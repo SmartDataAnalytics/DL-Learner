@@ -4,10 +4,12 @@
 package org.dllearner.scripts.evaluation;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
@@ -15,6 +17,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.QueryTreeHeuristic;
@@ -26,20 +29,20 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLP;
-import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * @author Lorenz Buehmann
  *
  */
 public class QTLEvaluation {
+	
+	private static final Logger logger = Logger.getLogger(QTLEvaluation.class.getName());
 	
 	int nrOfFolds = 10;
 	private int nrOfPosExamples = 300;
@@ -58,32 +61,84 @@ public class QTLEvaluation {
 	private QueryTreeFactory<String> queryTreeFactory;
 	private PosNegLP lp;
 
+	double start = 1.0;
+	double end = 2.0;
+	double stepsize = 1.0;
+	
+	ArrayList<HeuristicType> heuristics = Lists.newArrayList(
+//			HeuristicType.MATTHEWS_CORRELATION, 
+			HeuristicType.PRED_ACC 
+//			HeuristicType.FMEASURE
+//			HeuristicType.ENTROPY
+			);
+	
+	CLI[] clis = new CLI[]{
+//			carcinogenesis, 
+//			breasttissue, 
+//			heart, 
+			parkinsons, 
+//			mammographic, 
+//			mutagenesis
+			};
+	private Map<HeuristicType, Map<Double, Stat>> fMeasureStats;
+	private Map<HeuristicType, Map<Double, Stat>> accuracyStats;
+
+	private int maxExecutionTimeInSeconds = 60;
 	
 	
 	public QTLEvaluation() throws ComponentInitException, IOException {
-		queryTreeFactory = new QueryTreeFactoryImpl();
-		queryTreeFactory.setMaxDepth(3);
+		init();
 		
 //		loadDataset();
 		
 		loadExamples();
 	}
 	
-	private void loadDataset(){
-		File file = new File("../examples/carcinogenesis/carcinogenesis.owl");
-		model = ModelFactory.createDefaultModel();
-		try {
-			model.read(new FileInputStream(file), null, "RDF/XML");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+	private void init() throws IOException{
+		queryTreeFactory = new QueryTreeFactoryImpl();
+		queryTreeFactory.setMaxDepth(3);
+		
+		fMeasureStats = new HashMap<HeuristicType, Map<Double,Stat>>();
+		for (HeuristicType h : heuristics) {
+			Map<Double, Stat> beta2Stat = new TreeMap<Double, Stat>();
+			fMeasureStats.put(h, beta2Stat);
+			for(double beta = start; beta <= end; beta +=stepsize){
+				Double val = Math.round(beta * 10d)/10d;
+				beta2Stat.put(val, new Stat());
+			}
 		}
 		
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		try {
-			ontology = man.loadOntologyFromOntologyDocument(file);
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
+		accuracyStats = new HashMap<HeuristicType, Map<Double,Stat>>();
+		for (HeuristicType h : heuristics) {
+			Map<Double, Stat> beta2Stat = new TreeMap<Double, Stat>();
+			accuracyStats.put(h, beta2Stat);
+			for(double beta = start; beta <= end; beta +=stepsize){
+				Double val = Math.round(beta * 10d)/10d;
+				beta2Stat.put(val, new Stat());
+			}
 		}
+		
+		Layout layout = new PatternLayout("%m%n");
+		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
+		Logger logger = Logger.getRootLogger();
+		logger.removeAllAppenders();
+		logger.addAppender(consoleAppender);
+		logger.setLevel(Level.ERROR);
+		Logger.getLogger("org.dllearner.algorithms").setLevel(Level.INFO);
+		Logger.getLogger("org.dllearner.scripts").setLevel(Level.INFO);
+		
+		FileAppender fileAppender = new FileAppender(layout, "log/qtl-eval.log", false);
+		logger.addAppender(fileAppender);
+		fileAppender.setThreshold(Level.INFO);
+		// disable OWL API info output
+		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
+		
+//		FastInstanceChecker reasoner = new FastInstanceChecker(new OWLAPIOntology(ontology));
+//		reasoner.init();
+//		lp.setReasoner(reasoner);
+//		lp.init();
+		CrossValidation.outputFile = new File("log/qtl-cv.log");
+		CrossValidation.writeToFile = true;
 	}
 	
 	private void loadExamples() throws ComponentInitException, IOException{
@@ -112,49 +167,10 @@ public class QTLEvaluation {
 	}
 	
 	public void run(boolean multiThreaded) throws ComponentInitException, LearningProblemUnsupportedException, IOException{
-		Layout layout = new PatternLayout("%m%n");
-		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		Logger logger = Logger.getRootLogger();
-		logger.removeAllAppenders();
-		logger.addAppender(consoleAppender);
-		logger.setLevel(Level.ERROR);
-		Logger.getLogger("org.dllearner.algorithms").setLevel(Level.INFO);
-		Logger.getLogger("org.dllearner.scripts").setLevel(Level.INFO);
-		
-		FileAppender fileAppender = new FileAppender(layout, "log/qtl-eval.log", false);
-		logger.addAppender(fileAppender);
-		fileAppender.setThreshold(Level.INFO);
-		// disable OWL API info output
-		java.util.logging.Logger.getLogger("").setLevel(java.util.logging.Level.WARNING);
 		long startTime = System.currentTimeMillis();
-//		FastInstanceChecker reasoner = new FastInstanceChecker(new OWLAPIOntology(ontology));
-//		reasoner.init();
-//		lp.setReasoner(reasoner);
-//		lp.init();
-		CrossValidation.outputFile = new File("log/qtl-cv.log");
-		CrossValidation.writeToFile = true;
-//		CrossValidation.multiThreaded = multiThreaded;
-		CrossValidation.multiThreaded = true;
-		
+		CrossValidation.multiThreaded = multiThreaded;
 		StringBuilder sb = new StringBuilder();
-		CLI[] clis = new CLI[]{
-				carcinogenesis, 
-				breasttissue, 
-				heart, 
-				parkinsons, 
-				mammographic, 
-				mutagenesis
-				};
-//		clis = new CLI[]{parkinsons};
-		ArrayList<HeuristicType> heuristics = Lists.newArrayList(
-				HeuristicType.MATTHEWS_CORRELATION, 
-				HeuristicType.PRED_ACC, 
-				HeuristicType.FMEASURE
-//				HeuristicType.ENTROPY
-				);
-		double start = 0.1;
-		double end = 1.0;
-		double stepsize = 0.1;
+		
 		for (CLI cli : clis) {
 			sb.append("############################################\n");
 			sb.append(cli.getConfFile().getPath()).append("\n");
@@ -170,18 +186,54 @@ public class QTLEvaluation {
 				sb.append("Beta\t\tF-measure\t\tAccuracy").append("\n");
 				heuristic.setHeuristicType(heuristicType);
 				for(double beta = start; beta <= end; beta +=stepsize){
-					la.setBeta(Math.round(beta * 10d)/10d);
+					double val = Math.round(beta * 10d)/10d;
+					la.setBeta(val);
 					la.init();
 					CrossValidation cv = new CrossValidation(la, lp, reasoner, nrOfFolds, false);
 					sb.append(Math.round(beta * 10d)/10d + "\t\t" + cv.getfMeasure().getMean() + "\t\t" + cv.getAccuracy().getMean()).append("\n");
+					fMeasureStats.get(heuristicType).get(val).add(cv.getfMeasure());
+					accuracyStats.get(heuristicType).get(val).add(cv.getAccuracy());
 				}
 				sb.append("******************************\n");
 			}
+			
+			//run CELOE algorithm for comparison
+			//TODO: adjust parameters
+//			CELOE celoe = new CELOE(lp, reasoner);
+//			celoe.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+//			RhoDRDown op = new RhoDRDown();
+//			op.setReasoner(reasoner);
+//			op.setUseNegation(false);
+//			op.init();
+//			celoe.init();
+//			CrossValidation cv = new CrossValidation(celoe, lp, reasoner, nrOfFolds, false);
+//			sb.append("CELOE\n");
+//			sb.append("F-measure\t\tAccuracy").append("\n");
+//			sb.append(cv.getfMeasure().getMean() + "\t\t" + cv.getAccuracy().getMean()).append("\n");
 		}
-		System.out.println(sb.toString());
 		
 		long endTime = System.currentTimeMillis();
-		System.out.println((endTime - startTime) + "ms");
+		logger.info((endTime - startTime) + "ms");
+		
+		//write stats for each heuristic and each dataset
+		logger.info(sb.toString());
+		
+		//write total stats by heuristic
+		String s = "";
+		for (Entry<HeuristicType, Map<Double, Stat>> entry : accuracyStats.entrySet()) {
+			HeuristicType h = entry.getKey();
+			s += "Heuristic: " + h.name() + "\n";
+			Map<Double, Stat> param2AccuracyStat = entry.getValue();
+			s += "Beta\t\tF-measure\t\tAccuracy\n";
+			for (Entry<Double, Stat> entry2 : param2AccuracyStat.entrySet()) {
+				Double param = entry2.getKey();
+				Stat accuracyStat = entry2.getValue();
+				Stat fMeasureStat = fMeasureStats.get(h).get(param);
+				s += param + "\t\t" + fMeasureStat.getMean() + "\t\t" + accuracyStat.getMean() + "\n";
+			}
+			
+		}
+		logger.info("TOTAL\n:" + s);
 	}
 
 	

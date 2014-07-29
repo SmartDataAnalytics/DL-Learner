@@ -29,6 +29,18 @@
 					<artifactId>owlapi</artifactId>
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-apibinding</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-api</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>owlapi-impl</artifactId>
+					<groupId>net.sourceforge.owlapi</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -117,8 +129,9 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
+			<version>3.5.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-reasoner</artifactId>
 			<exclusions>
@@ -137,7 +150,7 @@
 					<groupId>net.sourceforge.owlapi</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 
 
 		<dependency>

@@ -59,6 +59,7 @@ import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
+import org.dllearner.core.owl.OWL2Datatype;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
@@ -263,7 +264,6 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			long dematStartTime = System.currentTimeMillis();
 
 			logger.debug("dematerialising concepts");
-
 			for (NamedClass atomicConcept : rc.getNamedClasses()) {
 				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
 				classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
@@ -862,23 +862,61 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
-
-			Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();			
-
-			if (dr instanceof DoubleMaxValue) {
-				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-					if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
-						returnSet.add(entry.getKey());
+			
+			if(dr.isDatatype()){
+				return new TreeSet<Individual>(dd.get(dp).keySet());			
+			} else {
+				Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
+				SortedSet<Individual> returnSet = new TreeSet<Individual>();	
+				
+				if (dr instanceof DoubleMaxValue) {
+					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+						if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
+							returnSet.add(entry.getKey());
+						}
+					}				
+				} else if (dr instanceof DoubleMinValue) {
+					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+						if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
+							returnSet.add(entry.getKey());
+						}
 					}
-				}				
-			} else if (dr instanceof DoubleMinValue) {
-				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-					if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
-						returnSet.add(entry.getKey());
+				} else if(dr instanceof DoubleMinMaxRange){
+					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+						double min = ((DoubleMinMaxRange)dr).getMinValue();
+						double max = ((DoubleMinMaxRange)dr).getMaxValue();
+						//we can skip of largest number is below minimum or lowest number is above maximum
+						if(entry.getValue().last() < min ||
+								entry.getValue().first() > max) {
+							continue;
+						}
+						
+						//search a value which is in the interval
+						for (Double value : entry.getValue()) {
+							if(value >= min && value <= max){
+								returnSet.add(entry.getKey());
+								break;
+							}
+						}
+					}
+				}
+				return returnSet;
+			}
+		} else if (description instanceof DatatypeValueRestriction){
+			SortedSet<Individual> returnSet = new TreeSet<Individual>();	
+			Constant literal = ((DatatypeValueRestriction) description).getValue();
+			if(literal instanceof TypedConstant){
+				if(((TypedConstant) literal).getDatatype().equals(OWL2Datatype.DOUBLE.getDatatype())){
+					Map<Individual, SortedSet<Double>> mapping = dd.get(((DatatypeValueRestriction) description).getRestrictedPropertyExpression());
+					Double value = Double.parseDouble(literal.getLiteral());
+					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+						if(entry.getValue().contains(value)) {
+							returnSet.add(entry.getKey());
+						}
 					}
 				}
 			}
+			return returnSet;
 		}
 			
 		throw new ReasoningMethodUnsupportedException("Retrieval for description "

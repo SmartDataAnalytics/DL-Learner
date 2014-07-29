@@ -19,17 +19,16 @@
 
 package org.dllearner.core.owl;
 
+import java.io.Serializable;
+
 /**
  * A constant value.
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class Constant implements KBElement, Comparable<Constant> {
+public abstract class Constant implements KBElement, Comparable<Constant>, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2331790456049452753L;
 	String literal;
 	

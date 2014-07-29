@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -141,34 +142,32 @@ public class CLI {
         	}		
 		}    	
 		rs = context.getBean(AbstractReasonerComponent.class);
-		la = context.getBean(AbstractCELA.class);
-		if (performCrossValidation) {
-			
-			
-			//this test is added for PDLL algorithm since it does not use the PosNegLP			
-			try {
-				ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);
-				new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
-			}
-			catch (BeansException be) {
-				PosNegLP lp = context.getBean(PosNegLP.class);
-				if(la instanceof QTL2){
-					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
-				} else {
-					new CrossValidation(la,lp,rs,nrOfFolds,false);	
+		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
+		
+			if (performCrossValidation) {
+				//this test is added for PDLL algorithm since it does not use the PosNegLP			
+				try {
+					ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);
+					new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
+				}
+				catch (BeansException be) {
+					PosNegLP lp = context.getBean(PosNegLP.class);
+					if(la instanceof QTL2){
+						new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
+					} else {
+						new CrossValidation(la,lp,rs,nrOfFolds,false);	
+					}
+				}
+				
+			} else {
+				lp = context.getBean(AbstractLearningProblem.class);
+//				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
+				for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
+					algorithm = entry.getValue();
+					logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
+					algorithm.start();
 				}
 			}
-			
-		} else {
-			lp = context.getBean(AbstractLearningProblem.class);
-//			knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
-			for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
-				algorithm = entry.getValue();
-				logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
-				algorithm.start();
-			}
-		}
-
     }
 
     public boolean isWriteSpringConfiguration() {

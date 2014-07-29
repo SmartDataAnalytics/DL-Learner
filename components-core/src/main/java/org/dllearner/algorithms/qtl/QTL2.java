@@ -202,7 +202,7 @@ public class QTL2 extends AbstractCELA {
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		EvaluatedQueryTree<String> bestSolution = solutions.first();
 		Description description = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-				bestSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION));
+				bestSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX));
 		return new EvaluatedDescription(description, new AxiomScore(bestSolution.getScore()));
 	}
 	

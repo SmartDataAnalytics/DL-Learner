@@ -118,11 +118,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 		/**
 		 * Literals as an interval on the datatype, e.g. [>= 5 <=10]
 		 */
-		FACET_RESTRICTION, 
+		MIN_MAX, 
 		/**
 		 * Literals as datatype, e.g. xsd:integer
 		 */
-		SOME_VALUES_FROM,
+		DATATYPE,
 		
 		MIN,
 		
@@ -207,7 +207,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         if(nodeType == NodeType.RESOURCE){
         	isResourceNode = true;
         } else if(nodeType == NodeType.LITERAL){
-        	isResourceNode = true;
+        	isLiteralNode = true;
         }
     }
     
@@ -1405,7 +1405,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
      * are transformed into existential restrictions.
      */
     public OWLClassExpression asOWLClassExpression(){
-    	return asOWLClassExpression(LiteralNodeConversionStrategy.SOME_VALUES_FROM);
+    	return asOWLClassExpression(LiteralNodeConversionStrategy.DATATYPE);
     }
     
     /**
@@ -1430,15 +1430,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	for(QueryTree<N> child : children){
     		String childLabel = (String) child.getUserObject();
     		String predicateString = (String) tree.getEdge(child);
-    		if(predicateString.equals(RDF.type.getURI())){
-    			if(child.isVarNode()){
-    				classExpressions.addAll(buildOWLClassExpressions(df, child, literalNodeConversionStrategy));
-    			} else {
-    				if(!childLabel.equals(OWL.Thing.getURI())){//avoid trivial owl:Thing statements
-    					classExpressions.add(df.getOWLClass(IRI.create(childLabel)));
-    				}
-    			}
-    		} else if(predicateString.equals(RDFS.subClassOf.getURI())){
+    		if(predicateString.equals(RDF.type.getURI()) || predicateString.equals(RDFS.subClassOf.getURI())){//A
     			if(child.isVarNode()){
     				classExpressions.addAll(buildOWLClassExpressions(df, child, literalNodeConversionStrategy));
     			} else {
@@ -1449,14 +1441,14 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		} else {
     			if(child.isLiteralNode()){
     				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
-    				if(childLabel.equals("?")){
+    				if(childLabel.equals("?")){//p some int
     					Set<Literal> literals = child.getLiterals();
     					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
     						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     					} else {
-    						if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.SOME_VALUES_FROM){
+    						if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.DATATYPE){
     							Literal lit = literals.iterator().next();
                     			RDFDatatype datatype = lit.getDatatype();
                     			String datatypeURI;
@@ -1468,7 +1460,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                     			dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.DATA_ONE_OF){
     							dataRange = asDataOneOf(df, literals);
-    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.FACET_RESTRICTION){
+    						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.MIN_MAX){
     							dataRange = asFacet(df, literals);
     						} else if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.MIN){
     							dataRange = asMinFacet(df, literals);
@@ -1477,7 +1469,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     						}
     					}
             			classExpressions.add(df.getOWLDataSomeValuesFrom(p, dataRange));
-    				} else {
+    				} else {//p value 1.2
     					Set<Literal> literals = child.getLiterals();
             			Literal lit = literals.iterator().next();
             			OWLLiteral owlLiteral = asOWLLiteral(df, lit);
@@ -1486,7 +1478,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         		} else {
         			OWLObjectProperty p = df.getOWLObjectProperty(IRI.create((String) tree.getEdge(child)));
         			OWLClassExpression filler;
-        			if(child.isVarNode()){
+        			if(child.isVarNode()){//p some C
             			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child, literalNodeConversionStrategy);
             			if(fillerClassExpressions.isEmpty()){
             				filler = df.getOWLThing();
@@ -1496,7 +1488,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             				filler = df.getOWLObjectIntersectionOf(fillerClassExpressions);
             			}
             			classExpressions.add(df.getOWLObjectSomeValuesFrom(p, filler));
-            		} else {
+            		} else {//p value {a}
             			classExpressions.add(df.getOWLObjectHasValue(p, df.getOWLNamedIndividual(IRI.create(childLabel))));
             		}
         		}

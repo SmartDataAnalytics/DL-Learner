@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.owl;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ import org.dllearner.core.owl.Union;
  * @author Jens Lehmann
  *
  */
-public class ConceptComparator implements Comparator<Description> {
+public class ConceptComparator implements Comparator<Description>, Serializable {
 	
 	RoleComparator rc = new RoleComparator();
 	

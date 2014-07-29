@@ -6,6 +6,7 @@ package org.dllearner.reasoning;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -81,27 +82,55 @@ public class ExistentialRestrictionMaterialization {
 		private Map<OWLClass, Set<OWLClassExpression>> map = new HashMap<>();
 		Stack<Set<OWLClassExpression>> stack = new Stack<Set<OWLClassExpression>>();
 		OWLDataFactory df;
+		boolean onlyIfExistentialOnPath = true;
+		
+		int indent = 0;
 
 		public SuperClassFinder() {
 			df = ontology.getOWLOntologyManager().getOWLDataFactory();
 		}
 		
 		public Set<OWLClassExpression> getSuperClasses(OWLClass cls){
+//			System.out.println("#################");
 			map.clear();
 			computeSuperClasses(cls);
 			Set<OWLClassExpression> superClasses = map.get(cls);
 			superClasses.remove(cls);
+			
+			//filter out non existential superclasses
+			if(onlyIfExistentialOnPath){
+				for (Iterator<OWLClassExpression> iterator = superClasses.iterator(); iterator.hasNext();) {
+					OWLClassExpression sup = iterator.next();
+					if (!(sup instanceof OWLObjectSomeValuesFrom || sup instanceof OWLDataAllValuesFrom)) {
+						iterator.remove();
+					}
+				}
+			}
 			return superClasses;
 		}
 		
 		private void computeSuperClasses(OWLClass cls){
+			String s = "";
+			for(int i = 0; i < indent; i++){
+				s += "   ";
+			}
+//			System.out.println(s + cls);
+			indent++;
 			Set<OWLClassExpression> superClasses = new HashSet<OWLClassExpression>();
 			superClasses.add(cls);
+			
+			//get the directly asserted super classes
 			Set<OWLClassExpression> superClassExpressions = cls.getSuperClasses(ontology);
+			
+			//omit trivial super class
+			superClassExpressions.remove(cls);
+			
+			//go subsumption hierarchy up for each directly asserted super class
 			for (OWLClassExpression sup : superClassExpressions) {
 				sup.accept(this);
 				superClasses.addAll(stack.pop());
 			}
+			
 			stack.push(superClasses);
 			map.put(cls, superClasses);
 		}

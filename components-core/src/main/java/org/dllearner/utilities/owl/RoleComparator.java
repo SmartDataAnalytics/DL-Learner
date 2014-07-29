@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.owl;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.dllearner.core.owl.DatatypeProperty;
@@ -35,7 +36,7 @@ import org.dllearner.core.owl.PropertyExpression;
  * @author Jens Lehmann
  *
  */
-public class RoleComparator implements Comparator<PropertyExpression> {
+public class RoleComparator implements Comparator<PropertyExpression>, Serializable {
 
 	public int compare(PropertyExpression r1, PropertyExpression r2) {
 		

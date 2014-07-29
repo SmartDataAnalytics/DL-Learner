@@ -27,6 +27,11 @@ public class GeneralisationTest {
 	private static final String ENDPOINT_URL = "http://dbpedia.org/sparql";
 	
 	@Test
+	public void test(){
+		
+	}
+	
+//	@Test
 	public void generalisationTest1(){
 		String resource = "http://dbpedia.org/resource/Chelsea_F.C.";
 		
@@ -40,7 +45,7 @@ public class GeneralisationTest {
 		System.out.println(tree.toQuery());
 	}
 	
-	@Test
+//	@Test
 	public void generalisationTest2(){
 //		String resource = "http://dbpedia.org/resource/Interview_with_the_Vampire:_The_Vampire_Chronicles";
 		String resource = "http://dbpedia.org/resource/Arsenal_F.C.";

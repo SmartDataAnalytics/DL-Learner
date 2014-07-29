@@ -77,6 +77,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Sets;
+
 /**
  * A downward refinement operator, which makes use of domains
  * and ranges of properties. The operator is currently under
@@ -244,9 +246,35 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 	}
 	
+	public RhoDRDown(RhoDRDown op) {
+		setApplyAllFilter(op.applyAllFilter);
+		setCardinalityLimit(op.cardinalityLimit);
+		setClassHierarchy(op.subHierarchy);
+		setDataPropertyHierarchy(op.dataPropertyHierarchy);
+		setDropDisjuncts(op.dropDisjuncts);
+		setFrequencyThreshold(op.frequencyThreshold);
+		setInstanceBasedDisjoints(op.instanceBasedDisjoints);
+		setObjectPropertyHierarchy(op.objectPropertyHierarchy);
+		setReasoner(op.reasoner);
+		setStartClass(op.startClass);
+		setSubHierarchy(op.subHierarchy);
+		setUseAllConstructor(op.useAllConstructor);
+		setUseBooleanDatatypes(op.useBooleanDatatypes);
+		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
+		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
+		setUseDoubleDatatypes(op.useDoubleDatatypes);
+		setUseExistsConstructor(op.useExistsConstructor);
+		setUseHasValueConstructor(op.useHasValueConstructor);
+		setUseIntDatatypes(op.useIntDatatypes);
+		setUseNegation(op.useNegation);
+		setUseObjectValueNegation(op.useObjectValueNegation);
+		setUseStringDatatypes(op.useStringDatatypes);
+		isInitialised = false;
+	}
+	
 	public void init() throws ComponentInitException {	
 		if(isInitialised) {
-			throw new ComponentInitException("Refinement operator cannot be nitialised twice.");
+			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
 //		System.out.println("subHierarchy: " + subHierarchy);
 //		System.out.println("object properties: " + reasoner.getObjectProperties());
@@ -358,11 +386,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 				maxNrOfFillers.put(op, maxFillers);
 			}
-		
-			isInitialised = true;
-		
 		}
-		
+		isInitialised = true;
 		/*
 		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
 		try {
@@ -1433,6 +1458,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	
 	// computes the set of applicable properties for a given class
 	private void computeApp(NamedClass domain) {
+		SortedSet<Individual> individuals1 = reasoner.getIndividuals(domain);
 		// object properties
 		Set<ObjectProperty> mostGeneral = reasoner.getObjectProperties();
 		Set<ObjectProperty> applicableRoles = new TreeSet<ObjectProperty>();
@@ -1440,9 +1466,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
 			Description d = reasoner.getDomain(role);
-			if(!isDisjoint(domain,d))
-				applicableRoles.add(role);
-		}
+			
+			Set<Individual> individuals2 = new HashSet<Individual>();
+			for (Entry<Individual, SortedSet<Individual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
+				Individual ind = entry.getKey();
+				if(!entry.getValue().isEmpty()){
+					individuals2.add(ind);
+				}
+			}
+			
+			boolean disjoint = Sets.intersection(individuals1, individuals2).isEmpty();
+//			if(!isDisjoint(domain,d))
+				if(!disjoint){
+					applicableRoles.add(role);
+				}
+				
+		}System.out.println(domain + ":" + applicableRoles);
 		appOP.put(domain, applicableRoles);
 		
 		// boolean datatype properties

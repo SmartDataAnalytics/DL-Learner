@@ -25,6 +25,7 @@ import java.util.Stack;
 
 import org.dllearner.algorithms.gp.ADC;
 import org.dllearner.core.owl.Constant;
+import org.dllearner.core.owl.DataOneOf;
 import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.Datatype;
 import org.dllearner.core.owl.DatatypeExactCardinalityRestriction;
@@ -339,6 +340,11 @@ public class OWLAPIDescriptionConvertVisitor implements DescriptionVisitor {
 			// currently only double restrictions implemented
 	        owlDataRange = factory.getOWLDatatypeMinMaxInclusiveRestriction(
 	        		((DoubleMinMaxRange) dataRange).getMinValue(), ((DoubleMinMaxRange) dataRange).getMaxValue());
+		} else if(dataRange instanceof DataOneOf){
+			// currently only double restrictions implemented
+			Set<Constant> values = ((DataOneOf) dataRange).getValues();
+			//TODO
+			throw new UnsupportedOperationException("Can not convert " + description);
 		} else {
 			throw new UnsupportedOperationException("Can not convert " + description);
 		}
