@@ -1,0 +1,67 @@
+#Solution \exists bereifung.\top \sqcap Fahrzeug
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://ex.org/> .
+
+ex:Gummireifen a owl:Class .
+ex:bereifung a owl:ObjectProperty .
+
+ex:Transporthilfe a owl:Class .
+
+ex:Schubkarre
+    a owl:Class ;
+    rdfs:subClassOf ex:Transporthilfe .
+
+ex:Fahrzeug a owl:Class .
+ex:Fahrzeug owl:disjointWith ex:Transporthilfe .
+
+ex:Tram
+    a owl:Class ;
+    rdfs:subClassOf ex:Fahrzeug .
+
+ex:Bahn
+    a owl:Class ;
+    rdfs:subClassOf ex:Fahrzeug .
+
+ex:Auto
+    a owl:Class ;
+    rdfs:subClassOf ex:Fahrzeug .
+
+ex:Moped
+    a owl:Class ;
+    rdfs:subClassOf ex:Fahrzeug .
+
+ex:Fahrrad
+    a owl:Class ;
+    rdfs:subClassOf ex:Fahrzeug .
+
+ex:BRIDGESTONE_XYZ a ex:Gummireifen .
+ex:PNEUMANT_4711 a ex:Gummireifen .
+ex:HEIDENAU_K36 a ex:Gummireifen .
+ex:DEMA_ABC23 a ex:Gummireifen .
+
+ex:Auto ex:bereifung ex:BRIDGESTONE_XYZ .
+ex:Moped ex:bereifung ex:HEIDENAU_K36 .
+ex:Fahrrad ex:bereifung ex:PNEUMANT_4711 .
+ex:Schubkarre ex:bereifung ex:DEMA_ABC23 .
+
+# positive individuals
+<http://ex.org/TRABANT601#1234> a ex:Auto .
+<http://ex.org/S51#2345> a ex:Moped .
+<http://ex.org/MIFA23#3456> a ex:Fahrrad .
+
+# negative individuals
+<http://ex.org/CLIPSO90MG#4567> a ex:Schubkarre .
+<http://ex.org/SIEMENS425#567> a ex:Bahn .
+<http://ex.org/TATRAT3#678> a ex:Tram .
+
+# punning workaround
+ex:p a owl:ObjectProperty .
+<http://ex.org/TRABANT601#1234> ex:p ex:Auto .
+<http://ex.org/S51#2345> ex:p ex:Moped .
+<http://ex.org/MIFA23#3456> ex:p ex:Fahrrad .
+<http://ex.org/CLIPSO90MG#4567> ex:p ex:Schubkarre .
+<http://ex.org/SIEMENS425#567> ex:p ex:Bahn .
+<http://ex.org/TATRAT3#678> ex:p ex:Tram .
