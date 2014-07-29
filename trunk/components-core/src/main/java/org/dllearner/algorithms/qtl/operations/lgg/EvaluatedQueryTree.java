@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 
@@ -18,6 +19,8 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	private Collection<QueryTree<N>> falsePositives;
 	private QueryTreeScore score;
 //	private ScoreTwoValued score;
+	
+	private EvaluatedDescription description;
 
 	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
 			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
@@ -61,7 +64,8 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	@Override
 	public int compareTo(EvaluatedQueryTree<N> other) {
 		return ComparisonChain.start()
-		         .compare(this.getScore(), other.getScore())
+//		         .compare(this.getScore(), other.getScore())
+		         .compare(other.getScore(), this.getScore())
 		         .result();
 //		double diff = getScore() - other.getScore();
 //		if(diff == 0){
@@ -73,9 +77,26 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 //		}
 	}
 	
+	
+	/**
+	 * @return the description
+	 */
+	public EvaluatedDescription getEvaluatedDescription() {
+		return asEvaluatedDescription();
+	}
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(EvaluatedDescription description) {
+		this.description = description;
+	}
+	
 	public EvaluatedDescription asEvaluatedDescription(){
-		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-				getTree().asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION)), score);
+		if(description == null){
+			description = new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
+					getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX)), score);
+		}
+		return description;
 	}
 	
 	public EvaluatedDescription asEvaluatedDescription(LiteralNodeConversionStrategy strategy){

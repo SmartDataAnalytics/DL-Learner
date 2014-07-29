@@ -32,7 +32,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -50,7 +49,6 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Restriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -92,7 +90,7 @@ import com.jamonapi.MonitorFactory;
  *
  */
 @ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
-public class CELOE extends AbstractCELA {
+public class CELOE extends AbstractCELA implements Cloneable{
 
 	private static Logger logger = Logger.getLogger(CELOE.class);
 //	private CELOEConfigurator configurator;
@@ -222,6 +220,39 @@ public class CELOE extends AbstractCELA {
 	
 	public CELOE() {
 		
+	}
+	
+	public CELOE(CELOE celoe){
+		setReasoner(celoe.reasoner);
+		setLearningProblem(celoe.learningProblem);
+		setAllowedConcepts(celoe.getAllowedConcepts());
+		setExpandAccuracy100Nodes(celoe.expandAccuracy100Nodes);
+		setFilterDescriptionsFollowingFromKB(celoe.filterDescriptionsFollowingFromKB);
+		setHeuristic(celoe.heuristic);
+		setIgnoredConcepts(celoe.ignoredConcepts);
+		setLearningProblem(celoe.learningProblem);
+		setMaxClassExpressionTests(celoe.maxClassExpressionTests);
+		setMaxClassExpressionTestsAfterImprovement(celoe.maxClassExpressionTestsAfterImprovement);
+		setMaxDepth(celoe.maxDepth);
+		setMaxExecutionTimeInSeconds(celoe.maxExecutionTimeInSeconds);
+		setMaxExecutionTimeInSecondsAfterImprovement(celoe.maxExecutionTimeInSecondsAfterImprovement);
+		setMaxNrOfResults(celoe.maxNrOfResults);
+		setNoisePercentage(celoe.noisePercentage);
+		RhoDRDown op = new RhoDRDown((RhoDRDown)celoe.operator);
+		try {
+			op.init();
+		} catch (ComponentInitException e) {
+			e.printStackTrace();
+		}
+		setOperator(op);
+		setReplaceSearchTree(celoe.replaceSearchTree);
+		setReuseExistingDescription(celoe.reuseExistingDescription);
+		setSingleSuggestionMode(celoe.singleSuggestionMode);
+		setStartClass(celoe.startClass);
+		setStopOnFirstDefinition(celoe.stopOnFirstDefinition);
+		setTerminateOnNoiseReached(celoe.terminateOnNoiseReached);
+		setUseMinimizer(celoe.useMinimizer);
+		setWriteSearchTree(celoe.writeSearchTree);
 	}
 	
 	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -529,7 +560,7 @@ public class CELOE extends AbstractCELA {
 						treeString += "   " + n + "\n";
 					}
 				}
-				treeString += startNode.toTreeString(baseURI);
+				treeString += startNode.toTreeString(baseURI, prefixes);
 				treeString += "\n";
 
 				if (replaceSearchTree)
@@ -1133,6 +1164,14 @@ public class CELOE extends AbstractCELA {
 	 */
 	public void setExpandAccuracy100Nodes(boolean expandAccuracy100Nodes) {
 		this.expandAccuracy100Nodes = expandAccuracy100Nodes;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new CELOE(this);
 	}
 
 	public static void main(String[] args) throws Exception{

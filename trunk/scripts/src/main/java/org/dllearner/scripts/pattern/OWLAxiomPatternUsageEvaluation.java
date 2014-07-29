@@ -705,7 +705,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		Model fragment = ModelFactory.createDefaultModel();
 		//try to load from cache
 		HashFunction hf = Hashing.md5();
-		HashCode hc = hf.newHasher().putString(cls.getName()).hash();
+		HashCode hc = hf.newHasher().putString(cls.getName(), Charsets.UTF_8).hash();
 		File file = new File("pattern-cache/" + hc.toString() + ".ttl");
 		if(file.exists()){
 			try {

@@ -65,11 +65,11 @@ public class DoubleMinMaxRange implements DoubleDataRange {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " double[>= " + minValue + " <= " + maxValue + "]";
+		return "double[>= " + minValue + ", <= " + maxValue + "]";
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " double[>= " + minValue + " <= " + maxValue + "]";
+		return "double[>= " + minValue + ", <= " + maxValue + "]";
 	}
 	
 	public void accept(KBElementVisitor visitor) {
@@ -81,7 +81,7 @@ public class DoubleMinMaxRange implements DoubleDataRange {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " double[>= " + minValue + " <= " + maxValue + "]";
+		return "double[>= " + minValue + ", <= " + maxValue + "]";
 	}
 
 	/* (non-Javadoc)

@@ -56,7 +56,7 @@ public class ISLETestNoCorpus {
 	}	
 	
 	// uses the rdfs:label, rdfs:comment (or other properties) of the class directly instead of an external corpus
-	@Test
+//	@Test
 	public void testISLENoCorpus() throws Exception {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);

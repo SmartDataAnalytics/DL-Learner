@@ -185,7 +185,7 @@ public class LGGTest {
 		lgg.dump();
 	}
 	
-	@Test
+//	@Test
 	public void testNoiseLGGWithCarcinogenesis() throws Exception{
 		Model model = ModelFactory.createDefaultModel();
 		model.read(new FileInputStream(new File("../examples/carcinogenesis/carcinogenesis.owl")), null, "RDF/XML");
@@ -262,7 +262,7 @@ public class LGGTest {
 //		}
 	}
 	
-	@Test
+//	@Test
 	public void testTCGA() throws Exception{
 		URL url = new URL("http://vmlion14.deri.ie/node43/8080/sparql");
 		SparqlEndpoint endpoint = new SparqlEndpoint(url);

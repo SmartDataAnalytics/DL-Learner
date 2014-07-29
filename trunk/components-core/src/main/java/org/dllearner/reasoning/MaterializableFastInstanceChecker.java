@@ -20,6 +20,11 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,24 +69,17 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.ObjectValueRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
-import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -101,7 +99,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  * @author Jens Lehmann
  * 
  */
-@ComponentAnn(name = "fast instance checker", shortName = "fic", version = 0.9)
+@ComponentAnn(name = "materializable fast instance checker", shortName = "mat-fic", version = 0.9)
 public class MaterializableFastInstanceChecker extends AbstractReasonerComponent {
 
 	private static Logger logger = Logger.getLogger(MaterializableFastInstanceChecker.class);
@@ -152,7 +150,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
             "use those which have at least one r-filler and do not have an r-filler not in C.",defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
     private ForallSemantics forallSemantics = ForallSemantics.Standard;
     
-    private boolean materializeExistentialRestrictions = true;
+    private boolean materializeExistentialRestrictions = false;
+
+	private boolean useCaching = true;
     
 
     public enum ForallSemantics { 
@@ -261,7 +261,61 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		atomicRoles = rc.getObjectProperties();
 		individuals = (TreeSet<Individual>) rc.getIndividuals();
 
-		dematerialize();
+		loadOrDematerialize();
+	}
+	
+	private void loadOrDematerialize(){
+		if(useCaching){
+			File cacheDir = new File("cache");
+			cacheDir.mkdirs();
+			HashFunction hf = Hashing.md5();
+			Hasher hasher = hf.newHasher();
+			hasher.putBoolean(materializeExistentialRestrictions);
+			for (OWLOntology ont : rc.getOWLAPIOntologies()) {
+				hasher.putInt(ont.getLogicalAxioms().hashCode());
+				hasher.putInt(ont.getAxioms().hashCode());
+			}
+			String filename = hasher.hash().toString() + ".obj";
+			
+			File cacheFile = new File(cacheDir, filename);
+			if(cacheFile.exists()){
+				logger.debug("Loading materialization from disk...");
+				try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))){
+					Materialization mat = (Materialization) ois.readObject();
+					classInstancesPos = mat.classInstancesPos;
+					classInstancesNeg = mat.classInstancesNeg;
+					opPos = mat.opPos;
+					dpPos = mat.dpPos;
+					bdPos = mat.bdPos;
+					bdNeg = mat.bdNeg;
+					dd = mat.dd;
+					id = mat.id;
+					sd = mat.sd;
+				} catch (ClassNotFoundException | IOException e) {
+					e.printStackTrace();
+				} 
+				logger.debug("done.");
+			} else {
+				dematerialize();
+				Materialization mat = new Materialization();
+				mat.classInstancesPos = classInstancesPos;
+				mat.classInstancesNeg = classInstancesNeg;
+				mat.opPos = opPos;
+				mat.dpPos = dpPos;
+				mat.bdPos = bdPos;
+				mat.bdNeg = bdNeg;
+				mat.dd = dd;
+				mat.id = id;
+				mat.sd = sd;
+				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cacheFile))){
+					oos.writeObject(mat);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
+		} else {
+			dematerialize();
+		}
 	}
 	
 	private void dematerialize(){
@@ -1032,29 +1086,6 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
 		return rc.isSuperClassOfImpl(superConcept, subConcept);
-	}
-
-	/**
-	 * Test method for fast instance checker.
-	 * 
-	 * @param args
-	 *            No arguments supported.
-	 * @throws ComponentInitException Component cannot be initialised.
-	 * @throws ParseException File cannot be parsed.
-	 * @throws ReasoningMethodUnsupportedException Reasoning method not supported.
-	 */
-	public static void main(String[] args) throws Exception,
-			ReasoningMethodUnsupportedException {
-		
-		String ontologyURL = "/home/me/tools/pellet/test/data/modularity/koala.owl";
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLDataFactory dataFactory = man.getOWLDataFactory();
-		OWLOntology ontology = man.loadOntologyFromOntologyDocument(new File(ontologyURL));
-		OWLReasonerFactory reasonerFactory = PelletReasonerFactory.getInstance();
-		OWLReasoner reasoner = reasonerFactory.createNonBufferingReasoner(ontology);
-		OWLClass cls = dataFactory.getOWLClass(IRI.create("http://protege.stanford.edu/plugins/owl/owl-library/koala.owl#Koala"));
-		Set<OWLClassExpression> superClasses = cls.getSuperClasses(ontology);
-		System.out.println(superClasses);
 	}
 
 	/*

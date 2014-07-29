@@ -3,7 +3,7 @@ package org.dllearner.algorithms.pattern;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
-import org.junit.Before;
+import org.junit.Test;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
@@ -11,7 +11,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 public class OWLPatternDetectionTest {
 	
-	@Before
+//	@Before
 	public void setUp() throws Exception {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 	}
@@ -30,6 +30,11 @@ public class OWLPatternDetectionTest {
 		repository.initialize();
 		OWLAxiomPatternFinder patternFinder = new OWLAxiomPatternFinder(repository);
 		patternFinder.start();
+	}
+	
+	@Test
+	public void test(){
+		
 	}
 
 }

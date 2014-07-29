@@ -58,11 +58,11 @@ public class DoubleMaxValue implements SimpleDoubleDataRange {
 	 * @see org.dllearner.core.owl.KBElement#toString(java.lang.String, java.util.Map)
 	 */
 	public String toString(String baseURI, Map<String, String> prefixes) {
-		return " double[<= " + value + "]";
+		return "double[<= " + value + "]";
 	}
 	
 	public String toKBSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " double[<= " + value + "]";
+		return "double[<= " + value + "]";
 	}
 	
 	public void accept(KBElementVisitor visitor) {
@@ -74,7 +74,7 @@ public class DoubleMaxValue implements SimpleDoubleDataRange {
 	 */
 	@Override
 	public String toManchesterSyntaxString(String baseURI, Map<String, String> prefixes) {
-		return " double[<= " + value + "]";
+		return "double[<= " + value + "]";
 	}
 
 	/* (non-Javadoc)

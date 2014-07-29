@@ -22,6 +22,7 @@ package org.dllearner.algorithms.celoe;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.dllearner.algorithms.SearchTreeNode;
 import org.dllearner.algorithms.isle.NLPHeuristic;
@@ -119,7 +120,11 @@ public class OENode implements SearchTreeNode {
 	}
 	
 	public String getShortDescription(String baseURI) {
-		String ret = description.toString(baseURI,null) + " [";
+		return getShortDescription(baseURI, null);
+	}
+	
+	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
+		String ret = description.toString(baseURI,prefixes) + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";
@@ -141,6 +146,10 @@ public class OENode implements SearchTreeNode {
 		return toTreeString(0, baseURI).toString();
 	}	
 	
+	public String toTreeString(String baseURI, Map<String, String> prefixes) {
+		return toTreeString(0, baseURI, prefixes).toString();
+	}	
+	
 	private StringBuilder toTreeString(int depth, String baseURI) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
@@ -150,6 +159,19 @@ public class OENode implements SearchTreeNode {
 		treeString.append(getShortDescription(baseURI)+"\n");
 		for(OENode child : children) {
 			treeString.append(child.toTreeString(depth+1,baseURI));
+		}
+		return treeString;
+	}
+	
+	private StringBuilder toTreeString(int depth, String baseURI, Map<String, String> prefixes) {
+		StringBuilder treeString = new StringBuilder();
+		for(int i=0; i<depth-1; i++)
+			treeString.append("  ");
+		if(depth!=0)
+			treeString.append("|--> ");
+		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
+		for(OENode child : children) {
+			treeString.append(child.toTreeString(depth+1,baseURI,prefixes));
 		}
 		return treeString;
 	}
@@ -166,5 +188,5 @@ public class OENode implements SearchTreeNode {
 	 */
 	public void setRefinementCount(int refinementCount) {
 		this.refinementCount = refinementCount;
-	}	
+	}
 }

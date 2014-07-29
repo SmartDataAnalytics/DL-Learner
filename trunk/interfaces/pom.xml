@@ -16,7 +16,7 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0-beta-2</release.name>
+		<release.name>1.0-beta-3</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
 		<packaging.type>jar</packaging.type>
@@ -493,6 +493,10 @@
 					<artifactId>jena</artifactId>
 					<groupId>com.hp.hpl.jena</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>stanford-corenlp</artifactId>
+					<groupId>edu.stanford.nlp</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!--dependency> <groupId>org.dllearner</groupId> <artifactId>components-ext</artifactId> 
@@ -504,6 +508,16 @@
 			<artifactId>components-core</artifactId>
 			<classifier>tests</classifier>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jena</artifactId>
+					<groupId>com.hp.hpl.jena</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>stanford-corenlp</artifactId>
+					<groupId>edu.stanford.nlp</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jamonapi</groupId>

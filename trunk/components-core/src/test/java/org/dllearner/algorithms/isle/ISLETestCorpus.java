@@ -146,7 +146,7 @@ public class ISLETestCorpus {
 		System.out.println(Joiner.on("\n").join(entityRelevance.entrySet()));
 	}
 	
-	@Test
+//	@Test
 	public void testSemanticIndexCorpus(){
 		semanticIndex = SemanticIndexGenerator.generateIndex(createDocuments(), ontology, false);
 		Set<AnnotatedDocument> documents = semanticIndex.getDocuments(cls);
@@ -157,7 +157,7 @@ public class ISLETestCorpus {
 		System.out.println(entityRelevance);
 	}
 	
-	@Test
+//	@Test
 	public void testISLE() throws Exception {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
@@ -181,7 +181,7 @@ public class ISLETestCorpus {
 		isle.start();
 	}
 	
-    @Test
+//    @Test
     public void testEntityLinkingWithLemmatizing() throws Exception {
         EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
         LinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
@@ -196,7 +196,7 @@ public class ISLETestCorpus {
         }
     }
 
-    @Test
+//    @Test
     public void testEntityLinkingWithSimpleStringMatching() throws Exception {
         EntityCandidatesTrie ect = new SimpleEntityCandidatesTrie(new RDFSLabelEntityTextRetriever(ontology), ontology);
         TrieLinguisticAnnotator linguisticAnnotator = new TrieLinguisticAnnotator(ect);
@@ -212,7 +212,7 @@ public class ISLETestCorpus {
         }
     }
 
-	@Test
+//	@Test
 	public void compareISLE() throws Exception {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
@@ -266,7 +266,7 @@ public class ISLETestCorpus {
 		
 	}	
 	
-	@Test
+//	@Test
 	public void testWordSenseDisambiguation() throws Exception {
 		Set<OWLEntity> context = StructuralEntityContext.getContext(ontology, df.getOWLClass(IRI.create(cls.getName())));
 		System.out.println(context);
