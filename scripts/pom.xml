@@ -129,7 +129,6 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.5.1-SNAPSHOT</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
