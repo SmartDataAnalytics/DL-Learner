@@ -254,6 +254,12 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom axiom) {
+		axiom.getProperty().accept(this);
+		writeSpace();
+		write(DISJOINT_WITH);
+		writeSpace();
+		axiom.getProperty().accept(this);
+		write(INVERSE);
 	}
 
 	@Override

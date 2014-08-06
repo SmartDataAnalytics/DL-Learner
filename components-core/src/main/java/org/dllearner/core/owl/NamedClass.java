@@ -56,6 +56,22 @@ public class NamedClass extends Description implements Entity, NamedKBElement, C
     	return URI.create(name);
     }
     
+    /* (non-Javadoc)
+     * @see org.dllearner.core.owl.Description#isAnonymous()
+     */
+    @Override
+    public boolean isAnonymous() {
+    	return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.dllearner.core.owl.Description#asNamedClass()
+     */
+    @Override
+    public NamedClass asNamedClass() {
+    	return this;
+    }
+    
 	public int getLength() {
 		return 1;
 	}

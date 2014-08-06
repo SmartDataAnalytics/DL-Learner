@@ -22,6 +22,7 @@ package org.dllearner.core.owl;
 import java.util.Map;
 
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLRuntimeException;
 
 /**
  * Represents the inverse of a property expression. It can be used
@@ -48,6 +49,23 @@ public class ObjectPropertyInverse extends ObjectPropertyExpression {
 
 	public int getLength() {
 		return 2;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.ObjectPropertyExpression#asObjectProperty()
+	 */
+	@Override
+	public ObjectProperty asObjectProperty() {
+		 throw new OWLRuntimeException(
+	                "Property is not a named property.  Check using the isAnonymous method before calling this method!");
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.PropertyExpression#isAnonymous()
+	 */
+	@Override
+	public boolean isAnonymous() {
+		return true;
 	}
 		
 	public String toString(String baseURI, Map<String,String> prefixes) {
