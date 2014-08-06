@@ -57,11 +57,7 @@ ex:Schubkarre ex:bereifung ex:DEMA_ABC23 .
 <http://ex.org/SIEMENS425#567> a ex:Bahn .
 <http://ex.org/TATRAT3#678> a ex:Tram .
 
-# punning workaround
-ex:p a owl:ObjectProperty .
-<http://ex.org/TRABANT601#1234> ex:p ex:Auto .
-<http://ex.org/S51#2345> ex:p ex:Moped .
-<http://ex.org/MIFA23#3456> ex:p ex:Fahrrad .
-<http://ex.org/CLIPSO90MG#4567> ex:p ex:Schubkarre .
-<http://ex.org/SIEMENS425#567> ex:p ex:Bahn .
-<http://ex.org/TATRAT3#678> ex:p ex:Tram .
+# punning of ex:Gummireifen
+ex:bestehtAus a owl:ObjectProperty .
+ex:Gummireifen ex:bestehtAus ex:GUMMI .
+ex:GUMMI a ex:Werkstoff .

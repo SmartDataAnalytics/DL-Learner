@@ -3,37 +3,48 @@
  */
 package org.dllearner.test;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.reasoning.MaterializableFastInstanceChecker;
+import org.dllearner.reasoning.OWLPunningDetector;
+import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 /**
  * @author Lorenz Buehmann
@@ -41,87 +52,35 @@ import com.google.common.collect.Sets;
  */
 public class PunningTest {
 	
-	
-	public OWLOntology makeExampleKB() throws OWLOntologyCreationException{
-		String kb = "@prefix owl:<http://www.w3.org/2002/07/owl#> . @prefix :<http://foo.org/> .";
-		kb += ":p a owl:ObjectProperty .";
-		
-		for (int i = 1; i <= 5; i++) {
-			kb += ":r" + i + " a owl:ObjectProperty .";
-		}
-		
-		kb += ":A a owl:Class; :r1 :o1; :r2 :o2 .";
-		kb += ":B a owl:Class; :r1 :o3; :r3 :o2 .";
-		
-		for (int i = 1; i <= 10; i++) {
-			kb += ":x" + i + " a owl:NamedIndividual .";
-		}
-		
-		int m = 5;
-		int n = 5;
-		
-		//m instances of A
-		for (int i = 1; i <= m; i++) {
-			kb += ":x" + i + " a :A .";
-		}
-		
-		//n instances of B
-		for (int i = 1; i <= n; i++) {
-			kb += ":x" + i + " a :A .";
-		}
-		
-		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(kb.getBytes()));
-		return ontology;
-	}
-	
 	public OWLOntology loadExample() throws OWLOntologyCreationException{
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(this.getClass().getClassLoader().getResourceAsStream("punning_example.ttl"));
 		return ontology;
 	}
 	
 	@Test
-	public void testPunning() throws OWLOntologyCreationException, ComponentInitException{
-		OWLOntology ontology = makeExampleKB();
-		OWLDataFactory df = new OWLDataFactoryImpl();
+	public void testPunningExists() throws OWLOntologyCreationException, ComponentInitException{
+		OWLOntology ontology = loadExample();
 		
-		//check that A and B are both, individual and class
-		OWLClass clsA = df.getOWLClass(IRI.create("http://foo.org/A"));
-		OWLClass clsB = df.getOWLClass(IRI.create("http://foo.org/B"));
-		OWLIndividual indA = df.getOWLNamedIndividual(IRI.create("http://foo.org/A"));
-		OWLIndividual indB = df.getOWLNamedIndividual(IRI.create("http://foo.org/B"));
-		
-		Set<OWLClass> classes = ontology.getClassesInSignature();
-		Set<OWLObjectProperty> properties = ontology.getObjectPropertiesInSignature();
 		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature();
+		Set<OWLClass> classes = ontology.getClassesInSignature();
 		
-		System.out.println("Classes:" + classes);
-		System.out.println("Properties:" + properties);
-		System.out.println("Individuals:" + individuals);
+		SetView<IRI> intersection = Sets.intersection(toIRI(individuals), toIRI(classes));
+		System.out.println("Entities that are class and individual:\n" + intersection);
+		Assert.assertTrue(!intersection.isEmpty());
 		
-		Assert.assertTrue(
-				ontology.getClassesInSignature().contains(clsA) && 
-				ontology.getClassesInSignature().contains(clsB) &&
-				ontology.getIndividualsInSignature().contains(indA) &&
-				ontology.getIndividualsInSignature().contains(indB)
-				);
-		
-		KnowledgeSource ks = new OWLAPIOntology(ontology);
-		ks.init();
-		
-		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
-		rc.init();
-		
-		AbstractLearningProblem lp = new PosNegLPStandard(rc);
-		lp.init();
-		
-		AbstractCELA la = new CELOE(lp, rc);
-		la.init();
-		
-		la.start();
+	}
+	
+	private Set<IRI> toIRI(Set<? extends OWLEntity> entities){
+		Set<IRI> iris = new HashSet<IRI>();
+		for (OWLEntity e : entities) {
+			iris.add(e.getIRI());
+		}
+		return iris;
 	}
 	
 	@Test
-	public void testPunning2() throws OWLOntologyCreationException, ComponentInitException{
+	public void testPunning() throws OWLOntologyCreationException, ComponentInitException{
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		OWLOntology ontology = loadExample();
 		OWLDataFactory df = new OWLDataFactoryImpl();
 		
@@ -138,18 +97,83 @@ public class PunningTest {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+		MaterializableFastInstanceChecker rc = new MaterializableFastInstanceChecker(ks);
+//		rc.setUseMaterializationCaching(false);
+		rc.setHandlePunning(true);
+		rc.setUseMaterializationCaching(false);
 		rc.init();
+		rc.setBaseURI("http://ex.org/");
 		
 		PosNegLPStandard lp = new PosNegLPStandard(rc);
 		lp.setPositiveExamples(posExamples);
 		lp.setNegativeExamples(negExamples);
 		lp.init();
 		
-		AbstractCELA la = new CELOE(lp, rc);
+		CELOE la = new CELOE(lp, rc);
+		la.setWriteSearchTree(true);
+		la.setSearchTreeFile("log/punning_search_tree.txt");
+		la.setReplaceSearchTree(true);
+		la.setMaxNrOfResults(50);
+		la.setMaxExecutionTimeInSeconds(20);
+		la.setExpandAccuracy100Nodes(true);
+		OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
+//		heuristic.setExpansionPenaltyFactor(0.001);
+//		la.setHeuristic(heuristic);
 		la.init();
+		((RhoDRDown)la.getOperator()).setUseNegation(false);
+//		la.start();
 		
-		la.start();
+		System.out.println("Classes: " + ontology.getClassesInSignature());
+		System.out.println("Individuals: " + ontology.getIndividualsInSignature());
+		
+		Description d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"));
+		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		SortedSet<Individual> individuals = rc.getIndividuals(d);
+		System.out.println(individuals);
+
+		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
+				OWLPunningDetector.punningProperty, Thing.instance));
+		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		individuals = rc.getIndividuals(d);
+		System.out.println(individuals);
+
+		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
+				OWLPunningDetector.punningProperty, new ObjectSomeRestriction(new ObjectProperty(
+						"http://ex.org/bereifung"), Thing.instance)));
+		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		individuals = rc.getIndividuals(d);
+		System.out.println(individuals);
+		
+		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
+				OWLPunningDetector.punningProperty, 
+//				new ObjectSomeRestriction(new ObjectProperty("http://ex.org/bereifung"), 
+						Thing.instance));
+		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		individuals = rc.getIndividuals(d);
+		System.out.println(individuals);
+		
+		//get some refinements
+		System.out.println("###############");
+		System.out.println("Refinements:");
+		Set<Description> refinements = la.getOperator().refine(d, d.getLength() + 4);
+		for (Description ref : refinements) {
+			System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(ref));
+			System.out.println(lp.getAccuracyOrTooWeak(ref, 0d));
+		}
+		System.out.println("###############");
+		
+
+		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
+				OWLPunningDetector.punningProperty, new ObjectSomeRestriction(new ObjectProperty(
+						"http://ex.org/bereifung"), new ObjectSomeRestriction(OWLPunningDetector.punningProperty,
+						Thing.instance))));
+		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		individuals = rc.getIndividuals(d);
+		System.out.println(individuals);
+//		List<? extends EvaluatedDescription> currentlyBestEvaluatedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(100);
+//		for (EvaluatedDescription ed : currentlyBestEvaluatedDescriptions) {
+//			System.out.println(ed);
+//		}
 	}
 
 }

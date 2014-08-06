@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -153,7 +154,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
     private boolean materializeExistentialRestrictions = false;
 
 	private boolean useCaching = true;
-    
+    private boolean handlePunning = true;
 
     public enum ForallSemantics { 
     	Standard, // standard all quantor
@@ -271,6 +272,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			HashFunction hf = Hashing.md5();
 			Hasher hasher = hf.newHasher();
 			hasher.putBoolean(materializeExistentialRestrictions);
+			hasher.putBoolean(handlePunning);
 			for (OWLOntology ont : rc.getOWLAPIOntologies()) {
 				hasher.putInt(ont.getLogicalAxioms().hashCode());
 				hasher.putInt(ont.getAxioms().hashCode());
@@ -373,6 +375,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			sd.put(dp, rc.getStringDatatypeMembers(dp));
 		}			
 		
+		
 		if(materializeExistentialRestrictions){
 			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
 			for (NamedClass cls : atomicConcepts) {
@@ -382,6 +385,42 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
 				}
 			}
+		}
+		
+		//materialize facts based on OWL punning, i.e.:
+		//for each A in N_C
+		if(handlePunning){
+			OWLOntology ontology = rc.getReasoner().getRootOntology();
+			
+			Individual genericIndividual = new Individual("http://dl-learner.org/punning#genInd");
+			Map<Individual, SortedSet<Individual>> map = new HashMap<Individual, SortedSet<Individual>>();
+			for (Individual individual : individuals) {
+				SortedSet<Individual> objects = new TreeSet<Individual>();
+				objects.add(genericIndividual);
+				map.put(individual, objects);
+			}
+			for (NamedClass cls : atomicConcepts) {
+				classInstancesNeg.get(cls).add(genericIndividual);
+				if(OWLPunningDetector.hasPunning(ontology, cls)){
+					Individual clsAsInd = new Individual(cls.getName());
+					//for each x \in N_I with A(x) we add relatedTo(x,A)
+					SortedSet<Individual> individuals = classInstancesPos.get(cls);
+					for (Individual individual : individuals) {
+						SortedSet<Individual> objects = map.get(individual);
+						if(objects == null){
+							objects = new TreeSet<Individual>();
+							map.put(individual, objects);
+						}
+						objects.add(clsAsInd);
+						
+					}
+				}
+			}
+			opPos.put(OWLPunningDetector.punningProperty, map);
+			atomicRoles = new TreeSet<ObjectProperty>(atomicRoles);
+			atomicRoles.add(OWLPunningDetector.punningProperty);
+			atomicRoles = Collections.unmodifiableSet(atomicRoles);
+//			individuals.add(genericIndividual);
 		}
 		
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
@@ -482,6 +521,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			}
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
+			if(handlePunning && op == OWLPunningDetector.punningProperty && child.equals(new NamedClass(Thing.uri.toString()))){
+				return true;
+			}
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
 
 			if (mapping == null) {
@@ -489,7 +531,8 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 						+ ").");
 				return false;
 			}
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			
+			SortedSet<Individual> roleFillers = mapping.get(individual);
 			if (roleFillers == null) {
 				return false;
 			}
@@ -565,7 +608,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				return true;
 			}
 			// return false if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < number) {
+			if (roleFillers == null
+					|| (roleFillers.size() < number && op != OWLPunningDetector.punningProperty)
+					) {
 				return false;
 			}
 
@@ -574,7 +619,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				index++;
 				if (hasTypeImpl(child, roleFiller)) {
 					nrOfFillers++;
-					if (nrOfFillers == number) {
+					if (nrOfFillers == number 
+							|| (handlePunning && op == OWLPunningDetector.punningProperty)
+							) {
 						return true;
 					}
 					// early abort: e.g. >= 10 hasStructure.Methyl;
@@ -763,7 +810,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			ObjectProperty op = (ObjectProperty) ope;
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);	
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
@@ -1264,5 +1311,19 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 */
 	public void setMaterializeExistentialRestrictions(boolean materializeExistentialRestrictions) {
 		this.materializeExistentialRestrictions = materializeExistentialRestrictions;
+	}
+	
+	/**
+	 * @param handlePunning the handlePunning to set
+	 */
+	public void setHandlePunning(boolean handlePunning) {
+		this.handlePunning = handlePunning;
+	}
+	
+	/**
+	 * @param useCaching the useCaching to set
+	 */
+	public void setUseMaterializationCaching(boolean useCaching) {
+		this.useCaching = useCaching;
 	}
 }

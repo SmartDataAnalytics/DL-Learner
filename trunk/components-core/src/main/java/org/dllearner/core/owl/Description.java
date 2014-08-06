@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLRuntimeException;
+
 /**
  * A class description is sometimes also called "complex class" or "concept". 
  * 
@@ -216,8 +218,20 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		return this instanceof NamedClass;
 	}
 	
+	/**
+     * Determines whether or not this expression represents an anonymous class
+     * expression.
+     * 
+     * @return {@code true} if this is an anonymous class expression, or
+     *         {@code false} if this is a named class ( {@code OWLClass})
+     */
+    public boolean isAnonymous(){
+    	return true;
+    };
+	
 	public NamedClass asNamedClass(){
-		return (NamedClass)this;
+		 throw new OWLRuntimeException(
+	                "Not an OWLClass.  This method should only be called if the isAnonymous method returns false!");
 	}
 	
 	/**

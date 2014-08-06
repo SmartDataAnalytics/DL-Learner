@@ -21,6 +21,8 @@ package org.dllearner.core.owl;
 
 import java.io.Serializable;
 
+import org.semanticweb.owlapi.model.OWLRuntimeException;
+
 /**
  * An object property expression is an object property construct, which
  * can be used in axioms, e.g. complex class descriptions. It can be
@@ -52,7 +54,21 @@ public abstract class ObjectPropertyExpression implements PropertyExpression, Se
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
-
+	
+	 /**
+     * If the property is a named object property then this method will obtain
+     * the property as such. The general pattern of use is that the
+     * {@code isAnonymous} method should first be used to determine if the
+     * property is named (i.e. not an object property expression such as
+     * inv(p)). If the property is named then this method may be used to obtain
+     * the property as a named property without casting.
+     * 
+     * @return The property as an {@code ObjectProperty} if possible.
+     * @throws OWLRuntimeException
+     *         if the property is not a named property.
+     */
+	public abstract ObjectProperty asObjectProperty();
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

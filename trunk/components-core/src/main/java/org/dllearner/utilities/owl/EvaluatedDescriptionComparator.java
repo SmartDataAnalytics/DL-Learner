@@ -22,6 +22,10 @@ package org.dllearner.utilities.owl;
 import java.util.Comparator;
 
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.owl.Description;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.reasoning.OWLPunningDetector;
 
 /**
  * Comparator for evaluated descriptions, which orders them by
@@ -47,8 +51,12 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 		else if(acc1 < acc2)
 			return -1;
 		else {
-			int length1 = ed1.getDescriptionLength();
-			int length2 = ed2.getDescriptionLength();
+			int length1 = 
+					getLength(ed1);
+//			ed1.getDescriptionLength();
+			int length2 = 
+					getLength(ed2);
+//			ed2.getDescriptionLength();
 			if(length1 < length2)
 				return 1;
 			else if(length1 > length2)
@@ -56,6 +64,21 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 			else
 				return cc.compare(ed1.getDescription(), ed2.getDescription());
 		}
+	}
+	
+	private int getLength(EvaluatedDescription ed){
+		int length = 0;
+		Description d = ed.getDescription();
+		if(d instanceof Intersection){
+			for (Description child : d.getChildren()) {
+				if(child instanceof ObjectSomeRestriction && ((ObjectSomeRestriction) child).getRole().asObjectProperty() == OWLPunningDetector.punningProperty){
+					length += child.getChild(0).getLength();
+				} else {
+					length += child.getLength();
+				}
+			}
+		}
+		return length;
 	}
 
 }

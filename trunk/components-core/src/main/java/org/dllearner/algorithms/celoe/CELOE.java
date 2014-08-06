@@ -346,6 +346,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 		if(writeSearchTree) {
 			File f = new File(searchTreeFile );
+			if(f.getParentFile() != null){
+				f.getParentFile().mkdirs();
+			}
 			Files.clearFile(f);
 		}
 		

@@ -52,6 +52,14 @@ public class DatatypeProperty implements Comparable<DatatypeProperty>, Property,
     public URI getURI() {
     	return URI.create(name);
     }	
+    
+    /* (non-Javadoc)
+     * @see org.dllearner.core.owl.PropertyExpression#isAnonymous()
+     */
+    @Override
+    public boolean isAnonymous() {
+    	return false;
+    }
 	
 	@Override
 	public String toString() {
