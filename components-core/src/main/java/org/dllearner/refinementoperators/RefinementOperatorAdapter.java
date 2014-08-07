@@ -22,7 +22,7 @@ package org.dllearner.refinementoperators;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * Adapter for {@link RefinementOperator} interface.
@@ -36,13 +36,13 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public abstract Set<Description> refine(Description description);
+	public abstract Set<OWLClassExpression> refine(OWLClassExpression description);
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description, int)
 	 */
 	@Override
-	public Set<Description> refine(Description description, int maxLength) {
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
 		throw new UnsupportedOperationException();
 	}	
 	
@@ -50,8 +50,8 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
 	 */
 	@Override
-	public Set<Description> refine(Description description, int maxLength,
-			List<Description> knownRefinements) {
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
+			List<OWLClassExpression> knownRefinements) {
 		throw new UnsupportedOperationException();
 	}
 

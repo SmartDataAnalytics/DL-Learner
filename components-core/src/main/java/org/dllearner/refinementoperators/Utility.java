@@ -26,18 +26,16 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -53,28 +51,26 @@ public final class Utility {
 	private AbstractReasonerComponent reasoner;
 	ClassHierarchy sh; 
 	
-	
-	// concept comparator
-	private ConceptComparator conceptComparator = new ConceptComparator();	
-	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
 	private boolean instanceBasedDisjoints = true;	
 	
 	// cache for reasoner queries
-	private Map<Description,Map<Description,Boolean>> cachedDisjoints = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);
+	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
 		
 	// cache for applicaple object properties
-	private Map<Description, SortedSet<ObjectProperty>> appOPCache = new TreeMap<Description, SortedSet<ObjectProperty>>(conceptComparator);
-	private Map<Description, SortedSet<DatatypeProperty>> appDPCache = new TreeMap<Description, SortedSet<DatatypeProperty>>(conceptComparator);
-	private Map<ObjectProperty,Description> opDomains;
-	private Map<DatatypeProperty, Description> dpDomains;
+	private Map<OWLClassExpression, SortedSet<OWLObjectProperty>> appOPCache = new TreeMap<OWLClassExpression, SortedSet<OWLObjectProperty>>();
+	private Map<OWLClassExpression, SortedSet<OWLDataProperty>> appDPCache = new TreeMap<OWLClassExpression, SortedSet<OWLDataProperty>>();
+	private Map<OWLObjectProperty,OWLClassExpression> opDomains;
+	private Map<OWLDataProperty, OWLClassExpression> dpDomains;
+	
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public Utility(AbstractReasonerComponent rs) {
 		throw new Error("not implemented yet");
 	}
 	
-	public Utility(AbstractReasonerComponent rs, Map<ObjectProperty,Description> opDomains, boolean instanceBasedDisjoints) {
+	public Utility(AbstractReasonerComponent rs, Map<OWLObjectProperty,OWLClassExpression> opDomains, boolean instanceBasedDisjoints) {
 		this.reasoner = rs;
 		sh = rs.getClassHierarchy();
 		// we cache object property domains
@@ -82,7 +78,7 @@ public final class Utility {
 		this.instanceBasedDisjoints = instanceBasedDisjoints;
 	}
 	
-	public Utility(AbstractReasonerComponent rs, Map<ObjectProperty,Description> opDomains, Map<DatatypeProperty,Description> dpDomains, boolean instanceBasedDisjoints) {
+	public Utility(AbstractReasonerComponent rs, Map<OWLObjectProperty,OWLClassExpression> opDomains, Map<OWLDataProperty,OWLClassExpression> dpDomains, boolean instanceBasedDisjoints) {
 		this.reasoner = rs;
 		this.dpDomains = dpDomains;
 		sh = rs.getClassHierarchy();
@@ -98,17 +94,17 @@ public final class Utility {
 	 * @param index The index is a description which determines
 	 * which of the properties are applicable. Exactly those which
 	 * where the index and property domain are not disjoint are 
-	 * applicable, where disjoint is defined by {@link #isDisjoint(Description, Description)}.
+	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
 	 * 
 	 */
-	public SortedSet<ObjectProperty> computeApplicableObjectProperties(Description index) {
+	public SortedSet<OWLObjectProperty> computeApplicableObjectProperties(OWLClassExpression index) {
 		// use a cache, because large ontologies can have many object properties
-		SortedSet<ObjectProperty> applicableObjectProperties = appOPCache.get(index);
+		SortedSet<OWLObjectProperty> applicableObjectProperties = appOPCache.get(index);
 		if(applicableObjectProperties == null) {
-			Set<ObjectProperty> objectProperties = reasoner.getObjectProperties();
-			applicableObjectProperties = new TreeSet<ObjectProperty>();
-			for(ObjectProperty op : objectProperties) {
-				Description domain = opDomains.get(op);
+			Set<OWLObjectProperty> objectProperties = reasoner.getObjectProperties();
+			applicableObjectProperties = new TreeSet<OWLObjectProperty>();
+			for(OWLObjectProperty op : objectProperties) {
+				OWLClassExpression domain = opDomains.get(op);
 				if(!isDisjoint(index,domain)) {
 					applicableObjectProperties.add(op);
 				}
@@ -125,17 +121,17 @@ public final class Utility {
 	 * @param index The index is a description which determines
 	 * which of the properties are applicable. Exactly those which
 	 * where the index and property domain are not disjoint are 
-	 * applicable, where disjoint is defined by {@link #isDisjoint(Description, Description)}.
+	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
 	 * 
 	 */
-	public SortedSet<DatatypeProperty> computeApplicableDatatypeProperties(Description index) {
+	public SortedSet<OWLDataProperty> computeApplicableDatatypeProperties(OWLClassExpression index) {
 		// use a cache, because large ontologies can have many data properties
-		SortedSet<DatatypeProperty> applicableDatatypeProperties = appDPCache.get(index);
+		SortedSet<OWLDataProperty> applicableDatatypeProperties = appDPCache.get(index);
 		if(applicableDatatypeProperties == null) {
-			Set<DatatypeProperty> datatypeProperties = reasoner.getDatatypeProperties();
-			applicableDatatypeProperties = new TreeSet<DatatypeProperty>();
-			for(DatatypeProperty op : datatypeProperties) {
-				Description domain = dpDomains.get(op);
+			Set<OWLDataProperty> datatypeProperties = reasoner.getDatatypeProperties();
+			applicableDatatypeProperties = new TreeSet<OWLDataProperty>();
+			for(OWLDataProperty op : datatypeProperties) {
+				OWLClassExpression domain = dpDomains.get(op);
 				if(!isDisjoint(index,domain)) {
 					applicableDatatypeProperties.add(op);
 				}
@@ -157,7 +153,7 @@ public final class Utility {
 	 * @param applicableObjectProperties The set of applicable properties.
 	 * @return The most general applicable properties.
 	 */
-	public Set<ObjectProperty> computeMgr(Set<ObjectProperty> applicableObjectProperties) {
+	public Set<OWLObjectProperty> computeMgr(Set<OWLObjectProperty> applicableObjectProperties) {
 		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
 	}
 	
@@ -173,27 +169,27 @@ public final class Utility {
 	 * @param applicableDatatypeProperties The set of applicable properties.
 	 * @return The most general applicable properties.
 	 */
-	public Set<DatatypeProperty> computeMgrDP(Set<DatatypeProperty> applicableDatatypeProperties) {
+	public Set<OWLDataProperty> computeMgrDP(Set<OWLDataProperty> applicableDatatypeProperties) {
 		return Helper.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties);
 	}
 	
-	public Set<NamedClass> getClassCandidates(Description index, Set<NamedClass> existingClasses) {
-		return getClassCandidatesRecursive(index, existingClasses, Thing.instance);
+	public Set<OWLClass> getClassCandidates(OWLClassExpression index, Set<OWLClass> existingClasses) {
+		return getClassCandidatesRecursive(index, existingClasses, df.getOWLThing());
 	}
 	
-	private Set<NamedClass> getClassCandidatesRecursive(Description index, Set<NamedClass> existingClasses, Description upperClass) {
-		Set<NamedClass> candidates = new TreeSet<NamedClass>();
+	private Set<OWLClass> getClassCandidatesRecursive(OWLClassExpression index, Set<OWLClass> existingClasses, OWLClassExpression upperClass) {
+		Set<OWLClass> candidates = new TreeSet<OWLClass>();
 		
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
 		// there are 4 checks a class has to satisfy to get into the set;
 		// for 2 of them we can stop further traversal in the subsumption
 		// hierarchy
-		for(Description d : sh.getSubClasses(upperClass)) {
+		for(OWLClassExpression d : sh.getSubClasses(upperClass)) {
 //			System.out.println("d: " + d);
 			// owl:Nothing is never a candidate (not in EL)
-			if(!(d instanceof Nothing)) {
-				NamedClass candidate = (NamedClass) d;
+			if(!d.isOWLNothing()) {
+				OWLClass candidate = d.asOWLClass();
 				// we first do those checks where we know that we do not
 				// need to traverse the subsumption hierarchy if they are
 				// not satisfied
@@ -204,7 +200,7 @@ public final class Utility {
 					// check whether the class is meaningful, i.e. adds something to the index
 					// to do this, we need to make sure that the class is not a superclass of the
 					// index (otherwise we get nothing new)
-					if(!isDisjoint(new Negation(candidate),index) && checkSuperClasses(existingClasses,candidate)) {
+					if(!isDisjoint(df.getOWLObjectComplementOf(candidate),index) && checkSuperClasses(existingClasses,candidate)) {
 						// candidate went successfully through all checks
 						candidates.add(candidate);
 					} else {
@@ -220,8 +216,8 @@ public final class Utility {
 	
 	// returns true if the candidate is not subclass of an existing class,
 	// false otherwise (check 3)
-	private boolean checkSubClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
-		for(NamedClass nc : existingClasses) {
+	private boolean checkSubClasses(Set<OWLClass> existingClasses, OWLClass candidate) {
+		for(OWLClass nc : existingClasses) {
 //			System.out.println("csc: " + nc + candidate);
 			if(sh.isSubclassOf(candidate, nc)) {
 				return false;
@@ -232,8 +228,8 @@ public final class Utility {
 	
 	// returns true if the candidate is not superclass of an existing class,
 	// false otherwise (check 4)
-	private boolean checkSuperClasses(Set<NamedClass> existingClasses, NamedClass candidate) {
-		for(NamedClass nc : existingClasses) {
+	private boolean checkSuperClasses(Set<OWLClass> existingClasses, OWLClass candidate) {
+		for(OWLClass nc : existingClasses) {
 			if(sh.isSubclassOf(nc, candidate))
 				return false;
 		}
@@ -241,8 +237,8 @@ public final class Utility {
 	}	
 	
 	// returns false if any of the classes is disjoint with the new one; true otherwise
-	private boolean checkDisjoints(Set<NamedClass> existingClasses, NamedClass candidate) {
-		for(NamedClass nc : existingClasses) {
+	private boolean checkDisjoints(Set<OWLClass> existingClasses, OWLClass candidate) {
+		for(OWLClass nc : existingClasses) {
 			if(isDisjoint(nc, candidate))
 				return false;
 		}
@@ -250,13 +246,13 @@ public final class Utility {
 	}	
 		
 	
-	public boolean isDisjoint(Description d1, Description d2) {
+	public boolean isDisjoint(OWLClassExpression d1, OWLClassExpression d2) {
 //		System.out.println("d1: " + d1);
 //		System.out.println("d2: " + d2);
 //		System.out.println("cache: " + cachedDisjoints);
 		
 		// check whether we have cached this query
-		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
+		Map<OWLClassExpression,Boolean> tmp = cachedDisjoints.get(d1);
 		Boolean tmp2 = null;
 		if(tmp != null)
 			tmp2 = tmp.get(d2);
@@ -266,17 +262,17 @@ public final class Utility {
 			if(instanceBasedDisjoints) {
 				result = isDisjointInstanceBased(d1,d2);
 			} else {
-				Description d = new Intersection(d1, d2);
+				OWLClassExpression d = df.getOWLObjectIntersectionOf(d1, d2);
 				Monitor mon = MonitorFactory.start("disjointness reasoning");
-				result = reasoner.isSuperClassOf(new Nothing(), d);	
+				result = reasoner.isSuperClassOf(df.getOWLNothing(), d);	
 				mon.stop();
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
 			
 			// create new entries if necessary
-			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>(conceptComparator);
-			Map<Description,Boolean> map2 = new TreeMap<Description,Boolean>(conceptComparator);
+			Map<OWLClassExpression,Boolean> map1 = new TreeMap<OWLClassExpression,Boolean>();
+			Map<OWLClassExpression,Boolean> map2 = new TreeMap<OWLClassExpression,Boolean>();
 			if(tmp == null)
 				cachedDisjoints.put(d1, map1);
 			if(!cachedDisjoints.containsKey(d2))
@@ -291,10 +287,10 @@ public final class Utility {
 		}
 	}	
 	
-	private boolean isDisjointInstanceBased(Description d1, Description d2) {
-		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
-		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
-		for(Individual d1Instance : d1Instances) {
+	private boolean isDisjointInstanceBased(OWLClassExpression d1, OWLClassExpression d2) {
+		SortedSet<OWLIndividual> d1Instances = reasoner.getIndividuals(d1);
+		SortedSet<OWLIndividual> d2Instances = reasoner.getIndividuals(d2);
+		for(OWLIndividual d1Instance : d1Instances) {
 			if(d2Instances.contains(d1Instance))
 				return false;
 		}

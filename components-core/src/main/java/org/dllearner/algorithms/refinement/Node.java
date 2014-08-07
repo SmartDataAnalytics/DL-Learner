@@ -22,8 +22,7 @@ package org.dllearner.algorithms.refinement;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class Node {
 
@@ -33,14 +32,13 @@ public class Node {
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
 	
 	// alle Eigenschaften eines Knotens im Suchbaum
-	private Description concept;
+	private OWLClassExpression concept;
 	private int horizontalExpansion;
 	private int coveredNegativeExamples;
 	private boolean isTooWeak;
 	private boolean isQualityEvaluated;
 	private boolean isRedundant;
 	
-	private static ConceptComparator conceptComparator = new ConceptComparator();
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
 	// Einbettung in Suchbaum
@@ -48,12 +46,12 @@ public class Node {
 	// private Set<Node> children = new HashSet<Node>();
 	private Set<Node> children = new TreeSet<Node>(nodeComparator);
 	// es wird auch eine Liste von Kindern gehalten
-	private Set<Description> childConcepts = new TreeSet<Description>(conceptComparator);
+	private Set<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
 	
 	// verwendeter Operator für Expansion des Knotens
 	// private RefinementOperator operator;
 	
-	public Node(Description concept) {
+	public Node(OWLClassExpression concept) {
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
@@ -88,7 +86,7 @@ public class Node {
         return children.add(child);
     }
 	
-	public Description getConcept() {
+	public OWLClassExpression getConcept() {
 		return concept;
 	}
 	public int getCoveredNegativeExamples() {
@@ -163,7 +161,7 @@ public class Node {
 		return children;
 	}
 
-	public Set<Description> getChildConcepts() {
+	public Set<OWLClassExpression> getChildConcepts() {
 		return childConcepts;
 	}
 

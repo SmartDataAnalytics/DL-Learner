@@ -21,7 +21,7 @@ package org.dllearner.core;
 
 import java.util.List;
 
-import org.dllearner.core.owl.Axiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
 
 public interface AxiomLearningAlgorithm extends LearningAlgorithm {
 	
@@ -30,13 +30,13 @@ public interface AxiomLearningAlgorithm extends LearningAlgorithm {
 	/**
 	 * @return The best axioms found by the learning algorithm so far.
 	 */
-	public List<Axiom> getCurrentlyBestAxioms();
+	public List<OWLAxiom> getCurrentlyBestAxioms();
 	
 	/**
 	 * @param nrOfAxioms Limit for the number or returned axioms.
 	 * @return The best axioms found by the learning algorithm so far.
 	 */
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms);
+	public List<OWLAxiom> getCurrentlyBestAxioms(int nrOfAxioms);
 	
 	/**
 	 * @return The best evaluated axioms found by the learning algorithm so far.

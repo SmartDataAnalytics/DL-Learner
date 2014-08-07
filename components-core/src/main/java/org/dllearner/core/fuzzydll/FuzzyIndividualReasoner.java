@@ -21,8 +21,8 @@ package org.dllearner.core.fuzzydll;
 
 import java.util.SortedSet;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * Reasoning requests/queries related to fuzzy reasoning over individuals in the knowledge base.
@@ -40,6 +40,7 @@ public interface FuzzyIndividualReasoner {
 	 * @param individual An individual.
 	 * @return fuzzy membership degree of <code>individual</code> satisfying <code>description</code> [0-1].
 	 */
-	public double hasTypeFuzzyMembership(Description description, FuzzyIndividual individual);
-	public SortedSet<FuzzyIndividual> getFuzzyIndividuals(Description concept);
+	public double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual);
+	
+	public SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept);
 }

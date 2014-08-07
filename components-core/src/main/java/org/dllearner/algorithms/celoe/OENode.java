@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.algorithms.isle.NLPHeuristic;
-import org.dllearner.core.owl.Description;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
@@ -45,7 +45,7 @@ import org.dllearner.core.owl.Description;
  */
 public class OENode implements SearchTreeNode {
 
-	protected Description description;
+	protected OWLClassExpression description;
 	
 	protected double accuracy;
 	
@@ -61,11 +61,11 @@ public class OENode implements SearchTreeNode {
 	
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
-	public OENode(OENode parentNode, Description description, double accuracy) {
+	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
 		this.parent = parentNode;
 		this.description = description;
 		this.accuracy = accuracy;
-		horizontalExpansion = description.getLength()-1;
+		horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 	}
 
 	public void addChild(OENode node) {
@@ -83,11 +83,11 @@ public class OENode implements SearchTreeNode {
 	/**
 	 * @return the description
 	 */
-	public Description getDescription() {
+	public OWLClassExpression getDescription() {
 		return description;
 	}
 
-	public Description getExpression() {
+	public OWLClassExpression getExpression() {
 		return getDescription();
 	}	
 	
@@ -124,7 +124,7 @@ public class OENode implements SearchTreeNode {
 	}
 	
 	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
-		String ret = description.toString(baseURI,prefixes) + " [";
+		String ret = description.toString() + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";

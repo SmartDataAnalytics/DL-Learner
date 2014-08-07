@@ -39,13 +39,10 @@ import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -54,10 +51,16 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.owl.AxiomComparator;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -101,7 +104,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	private QueryExecutionFactory qef;
 	
 	protected List<EvaluatedAxiom> currentlyBestAxioms;
-	protected SortedSet<Axiom> existingAxioms;
+	protected SortedSet<OWLAxiom> existingAxioms;
 	protected int fetchedRows;
 	
 	protected long startTime;
@@ -126,9 +129,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected ParameterizedSparqlString posExamplesQueryTemplate;
 	protected ParameterizedSparqlString negExamplesQueryTemplate;
 	
+	OWLDataFactory df = new OWLDataFactoryImpl();
+	
 	
 	public AbstractAxiomLearningAlgorithm() {
-		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
+		existingAxioms = new TreeSet<OWLAxiom>();
 	}
 	
 	@Override
@@ -211,11 +216,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms() {
+	public List<OWLAxiom> getCurrentlyBestAxioms() {
 		return getCurrentlyBestAxioms(Integer.MAX_VALUE);
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+	public List<OWLAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
 	}
 	
@@ -223,17 +228,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return timeout;
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms,
+	public List<OWLAxiom> getCurrentlyBestAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+		List<OWLAxiom> bestAxioms = new ArrayList<OWLAxiom>();
 		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(double accuracyThreshold) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
+	public List<OWLAxiom> getCurrentlyBestAxioms(double accuracyThreshold) {
+		List<OWLAxiom> bestAxioms = new ArrayList<OWLAxiom>();
 		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
@@ -281,14 +286,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return null;
 	}
 	
-	protected Set<NamedClass> getAllClasses() {
+	protected Set<OWLClass> getAllClasses() {
 		if(ks.isRemote()){
 			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
 		} else {
-			Set<NamedClass> classes = new TreeSet<NamedClass>();
+			Set<OWLClass> classes = new TreeSet<OWLClass>();
 			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).filterDrop(new RDFSFilter()).filterDrop(new RDFFilter()).toList()){
 				if(!cls.isAnon()){
-					classes.add(new NamedClass(cls.getURI()));
+					classes.add(df.getOWLClass(IRI.create(cls.getURI())));
 				}
 			}
 			return classes;
@@ -377,14 +382,14 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return  timeLimitExceeded || resultLimitExceeded; 
 	}
 	
-	protected List<Entry<Description, Integer>> sortByValues(Map<Description, Integer> map, final boolean useHierachy){
-		List<Entry<Description, Integer>> entries = new ArrayList<Entry<Description, Integer>>(map.entrySet());
+	protected List<Entry<OWLClassExpression, Integer>> sortByValues(Map<OWLClassExpression, Integer> map, final boolean useHierachy){
+		List<Entry<OWLClassExpression, Integer>> entries = new ArrayList<Entry<OWLClassExpression, Integer>>(map.entrySet());
 		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
 		
-        Collections.sort(entries, new Comparator<Entry<Description, Integer>>() {
+        Collections.sort(entries, new Comparator<Entry<OWLClassExpression, Integer>>() {
 
 			@Override
-			public int compare(Entry<Description, Integer> o1, Entry<Description, Integer> o2) {
+			public int compare(Entry<OWLClassExpression, Integer> o1, Entry<OWLClassExpression, Integer> o2) {
 				int ret = o2.getValue().compareTo(o1.getValue());
 				//if the score is the same, than we optionally also take into account the subsumption hierarchy
 				if(ret == 0 && useHierachy){

@@ -22,7 +22,7 @@ package org.dllearner.refinementoperators;
 import java.util.Set;
 
 import org.dllearner.core.Component;
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * Interface for all refinement operators based on OWL/Description Logics.
@@ -41,6 +41,6 @@ public interface RefinementOperator extends Component {
 	 * @param description The description, which will be refined.
 	 * @return A set of refinements.
 	 */
-	public Set<Description> refine(Description description);
+	public Set<OWLClassExpression> refine(OWLClassExpression description);
 	
 }

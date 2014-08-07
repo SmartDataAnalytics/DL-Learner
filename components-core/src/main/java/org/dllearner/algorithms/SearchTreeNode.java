@@ -21,7 +21,7 @@ package org.dllearner.algorithms;
 
 import java.util.Collection;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * Interface for search tree nodes, which are used in various algorithms.
@@ -35,7 +35,7 @@ public interface SearchTreeNode {
 	 * Gets the OWL 2 class expression at this search tree node.
 	 * @return The expression at this node.
 	 */
-	public Description getExpression();
+	public OWLClassExpression getExpression();
 	
 	/**
 	 * The children of this node.

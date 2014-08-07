@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Contains the following reasoning/query operations:
@@ -56,32 +56,32 @@ public interface BaseReasoner {
 	 * @param axiom The axiom to be added to the knowledge base.
 	 * @return True of the knowledge base including the axiom is satisfiable. False otherwise.
 	 */
-	public boolean remainsSatisfiable(Axiom axiom);
+	public boolean remainsSatisfiable(OWLAxiom axiom);
 	
 	/**
 	 * Gets all named classes in the knowledge base, e.g. Person, City, Car.
 	 * @return All named classes in KB.
 	 */
-	public Set<NamedClass> getNamedClasses();
+	public Set<OWLClass> getClasses();
 	
 	/**
 	 * Gets all object properties in the knowledge base, e.g. hasChild, isCapitalOf, hasEngine.
 	 * @return All object properties in KB.
 	 */
-	public Set<ObjectProperty> getObjectProperties();
+	public Set<OWLObjectProperty> getObjectProperties();
 	
 	/**
 	 * Gets all data properties in the knowledge base, e.g. hasIncome, height.
 	 * @return All data properties in KB.
 	 */
-	public SortedSet<DatatypeProperty> getDatatypeProperties();
+	public SortedSet<OWLDataProperty> getDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:boolean.
 	 * @see org.dllearner.core.owl.Datatype#BOOLEAN
 	 * @return Boolean data properties in KB.
 	 */
-	public SortedSet<DatatypeProperty> getBooleanDatatypeProperties();
+	public SortedSet<OWLDataProperty> getBooleanDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:double.
@@ -90,7 +90,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#DOUBLE
 	 * @return Double data properties in KB.
 	 */
-	public SortedSet<DatatypeProperty> getDoubleDatatypeProperties();
+	public SortedSet<OWLDataProperty> getDoubleDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:int.
@@ -99,7 +99,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#INT
 	 * @return Integer data properties in KB.
 	 */
-	public SortedSet<DatatypeProperty> getIntDatatypeProperties();
+	public SortedSet<OWLDataProperty> getIntDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:string.
@@ -108,13 +108,13 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#String
 	 * @return String data properties in KB.
 	 */
-	public SortedSet<DatatypeProperty> getStringDatatypeProperties();	
+	public SortedSet<OWLDataProperty> getStringDatatypeProperties();	
 	
 	/**
 	 * Gets all individuals in the knowledge base, e.g. Eric, London, Car829. 
 	 * @return All individuals in KB.
 	 */	
-	public SortedSet<Individual> getIndividuals();
+	public SortedSet<OWLIndividual> getIndividuals();
 
 	/**
 	 * Returns the base URI of the knowledge base. If several knowledge sources are
@@ -137,6 +137,6 @@ public interface BaseReasoner {
 	 * @param entity An entity, e.g. Machine.
 	 * @return All values of rdfs:label for the entity, e.g. {"Machine"@en, "Maschine"@de}. 
 	 */
-	public Set<Constant> getLabel(Entity entity);
+	public Set<OWLLiteral> getLabel(OWLEntity entity);
 	
 }

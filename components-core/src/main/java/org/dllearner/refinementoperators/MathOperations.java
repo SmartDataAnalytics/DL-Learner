@@ -19,16 +19,20 @@
 
 package org.dllearner.refinementoperators;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Union;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Math operations related to refinement operators.
@@ -37,6 +41,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  *
  */
 public class MathOperations {
+	
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
 	 * This function implements the getCombos method. Through the
@@ -155,22 +161,23 @@ public class MathOperations {
 	 * @param newSet The descriptions to add to each union class descriptions.
 	 * @return The "cross product" of baseSet and newSet.
 	 */
-	public static SortedSet<Union> incCrossProduct(Set<Union> baseSet, Set<Description> newSet) {
-		SortedSet<Union> retSet = new TreeSet<Union>(new ConceptComparator());
+	public static SortedSet<OWLObjectUnionOf> incCrossProduct(Set<OWLObjectUnionOf> baseSet, Set<OWLClassExpression> newSet) {
+		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<OWLObjectUnionOf>();
 	
 		if(baseSet.isEmpty()) {
-			for(Description c : newSet) {
-				Union md = new Union();
-				md.addChild(c);
+			for(OWLClassExpression c : newSet) {
+				OWLObjectUnionOf md = df.getOWLObjectUnionOf(c);
 				retSet.add(md);
 			}
 			return retSet;
 		}
 		
-		for(Union md : baseSet) {
-			for(Description c : newSet) {
-				Union mdNew = new Union(md.getChildren());
-				mdNew.addChild(c);
+		Set<OWLClassExpression> operands;
+		for(OWLObjectUnionOf md : baseSet) {
+			for(OWLClassExpression c : newSet) {
+				operands = md.getOperands();
+				operands.add(c);
+				OWLObjectUnionOf mdNew = df.getOWLObjectUnionOf(operands);
 				retSet.add(mdNew);
 			}
 		}
@@ -188,11 +195,11 @@ public class MathOperations {
 	 * @param d Description to test.
 	 * @return See description.
 	 */
-	public static boolean containsDoubleObjectSomeRestriction(Description d) {
-		Set<String> roles = new TreeSet<String>();
-		for(Description c : d.getChildren()) {
-			if(c instanceof ObjectSomeRestriction) {
-				String role = ((ObjectSomeRestriction)c).getRole().getName();								
+	public static boolean containsDoubleObjectSomeRestriction(OWLClassExpression d) {
+		Set<OWLObjectPropertyExpression> roles = new HashSet<OWLObjectPropertyExpression>();
+		for(OWLClassExpression c : d.getNestedClassExpressions()) {
+			if(c instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom)c).getProperty();								
 				boolean roleExists = !roles.add(role);
 				if(roleExists)
 					return true;

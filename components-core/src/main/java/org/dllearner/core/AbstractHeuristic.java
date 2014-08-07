@@ -23,7 +23,8 @@ import java.util.Comparator;
 
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.utilities.owl.ConceptComparator;
+
+import com.google.common.collect.ComparisonChain;
 
 /**
  * Search algorithm heuristic for the ontology engineering algorithm. The heuristic
@@ -43,8 +44,6 @@ public abstract class AbstractHeuristic extends AbstractComponent implements Heu
 	// penalty if a node description has very many refinements since exploring 
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;
-	// syntactic comparison as final comparison criterion
-	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1;
@@ -60,20 +59,10 @@ public abstract class AbstractHeuristic extends AbstractComponent implements Heu
 	
 	@Override
 	public int compare(OENode node1, OENode node2) {
-//		System.out.println("node1 " + node1);
-//		System.out.println("score: " + getNodeScore(node1));
-//		System.out.println("node2 " + node2);
-//		System.out.println("score: " + getNodeScore(node2));
-		
-		double diff = getNodeScore(node1) - getNodeScore(node2);
-		
-		if(diff>0) {		
-			return 1;
-		} else if(diff<0) {
-			return -1;
-		} else {
-			return conceptComparator.compare(node1.getDescription(), node2.getDescription());
-		}
+		return ComparisonChain.start()
+				.compare(getNodeScore(node1), getNodeScore(node2))
+				.compare(node1.getDescription(), node2.getDescription())
+				.result();
 	}
 
 	public abstract double getNodeScore(OENode node);

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A refinement operator for which the syntactic length of the generated
@@ -40,7 +41,7 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 * @param maxLength The maximum length of returned description, where length is defined by {@link Description#getLength()}.
 	 * @return A set of refinements obeying the above restrictions.
 	 */
-	public Set<Description> refine(Description description, int maxLength);
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength);
 		
 	/**
 	 * Optional refinement operation, where the learning algorithm can
@@ -52,6 +53,6 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 * @param knownRefinements A collection of known refinements, which do not need to be returned. 
 	 * @return A set of refinements obeying the above restrictions.
 	 */
-	public Set<Description> refine(Description description, int maxLength, List<Description> knownRefinements);
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength, List<OWLClassExpression> knownRefinements);
 		
 }

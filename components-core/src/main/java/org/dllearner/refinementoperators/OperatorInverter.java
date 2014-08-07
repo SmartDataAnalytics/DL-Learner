@@ -24,10 +24,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
 
 /**
  * The class uses an existing refinement operator and inverts it, i.e. a 
@@ -40,7 +40,6 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 public class OperatorInverter implements LengthLimitedRefinementOperator {
 
 	private LengthLimitedRefinementOperator operator;
-	private ConceptComparator cc = new ConceptComparator();
 	private boolean useNegationNormalForm = true;
 	private boolean guaranteeLength = true;
 	
@@ -49,31 +48,31 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 	}
 	
 	@Override
-	public Set<Description> refine(Description description) {
-		Set<Description> refinements = operator.refine(getNegation(description));
-		TreeSet<Description> results = new TreeSet<Description>(cc);
-		for(Description d : refinements) {
+	public Set<OWLClassExpression> refine(OWLClassExpression description) {
+		Set<OWLClassExpression> refinements = operator.refine(getNegation(description));
+		TreeSet<OWLClassExpression> results = new TreeSet<OWLClassExpression>();
+		for(OWLClassExpression d : refinements) {
 			results.add(getNegation(d));
 		}
 		return results;
 	}
 
 	@Override
-	public Set<Description> refine(Description description, int maxLength) {
-		Description negatedDescription = getNegation(description);
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
+		OWLClassExpression negatedDescription = getNegation(description);
 //		System.out.println("negated description: " + negatedDescription);
 		// concept length can change because of the conversion process; as a heuristic
 		// we increase maxLength by the length difference of negated and original concept
-		int lengthDiff = Math.max(0, negatedDescription.getLength() - description.getLength());
-		Set<Description> refinements = operator.refine(negatedDescription, maxLength+lengthDiff+1);
+		int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription) - OWLClassExpressionUtils.getLength(description));
+		Set<OWLClassExpression> refinements = operator.refine(negatedDescription, maxLength+lengthDiff+1);
 //		System.out.println("refinv: " + refinements);
-		TreeSet<Description> results = new TreeSet<Description>(cc);
-		for(Description d : refinements) {
-			Description dNeg = getNegation(d);
+		TreeSet<OWLClassExpression> results = new TreeSet<OWLClassExpression>();
+		for(OWLClassExpression d : refinements) {
+			OWLClassExpression dNeg = getNegation(d);
 //			System.out.println("dNeg: " + dNeg);
 			// to satisfy the guarantee that the method does not return longer
 			// concepts, we perform an additional check
-			if(!guaranteeLength || dNeg.getLength() <= maxLength) {
+			if(!guaranteeLength || OWLClassExpressionUtils.getLength(dNeg) <= maxLength) {
 				results.add(dNeg);
 			}
 		}
@@ -81,15 +80,15 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 	}
 
 	@Override
-	public Set<Description> refine(Description description, int maxLength,
-			List<Description> knownRefinements) {
+	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
+			List<OWLClassExpression> knownRefinements) {
 		throw new Error("Method not implemented.");
 	}
 
-	private Description getNegation(Description description) {
-		Description negatedDescription = new Negation(description);
+	private OWLClassExpression getNegation(OWLClassExpression description) {
+		OWLClassExpression negatedDescription = new OWLObjectComplementOfImpl(description);
 		if(useNegationNormalForm) {
-			negatedDescription = ConceptTransformation.transformToNegationNormalForm(negatedDescription);
+			negatedDescription = negatedDescription.getNNF();
 		}
 		return negatedDescription;
 	}

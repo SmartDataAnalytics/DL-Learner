@@ -30,11 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.EnrichmentVocabulary;
-import org.dllearner.utilities.PrefixCCMap;
-import org.dllearner.utilities.owl.AxiomComparator;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -47,28 +43,29 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
+import com.google.common.collect.ComparisonChain;
+
 public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 	
 	private static DecimalFormat df = new DecimalFormat("##0.0");
-	private AxiomComparator axiomComparator = new AxiomComparator();
 	
-	private Axiom axiom;
+	private OWLAxiom axiom;
 	private Score score;
 	
 	private boolean asserted = false;
 	
-	public EvaluatedAxiom(Axiom axiom, Score score) {
+	public EvaluatedAxiom(OWLAxiom axiom, Score score) {
 		this.axiom = axiom;
 		this.score = score;
 	}
 	
-	public EvaluatedAxiom(Axiom axiom, Score score, boolean asserted) {
+	public EvaluatedAxiom(OWLAxiom axiom, Score score, boolean asserted) {
 		this.axiom = axiom;
 		this.score = score;
 		this.asserted = asserted;
 	}
 
-	public Axiom getAxiom() {
+	public OWLAxiom getAxiom() {
 		return axiom;
 	}
 
@@ -100,8 +97,7 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		ManchesterOWLSyntaxObjectRenderer r = new ManchesterOWLSyntaxObjectRenderer(pw, new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
-		OWLAxiom ax = OWLAPIConverter.getOWLAPIAxiom(axiom);
-		ax.accept(r);
+		axiom.accept(r);
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.AddSuggestion, ind);
 		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
@@ -136,7 +132,9 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		String accs = df.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
 		if(accs.length()==4) { accs = " " + accs; }
-		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
+		String str =  accs + "%\t" + axiom.getAxiom();
+//		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
+		//TODO fix rendering
 		return str;
 	}
 	
@@ -166,11 +164,10 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 	
 	@Override
 	public int compareTo(EvaluatedAxiom other) {
-		int ret = Double.compare(score.getAccuracy(), other.getScore().getAccuracy());
-		if(ret == 0){
-			ret = axiomComparator.compare(axiom, other.getAxiom());
-		}
-		return ret;
+		return ComparisonChain.start().
+				compare(score.getAccuracy(), other.getScore().getAccuracy()).
+				compare(axiom, other.getAxiom()).
+				result();
 	}
 	
 
