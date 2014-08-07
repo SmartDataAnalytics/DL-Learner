@@ -32,10 +32,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
@@ -47,15 +45,16 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.ontology.DatatypeProperty;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -901,7 +900,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final DataRange getRange(OWLDataProperty datatypeProperty) {
+	public final OWLDataRange getRange(OWLDataProperty datatypeProperty) {
 		try {
 			return getRangeImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -910,7 +909,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected DataRange getRangeImpl(OWLDataProperty datatypeProperty)
+	protected OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
@@ -1228,10 +1227,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return nrOfMultiInstanceChecks;
 	}
 	
-	public boolean isSubPropertyOf(Property subProperty, Property superProperty){
-		if(subProperty instanceof OWLObjectProperty && superProperty instanceof OWLObjectProperty){
+	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
+		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
 			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
-		} else if(subProperty instanceof OWLDataProperty && superProperty instanceof DatatypeProperty){
+		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
 			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
 		}
 		return false;

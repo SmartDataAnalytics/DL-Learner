@@ -19,13 +19,10 @@
 
 package org.dllearner.reasoning;
 
-import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -57,7 +54,6 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -69,7 +65,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -957,7 +952,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			if(qs.get("ind").isURIResource()){
-				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
 		return individuals;
@@ -971,7 +966,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 * @author sherif
 	 */
 	public SortedSet<OWLIndividual> getIndividualsExcluding(OWLClassExpression wantedClass, OWLClassExpression excludeClass, int limit) {
-		if(!(wantedClass instanceof NamedClass)){
+		if(wantedClass.isAnonymous()){
 			throw new UnsupportedOperationException("Only named classes are supported.");
 		}
 		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
@@ -987,7 +982,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			if(qs.get("ind").isURIResource()){
-				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
 		return individuals;
@@ -1013,7 +1008,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			if(qs.get("ind").isURIResource()){
-				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
 		return individuals;
@@ -1047,7 +1042,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			if(qs.get("ind").isURIResource()){
-				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
 		return individuals;
@@ -1081,7 +1076,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			while(rs.hasNext()){
 				qs = rs.next();
 				if(qs.get("ind").isURIResource()){
-					individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+					individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 				}
 			}
 			System.out.println(individuals.size());
@@ -1097,7 +1092,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	@Override
-	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, ObjectProperty objectProperty) {
+	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) {
 		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
 		String query = String.format("SELECT ?ind WHERE {<%s> <%s> ?ind, FILTER(isIRI(?ind))}", individual.toStringID(), objectProperty.toStringID());
 
@@ -1105,7 +1100,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI()));
+			individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 		}
 		return individuals;
 	}
@@ -1320,16 +1315,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
-		List<OWLClassExpression> domains = new ArrayList<OWLClassExpression>();
+		SortedSet<OWLClassExpression> domains = new TreeSet<OWLClassExpression>();
 		while(rs.hasNext()){
 			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI()));
+			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
 
 		}
 		if(domains.size() == 1){
-			return domains.get(0);
+			return domains.first();
 		} else if(domains.size() > 1){
-			return new Intersection(domains);
+			return df.getOWLObjectIntersectionOf(domains);
 		} 
 		return null;
 	}
@@ -1342,7 +1337,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
 		}
 		
 		return properties;
@@ -1356,7 +1351,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
 		}
 		
 		return properties;
@@ -1373,7 +1368,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		SortedSet<OWLClass> domains = new TreeSet<OWLClass>();
 		while(rs.hasNext()){
 			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI()));
+			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
 
 		}
 		return domains;
@@ -1388,16 +1383,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
-		List<OWLClassExpression> domains = new ArrayList<OWLClassExpression>();
+		SortedSet<OWLClassExpression> domains = new TreeSet<OWLClassExpression>();
 		while(rs.hasNext()){
 			qs = rs.next();
-			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI()));
+			domains.add(df.getOWLClass(IRI.create(qs.getResource("domain").getURI())));
 
 		}
 		if(domains.size() == 1){
-			return domains.get(0);
+			return domains.first();
 		} else if(domains.size() > 1){
-			return new Intersection(domains);
+			return df.getOWLObjectIntersectionOf(domains);
 		} 
 		return null;
 	}
@@ -1411,15 +1406,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
-		List<OWLClassExpression> ranges = new ArrayList<OWLClassExpression>();
+		SortedSet<OWLClassExpression> domains = new TreeSet<OWLClassExpression>();
 		while(rs.hasNext()){
 			qs = rs.next();
-			ranges.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI()));
+			domains.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI())));
+
 		}
-		if(ranges.size() == 1){
-			return ranges.get(0);
-		} else if(ranges.size() > 1){
-			return new Intersection(ranges);
+		if(domains.size() == 1){
+			return domains.first();
+		} else if(domains.size() > 1){
+			return df.getOWLObjectIntersectionOf(domains);
 		} 
 		return null;
 	}
@@ -1435,7 +1431,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		SortedSet<OWLClass> ranges = new TreeSet<OWLClass>();
 		while(rs.hasNext()){
 			qs = rs.next();
-			ranges.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI()));
+			ranges.add(df.getOWLClass(IRI.create(qs.getResource("range").getURI())));
 		}
 		return ranges;
 	}
@@ -1474,11 +1470,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return isDataProperty;
 	}
 
-	public int getIndividualsCount(OWLClass nc){
-		String query = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {" +
-				"?s a <%s>." +
-				"}", 
-				nc.getURI());
+	public int getIndividualsCount(OWLClass cls){
+		String query = String.format("SELECT (COUNT(?s) AS ?cnt) WHERE {?s a <%s>.}", cls.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		int cnt = rs.next().get(rs.getResultVars().get(0)).asLiteral().getInt();
 		return cnt;
@@ -1501,7 +1494,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			inverseObjectProperties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			inverseObjectProperties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
 
 		}
 		return inverseObjectProperties;
@@ -1516,10 +1509,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
-		DataRange range = null;
+		OWLDataRange range = null;
 		while(rs.hasNext()){
 			qs = rs.next();
-			range = new Datatype(qs.getResource("range").getURI());
+			range = df.getOWLDatatype(IRI.create(qs.getResource("range").getURI()));
 
 		}
 		return range;
@@ -1624,13 +1617,21 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
 		SortedSet<OWLClassExpression> superClasses = new TreeSet<OWLClassExpression>();
-		//this query is virtuoso specific
-		String query = String.format("SELECT DISTINCT ?y WHERE {" +
-				"{ SELECT ?x ?y WHERE { ?x rdfs:subClassOf ?y } }" +
-				"OPTION ( TRANSITIVE, T_DISTINCT, t_in(?x), t_out(?y), t_step('path_id') as ?path, t_step(?x) as ?route, t_step('step_no') AS ?jump, T_DIRECTION 3 )" +
-				"FILTER ( ?x = <%s> )}", ((OWLClass)description).toStringID());
-
-
+		String query;
+		if(direct){
+			query = String.format("SELECT ?sup {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup. FILTER(isIRI(?sup))}", 
+					description.asOWLClass().toStringID());
+		} else {
+			query = String.format("SELECT ?sub {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?sup. FILTER(isIRI(?sup))}", 
+					description.asOWLClass().toStringID());
+		}
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
+		}
+		superClasses.remove(description);
 
 		return superClasses;
 	}
@@ -1801,33 +1802,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	public void setUseCache(boolean useCache) {
 		this.useCache = useCache;
-	}
-
-	public static void main(String[] args) throws Exception{
-		//		QueryEngineHTTP e = new QueryEngineHTTP("http://bibleontology.com/sparql/index.jsp",
-		//				"SELECT DISTINCT ?type WHERE {?s a ?type) LIMIT 10");
-		//		e.addParam("type1", "xml");System.out.println(e.toString());
-		//		e.execSelect();
-
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://aemet.linkeddata.es/sparql"));
-//		endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
-		SPARQLReasoner r = new SPARQLReasoner(ks);
-		Model schema = r.loadSchema("http://dbpedia.org/ontology/");
-		System.out.println(schema.size());
-		schema = r.loadOWLSchema();
-		System.out.println(schema.size());
-		
-		long startTime = System.currentTimeMillis();
-		ClassHierarchy h = r.prepareSubsumptionHierarchyFast();
-		System.out.println(h.toString(false));
-		//		Model schema = r.loadSchema();
-		//		for(Statement st : schema.listStatements().toList()){
-		//			System.out.println(st);
-		//		}
-		System.out.println(h.getSubClasses(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Bridge"), false)));
-		System.out.println("Time needed: " + (System.currentTimeMillis()-startTime) + "ms");
-
 	}
 
 	/* (non-Javadoc)
