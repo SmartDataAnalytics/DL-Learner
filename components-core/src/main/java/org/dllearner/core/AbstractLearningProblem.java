@@ -19,7 +19,7 @@
 
 package org.dllearner.core;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -74,7 +74,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @param description A class description (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
-	public abstract Score computeScore(Description description);
+	public abstract Score computeScore(OWLClassExpression description);
 	
 	/**
 	 * Evaluates the description by computing the score and returning an
@@ -83,7 +83,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @param description Description to evaluate.
 	 * @return 
 	 */
-	public abstract EvaluatedDescription evaluate(Description description);
+	public abstract EvaluatedDescription evaluate(OWLClassExpression description);
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
@@ -95,7 +95,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * 
 	 * @return A value between 0 and 1 indicating the quality (of a class description).
 	 */	
-	public abstract double getAccuracy(Description description);	
+	public abstract double getAccuracy(OWLClassExpression description);	
 	
 	/**
 	 * This method computes the accuracy as {@link #getAccuracy(Description)},
@@ -109,7 +109,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @return A value between 0 and 1 indicating the quality (of a class description)
 	 * or -1 as described above.
 	 */	
-	public abstract double getAccuracyOrTooWeak(Description description, double noise);
+	public abstract double getAccuracyOrTooWeak(OWLClassExpression description, double noise);
 
     /**
      * Implementations of learning problems can use this class

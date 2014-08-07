@@ -32,9 +32,9 @@ import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 /**
@@ -44,9 +44,9 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 public abstract class PosNegLP extends AbstractLearningProblem {
 	private static Logger logger = Logger.getLogger(PosNegLP.class);
 
-	protected Set<Individual> positiveExamples = new TreeSet<Individual>();
-	protected Set<Individual> negativeExamples = new TreeSet<Individual>();
-	protected Set<Individual> allExamples = new TreeSet<Individual>();
+	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+	protected Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+	protected Set<OWLIndividual> allExamples = new TreeSet<OWLIndividual>();
 
     @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
@@ -116,7 +116,7 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 		
 		if(!reasoner.getIndividuals().containsAll(allExamples)) {
-            Set<Individual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
+            Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
             double percentage = (double) (missing.size()/allExamples.size());
             percentage = Math.round(percentage * 1000) / 1000 ;
 			String str = "The examples ("+percentage+" % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
@@ -131,23 +131,23 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		}
 	}
 	
-	public Set<Individual> getNegativeExamples() {
+	public Set<OWLIndividual> getNegativeExamples() {
 		return negativeExamples;
 	}
 
-	public Set<Individual> getPositiveExamples() {
+	public Set<OWLIndividual> getPositiveExamples() {
 		return positiveExamples;
 	}
 	
-	public void setNegativeExamples(Set<Individual> set) {
+	public void setNegativeExamples(Set<OWLIndividual> set) {
 		this.negativeExamples=set;
 	}
 
-	public void setPositiveExamples(Set<Individual> set) {
+	public void setPositiveExamples(Set<OWLIndividual> set) {
 		this.positiveExamples=set;
 	}
 	
-	public abstract int coveredNegativeExamplesOrTooWeak(Description concept);
+	public abstract int coveredNegativeExamplesOrTooWeak(OWLClassExpression concept);
 
 	public double getPercentPerLengthUnit() {
 		return percentPerLengthUnit;

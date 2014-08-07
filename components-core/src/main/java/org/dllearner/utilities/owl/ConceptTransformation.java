@@ -31,21 +31,14 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Restriction;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import com.hp.hpl.jena.ontology.ObjectProperty;
 
 /**
  * Concept transformation and concept checking methods.
@@ -63,23 +56,23 @@ public class ConceptTransformation {
 	
 	private static ConceptComparator descComp = new ConceptComparator();
 	
-	public static void cleanConceptNonRecursive(Description concept) {
+	public static void cleanConceptNonRecursive(OWLClassExpression concept) {
 		// cleaningTimeNsStart = System.nanoTime();
 		
 		if(concept instanceof Intersection || concept instanceof Union) {
 
-			List<Description> deleteChilds = new LinkedList<Description>();
+			List<OWLClassExpression> deleteChilds = new LinkedList<OWLClassExpression>();
 			
-			for(Description child : concept.getChildren()) {
+			for(OWLClassExpression child : concept.getChildren()) {
 				if((concept instanceof Intersection && child instanceof Intersection)
 						|| (concept instanceof Union && child instanceof Union)) {
 					deleteChilds.add(child);
 				}
 			}
 			
-			for(Description dc : deleteChilds) {
+			for(OWLClassExpression dc : deleteChilds) {
 				// alle Kinder des zu löschenden Konzeptes hinzufügen
-				for(Description dcChild : dc.getChildren()) {
+				for(OWLClassExpression dcChild : dc.getChildren()) {
 					concept.addChild(dcChild);
 				}
 				// Konzept selber löschen
@@ -94,10 +87,10 @@ public class ConceptTransformation {
 	
 
 	// eliminiert Disjunktionen in Disjunktionen bzw. Konjunktionen in Konjunktionen
-	public static void cleanConcept(Description concept) {
+	public static void cleanConcept(OWLClassExpression concept) {
 		
 		// Rekursion (verändert Eingabekonzept)
-		for(Description child : concept.getChildren()) {
+		for(OWLClassExpression child : concept.getChildren()) {
 			cleanConcept(child);
 		}
 		
@@ -114,18 +107,18 @@ public class ConceptTransformation {
 		*/
 		if(concept instanceof Intersection || concept instanceof Union) {
 
-			List<Description> deleteChilds = new LinkedList<Description>();
+			List<OWLClassExpression> deleteChilds = new LinkedList<OWLClassExpression>();
 			
-			for(Description child : concept.getChildren()) {
+			for(OWLClassExpression child : concept.getChildren()) {
 				if((concept instanceof Intersection && child instanceof Intersection)
 						|| (concept instanceof Union && child instanceof Union)) {
 					deleteChilds.add(child);
 				}
 			}
 			
-			for(Description dc : deleteChilds) {
+			for(OWLClassExpression dc : deleteChilds) {
 				// alle Kinder des zu löschenden Konzeptes hinzufügen
-				for(Description dcChild : dc.getChildren()) {
+				for(OWLClassExpression dcChild : dc.getChildren()) {
 					concept.addChild(dcChild);
 				}
 				// Konzept selber löschen
@@ -138,85 +131,14 @@ public class ConceptTransformation {
 	}
 	
 	// wandelt ein Konzept in Negationsnormalform um
-	public static Description transformToNegationNormalForm(Description concept) {
-		if(concept instanceof Negation) {
-			Description child = concept.getChild(0);
-			
-			if(child.getChildren().size()==0) {
-				// NOT TOP = BOTTOM
-				if(child instanceof Thing)
-					return new Nothing();
-				// NOT BOTTOM = TOP
-				else if(child instanceof Nothing)
-					return new Thing();
-				// atomares Konzept: NOT A wird zurückgegeben
-				else if(child instanceof NamedClass)
-					return concept;
-				else
-					throw new RuntimeException("Conversion to negation normal form not supported for " + concept);
-			} else {
-				if(child instanceof Negation) {
-					// doppelte Negation hebt sich auf
-					return transformToNegationNormalForm(child.getChild(0));
-				} else if(child instanceof ObjectQuantorRestriction) {
-					ObjectPropertyExpression r = ((ObjectQuantorRestriction)child).getRole();
-					// Negation nach innen
-					Description c = new Negation(child.getChild(0));
-					// Exists
-					if(child instanceof ObjectSomeRestriction)
-						return new ObjectAllRestriction(r,transformToNegationNormalForm(c));
-					// All
-					else
-						return new ObjectSomeRestriction(r,transformToNegationNormalForm(c));					
-				} else if(child instanceof ObjectCardinalityRestriction) {
-					ObjectCardinalityRestriction card = (ObjectCardinalityRestriction)child;
-					ObjectPropertyExpression r = card.getRole();
-					int number = card.getCardinality();
-					// Negation nach innen
-					Description c = new Negation(child.getChild(0));
-					// <= n is transformed to >= n+1 
-					if(child instanceof ObjectMaxCardinalityRestriction)
-						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
-					// >= n is transformed to <= n-1
-					else if(child instanceof ObjectMinCardinalityRestriction)
-						return new ObjectMinCardinalityRestriction(number+1,r,transformToNegationNormalForm(c));
-					// >= n is transformed to <= n-1
-					else
-						throw new RuntimeException("Conversion to negation normal form not supported for " + concept);			
-				} else if(child instanceof Intersection) {
-					// wg. Negation wird Konjunktion zu Disjunktion
-					Union md = new Union();
-					for(Description c : child.getChildren()) {
-						md.addChild(transformToNegationNormalForm(new Negation(c)));
-					}
-					return md;
-				} else if(child instanceof Union) {
-					Intersection mc = new Intersection();
-					for(Description c : child.getChildren()) {
-						mc.addChild(transformToNegationNormalForm(new Negation(c)));
-					}			
-					return mc;
-				} else
-					throw new RuntimeException("Conversion to negation normal form not supported for " + concept);
-			}
-		// keine Negation
-		} else {
-
-			Description conceptClone = (Description) concept.clone();
-			conceptClone.getChildren().clear();
-			
-			for(Description c : concept.getChildren()) {
-				conceptClone.addChild(transformToNegationNormalForm(c));
-			}		
-			
-			return conceptClone;
-		}
+	public static OWLClassExpression transformToNegationNormalForm(OWLClassExpression concept) {
+		return concept.getNNF();
 	}
 	
 
 	@SuppressWarnings("unused")
-	private boolean containsTop(Description concept) {
-		for(Description c : concept.getChildren()) {
+	private boolean containsTop(OWLClassExpression concept) {
+		for(OWLClassExpression c : concept.getChildren()) {
 			if(c instanceof Thing)
 				return true;
 		}
@@ -224,8 +146,8 @@ public class ConceptTransformation {
 	}
 	
 	@SuppressWarnings("unused")
-	private boolean containsBottom(Description concept) {
-		for(Description c : concept.getChildren()) {
+	private boolean containsBottom(OWLClassExpression concept) {
+		for(OWLClassExpression c : concept.getChildren()) {
 			if(c instanceof Nothing)
 				return true;
 		}
@@ -234,12 +156,12 @@ public class ConceptTransformation {
 	
 	// nimmt Konzept in Negationsnormalform und wendet äquivalenzerhaltende
 	// Regeln an, die TOP und BOTTOM aus Disjunktion/Konjunktion entfernen
-	public static Description applyEquivalenceRules(Description concept) {
+	public static OWLClassExpression applyEquivalenceRules(OWLClassExpression concept) {
 		
-		Description conceptClone = (Description) concept.clone();
+		Description conceptClone = (OWLClassExpression) concept.clone();
 		conceptClone.getChildren().clear();
 		
-		for(Description c : concept.getChildren()) {
+		for(OWLClassExpression c : concept.getChildren()) {
 			conceptClone.addChild(applyEquivalenceRules(c));
 		}		
 		
@@ -247,7 +169,7 @@ public class ConceptTransformation {
 		
 		// TOP, BOTTOM in Disjunktion entfernen
 		if(concept instanceof Union) {
-			Iterator<Description> it = conceptClone.getChildren().iterator();
+			Iterator<OWLClassExpression> it = conceptClone.getChildren().iterator();
 			while(it.hasNext()) {
 				Description c = it.next();
 			// for(Concept c : concept.getChildren()) {
@@ -271,7 +193,7 @@ public class ConceptTransformation {
 				return new Nothing();
 			
 		} else if(concept instanceof Intersection) {
-			Iterator<Description> it = conceptClone.getChildren().iterator();
+			Iterator<OWLClassExpression> it = conceptClone.getChildren().iterator();
 			while(it.hasNext()) {
 				Description c = it.next();
 				// TOP in Konjunktion => entfernen
@@ -296,7 +218,7 @@ public class ConceptTransformation {
 	
 	// TODO: aus Effizienzgründen könnte man noch eine nicht-rekursive Methode entwickeln, die
 	// nur die obere Ebene umwandelt
-	public static void transformToOrderedNegationNormalFormNonRecursive(Description concept, Comparator<Description> conceptComparator) {
+	public static void transformToOrderedNegationNormalFormNonRecursive(OWLClassExpression concept, Comparator<OWLClassExpression> conceptComparator) {
 		// onnfTimeNsStart = System.nanoTime();
 		
 		// Liste der Kinder sortieren
@@ -308,10 +230,10 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in geordnete Negationsnormalform um;
 	// es wird angenommen, dass das Eingabekonzept in Negationsnormalform und
 	// "sauber" ist
-	public static void transformToOrderedForm(Description concept, Comparator<Description> conceptComparator) {
+	public static void transformToOrderedForm(OWLClassExpression concept, Comparator<OWLClassExpression> conceptComparator) {
 		
 		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
-		for(Description child : concept.getChildren()) {
+		for(OWLClassExpression child : concept.getChildren()) {
 			transformToOrderedForm(child, conceptComparator);
 		}
 		
@@ -327,28 +249,28 @@ public class ConceptTransformation {
 		onnfTimeNs += System.nanoTime() - onnfTimeNsStart;
 	}
 	/*
-	public static Description transformToMultiClean(Description concept) {
+	public static OWLClassExpression transformToMultiClean(OWLClassExpression concept) {
 		concept = transformToMulti(concept);
 		cleanConcept(concept);
 		return concept;
 	}
 	
 	// ersetzt einfache Disjunktionen/Konjunktionen durch Multi
-	public static Description transformToMulti(Description concept) {
+	public static OWLClassExpression transformToMulti(OWLClassExpression concept) {
 		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
-		List<Description> multiChildren = new LinkedList<Description>();
+		List<OWLClassExpression> multiChildren = new LinkedList<OWLClassExpression>();
 		
 		// es müssen veränderte Kinder entfernt und neu hinzugefügt werden
 		// (einfache Zuweisung mit = funktioniert nicht, da die Pointer die gleichen
 		// bleiben)
-		Iterator<Description> it = concept.getChildren().iterator();
+		Iterator<OWLClassExpression> it = concept.getChildren().iterator();
 		while(it.hasNext()) {
 			Description child = it.next();
 			multiChildren.add(transformToMulti(child));
 			it.remove();
 		}
 		
-		for(Description multiChild : multiChildren)
+		for(OWLClassExpression multiChild : multiChildren)
 			concept.addChild(multiChild);
 			
 		if(concept instanceof Disjunction)
@@ -363,17 +285,17 @@ public class ConceptTransformation {
 	// liefert ein ev. verkürztes Konzept, wenn in Disjunktionen bzw.
 	// Konjunktionen Elemente mehrfach vorkommen
 	// (erstmal nicht-rekursiv implementiert)
-	public static Description getShortConceptNonRecursive(Description concept, ConceptComparator conceptComparator) {
+	public static OWLClassExpression getShortConceptNonRecursive(OWLClassExpression concept, ConceptComparator conceptComparator) {
 		if(concept instanceof Union || concept instanceof Intersection) {
 			// Verkürzung geschieht einfach durch einfügen in eine geordnete Menge
-			Set<Description> newChildren = new TreeSet<Description>(conceptComparator);
+			Set<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>(conceptComparator);
 			newChildren.addAll(concept.getChildren());
 			// ev. geht das noch effizienter, wenn man keine neue Liste erstellen 
 			// muss(?) => Listen erstellen dürfte allerdings sehr schnell gehen
 			if(concept instanceof Intersection)
-				return new Intersection(new LinkedList<Description>(newChildren));
+				return new Intersection(new LinkedList<OWLClassExpression>(newChildren));
 			else
-				return new Union(new LinkedList<Description>(newChildren));
+				return new Union(new LinkedList<OWLClassExpression>(newChildren));
 		} else
 			return concept;
 	}
@@ -384,12 +306,12 @@ public class ConceptTransformation {
 	 * @param conceptComparator A comparator for concepts.
 	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
 	 */
-	public static Description getShortConcept(Description concept, ConceptComparator conceptComparator) {
+	public static OWLClassExpression getShortConcept(OWLClassExpression concept, ConceptComparator conceptComparator) {
 		shorteningTimeNsStart = System.nanoTime();
 		// deep copy des Konzepts, da es nicht verändert werden darf
 		// (Nachteil ist, dass auch Konzepte kopiert werden, bei denen sich gar
 		// nichts ändert)
-		Description clone = (Description) concept.clone();
+		Description clone = (OWLClassExpression) concept.clone();
 		clone = getShortConcept(clone, conceptComparator, 0);
 		// return getShortConcept(concept, conceptComparator, 0);
 		shorteningTimeNs += System.nanoTime() - shorteningTimeNsStart;
@@ -397,15 +319,15 @@ public class ConceptTransformation {
 	}
 	
 	// das Eingabekonzept darf nicht modifiziert werden
-	private static Description getShortConcept(Description concept, ConceptComparator conceptComparator, int recDepth) {
+	private static OWLClassExpression getShortConcept(OWLClassExpression concept, ConceptComparator conceptComparator, int recDepth) {
 		
 		//if(recDepth==0)
 		//	System.out.println(concept);
 		
 		// Kinder schrittweise ersetzen
 		// TODO: effizienter wäre nur zu ersetzen, wenn sich etwas geändert hat
-		List<Description> tmp = new LinkedList<Description>(); 
-		Iterator<Description> it = concept.getChildren().iterator();
+		List<OWLClassExpression> tmp = new LinkedList<OWLClassExpression>(); 
+		Iterator<OWLClassExpression> it = concept.getChildren().iterator();
 		while(it.hasNext()) {
 			Description c = it.next();
 			// concept.addChild(getShortConcept(c, conceptComparator));
@@ -417,12 +339,12 @@ public class ConceptTransformation {
 				it.remove();	
 			}
 		}
-		for(Description child : tmp)
+		for(OWLClassExpression child : tmp)
 			concept.addChild(child);
 		
 		if(concept instanceof Union || concept instanceof Intersection) {
 			// Verkürzung geschieht einfach durch einfügen in eine geordnete Menge
-			SortedSet<Description> newChildren = new TreeSet<Description>(conceptComparator);
+			SortedSet<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>(conceptComparator);
 			newChildren.addAll(concept.getChildren());
 			// falls sich Kinderliste auf ein Element reduziert hat, dann gebe nur
 			// dieses Element zurück (umschließende Konjunktion/Disjunktion entfällt)
@@ -431,9 +353,9 @@ public class ConceptTransformation {
 			// ev. geht das noch effizienter, wenn man keine neue Liste erstellen 
 			// muss(?) => Listen erstellen dürfte allerdings sehr schnell gehen
 			if(concept instanceof Intersection)
-				return new Intersection(new LinkedList<Description>(newChildren));
+				return new Intersection(new LinkedList<OWLClassExpression>(newChildren));
 			else
-				return new Union(new LinkedList<Description>(newChildren));
+				return new Union(new LinkedList<OWLClassExpression>(newChildren));
 		} else
 			return concept;
 	}	
@@ -446,7 +368,7 @@ public class ConceptTransformation {
 	 * @param description Input description.
 	 * @return True if a superfluous construct has been found.
 	 */
-	public static boolean isDescriptionMinimal(Description description) {
+	public static boolean isDescriptionMinimal(OWLClassExpression description) {
 		ConceptComparator cc = new ConceptComparator();
 		int length = description.getLength();
 		int length2 = ConceptTransformation.getShortConcept(description, cc).getLength();
@@ -457,7 +379,7 @@ public class ConceptTransformation {
 		return true;
 	}	
  
-	private static boolean findEquivalences(Description description) {
+	private static boolean findEquivalences(OWLClassExpression description) {
 		// \exists r.\bot \equiv \bot
 		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Nothing)
 			return true;
@@ -465,7 +387,7 @@ public class ConceptTransformation {
 		if(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Thing)
 			return true;
 		// check children
-		for(Description child : description.getChildren()) {
+		for(OWLClassExpression child : description.getChildren()) {
 			if(findEquivalences(child))
 				return true;
 		}
@@ -476,17 +398,17 @@ public class ConceptTransformation {
 	// replaces EXISTS hasChild.TOP with EXISTS hasChild.Person, 
 	// i.e. TOP is replaced by the range of the property; 
 	// this is semantically equivalent, but easier to read for some people
-	public static void replaceRange(Description description, AbstractReasonerComponent rs) {
+	public static void replaceRange(OWLClassExpression description, AbstractReasonerComponent rs) {
 		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Thing) {
 			ObjectPropertyExpression p = ((ObjectSomeRestriction)description).getRole();
-			if(p instanceof ObjectProperty) {
+			if(p instanceof OWLObjectProperty) {
 				// replace TOP with range of propery
 				description.removeChild(description.getChild(0));
 				description.addChild(rs.getRange((ObjectProperty)p));
 			}
 		}
 		
-		for(Description child : description.getChildren()) {
+		for(OWLClassExpression child : description.getChildren()) {
 			replaceRange(child, rs);
 		}
 	}
@@ -500,7 +422,7 @@ public class ConceptTransformation {
 	 * @return True if <code>subdescription</code> is indeed a sub description and false
 	 * otherwise.
 	 */
-	public static boolean isSubdescription(Description description, Description subDescription) {
+	public static boolean isSubdescription(OWLClassExpression description, OWLClassExpression subDescription) {
 //		if(description instanceof Thing) {
 //			return (subDescription instanceof Thing);
 //		} else if(description instanceof Nothing) {
@@ -509,8 +431,8 @@ public class ConceptTransformation {
 //			return ((subDescription instanceof NamedClass) && (((NamedClass)description).getName().equals(((NamedClass)subDescription).getName())));
 //		}
 		
-		List<Description> children = description.getChildren();
-		List<Description> subChildren = subDescription.getChildren();
+		List<OWLClassExpression> children = description.getChildren();
+		List<OWLClassExpression> subChildren = subDescription.getChildren();
 
 		// no children: both have to be equal
 		if(children.size()==0) {
@@ -524,7 +446,7 @@ public class ConceptTransformation {
 			// test whether subdescription corresponds to an element of the 
 			// intersection/union
 			if(subChildren.size()<2) {
-				for(Description child : children) {
+				for(OWLClassExpression child : children) {
 					if(isSubdescription(child, subDescription)) {
 						return true;
 					}
@@ -540,9 +462,9 @@ public class ConceptTransformation {
 			// comparing everything is quadratic; the faster linear variant (below)
 			// using 
 			
-			for(Description subChild : subChildren) {
+			for(OWLClassExpression subChild : subChildren) {
 				boolean foundMatch = false;
-				for(Description child : children) {
+				for(OWLClassExpression child : children) {
 					if(isSubdescription(child, subChild)) {
 						foundMatch = true;
 						break;
@@ -560,7 +482,7 @@ public class ConceptTransformation {
 			// and A1 \sqcap A2 -> it won't find the A2 match because it has advanced
 			// beyond it already)
 //			int j = 0;
-//			for(Description child : children) {
+//			for(OWLClassExpression child : children) {
 //				if(isSubdescription(child, subChildren.get(j))) {
 //					j++;
 //				}
@@ -578,12 +500,12 @@ public class ConceptTransformation {
 	 * @param description A description.
 	 * @return Number of \forall occurrences.
 	 */
-	public static int getForallOccurences(Description description) {
+	public static int getForallOccurences(OWLClassExpression description) {
 		int count = 0;
 		if(description instanceof ObjectAllRestriction) {
 			count++;
 		}
-		for(Description child : description.getChildren()) {
+		for(OWLClassExpression child : description.getChildren()) {
 			count += getForallOccurences(child);
 		}
 		return count;
@@ -596,16 +518,16 @@ public class ConceptTransformation {
 	 * @param description A description.
 	 * @return Set of property contexts.
 	 */
-	public static SortedSet<PropertyContext> getForallContexts(Description description) {
+	public static SortedSet<PropertyContext> getForallContexts(OWLClassExpression description) {
 		return getForallContexts(description, new PropertyContext());
 	}
 	
-	private static SortedSet<PropertyContext> getForallContexts(Description description, PropertyContext currentContext) {
+	private static SortedSet<PropertyContext> getForallContexts(OWLClassExpression description, PropertyContext currentContext) {
 		// the context changes if we have a restriction
 		if(description instanceof Restriction) {
 			Property op = (Property) ((Restriction)description).getRestrictedPropertyExpression();
 			// object restrictions
-			if(op instanceof ObjectProperty) {
+			if(op instanceof OWLObjectProperty) {
 				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
 				// if we have an all-restriction, we return it; otherwise we call the child
 				// (if it exists)
@@ -631,7 +553,7 @@ public class ConceptTransformation {
 		// for non-restrictions, we collect contexts over all children
 		} else {
 			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-			for(Description child : description.getChildren()) {
+			for(OWLClassExpression child : description.getChildren()) {
 //				System.out.println("testing child " + child + " " + currentContext);
 				contexts.addAll(getForallContexts(child, currentContext));
 			}

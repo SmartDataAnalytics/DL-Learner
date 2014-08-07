@@ -40,10 +40,6 @@ import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -56,13 +52,14 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -473,7 +470,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 			((ElementGroup)query.getQueryPattern()).addElementFilter(
 					new ElementFilter(
 							new E_Regex(
-									new E_Str(new ExprVar(Node.createVariable("type"))),
+									new E_Str(new ExprVar(NodeFactory.createVariable("type"))),
 									ns, "")));
 		}
 		query.setLimit(chunkSize);
@@ -485,18 +482,20 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		allowedNamespaces.add(namespace);
 	}
 	
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom axiom){
+	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom axiom){
 		if(workingModel != null){
-			SortedSet<KBElement> posExamples = new TreeSet<KBElement>();
+			SortedSet<OWLObject> posExamples = new TreeSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 			RDFNode node;
 			while(rs.hasNext()){
 				node = rs.next().get("s");
 				if(node.isResource()){
-					posExamples.add(new Individual(node.asResource().getURI()));
+					posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
 				} else if(node.isLiteral()){
-					posExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
+					posExamples.add(df.getOWLLiteral(
+							node.asLiteral().getLexicalForm(), 
+							df.getOWLDatatype(IRI.create(node.asLiteral().getDatatypeURI()))));
 				}
 			}
 			
@@ -506,18 +505,20 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 	}
 	
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom axiom){
+	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom axiom){
 		if(workingModel != null){
-			SortedSet<KBElement> negExamples = new TreeSet<KBElement>();
+			SortedSet<OWLObject> negExamples = new TreeSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 			RDFNode node;
 			while(rs.hasNext()){
 				node = rs.next().get("s");
 				if(node.isResource()){
-					negExamples.add(new Individual(node.asResource().getURI()));
+					negExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
 				} else if(node.isLiteral()){
-					negExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
+					negExamples.add(df.getOWLLiteral(
+							node.asLiteral().getLexicalForm(), 
+							df.getOWLDatatype(IRI.create(node.asLiteral().getDatatypeURI()))));
 				}
 			}
 			

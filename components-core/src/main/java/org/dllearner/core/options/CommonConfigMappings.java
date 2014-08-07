@@ -24,41 +24,44 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.options.fuzzydll.FuzzyExample;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * @author Jens Lehmann
  *
  */
 public class CommonConfigMappings {
-
-	private static ConceptComparator cm = new ConceptComparator();
-	// private static RoleComparator rc = new RoleComparator();
 	
-	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
-		SortedSet<Individual> set = new TreeSet<Individual>();
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
+
+	
+	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
+		SortedSet<OWLIndividual> set = new TreeSet<OWLIndividual>();
 		for(String individual : individuals){
-			set.add(new Individual(individual));
+			set.add(df.getOWLNamedIndividual(IRI.create(individual)));
 		}
 		return set;
 	}
 	
-	public static SortedSet<NamedClass> getAtomicConceptSet(Set<String> atomicConcepts) {
-		SortedSet<NamedClass> set = new TreeSet<NamedClass>(cm);
+	public static SortedSet<OWLClass> getAtomicConceptSet(Set<String> atomicConcepts) {
+		SortedSet<OWLClass> set = new TreeSet<OWLClass>();
 		for(String atomicConcept : atomicConcepts) {
-			set.add(new NamedClass(atomicConcept));
+			set.add(df.getOWLClass(IRI.create(atomicConcept)));
 		}
 		return set;
 	}	
 	
-	public static SortedSet<ObjectProperty> getAtomicRoleSet(Set<String> atomicRoles) {
-		SortedSet<ObjectProperty> set = new TreeSet<ObjectProperty>();
+	public static SortedSet<OWLObjectProperty> getAtomicRoleSet(Set<String> atomicRoles) {
+		SortedSet<OWLObjectProperty> set = new TreeSet<OWLObjectProperty>();
 		for(String atomicRole : atomicRoles){
-			set.add(new ObjectProperty(atomicRole));
+			set.add(df.getOWLObjectProperty(IRI.create(atomicRole)));
 		}
 		return set;
 	}

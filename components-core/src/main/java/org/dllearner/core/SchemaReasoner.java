@@ -24,12 +24,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.DataRange;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
@@ -75,7 +75,7 @@ public interface SchemaReasoner {
 	 * @param datatypeProperty An data property in the knowledge base.
 	 * @return The rdfs:range of <code>datatypeProperty</code>
 	 */		
-	public DataRange getRange(OWLDataProperty datatypeProperty);
+	public OWLDataRange getRange(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Checks whether <code>superClass</code> is a super class of <code>subClass</code>.

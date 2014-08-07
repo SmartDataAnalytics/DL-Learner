@@ -26,13 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -72,6 +75,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	protected AbstractReasonerComponent reasoner;
 
+	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
 
     /**
      * Default Constructor
@@ -142,14 +146,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @see #getCurrentlyBestEvaluatedDescription()
 	 * @return The best class description found by the learning algorithm so far.
 	 */
-	public abstract Description getCurrentlyBestDescription();
+	public abstract OWLClassExpression getCurrentlyBestDescription();
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public List<Description> getCurrentlyBestDescriptions() {
-		List<Description> ds = new LinkedList<Description>();
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
+		List<OWLClassExpression> ds = new LinkedList<OWLClassExpression>();
 		ds.add(getCurrentlyBestDescription());
 		return ds;
 	}
@@ -159,7 +163,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestDescriptions(nrOfDescriptions, false);
 	}
 	
@@ -170,10 +174,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * to an equivalent concept) from the returned set.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
-		List<Description> currentlyBest = getCurrentlyBestDescriptions();
-		List<Description> returnList = new LinkedList<Description>();
-		for(Description ed : currentlyBest) {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
+		List<OWLClassExpression> currentlyBest = getCurrentlyBestDescriptions();
+		List<OWLClassExpression> returnList = new LinkedList<OWLClassExpression>();
+		for(OWLClassExpression ed : currentlyBest) {
 			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
 			}
@@ -243,9 +247,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				// before we add the description we replace EXISTS r.TOP with
 				// EXISTS r.range(r) if range(r) is atomic
 				// (we need to clone, otherwise we change descriptions which could
-				// be in the search of the learning algorith, which leads to
+				// be in the search of the learning algorithm, which leads to
 				// unpredictable behaviour)
-				Description d = ed.getDescription().clone();
+				OWLClassExpression d = duplicator.duplicateObject(ed.getDescription());
 				
 				//commented out because reasoner is called. leads in swing applications sometimes to exceptions
 //				ConceptTransformation.replaceRange(d, reasoner);
@@ -294,8 +298,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
 	
 	// central function for printing description
-	protected String descriptionToString(Description description) {
-		return description.toManchesterSyntaxString(baseURI, prefixes);
+	protected String descriptionToString(OWLClassExpression description) {
+		return description.toString();
 	}
 		
 	

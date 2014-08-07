@@ -21,7 +21,7 @@ package org.dllearner.core;
 
 import java.util.List;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * 
@@ -63,6 +63,6 @@ public interface Oracle {
 	 * returned.
 	 *
 	 */
-	public List<Double> classifyIndividuals(List<Individual> individuals);
+	public List<Double> classifyIndividuals(List<OWLIndividual> individuals);
 	
 }

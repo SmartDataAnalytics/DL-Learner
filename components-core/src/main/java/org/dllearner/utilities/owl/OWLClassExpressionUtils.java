@@ -38,6 +38,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
+import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
 
 /**
  * @author Lorenz Buehmann
@@ -47,17 +48,29 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	
 	private static final OWLClassExpressionUtils visitor = new OWLClassExpressionUtils();
 	private static int length = 0;
+	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
 	
 	/**
 	 * Returns the length of a given class expression. Note that the current implementation
 	 * is not thread-safe.
 	 * @param ce
-	 * @return
+	 * @return the length of the class expression
 	 */
 	public static int getLength(OWLClassExpression ce){
 		length = 0;
 		ce.accept(visitor);
 		return length;
+	}
+	
+	/**
+	 * Returns the depth of a given class expression. Note that the current implementation
+	 * is not thread-safe.
+	 * @param ce
+	 * @return the depth of the class expression
+	 */
+	public static int getDepth(OWLClassExpression ce){
+		int depth = ce.accept(DEPTH_FINDER);
+		return depth;
 	}
 
 	/* (non-Javadoc)

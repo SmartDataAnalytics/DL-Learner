@@ -22,7 +22,7 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * The score class is used to store how well a class description did
@@ -38,10 +38,10 @@ public abstract class ScorePosNeg extends Score {
 	public abstract double getScoreValue();
 	
 	// example coverage
-	public abstract Set<Individual> getCoveredPositives();
-	public abstract Set<Individual> getCoveredNegatives();
-	public abstract Set<Individual> getNotCoveredPositives();
-	public abstract Set<Individual> getNotCoveredNegatives();	
+	public abstract Set<OWLIndividual> getCoveredPositives();
+	public abstract Set<OWLIndividual> getCoveredNegatives();
+	public abstract Set<OWLIndividual> getNotCoveredPositives();
+	public abstract Set<OWLIndividual> getNotCoveredNegatives();	
 	
 	/**
 	 * The score of a concept depends on how good it classifies the

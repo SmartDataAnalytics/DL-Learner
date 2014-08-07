@@ -22,14 +22,13 @@ package org.dllearner.core;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import com.google.common.collect.ComparisonChain;
 
 /**
  * An evaluated description is a description and its score (with some
@@ -44,8 +43,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * 
 	 */
 	private static final long serialVersionUID = 1106431570510815033L;
-	private static ConceptComparator conceptComparator = new ConceptComparator();
-	protected Description description;
+	protected OWLClassExpression description;
 	protected Score score;
 	
 	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
@@ -55,7 +53,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * @param description The description, which was evaluated.
 	 * @param score The score of the description.
 	 */
-	public EvaluatedDescription(Description description, Score score) {
+	public EvaluatedDescription(OWLClassExpression description, Score score) {
 		this.description = description;
 		this.score = score;
 	}
@@ -64,7 +62,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * Gets the description, which was evaluated.
 	 * @return The underlying description.
 	 */
-	public Description getDescription() {
+	public OWLClassExpression getDescription() {
 		return description;
 	}
 	
@@ -80,7 +78,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * evaluated descriptions returned by the learning algorithm.
 	 * @param description The description to set.
 	 */
-	public void setDescription(Description description) {
+	public void setDescription(OWLClassExpression description) {
 		this.description = description;
 	}	
 	
@@ -89,7 +87,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * @return Length of the description.
 	 */		
 	public int getDescriptionLength() {
-		return description.getLength();
+		return OWLClassExpressionUtils.getLength(description);
 	}
 	
 	/**
@@ -97,7 +95,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * @return Depth of the description.
 	 */	
 	public int getDescriptionDepth() {
-		return description.getDepth();
+		return OWLClassExpressionUtils.getDepth(description);
 	}
 	
 	/**
@@ -109,21 +107,6 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	}
 	
 	/**
-	 * Returns a SPARQL query to get instances of this description
-	 * from a SPARQL endpoint. Of course, results may be incomplete,
-	 * because no inference is done. The SPARQL query is a straightforward
-	 * translation without any attempts to perform e.g. subclass 
-	 * inferencing.
-	 * 
-	 * @param limit The maximum number of results. Corresponds to LIMIT
-	 * in SPARQL.
-	 * @return A SPARQL query of the underlying description.
-	 */
-	public String getSparqlQuery(int limit) {
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(description, limit, false, false);
-	}	
-	
-	/**
 	 * This convenience method can be used to store and exchange evaluated
 	 * descriptions by transforming them to a JSON string.
 	 * @return A JSON representation of an evaluated description.
@@ -131,10 +114,8 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
-			object.put("descriptionKBSyntax", description.toKBSyntaxString());
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
 			object.put("scoreValue", score.getAccuracy());		
 			return object.toString(3);
 		} catch (JSONException e) {
@@ -153,11 +134,10 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 */
 	@Override
 	public int compareTo(EvaluatedDescription o) {
-		int diff = Double.compare(score.getAccuracy(), o.score.getAccuracy());
-		if(diff == 0){
-			conceptComparator.compare(description, o.getDescription());
-		}
-		return diff;
+		return ComparisonChain.start()
+				.compare(score.getAccuracy(), o.score.getAccuracy())
+				.compare(description, o.getDescription())
+				.result();
 	}
 
 }

@@ -34,15 +34,15 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * The problem of learning the description of an existing class
@@ -59,10 +59,10 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	private int maxExecutionTimeInSeconds = 10;
 	
 	@ConfigOption(name = "classToDescribe", description="class of which a description should be learned", required=true)
-	private NamedClass classToDescribe;
+	private OWLClass classToDescribe;
 	
-	private List<Individual> classInstances;
-	private TreeSet<Individual> classInstancesSet;
+	private List<OWLIndividual> classInstances;
+	private TreeSet<OWLIndividual> classInstancesSet;
 	private boolean equivalence = true;
 
 	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)	
@@ -81,11 +81,11 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	private double betaEq = 1.0;
 	
 	// instances of super classes excluding instances of the class itself
-	private List<Individual> superClassInstances;
+	private List<OWLIndividual> superClassInstances;
 	// instances of super classes including instances of the class itself
-	private List<Individual> classAndSuperClassInstances;
+	private List<OWLIndividual> classAndSuperClassInstances;
 	// specific variables for generalised F-measure
-	private TreeSet<Individual> negatedClassInstances;
+	private TreeSet<OWLIndividual> negatedClassInstances;
 	
     @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "pred_acc")
     private String accuracyMethod = "pred_acc";
@@ -94,6 +94,8 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	@ConfigOption(name = "checkConsistency", description = "whether to check for consistency of suggestions (when added to ontology)", required=false, defaultValue="true")
 	private boolean checkConsistency = true;
+	
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public ClassLearningProblem() {
 		
@@ -168,17 +170,17 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 //		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
 //		approxDelta = configurator.getApproxAccuracy();
 		
-		if(!getReasoner().getNamedClasses().contains(classToDescribe)) {
+		if(!getReasoner().getClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + classToDescribe + "\" does not exist. Make sure you spelled it correctly.");
 		}
 		
-		classInstances = new LinkedList<Individual>(getReasoner().getIndividuals(classToDescribe));
+		classInstances = new LinkedList<OWLIndividual>(getReasoner().getIndividuals(classToDescribe));
 		// sanity check
 		if(classInstances.size() == 0) {
 			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + ComponentManager.getInstance().getComponentName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
 		}
 		
-		classInstancesSet = new TreeSet<Individual>(classInstances);
+		classInstancesSet = new TreeSet<OWLIndividual>(classInstances);
 //		equivalence = (configurator.getType().equals("equivalence"));
 //		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
 		
@@ -190,26 +192,26 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		
 		// we compute the instances of the super class to perform
 		// optimisations later on
-		Set<Description> superClasses = getReasoner().getClassHierarchy().getSuperClasses(classToDescribe);
-		TreeSet<Individual> superClassInstancesTmp = new TreeSet<Individual>(getReasoner().getIndividuals());
-		for(Description superClass : superClasses) {
+		Set<OWLClassExpression> superClasses = getReasoner().getClassHierarchy().getSuperClasses(classToDescribe);
+		TreeSet<OWLIndividual> superClassInstancesTmp = new TreeSet<OWLIndividual>(getReasoner().getIndividuals());
+		for(OWLClassExpression superClass : superClasses) {
 			superClassInstancesTmp.retainAll(getReasoner().getIndividuals(superClass));
 		}
 		// we create one list, which includes instances of the class (an instance of the class is also instance of all super classes) ...
-		classAndSuperClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
+		classAndSuperClassInstances = new LinkedList<OWLIndividual>(superClassInstancesTmp);
 		// ... and a second list not including them
 		superClassInstancesTmp.removeAll(classInstances);
 		// since we use the instance list for approximations, we want to avoid
 		// any bias through URI names, so we shuffle the list once pseudo-randomly
-		superClassInstances = new LinkedList<Individual>(superClassInstancesTmp);
+		superClassInstances = new LinkedList<OWLIndividual>(superClassInstancesTmp);
 		Random rand = new Random(1);
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 		
 		if(heuristic.equals(HeuristicType.GEN_FMEASURE)) {
-			Description classToDescribeNeg = new Negation(classToDescribe);
-			negatedClassInstances = new TreeSet<Individual>();
-			for(Individual ind : superClassInstances) {
+			OWLClassExpression classToDescribeNeg = df.getOWLObjectComplementOf(classToDescribe);
+			negatedClassInstances = new TreeSet<OWLIndividual>();
+			for(OWLIndividual ind : superClassInstances) {
 				if(getReasoner().hasType(classToDescribeNeg, ind)) {
 					negatedClassInstances.add(ind);
 				}
@@ -221,22 +223,22 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	}
 		
 	@Override
-	public ClassScore computeScore(Description description) {
+	public ClassScore computeScore(OWLClassExpression description) {
 		
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
 		
 		// overhang
-		Set<Individual> additionalInstances = new TreeSet<Individual>();
-		for(Individual ind : superClassInstances) {
+		Set<OWLIndividual> additionalInstances = new TreeSet<OWLIndividual>();
+		for(OWLIndividual ind : superClassInstances) {
 			if(getReasoner().hasType(description, ind)) {
 				additionalInstances.add(ind);
 			}
 		}
 		
 		// coverage
-		Set<Individual> coveredInstances = new TreeSet<Individual>();
-		for(Individual ind : classInstances) {
+		Set<OWLIndividual> coveredInstances = new TreeSet<OWLIndividual>();
+		for(OWLIndividual ind : classInstances) {
 			if(getReasoner().hasType(description, ind)) {
 				coveredInstances.add(ind);
 			}
@@ -287,27 +289,27 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(Description description) {
+	public double getAccuracy(OWLClassExpression description) {
 		// a noise value of 1.0 means that we never return too weak (-1.0) 
 		return getAccuracyOrTooWeak(description, 1.0);
 	}
 
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods
 		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);		
 	}
 	
 	// instead of using the standard operation, we use optimisation
 	// and approximation here
-	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
+	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		if(heuristic.equals(HeuristicType.FMEASURE)) {
 			// we abort when there are too many uncovered positives
 			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 			int instancesCovered = 0;
 			int instancesNotCovered = 0;
 			
-			for(Individual ind : classInstances) {
+			for(OWLIndividual ind : classInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					instancesCovered++;
 				} else {
@@ -323,7 +325,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			int testsPerformed = 0;
 			int instancesDescription = 0;
 			
-			for(Individual ind : superClassInstances) {
+			for(OWLIndividual ind : superClassInstances) {
 
 				if(getReasoner().hasType(description, ind)) {
 					instancesDescription++;
@@ -361,7 +363,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			double upperBorderA = 1;
 			int upperEstimateA = classInstances.size();
 			
-			for(Individual ind : classInstances) {
+			for(OWLIndividual ind : classInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					instancesCovered++;
 				} else {
@@ -430,7 +432,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			int instancesDescription = 0;
 //			boolean estimatedB = false;
 			
-			for(Individual ind : superClassInstances) {
+			for(OWLIndividual ind : superClassInstances) {
 
 				if(getReasoner().hasType(description, ind)) {
 					instancesDescription++;
@@ -492,15 +494,15 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			int nrOfNegChecks = 0;
 			
 			// special case: we test positive and negative examples in turn
-			Iterator<Individual> itPos = classInstances.iterator();
-			Iterator<Individual> itNeg = superClassInstances.iterator();
+			Iterator<OWLIndividual> itPos = classInstances.iterator();
+			Iterator<OWLIndividual> itNeg = superClassInstances.iterator();
 			
 			do {
 				// in each loop we pick 0 or 1 positives and 0 or 1 negative
 				// and classify it
 				
 				if(itPos.hasNext()) {
-					Individual posExample = itPos.next();
+					OWLIndividual posExample = itPos.next();
 //					System.out.println(posExample);
 					
 					if(getReasoner().hasType(description, posExample)) {
@@ -517,7 +519,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 				}
 				
 				if(itNeg.hasNext()) {
-					Individual negExample = itNeg.next();
+					OWLIndividual negExample = itNeg.next();
 					if(!getReasoner().hasType(description, negExample)) {
 						negClassifiedAsNeg++;
 					}
@@ -544,15 +546,15 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 
 	// exact computation for 5 heuristics; each one adapted to super class learning;
 	// each one takes the noise parameter into account
-	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 
 		nanoStartTime = System.nanoTime();
 		
 		if(heuristic.equals(HeuristicType.JACCARD)) {
 			
 			// computing R(A)
-			TreeSet<Individual> coveredInstancesSet = new TreeSet<Individual>();
-			for(Individual ind : classInstances) {
+			TreeSet<OWLIndividual> coveredInstancesSet = new TreeSet<OWLIndividual>();
+			for(OWLIndividual ind : classInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					coveredInstancesSet.add(ind);
 				}
@@ -568,8 +570,8 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			}
 			
 			// computing R(C) restricted to relevant instances
-			TreeSet<Individual> additionalInstancesSet = new TreeSet<Individual>();
-			for(Individual ind : superClassInstances) {
+			TreeSet<OWLIndividual> additionalInstancesSet = new TreeSet<OWLIndividual>();
+			for(OWLIndividual ind : superClassInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					additionalInstancesSet.add(ind);
 				}
@@ -578,14 +580,14 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 				}
 			}
 					
-			Set<Individual> union = Helper.union(classInstancesSet, additionalInstancesSet);
+			Set<OWLIndividual> union = Helper.union(classInstancesSet, additionalInstancesSet);
 			return Heuristics.getJaccardCoefficient(coveredInstancesSet.size(), union.size());
 			
 		} else if (heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE) || heuristic.equals(HeuristicType.PRED_ACC)) {
 			
 			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
-			for(Individual ind : superClassInstances) {
+			for(OWLIndividual ind : superClassInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					additionalInstances++;
 				}
@@ -596,7 +598,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			
 			// computing R(A)
 			int coveredInstances = 0;
-			for(Individual ind : classInstances) {
+			for(OWLIndividual ind : classInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					coveredInstances++;
 				}
@@ -646,11 +648,11 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// default negation should be turned off when using fast instance checker
 			
 			// compute I_C (negated and non-negated concepts separately)
-			TreeSet<Individual> icPos = new TreeSet<Individual>();
-			TreeSet<Individual> icNeg = new TreeSet<Individual>();
-			Description descriptionNeg = new Negation(description);
+			TreeSet<OWLIndividual> icPos = new TreeSet<OWLIndividual>();
+			TreeSet<OWLIndividual> icNeg = new TreeSet<OWLIndividual>();
+			OWLClassExpression descriptionNeg = df.getOWLObjectComplementOf(description);
 			// loop through all relevant instances
-			for(Individual ind : classAndSuperClassInstances) {
+			for(OWLIndividual ind : classAndSuperClassInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					icPos.add(ind);
 				} else if(getReasoner().hasType(descriptionNeg, ind)) {
@@ -665,8 +667,8 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			// first compute I_C \cap Cn(DC)
 			// it seems that in our setting, we can ignore Cn, because the examples (class instances)
 			// are already part of the background knowledge
-			Set<Individual> tmp1Pos = Helper.intersection(icPos, classInstancesSet);
-			Set<Individual> tmp1Neg = Helper.intersection(icNeg, negatedClassInstances);
+			Set<OWLIndividual> tmp1Pos = Helper.intersection(icPos, classInstancesSet);
+			Set<OWLIndividual> tmp1Neg = Helper.intersection(icNeg, negatedClassInstances);
 			int tmp1Size = tmp1Pos.size() + tmp1Neg.size();
 			
 			// Cn(I_C) \cap D_C is the same set if we ignore Cn ...
@@ -712,7 +714,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	}
 	
 //	@Deprecated
-//	public double getAccuracyOrTooWeakStandard(Description description, double minAccuracy) {
+//	public double getAccuracyOrTooWeakStandard(OWLClassExpression description, double minAccuracy) {
 //		// since we have to perform a retrieval operation anyway, we cannot easily
 //		// get a benefit from the accuracy limit
 //		double accuracy = getAccuracy(description);
@@ -725,9 +727,9 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	// please note that getting recall and precision wastes some computational
 	// resource, because both methods need to compute the covered instances
-	public double getRecall(Description description) {
+	public double getRecall(OWLClassExpression description) {
 		int coveredInstances = 0;
-		for(Individual ind : classInstances) {
+		for(OWLIndividual ind : classInstances) {
 			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
@@ -735,17 +737,17 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		return coveredInstances/(double)classInstances.size();
 	}
 	
-	public double getPrecision(Description description) {
+	public double getPrecision(OWLClassExpression description) {
 
 		int additionalInstances = 0;
-		for(Individual ind : superClassInstances) {
+		for(OWLIndividual ind : superClassInstances) {
 			if(getReasoner().hasType(description, ind)) {
 				additionalInstances++;
 			}
 		}
 		
 		int coveredInstances = 0;
-		for(Individual ind : classInstances) {
+		for(OWLIndividual ind : classInstances) {
 			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
@@ -785,9 +787,9 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	}		
 	
 	@SuppressWarnings("unused")
-	private double getInverseJaccardDistance(TreeSet<Individual> set1, TreeSet<Individual> set2) {
-		Set<Individual> intersection = Helper.intersection(set1, set2);
-		Set<Individual> union = Helper.union(set1, set2);
+	private double getInverseJaccardDistance(TreeSet<OWLIndividual> set1, TreeSet<OWLIndividual> set2) {
+		Set<OWLIndividual> intersection = Helper.intersection(set1, set2);
+		Set<OWLIndividual> union = Helper.union(set1, set2);
 		return 1 - (union.size() - intersection.size()) / (double) union.size();
 	}
 	
@@ -827,11 +829,11 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	/**
 	 * @return the classToDescribe
 	 */
-	public NamedClass getClassToDescribe() {
+	public OWLClass getClassToDescribe() {
 		return classToDescribe;
 	}
 
-	public void setClassToDescribe(NamedClass classToDescribe) {
+	public void setClassToDescribe(OWLClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 
@@ -839,7 +841,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescriptionClass evaluate(Description description) {
+	public EvaluatedDescriptionClass evaluate(OWLClassExpression description) {
 		ClassScore score = computeScore(description);
 		return new EvaluatedDescriptionClass(description, score);
 	}
@@ -847,17 +849,17 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	/**
 	 * @return the isConsistent
 	 */
-	public boolean isConsistent(Description description) {
-		Axiom axiom;
+	public boolean isConsistent(OWLClassExpression description) {
+		OWLAxiom axiom;
 		if(equivalence) {
-			axiom = new EquivalentClassesAxiom(classToDescribe, description);
+			axiom = df.getOWLEquivalentClassesAxiom(classToDescribe, description);
 		} else {
-			axiom = new SubClassAxiom(classToDescribe, description);
+			axiom = df.getOWLSubClassOfAxiom(classToDescribe, description);
 		}
 		return getReasoner().remainsSatisfiable(axiom);
 	}
 	
-	public boolean followsFromKB(Description description) {
+	public boolean followsFromKB(OWLClassExpression description) {
 		return equivalence ? getReasoner().isEquivalentClass(description, classToDescribe) : getReasoner().isSuperClassOf(description, classToDescribe);
 	}
 

@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * The score of a class in ontology engineering.
@@ -37,10 +37,10 @@ public class ClassScore extends Score implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 2003326044901308157L;
-	private Set<Individual> coveredInstances;
-	private Set<Individual> notCoveredInstances;
+	private Set<OWLIndividual> coveredInstances;
+	private Set<OWLIndividual> notCoveredInstances;
 
-	private Set<Individual> additionalInstances;
+	private Set<OWLIndividual> additionalInstances;
 	
 	private double coverage;
 	private double addition;
@@ -49,7 +49,7 @@ public class ClassScore extends Score implements Serializable{
 	private boolean isConsistent;
 	private boolean followsFromKB;
 	
-	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
+	public ClassScore(Set<OWLIndividual> coveredInstances, Set<OWLIndividual> notCoveredInstances, double coverage, Set<OWLIndividual> additionalInstances, double protusion, double accuracy) {
 		this.coveredInstances = coveredInstances;
 		this.notCoveredInstances = notCoveredInstances;
 		this.additionalInstances = additionalInstances;
@@ -58,7 +58,7 @@ public class ClassScore extends Score implements Serializable{
 		this.accuracy = accuracy;
 	}	
 	
-	public ClassScore(Set<Individual> coveredInstances, Set<Individual> notCoveredInstances, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
+	public ClassScore(Set<OWLIndividual> coveredInstances, Set<OWLIndividual> notCoveredInstances, double coverage, Set<OWLIndividual> additionalInstances, double protusion, double accuracy, boolean isConsistent, boolean followsFromKB) {
 		this(coveredInstances, notCoveredInstances, coverage, additionalInstances, protusion, accuracy);
 		this.isConsistent = isConsistent;
 		this.followsFromKB = followsFromKB;
@@ -93,21 +93,21 @@ public class ClassScore extends Score implements Serializable{
 	/**
 	 * @return the coveredInstances
 	 */
-	public Set<Individual> getCoveredInstances() {
+	public Set<OWLIndividual> getCoveredInstances() {
 		return coveredInstances;
 	}
 
 	/**
 	 * @return the notCoveredInstances
 	 */
-	public Set<Individual> getNotCoveredInstances() {
+	public Set<OWLIndividual> getNotCoveredInstances() {
 		return notCoveredInstances;
 	}	
 	
 	/**
 	 * @return the additionalInstances
 	 */
-	public Set<Individual> getAdditionalInstances() {
+	public Set<OWLIndividual> getAdditionalInstances() {
 		return additionalInstances;
 	}
 

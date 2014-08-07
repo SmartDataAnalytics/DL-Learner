@@ -22,8 +22,8 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * @author Jens Lehmann
@@ -34,7 +34,7 @@ public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 	private static final long serialVersionUID = 4014754537024635033L;
 	private ScorePosOnly score2;
 	
-	public EvaluatedDescriptionPosOnly(Description description, ScorePosOnly score) {
+	public EvaluatedDescriptionPosOnly(OWLClassExpression description, ScorePosOnly score) {
 		super(description, score);
 		score2 = score;
 	}
@@ -48,15 +48,15 @@ public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getCoveredPositives()
 	 * @return Positive examples covered by the description.
 	 */
-	public Set<Individual> getCoveredPositives() {
+	public Set<OWLIndividual> getCoveredPositives() {
 		return score2.getCoveredInstances();
 	}	
 	
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<OWLIndividual> getNotCoveredPositives() {
 		return score2.getNotCoveredPositives();
 	}		
 	
-	public Set<Individual> getAdditionalInstances() {
+	public Set<OWLIndividual> getAdditionalInstances() {
 		return score2.getAdditionalInstances();
 	}
 }

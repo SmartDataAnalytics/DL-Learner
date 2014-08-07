@@ -19,18 +19,18 @@
 
 package org.dllearner.learningproblems;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 /**
  * Caches results of previous concept evaluation to speed up
@@ -45,22 +45,17 @@ import org.dllearner.utilities.owl.ConceptComparator;
 public class EvaluationCache {
 
 	// maps a concept to a list of individuals it covers
-	private Map<Description,SortedSet<Individual>> cache;
+	private Map<OWLClassExpression,SortedSet<OWLIndividual>> cache;
 	private boolean checkForEqualConcepts = false;
 	
-	// concept comparator for concept indexing 
-	// (so only logarithmic time complexity is needed to access a cached object)
-	private ConceptComparator conceptComparator;
+	private SortedSet<OWLIndividual> examples;
 	
-	private SortedSet<Individual> examples;
-	
-	public EvaluationCache(SortedSet<Individual> examples) {
+	public EvaluationCache(SortedSet<OWLIndividual> examples) {
 		this.examples = examples;
-		conceptComparator = new ConceptComparator();
-		cache = new TreeMap<Description,SortedSet<Individual>>(conceptComparator);
+		cache = new TreeMap<OWLClassExpression,SortedSet<OWLIndividual>>();
 	}
 	
-	public void put(Description concept, SortedSet<Individual> individuals) {
+	public void put(OWLClassExpression concept, SortedSet<OWLIndividual> individuals) {
 		cache.put(concept, individuals);
 	}
 
@@ -73,42 +68,44 @@ public class EvaluationCache {
 	 * elements, which are in neither of the sets, the cache cannot
 	 * safely determine whether they are concept instances or not.
 	 */
-	public SortedSetTuple<Individual> infer(Description concept) {
+	public SortedSetTuple<OWLIndividual> infer(OWLClassExpression concept) {
 		if(checkForEqualConcepts) {
-			SortedSet<Individual> pos = cache.get(concept);
-			SortedSet<Individual> neg = Helper.difference(examples, pos);
-			return new SortedSetTuple<Individual>(pos,neg);
+			SortedSet<OWLIndividual> pos = cache.get(concept);
+			SortedSet<OWLIndividual> neg = Helper.difference(examples, pos);
+			return new SortedSetTuple<OWLIndividual>(pos,neg);
 		} else {
 			// for a negation NOT C we can only say which concepts are not in it
 			// (those in C), but we cannot say which ones are in NOT C
 			
 			// for a conjunction we know that the intersection of instances
 			// of all children belongs to the concept			
-			if(concept instanceof Intersection) {
-				handleMultiConjunction((Intersection)concept);
+			if(concept instanceof OWLObjectIntersectionOf) {
+				handleMultiConjunction((OWLObjectIntersectionOf)concept);
 			// disjunctions are similar to conjunctions but we use union here;
 			// note that there can be instances which are neither in a concept
 			// C nor in a concept D, but in (C OR D)				
-			} else if(concept instanceof Union) {
-				SortedSet<Individual> ret = cache.get(concept.getChild(0));
-				for(int i=1; i<concept.getChildren().size(); i++) {
-					ret = Helper.union(ret, cache.get(concept.getChild(i)));
+			} else if(concept instanceof OWLObjectUnionOf) {
+				List<OWLClassExpression> operands = ((OWLObjectUnionOf) concept).getOperandsAsList();
+				Set<OWLIndividual> pos = cache.get(operands.get(0));
+				for (int i = 1; i < operands.size(); i++) {
+					pos = Helper.union(pos, cache.get(operands.get(i)));
 				}
 			// in all other cases we cannot infer anything, so we return an
 			// empty tuple
 			} else {
-				return new SortedSetTuple<Individual>();
+				return new SortedSetTuple<OWLIndividual>();
 			}
 		}
 		
 		return null;
 	}
 	
-	private SortedSetTuple<Individual> handleMultiConjunction(Intersection mc) {
-		Set<Individual> pos = cache.get(mc.getChild(0));
-		for(int i=1; i<mc.getChildren().size(); i++) {
-			pos = Helper.intersection(pos, cache.get(mc.getChild(i)));
-		}		
+	private SortedSetTuple<OWLIndividual> handleMultiConjunction(OWLObjectIntersectionOf mc) {
+		List<OWLClassExpression> operands = mc.getOperandsAsList();
+		Set<OWLIndividual> pos = cache.get(operands.get(0));
+		for (int i = 1; i < operands.size(); i++) {
+			pos = Helper.intersection(pos, cache.get(operands.get(i)));
+		}
 		// TODO: handle the case that some children may not be in cache
 		return null;
 	}

@@ -26,9 +26,9 @@ import java.io.UnsupportedEncodingException;
 import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
 import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.StringFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -41,6 +41,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 
 /**
@@ -51,6 +52,8 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjec
  *
  */
 public class OWLAPIRenderers {
+	
+	private static final OWLObjectRenderer manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 
 	/**
 	 * Converts an OWL API axiom to a Manchester OWL syntax string.
@@ -58,12 +61,8 @@ public class OWLAPIRenderers {
 	 * @param description Input OWLAxiom.
 	 * @return Manchester OWL syntax string.
 	 */
-	public static String toManchesterOWLSyntax(OWLAxiom description) {
-		StringWriter sw = new StringWriter();
-		ShortFormProvider sfp = new SimpleShortFormProvider();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, sfp);
-		description.accept(renderer);
-		return sw.toString();
+	public static String toManchesterOWLSyntax(OWLAxiom axiom) {
+		return manchesterRenderer.render(axiom);
 	}	
 	
 	/**
@@ -98,10 +97,6 @@ public class OWLAPIRenderers {
 		return sw.toString();
 	}	
 	
-	public static String toOWLXMLSyntax(Axiom axiom) {
-		return toOWLXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
-	}		
-	
 	public static String toOWLXMLSyntax(OWLAxiom axiom) {
 		StringWriter sw = new StringWriter();
 		try {
@@ -112,10 +107,6 @@ public class OWLAPIRenderers {
 			e.printStackTrace();
 		}
 		return sw.toString();
-	}		
-	
-	public static String toRDFXMLSyntax(Axiom axiom) {
-		return toRDFXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
 	}		
 	
 	public static String toRDFXMLSyntax(OWLAxiom axiom) {
@@ -135,15 +126,6 @@ public class OWLAPIRenderers {
 			e.printStackTrace();
 		}
 		return str;
-	}		
-	
-	public static String toTurtleSyntax(Axiom axiom) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), false);
-	}		
-	
-	// short version = a lot of stuff thrown out (not a standalone Turtle file anymore)
-	public static String toTurtleSyntax(Axiom axiom, boolean shortVersion) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), shortVersion);
 	}		
 	
 	public static String toTurtleSyntax(OWLAxiom axiom, boolean shortVersion) {
