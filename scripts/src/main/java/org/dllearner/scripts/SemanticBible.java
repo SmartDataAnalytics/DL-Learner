@@ -87,15 +87,15 @@ public class SemanticBible {
 		
 		reasoningService = ReasonerComponentFactory.getReasonerComponent(
 				ontologyPath, ReasonerType.OWLAPI_PELLET);
-		// SortedSet<NamedClass> classesToRelearn = new
-		// TreeSet<NamedClass>(rs.getAtomicConceptsList(true));
+		// SortedSet<OWLClass> classesToRelearn = new
+		// TreeSet<OWLClass>(rs.getAtomicConceptsList(true));
 		// for (NamedClass target : classesToRelearn) {
 		// System.out.println("classesToRelearn.add(new
 		// NamedClass(\""+target.toString()+"\"));");
 
 		// }
 
-		SortedSet<NamedClass> classesToRelearn = getClassesToRelearn(false);
+		SortedSet<OWLClass> classesToRelearn = getClassesToRelearn(false);
 		SortedSet<Individual> positiveEx = new TreeSet<Individual>();
 		SortedSet<Individual> negativeEx = new TreeSet<Individual>();
 
@@ -275,9 +275,9 @@ public class SemanticBible {
 
 	}
 
-	public static SortedSet<NamedClass> getClassesToRelearn(boolean firstOnly) {
+	public static SortedSet<OWLClass> getClassesToRelearn(boolean firstOnly) {
 
-		SortedSet<NamedClass> classesToRelearn = new TreeSet<NamedClass>();
+		SortedSet<OWLClass> classesToRelearn = new TreeSet<OWLClass>();
 		if (firstOnly) {
 			//classesToRelearn.add(new NamedClass(
 				//	"http://semanticbible.org/ns/2006/NTNames#Angel"));

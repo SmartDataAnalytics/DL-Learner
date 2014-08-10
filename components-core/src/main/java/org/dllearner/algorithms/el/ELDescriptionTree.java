@@ -99,24 +99,24 @@ public class ELDescriptionTree implements Cloneable {
 		constructTree(description, rootNode);
 	}
 
-	private void constructTree(Description description, ELDescriptionNode node) {
+	private void constructTree(OWLClassExpression description, ELDescriptionNode node) {
 		if (description instanceof NamedClass) {
 			node.extendLabel((NamedClass) description);
 		} else if (description instanceof ObjectSomeRestriction) {
 			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) description).getRole();
-			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
+			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<OWLClass>());
 			constructTree(description.getChild(0), newNode);
 		} else if (description instanceof Thing) {
 			// nothing needs to be done as an empty set is owl:Thing
 		} else if (description instanceof Intersection) {
 			// loop through all elements of the intersection
-			for (Description child : description.getChildren()) {
+			for (OWLClassExpression child : description.getChildren()) {
 				if (child instanceof NamedClass) {
 					node.extendLabel((NamedClass) child);
 				} else if (child instanceof ObjectSomeRestriction) {
 					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) child).getRole();
 					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
-							new TreeSet<NamedClass>());
+							new TreeSet<OWLClass>());
 					constructTree(child.getChild(0), newNode);
 				} else {
 					throw new UnsupportedLanguageException(description + " specifically " + child,
@@ -323,7 +323,7 @@ public class ELDescriptionTree implements Cloneable {
 		return isSublabel(node1.getLabel(), node2.getLabel());
 	}
 	
-	private boolean isSublabel(NavigableSet<NamedClass> subLabel, NavigableSet<NamedClass> superLabel) {
+	private boolean isSublabel(NavigableSet<OWLClass> subLabel, NavigableSet<OWLClass> superLabel) {
 		// implemented according to definition in article
 		// (TODO can probably be done more efficiently)
 		for(NamedClass nc : superLabel) {
@@ -334,7 +334,7 @@ public class ELDescriptionTree implements Cloneable {
 		return true;
 	}
 	
-	private boolean containsSubclass(NamedClass superClass, NavigableSet<NamedClass> label) {
+	private boolean containsSubclass(NamedClass superClass, NavigableSet<OWLClass> label) {
 		for(NamedClass nc : label) {
 			if(subsumptionHierarchy.isSubclassOf(nc, superClass)) {
 				return true;
@@ -494,7 +494,7 @@ public class ELDescriptionTree implements Cloneable {
 			
 			newNode.tree = treeClone;
 			newNode.level = oldNode.level;
-			newNode.label = (TreeSet<NamedClass>) oldNode.label.clone();
+			newNode.label = (TreeSet<OWLClass>) oldNode.label.clone();
 			if(oldNode.parent != null) {
 				newNode.parent = cloneMap.get(oldNode.parent);
 			} else {
@@ -558,7 +558,7 @@ public class ELDescriptionTree implements Cloneable {
 		// create a new reference tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		// create a root node attached to this reference tree
-		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<NamedClass>(
+		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<OWLClass>(
 				rootNode.getLabel()));
 		cloneRecursively(rootNode, rootNodeClone);
 		return treeClone;
@@ -569,7 +569,7 @@ public class ELDescriptionTree implements Cloneable {
 		// loop through all edges and clone the subtrees
 		for (ELDescriptionEdge edge : node.getEdges()) {
 			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
-					new TreeSet<NamedClass>(edge.getNode().getLabel()));
+					new TreeSet<OWLClass>(edge.getNode().getLabel()));
 			cloneRecursively(edge.getNode(), tmp);
 		}
 	}

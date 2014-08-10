@@ -114,8 +114,8 @@ public class PCELOE extends AbstractCELA {
 	private Description startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
-//	private TreeSet<Description> descriptions;
-	private SortedSet<Description> descriptions;
+//	private TreeSet<OWLClassExpression> descriptions;
+	private SortedSet<OWLClassExpression> descriptions;
 	
 	
 	// if true, then each solution is evaluated exactly instead of approximately
@@ -158,8 +158,8 @@ public class PCELOE extends AbstractCELA {
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
-	Set<NamedClass> allowedConcepts = null;
-	Set<NamedClass> ignoredConcepts = null;
+	Set<OWLClass> allowedConcepts = null;
+	Set<OWLClass> ignoredConcepts = null;
 
 	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
 	private boolean writeSearchTree = false;
@@ -241,9 +241,9 @@ public class PCELOE extends AbstractCELA {
 		
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
-		Set<NamedClass> usedConcepts;
-//		Set<NamedClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
-//		Set<NamedClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
+		Set<OWLClass> usedConcepts;
+//		Set<OWLClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
+//		Set<OWLClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
 			Helper.checkConcepts(reasoner, allowedConcepts);
@@ -324,8 +324,8 @@ public class PCELOE extends AbstractCELA {
 		// is not a class learning problem
 		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
 		
-//		Set<Description> concepts = operator.refine(Thing.instance, 5);
-//		for(Description concept : concepts) {
+//		Set<OWLClassExpression> concepts = operator.refine(Thing.instance, 5);
+//		for(OWLClassExpression concept : concepts) {
 //			System.out.println(concept);
 //		}
 //		System.out.println("refinements of thing: " + concepts.size());
@@ -342,7 +342,7 @@ public class PCELOE extends AbstractCELA {
 			// capture all instances), but owl:Thing for learning subclasses (since it is
 			// superfluous to add super classes in this case)
 			if(isEquivalenceProblem) {
-				Set<Description> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
+				Set<OWLClassExpression> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
 				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
 					// the existing definition is reused, which in the simplest case means to
 					// use it as a start class or, if it is already too specific, generalise it
@@ -350,14 +350,14 @@ public class PCELOE extends AbstractCELA {
 					// pick the longest existing definition as candidate
 					Description existingDefinition = null;
 					int highestLength = 0;
-					for(Description exDef : existingDefinitions) {
+					for(OWLClassExpression exDef : existingDefinitions) {
 						if(exDef.getLength() > highestLength) {
 							existingDefinition = exDef;
 							highestLength = exDef.getLength();
 						}
 					}
 					
-					LinkedList<Description> startClassCandidates = new LinkedList<Description>();
+					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<OWLClassExpression>();
 					startClassCandidates.add(existingDefinition);
 					if(operator instanceof RhoDRDown) {
 						((RhoDRDown)operator).setDropDisjuncts(true);
@@ -371,9 +371,9 @@ public class PCELOE extends AbstractCELA {
 						candidate = startClassCandidates.pollFirst();
 						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
 							// add upward refinements to list
-							Set<Description> refinements = upwardOperator.refine(candidate, candidate.getLength());
+							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, candidate.getLength());
 //							System.out.println("ref: " + refinements);
-							LinkedList<Description> refinementList = new LinkedList<Description>(refinements);
+							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
 //							Collections.reverse(refinementList);
 //							System.out.println("list: " + refinementList);
 							startClassCandidates.addAll(refinementList);
@@ -399,11 +399,11 @@ public class PCELOE extends AbstractCELA {
 					}
 					
 				} else {
-					Set<Description> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
 					if(superClasses.size() > 1) {
-						startClass = new Intersection(new LinkedList<Description>(superClasses));
+						startClass = new Intersection(new LinkedList<OWLClassExpression>(superClasses));
 					} else if(superClasses.size() == 1){
-						startClass = (Description) superClasses.toArray()[0];
+						startClass = (OWLClassExpression) superClasses.toArray()[0];
 					} else {
 						startClass = Thing.instance;
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
@@ -425,7 +425,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	@Override
-	public List<Description> getCurrentlyBestDescriptions() {
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	
@@ -526,14 +526,14 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	// expand node horizontically
-	private TreeSet<Description> refineNode(OENode node) {
+	private TreeSet<OWLClassExpression> refineNode(OENode node) {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
-		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
+		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 		nodes.add(node);
@@ -542,7 +542,7 @@ public class PCELOE extends AbstractCELA {
 	
 	// add node to search tree if it is not too weak
 	// returns true if node was added and false otherwise
-	private boolean addNode(Description description, OENode parentNode) {
+	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		
 //		System.out.println("d: " + description);
 		
@@ -657,7 +657,7 @@ public class PCELOE extends AbstractCELA {
 	}	
 	
 	// checks whether the description is allowed
-	private boolean isDescriptionAllowed(Description description, OENode parentNode) {
+	private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
 		if(isClassLearningProblem) {
 			if(isEquivalenceProblem) {
 				// the class to learn must not appear on the outermost property level
@@ -667,7 +667,7 @@ public class PCELOE extends AbstractCELA {
 			} else {
 				// none of the superclasses of the class to learn must appear on the
 				// outermost property level
-				TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
 				toTest.add(classToDescribe);
 				while(!toTest.isEmpty()) {
 					Description d = toTest.pollFirst();
@@ -713,7 +713,7 @@ public class PCELOE extends AbstractCELA {
 		// we do not want to have negations of sibling classes on the outermost level
 		// (they are expressed more naturally by saying that the siblings are disjoint,
 		// so it is reasonable not to include them in solutions)
-//		Set<Description> siblingClasses = reasoner.getClassHierarchy().getSiblingClasses(classToDescribe);
+//		Set<OWLClassExpression> siblingClasses = reasoner.getClassHierarchy().getSiblingClasses(classToDescribe);
 //		for now, we just disable negation
 		
 		return true;
@@ -721,7 +721,7 @@ public class PCELOE extends AbstractCELA {
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
-	private boolean occursOnFirstLevel(Description description, Description clazz) {
+	private boolean occursOnFirstLevel(OWLClassExpression description, Description clazz) {
 		if(description instanceof NamedClass) {
 			if(description.equals(clazz)) {
 				return true;
@@ -732,7 +732,7 @@ public class PCELOE extends AbstractCELA {
 			return false;
 		}
 		
-		for(Description child : description.getChildren()) {
+		for(OWLClassExpression child : description.getChildren()) {
 			if(occursOnFirstLevel(child, clazz)) {
 				return true;
 			}
@@ -773,7 +773,7 @@ public class PCELOE extends AbstractCELA {
 		// the algorithm more than once)
 //		nodes = new TreeSet<OENode>(heuristic);
 		nodes = Collections.synchronizedSortedSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
-		descriptions = Collections.synchronizedSortedSet(new TreeSet<Description>(new ConceptComparator()));
+		descriptions = Collections.synchronizedSortedSet(new TreeSet<OWLClassExpression>(new ConceptComparator()));
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		highestAccuracy = 0.0;
@@ -799,7 +799,7 @@ public class PCELOE extends AbstractCELA {
 		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
 	
-//	private String getTemporaryString(Description description) {
+//	private String getTemporaryString(OWLClassExpression description) {
 //		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";
 //	}
 	
@@ -865,23 +865,23 @@ public class PCELOE extends AbstractCELA {
 		return startClass;
 	}
 
-	public void setStartClass(Description startClass) {
+	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 
-	public Set<NamedClass> getAllowedConcepts() {
+	public Set<OWLClass> getAllowedConcepts() {
 		return allowedConcepts;
 	}
 
-	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
 		this.allowedConcepts = allowedConcepts;
 	}
 
-	public Set<NamedClass> getIgnoredConcepts() {
+	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}
 
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
 
@@ -1046,11 +1046,11 @@ public class PCELOE extends AbstractCELA {
 					if(logger.isDebugEnabled()){
 						logger.debug("Refining node...");
 					}
-					TreeSet<Description> refinements = refineNode(nextNode);
+					TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
 					mon.stop();
 						
 //					System.out.println("next node: " + nextNode);
-//					for(Description refinement : refinements) {
+//					for(OWLClassExpression refinement : refinements) {
 //						System.out.println("refinement: " + refinement);
 //					}
 //					if((loop+1) % 500 == 0) {
@@ -1092,7 +1092,7 @@ public class PCELOE extends AbstractCELA {
 						String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
 						if (refinements.size() > 1) {
 							treeString += "all expanded nodes:\n";
-							for (Description n : refinements) {
+							for (OWLClassExpression n : refinements) {
 								treeString += "   " + n + "\n";
 							}
 						}
@@ -1129,7 +1129,7 @@ public class PCELOE extends AbstractCELA {
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setClassToDescribe(new NamedClass("http://example.com/father#father"));
+		lp.setClassToDescribe(df.getOWLClass(IRI.create("http://example.com/father#father"));
 		lp.setCheckConsistency(false);
 		lp.init();
 		

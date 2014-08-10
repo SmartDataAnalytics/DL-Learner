@@ -129,7 +129,7 @@ public class ParCELWorkerMat implements Runnable {
 					+ ParCELStringUtilities.replaceString(nodeToProcess.toString(), this.baseURI,
 							this.prefix)  + ", score: " + df.format(learner.getHeuristic().getScore(nodeToProcess)) + ", order: " + this.name);
 		 
-		TreeSet<Description> refinements; // will hold the refinement result (set of Descriptions)
+		TreeSet<OWLClassExpression> refinements; // will hold the refinement result (set of Descriptions)
 
 		// hold the partial definitions if any
 		HashSet<ParCELExtraNode> definitionsFound = new HashSet<ParCELExtraNode>();
@@ -215,7 +215,7 @@ public class ParCELWorkerMat implements Runnable {
 	 * 
 	 * @return Set of descriptions that are the results of refinement
 	 */
-	private TreeSet<Description> refineNode(ParCELNode node) {
+	private TreeSet<OWLClassExpression> refineNode(ParCELNode node) {
 		int horizExp = node.getHorizontalExpansion();
 
 		if (logger.isTraceEnabled())
@@ -242,7 +242,7 @@ public class ParCELWorkerMat implements Runnable {
 		}
 
 		//refine node and increase its horizontal expansion
-		TreeSet<Description> refinements = (TreeSet<Description>) refinementOperator.refine(
+		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) refinementOperator.refine(
 				node.getDescription(), horizExp + 1);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
@@ -274,7 +274,7 @@ public class ParCELWorkerMat implements Runnable {
 	 * 
 	 * @return Null if the description is processed before, or a node which contains the description
 	 */
-	private ParCELExtraNode checkAndCreateNewNode(Description description, ParCELNode parentNode) {
+	private ParCELExtraNode checkAndCreateNewNode(OWLClassExpression description, ParCELNode parentNode) {
 
 		// redundancy check
 		boolean nonRedundant = learner.addDescription(description);

@@ -107,13 +107,13 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 
 //	private boolean defaultNegation = true;
 
-	private Set<NamedClass> atomicConcepts;
+	private Set<OWLClass> atomicConcepts;
 	private Set<ObjectProperty> atomicRoles;
-	private SortedSet<DatatypeProperty> datatypeProperties;
-	private SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();	
+	private SortedSet<OWLDataProperty> datatypeProperties;
+	private SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();	
 	private TreeSet<Individual> individuals;
 
 	// private ReasonerComponent rs;
@@ -123,24 +123,24 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	// we use sorted sets (map indices) here, because they have only log(n)
 	// complexity for checking whether an element is contained in them
 	// instances of classes
-	private Map<NamedClass, TreeSet<Individual>> classInstancesPos = new TreeMap<NamedClass, TreeSet<Individual>>();
-	private Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
+	private Map<OWLClass, TreeSet<Individual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<Individual>>();
+	private Map<OWLClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<Individual>>();
 	// object property mappings
 	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
 	// data property mappings
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Constant>>>();
+	private Map<OWLDataProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Constant>>>();
 		
 	
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
-	private Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
-	private Map<DatatypeProperty, TreeSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+	private Map<OWLDataProperty, TreeSet<Individual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
+	private Map<OWLDataProperty, TreeSet<Individual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
-	private Map<DatatypeProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<String>>>();
+	private Map<OWLDataProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Double>>>();
+	private Map<OWLDataProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Integer>>>();
+	private Map<OWLDataProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<String>>>();
 
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
@@ -169,11 +169,11 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
     public MaterializableFastInstanceChecker(TreeSet<Individual> individuals,
-			Map<NamedClass, TreeSet<Individual>> classInstancesPos,
+			Map<OWLClass, TreeSet<Individual>> classInstancesPos,
 			Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos,
-			Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id,
-			Map<DatatypeProperty, TreeSet<Individual>> bdPos,
-			Map<DatatypeProperty, TreeSet<Individual>> bdNeg,
+			Map<OWLDataProperty, Map<Individual, SortedSet<Integer>>> id,
+			Map<OWLDataProperty, TreeSet<Individual>> bdPos,
+			Map<OWLDataProperty, TreeSet<Individual>> bdNeg,
 			KnowledgeSource... sources) {
 		super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
 		this.individuals = individuals;
@@ -392,7 +392,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		if(handlePunning){
 			OWLOntology ontology = rc.getReasoner().getRootOntology();
 			
-			Individual genericIndividual = new Individual("http://dl-learner.org/punning#genInd");
+			Individual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd");
 			Map<Individual, SortedSet<Individual>> map = new HashMap<Individual, SortedSet<Individual>>();
 			for (Individual individual : individuals) {
 				SortedSet<Individual> objects = new TreeSet<Individual>();
@@ -402,7 +402,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			for (NamedClass cls : atomicConcepts) {
 				classInstancesNeg.get(cls).add(genericIndividual);
 				if(OWLPunningDetector.hasPunning(ontology, cls)){
-					Individual clsAsInd = new Individual(cls.getName());
+					Individual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.getName());
 					//for each x \in N_I with A(x) we add relatedTo(x,A)
 					SortedSet<Individual> individuals = classInstancesPos.get(cls);
 					for (Individual individual : individuals) {
@@ -440,7 +440,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			SortedSet<Individual> newIndividuals = new TreeSet<Individual>();
 			int i = 0;
 			for (Individual individual : individuals) {
-				Individual newIndividual = new Individual("http://dllearner.org#genInd_" + i++);
+				Individual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++);
 				newIndividuals.add(newIndividual);
 				SortedSet<Individual> values = map.get(individual);
 				if(values == null){
@@ -521,7 +521,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			}
 			ObjectProperty op = (ObjectProperty) ope;
 			Description child = description.getChild(0);
-			if(handlePunning && op == OWLPunningDetector.punningProperty && child.equals(new NamedClass(Thing.uri.toString()))){
+			if(handlePunning && op == OWLPunningDetector.punningProperty && child.equals(df.getOWLClass(IRI.create(Thing.uri.toString()))){
 				return true;
 			}
 			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
@@ -1013,7 +1013,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
 	@Override
-	public Set<NamedClass> getNamedClasses() {
+	public Set<OWLClass> getNamedClasses() {
 		return atomicConcepts;
 	}
 
@@ -1028,27 +1028,27 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getDatatypePropertiesImpl() {
 		return datatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
 		return booleanDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		return doubleDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getStringDatatypePropertiesImpl() {
 		return stringDatatypeProperties;
 	}	
 	
@@ -1073,12 +1073,12 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 	
 	@Override
-	protected SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
-	protected SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}	
 	
@@ -1118,7 +1118,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 //	}
 
 //	@Override
-//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+//	public void prepareDatatypePropertyHierarchyImpl(Set<OWLDataProperty> allowedRoles) {
 //		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
 //	}
 
@@ -1182,7 +1182,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 	
 	@Override
-	public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
+	public OWLDataRange getRangeImpl(DatatypeProperty datatypeProperty) {
 		return rc.getRange(datatypeProperty);
 	}
 
@@ -1264,7 +1264,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 * @see org.dllearner.core.ReasonerComponent#getTypesImpl(org.dllearner.core.owl.Individual)
 	 */
 	@Override
-	protected Set<NamedClass> getTypesImpl(Individual individual) {
+	protected Set<OWLClass> getTypesImpl(Individual individual) {
 		return rc.getTypesImpl(individual);
 	}
 

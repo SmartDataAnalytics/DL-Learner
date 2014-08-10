@@ -72,11 +72,11 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner2.class);
 	
-	private Map<Individual, SortedSet<Description>> individual2Types;
+	private Map<Individual, SortedSet<OWLClassExpression>> individual2Types;
 	
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public ObjectPropertyDomainAxiomLearner2(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -85,7 +85,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -109,7 +109,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 				existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
 				if(reasoner.isPrepared()){
 					if(reasoner.getClassHierarchy().contains(existingDomain)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+						for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
 							existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
 							logger.info("Existing domain(inferred): " + sup);
 						}
@@ -132,7 +132,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			filter += "FILTER(STRSTARTS(STR(?type), '" + ns + "'))";
 		}
 		ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString("CONSTRUCT {?s a ?type.} WHERE {?s ?p ?o. ?s a ?type. " + filter + "}");
-		queryTemplate.setIri("p", propertyToDescribe.getName());
+		queryTemplate.setIri("p", propertyToDescribe.toStringID());
 		Query query =  queryTemplate.asQuery();
 		query.setLimit(limit);
 		Model tmp = executeConstructQuery(query.toString());
@@ -213,7 +213,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 					continue;
 				}
 				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe,
-						new NamedClass(type.getURI())), computeScore(all, qs.get("cnt").asLiteral().getInt())));
+						df.getOWLClass(IRI.create(type.getURI())), computeScore(all, qs.get("cnt").asLiteral().getInt())));
 			}
 		}
 	}
@@ -222,7 +222,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 	}
 	
-	private void computeScore(Set<ObjectPropertyDomainAxiom> axioms){
+	private void computeScore(Set<OWLObjectPropertyDomainAxiom> axioms){
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		for (ObjectPropertyDomainAxiom axiom : axioms) {
 			SubClassAxiom sub = axiom.asSubClassOfAxiom();
@@ -235,7 +235,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		int limit = 10000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s a ?type.} WHERE {?s <%s> ?o. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -263,13 +263,13 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 						continue;
 					}
 					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new ObjectPropertyDomainAxiom(propertyToDescribe, new NamedClass(type.getURI())),
+							new ObjectPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI())),
 							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 			fillWithInference(newModel);
 		}
@@ -280,9 +280,9 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		if(reasoner.isPrepared()){
 			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
 				Statement st = iter.next();
-				Description cls = new NamedClass(st.getObject().asResource().getURI());
+				Description cls = df.getOWLClass(IRI.create(st.getObject().asResource().getURI());
 				if(reasoner.getClassHierarchy().contains(cls)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
 						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
 					}
 				}
@@ -292,14 +292,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getNegativeExamples(evAxiom);
@@ -318,7 +318,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.addFilterNamespace("http://dbpedia.org/ontology/");
 		l.init();
@@ -328,7 +328,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		ObjectPropertyDomainAxiomLearner l2 = new ObjectPropertyDomainAxiomLearner(ks);
 		l2.setReasoner(reasoner);
-		l2.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l2.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
 		l2.setMaxExecutionTimeInSeconds(10);
 		l2.addFilterNamespace("http://dbpedia.org/ontology/");
 		l2.init();

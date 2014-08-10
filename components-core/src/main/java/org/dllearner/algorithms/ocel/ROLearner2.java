@@ -174,11 +174,11 @@ public class ROLearner2 {
 	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
 
 	// all concepts which have been evaluated as being proper refinements
-	private SortedSet<Description> properRefinements = new TreeSet<Description>(conceptComparator);
+	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<OWLClassExpression>(conceptComparator);
 
 	// blacklists
-	private SortedSet<Description> tooWeakList = new TreeSet<Description>(conceptComparator);
-	private SortedSet<Description> overlyGeneralList = new TreeSet<Description>(conceptComparator);
+	private SortedSet<OWLClassExpression> tooWeakList = new TreeSet<OWLClassExpression>(conceptComparator);
+	private SortedSet<OWLClassExpression> overlyGeneralList = new TreeSet<OWLClassExpression>(conceptComparator);
 
 	// set of expanded nodes (TODO: better explanation)
 	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
@@ -339,8 +339,8 @@ public class ROLearner2 {
 		 * NamedClass struc = new
 		 * NamedClass("http://dl-learner.org/carcinogenesis#Compound");
 		 * Description d = KBParser.parseConcept(conceptStr); Description d2 =
-		 * KBParser.parseConcept(conceptStr2); // SortedSet<Description> ds =
-		 * (SortedSet<Description>) operator.refine(d,15,null,struc); //
+		 * KBParser.parseConcept(conceptStr2); // SortedSet<OWLClassExpression> ds =
+		 * (SortedSet<OWLClassExpression>) operator.refine(d,15,null,struc); //
 		 * System.out.println(ds);
 		 *  // System.out.println(RhoDRDown.checkIntersection((Intersection)d));
 		 * 
@@ -353,7 +353,7 @@ public class ROLearner2 {
 		 * coveredNegatives);
 		 * 
 		 * properRefinements.add(d2); extendNodeProper(ebn,13);
-		 * extendNodeProper(ebn,14); for(Description refinement:
+		 * extendNodeProper(ebn,14); for(OWLClassExpression refinement:
 		 * ebn.getChildConcepts()) System.out.println("refinement: " +
 		 * refinement);
 		 *  // Individual i = new
@@ -568,7 +568,7 @@ public class ROLearner2 {
 		// horizontal expansion,
 		// because they are used in recursive calls of this method later on
 		long refinementCalcTimeNsStart = System.nanoTime();
-		Set<Description> refinements = operator.refine(concept, maxLength, null);
+		Set<OWLClassExpression> refinements = operator.refine(concept, maxLength, null);
 		refinementCalcTimeNs += System.nanoTime() - refinementCalcTimeNsStart;
 
 		if (refinements.size() > maxNrOfRefinements)
@@ -589,7 +589,7 @@ public class ROLearner2 {
 
 		// if(refinements.size()<30) {
 		// // System.out.println("refinements: " + refinements);
-		// for(Description refinement: refinements)
+		// for(OWLClassExpression refinement: refinements)
 		// System.out.println("refinement: " + refinement);
 		// }
 
@@ -598,8 +598,8 @@ public class ROLearner2 {
 		// alle Konzepte, die länger als horizontal expansion sind, müssen
 		// ausgewertet
 		// werden
-		TreeSet<Description> toEvaluateConcepts = new TreeSet<Description>(conceptComparator);
-		Iterator<Description> it = refinements.iterator();
+		TreeSet<OWLClassExpression> toEvaluateConcepts = new TreeSet<OWLClassExpression>(conceptComparator);
+		Iterator<OWLClassExpression> it = refinements.iterator();
 		// for(Concept refinement : refinements) {
 		while (it.hasNext()) {
 
@@ -664,7 +664,7 @@ public class ROLearner2 {
 					// if(!res) {
 					// System.out.println("already in: " + refinement);
 					// Comparator comp = toEvaluateConcepts.comparator();
-					// for(Description d : toEvaluateConcepts) {
+					// for(OWLClassExpression d : toEvaluateConcepts) {
 					// if(comp.compare(d,refinement)==0)
 					// System.out.println("see: " + d);
 					// }
@@ -686,7 +686,7 @@ public class ROLearner2 {
 
 		// System.out.println(toEvaluateConcepts.size());
 
-		Set<Description> improperConcepts = null;
+		Set<OWLClassExpression> improperConcepts = null;
 		if (toEvaluateConcepts.size() > 0) {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			if (usePropernessChecks) {
@@ -710,7 +710,7 @@ public class ROLearner2 {
 		// alle proper concepts bleiben übrig (einfache Umbenennung)
 		if (improperConcepts != null)
 			toEvaluateConcepts.removeAll(improperConcepts);
-		Set<Description> properConcepts = toEvaluateConcepts;
+		Set<OWLClassExpression> properConcepts = toEvaluateConcepts;
 		// alle proper concepts von refinements löschen
 		refinements.removeAll(properConcepts);
 		improperConceptsRemovalTimeNs += System.nanoTime() - improperConceptsRemovalTimeNsStart;
@@ -722,7 +722,7 @@ public class ROLearner2 {
 		//		
 		// System.out.println("improper concepts: " + improperConcepts);
 
-		for (Description refinement : properConcepts) {
+		for (OWLClassExpression refinement : properConcepts) {
 			long redundancyCheckTimeNsStart = System.nanoTime();
 			boolean nonRedundant = properRefinements.add(refinement);
 			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
@@ -861,7 +861,7 @@ public class ROLearner2 {
 		// auf jedem dieser Konzepte wird die Funktion erneut aufgerufen, da
 		// sich
 		// proper refinements ergeben könnten
-		for (Description refinement : refinements) {
+		for (OWLClassExpression refinement : refinements) {
 			// for(int i=0; i<=recDepth; i++)
 			// System.out.print(" ");
 			// System.out.println("call: " + refinement + " [maxLength " +
@@ -1018,7 +1018,7 @@ public class ROLearner2 {
 	}
 
 	// @SuppressWarnings({"unused"})
-	// private int coveredNegativesOrTooWeak(Description concept) {
+	// private int coveredNegativesOrTooWeak(OWLClassExpression concept) {
 	// if(posOnly)
 	// return
 	// posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
@@ -1034,7 +1034,7 @@ public class ROLearner2 {
 	// }
 
 	private boolean containsTooWeakElement(Intersection mc) {
-		for (Description child : mc.getChildren()) {
+		for (OWLClassExpression child : mc.getChildren()) {
 			if (tooWeakList.contains(child))
 				return true;
 		}
@@ -1042,7 +1042,7 @@ public class ROLearner2 {
 	}
 
 	private boolean containsOverlyGeneralElement(Union md) {
-		for (Description child : md.getChildren()) {
+		for (OWLClassExpression child : md.getChildren()) {
 			if (overlyGeneralList.contains(child))
 				return true;
 		}
@@ -1194,7 +1194,7 @@ public class ROLearner2 {
 	}
 
 	/*
-	 * private Set<Individual> computeQuality(Description refinement, Set<Individual>
+	 * private Set<Individual> computeQuality(OWLClassExpression refinement, Set<Individual>
 	 * coveredPositives) { Set<Individual> ret = new TreeSet<Individual>();
 	 * int misclassifications; for(Individual i : coveredPositives) { boolean
 	 * covered = rs.instanceCheck(refinement, i); if(!covered)
@@ -1211,8 +1211,8 @@ public class ROLearner2 {
 		return candidatesStable.last().getConcept();
 	}
 
-	public List<Description> getCurrentlyBestDescriptions() {
-		List<Description> best = new LinkedList<Description>();
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
+		List<OWLClassExpression> best = new LinkedList<OWLClassExpression>();
 		int i = 0;
 		int nrOfSolutions = 200;
 		for (ExampleBasedNode n : candidatesStable.descendingSet()) {
@@ -1263,9 +1263,9 @@ public class ROLearner2 {
 		if (showOrderedSolutions) {
 			logger.trace("ordered by generality (most special solutions first):");
 			SubsumptionComparator sc = new SubsumptionComparator(rs);
-			TreeSet<Description> solutionsOrderedBySubsumption = new TreeSet<Description>(sc);
+			TreeSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<OWLClassExpression>(sc);
 //			solutionsOrderedBySubsumption.addAll(solutions);
-			for (Description d : solutionsOrderedBySubsumption)
+			for (OWLClassExpression d : solutionsOrderedBySubsumption)
 				logger.trace("special: " + d);
 			throw new Error("implementation needs to be updated to show ordered solutions");			
 		}
@@ -1280,7 +1280,7 @@ public class ROLearner2 {
 		return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
 	}
 
-	private ScorePosNeg getScore(Description d) {
+	private ScorePosNeg getScore(OWLClassExpression d) {
 		return (ScorePosNeg) learningProblem.computeScore(d);
 	}
 

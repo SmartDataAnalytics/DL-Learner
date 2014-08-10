@@ -84,7 +84,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 			else {
 				LinkedList<Description> nc = new LinkedList<Description>();
 				for (String one : subclasses) {
-					nc.add(new NamedClass(one));
+					nc.add(df.getOWLClass(IRI.create(one));
 				}
 				currentconcept = new Union(nc).toKBSyntaxString();
 			}

@@ -25,7 +25,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.Description;
 import org.dllearner.utilities.owl.ConceptComparator;
 
-public class SubsumptionComparator implements Comparator<Description> {
+public class SubsumptionComparator implements Comparator<OWLClassExpression> {
 
 	private AbstractReasonerComponent rs;
 	private ConceptComparator cc = new ConceptComparator();
@@ -40,7 +40,7 @@ public class SubsumptionComparator implements Comparator<Description> {
 		return compare(concept1, concept2);
 	}
 
-	public int compare(Description concept1, Description concept2) {
+	public int compare(OWLClassExpression concept1, Description concept2) {
 		// return true if concept1 is a super concept of concept2
 		boolean value1 = rs.isSuperClassOf(concept1, concept2);
 		if(value1)

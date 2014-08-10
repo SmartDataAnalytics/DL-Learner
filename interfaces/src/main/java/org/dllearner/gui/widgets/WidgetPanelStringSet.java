@@ -233,10 +233,10 @@ public class WidgetPanelStringSet extends AbstractWidgetPanel<Set<String>> imple
 			if (configOption.getName().equalsIgnoreCase("allowedConcepts")
 					|| configOption.getName().equalsIgnoreCase("ignoredConcepts")) {
 				// fill lists
-				Set<NamedClass> atomicsSet = config.getReasoner()
+				Set<OWLClass> atomicsSet = config.getReasoner()
 						.getNamedClasses();
 				if(atomicsSet != null) {
-					LinkedList<NamedClass> atomicConcepts = new LinkedList<NamedClass>(
+					LinkedList<OWLClass> atomicConcepts = new LinkedList<OWLClass>(
 							atomicsSet);
 					for (NamedClass ind : atomicConcepts) {
 						cBL.add(ind.getName());

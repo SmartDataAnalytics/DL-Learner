@@ -272,11 +272,11 @@ public class DBpediaExperiment {
 	}
 	
 	public void run(){
-		Set<NamedClass> classes = getClasses(); 	
+		Set<OWLClass> classes = getClasses(); 	
 		classes = sparqlReasoner.getMostSpecificClasses();
 		logger.info("#Leaf classes:" + classes.size());
 		
-		for (Iterator<NamedClass> iter = classes.iterator(); iter.hasNext();) {
+		for (Iterator<OWLClass> iter = classes.iterator(); iter.hasNext();) {
 			NamedClass cls = iter.next();
 			SortedSet<Individual> individuals = sparqlReasoner.getIndividuals(cls, 1000);
 			if(individuals.size() < minNrOfPositiveExamples){
@@ -288,7 +288,7 @@ public class DBpediaExperiment {
 		
 	}
 	
-	public void run(Set<NamedClass> classes, boolean overwrite){
+	public void run(Set<OWLClass> classes, boolean overwrite){
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
 		for (final NamedClass cls : classes) {
@@ -756,8 +756,8 @@ public class DBpediaExperiment {
 	 * Get the classes on which the experiment is applied.
 	 * @return
 	 */
-	private Set<NamedClass> getClasses(){
-		Set<NamedClass> classes = new HashSet<NamedClass>();
+	private Set<OWLClass> getClasses(){
+		Set<OWLClass> classes = new HashSet<OWLClass>();
 		
 		for(OWLClass cls : schema.getClassesInSignature()){
 			classes.add(new NamedClass(cls.toStringID()));
@@ -825,14 +825,14 @@ public class DBpediaExperiment {
 		DBpediaExperiment experiment = new DBpediaExperiment();
 		long start = System.currentTimeMillis();
 		if(args.length == 1){
-			Set<NamedClass> classes = new HashSet<>();
+			Set<OWLClass> classes = new HashSet<>();
 			List<String> lines = Files.readLines(new File(args[0]), Charsets.UTF_8);
 			for (String line : lines) {
 				classes.add(new NamedClass(line.trim()));
 			}
 			experiment.run(classes, true);
 		} if(args.length == 2){
-			Set<NamedClass> classes = Sets.newHashSet(new NamedClass(args[1].trim()));
+			Set<OWLClass> classes = Sets.newHashSet(new NamedClass(args[1].trim()));
 			experiment.run(classes, true);
 		} else {
 			experiment.run();

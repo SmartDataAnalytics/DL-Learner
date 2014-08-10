@@ -239,7 +239,7 @@ public class DBpediaClassLearnerCELOE {
         op.setUseCardinalityRestrictions(false);
         op.setUseHasValueConstructor(true);
         la.setNoisePercentage(20);
-        la.setIgnoredConcepts(new HashSet<NamedClass>(Arrays
+        la.setIgnoredConcepts(new HashSet<OWLClass>(Arrays
                 .asList(new NamedClass[] { new NamedClass(classToLearn) })));
         la.init();
         

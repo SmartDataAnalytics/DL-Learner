@@ -369,7 +369,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
 		
 //		Set<OWLClassExpression> concepts = operator.refine(Thing.instance, 5);
-//		for(Description concept : concepts) {
+//		for(OWLClassExpression concept : concepts) {
 //			System.out.println(concept);
 //		}
 //		System.out.println("refinements of thing: " + concepts.size());
@@ -524,7 +524,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
-//			for(Description refinement : refinements) {
+//			for(OWLClassExpression refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
 //			if((loop+1) % 500 == 0) {
@@ -830,7 +830,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			return false;
 		}
 		
-		for(Description child : description.getChildren()) {
+		for(OWLClassExpression child : description.getChildren()) {
 			if(occursOnFirstLevel(child, clazz)) {
 				return true;
 			}
@@ -909,7 +909,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
 	
-//	private String getTemporaryString(Description description) {
+//	private String getTemporaryString(OWLClassExpression description) {
 //		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";
 //	}
 	
@@ -978,7 +978,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return startClass;
 	}
 
-	public void setStartClass(Description startClass) {
+	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 

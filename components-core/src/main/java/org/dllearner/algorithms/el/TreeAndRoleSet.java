@@ -32,9 +32,9 @@ import org.dllearner.core.owl.ObjectProperty;
 public class TreeAndRoleSet {
 
 	private ELDescriptionTree tree;
-	private Set<ObjectProperty> roles;
+	private Set<OWLObjectProperty> roles;
 	
-	public TreeAndRoleSet(ELDescriptionTree tree, Set<ObjectProperty> roles) {
+	public TreeAndRoleSet(ELDescriptionTree tree, Set<OWLObjectProperty> roles) {
 		this.tree = tree;
 		this.roles = roles;
 	}
@@ -49,7 +49,7 @@ public class TreeAndRoleSet {
 	/**
 	 * @return the roles
 	 */
-	public Set<ObjectProperty> getRoles() {
+	public Set<OWLObjectProperty> getRoles() {
 		return roles;
 	}
 	

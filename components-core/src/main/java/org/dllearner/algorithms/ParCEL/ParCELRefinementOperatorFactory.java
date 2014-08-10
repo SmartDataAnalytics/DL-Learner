@@ -24,7 +24,7 @@ public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<L
 	private AbstractReasonerComponent reasoner;
 	private ClassHierarchy classHierarchy;
 	private Description startclass;
-	private Map<DatatypeProperty, List<Double>> splits;
+	private Map<OWLDataProperty, List<Double>> splits;
 	
 
 	private boolean useNegation = true;
@@ -55,7 +55,7 @@ public class ParCELRefinementOperatorFactory extends BasePoolableObjectFactory<L
 	
 	
 	public ParCELRefinementOperatorFactory(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, 
-			Description startclass, Map<DatatypeProperty, List<Double>> splits) 
+			Description startclass, Map<OWLDataProperty, List<Double>> splits) 
 	{
 		this.reasoner = reasoner;
 		this.classHierarchy = classHierarchy;

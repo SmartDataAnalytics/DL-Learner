@@ -105,13 +105,13 @@ public class OCEL extends AbstractCELA {
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 //	private String heuristicStr = "multi";
-	Set<NamedClass> allowedConcepts;
-	Set<ObjectProperty> allowedRoles;
-	Set<NamedClass> ignoredConcepts;
-	Set<ObjectProperty> ignoredRoles;
+	Set<OWLClass> allowedConcepts;
+	Set<OWLObjectProperty> allowedRoles;
+	Set<OWLClass> ignoredConcepts;
+	Set<OWLObjectProperty> ignoredRoles;
 	// these are computed as the result of the previous four settings
-	Set<NamedClass> usedConcepts;
-	Set<ObjectProperty> usedRoles;	
+	Set<OWLClass> usedConcepts;
+	Set<OWLObjectProperty> usedRoles;	
 //	private boolean applyAllFilter = true;
 //	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;
@@ -427,7 +427,7 @@ public class OCEL extends AbstractCELA {
 	}
 	
 	@Override
-	public synchronized List<Description> getCurrentlyBestDescriptions() {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return algorithm.getCurrentlyBestDescriptions();
 	}	
 	
@@ -497,51 +497,51 @@ public class OCEL extends AbstractCELA {
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
-	public Set<NamedClass> getAllowedConcepts() {
+	public Set<OWLClass> getAllowedConcepts() {
 		return allowedConcepts;
 	}
 
-	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
 		this.allowedConcepts = allowedConcepts;
 	}
 
-	public Set<ObjectProperty> getAllowedRoles() {
+	public Set<OWLObjectProperty> getAllowedRoles() {
 		return allowedRoles;
 	}
 
-	public void setAllowedRoles(Set<ObjectProperty> allowedRoles) {
+	public void setAllowedRoles(Set<OWLObjectProperty> allowedRoles) {
 		this.allowedRoles = allowedRoles;
 	}
 
-	public Set<NamedClass> getIgnoredConcepts() {
+	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}
 
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
 
-	public Set<ObjectProperty> getIgnoredRoles() {
+	public Set<OWLObjectProperty> getIgnoredRoles() {
 		return ignoredRoles;
 	}
 
-	public void setIgnoredRoles(Set<ObjectProperty> ignoredRoles) {
+	public void setIgnoredRoles(Set<OWLObjectProperty> ignoredRoles) {
 		this.ignoredRoles = ignoredRoles;
 	}
 
-	public Set<NamedClass> getUsedConcepts() {
+	public Set<OWLClass> getUsedConcepts() {
 		return usedConcepts;
 	}
 
-	public void setUsedConcepts(Set<NamedClass> usedConcepts) {
+	public void setUsedConcepts(Set<OWLClass> usedConcepts) {
 		this.usedConcepts = usedConcepts;
 	}
 
-	public Set<ObjectProperty> getUsedRoles() {
+	public Set<OWLObjectProperty> getUsedRoles() {
 		return usedRoles;
 	}
 
-	public void setUsedRoles(Set<ObjectProperty> usedRoles) {
+	public void setUsedRoles(Set<OWLObjectProperty> usedRoles) {
 		this.usedRoles = usedRoles;
 	}
 

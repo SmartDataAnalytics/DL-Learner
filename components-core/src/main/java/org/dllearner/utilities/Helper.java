@@ -46,6 +46,11 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyAssertion;
 import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * TODO: JavaDoc
@@ -56,12 +61,13 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 public class Helper {
 
 	private static Logger logger = Logger.getLogger(Helper.class);	
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	// findet alle atomaren Konzepte in einem Konzept
-	public static List<NamedClass> getAtomicConcepts(Description concept) {
-		List<NamedClass> ret = new LinkedList<NamedClass>();
+	public static List<OWLClass> getAtomicConcepts(Description concept) {
+		List<OWLClass> ret = new LinkedList<OWLClass>();
 		if (concept instanceof NamedClass) {
-			ret.add((NamedClass) concept);
+			ret.add((OWLClass) concept);
 			return ret;
 		} else {
 			for (Description child : concept.getChildren()) {
@@ -76,9 +82,9 @@ public class Helper {
 		List<ObjectProperty> ret = new LinkedList<ObjectProperty>();
 
 		if (concept instanceof ObjectQuantorRestriction) {
-			ret.add(new ObjectProperty(((ObjectQuantorRestriction) concept).getRole().getName()));
+			ret.add(df.getOWLObjectProperty(IRI.create(((ObjectQuantorRestriction) concept).getRole().getName()));
 		} else if (concept instanceof ObjectCardinalityRestriction) {
-			ret.add(new ObjectProperty(((ObjectCardinalityRestriction) concept).getRole().getName()));
+			ret.add(df.getOWLObjectProperty(IRI.create(((ObjectCardinalityRestriction) concept).getRole().getName()));
 		}
 
 		// auch NumberRestrictions und Quantifications können weitere Rollen
@@ -307,38 +313,38 @@ public class Helper {
 	}	
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
-		SortedSet<Individual> ret = new TreeSet<Individual>();
+	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
+		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
 		for (String s : individuals) {
-			ret.add(new Individual(s));
+			ret.add(df.getOWLNamedIndividual(IRI.create(s)));
 		}
 		return ret;
 	}
 
-	public static SortedSetTuple<Individual> getIndividualTuple(SortedSetTuple<String> tuple) {
-		return new SortedSetTuple<Individual>(getIndividualSet(tuple.getPosSet()),
+	public static SortedSetTuple<OWLIndividual> getIndividualTuple(SortedSetTuple<String> tuple) {
+		return new SortedSetTuple<OWLIndividual>(getIndividualSet(tuple.getPosSet()),
 				getIndividualSet(tuple.getNegSet()));
 	}
 
-	public static SortedSetTuple<String> getStringTuple(SortedSetTuple<Individual> tuple) {
+	public static SortedSetTuple<String> getStringTuple(SortedSetTuple<OWLIndividual> tuple) {
 		return new SortedSetTuple<String>(getStringSet(tuple.getPosSet()), getStringSet(tuple
 				.getNegSet()));
 	}
 
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<String> getStringSet(Set<Individual> individuals) {
+	public static SortedSet<String> getStringSet(Set<OWLIndividual> individuals) {
 		SortedSet<String> ret = new TreeSet<String>();
-		for (Individual i : individuals) {
-			ret.add(i.getName());
+		for (OWLIndividual i : individuals) {
+			ret.add(i.toStringID());
 		}
 		return ret;
 	}
 
 	public static Map<String, SortedSet<String>> getStringMap(
-			Map<Individual, SortedSet<Individual>> roleMembers) {
+			Map<OWLIndividual, SortedSet<OWLIndividual>> roleMembers) {
 		Map<String, SortedSet<String>> ret = new TreeMap<String, SortedSet<String>>();
-		for (Individual i : roleMembers.keySet()) {
-			ret.put(i.getName(), getStringSet(roleMembers.get(i)));
+		for (OWLIndividual i : roleMembers.keySet()) {
+			ret.put(i.toStringID(), getStringSet(roleMembers.get(i)));
 		}
 		return ret;
 	}
@@ -478,8 +484,8 @@ public class Helper {
 	 * @deprecated Deprecated method, because it is not needed anymore. 
 	 */
 	@Deprecated
-	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
-		Iterator<NamedClass> it = concepts.iterator();
+	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
+		Iterator<OWLClass> it = concepts.iterator();
 		while (it.hasNext()) {
 			String conceptName = it.next().getName();
 			
@@ -507,19 +513,19 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<NamedClass> computeConcepts(AbstractReasonerComponent rs) {
+	public static Set<OWLClass> computeConcepts(AbstractReasonerComponent rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<NamedClass> concepts = rs.getNamedClasses();
+		Set<OWLClass> concepts = rs.getNameClasses();
 //		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<NamedClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
+	public static Set<OWLClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<OWLClass> ignoredConcepts) {
+		Set<OWLClass> concepts = new TreeSet<OWLClass>(rs.getNamedClasses());
 //		Helper.removeUninterestingConcepts(concepts);
-		for (NamedClass ac : ignoredConcepts) {
+		for (OWLClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
 			if (!success)
 				logger.warn("Warning: Ignored concept " + ac + " does not exist in knowledge base.");
@@ -566,9 +572,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(AbstractReasonerComponent rs, Set<NamedClass> concepts) {
-		Set<NamedClass> existingConcepts = rs.getNamedClasses();
-		for (NamedClass ar : concepts) {
+	public static NamedClass checkConcepts(AbstractReasonerComponent rs, Set<OWLClass> concepts) {
+		Set<OWLClass> existingConcepts = rs.getNamedClasses();
+		for (OWLClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
 		}
@@ -581,8 +587,8 @@ public class Helper {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		if(!rs.getNamedClasses().isEmpty()) {
-			for (NamedClass atomicConcept : rs.getNamedClasses()) {
+		if(!rs.getClasses().isEmpty()) {
+			for (OWLClass atomicConcept : rs.getClasses()) {
 				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
 						.getIndividuals(atomicConcept)));
 				Negation negatedAtomicConcept = new Negation(atomicConcept);
@@ -607,43 +613,6 @@ public class Helper {
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
 		System.out.println("OK (" + dematDuration + " ms)");
 		return aBox;
-	}
-
-	// die Methode soll alle Konzeptzusicherungen und Rollenzusicherungen von
-	// Individuen entfernen, die mit diesem Individuum verbunden sind
-	@SuppressWarnings("unused")
-	private static void removeIndividualSubtree(KB kb, Individual individual) {
-		System.out.println();
-		// erster Schritt: alle verbundenen Individuen finden
-		Set<Individual> connectedIndividuals = kb.findRelatedIndividuals(individual);
-		System.out.println("connected individuals: " + connectedIndividuals);
-		// Individual selbst auch entfernen
-		connectedIndividuals.add(individual);
-
-		// zweiter Schritt: entfernen von Rollen- und Konzeptzusicherungen
-		Set<AssertionalAxiom> abox = kb.getAbox();
-		Iterator<AssertionalAxiom> it = abox.iterator();
-		while (it.hasNext()) {
-			AssertionalAxiom a = it.next();
-			if (a instanceof ObjectPropertyAssertion) {
-				ObjectPropertyAssertion ra = (ObjectPropertyAssertion) a;
-				if (connectedIndividuals.contains(ra.getIndividual1())
-						|| connectedIndividuals.contains(ra.getIndividual2())) {
-					System.out.println("remove " + ra);
-					it.remove();
-				}
-			} else if (a instanceof ClassAssertionAxiom) {
-				if (connectedIndividuals.contains(((ClassAssertionAxiom) a).getIndividual())) {
-					System.out.println("remove " + a);
-					it.remove();
-				}
-			} else
-				throw new RuntimeException();
-		}
-
-		Set<Individual> inds = kb.findAllIndividuals();
-		System.out.println("remaining individuals: " + inds);
-		System.out.println();
 	}
 	
 	public static String arrayContent(int[] ar) {

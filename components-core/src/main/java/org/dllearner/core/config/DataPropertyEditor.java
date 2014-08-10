@@ -75,7 +75,7 @@ public class DataPropertyEditor implements PropertyEditor {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        value = new DatatypeProperty(text);
+        value = df.getOWLDataProperty(IRI.create(text);
     }
 
     @Override

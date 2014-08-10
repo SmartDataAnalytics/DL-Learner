@@ -16,22 +16,22 @@ class Materialization implements Serializable{
 		// we use sorted sets (map indices) here, because they have only log(n)
 		// complexity for checking whether an element is contained in them
 		// instances of classes
-		public Map<NamedClass, TreeSet<Individual>> classInstancesPos = new TreeMap<NamedClass, TreeSet<Individual>>();
-		public Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
+		public Map<OWLClass, TreeSet<Individual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<Individual>>();
+		public Map<OWLClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<Individual>>();
 		// object property mappings
 		public Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
 		// data property mappings
-		public Map<DatatypeProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Constant>>>();
+		public Map<OWLDataProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Constant>>>();
 			
 		
 		// datatype property mappings
 		// for boolean data properties we have one mapping for true and false for efficiency reasons
-		public Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
-		public Map<DatatypeProperty, TreeSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+		public Map<OWLDataProperty, TreeSet<Individual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
+		public Map<OWLDataProperty, TreeSet<Individual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
 		//double datatype property mappings
-		public Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
+		public Map<OWLDataProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Double>>>();
 		//int datatype property
-		public Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
+		public Map<OWLDataProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Integer>>>();
 		//string datatype property
-		public Map<DatatypeProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<String>>>();
+		public Map<OWLDataProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<String>>>();
 	}

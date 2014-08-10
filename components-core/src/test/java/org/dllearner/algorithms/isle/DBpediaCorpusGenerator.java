@@ -123,7 +123,7 @@ public class DBpediaCorpusGenerator {
 		return documents;
 	}
 	
-	public static Set<String> getDBpediaCorpusSample(String textProperty, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
+	public static Set<String> getDBpediaCorpusSample(String textProperty, Set<OWLClass> classes, int maxNrOfInstancesPerClass){
 		logger.info("Generating DBpedia corpus based on " + textProperty + " for " + classes + " based on at most " + maxNrOfInstancesPerClass + " instances...");
 		Set<String> documents = new HashSet<>();
 		

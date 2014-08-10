@@ -385,13 +385,13 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
             String prefix = "http://nlp2rdf.org/ontology/";
             String test = "(\"Sentence\" AND (EXISTS \"syntaxTreeHasPart\".\"VVPP\" AND EXISTS \"syntaxTreeHasPart\".(\"stts:AuxilliaryVerb\" AND \"hasLemma\" = werden)))";
             
-            ObjectProperty stp = new ObjectProperty(prefix + "syntaxTreeHasPart");
-            DatatypeProperty dtp = new DatatypeProperty(prefix + "hasLemma");
+            ObjectProperty stp = df.getOWLObjectProperty(IRI.create(prefix + "syntaxTreeHasPart");
+            DatatypeProperty dtp = df.getOWLDataProperty(IRI.create(prefix + "hasLemma");
             StringValueRestriction svr = new StringValueRestriction(dtp, "werden");
-            Intersection inner = new Intersection(new NamedClass(prefix + "Auxillary"), svr);
-            Intersection middle = new Intersection(new ObjectSomeRestriction(stp, new NamedClass(
+            Intersection inner = new Intersection(df.getOWLClass(IRI.create(prefix + "Auxillary"), svr);
+            Intersection middle = new Intersection(new ObjectSomeRestriction(stp, df.getOWLClass(IRI.create(
                     prefix + "VVPP")), new ObjectSomeRestriction(stp, inner));
-            Intersection outer = new Intersection(new NamedClass(prefix + "Sentence"), middle);
+            Intersection outer = new Intersection(df.getOWLClass(IRI.create(prefix + "Sentence"), middle);
             
             System.out.println(outer.toKBSyntaxString(null, null));
             System.out.println(test);

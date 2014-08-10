@@ -111,7 +111,7 @@ public class ParCELNode extends OENode {
 
 	}
 
-	public void setDescription(Description newDescription) {
+	public void setDescription(OWLClassExpression newDescription) {
 		this.description = newDescription;
 	}
 

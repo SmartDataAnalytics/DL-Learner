@@ -55,7 +55,7 @@ public class InstanceNode extends Node {
 	private List<ClassNode> classes = new ArrayList<ClassNode>();
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
 	private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
-	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
 
 	public InstanceNode(String uri) {
 		super(uri);
@@ -275,7 +275,7 @@ public class InstanceNode extends Node {
 		return objectProperties;
 	}
 	
-	public List<DatatypePropertyNode> getDatatypePropertyNode() {
+	public List<OWLDataPropertyNode> getDatatypePropertyNode() {
 		return datatypeProperties;
 	}
 	

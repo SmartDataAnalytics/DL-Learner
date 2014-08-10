@@ -20,24 +20,25 @@
 package org.dllearner.algorithms.properties;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.AsymmetricObjectPropertyAxiom;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -46,156 +47,183 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL2;
 
-@ComponentAnn(name="asymmetric objectproperty axiom learner", shortName="oplasymm", version=0.1)
-public class AsymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
-	
+@ComponentAnn(name = "asymmetric objectproperty axiom learner", shortName = "oplasymm", version = 0.1)
+public class AsymmetricObjectPropertyAxiomLearner extends
+		AbstractAxiomLearningAlgorithm<OWLAsymmetricObjectPropertyAxiom, OWLObjectPropertyAssertionAxiom> {
+
 	private static final Logger logger = LoggerFactory.getLogger(AsymmetricObjectPropertyAxiomLearner.class);
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
-	
+
+	private OWLObjectProperty propertyToDescribe;
+
 	private boolean declaredAsymmetric;
 
-	public AsymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks){
+	public AsymmetricObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?o ?p ?s}}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. ?o ?p ?s}");
-	
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?o ?p ?s}}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT ?s ?o WHERE {?s ?p ?o. ?o ?p ?s}");
+
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		//check if property is already declared as asymmetric in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.AsymmetricProperty.getURI());
+	protected void getExistingAxioms() {
+		// check if property is already declared as asymmetric in knowledge base
+		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe.toStringID(),
+				OWL2.AsymmetricProperty.getURI());
 		declaredAsymmetric = executeAskQuery(query);
-		if(declaredAsymmetric) {
-			existingAxioms.add(new AsymmetricObjectPropertyAxiom(propertyToDescribe));
+		if (declaredAsymmetric) {
+			existingAxioms.add(df.getOWLAsymmetricObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
+		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-	
-	private void runSPARQL1_0_Mode(){
-		workingModel  = ModelFactory.createDefaultModel();
+
+	private void runSPARQL1_0_Mode() {
+		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String baseQuery = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(),
+				limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
 			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
-			while(rs.hasNext()){
+			while (rs.hasNext()) {
 				qs = rs.next();
 				total = qs.getLiteral("total").getInt();
 			}
 			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s.}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			rs = executeSelectQuery(query, workingModel);
 			int symmetric = 0;
-			while(rs.hasNext()){
+			while (rs.hasNext()) {
 				qs = rs.next();
 				symmetric = qs.getLiteral("symmetric").getInt();
 			}
 			int asymmetric = total - symmetric;
-			
-			if(total > 0){
+
+			if (total > 0) {
 				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
-						computeScore(total, asymmetric), declaredAsymmetric));
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLAsymmetricObjectPropertyAxiom>(df
+						.getOWLAsymmetricObjectPropertyAxiom(propertyToDescribe), computeScore(total, asymmetric),
+						declaredAsymmetric));
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit,
+					offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
-	
+
 	@Override
-	public SortedSet<KBElement> getPositiveExamples(EvaluatedAxiom axiom) {
-		if(workingModel != null){
-			SortedSet<KBElement> allExamples = new TreeSet<KBElement>();
-			ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o.}");
-			query.setIri("p", propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query.toString(), workingModel);
-			while(rs.hasNext()){
-				allExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
-			}
-			SortedSet<KBElement> negExamples = getNegativeExamples(axiom);
-			
-			SortedSet<KBElement> posExamples = new TreeSet<KBElement>(allExamples);
-			posExamples.removeAll(negExamples);
-			
-			
-			return posExamples;
+	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(
+			EvaluatedAxiom<OWLAsymmetricObjectPropertyAxiom> evAxiom) {
+		OWLAsymmetricObjectPropertyAxiom axiom = evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
+
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+
+		ResultSet rs;
+		if (workingModel != null) {
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 		}
+
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+		}
+
+		return posExamples;
 	}
-	
+
 	@Override
-	public SortedSet<KBElement> getNegativeExamples(EvaluatedAxiom axiom) {
-		if(workingModel != null){
-			SortedSet<KBElement> negExamples = new TreeSet<KBElement>();
-			ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o.?o ?p ?s}");
-			query.setIri("p", propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query.toString(), workingModel);
-			while(rs.hasNext()){
-				negExamples.add(new Individual(rs.next().get("s").asResource().getURI()));
-			}
-			
-			return negExamples;
+	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(
+			EvaluatedAxiom<OWLAsymmetricObjectPropertyAxiom> evaluatedAxiom) {
+		OWLAsymmetricObjectPropertyAxiom axiom = evaluatedAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
+
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+
+		ResultSet rs;
+		if (workingModel != null) {
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		}
+
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+		}
+
+		return negExamples;
 	}
-	
-	private void runSPARQL1_1_Mode(){
+
+	private void runSPARQL1_1_Mode() {
 		int total = reasoner.getPopularity(propertyToDescribe);
-		
-		if(total > 0){
+
+		if (total > 0) {
 			int asymmetric = 0;
 			String query = "SELECT (COUNT(*) AS ?asymmetric) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?o <%s> ?s.}}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
-			if(rs.hasNext()){
+			if (rs.hasNext()) {
 				asymmetric = rs.next().getLiteral("asymmetric").getInt();
 			}
-			
-			currentlyBestAxioms.add(new EvaluatedAxiom(new AsymmetricObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, asymmetric), declaredAsymmetric));
+
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLAsymmetricObjectPropertyAxiom>(df
+					.getOWLAsymmetricObjectPropertyAxiom(propertyToDescribe), computeScore(total, asymmetric),
+					declaredAsymmetric));
 		}
-		
+
 	}
-	
-	public static void main(String[] args) throws Exception{
-		AsymmetricObjectPropertyAxiomLearner l = new AsymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
-				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/spouse"));
+
+	public static void main(String[] args) throws Exception {
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		AsymmetricObjectPropertyAxiomLearner l = new AsymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(
+				new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"),
+						Collections.singletonList("http://dbpedia.org"), Collections.<String> emptyList())));// .getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/spouse")));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

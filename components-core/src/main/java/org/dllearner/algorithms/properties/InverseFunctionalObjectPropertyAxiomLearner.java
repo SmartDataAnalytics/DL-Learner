@@ -46,7 +46,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	private static final Logger logger = LoggerFactory.getLogger(InverseFunctionalObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	private boolean declaredAsInverseFunctional;
 
@@ -57,7 +57,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o1 ?p ?s. ?o2 ?p ?s. FILTER(?o1 != ?o2)}");
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -94,14 +94,14 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?o) AS ?all) WHERE {?s <%s> ?o.}",
-					propertyToDescribe.getName());
+					propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 1;
@@ -129,7 +129,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 			}
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
@@ -166,7 +166,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends AbstractAxiomLe
 	public static void main(String[] args) throws Exception{
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/profession"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/profession"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 //		l.setForceSPARQL_1_0_Mode(true);

@@ -151,13 +151,13 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //	private Set<Description> allowedConceptsInSubsumptionHierarchy;
 	
 	// primitives
-	Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
+	Set<OWLClass> atomicConcepts = new TreeSet<OWLClass>(conceptComparator);
 	Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
-	SortedSet<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();
+	SortedSet<OWLDataProperty> datatypeProperties = new TreeSet<OWLDataProperty>();
+	SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+	SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+	SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
+	SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
 	SortedSet<Individual> individuals = new TreeSet<Individual>();	
 	
 	// namespaces
@@ -213,13 +213,13 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	public void init() throws ComponentInitException {
 		// reset variables (otherwise subsequent initialisation with
 		// different knowledge sources will merge both)
-		atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
+		atomicConcepts = new TreeSet<OWLClass>(conceptComparator);
 		atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
-		datatypeProperties = new TreeSet<DatatypeProperty>();
-		booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-		doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-		intDatatypeProperties = new TreeSet<DatatypeProperty>();
-		stringDatatypeProperties = new TreeSet<DatatypeProperty>();
+		datatypeProperties = new TreeSet<OWLDataProperty>();
+		booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+		doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+		intDatatypeProperties = new TreeSet<OWLDataProperty>();
+		stringDatatypeProperties = new TreeSet<OWLDataProperty>();
 		individuals = new TreeSet<Individual>();	
 				
 		// create OWL API ontology manager
@@ -372,11 +372,11 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		
 		// read in primitives
 		for(OWLClass owlClass : classes)
-			atomicConcepts.add(new NamedClass(owlClass.toStringID()));
+			atomicConcepts.add(df.getOWLClass(IRI.create(owlClass.toStringID()));
 		for(OWLObjectProperty owlProperty : owlObjectProperties)
-			atomicRoles.add(new ObjectProperty(owlProperty.toStringID()));
+			atomicRoles.add(df.getOWLObjectProperty(IRI.create(owlProperty.toStringID()));
 		for(OWLDataProperty owlProperty : owlDatatypeProperties) {
-			DatatypeProperty dtp = new DatatypeProperty(owlProperty.toStringID());
+			DatatypeProperty dtp = df.getOWLDataProperty(IRI.create(owlProperty.toStringID());
 			Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
 			Iterator<OWLDataRange> it = ranges.iterator();
 			if(it.hasNext()) {
@@ -398,18 +398,18 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			datatypeProperties.add(dtp);
 		}
 		for(OWLNamedIndividual owlIndividual : owlIndividuals) {
-			individuals.add(new Individual(owlIndividual.toStringID()));
+			individuals.add(df.getOWLNamedIndividual(IRI.create(owlIndividual.toStringID()));
 		}		
 		
 		// remove top and bottom properties (for backwards compatibility)
-//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
-//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));
+//		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
+//		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
-	public Set<NamedClass> getNamedClasses() {		
+	public Set<OWLClass> getNamedClasses() {		
 		return Collections.unmodifiableSet(atomicConcepts);
 	}
 
@@ -421,7 +421,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getDatatypePropertiesImpl() {
 		return datatypeProperties;
 	}
 	
@@ -493,12 +493,12 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //		return roleHierarchy;
 //	}	
 		
-//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+//	public void prepareDatatypePropertyHierarchyImpl(Set<OWLDataProperty> allowedRoles) {
 //		// code copied from DIG reasoner
 //		
-//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+//		TreeMap<OWLDataProperty, TreeSet<OWLDataProperty>> datatypePropertyHierarchyUp = new TreeMap<OWLDataProperty, TreeSet<OWLDataProperty>>(
 //				roleComparator);
-//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
+//		TreeMap<OWLDataProperty, TreeSet<OWLDataProperty>> datatypePropertyHierarchyDown = new TreeMap<OWLDataProperty, TreeSet<OWLDataProperty>>(
 //				roleComparator);
 // 
 //		// refinement of atomic concepts
@@ -565,7 +565,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
+	protected TreeSet<OWLDataProperty> getSuperPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
 		properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
@@ -574,7 +574,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
+	protected TreeSet<OWLDataProperty> getSubPropertiesImpl(DatatypeProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
 		properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
@@ -606,7 +606,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		for(OWLNamedIndividual ind : individuals)
 			//ugly code
 			if(ind != null)
-				inds.add(new Individual(ind.toStringID()));
+				inds.add(df.getOWLNamedIndividual(IRI.create(ind.toStringID()));
 		return inds;
 	}
 	
@@ -624,7 +624,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Set<NamedClass> getTypesImpl(Individual individual) {
+	public Set<OWLClass> getTypesImpl(Individual individual) {
 		Set<Node<OWLClass>> result = null;
 		
 		result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())),false).getNodes();
@@ -670,7 +670,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		if(oc.isOWLThing()){
 			return Thing.instance;
 		}
-		return new NamedClass(oc.toStringID());
+		return df.getOWLClass(IRI.create(oc.toStringID());
 
 	}
 	
@@ -703,7 +703,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		if(oc.isOWLThing()) {
 			return new Thing();
 		} else {
-			return new NamedClass(oc.toStringID());
+			return df.getOWLClass(IRI.create(oc.toStringID());
 		}					
 	}
 	
@@ -721,7 +721,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			// convert data back to DL-Learner structures
 			SortedSet<Individual> is = new TreeSet<Individual>();
 			for(OWLNamedIndividual oi : inds)
-				is.add(new Individual(oi.toStringID()));
+				is.add(df.getOWLNamedIndividual(IRI.create(oi.toStringID()));
 			map.put(i, is);
 		}
 		return map;
@@ -758,7 +758,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		// convert data back to DL-Learner structures
 		SortedSet<Individual> is = new TreeSet<Individual>();
 		for(OWLNamedIndividual oi : inds) {
-			is.add(new Individual(oi.toStringID()));
+			is.add(df.getOWLNamedIndividual(IRI.create(oi.toStringID()));
 		}
 		return is;
 	}
@@ -850,20 +850,20 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			} else if(concept.isOWLNothing()) {
 				concepts.add(new Nothing());
 			} else {
-				concepts.add(new NamedClass(concept.toStringID()));
+				concepts.add(df.getOWLClass(IRI.create(concept.toStringID()));
 			}
 		}
 		return concepts;		
 	}
 	
-	private Set<NamedClass> getFirstClassesNoTopBottom(Set<Node<OWLClass>> nodeSet) {
-		Set<NamedClass> concepts = new HashSet<NamedClass>();
+	private Set<OWLClass> getFirstClassesNoTopBottom(Set<Node<OWLClass>> nodeSet) {
+		Set<OWLClass> concepts = new HashSet<OWLClass>();
 		for(Node<OWLClass> node : nodeSet) {
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLClass concept = node.getRepresentativeElement();
 			if(!concept.isOWLThing() && !concept.isOWLNothing())
-				concepts.add(new NamedClass(concept.toStringID()));
+				concepts.add(df.getOWLClass(IRI.create(concept.toStringID()));
 		}
 		return concepts;			
 	}
@@ -877,24 +877,24 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			// take one element from the set and ignore the rest
 			// (TODO: we need to make sure we always ignore the same concepts)
 			OWLObjectPropertyExpression property = node.getRepresentativeElement();
-			roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+			roles.add(df.getOWLObjectProperty(IRI.create(property.asOWLObjectProperty().toStringID()));
 		}
-		roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));
-		roles.remove(new ObjectProperty(factory.getOWLBottomObjectProperty().toStringID()));
+		roles.remove(df.getOWLObjectProperty(IRI.create(factory.getOWLTopObjectProperty().toStringID()));
+		roles.remove(df.getOWLObjectProperty(IRI.create(factory.getOWLBottomObjectProperty().toStringID()));
 		return roles;		
 	}	
 	
-	private TreeSet<DatatypeProperty> getFirstDatatypeProperties(NodeSet<OWLDataProperty> nodeSet) {
-		TreeSet<DatatypeProperty> roles = new TreeSet<DatatypeProperty>(roleComparator);
+	private TreeSet<OWLDataProperty> getFirstDatatypeProperties(NodeSet<OWLDataProperty> nodeSet) {
+		TreeSet<OWLDataProperty> roles = new TreeSet<OWLDataProperty>(roleComparator);
 		for(Node<OWLDataProperty> node : nodeSet) {
 			if(node.isBottomNode() || node.isTopNode()){
 				continue;
 			}
 			OWLDataProperty property = node.getRepresentativeElement();
-			roles.add(new DatatypeProperty(property.toStringID()));
+			roles.add(df.getOWLDataProperty(IRI.create(property.toStringID()));
 		}
-		roles.remove(new DatatypeProperty(factory.getOWLTopDataProperty().toStringID()));
-		roles.remove(new DatatypeProperty(factory.getOWLBottomDataProperty().toStringID()));		
+		roles.remove(df.getOWLDataProperty(IRI.create(factory.getOWLTopDataProperty().toStringID()));
+		roles.remove(df.getOWLDataProperty(IRI.create(factory.getOWLBottomDataProperty().toStringID()));		
 		return roles;		
 	}	
 	
@@ -952,7 +952,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 * @return the booleanDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
 		return booleanDatatypeProperties;
 	}
 
@@ -960,7 +960,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 * @return the doubleDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		return doubleDatatypeProperties;
 	}
 
@@ -968,7 +968,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 * @return the intDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
 	
@@ -976,7 +976,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 * @return the intDatatypeProperties
 	 */
 	@Override
-	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
+	public SortedSet<OWLDataProperty> getStringDatatypePropertiesImpl() {
 		return stringDatatypeProperties;
 	}	
 
@@ -1016,11 +1016,11 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //	}
 	
 	@Override
-	public Set<NamedClass> getInconsistentClassesImpl() {
-		Set<NamedClass> concepts = new HashSet<NamedClass>();
+	public Set<OWLClass> getInconsistentClassesImpl() {
+		Set<OWLClass> concepts = new HashSet<OWLClass>();
 
 		for (OWLClass concept : reasoner.getUnsatisfiableClasses().getEntities()){
-			concepts.add(new NamedClass(concept.toStringID()));
+			concepts.add(df.getOWLClass(IRI.create(concept.toStringID()));
 		}
 
 		return concepts;

@@ -98,7 +98,7 @@ public class KB implements KBElement {
 		
 		Set<ObjectProperty> ret = new HashSet<ObjectProperty>();
 		for(String name : roleNames) {
-			ret.add(new ObjectProperty(name));
+			ret.add(df.getOWLObjectProperty(IRI.create(name));
 		}
 		return ret;		
 	}
@@ -115,7 +115,7 @@ public class KB implements KBElement {
 		return ret;
 	}
 	
-	public Set<NamedClass> findAllAtomicConcepts() {
+	public Set<OWLClass> findAllAtomicConcepts() {
 		// erstmal eine Menge von Konzeptnamen finden, dadurch ist sichergestellt,
 		// dass kein Name zweimal auftaucht (wenn später mal ein Comparator
 		// für Konzepte implementiert ist, dann ist dieser Zwischenschritt 
@@ -137,9 +137,9 @@ public class KB implements KBElement {
 			}
 		}
 		
-		Set<NamedClass> ret = new HashSet<NamedClass>();
+		Set<OWLClass> ret = new HashSet<OWLClass>();
 		for(String name : conceptNames) {
-			ret.add(new NamedClass(name));
+			ret.add(df.getOWLClass(IRI.create(name));
 		}
 
 		return ret;

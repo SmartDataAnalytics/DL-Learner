@@ -47,7 +47,7 @@ public class ClassNode extends Node {
 		.getLogger(ClassNode.class);
 	
 	List<ObjectPropertyNode> classProperties = new ArrayList<ObjectPropertyNode>();
-	List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
 	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
 	
 	public ClassNode(String uri) {

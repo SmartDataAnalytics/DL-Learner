@@ -32,6 +32,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -62,6 +63,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected ConceptComparator descriptionComparator = new ConceptComparator();
 	protected String baseURI;
 	protected Map<String, String> prefixes;
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
 	 * The learning problem variable, which must be used by

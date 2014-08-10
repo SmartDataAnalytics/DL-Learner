@@ -58,7 +58,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 	private JTextField stringField;
 
 	private JComboBox comboBox;
-	private List<NamedClass> classes;
+	private List<OWLClass> classes;
 	
 	/**
 	 * Provides a widget for URL options.
@@ -133,7 +133,7 @@ public class WidgetPanelURL extends AbstractWidgetPanel<URL> implements ActionLi
 			AbstractReasonerComponent reasoner = config.getReasoner();
 			String baseURI = reasoner.getBaseURI();
 			Map<String,String> prefixes = reasoner.getPrefixes();
-			classes = new LinkedList<NamedClass>(reasoner.getNamedClasses());
+			classes = new LinkedList<OWLClass>(reasoner.getNamedClasses());
 			for(NamedClass clazz : classes) {
 				comboBox.addItem(clazz.toManchesterSyntaxString(baseURI, prefixes));
 			}

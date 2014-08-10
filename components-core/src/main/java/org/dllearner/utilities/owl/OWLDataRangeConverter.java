@@ -30,9 +30,9 @@ import org.semanticweb.owlapi.vocab.OWLFacet;
  */
 public class OWLDataRangeConverter implements OWLDataRangeVisitor{
 	
-	private DataRange dataRange;
+	private OWLDataRange dataRange;
 	
-	public static DataRange convert(OWLDataRange owlDataRange){
+	public static OWLDataRange convert(OWLDataRange owlDataRange){
 		OWLDataRangeConverter converter = new OWLDataRangeConverter();
 		owlDataRange.accept(converter);
 		return converter.dataRange;

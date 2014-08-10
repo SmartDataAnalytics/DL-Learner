@@ -62,7 +62,7 @@ public class ELDescriptionNode {
 	// the reference tree for storing values, must not be null
 	protected ELDescriptionTree tree;
 	
-	protected TreeSet<NamedClass> label = new TreeSet<NamedClass>();
+	protected TreeSet<OWLClass> label = new TreeSet<OWLClass>();
 	
 	protected List<ELDescriptionEdge> edges = new LinkedList<ELDescriptionEdge>();
 
@@ -91,19 +91,19 @@ public class ELDescriptionNode {
 	 * Constructs an EL description tree with empty root label.
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree) {
-		this(tree, new TreeSet<NamedClass>());
+		this(tree, new TreeSet<OWLClass>());
 	}	
 	
 	// convenience constructor
 	public ELDescriptionNode(ELDescriptionTree tree, NamedClass... label) {
-		this(tree, new TreeSet<NamedClass>(Arrays.asList(label)));
+		this(tree, new TreeSet<OWLClass>(Arrays.asList(label)));
 	}	
 	
 	/**
 	 * Constructs an EL description tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<OWLClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();	
 		this.tree = tree;
@@ -116,11 +116,11 @@ public class ELDescriptionNode {
 	}
 	
 	// convenience constructor
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NamedClass... label) {
-		this(parentNode, parentProperty, new TreeSet<NamedClass>(Arrays.asList(label)));
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLObjectProperty parentProperty, NamedClass... label) {
+		this(parentNode, parentProperty, new TreeSet<OWLClass>(Arrays.asList(label)));
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, Set<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLObjectProperty parentProperty, Set<OWLClass> label) {
 //		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
@@ -206,7 +206,7 @@ public class ELDescriptionNode {
 	 */
 //  TODO: probably delete as this constructor is not straightforward to
 //  implement within the new structure
-//	public ELDescriptionNode(SortedSet<NamedClass> label, List<ELDescriptionEdge> edges) {
+//	public ELDescriptionNode(SortedSet<OWLClass> label, List<ELDescriptionEdge> edges) {
 //		this.label = label;
 //		this.edges = edges;
 //	}
@@ -414,7 +414,7 @@ public class ELDescriptionNode {
 //		mon.stop();
 	}
 
-	public void refineEdge(int edgeNumber, ObjectProperty op) {
+	public void refineEdge(int edgeNumber, OWLObjectProperty op) {
 		edges.get(edgeNumber).setLabel(op);
 		
 //		Monitor mon = MonitorFactory.start("simulation update");
@@ -459,7 +459,7 @@ public class ELDescriptionNode {
 	 * but use the provided methods instead!
 	 * @return The label of root node of this subtree.
 	 */
-	public NavigableSet<NamedClass> getLabel() {
+	public NavigableSet<OWLClass> getLabel() {
 		return label;
 	}
 
@@ -504,7 +504,7 @@ public class ELDescriptionNode {
 		if(label.isEmpty()) {
 			str = "TOP";
 		} else {
-			Iterator<NamedClass> it = label.iterator();
+			Iterator<OWLClass> it = label.iterator();
 			while(it.hasNext()) {
 				NamedClass nc = it.next();
 				if(it.hasNext()) {

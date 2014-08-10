@@ -70,7 +70,7 @@ public class UsedEntitiesDetection {
 		
 	};
 	
-	private Map<Set<ObjectProperty>,Set<NamedClass>> usedClasses;
+	private Map<Set<ObjectProperty>,Set<OWLClass>> usedClasses;
 	
 	private Map<Set<ObjectProperty>,Set<ObjectProperty>> usedObjectProperties;
 	
@@ -88,7 +88,7 @@ public class UsedEntitiesDetection {
 	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<Individual> individuals, int maxDepth) {
 		this.reasoner = reasoner;
 		this.maxDepth = maxDepth;
-		usedClasses = new TreeMap<Set<ObjectProperty>,Set<NamedClass>>(keyComp);
+		usedClasses = new TreeMap<Set<ObjectProperty>,Set<OWLClass>>(keyComp);
 		usedObjectProperties = new TreeMap<Set<ObjectProperty>,Set<ObjectProperty>>(keyComp);
 		
 		Set<ObjectProperty> startKey = new TreeSet<ObjectProperty>();
@@ -97,7 +97,7 @@ public class UsedEntitiesDetection {
 	}
 
 	private void computeUsedEntitiesRec(Set<ObjectProperty> key, Set<Individual> individuals) {
-		Set<NamedClass> types = new TreeSet<NamedClass>();
+		Set<OWLClass> types = new TreeSet<OWLClass>();
 //		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		// we must use the object property comparator to avoid double occurences of properties
 		Map<ObjectProperty,Set<Individual>> relations = new TreeMap<ObjectProperty,Set<Individual>>();
@@ -149,7 +149,7 @@ public class UsedEntitiesDetection {
 	/**
 	 * @return the usedClasses
 	 */
-	public Map<Set<ObjectProperty>, Set<NamedClass>> getUsedClasses() {
+	public Map<Set<ObjectProperty>, Set<OWLClass>> getUsedClasses() {
 		return usedClasses;
 	}
 

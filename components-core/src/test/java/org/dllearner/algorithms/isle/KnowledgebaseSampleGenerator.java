@@ -47,7 +47,7 @@ public class KnowledgebaseSampleGenerator {
 	public static String sparqlCacheDir = "sparql-cache";
 	public static int maxCBDDepth = 1;
 	
-	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, String namespace, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
+	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, String namespace, Set<OWLClass> classes, int maxNrOfInstancesPerClass){
 		Model model = ModelFactory.createDefaultModel();
 		logger.info("Generating sample(" + maxNrOfInstancesPerClass + " instances) for " + classes + "...");
 		long startTime = System.currentTimeMillis();
@@ -205,11 +205,11 @@ public class KnowledgebaseSampleGenerator {
 			ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, sparqlCacheDir);
 			
 			//get all OWL classes
-			Set<NamedClass> classes = reasoner.getOWLClasses(namespace);
+			Set<OWLClass> classes = reasoner.getOWLClasses(namespace);
 			if(maxNrOfClasses != -1 && maxNrOfClasses != Integer.MAX_VALUE){
-				List<NamedClass> tmpClasses = new ArrayList<NamedClass>(classes);
+				List<OWLClass> tmpClasses = new ArrayList<OWLClass>(classes);
 				Collections.shuffle(tmpClasses);
-				classes = new HashSet<NamedClass>(tmpClasses.subList(0, Math.min(tmpClasses.size(), maxNrOfClasses)));
+				classes = new HashSet<OWLClass>(tmpClasses.subList(0, Math.min(tmpClasses.size(), maxNrOfClasses)));
 			}
 			
 			//get for each class n instances and compute the CBD for each instance
@@ -274,7 +274,7 @@ public class KnowledgebaseSampleGenerator {
 		return createKnowledgebaseSample(endpoint, null, maxNrOfClasses, maxNrOfInstancesPerClass);
 	}
 	
-	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, Set<NamedClass> classes, int maxNrOfInstancesPerClass){
+	public static Model createKnowledgebaseSample(SparqlEndpoint endpoint, Set<OWLClass> classes, int maxNrOfInstancesPerClass){
 		return createKnowledgebaseSample(endpoint, null, classes, maxNrOfInstancesPerClass);
 	}
 	

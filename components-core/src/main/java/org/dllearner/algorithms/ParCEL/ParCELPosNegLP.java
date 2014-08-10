@@ -80,7 +80,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Set of positive examples covered by the description
 	 */
-	protected Set<Individual> coveredPositiveExamples(Description description) {
+	protected Set<Individual> coveredPositiveExamples(OWLClassExpression description) {
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
 
 		for (Individual example : positiveExamples)
@@ -98,7 +98,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Set of positive examples covered by the description
 	 */
-	protected Set<Individual> coveredUncoveredPositiveExamples(Description description) {
+	protected Set<Individual> coveredUncoveredPositiveExamples(OWLClassExpression description) {
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
 
 		for (Individual example : uncoveredPositiveExamples)
@@ -115,7 +115,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *            Description
 	 * @return Number if positive examples covered by the description
 	 */
-	protected int getNumberCoveredPositiveExamples(Description description) {
+	protected int getNumberCoveredPositiveExamples(OWLClassExpression description) {
 		int coveredPos = 0;
 
 		for (Individual example : positiveExamples) {
@@ -134,7 +134,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Number of negative examples covered by the description
 	 */
-	protected int getNumberOfCoveredNegativeExamples(Description description) {
+	protected int getNumberOfCoveredNegativeExamples(OWLClassExpression description) {
 		int coveredNeg = 0;
 
 		for (Individual example : negativeExamples) {
@@ -155,7 +155,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Predictive accuracy of a description
 	 */
-	protected double accuracy_cal(Description description) {
+	protected double accuracy_cal(OWLClassExpression description) {
 		int cp = this.getNumberCoveredPositiveExamples(description);
 		int un = this.negativeExamples.size()
 				- this.getNumberOfCoveredNegativeExamples(description);
@@ -171,7 +171,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Correctness of the description
 	 */
-	protected double correctness_cal(Description description) {
+	protected double correctness_cal(OWLClassExpression description) {
 		int un = this.negativeExamples.size()
 				- this.getNumberOfCoveredNegativeExamples(description);
 		return un / (double) this.negativeExamples.size();
@@ -185,7 +185,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * 
 	 * @return Complete if the description
 	 */
-	protected double completeness_cal(Description description) {
+	protected double completeness_cal(OWLClassExpression description) {
 		int cp = this.getNumberCoveredPositiveExamples(description);
 		return cp / (double) this.positiveExamples.size();
 	}
@@ -207,7 +207,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *         NOTE: do we need "weak" concept with the value of -1? How if we just simply assign 0
 	 *         for it?
 	 */
-	public ParCELEvaluationResult getAccuracyAndCorrectness(Description description) {
+	public ParCELEvaluationResult getAccuracyAndCorrectness(OWLClassExpression description) {
 
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
@@ -258,7 +258,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *            Description to be calculated
 	 * @return
 	 */
-	public ParCELEvaluationResult getAccuracyAndCorrectness2(Description description) {
+	public ParCELEvaluationResult getAccuracyAndCorrectness2(OWLClassExpression description) {
 
 		int notCoveredNeg = 0;
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
@@ -322,7 +322,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *            Description to be calculated
 	 * @return
 	 */
-	public ParCELEvaluationResult getAccuracyAndCorrectness3(Description description) {
+	public ParCELEvaluationResult getAccuracyAndCorrectness3(OWLClassExpression description) {
 
 		int notCoveredNeg = 0;
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
@@ -394,7 +394,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 *            Description to be calculated
 	 * @return
 	 */
-	public ParCELEvaluationResult getAccuracyAndCorrectnessEx(Description description) {
+	public ParCELEvaluationResult getAccuracyAndCorrectnessEx(OWLClassExpression description) {
 
 		Set<Individual> coveredPositiveExamples = new HashSet<Individual>();
 		Set<Individual> coveredNegativeExamples = new HashSet<Individual>();
@@ -439,7 +439,7 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * PDLLScore = {accuracy, correctness}
 	 */
 	@Override
-	public ParCELScore computeScore(Description description) {
+	public ParCELScore computeScore(OWLClassExpression description) {
 		double correctness = this.correctness_cal(description);
 		double accuracy = this.accuracy_cal(description);
 
@@ -450,19 +450,19 @@ public class ParCELPosNegLP extends AbstractLearningProblem {
 	 * Create evaluated description
 	 */
 	@Override
-	public EvaluatedDescription evaluate(Description description) {
+	public EvaluatedDescription evaluate(OWLClassExpression description) {
 		ParCELScore score = this.computeScore(description);
 
 		return new EvaluatedDescription(description, score);
 	}
 
 	@Override
-	public double getAccuracy(Description description) {
+	public double getAccuracy(OWLClassExpression description) {
 		return accuracy_cal(description);
 	}
 
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		throw new RuntimeException("getAccuracyOrTooWeak() is not supported by PDLLPosNegLP");
 	}
 

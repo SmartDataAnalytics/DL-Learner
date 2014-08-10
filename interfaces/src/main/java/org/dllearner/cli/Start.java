@@ -801,7 +801,7 @@ public class Start {
 
 				if (parsedCorrectly) {
 					// compute atomic roles and concepts used in concept
-					SortedSet<NamedClass> occurringConcepts = new TreeSet<NamedClass>(
+					SortedSet<OWLClass> occurringConcepts = new TreeSet<OWLClass>(
 							new ConceptComparator());
 					occurringConcepts.addAll(Helper.getAtomicConcepts(concept));
 					SortedSet<ObjectProperty> occurringRoles = new TreeSet<ObjectProperty>(

@@ -60,8 +60,8 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 				int compare = 0;
 				if(node1.isClassNode() && node2.isClassNode()){
 					// navigate through both labels
-					Iterator<NamedClass> it1 = node1.getLabel().descendingIterator();
-					Iterator<NamedClass> it2 = node2.getLabel().descendingIterator();
+					Iterator<OWLClass> it1 = node1.getLabel().descendingIterator();
+					Iterator<OWLClass> it2 = node2.getLabel().descendingIterator();
 					while(it1.hasNext()) {
 						NamedClass nc1 = it1.next();
 						NamedClass nc2 = it2.next();

@@ -3177,26 +3177,26 @@ public class ManchesterOWLSyntaxEditorParser {
 		OWLDataPropertyExpression prop = parseDataProperty();
 		String kw = consumeToken();
 		if (kw.equalsIgnoreCase(SOME)) {
-			OWLDataRange dataRange = parseDataIntersectionOf();
+			OWLDataRange OWLDataRange = parseDataIntersectionOf();
 			return parseClassAxiomRemainder(getDataFactory()
 					.getOWLDataSomeValuesFrom(prop, dataRange));
 		} else if (kw.equalsIgnoreCase(ONLY)) {
-			OWLDataRange dataRange = parseDataIntersectionOf();
+			OWLDataRange OWLDataRange = parseDataIntersectionOf();
 			return parseClassAxiomRemainder(getDataFactory()
 					.getOWLDataAllValuesFrom(prop, dataRange));
 		} else if (kw.equalsIgnoreCase(MIN)) {
 			int cardi = parseInteger();
-			OWLDataRange dataRange = parseDataIntersectionOf();
+			OWLDataRange OWLDataRange = parseDataIntersectionOf();
 			return parseClassAxiomRemainder(getDataFactory()
 					.getOWLDataMinCardinality(cardi, prop, dataRange));
 		} else if (kw.equalsIgnoreCase(MAX)) {
 			int cardi = parseInteger();
-			OWLDataRange dataRange = parseDataIntersectionOf();
+			OWLDataRange OWLDataRange = parseDataIntersectionOf();
 			return parseClassAxiomRemainder(getDataFactory()
 					.getOWLDataMaxCardinality(cardi, prop, dataRange));
 		} else if (kw.equalsIgnoreCase(EXACTLY)) {
 			int cardi = parseInteger();
-			OWLDataRange dataRange = parseDataIntersectionOf();
+			OWLDataRange OWLDataRange = parseDataIntersectionOf();
 			return parseClassAxiomRemainder(getDataFactory()
 					.getOWLDataExactCardinality(cardi, prop, dataRange));
 		} else if (kw.equalsIgnoreCase(SUB_PROPERTY_OF)) {

@@ -47,7 +47,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	private boolean declaredAsSymmetric;
 
@@ -58,7 +58,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?o ?p ?s}}");
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -95,7 +95,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -125,7 +125,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 						computeScore(total, symmetric), declaredAsSymmetric));
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
@@ -150,7 +150,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 	
 	public static void main(String[] args) throws Exception{
 		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://factforge.net/sparql"))));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/industry"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/industry"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

@@ -42,12 +42,12 @@ public class TreeAndRoleSetComparator implements Comparator<TreeAndRoleSet> {
 	public int compare(TreeAndRoleSet o1, TreeAndRoleSet o2) {
 		int comp = treeComp.compare(o1.getTree(), o2.getTree());
 		if(comp == 0) {
-			Set<ObjectProperty> op1 = o1.getRoles();
-			Set<ObjectProperty> op2 = o2.getRoles();
+			Set<OWLObjectProperty> op1 = o1.getRoles();
+			Set<OWLObjectProperty> op2 = o2.getRoles();
 			int sizeDiff = op1.size() - op2.size();
 			if(sizeDiff == 0) {
-				Iterator<ObjectProperty> it1 = op1.iterator();
-				Iterator<ObjectProperty> it2 = op2.iterator();
+				Iterator<OWLObjectProperty> it1 = op1.iterator();
+				Iterator<OWLObjectProperty> it2 = op2.iterator();
 				while(it1.hasNext()) {
 					int stringComp = it1.next().compareTo(it2.next());
 					if(stringComp != 0) {

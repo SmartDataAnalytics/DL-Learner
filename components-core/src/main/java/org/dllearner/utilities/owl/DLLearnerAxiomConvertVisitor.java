@@ -153,12 +153,12 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLAsymmetricObjectPropertyAxiom ax) {
-		axiom = new AsymmetricObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new AsymmetricObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLReflexiveObjectPropertyAxiom ax) {
-		axiom = new ReflexiveObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new ReflexiveObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
@@ -172,13 +172,13 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLDataPropertyDomainAxiom ax) {
-		axiom = new DatatypePropertyDomainAxiom(new DatatypeProperty(ax.getProperty().asOWLDataProperty().toStringID()),
+		axiom = new DatatypePropertyDomainAxiom(df.getOWLDataProperty(IRI.create(ax.getProperty().asOWLDataProperty().toStringID()),
 				DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(ax.getDomain()));
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyDomainAxiom ax) {
-		axiom = new ObjectPropertyDomainAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()),
+		axiom = new ObjectPropertyDomainAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()),
 				DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(ax.getDomain()));
 	}
 
@@ -186,7 +186,7 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	public void visit(OWLEquivalentObjectPropertiesAxiom ax) {
 		Set<ObjectProperty> properties = new HashSet<ObjectProperty>();
 		for(OWLObjectPropertyExpression expr : ax.getProperties()){
-			properties.add(new ObjectProperty(expr.asOWLObjectProperty().toStringID()));
+			properties.add(df.getOWLObjectProperty(IRI.create(expr.asOWLObjectProperty().toStringID()));
 		}
 		axiom = new EquivalentObjectPropertiesAxiom(properties);
 	}
@@ -206,22 +206,22 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom ax) {
 		Iterator<OWLDataPropertyExpression> iter = ax.getProperties().iterator();
-		DatatypeProperty p1 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
-		DatatypeProperty p2 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p1 = df.getOWLDataProperty(IRI.create(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p2 = df.getOWLDataProperty(IRI.create(iter.next().asOWLDataProperty().toStringID());
 		axiom = new DisjointDatatypePropertyAxiom(p1, p2);
 	}
 
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom ax) {
 		Iterator<OWLObjectPropertyExpression> iter = ax.getProperties().iterator();
-		ObjectProperty p1 = new ObjectProperty(iter.next().asOWLObjectProperty().toStringID());
-		ObjectProperty p2 = new ObjectProperty(iter.next().asOWLObjectProperty().toStringID());
+		ObjectProperty p1 = df.getOWLObjectProperty(IRI.create(iter.next().asOWLObjectProperty().toStringID());
+		ObjectProperty p2 = df.getOWLObjectProperty(IRI.create(iter.next().asOWLObjectProperty().toStringID());
 		axiom = new DisjointObjectPropertyAxiom(p1, p2);
 	}
 
 	@Override
 	public void visit(OWLObjectPropertyRangeAxiom ax) {
-		axiom = new ObjectPropertyRangeAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()),
+		axiom = new ObjectPropertyRangeAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()),
 				DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(ax.getRange()));
 	}
 
@@ -233,13 +233,13 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLFunctionalObjectPropertyAxiom ax) {
-		axiom = new FunctionalObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new FunctionalObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLSubObjectPropertyOfAxiom ax) {
-		axiom = new SubObjectPropertyAxiom(new ObjectProperty(ax.getSubProperty().asOWLObjectProperty().toStringID()),
-				new ObjectProperty(ax.getSuperProperty().asOWLObjectProperty().toStringID()));
+		axiom = new SubObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getSubProperty().asOWLObjectProperty().toStringID()),
+				df.getOWLObjectProperty(IRI.create(ax.getSuperProperty().asOWLObjectProperty().toStringID()));
 		
 	}
 
@@ -251,25 +251,25 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLSymmetricObjectPropertyAxiom ax) {
-		axiom = new SymmetricObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new SymmetricObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLDataPropertyRangeAxiom ax) {
-		axiom = new DatatypePropertyRangeAxiom(new DatatypeProperty(ax.getProperty().asOWLDataProperty().toStringID()),
+		axiom = new DatatypePropertyRangeAxiom(df.getOWLDataProperty(IRI.create(ax.getProperty().asOWLDataProperty().toStringID()),
 				new Datatype(ax.getRange().asOWLDatatype().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLFunctionalDataPropertyAxiom ax) {
-		axiom = new FunctionalDatatypePropertyAxiom(new DatatypeProperty(ax.getProperty().asOWLDataProperty().toStringID()));
+		axiom = new FunctionalDatatypePropertyAxiom(df.getOWLDataProperty(IRI.create(ax.getProperty().asOWLDataProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom ax) {
 		Iterator<OWLDataPropertyExpression> iter = ax.getProperties().iterator();
-		DatatypeProperty p1 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
-		DatatypeProperty p2 = new DatatypeProperty(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p1 = df.getOWLDataProperty(IRI.create(iter.next().asOWLDataProperty().toStringID());
+		DatatypeProperty p2 = df.getOWLDataProperty(IRI.create(iter.next().asOWLDataProperty().toStringID());
 		axiom = new EquivalentDatatypePropertiesAxiom(p1, p2);
 	}
 
@@ -295,23 +295,23 @@ public class DLLearnerAxiomConvertVisitor implements OWLAxiomVisitor{
 
 	@Override
 	public void visit(OWLTransitiveObjectPropertyAxiom ax) {
-		axiom = new TransitiveObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new TransitiveObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLIrreflexiveObjectPropertyAxiom ax) {
-		axiom = new IrreflexiveObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new IrreflexiveObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom ax) {
-		axiom = new SubDatatypePropertyAxiom(new DatatypeProperty(ax.getSubProperty().asOWLDataProperty().toStringID()),
-				new DatatypeProperty(ax.getSuperProperty().asOWLDataProperty().toStringID()));
+		axiom = new SubDatatypePropertyAxiom(df.getOWLDataProperty(IRI.create(ax.getSubProperty().asOWLDataProperty().toStringID()),
+				df.getOWLDataProperty(IRI.create(ax.getSuperProperty().asOWLDataProperty().toStringID()));
 	}
 
 	@Override
 	public void visit(OWLInverseFunctionalObjectPropertyAxiom ax) {
-		axiom = new InverseFunctionalObjectPropertyAxiom(new ObjectProperty(ax.getProperty().asOWLObjectProperty().toStringID()));
+		axiom = new InverseFunctionalObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(ax.getProperty().asOWLObjectProperty().toStringID()));
 	}
 
 	@Override

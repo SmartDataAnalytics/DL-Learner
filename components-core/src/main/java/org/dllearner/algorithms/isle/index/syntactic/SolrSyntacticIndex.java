@@ -84,7 +84,7 @@ public class SolrSyntacticIndex implements Index{
 			}
 		}
 		logger.info("...done.");
-		Entity e = new NamedClass("http://dbpedia.org/ontology/Comics");
+		Entity e = df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics");
 		int i = 0;
 		for (Set<Entity> entities : cache.keySet()) {
 			if(entities.contains(e)){
@@ -95,7 +95,7 @@ public class SolrSyntacticIndex implements Index{
 		System.out.println(i);
 	}
 	
-	public void buildIndex(Collection<NamedClass> classes){
+	public void buildIndex(Collection<OWLClass> classes){
 		logger.info("Building cache...");
 		logger.info("#Classes: " + classes.size());
 		
@@ -331,9 +331,9 @@ public class SolrSyntacticIndex implements Index{
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
 		SolrSyntacticIndex index = new SolrSyntacticIndex(ontology, solrServerURL, searchField);
 		index.loadCache(new File("entity_frequencies.obj"));
-		long n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Comics"));
+		long n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics"));
 		System.out.println(n);
-		n = index.getNumberOfDocumentsFor(new NamedClass("http://dbpedia.org/ontology/Comics"), new ObjectProperty("http://dbpedia.org/ontology/largestCity"));
+		n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics"), df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/largestCity"));
 		System.out.println(n);
 	}
 

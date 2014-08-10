@@ -56,18 +56,18 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
-	private Map<Individual, SortedSet<Description>> individual2Types;
+	private Map<Individual, SortedSet<OWLClassExpression>> individual2Types;
 	
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.iterativeQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?ind ?type WHERE {?ind ?p ?o. ?ind a ?type.}");
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -77,7 +77,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	
 	@Override
 	public void start() {
-		iterativeQueryTemplate.setIri("p", propertyToDescribe.getName());
+		iterativeQueryTemplate.setIri("p", propertyToDescribe.toStringID());
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
@@ -90,7 +90,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 				existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
 				if(reasoner.isPrepared()){
 					if(reasoner.getClassHierarchy().contains(existingDomain)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+						for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
 							existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
 							logger.info("Existing domain(inferred): " + sup);
 						}
@@ -109,16 +109,16 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	}
 	
 	private void runSingleQueryMode(){
-		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
-		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", propertyToDescribe.getName());
+		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", propertyToDescribe.toStringID());
 		rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			NamedClass domain = new NamedClass(qs.getResource("type").getURI());
+			NamedClass domain = df.getOWLClass(IRI.create(qs.getResource("type").getURI());
 			int cnt = qs.getLiteral("cnt").getInt();
 			if(!domain.getURI().equals(Thing.uri)){
 				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, domain), computeScore(nrOfSubjects, cnt)));
@@ -128,7 +128,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 	}
 	
 	private void runIterativeQueryMode(){
-		individual2Types = new HashMap<Individual, SortedSet<Description>>();
+		individual2Types = new HashMap<Individual, SortedSet<OWLClassExpression>>();
 		while(!terminationCriteriaSatisfied() && !fullDataLoaded){
 			ResultSet rs = fetchData();
 			processData(rs);
@@ -140,15 +140,15 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		QuerySolution qs;
 		Individual ind;
 		Description type;
-		SortedSet<Description> types;
+		SortedSet<OWLClassExpression> types;
 		int cnt = 0;
 		while(rs.hasNext()){
 			cnt++;
 			qs = rs.next();
 			if(qs.get("type").isURIResource()){
-				types = new TreeSet<Description>();
-				ind = new Individual(qs.getResource("ind").getURI());
-				type = new NamedClass(qs.getResource("type").getURI());
+				types = new TreeSet<OWLClassExpression>();
+				ind = df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI());
+				type = df.getOWLClass(IRI.create(qs.getResource("type").getURI());
 				types.add(type);
 				if(reasoner.isPrepared()){
 					if(reasoner.getClassHierarchy().contains(type)){
@@ -163,9 +163,9 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 
 	private void buildEvaluatedAxioms(){
 		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		Map<Description, Integer> result = new HashMap<Description, Integer>();
-		for(Entry<Individual, SortedSet<Description>> entry : individual2Types.entrySet()){
-			for(Description nc : entry.getValue()){
+		Map<OWLClassExpression, Integer> result = new HashMap<OWLClassExpression, Integer>();
+		for(Entry<Individual, SortedSet<OWLClassExpression>> entry : individual2Types.entrySet()){
+			for(OWLClassExpression nc : entry.getValue()){
 				Integer cnt = result.get(nc);
 				if(cnt == null){
 					cnt = Integer.valueOf(1);
@@ -177,11 +177,11 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		}
 		
 		//omit owl:Thing
-		result.remove(new NamedClass(Thing.instance.getURI()));
+		result.remove(df.getOWLClass(IRI.create(Thing.instance.getURI()));
 		
 		EvaluatedAxiom evalAxiom;
 		int total = individual2Types.keySet().size();
-		for(Entry<Description, Integer> entry : sortByValues(result)){
+		for(Entry<OWLClassExpression, Integer> entry : sortByValues(result)){
 			evalAxiom = new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe, entry.getKey()),
 					computeScore(total, entry.getValue()));
 			if(existingAxioms.contains(evalAxiom.getAxiom())){
@@ -207,7 +207,7 @@ public class ObjectPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgor
 		
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/birthPlace"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
 		l.setMaxExecutionTimeInSeconds(10);
 //		l.addFilterNamespace("http://dbpedia.org/ontology/");
 //		l.setReturnOnlyNewAxioms(true);

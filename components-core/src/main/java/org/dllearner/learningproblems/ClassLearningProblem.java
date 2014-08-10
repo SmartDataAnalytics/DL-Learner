@@ -143,7 +143,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	
 	@Override
 	public void init() throws ComponentInitException {
-//		classToDescribe = new NamedClass(configurator.getClassToDescribe().toString());
+//		classToDescribe = df.getOWLClass(IRI.create(configurator.getClassToDescribe().toString());
 //		useApproximations = configurator.getUseApproximations();
 		
 		String accM = accuracyMethod;

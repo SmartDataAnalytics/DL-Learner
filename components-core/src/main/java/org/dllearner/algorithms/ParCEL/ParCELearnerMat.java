@@ -263,7 +263,7 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 			// -----------------------------------------
 			// prepare for refinement operator creation
 			// -----------------------------------------
-			Set<NamedClass> usedConcepts = new TreeSet<NamedClass>(reasoner.getNamedClasses());
+			Set<OWLClass> usedConcepts = new TreeSet<OWLClass>(reasoner.getNamedClasses());
 
 			// remove the ignored concepts out of the list of concepts will be used by refinement
 			// operator
@@ -277,7 +277,7 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 
 			ClassHierarchy classHiearachy = reasoner.getClassHierarchy().cloneAndRestrict(
 					usedConcepts);
-			Map<DatatypeProperty, List<Double>> splits = null;
+			Map<OWLDataProperty, List<Double>> splits = null;
 
 			// create a splitter and refinement operator pool
 			// there are two options: i) using object pool, ii) using set of objects (removed from
@@ -627,7 +627,7 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 	 * @return True is the description can be added (has not been in the search tree/all
 	 *         descriptions set
 	 */
-	public boolean addDescription(Description des) {
+	public boolean addDescription(OWLClassExpression des) {
 		return this.allDescriptions.add(des);
 	}
 
@@ -656,8 +656,8 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 	private void reset() {
 		searchTree = new ConcurrentSkipListSet<ParCELNode>(heuristic);
 
-		// allDescriptions = new TreeSet<Description>(new ConceptComparator());
-		allDescriptions = new ConcurrentSkipListSet<Description>(new ConceptComparator());
+		// allDescriptions = new TreeSet<OWLClassExpression>(new ConceptComparator());
+		allDescriptions = new ConcurrentSkipListSet<OWLClassExpression>(new ConceptComparator());
 
 		partialDefinitions = new TreeSet<ParCELExtraNode>(new ParCELCorrectnessComparator());
 
@@ -736,7 +736,7 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 	 * etc.
 	 */
 	@Override
-	public List<Description> getCurrentlyBestDescriptions() {
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return PLOENodesToDescriptions(partialDefinitions);
 	}
 
@@ -749,8 +749,8 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 	 * 
 	 * @return Set of descriptions corresponding to the given set of PLOENode
 	 */
-	private List<Description> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
-		List<Description> result = new LinkedList<Description>();
+	private List<OWLClassExpression> PLOENodesToDescriptions(Set<ParCELExtraNode> nodes) {
+		List<OWLClassExpression> result = new LinkedList<OWLClassExpression>();
 		for (ParCELExtraNode node : nodes)
 			result.add(node.getDescription());
 		return result;
@@ -828,7 +828,7 @@ public class ParCELearnerMat extends ParCELAbstract implements ParCELearnerMBean
 	}
 
 	public Description getUnionCurrenlyBestDescription() {
-		List<Description> compactedDescriptions = new LinkedList<Description>();
+		List<OWLClassExpression> compactedDescriptions = new LinkedList<OWLClassExpression>();
 
 		SortedSet<ParCELExtraNode> compactedPartialdefinition = this.compactPartialDefinition();
 

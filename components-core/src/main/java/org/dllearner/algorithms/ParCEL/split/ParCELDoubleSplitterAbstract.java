@@ -27,7 +27,7 @@ public interface ParCELDoubleSplitterAbstract {
 	 * 
 	 * @return A list of mapped data type properties and their splits
 	 */
-	public Map<DatatypeProperty, List<Double>> computeSplits();
+	public Map<OWLDataProperty, List<Double>> computeSplits();
 
 	/**
 	 * Get the reasoner used by the splitter

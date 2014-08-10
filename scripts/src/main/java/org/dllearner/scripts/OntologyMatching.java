@@ -190,7 +190,7 @@ public class OntologyMatching {
 	private Map<Description, List<? extends EvaluatedDescription>> computeAlignment(KnowledgeBase source, KnowledgeBase target) {
 		Map<Description, List<? extends EvaluatedDescription>> mapping = new HashMap<Description, List<? extends EvaluatedDescription>>();
 		// get all classes in SOURCE
-		Set<NamedClass> sourceClasses = getClasses(source);
+		Set<OWLClass> sourceClasses = getClasses(source);
 
 		// for each class of KB1
 		for (NamedClass nc : sourceClasses) {
@@ -242,7 +242,7 @@ public class OntologyMatching {
 			if(posNeg){
 				mon.start();
 				//find the classes the positive examples are asserted to
-				Set<NamedClass> classes = new HashSet<NamedClass>();
+				Set<OWLClass> classes = new HashSet<OWLClass>();
 				ParameterizedSparqlString template = new ParameterizedSparqlString("SELECT ?type WHERE {?s a ?type.}");
 				for(Individual pos : positiveExamples){
 					template.clearParams();
@@ -444,8 +444,8 @@ public class OntologyMatching {
 		return cbd;
 	}
 	
-	private Set<NamedClass> getClasses(KnowledgeBase kb){
-		Set<NamedClass> classes = kb.getSparqlHelper().getAllClasses();
+	private Set<OWLClass> getClasses(KnowledgeBase kb){
+		Set<OWLClass> classes = kb.getSparqlHelper().getAllClasses();
 		//fallback: check for ?s a ?type where ?type is not asserted to owl:Class
 		if(classes.isEmpty()){
 			String query = "SELECT ?type WHERE {?s a ?type.}";

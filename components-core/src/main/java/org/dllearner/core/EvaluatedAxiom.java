@@ -45,27 +45,27 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefi
 
 import com.google.common.collect.ComparisonChain;
 
-public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
+public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedAxiom<T>>{
 	
 	private static DecimalFormat df = new DecimalFormat("##0.0");
 	
-	private OWLAxiom axiom;
+	private T axiom;
 	private Score score;
 	
 	private boolean asserted = false;
 	
-	public EvaluatedAxiom(OWLAxiom axiom, Score score) {
+	public EvaluatedAxiom(T axiom, Score score) {
 		this.axiom = axiom;
 		this.score = score;
 	}
 	
-	public EvaluatedAxiom(OWLAxiom axiom, Score score, boolean asserted) {
+	public EvaluatedAxiom(T axiom, Score score, boolean asserted) {
 		this.axiom = axiom;
 		this.score = score;
 		this.asserted = asserted;
 	}
 
-	public OWLAxiom getAxiom() {
+	public T getAxiom() {
 		return axiom;
 	}
 
@@ -115,19 +115,27 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		return ind2Axioms;
 	}
 	
-	public static String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
+	@Override
+	public int compareTo(EvaluatedAxiom<T> other) {
+		return ComparisonChain.start().
+				compare(score.getAccuracy(), other.getScore().getAccuracy()).
+				compare(axiom, other.getAxiom()).
+				result();
+	}
+	
+	public static <T extends OWLAxiom> String prettyPrint(List<EvaluatedAxiom<T>> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {
 			return "  no axiom suggested\n";
 		} else {
-			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+			for (EvaluatedAxiom<T> learnedAxiom : learnedAxioms) {
 				str += " " + prettyPrint(learnedAxiom) + "\n";
 			}		
 		}
 		return str;
 	}
 	
-	public static String prettyPrint(EvaluatedAxiom axiom) {
+	public static <T extends OWLAxiom> String prettyPrint(EvaluatedAxiom<T> axiom) {
 		double acc = axiom.getScore().getAccuracy() * 100;
 		String accs = df.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
@@ -138,22 +146,22 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		return str;
 	}
 	
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms) {
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms) {
 		return getBestEvaluatedAxioms(evaluatedAxioms, nrOfAxioms, 0.0);
 	}
 	
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, double accuracyThreshold) {
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, double accuracyThreshold) {
 		return getBestEvaluatedAxioms(evaluatedAxioms, Integer.MAX_VALUE, accuracyThreshold);
 	}
 
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms,
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom> returnList = new ArrayList<EvaluatedAxiom>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
 		
 		//get the currently best evaluated axioms
-		Set<EvaluatedAxiom> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom>(evaluatedAxioms);
+		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom<T>>(evaluatedAxioms);
 		
-		for(EvaluatedAxiom evAx : orderedEvaluatedAxioms){
+		for(EvaluatedAxiom<T> evAx : orderedEvaluatedAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
 				returnList.add(evAx);
 			}
@@ -161,14 +169,5 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		
 		return returnList;
 	}
-	
-	@Override
-	public int compareTo(EvaluatedAxiom other) {
-		return ComparisonChain.start().
-				compare(score.getAccuracy(), other.getScore().getAccuracy()).
-				compare(axiom, other.getAxiom()).
-				result();
-	}
-	
 
 }

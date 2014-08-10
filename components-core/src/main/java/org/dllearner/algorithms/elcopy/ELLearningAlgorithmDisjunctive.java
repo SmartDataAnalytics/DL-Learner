@@ -474,7 +474,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return startClass;
 	}
 
-	public void setStartClass(Description startClass) {
+	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 

@@ -34,14 +34,14 @@ public abstract class ParCELAbstract extends AbstractCELA {
 	protected int maxNoOfSplits = 10;
 
 	@ConfigOption(name = "ignoredConcepts", defaultValue = "", description = "set of concepts that will be ignored in learning the target concept")
-	protected Set<NamedClass> ignoredConcepts = null;
+	protected Set<OWLClass> ignoredConcepts = null;
 
 	
 	/**
 	 * All generated descriptions thread-safe set is used to avoid concurrently
 	 * accessing
 	 */
-	protected ConcurrentSkipListSet<Description> allDescriptions = null;
+	protected ConcurrentSkipListSet<OWLClassExpression> allDescriptions = null;
 
 	/**
 	 * Search tree. It hold all evaluated descriptions that are not correct and
@@ -130,11 +130,11 @@ public abstract class ParCELAbstract extends AbstractCELA {
 		this.maxNoOfSplits = maxNoOfSplits;
 	}
 
-	public Set<NamedClass> getIgnoredConcepts() {
+	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}
 
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
 

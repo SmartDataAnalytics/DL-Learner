@@ -178,7 +178,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
 	// this function can be used to give some constructs a length bonus
 	// compared to their syntactic length
-	private int getHeuristicLengthBonus(Description description) {
+	private int getHeuristicLengthBonus(OWLClassExpression description) {
 		int bonus = 0;
 		
 		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
@@ -201,8 +201,8 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 			bonus = 3; //2;
 		}
 		
-		List<Description> children = description.getChildren();
-		for(Description child : children) {
+		List<OWLClassExpression> children = description.getChildren();
+		for(OWLClassExpression child : children) {
 			bonus += getHeuristicLengthBonus(child);
 		}
 		return bonus;

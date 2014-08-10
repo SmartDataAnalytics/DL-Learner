@@ -48,13 +48,13 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	private static final Logger logger = LoggerFactory.getLogger(InverseObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public InverseObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -71,7 +71,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		
 		if(reasoner.isPrepared()){
 			//get existing inverse object property axioms
-			SortedSet<ObjectProperty> existingInverseObjectProperties = reasoner.getInverseObjectProperties(propertyToDescribe);
+			SortedSet<OWLObjectProperty> existingInverseObjectProperties = reasoner.getInverseObjectProperties(propertyToDescribe);
 			for(ObjectProperty invProp : existingInverseObjectProperties){
 				existingAxioms.add(new InverseObjectPropertyAxiom(invProp, propertyToDescribe));
 			}
@@ -89,13 +89,13 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 	private void runSingleQueryMode(){
 		int total = reasoner.getPopularity(propertyToDescribe);
 		
-		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
+		String query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
 			currentlyBestAxioms.add(new EvaluatedAxiom(
-					new InverseObjectPropertyAxiom(new ObjectProperty(qs.getResource("p").getURI()), propertyToDescribe),
+					new InverseObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()), propertyToDescribe),
 					computeScore(total, qs.getLiteral("cnt").getInt())));
 		}
 	}
@@ -105,7 +105,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o. ?o ?p ?s} WHERE {?s <%s> ?o. OPTIONAL{?o ?p ?s. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>}} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			model.add(newModel);
@@ -120,16 +120,16 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 				total = qs.getLiteral("total").getInt();
 			}
 			
-			query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.getName());
+			query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p", propertyToDescribe.toStringID());
 			rs = executeSelectQuery(query, model);
 			while(rs.hasNext()){
 				qs = rs.next();
 				currentlyBestAxioms.add(new EvaluatedAxiom(
-						new InverseObjectPropertyAxiom(new ObjectProperty(qs.getResource("p").getURI()), propertyToDescribe),
+						new InverseObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()), propertyToDescribe),
 						computeScore(total, qs.getLiteral("cnt").getInt())));
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
@@ -145,12 +145,12 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 			total = qs.getLiteral("total").getInt();
 		}
 		
-		query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>} GROUP BY ?p", propertyToDescribe.getName());
+		query = String.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>} GROUP BY ?p", propertyToDescribe.toStringID());
 		rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			qs = rs.next();
 			currentlyBestAxioms.add(new EvaluatedAxiom(
-					new InverseObjectPropertyAxiom(new ObjectProperty(qs.getResource("p").getURI()), propertyToDescribe),
+					new InverseObjectPropertyAxiom(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()), propertyToDescribe),
 					computeScore(total, qs.getLiteral("cnt").getInt())));
 		}
 		
@@ -160,7 +160,7 @@ public class InverseObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgo
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		
 		InverseObjectPropertyAxiomLearner l = new InverseObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/routeEnd"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/routeEnd"));
 		l.setMaxExecutionTimeInSeconds(60);
 //		l.setForceSPARQL_1_0_Mode(true);
 //		l.setReturnOnlyNewAxioms(true);

@@ -11,11 +11,10 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Heuristic;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * @author Lorenz Buehmann
@@ -28,9 +27,6 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	
 	private double posExamplesWeight = 1;
 	
-	// syntactic comparison as final comparison criterion
-	private ConceptComparator conceptComparator = new ConceptComparator();
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
@@ -41,10 +37,10 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	public double getScore(EvaluatedQueryTree<String> tree){
 		QueryTreeScore treeScore = tree.getTreeScore();
 		
-		Set<Individual> truePositives = treeScore.getCoveredPositives();
-		Set<Individual> trueNegatives = treeScore.getNotCoveredNegatives();
-		Set<Individual> falsePositives = treeScore.getNotCoveredPositives();
-		Set<Individual> falseNegatives = treeScore.getCoveredNegatives();
+		Set<OWLIndividual> truePositives = treeScore.getCoveredPositives();
+		Set<OWLIndividual> trueNegatives = treeScore.getNotCoveredNegatives();
+		Set<OWLIndividual> falsePositives = treeScore.getNotCoveredPositives();
+		Set<OWLIndividual> falseNegatives = treeScore.getCoveredNegatives();
 		
 		double tp = truePositives.size();
 		double tn = trueNegatives.size();
@@ -81,10 +77,10 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	public double getMaximumAchievableScore(EvaluatedQueryTree<String> tree) {
 		QueryTreeScore treeScore = tree.getTreeScore();
 		
-		Set<Individual> truePositives = treeScore.getCoveredPositives();
-		Set<Individual> trueNegatives = treeScore.getNotCoveredNegatives();
-		Set<Individual> falsePositives = treeScore.getNotCoveredPositives();
-		Set<Individual> falseNegatives = treeScore.getCoveredNegatives();
+		Set<OWLIndividual> truePositives = treeScore.getCoveredPositives();
+		Set<OWLIndividual> trueNegatives = treeScore.getNotCoveredNegatives();
+		Set<OWLIndividual> falsePositives = treeScore.getNotCoveredPositives();
+		Set<OWLIndividual> falseNegatives = treeScore.getCoveredNegatives();
 		
 		double tp = truePositives.size();
 		double tn = trueNegatives.size();
@@ -139,7 +135,7 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 		} else if (diff < 0) {
 			return -1;
 		} else {
-			return conceptComparator.compare(tree1.asEvaluatedDescription().getDescription(), tree2.asEvaluatedDescription().getDescription());
+			return tree1.asEvaluatedDescription().getDescription().compareTo(tree2.asEvaluatedDescription().getDescription());
 		}
 	}
 	

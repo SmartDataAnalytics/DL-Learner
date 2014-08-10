@@ -275,8 +275,8 @@ public class TokenTree {
         ;
 
         TokenTree tree = new TokenTree();
-        tree.add(tokens1, new NamedClass("TokenTree"));
-        tree.add(tokens2, new NamedClass("TokenizedTree"));
+        tree.add(tokens1, df.getOWLClass(IRI.create("TokenTree"));
+        tree.add(tokens2, df.getOWLClass(IRI.create("TokenizedTree"));
         System.out.println(tree);
 
         System.out.println(tree.getEntitiesForLongestMatch(tokens1));

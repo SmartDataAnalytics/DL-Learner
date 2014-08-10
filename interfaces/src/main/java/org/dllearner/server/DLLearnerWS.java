@@ -771,7 +771,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
-		Set<NamedClass> atomicConcepts = getState(id).getReasonerComponent().getNamedClasses();
+		Set<OWLClass> atomicConcepts = getState(id).getReasonerComponent().getNamedClasses();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
 	

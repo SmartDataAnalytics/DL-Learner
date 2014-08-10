@@ -79,12 +79,12 @@ public class ExampleBasedNode implements SearchTreeNode {
 	private ExampleBasedNode parent = null;
 	private SortedSet<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
 	// apart from the child nodes, we also keep child concepts
-	private SortedSet<Description> childConcepts = new TreeSet<Description>(conceptComparator);
+	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>(conceptComparator);
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
 	
-	public ExampleBasedNode(Description concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
+	public ExampleBasedNode(OWLClassExpression concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
 //		this.configurator = configurator;
 		this.concept = concept;
 		horizontalExpansion = 0;
@@ -273,7 +273,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		return children;
 	}
 
-	public SortedSet<Description> getChildConcepts() {
+	public SortedSet<OWLClassExpression> getChildConcepts() {
 		return childConcepts;
 	}
 

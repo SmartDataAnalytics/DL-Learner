@@ -33,11 +33,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.collections15.ListUtils;
@@ -53,7 +55,6 @@ import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -65,8 +66,6 @@ import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.CachingConciseBoundedDescriptionGenerator;
@@ -76,9 +75,8 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
@@ -539,10 +537,10 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
 
-	private List<String> convert(Set<Individual> individuals){
+	private List<String> convert(Set<OWLIndividual> individuals){
 		List<String> list = new ArrayList<String>();
-		for(Individual ind : individuals){
-			list.add(ind.toString());
+		for(OWLIndividual ind : individuals){
+			list.add(ind.toStringID());
 		}
 		return list;
 	}
@@ -584,8 +582,8 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
 	 */
 	@Override
-	public Description getCurrentlyBestDescription() {
-		return (lgg == null) ? null : DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(lgg.asOWLClassExpression());
+	public OWLClassExpression getCurrentlyBestDescription() {
+		return (lgg == null) ? null : lgg.asOWLClassExpression();
 	}
 
 	/* (non-Javadoc)

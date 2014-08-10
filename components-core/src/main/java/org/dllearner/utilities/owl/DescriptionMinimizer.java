@@ -52,7 +52,7 @@ import org.dllearner.core.owl.Union;
  */
 public class DescriptionMinimizer {
 	
-	private static final NamedClass OWL_THING = new NamedClass(Thing.uri);
+	private static final NamedClass OWL_THING = df.getOWLClass(IRI.create(Thing.uri);
 
 	private AbstractReasonerComponent reasoner;
 	private ConceptComparator conceptComparator = new ConceptComparator();
@@ -291,8 +291,8 @@ public class DescriptionMinimizer {
 	}	
 	
 	public static void main(String[] args) throws Exception {
-		Description d1 = new ObjectSomeRestriction(new ObjectProperty("r"), Thing.instance);
-		Description d2 = new ObjectSomeRestriction(new ObjectProperty("r"), new NamedClass(Thing.uri.toString()));
+		Description d1 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), Thing.instance);
+		Description d2 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), df.getOWLClass(IRI.create(Thing.uri.toString()));
 		
 		System.out.println(d1.equals(d2));
 	}

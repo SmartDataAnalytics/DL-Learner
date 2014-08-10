@@ -48,7 +48,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 	private static final Logger logger = LoggerFactory.getLogger(IrreflexiveObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	private boolean declaredAsIrreflexive;
 
@@ -59,7 +59,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?s. }");
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -96,7 +96,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -131,7 +131,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 			}
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
@@ -141,7 +141,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 
 		if (total > 0) {
 			int irreflexive = 0;
-			String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?s <%s> ?s}}", propertyToDescribe.getName(), propertyToDescribe.getName());
+			String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?s <%s> ?s}}", propertyToDescribe.toStringID(), propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			if (rs.hasNext()) {
 				irreflexive = rs.next().getLiteral("irreflexive").getInt();
@@ -161,7 +161,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 		
 		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/author"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/author"));
 		l.init();
 		l.start();
 		

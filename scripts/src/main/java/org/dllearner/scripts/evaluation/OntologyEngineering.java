@@ -180,7 +180,7 @@ public class OntologyEngineering {
 		Stat positionStatSC = new Stat();
 
 		// loop through all classes
-		Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
+		Set<OWLClass> classes = new TreeSet<OWLClass>(reasoner.getNamedClasses());
 		classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
 		// reduce number of classes for testing purposes
 //		shrinkSet(classes, 20);

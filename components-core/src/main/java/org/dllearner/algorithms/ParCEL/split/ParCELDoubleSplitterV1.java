@@ -104,7 +104,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 		// get a list of double data type properties for filtering out other properties
 		this.doubleDatatypeProperties = new HashSet<OWLDataPropertyExpression>();
-		for (DatatypeProperty dp : reasoner.getDoubleDatatypeProperties())
+		for (OWLDataProperty dp : reasoner.getDoubleDatatypeProperties())
 			this.doubleDatatypeProperties.add(OWLAPIConverter.getOWLAPIDataProperty(dp));
 
 	}
@@ -115,20 +115,20 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 	 * 
 	 * @return a map of datatype properties and their splitting values
 	 */
-	public Map<DatatypeProperty, List<Double>> computeSplits() {
+	public Map<OWLDataProperty, List<Double>> computeSplits() {
 		// -------------------------------------------------
 		// generate relations for positive examples
 		// -------------------------------------------------
 
-		Map<DatatypeProperty, ValuesSet> relations = new HashMap<DatatypeProperty, ValuesSet>();
+		Map<OWLDataProperty, ValuesSet> relations = new HashMap<OWLDataProperty, ValuesSet>();
 
 		OWLDataFactory factory = ontology.getOWLOntologyManager().getOWLDataFactory();
 
 		for (Individual ind : positiveExamples) {
-			Map<DatatypeProperty, ValuesSet> individualRelations = getInstanceValueRelation(
+			Map<OWLDataProperty, ValuesSet> individualRelations = getInstanceValueRelation(
 					factory.getOWLNamedIndividual(IRI.create(ind.getURI())), true, null);
 
-			for (DatatypeProperty pro : individualRelations.keySet()) {
+			for (OWLDataProperty pro : individualRelations.keySet()) {
 				if (relations.keySet().contains(pro))
 					relations.get(pro).addAll(individualRelations.get(pro));
 				else
@@ -138,10 +138,10 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 		// generate relation for negative examples
 		for (Individual ind : negativeExamples) {
-			Map<DatatypeProperty, ValuesSet> individualRelations = getInstanceValueRelation(
+			Map<OWLDataProperty, ValuesSet> individualRelations = getInstanceValueRelation(
 					factory.getOWLNamedIndividual(IRI.create(ind.getURI())), false, null);
 
-			for (DatatypeProperty pro : individualRelations.keySet()) {
+			for (OWLDataProperty pro : individualRelations.keySet()) {
 				if (relations.keySet().contains(pro))
 					relations.get(pro).addAll(individualRelations.get(pro));
 				else
@@ -153,10 +153,10 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		// calculate the splits for each data property
 		// -------------------------------------------------
 
-		Map<DatatypeProperty, List<Double>> splits = new TreeMap<DatatypeProperty, List<Double>>();
+		Map<OWLDataProperty, List<Double>> splits = new TreeMap<OWLDataProperty, List<Double>>();
 
 		// - - - . + + + + + . = . = . = . + . = . = . - . = . - - -
-		for (DatatypeProperty dp : relations.keySet()) {
+		for (OWLDataProperty dp : relations.keySet()) {
 
 			if (relations.get(dp).size() > 0) {
 				List<Double> values = new ArrayList<Double>();
@@ -205,7 +205,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 	 * @return A map from data property to its related values that had been discovered from the
 	 *         given individual
 	 */
-	private Map<DatatypeProperty, ValuesSet> getInstanceValueRelation(OWLIndividual individual,
+	private Map<OWLDataProperty, ValuesSet> getInstanceValueRelation(OWLIndividual individual,
 			boolean positiveExample, Set<OWLIndividual> visitedIndividuals) {
 
 		if (visitedIndividuals == null)
@@ -217,7 +217,7 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		else
 			visitedIndividuals.add(individual);
 
-		Map<DatatypeProperty, ValuesSet> relations = new HashMap<DatatypeProperty, ValuesSet>();
+		Map<OWLDataProperty, ValuesSet> relations = new HashMap<OWLDataProperty, ValuesSet>();
 
 		// get all data property values of the given individual
 		Map<OWLDataPropertyExpression, Set<OWLLiteral>> dataPropertyValues = individual
@@ -246,12 +246,12 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 
 				// if the data property exist, update its values
 				if (relations.keySet().contains(dp))
-					relations.get(new DatatypeProperty(dp.asOWLDataProperty().getIRI().toString()))
+					relations.get(df.getOWLDataProperty(IRI.create(dp.asOWLDataProperty().getIRI().toString()))
 							.addAll(values);
 				// otherwise, create a new map <data property - values and add it into the return
 				// value
 				else
-					relations.put(new DatatypeProperty(dp.asOWLDataProperty().getIRI().toString()),
+					relations.put(df.getOWLDataProperty(IRI.create(dp.asOWLDataProperty().getIRI().toString()),
 							values);
 			}
 		}
@@ -259,12 +259,12 @@ public class ParCELDoubleSplitterV1 implements ParCELDoubleSplitterAbstract {
 		// process each object property: call this method recursively
 		for (OWLObjectPropertyExpression op : objectPropertyValues.keySet()) {
 			for (OWLIndividual ind : objectPropertyValues.get(op)) {
-				Map<DatatypeProperty, ValuesSet> subRelations = getInstanceValueRelation(ind,
+				Map<OWLDataProperty, ValuesSet> subRelations = getInstanceValueRelation(ind,
 						positiveExample, visitedIndividuals);
 
 				// sub-relation == null if the ind had been visited
 				if (subRelations != null) {
-					for (DatatypeProperty dp : subRelations.keySet()) {
+					for (OWLDataProperty dp : subRelations.keySet()) {
 						// if the data property exist, update its values
 						if (relations.keySet().contains(dp))
 							relations.get(dp).addAll(subRelations.get(dp));

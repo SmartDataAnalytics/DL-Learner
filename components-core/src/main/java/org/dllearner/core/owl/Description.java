@@ -243,9 +243,9 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		if(this instanceof NamedClass){
 			entities.add((NamedClass)this);
 		} else if(this instanceof Thing){
-			entities.add(new NamedClass(Thing.uri));
+			entities.add(df.getOWLClass(IRI.create(Thing.uri));
 		} else if(this instanceof Nothing){
-			entities.add(new NamedClass(Nothing.uri));
+			entities.add(df.getOWLClass(IRI.create(Nothing.uri));
 		} else if(this instanceof Restriction){
 			PropertyExpression propertyExpression = ((Restriction)this).getRestrictedPropertyExpression();
 			if(propertyExpression instanceof ObjectProperty){

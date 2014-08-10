@@ -233,7 +233,7 @@ public class NKEGeizhals extends HttpServlet {
 
     public static JSONObject jsonForEd(EvaluatedDescriptionPosNeg ed) {
 
-        SortedSet<NamedClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>());
+        SortedSet<OWLClass> namedClasses = getNamedClasses(ed.getDescription(), new TreeSet<OWLClass>());
 
         String link = "";
         String label = "";
@@ -268,7 +268,7 @@ public class NKEGeizhals extends HttpServlet {
             if (ed.getAccuracy() < 1.0) {
                 break;
             } else {
-                current = getNamedClasses(ed.getDescription(), new TreeSet<NamedClass>()).size();
+                current = getNamedClasses(ed.getDescription(), new TreeSet<OWLClass>()).size();
                 if (current > maxNamedClasses) {
                     maxNamedClasses = current;
                     ret = ed;
@@ -281,7 +281,7 @@ public class NKEGeizhals extends HttpServlet {
     }
 
 
-    public static String getID(Description d, SortedSet<NamedClass> namedClasses) {
+    public static String getID(Description d, SortedSet<OWLClass> namedClasses) {
 
         //prepare retrieval string
         StringBuilder sb = new StringBuilder();
@@ -296,7 +296,7 @@ public class NKEGeizhals extends HttpServlet {
         return sb.toString();
     }
 
-    public static String getLabel(Description d, SortedSet<NamedClass> namedClasses) {
+    public static String getLabel(Description d, SortedSet<OWLClass> namedClasses) {
 
         String mos = d.toManchesterSyntaxString(null, null);
         for (NamedClass nc : namedClasses) {
@@ -312,7 +312,7 @@ public class NKEGeizhals extends HttpServlet {
 
     }
 
-    public static SortedSet<NamedClass> getNamedClasses(Description d, SortedSet<NamedClass> ret) {
+    public static SortedSet<OWLClass> getNamedClasses(Description d, SortedSet<OWLClass> ret) {
         if (d instanceof NamedClass) {
             ret.add((NamedClass) d);
         }

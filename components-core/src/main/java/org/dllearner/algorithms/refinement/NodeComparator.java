@@ -19,13 +19,9 @@
 
 package org.dllearner.algorithms.refinement;
 
-import org.dllearner.utilities.owl.ConceptComparator;
 
 public class NodeComparator implements Heuristic {
 
-	// Vergleich von Konzepten, falls alle anderen Kriterien fehlschlagen
-	ConceptComparator conceptComparator = new ConceptComparator();
-	
 	// implementiert einfach die Definition in der Diplomarbeit
 	public int compare(Node n1, Node n2) {
 		
@@ -75,7 +71,7 @@ public class NodeComparator implements Heuristic {
 						
 						// TODO: es ist nicht sehr gut nur Strings zu vergleichen 
 						// int test = n1.getConcept().toString().compareTo(n2.getConcept().toString());
-						return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+						return n1.getConcept().compareTo(n2.getConcept());
 						//if(test>0)
 						//	return 1;
 						//else if(test<0)

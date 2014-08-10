@@ -127,7 +127,7 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 						+ v.get(i).getIndividualName().toString() + "</b>";
 				if (v.get(i).getDLLearnerIndividual() != null) {
 
-					Set<NamedClass> types = reasoner.getTypes(v.get(i)
+					Set<OWLClass> types = reasoner.getTypes(v.get(i)
 							.getDLLearnerIndividual());
 					individualInformation += "<br><br><b>Types:</b><br>";
 					for (NamedClass dlLearnerClass : types) {

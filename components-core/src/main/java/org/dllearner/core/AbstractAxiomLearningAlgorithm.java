@@ -52,6 +52,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -84,7 +86,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Lorenz Bühmann
  * @author Jens Lehmann
  */
-public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
+public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
 	protected LearningProblem learningProblem;
 	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
@@ -100,7 +102,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected SPARQLReasoner reasoner;
 	private QueryExecutionFactory qef;
 	
-	protected List<EvaluatedAxiom> currentlyBestAxioms;
+	protected List<EvaluatedAxiom<T>> currentlyBestAxioms;
 	protected SortedSet<OWLAxiom> existingAxioms;
 	protected int fetchedRows;
 	
@@ -125,8 +127,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	protected Model workingModel;
 	protected ParameterizedSparqlString posExamplesQueryTemplate;
 	protected ParameterizedSparqlString negExamplesQueryTemplate;
+	protected ParameterizedSparqlString existingAxiomsTemplate;
 	
-	OWLDataFactory df = new OWLDataFactoryImpl();
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	
 	public AbstractAxiomLearningAlgorithm() {
@@ -182,6 +185,18 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public void start() {
+		logger.info("Start learning...");
+		startTime = System.currentTimeMillis();
+		fetchedRows = 0;
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<T>>();
+		
+		if(returnOnlyNewAxioms){
+			getExistingAxioms();
+		}
+		
+		learnAxioms();
+		
+		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 
 	public int getLimit() {
@@ -211,13 +226,24 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		}
 		timeout = true;
 	}
+	
+	/**
+	 * Get the defined axioms in the knowledge base.
+	 * @return
+	 */
+	protected abstract void getExistingAxioms();
+	
+	/**
+	 * Learn new OWL axioms based on instance data.
+	 */
+	protected abstract void learnAxioms();
 
 	@Override
-	public List<OWLAxiom> getCurrentlyBestAxioms() {
+	public List<T> getCurrentlyBestAxioms() {
 		return getCurrentlyBestAxioms(Integer.MAX_VALUE);
 	}
 	
-	public List<OWLAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+	public List<T> getCurrentlyBestAxioms(int nrOfAxioms) {
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
 	}
 	
@@ -225,43 +251,43 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return timeout;
 	}
 	
-	public List<OWLAxiom> getCurrentlyBestAxioms(int nrOfAxioms,
+	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<OWLAxiom> bestAxioms = new ArrayList<OWLAxiom>();
-		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
+		List<T> bestAxioms = new ArrayList<T>();
+		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
 	}
 	
-	public List<OWLAxiom> getCurrentlyBestAxioms(double accuracyThreshold) {
-		List<OWLAxiom> bestAxioms = new ArrayList<OWLAxiom>();
-		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
+	public List<T> getCurrentlyBestAxioms(double accuracyThreshold) {
+		List<T> bestAxioms = new ArrayList<T>();
+		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
 	}
 	
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
 		return currentlyBestAxioms;
 	}
 
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms, 0.0);
 	}
 	
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(double accuracyThreshold) {
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, accuracyThreshold);
 	}
 
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom> returnList = new ArrayList<EvaluatedAxiom>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
 		
 		//get the currently best evaluated axioms
-		List<EvaluatedAxiom> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
+		List<EvaluatedAxiom<T>> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
 		
-		for(EvaluatedAxiom evAx : currentlyBestEvAxioms){
+		for(EvaluatedAxiom<T> evAx : currentlyBestEvAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
 				if(returnOnlyNewAxioms){
 					if(!existingAxioms.contains(evAx.getAxiom())){
@@ -276,9 +302,9 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return returnList;
 	}
 	
-	public EvaluatedAxiom getBestEvaluatedAxiom(){
+	public EvaluatedAxiom<T> getBestEvaluatedAxiom(){
 		if(!currentlyBestAxioms.isEmpty()){
-			return new TreeSet<EvaluatedAxiom>(currentlyBestAxioms).last();
+			return new TreeSet<EvaluatedAxiom<T>>(currentlyBestAxioms).last();
 		}
 		return null;
 	}
@@ -482,53 +508,56 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		allowedNamespaces.add(namespace);
 	}
 	
-	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom axiom){
+	@SuppressWarnings("unchecked")
+	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
+		ResultSet rs;
 		if(workingModel != null){
-			SortedSet<OWLObject> posExamples = new TreeSet<OWLObject>();
-			
-			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-			RDFNode node;
-			while(rs.hasNext()){
-				node = rs.next().get("s");
-				if(node.isResource()){
-					posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
-				} else if(node.isLiteral()){
-					posExamples.add(df.getOWLLiteral(
-							node.asLiteral().getLexicalForm(), 
-							df.getOWLDatatype(IRI.create(node.asLiteral().getDatatypeURI()))));
-				}
-			}
-			
-			return posExamples;
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 		}
+		Set<OWLObject> posExamples = new TreeSet<OWLObject>();
+		
+		RDFNode node;
+		while(rs.hasNext()){
+			node = rs.next().get("s");
+			if(node.isResource()){
+				posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
+			} else if(node.isLiteral()){
+				posExamples.add(convertLiteral(node.asLiteral()));
+			}
+		}
+		
+		return (Set<S>) posExamples;
+//		throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		
 	}
 	
-	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom axiom){
+	@SuppressWarnings("unchecked")
+	public Set<S> getNegativeExamples(EvaluatedAxiom<T> axiom){
+		
+		ResultSet rs;
 		if(workingModel != null){
-			SortedSet<OWLObject> negExamples = new TreeSet<OWLObject>();
-			
-			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-			RDFNode node;
-			while(rs.hasNext()){
-				node = rs.next().get("s");
-				if(node.isResource()){
-					negExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
-				} else if(node.isLiteral()){
-					negExamples.add(df.getOWLLiteral(
-							node.asLiteral().getLexicalForm(), 
-							df.getOWLDatatype(IRI.create(node.asLiteral().getDatatypeURI()))));
-				}
-			}
-			
-			return negExamples;
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting negative examples is not possible.");
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		}
+		
+		Set<OWLObject> negExamples = new TreeSet<OWLObject>();
+		
+		while(rs.hasNext()){
+			RDFNode node = rs.next().get("s");
+			if(node.isResource()){
+				negExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
+			} else if(node.isLiteral()){
+				negExamples.add(convertLiteral(node.asLiteral()));
+			}
+		}
+		return (Set<S>) negExamples;
+//		throw new UnsupportedOperationException("Getting negative examples is not possible.");
 	}
 	
-	public void explainScore(EvaluatedAxiom evAxiom){
+	public void explainScore(EvaluatedAxiom<T> evAxiom){
 		int posExampleCnt = getPositiveExamples(evAxiom).size();
 		int negExampleCnt = getNegativeExamples(evAxiom).size();
 		int total = posExampleCnt + negExampleCnt;
@@ -548,6 +577,23 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	public long getEvaluatedFramentSize(){
 		return workingModel.size();
+	}
+	
+	/**
+	 * Converts a JENA API Literal object into an OWL API OWLLiteral object.
+	 * 
+	 * @param lit
+	 * @return
+	 */
+	protected OWLLiteral convertLiteral(Literal lit) {
+		String datatypeURI = lit.getDatatypeURI();
+		OWLLiteral owlLiteral;
+		if (datatypeURI == null) {// rdf:PlainLiteral
+			owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), lit.getLanguage());
+		} else {
+			owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), df.getOWLDatatype(IRI.create(datatypeURI)));
+		}
+		return owlLiteral;
 	}
 	
 	public static <E> void printSubset(Collection<E> collection, int maxSize){

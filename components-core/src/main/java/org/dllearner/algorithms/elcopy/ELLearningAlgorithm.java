@@ -94,7 +94,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	private int maxNrOfResults = 10;
 	
-	private Set<NamedClass> ignoredConcepts = null;
+	private Set<OWLClass> ignoredConcepts = null;
 	
 	private NamedClass classToDescribe;
 		
@@ -155,7 +155,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
 		if(ignoredConcepts != null) {
-			Set<NamedClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+			Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
 			// copy class hierarchy and modify it such that each class is only
 			// reachable via a single path
 			ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
@@ -290,9 +290,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 * @param d
 	 * @return
 	 */
-	private Description getNiceDescription(Description d){
+	private Description getNiceDescription(OWLClassExpression d){
 		Description description = d.clone();
-		List<Description> children = description.getChildren();
+		List<OWLClassExpression> children = description.getChildren();
 		for(int i=0; i<children.size(); i++) {
 			description.replaceChild(i, getNiceDescription(children.get(i)));
 		}
@@ -337,7 +337,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		bestEvaluatedDescriptions.getSet().clear();
 	}
 	
-	private boolean isDescriptionAllowed(Description description) {
+	private boolean isDescriptionAllowed(OWLClassExpression description) {
 		if(isEquivalenceProblem) {
 			// the class to learn must not appear on the outermost property level
 			if(occursOnFirstLevel(description, classToDescribe)) {
@@ -345,7 +345,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			}
 			
 			//non of the equivalent classes must occur on the first level
-			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
 			if(classToDescribe != null){
 				toTest.add(classToDescribe);
 			}
@@ -359,7 +359,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		} else {
 			// none of the superclasses of the class to learn must appear on the
 			// outermost property level
-			TreeSet<Description> toTest = new TreeSet<Description>(descriptionComparator);
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
 			if(classToDescribe != null){
 				toTest.add(classToDescribe);
 			}
@@ -376,7 +376,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 		// (it can still be at higher depth, e.g. if intersections are nested in unions)
-		private boolean occursOnFirstLevel(Description description, Description clazz) {
+		private boolean occursOnFirstLevel(OWLClassExpression description, Description clazz) {
 			if(description instanceof NamedClass) {
 				if(description.equals(clazz)) {
 					return true;
@@ -387,7 +387,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				return false;
 			}
 			
-			for(Description child : description.getChildren()) {
+			for(OWLClassExpression child : description.getChildren()) {
 				if(occursOnFirstLevel(child, clazz)) {
 					return true;
 				}
@@ -412,7 +412,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}
 
 	@Override
-	public List<Description> getCurrentlyBestDescriptions() {
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	
@@ -473,7 +473,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @param startClass the startClass to set
 	 */
-	public void setStartClass(Description startClass) {
+	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 	
@@ -487,14 +487,14 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @param ignoredConcepts the ignoredConcepts to set
 	 */
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
 	
 	/**
 	 * @return the ignoredConcepts
 	 */
-	public Set<NamedClass> getIgnoredConcepts() {
+	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}
 	

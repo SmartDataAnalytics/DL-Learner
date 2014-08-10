@@ -3,7 +3,7 @@
  */
 package org.dllearner.algorithms.pattern;
 
-import org.dllearner.core.owl.NamedClass;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -18,6 +18,6 @@ public interface FragmentExtractor {
 	 * @param maxFragmentDepth
 	 * @return
 	 */
-	Model extractFragment(NamedClass cls, int maxFragmentDepth);
+	Model extractFragment(OWLClass cls, int maxFragmentDepth);
 
 }

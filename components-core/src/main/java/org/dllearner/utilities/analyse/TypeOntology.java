@@ -44,7 +44,7 @@ public class TypeOntology {
 			individuals.add(itIndividuals.next().getURI());
 		}
 
-		ExtendedIterator<DatatypeProperty> itDataProperties = model
+		ExtendedIterator<OWLDataProperty> itDataProperties = model
 				.listDatatypeProperties();
 		while (itDataProperties.hasNext()) {
 			dataProperties.add(itDataProperties.next().getURI());

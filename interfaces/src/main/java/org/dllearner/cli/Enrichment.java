@@ -423,7 +423,7 @@ public class Enrichment {
 			int entities = 0;
 			Set<org.dllearner.core.owl.Property> processedProperties = new HashSet<org.dllearner.core.owl.Property>();
 			if(processClasses){
-				Set<NamedClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
+				Set<OWLClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
 				filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
 				for(NamedClass nc : classes) {
 					try {
@@ -452,7 +452,7 @@ public class Enrichment {
 			}
 			entities = 0;
 			if(processDataProperties){
-				Set<DatatypeProperty> dataProperties = st.getAllDataProperties();
+				Set<OWLDataProperty> dataProperties = st.getAllDataProperties();
 				filterByNamespaces(dataProperties);
 				for(DatatypeProperty property : dataProperties) {
 					runDataPropertyAlgorithms(ks, property);

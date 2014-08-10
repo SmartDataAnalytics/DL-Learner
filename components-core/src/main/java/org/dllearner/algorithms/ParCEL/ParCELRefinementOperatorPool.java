@@ -44,7 +44,7 @@ public class ParCELRefinementOperatorPool extends StackObjectPool<LengthLimitedR
 	 * @param maxIdle
 	 */	
 	public ParCELRefinementOperatorPool(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, Description startclass, 
-			Map<DatatypeProperty, List<Double>> splits, int maxIdle) 
+			Map<OWLDataProperty, List<Double>> splits, int maxIdle) 
 	{
 		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass, splits), maxIdle);		
 	}
@@ -90,7 +90,7 @@ public class ParCELRefinementOperatorPool extends StackObjectPool<LengthLimitedR
 	
 	
 	public ParCELRefinementOperatorPool(AbstractReasonerComponent reasoner, ClassHierarchy classHierarchy, 
-			Description startclass, Map<DatatypeProperty, List<Double>> splits, int maxIdle, int maxIdleCapacity) 
+			Description startclass, Map<OWLDataProperty, List<Double>> splits, int maxIdle, int maxIdleCapacity) 
 	{
 		super(new ParCELRefinementOperatorFactory(reasoner, classHierarchy, startclass, splits), maxIdle, maxIdleCapacity);		
 	}

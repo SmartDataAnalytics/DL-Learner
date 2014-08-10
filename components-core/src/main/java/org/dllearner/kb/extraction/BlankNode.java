@@ -50,10 +50,10 @@ public class BlankNode extends Node {
 	
 	private List<BlankNode> blankNodes =new ArrayList<BlankNode>();
 	private SortedSet<StringTuple> otherNodes = new TreeSet<StringTuple> ();
-	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
 	
 	//private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
-	//private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	//private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
 
 	
 	public BlankNode(RDFBlankNode bNode, String inboundEdge){

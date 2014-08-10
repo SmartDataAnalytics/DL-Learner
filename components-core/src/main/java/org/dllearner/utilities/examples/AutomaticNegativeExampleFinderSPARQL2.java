@@ -142,7 +142,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	public SortedSet<Individual> getNegativeExamples(NamedClass classToDescribe, Set<Individual> positiveExamples, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
 		//set class to describe as the type for each instance
-		Multiset<NamedClass> types = HashMultiset.create();
+		Multiset<OWLClass> types = HashMultiset.create();
 		types.add(classToDescribe);
 		
 		return computeNegativeExamples(classToDescribe, types, strategiesWithWeight, maxNrOfReturnedInstances);
@@ -163,7 +163,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	public SortedSet<Individual> getNegativeExamples(Set<Individual> positiveExamples, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
 		//get the types for each instance
-		Multiset<NamedClass> types = HashMultiset.create();
+		Multiset<OWLClass> types = HashMultiset.create();
 		for (Individual ex : positiveExamples) {
 			types.addAll(sr.getTypes(ex));
 		}
@@ -176,7 +176,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		return computeNegativeExamples(null, types, strategiesWithWeight, maxNrOfReturnedInstances);
 	}
 	
-	private SortedSet<Individual> computeNegativeExamples(NamedClass classToDescribe, Multiset<NamedClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
+	private SortedSet<Individual> computeNegativeExamples(NamedClass classToDescribe, Multiset<OWLClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
 		SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
 		
 		for (Entry<Strategy, Double> entry : strategiesWithWeight.entrySet()) {
@@ -194,7 +194,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				for (NamedClass nc : positiveExamplesTypes.elementSet()) {
 					int frequency = positiveExamplesTypes.count(nc);
 					//get sibling classes
-					Set<NamedClass> siblingClasses = sr.getSiblingClasses(nc);
+					Set<OWLClass> siblingClasses = sr.getSiblingClasses(nc);
 					siblingClasses = filterByNamespace(siblingClasses);
 					logger.info("Sibling classes: " + siblingClasses);
 					
@@ -218,9 +218,9 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					int frequency = positiveExamplesTypes.count(nc);
 					//get super classes
 					Set<Description> superClasses = sr.getSuperClasses(nc);
-					superClasses.remove(new NamedClass(Thing.instance.getURI()));
+					superClasses.remove(df.getOWLClass(IRI.create(Thing.instance.getURI()));
 //					superClasses.remove(Thing.instance);
-					superClasses.remove(new NamedClass("http://www.w3.org/2000/01/rdf-schema#Resource"));
+					superClasses.remove(df.getOWLClass(IRI.create("http://www.w3.org/2000/01/rdf-schema#Resource"));
 					superClasses = filterByNamespace(superClasses);
 					logger.info("Super classes: " + superClasses);
 					
@@ -256,7 +256,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				QuerySolution qs;
 				while(rs.hasNext()){
 					qs = rs.next();
-					randomNegativeExamples.add(new Individual(qs.getResource("s").getURI()));
+					randomNegativeExamples.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 				}
 				randomNegativeExamples.removeAll(negativeExamples);
 				negativeExamples.addAll(new ArrayList<>(randomNegativeExamples).subList(0, Math.min(randomNegativeExamples.size(), maxNrOfReturnedInstances - negativeExamples.size())));
@@ -277,9 +277,9 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		return classes;
 	}
 	
-	private Multiset<NamedClass> filterByNamespace(Multiset<NamedClass> classes){
+	private Multiset<OWLClass> filterByNamespace(Multiset<OWLClass> classes){
 		if(namespace != null){
-			return Multisets.filter(classes, new Predicate<NamedClass>() {
+			return Multisets.filter(classes, new Predicate<OWLClass>() {
 				public boolean apply(NamedClass input){
 					return input.getName().startsWith(namespace);
 				}
@@ -288,8 +288,8 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		return classes;
 	}
 	
-	private void keepMostSpecificClasses(Multiset<NamedClass> classes){
-		HashMultiset<NamedClass> copy = HashMultiset.create(classes);
+	private void keepMostSpecificClasses(Multiset<OWLClass> classes){
+		HashMultiset<OWLClass> copy = HashMultiset.create(classes);
 		for (NamedClass nc1 : copy.elementSet()) {
 			for (NamedClass nc2 : copy.elementSet()) {
 				if(!nc1.equals(nc2)){

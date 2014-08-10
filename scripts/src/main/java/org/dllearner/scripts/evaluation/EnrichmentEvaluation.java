@@ -451,7 +451,7 @@ public class EnrichmentEvaluation {
 	}
 	
 	private void evaluateDataProperties(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
-		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		Set<OWLDataProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
 		logger.info("Evaluating " + properties.size() + " data properties...");
 		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			int dataProperties = 0;
@@ -539,7 +539,7 @@ public class EnrichmentEvaluation {
 	}
 	
 	private void evaluateClasses(SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
-		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		Set<OWLClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		logger.info("Evaluating " + classes.size() + " classes...");
 		for (Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			int classesCnt = 0;

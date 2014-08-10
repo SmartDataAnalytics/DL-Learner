@@ -54,7 +54,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	private static final Logger logger = LoggerFactory.getLogger(EquivalentObjectPropertyAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public EquivalentObjectPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -63,7 +63,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -80,7 +80,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		
 		if(returnOnlyNewAxioms){
 			//get existing domains
-			SortedSet<ObjectProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(propertyToDescribe);
+			SortedSet<OWLObjectProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(propertyToDescribe);
 			if(existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()){
 				for(ObjectProperty supProp : existingEquivalentProperties){
 					existingAxioms.add(new EquivalentObjectPropertiesAxiom(propertyToDescribe, supProp));
@@ -100,12 +100,12 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		int total = reasoner.getPopularity(propertyToDescribe);
 		
 		if(total > 0){
-			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
+			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				ObjectProperty prop = new ObjectProperty(qs.getResource("p").getURI());
+				ObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI());
 				int cnt = qs.getLiteral("cnt").getInt();
 				if(!prop.equals(propertyToDescribe)){
 					currentlyBestAxioms.add(new EvaluatedAxiom(new EquivalentObjectPropertiesAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
@@ -119,7 +119,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -136,7 +136,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 				ObjectProperty prop;
 				while(rs.hasNext()){
 					qs = rs.next();
-					prop = new ObjectProperty(qs.get("p").asResource().getURI());
+					prop = df.getOWLObjectProperty(IRI.create(qs.get("p").asResource().getURI());
 					//omit property to describe as it is trivial
 					if(prop.equals(propertyToDescribe)){
 						continue;
@@ -148,17 +148,17 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
 		EquivalentObjectPropertiesAxiom axiom = (EquivalentObjectPropertiesAxiom) evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("p", axiom.getEquivalentProperties().iterator().next().toString());
 		if(workingModel != null){
-			Set<KBElement> posExamples = new HashSet<KBElement>();
+			Set<OWLObject> posExamples = new HashSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 			Individual subject;
@@ -166,8 +166,8 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = new Individual(qs.getResource("o").getURI());
+				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
+				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
 				posExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
 			}
 			
@@ -178,11 +178,11 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
 		EquivalentObjectPropertiesAxiom axiom = (EquivalentObjectPropertiesAxiom) evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("p", axiom.getEquivalentProperties().iterator().next().toString());
 		if(workingModel != null){
-			Set<KBElement> negExamples = new TreeSet<KBElement>();
+			Set<OWLObject> negExamples = new TreeSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 			Individual subject;
@@ -190,8 +190,8 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = new Individual(qs.getResource("o").getURI());
+				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
+				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
 				negExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
 			}
 			
@@ -204,7 +204,7 @@ public class EquivalentObjectPropertyAxiomLearner extends AbstractAxiomLearningA
 	public static void main(String[] args) throws Exception{
 		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(
 				new URL("http://dbpedia.aksw.org:8902/sparql"), Collections.singletonList("http://dbpedia.org"), Collections.<String>emptyList())));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/nationality"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/nationality"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

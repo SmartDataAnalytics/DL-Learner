@@ -91,7 +91,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 		} else if(description.isOWLThing()){
 			stack.push(Thing.instance);
 		} else {
-			stack.push(new NamedClass(description.getIRI().toURI()));
+			stack.push(df.getOWLClass(IRI.create(description.getIRI().toURI()));
 		}
 	}
 
@@ -125,7 +125,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectSomeValuesFrom description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
@@ -134,7 +134,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectAllValuesFrom description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
@@ -143,15 +143,15 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectHasValue description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
-		Individual ind = new Individual(description.getValue().asOWLNamedIndividual().getIRI().toString());
+		Individual ind = df.getOWLNamedIndividual(IRI.create(description.getValue().asOWLNamedIndividual().getIRI().toString());
 		stack.push(new ObjectValueRestriction((ObjectProperty)role, ind));
 	}
 
 	@Override
 	public void visit(OWLObjectMinCardinality description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
@@ -161,7 +161,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectExactCardinality description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
@@ -171,7 +171,7 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectMaxCardinality description) {
-		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+		ObjectPropertyExpression role = df.getOWLObjectProperty(IRI.create(description.getProperty().asOWLObjectProperty().
 				getIRI().toString());
 		description.getFiller().accept(this);
 		Description d = stack.pop();
@@ -192,33 +192,33 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLDataSomeValuesFrom description) {
-		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
+		DataRange OWLDataRange = OWLDataRangeConverter.convert(description.getFiller());
 		stack.push(new DatatypeSomeRestriction(property, dataRange));
 	}
 
 	@Override
 	public void visit(OWLDataAllValuesFrom description) {
-//		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+//		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty()
 //				.getURI().toString());
-//		DataRange dataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
+//		DataRange OWLDataRange = OWLAPIConverter.convertDatatype(description.getFiller().asOWLDataType());
 //		stack.push(new DatatypeAllRestriction(property, dataRange));
 		throw new Error("Unsupported owl construct " + description.getClass() + ". Please inform a DL-Learner developer to add it.");		
 	}
 
 	@Override
 	public void visit(OWLDataHasValue description) {
-		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty().getIRI().toString());
+		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty().getIRI().toString());
 		Constant value = OWLAPIConverter.convertConstant(description.getValue());
 		stack.push(new DatatypeValueRestriction(property, value));
 	}
 
 	@Override
 	public void visit(OWLDataMinCardinality description) {
-		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
+		DataRange OWLDataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int min = description.getCardinality();
 		stack.push(new DatatypeMinCardinalityRestriction(property, dataRange,min));
 		
@@ -226,9 +226,9 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLDataExactCardinality description) {
-		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
+		DataRange OWLDataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int minmax = description.getCardinality();
 		stack.push(new DatatypeExactCardinalityRestriction(property, dataRange, minmax));
 		
@@ -236,9 +236,9 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLDataMaxCardinality description) {
-		DatatypeProperty property = new DatatypeProperty(description.getProperty().asOWLDataProperty()
+		DatatypeProperty property = df.getOWLDataProperty(IRI.create(description.getProperty().asOWLDataProperty()
 				.getIRI().toString());
-		DataRange dataRange = OWLDataRangeConverter.convert(description.getFiller());
+		DataRange OWLDataRange = OWLDataRangeConverter.convert(description.getFiller());
 		int max = description.getCardinality();
 		stack.push(new DatatypeMaxCardinalityRestriction(property, dataRange, max));
 		

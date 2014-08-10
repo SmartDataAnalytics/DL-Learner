@@ -206,7 +206,7 @@ public class OntologyCloser {
 							fillers.size(), oneRole, new Thing());
 					// indToRestr.put(oneInd,)
 					//make Description
-					Description d = new NamedClass(oneRole+"Exact"+fillers.size()+"gen");
+					Description d = df.getOWLClass(IRI.create(oneRole+"Exact"+fillers.size()+"gen");
 					//d.addChild(oecr);
 					kb.addTBoxAxiom(new EquivalentClassesAxiom(d,oecr));
 					//System.out.println(d.toManchesterSyntaxString("", new HashMap<String, String>()));

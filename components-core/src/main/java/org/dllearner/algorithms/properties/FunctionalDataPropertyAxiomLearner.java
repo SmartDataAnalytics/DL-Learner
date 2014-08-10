@@ -19,21 +19,22 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.FunctionalDatatypePropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -43,12 +44,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 @ComponentAnn(name="functional dataproperty axiom learner", shortName="dplfunc", version=0.1)
-public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
+public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm<OWLFunctionalDataPropertyAxiom, OWLIndividual> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(FunctionalDataPropertyAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
-	private DatatypeProperty propertyToDescribe;
+	private OWLDataProperty propertyToDescribe;
 	
 	private boolean declaredAsFunctional;
 
@@ -59,36 +59,37 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s ?p ?o1. ?s ?p ?o2. FILTER(?o1 != ?o2)}");
 	}
 	
-	public DatatypeProperty getPropertyToDescribe() {
+	public OWLDataProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLDataProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		//check if property is already declared as functional in knowledge base
+	protected void getExistingAxioms() {
 		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
 		declaredAsFunctional = executeAskQuery(query);
 		if(declaredAsFunctional) {
-			existingAxioms.add(new FunctionalDatatypePropertyAxiom(propertyToDescribe));
-			logger.info("Property is already declared as functional in knowledge base.");
+			existingAxioms.add(df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe));
+			logger.warn("Data property " + propertyToDescribe + " is already declared as functional in knowledge base.");
 		}
-		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode() {
@@ -96,14 +97,14 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = String.format(
 					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
-					propertyToDescribe.getName());
+					propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 1;
@@ -113,7 +114,7 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			}
 			// get number of instances of s with <s p o> <s p o1> where o != o1
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID().toString());
 			rs = executeSelectQuery(query, workingModel);
 			int functional = 1;
 			while (rs.hasNext()) {
@@ -122,14 +123,14 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 			}
 			if (all > 0) {
 				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom(
-						new FunctionalDatatypePropertyAxiom(propertyToDescribe),
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
+						df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe),
 						computeScore(all, functional),
 						declaredAsFunctional));
 			}
 			
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
@@ -144,30 +145,30 @@ public class FunctionalDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 		if (numberOfSubjects > 0) {
 			int functional = 0;
 			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID().toString());
 			ResultSet rs = executeSelectQuery(query);
 			if (rs.hasNext()) {
 				functional = rs.next().getLiteral("functional").getInt();
 			}
 			
-			currentlyBestAxioms.add(new EvaluatedAxiom(
-					new FunctionalDatatypePropertyAxiom(propertyToDescribe),
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
+					df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe),
 					computeScore(numberOfSubjects, functional),
 					declaredAsFunctional));
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		FunctionalDataPropertyAxiomLearner l = new FunctionalDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
+		FunctionalDataPropertyAxiomLearner l = new FunctionalDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLDataProperty(IRI.create("http://dbpedia.org/ontology/birthDate")));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.setForceSPARQL_1_0_Mode(true);
 		l.init();
 		l.start();
-		List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(5);
+		List<EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>> axioms = l.getCurrentlyBestEvaluatedAxioms(5);
 		System.out.println(axioms);
 		
-		for(EvaluatedAxiom axiom : axioms){
+		for(EvaluatedAxiom<OWLFunctionalDataPropertyAxiom> axiom : axioms){
 			printSubset(l.getPositiveExamples(axiom), 10);
 			printSubset(l.getNegativeExamples(axiom), 10);
 			l.explainScore(axiom);

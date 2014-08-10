@@ -58,7 +58,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRangeAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,7 +68,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -90,7 +90,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 				existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
 				if(reasoner.isPrepared()){
 					if(reasoner.getClassHierarchy().contains(existingRange)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
+						for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
 							existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
 							logger.info("Existing range(inferred): " + sup);
 						}
@@ -109,16 +109,16 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	private void runSingleQueryMode(){
-		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
-		query = String.format("SELECT ?type (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o. ?o a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)", propertyToDescribe.getName());
+		query = String.format("SELECT ?type (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o. ?o a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)", propertyToDescribe.toStringID());
 		rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			NamedClass range = new NamedClass(qs.getResource("type").getURI());
+			NamedClass range = df.getOWLClass(IRI.create(qs.getResource("type").getURI());
 			int cnt = qs.getLiteral("cnt").getInt();
 			if(!range.getURI().equals(Thing.uri)){
 				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
@@ -131,7 +131,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?o a ?type.} WHERE {?s <%s> ?o. ?o a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -159,13 +159,13 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 						continue;
 					}
 					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new ObjectPropertyRangeAxiom(propertyToDescribe, new NamedClass(type.getURI())),
+							new ObjectPropertyRangeAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI())),
 							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 			fillWithInference(newModel);
 		}
@@ -176,9 +176,9 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		if(reasoner.isPrepared()){
 			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
 				Statement st = iter.next();
-				Description cls = new NamedClass(st.getObject().asResource().getURI());
+				Description cls = df.getOWLClass(IRI.create(st.getObject().asResource().getURI());
 				if(reasoner.getClassHierarchy().contains(cls)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
 						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
 					}
 				}
@@ -188,14 +188,14 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
 		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
 		return super.getNegativeExamples(evAxiom);
@@ -209,7 +209,7 @@ public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/currency"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/currency"));
 		l.setMaxExecutionTimeInSeconds(10);
 //		l.setReturnOnlyNewAxioms(true);
 		l.init();

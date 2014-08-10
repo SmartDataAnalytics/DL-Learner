@@ -80,9 +80,9 @@ public class SimulationTests {
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		v1.extendLabel(a1);
 		ObjectProperty r1 = new ObjectProperty(uri("r1"));
-		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, new TreeSet<NamedClass>());
+		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, new TreeSet<OWLClass>());
 		ObjectProperty r2 = new ObjectProperty(uri("r2"));
-		ELDescriptionNode v3 = new ELDescriptionNode(v1, r2, new TreeSet<NamedClass>());
+		ELDescriptionNode v3 = new ELDescriptionNode(v1, r2, new TreeSet<OWLClass>());
 				
 		assertEmpty(v1);
 		assertAll(v2, v3);

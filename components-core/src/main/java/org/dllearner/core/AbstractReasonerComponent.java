@@ -120,7 +120,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private ObjectPropertyHierarchy roleHierarchy = null;
 	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 	
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
 	 * The underlying knowledge sources.
@@ -623,9 +623,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Double> valuesDouble = new TreeSet<Double>();
-			for (OWLLiteral c : values) {
-				double v = Double.valueOf(c.getLiteral());
-				valuesDouble.add(v);
+			for (OWLLiteral lit : values) {
+				if(lit.isDouble()){
+					valuesDouble.add(lit.parseDouble());
+				}
 			}
 			ret.put(e.getKey(), valuesDouble);
 		}
@@ -650,9 +651,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
-			for (OWLLiteral c : values) {
-				int v = Integer.valueOf(c.getLiteral());
-				valuesInt.add(v);
+			for (OWLLiteral lit : values) {
+				if(lit.isInteger()){
+					valuesInt.add(lit.parseInteger());
+				}
 			}
 			ret.put(e.getKey(), valuesInt);
 		}

@@ -141,10 +141,10 @@ public class RefinementOperatorTests {
 		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 		
-		Set<NamedClass> ignoredConcepts = new TreeSet<NamedClass>();
+		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
 		ignoredConcepts.add(new NamedClass("http://www.test.de/test#ZERO"));
 		ignoredConcepts.add(new NamedClass("http://www.test.de/test#ONE"));
-		Set<NamedClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
 		
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts); 
 		classHierarchy.thinOutSubsumptionHierarchy();

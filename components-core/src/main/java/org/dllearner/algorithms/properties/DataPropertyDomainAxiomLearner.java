@@ -19,7 +19,6 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.log4j.ConsoleAppender;
@@ -28,19 +27,19 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -55,12 +54,11 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 @ComponentAnn(name="dataproperty domain axiom learner", shortName="dpldomain", version=0.1)
-public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorithm {
+public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorithm<OWLDataPropertyDomainAxiom, OWLIndividual> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyDomainAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
-	private DatatypeProperty propertyToDescribe;
+	private OWLDataProperty propertyToDescribe;
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -68,60 +66,58 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
 	}
 	
-	public DatatypeProperty getPropertyToDescribe() {
+	public OWLDataProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLDataProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		if(returnOnlyNewAxioms){
-			//get existing domains
-			Description existingDomain = reasoner.getDomain(propertyToDescribe);
-			if(existingDomain != null){
-				existingAxioms.add(new DatatypePropertyDomainAxiom(propertyToDescribe, existingDomain));
-				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(existingDomain)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-							existingAxioms.add(new DatatypePropertyDomainAxiom(propertyToDescribe, existingDomain));
-							logger.info("Existing domain(inferred): " + sup);
-						}
+	protected void getExistingAxioms() {
+		OWLClassExpression existingDomain = reasoner.getDomain(propertyToDescribe);
+		if(existingDomain != null){
+			existingAxioms.add(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, existingDomain));
+			if(reasoner.isPrepared()){
+				if(reasoner.getClassHierarchy().contains(existingDomain)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+						existingAxioms.add(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, existingDomain));
+						logger.info("Existing domain(inferred): " + sup);
 					}
-					
 				}
+				
 			}
 		}
+	}
+	
+	protected void learnAxioms() {
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSingleQueryMode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
+	};
 	
 	private void runSingleQueryMode(){
 		
-		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
+		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
-		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", propertyToDescribe.getName());
+		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", 
+				propertyToDescribe.toStringID());
 		rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			NamedClass domain = new NamedClass(qs.getResource("type").getURI());
+			OWLClass domain = df.getOWLClass(IRI.create((qs.getResource("type").getURI())));
 			int cnt = qs.getLiteral("cnt").getInt();
-			if(!domain.getURI().equals(Thing.uri)){
-				currentlyBestAxioms.add(new EvaluatedAxiom(new DatatypePropertyDomainAxiom(propertyToDescribe, domain), computeScore(nrOfSubjects, cnt)));
+			if(!domain.isOWLThing()){
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, domain), computeScore(nrOfSubjects, cnt)));
 			}
 		}
 	}
@@ -131,7 +127,7 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s a ?type.} WHERE {?s <%s> ?o. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -158,14 +154,14 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 					if(type.equals(OWL.Thing)){
 						continue;
 					}
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new DatatypePropertyDomainAxiom(propertyToDescribe, new NamedClass(type.getURI())),
+					currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
+							df.getOWLDataPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
 							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 			fillWithInference(newModel);
 		}
@@ -176,9 +172,9 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		if(reasoner.isPrepared()){
 			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
 				Statement st = iter.next();
-				Description cls = new NamedClass(st.getObject().asResource().getURI());
+				OWLClass cls = df.getOWLClass(IRI.create(st.getObject().asResource().getURI()));
 				if(reasoner.getClassHierarchy().contains(cls)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
 						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
 					}
 				}
@@ -188,16 +184,16 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		DatatypePropertyDomainAxiom axiom = (DatatypePropertyDomainAxiom) evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
+	public Set<OWLIndividual> getPositiveExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
+		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		DatatypePropertyDomainAxiom axiom = (DatatypePropertyDomainAxiom) evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
+	public Set<OWLIndividual> getNegativeExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
+		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getNegativeExamples(evAxiom);
 	}
 	
@@ -209,11 +205,11 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		reasoner.prepareSubsumptionHierarchy();
+//		reasoner.prepareSubsumptionHierarchy();
 		
-		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
+		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/AutomobileEngine/height"));
+		l.setPropertyToDescribe(new OWLDataPropertyImpl(IRI.create("http://dbpedia.org/ontology/AutomobileEngine/height")));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.addFilterNamespace("http://dbpedia.org/ontology/");
 //		l.setReturnOnlyNewAxioms(true);

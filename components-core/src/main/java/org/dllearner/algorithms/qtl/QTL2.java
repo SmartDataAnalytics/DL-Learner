@@ -27,14 +27,13 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,7 +49,7 @@ import com.jamonapi.MonitorFactory;
 public class QTL2 extends AbstractCELA {
 	
 	
-	private static final Logger logger = Logger.getLogger(QTL2.class.getName());
+	private static final Logger logger = Logger.getLogger(QTL2.class);
 	
 	private LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
 	
@@ -62,7 +61,7 @@ public class QTL2 extends AbstractCELA {
 	private List<QueryTree<String>> currentPosExampleTrees;
 	private List<QueryTree<String>> currentNegExampleTrees;
 	
-	private Map<QueryTree<String>, Individual> tree2Indivual;
+	private Map<QueryTree<String>, OWLIndividual> tree2Indivual;
 
 	private double coverageWeight = 1;
 	private double specifityWeight = 0;
@@ -101,22 +100,22 @@ public class QTL2 extends AbstractCELA {
 	public void init() throws ComponentInitException {
 		logger.info("Initializing...");
 		treeCache = new QueryTreeCache(model);
-		tree2Indivual = new HashMap<QueryTree<String>, Individual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
+		tree2Indivual = new HashMap<QueryTree<String>, OWLIndividual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
 		
 		currentPosExampleTrees = new ArrayList<QueryTree<String>>(lp.getPositiveExamples().size());
 		currentNegExampleTrees = new ArrayList<QueryTree<String>>(lp.getNegativeExamples().size());
 		
 		//get the query trees
 		QueryTree<String> queryTree;
-		for (Individual ind : lp.getPositiveExamples()) {
-			queryTree = treeCache.getQueryTree(ind.getName());
+		for (OWLIndividual ind : lp.getPositiveExamples()) {
+			queryTree = treeCache.getQueryTree(ind.toStringID());
 			tree2Indivual.put(queryTree, ind);
 			currentPosExampleTrees.add(queryTree);
 		}
-		for (Individual ind : lp.getNegativeExamples()) {
-			queryTree = treeCache.getQueryTree(ind.getName());
+		for (OWLIndividual ind : lp.getNegativeExamples()) {
+			queryTree = treeCache.getQueryTree(ind.toStringID());
 			tree2Indivual.put(queryTree, ind);
-			currentNegExampleTrees.add(treeCache.getQueryTree(ind.getName()));
+			currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
 		}
 		
 		//some logging
@@ -191,7 +190,7 @@ public class QTL2 extends AbstractCELA {
 	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
 	 */
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return getCurrentlyBestEvaluatedDescription().getDescription();
 	}
 	
@@ -201,9 +200,7 @@ public class QTL2 extends AbstractCELA {
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		EvaluatedQueryTree<String> bestSolution = solutions.first();
-		Description description = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-				bestSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX));
-		return new EvaluatedDescription(description, new AxiomScore(bestSolution.getScore()));
+		return new EvaluatedDescription(bestSolution.getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX), new AxiomScore(bestSolution.getScore()));
 	}
 	
 	/**
@@ -255,13 +252,13 @@ public class QTL2 extends AbstractCELA {
 		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
 		Collection<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
-		Set<Individual> uncoveredPosExamples = new HashSet<Individual>();
+		Set<OWLIndividual> uncoveredPosExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : uncoveredPositiveExampleTrees) {
 			uncoveredPosExamples.add(tree2Indivual.get(queryTree));
 		}
 		//compute negative examples which are covered by LGG
 		Collection<QueryTree<String>> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
-		Set<Individual> coveredNegExamples = new HashSet<Individual>();
+		Set<OWLIndividual> coveredNegExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : coveredNegativeExampleTrees) {
 			coveredNegExamples.add(tree2Indivual.get(queryTree));
 		}

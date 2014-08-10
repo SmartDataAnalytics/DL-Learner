@@ -5,12 +5,9 @@ import java.util.Collection;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
@@ -93,15 +90,13 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	public EvaluatedDescription asEvaluatedDescription(){
 		if(description == null){
-			description = new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-					getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX)), score);
+			description = new EvaluatedDescription(getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX), score);
 		}
 		return description;
 	}
 	
 	public EvaluatedDescription asEvaluatedDescription(LiteralNodeConversionStrategy strategy){
-		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-				getTree().asOWLClassExpression(strategy)), score);
+		return new EvaluatedDescription(getTree().asOWLClassExpression(strategy), score);
 	}
 	
 	/* (non-Javadoc)

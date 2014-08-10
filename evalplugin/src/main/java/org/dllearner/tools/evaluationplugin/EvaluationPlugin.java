@@ -67,7 +67,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	private JLabel currentClassLabel;
 	private JProgressBar progressBar;
 
-	private List<NamedClass> classes = new ArrayList<NamedClass>();
+	private List<OWLClass> classes = new ArrayList<OWLClass>();
 	private int currentClassIndex = 0;
 	
 	private int lastSelectedRowIndex = -1;
@@ -82,35 +82,35 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 	//TODO Add label
 //	private static final String FOLLOWS_FROM_KB_WARNING = "<html>Selected class expressions follows already logically from ontology.</html>";
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap;
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMapComp;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapComp;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMapComp;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapComp;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMapComp;
 	
-	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap = new Hashtable<NamedClass, Map<EvaluatedDescriptionClass,Integer>>();
+	private Hashtable<OWLClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap = new Hashtable<OWLClass, Map<EvaluatedDescriptionClass,Integer>>();
 
 	@Override
 	protected void initialiseOWLView() throws Exception {
@@ -275,34 +275,34 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 				fis = new FileInputStream(new File(URI.create(resultFile)));
 				o = new ObjectInputStream(fis);
 				
-				owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 				
-				fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-				defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			} else {
 				resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.')) + "_ff.res";
 				fis = new FileInputStream(new File(URI.create(resultFile)));
 				o = new ObjectInputStream(fis);
-				owlEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalencePredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				defaultEquivalenceMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 				
 				String ending = null;
 				switch(compareMode){
@@ -313,17 +313,17 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 				resultFile = uri.toString().substring(0, uri.toString().lastIndexOf('.')) + ending + ".res";
 				fis = new FileInputStream(new File(URI.create(resultFile)));
 				o = new ObjectInputStream(fis);
-				owlEquivalenceStandardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalencePredaccMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceJaccardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				owlEquivalenceGenFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceStandardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalencePredaccMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceJaccardMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				fastEquivalenceGenFMeasureMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-				defaultEquivalenceMapComp = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceStandardMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceFMeasureMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalencePredaccMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceJaccardMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				owlEquivalenceGenFMeasureMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceStandardMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceFMeasureMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalencePredaccMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceJaccardMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				fastEquivalenceGenFMeasureMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+				defaultEquivalenceMapComp = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			}
 
 		} catch (FileNotFoundException e) {
@@ -336,7 +336,7 @@ public class EvaluationPlugin extends AbstractOWLViewComponent implements ListSe
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		classes.addAll(new TreeSet<NamedClass>(owlEquivalenceStandardMap.keySet()));
+		classes.addAll(new TreeSet<OWLClass>(owlEquivalenceStandardMap.keySet()));
 		progressBar.setMaximum(classes.size());
 	}
 	

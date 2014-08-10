@@ -486,7 +486,7 @@ public class EnrichmentEvaluationMultithreaded {
 	}
 	
 	private void evaluateDataProperties(final SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
-		Set<DatatypeProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+		Set<OWLDataProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
 		logger.info("Evaluating " + properties.size() + " data properties...");
 		for (final Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
 			Thread.sleep(5000);
@@ -547,7 +547,7 @@ public class EnrichmentEvaluationMultithreaded {
 	}
 	
 	private void evaluateClasses(final SparqlEndpointKS ks) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ComponentInitException, InterruptedException{
-		Set<NamedClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+		Set<OWLClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		logger.info("Evaluating " + classes.size() + " classes...");
 		for (final Class<? extends LearningAlgorithm> algorithmClass : classAlgorithms) {
 			ExecutorService threadPool = null;

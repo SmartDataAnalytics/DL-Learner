@@ -63,7 +63,7 @@ public final class ELDescriptionTreeTests {
 		assertTrue(s.in(t2).size() == 1);
 //		assertTrue(s.out(t2).size() == 0);
 		ObjectProperty p = new ObjectProperty("p");
-		TreeSet<NamedClass> l3 = new TreeSet<NamedClass>();
+		TreeSet<OWLClass> l3 = new TreeSet<OWLClass>();
 		ELDescriptionNode t3 = new ELDescriptionNode(t1,p,l3);
 		assertTrue(t3.getLevel() == 2);
 		assertTrue(tree1.getMaxLevel() == 2);

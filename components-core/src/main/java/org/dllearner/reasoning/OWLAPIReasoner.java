@@ -311,7 +311,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicConcepts()
       */
-    public Set<OWLClass> getNamedClasses() {
+    public Set<OWLClass> getClasses() {
         return Collections.unmodifiableSet(atomicConcepts);
     }
 
@@ -827,12 +827,4 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void setOwlLinkURL(String owlLinkURL) {
         this.owlLinkURL = owlLinkURL;
     }
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.BaseReasoner#getClasses()
-	 */
-	@Override
-	public Set<OWLClass> getClasses() {
-		return atomicConcepts;
-	}
 }

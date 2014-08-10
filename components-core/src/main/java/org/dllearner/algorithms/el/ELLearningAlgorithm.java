@@ -216,9 +216,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 	}
 	
-	private Description getNiceDescription(Description d){
+	private Description getNiceDescription(OWLClassExpression d){
 		Description description = d.clone();
-		List<Description> children = description.getChildren();
+		List<OWLClassExpression> children = description.getChildren();
 		for(int i=0; i<children.size(); i++) {
 			description.replaceChild(i, getNiceDescription(children.get(i)));
 		}
@@ -279,7 +279,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}
 
 	@Override
-	public List<Description> getCurrentlyBestDescriptions() {
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	

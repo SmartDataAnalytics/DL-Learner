@@ -165,7 +165,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	
 	private PreparedStatement ps;
 	
-	private LoadingCache<NamedClass, Model> fragments;
+	private LoadingCache<OWLClass, Model> fragments;
 	
 	private File samplesDir;
 	private File instantiationsDir;
@@ -264,13 +264,13 @@ public class OWLAxiomPatternUsageEvaluation {
 		List<OWLAxiom> patterns = getPatternsToEvaluate(patternOntology);
 		
 		//get all classes in KB
-		Collection<NamedClass> classes = reasoner.getOWLClasses();
+		Collection<OWLClass> classes = reasoner.getOWLClasses();
 		
 		//get n random classes which contain at least x instances
 		int minNrOfInstances = 5;
-		List<NamedClass> classesList = new ArrayList<NamedClass>(classes);
+		List<OWLClass> classesList = new ArrayList<OWLClass>(classes);
 		Collections.shuffle(classesList, new Random(123));
-		classes = new TreeSet<NamedClass>();
+		classes = new TreeSet<OWLClass>();
 		for (NamedClass cls : classesList) {
 			if(reasoner.getIndividualsCount(cls) >= minNrOfInstances){
 				classes.add(cls);
@@ -296,7 +296,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 		
 		//extract fragment for each class only once
-		Map<NamedClass, Model> class2Fragment = null;
+		Map<OWLClass, Model> class2Fragment = null;
 		if(fragmentsNeeded){
 			class2Fragment = extractFragments(classes, maxModalDepth);
 		}
@@ -364,13 +364,13 @@ public class OWLAxiomPatternUsageEvaluation {
 		List<OWLAxiom> patterns = getPatternsToEvaluate(patternOntology);
 		
 		//get all classes in KB
-		Collection<NamedClass> classes = reasoner.getOWLClasses();
+		Collection<OWLClass> classes = reasoner.getOWLClasses();
 		
 		//get n random classes which contain at least x instances
 		int minNrOfInstances = 5;
-		List<NamedClass> classesList = new ArrayList<NamedClass>(classes);
+		List<OWLClass> classesList = new ArrayList<OWLClass>(classes);
 		Collections.shuffle(classesList, new Random(123));
-		classes = new TreeSet<NamedClass>();
+		classes = new TreeSet<OWLClass>();
 		for (NamedClass cls : classesList) {
 			if(!cls.getName().startsWith("http://dbpedia.org/ontology/"))continue;
 			if (reasoner.getIndividualsCount(cls) >= minNrOfInstances) {
@@ -390,7 +390,7 @@ public class OWLAxiomPatternUsageEvaluation {
 			       .maximumSize(maxNrOfTestedClasses)
 			       .expireAfterWrite(100, TimeUnit.HOURS)
 			       .build(
-			           new CacheLoader<NamedClass, Model>() {
+			           new CacheLoader<OWLClass, Model>() {
 			             public Model load(NamedClass cls) {
 			               return extractFragment(cls, maxModalDepth);
 			             }
@@ -470,7 +470,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		}
 	}
 	
-//	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+//	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<OWLClass> classes){
 //		List<OWLAxiom> sample = new ArrayList<OWLAxiom>();
 //		
 //		Set<OWLAxiom> axioms = ontology.getAxioms();
@@ -506,7 +506,7 @@ public class OWLAxiomPatternUsageEvaluation {
 //		return sample.subList(0, Math.min(sampleSize, sample.size()));
 //	}
 	
-	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<NamedClass> classes){
+	private List<OWLAxiom> createSample(OWLOntology ontology, Collection<OWLClass> classes){
 		List<OWLAxiom> sample = new ArrayList<OWLAxiom>();
 		
 		Set<OWLLogicalAxiom> axioms = ontology.getLogicalAxioms();
@@ -538,7 +538,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		return sample.subList(0, Math.min(sampleSize, sample.size()));
 	}
 	
-	private List<OWLAxiom> createSample2(OWLOntology ontology, Collection<NamedClass> classes){
+	private List<OWLAxiom> createSample2(OWLOntology ontology, Collection<OWLClass> classes){
 		List<OWLAxiom> axiomList = new ArrayList<OWLAxiom>();
 		for (NamedClass cls : classes) {
 			OWLClass owlClass = df.getOWLClass(IRI.create(cls.getName()));
@@ -690,8 +690,8 @@ public class OWLAxiomPatternUsageEvaluation {
 //		return maxModalDepth;
 	}
 	
-	private Map<NamedClass, Model> extractFragments(Collection<NamedClass> classes, int depth){
-		Map<NamedClass, Model> class2Fragment = new HashMap<NamedClass, Model>();
+	private Map<OWLClass, Model> extractFragments(Collection<OWLClass> classes, int depth){
+		Map<OWLClass, Model> class2Fragment = new HashMap<OWLClass, Model>();
 		Model fragment;
 		for (NamedClass cls : classes) {
 			fragment = extractFragment(cls, depth);
@@ -991,7 +991,7 @@ public class OWLAxiomPatternUsageEvaluation {
 		return axioms2Score;
 	}
 	
-	private OWLOntology applyPattern(OWLAxiom pattern, Collection<NamedClass> classes) {
+	private OWLOntology applyPattern(OWLAxiom pattern, Collection<OWLClass> classes) {
 		logger.info("Applying pattern " + pattern + "...");
 		Set<OWLAxiom> learnedAxioms = new HashSet<OWLAxiom>();
 		Monitor patternClassTimeMon = MonitorFactory.getTimeMonitor("class-pattern-runtime");

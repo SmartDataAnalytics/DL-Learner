@@ -80,7 +80,7 @@ public class ConceptComparator implements Comparator<Description>, Serializable 
 	// TODO: erstmal nur mit Stringvergleichen, da diese bei atomaren Konzepten
 	// schnell sein könnten, und dann testen, ob vorgegebene Ordnung Geschwindigkeitsvorteile
 	// bringt
-	public ConceptComparator(Set<NamedClass> atomicConcepts) {
+	public ConceptComparator(Set<OWLClass> atomicConcepts) {
 		
 	}
 	

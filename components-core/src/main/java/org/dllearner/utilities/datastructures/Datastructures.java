@@ -89,10 +89,10 @@ public class Datastructures {
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListConcepts(Set<NamedClass> s){
+	public static String[] sortedSet2StringListConcepts(Set<OWLClass> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<NamedClass> i=s.iterator();
+		Iterator<OWLClass> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
 			ret[a++]=((NamedClass)i.next()).getName();

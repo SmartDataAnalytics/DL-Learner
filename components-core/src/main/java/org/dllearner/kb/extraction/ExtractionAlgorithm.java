@@ -155,7 +155,7 @@ public class ExtractionAlgorithm {
 				}
 				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
 			}
-			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
+			List<OWLDataPropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
 			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
 			for (DatatypePropertyNode node : datatypeProperties) {
 				if(stopCondition()){
@@ -302,8 +302,8 @@ public class ExtractionAlgorithm {
 		return properties;
 	}
 	
-	private static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
-		List<DatatypePropertyNode> properties = new ArrayList<DatatypePropertyNode>();
+	private static List<OWLDataPropertyNode> getDatatypeProperties(List<Node> l ){
+		List<OWLDataPropertyNode> properties = new ArrayList<OWLDataPropertyNode>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());

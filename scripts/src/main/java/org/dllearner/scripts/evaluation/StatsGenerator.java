@@ -44,28 +44,28 @@ import org.semanticweb.owlapi.util.DLExpressivityChecker;
 
 public class StatsGenerator {
 	
-	private Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap;
+	private Hashtable<OWLClass, Map<EvaluatedDescriptionClass, Integer>> userInputMap;
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastPredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastJaccardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastStandardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastPredaccMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastGenFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlStandardMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlPredaccMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlGenFMeasureMap;
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlJaccardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlStandardMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlPredaccMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlGenFMeasureMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlJaccardMap;
 
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultMap;
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> defaultMap;
 
 	
 	private StringBuilder latexStats;
 	private StringBuilder latexMetrics;
 	
 	@SuppressWarnings("unused")
-	private Map<NamedClass, Map<EvaluatedDescriptionClass, Integer>> incMap;
+	private Map<OWLClass, Map<EvaluatedDescriptionClass, Integer>> incMap;
 
 	List<Stat> defaultFractions = new ArrayList<Stat>();
 	List<Stat> owlStandardFractions = new ArrayList<Stat>();
@@ -197,7 +197,7 @@ public class StatsGenerator {
 	//matrix for Fleiss Kappa input
 	private short[][] mat;
 	
-	private Set<NamedClass> classesToEvaluate = new HashSet<NamedClass>();
+	private Set<OWLClass> classesToEvaluate = new HashSet<OWLClass>();
 	
 	private ConceptComparator c = new ConceptComparator();
 	
@@ -320,9 +320,9 @@ public class StatsGenerator {
 		}
 	}
 	
-	private int getSuggestionsCount(Map<NamedClass, List<EvaluatedDescriptionClass>> map){
+	private int getSuggestionsCount(Map<OWLClass, List<EvaluatedDescriptionClass>> map){
 		int suggestionsCount = 0;
-		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
+		for(Entry<OWLClass, List<EvaluatedDescriptionClass>> entry : map.entrySet()){
 			if(!classesToEvaluate.contains(entry.getKey())){
 				continue;
 			}
@@ -899,7 +899,7 @@ public class StatsGenerator {
 	
 	private void computeClassesToEvaluate(){
 		classesToEvaluate.clear();
-		for(Entry<NamedClass, List<EvaluatedDescriptionClass>> entry : defaultMap.entrySet()){
+		for(Entry<OWLClass, List<EvaluatedDescriptionClass>> entry : defaultMap.entrySet()){
 			for(EvaluatedDescriptionClass ec : entry.getValue()){
 				if(ec.getAccuracy() >= MIN_ACCURACY){
 					classesToEvaluate.add(entry.getKey());
@@ -1608,8 +1608,8 @@ public class StatsGenerator {
 			fis = new FileInputStream(input);
 			ObjectInputStream o = new ObjectInputStream(fis);
 
-			userInputMap = (Hashtable<NamedClass, Map<EvaluatedDescriptionClass, Integer>>) o.readObject();
-//			for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> entry : userInputMap.entrySet()){
+			userInputMap = (Hashtable<OWLClass, Map<EvaluatedDescriptionClass, Integer>>) o.readObject();
+//			for(Entry<OWLClass, Map<EvaluatedDescriptionClass, Integer>> entry : userInputMap.entrySet()){
 //				System.out.println(entry.getKey());
 //				for(Entry<EvaluatedDescriptionClass, Integer> e : entry.getValue().entrySet()){
 //					System.out.println(e.getKey() + " --> " + e.getValue());
@@ -1637,19 +1637,19 @@ public class StatsGenerator {
 			fis = new FileInputStream(file);
 			ObjectInputStream o = new ObjectInputStream(fis);
 
-			owlStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			owlGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlPredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			owlGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
-			fastStandardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastPredaccMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastJaccardMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
-			fastGenFMeasureMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastStandardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastPredaccMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastJaccardMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			fastGenFMeasureMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 
-			defaultMap = (HashMap<NamedClass, List<EvaluatedDescriptionClass>>) o.readObject();
+			defaultMap = (HashMap<OWLClass, List<EvaluatedDescriptionClass>>) o.readObject();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1666,14 +1666,14 @@ public class StatsGenerator {
 	
 	private void computeFleissKappa(File directory){
 		System.out.println("Computing Fleiss Kappa...");
-		Map<NamedClass, Map<EvaluatedDescriptionClass, Map<Integer, Integer>>> map = new HashMap<NamedClass, Map<EvaluatedDescriptionClass,Map<Integer,Integer>>>();
+		Map<OWLClass, Map<EvaluatedDescriptionClass, Map<Integer, Integer>>> map = new HashMap<OWLClass, Map<EvaluatedDescriptionClass,Map<Integer,Integer>>>();
 		Map<EvaluatedDescriptionClass, Map<Integer, Integer>> m;
 		for (File suggestionFile : directory.listFiles(new ResultFileFilter())) {System.out.println(suggestionFile);
 			loadLearnResults(suggestionFile);
 			computeClassesToEvaluate();
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
-				for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
+				for(Entry<OWLClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
 					if(!classesToEvaluate.contains(e.getKey())){
 						continue;
 					}
@@ -1693,7 +1693,7 @@ public class StatsGenerator {
 			computeClassesToEvaluate();
 			for (File inputFile : directory.listFiles(new NameFilter(suggestionFile))) {
 				loadUserInput(inputFile);
-				for(Entry<NamedClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
+				for(Entry<OWLClass, Map<EvaluatedDescriptionClass, Integer>> e : userInputMap.entrySet()){
 					if(!classesToEvaluate.contains(e.getKey())){
 						continue;
 					}

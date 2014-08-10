@@ -51,7 +51,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
 	
 	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private OWLObjectProperty propertyToDescribe;
 	
 	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -60,7 +60,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p1 ?o. FILTER NOT EXISTS{?s ?p ?o}}");
 	}
 
-	public ObjectProperty getPropertyToDescribe() {
+	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
@@ -77,7 +77,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		
 		if(returnOnlyNewAxioms){
 			//get existing domains
-			SortedSet<ObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
+			SortedSet<OWLObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
 			if(existingSuperProperties != null && !existingSuperProperties.isEmpty()){
 				for(ObjectProperty supProp : existingSuperProperties){
 					existingAxioms.add(new SubObjectPropertyAxiom(propertyToDescribe, supProp));
@@ -98,12 +98,12 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		int total = reasoner.getPopularity(propertyToDescribe);
 		
 		if(total > 0){
-			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
+			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				ObjectProperty prop = new ObjectProperty(qs.getResource("p").getURI());
+				ObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI());
 				int cnt = qs.getLiteral("cnt").getInt();
 				if(!prop.equals(propertyToDescribe)){
 					currentlyBestAxioms.add(new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
@@ -117,7 +117,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -134,7 +134,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 				ObjectProperty prop;
 				while(rs.hasNext()){
 					qs = rs.next();
-					prop = new ObjectProperty(qs.get("p").asResource().getURI());
+					prop = df.getOWLObjectProperty(IRI.create(qs.get("p").asResource().getURI());
 					//omit property to describe as it is trivial
 					if(prop.equals(propertyToDescribe)){
 						continue;
@@ -146,17 +146,17 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
 		SubObjectPropertyAxiom axiom = (SubObjectPropertyAxiom) evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
 		if(workingModel != null){
-			Set<KBElement> posExamples = new HashSet<KBElement>();
+			Set<OWLObject> posExamples = new HashSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 			Individual subject;
@@ -164,8 +164,8 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = new Individual(qs.getResource("o").getURI());
+				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
+				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
 				posExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
 			}
 			
@@ -176,11 +176,11 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
+	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
 		SubObjectPropertyAxiom axiom = (SubObjectPropertyAxiom) evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
 		if(workingModel != null){
-			Set<KBElement> negExamples = new HashSet<KBElement>();
+			Set<OWLObject> negExamples = new HashSet<OWLObject>();
 			
 			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 			Individual subject;
@@ -188,8 +188,8 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = new Individual(qs.getResource("o").getURI());
+				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
+				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
 				negExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
 			}
 			
@@ -201,7 +201,7 @@ public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgori
 	
 	public static void main(String[] args) throws Exception{
 		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/writer"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/writer"));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

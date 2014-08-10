@@ -31,7 +31,7 @@ import org.dllearner.core.owl.ObjectProperty;
  */
 public class ELDescriptionEdge {
 
-	private ObjectProperty label;
+	private OWLObjectProperty label;
 	
 	private ELDescriptionNode node;
 
@@ -55,7 +55,7 @@ public class ELDescriptionEdge {
 	/**
 	 * @return The label of this edge.
 	 */
-	public ObjectProperty getLabel() {
+	public OWLObjectProperty getLabel() {
 		return label;
 	}
 

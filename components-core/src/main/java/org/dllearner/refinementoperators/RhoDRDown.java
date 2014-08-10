@@ -397,12 +397,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		/*
 		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
 		try {
-			NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Compound");
+			NamedClass struc = df.getOWLClass(IRI.create("http://dl-learner.org/carcinogenesis#Compound");
 			Description d = KBParser.parseConcept(conceptStr);
 			SortedSet<Description> ds = (SortedSet<Description>) refine(d,15,null,struc);
 			System.out.println(ds);
 			
-			Individual i = new Individual("http://dl-learner.org/carcinogenesis#d101");
+			Individual i = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/carcinogenesis#d101");
 			rs.instanceCheck(ds.first(), i);
 			
 		} catch (ParseException e) {
@@ -413,8 +413,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		*/
 		
 		/*
-		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Atom");
-		ObjectProperty op = new ObjectProperty("http://dl-learner.org/carcinogenesis#hasAtom");
+		NamedClass struc = df.getOWLClass(IRI.create("http://dl-learner.org/carcinogenesis#Atom");
+		ObjectProperty op = df.getOWLObjectProperty(IRI.create("http://dl-learner.org/carcinogenesis#hasAtom");
 		ObjectSomeRestriction oar = new ObjectSomeRestriction(op,Thing.instance);
 
 		Set<Description> ds = refine(Thing.instance,3,null,struc);

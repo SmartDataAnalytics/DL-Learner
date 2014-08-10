@@ -69,17 +69,17 @@ public class EvaluationComputingScript {
 	private URI ontologyURI;
 	
 	
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
-	private Map<NamedClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<NamedClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceStandardMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceFMeasureMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalencePredaccMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceGenFMeasureMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> fastEquivalenceJaccardMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceStandardMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceFMeasureMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalencePredaccMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceGenFMeasureMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> owlEquivalenceJaccardMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
+	private Map<OWLClass, List<EvaluatedDescriptionClass>> defaultEquivalenceMap = new HashMap<OWLClass, List<EvaluatedDescriptionClass>>();
 	
 	
 	public EvaluationComputingScript(URI ontologyURI) throws ComponentInitException, MalformedURLException, LearningProblemUnsupportedException, URISyntaxException{
@@ -102,7 +102,7 @@ public class EvaluationComputingScript {
 	
 	
 	private void evaluateInconsistencies(){
-		List<Map<NamedClass, List<EvaluatedDescriptionClass>>> equivalenceMapList = new ArrayList<Map<NamedClass,List<EvaluatedDescriptionClass>>>();
+		List<Map<OWLClass, List<EvaluatedDescriptionClass>>> equivalenceMapList = new ArrayList<Map<OWLClass,List<EvaluatedDescriptionClass>>>();
 		
 		equivalenceMapList.add(defaultEquivalenceMap);
 		equivalenceMapList.add(owlEquivalenceFMeasureMap);
@@ -129,7 +129,7 @@ public class EvaluationComputingScript {
 		boolean followsFromKB;
 		boolean isConsistent;
 		for(NamedClass nc : defaultEquivalenceMap.keySet()){
-			for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
+			for(Map<OWLClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
 				evaluatedDescriptions.addAll(map.get(nc));
 			}
 			for(EvaluatedDescriptionClass ec : evaluatedDescriptions){
@@ -142,7 +142,7 @@ public class EvaluationComputingScript {
 				System.out.println("Consistent: " +isConsistent);
 				System.out.println("Follows from KB: " + followsFromKB);
 			}
-			for(Map<NamedClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
+			for(Map<OWLClass, List<EvaluatedDescriptionClass>> map : equivalenceMapList){
 				for(EvaluatedDescriptionClass ec : map.get(nc)){
 					for(EvaluatedDescriptionClass ec2 : evaluatedDescriptions){
 						if(comparator.compare(ec.getDescription(), ec2.getDescription()) == 0){
@@ -449,7 +449,7 @@ public class EvaluationComputingScript {
 		prefixes = reasoner.getPrefixes();
 
 		// loop through all classes
-		Set<NamedClass> classes = new TreeSet<NamedClass>(reasoner.getNamedClasses());
+		Set<OWLClass> classes = new TreeSet<OWLClass>(reasoner.getNamedClasses());
 		classes.remove(new NamedClass("http://www.w3.org/2002/07/owl#Thing"));
 		// reduce number of classes for testing purposes
 		// shrinkSet(classes, 20);
