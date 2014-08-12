@@ -24,8 +24,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 public class AutomaticPositiveExampleFinderOWL {
 	

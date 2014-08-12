@@ -30,8 +30,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * This class takes Descritptions and a reasoner and orders the 
@@ -40,7 +41,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
  *
  */
 public class DescriptionSubsumptionTree {
-	private static final Logger logger = Logger.getLogger(OWLClassExpressionSubsumptionTree.class);
+	private static final Logger logger = Logger.getLogger(DescriptionSubsumptionTree.class);
 	/**
 	 * turns on logging
 	 */
@@ -213,7 +214,7 @@ public class DescriptionSubsumptionTree {
 
 			int ret = (int) Math.round(accuracy - node.accuracy);
 			if (ret == 0) {
-				ret = node.getDesc().getLength() - getDesc().getLength();
+				ret = OWLClassExpressionUtils.getLength(node.getDesc()) - OWLClassExpressionUtils.getLength(getDesc());
 			}
 			if (ret == 0) {
 				ret = -1;

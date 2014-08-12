@@ -124,7 +124,7 @@ public final class ComponentManager {
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
 		public int compare(Class<?> c1, Class<?> c2) {
-			return c1.toStringID().compareTo(c2.toStringID());
+			return c1.getName().compareTo(c2.getName());
 		}
 
 	};
@@ -197,7 +197,7 @@ public final class ComponentManager {
 			// make config options accessible by name
 			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
 			for (ConfigOption<?> option : options) {
-				byName.put(option.toStringID(), option);
+				byName.put(option.getName(), option);
 			}
 			componentOptionsByName.put(component, byName);
 			

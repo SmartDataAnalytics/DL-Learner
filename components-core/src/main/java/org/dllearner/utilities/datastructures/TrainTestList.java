@@ -22,7 +22,7 @@ package org.dllearner.utilities.datastructures;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * A tuple of training set and test set.

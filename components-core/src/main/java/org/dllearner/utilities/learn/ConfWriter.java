@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 public class ConfWriter {
 

@@ -25,7 +25,6 @@ import java.util.Set;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEntity;
 
@@ -45,8 +44,6 @@ public class NLPHeuristic extends AbstractHeuristic{
 	// penalty if a node OWLClassExpression has very many refinements since exploring 
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;
-	// syntactic comparison as final comparison criterion
-	private ConceptComparator conceptComparator = new ConceptComparator();
 	
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1;

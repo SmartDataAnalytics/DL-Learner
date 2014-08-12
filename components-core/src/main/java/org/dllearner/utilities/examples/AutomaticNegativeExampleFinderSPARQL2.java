@@ -42,16 +42,20 @@ import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.SetManipulation;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultiset;
@@ -74,6 +78,8 @@ import com.hp.hpl.jena.query.ResultSet;
 public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AutomaticNegativeExampleFinderSPARQL2.class.getSimpleName());
+	
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public enum Strategy{
 		SUPERCLASS, SIBLING, RANDOM;
@@ -217,10 +223,10 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				for (OWLClass nc : positiveExamplesTypes.elementSet()) {
 					int frequency = positiveExamplesTypes.count(nc);
 					//get super classes
-					Set<Description> superClasses = sr.getSuperClasses(nc);
-					superClasses.remove(df.getOWLClass(IRI.create(Thing.instance.getURI()));
+					Set<OWLClassExpression> superClasses = sr.getSuperClasses(nc);
+					superClasses.remove(df.getOWLThing());
 //					superClasses.remove(Thing.instance);
-					superClasses.remove(df.getOWLClass(IRI.create("http://www.w3.org/2000/01/rdf-schema#Resource"));
+					superClasses.remove(df.getOWLClass(OWLRDFVocabulary.RDFS_RESOURCE.getIRI()));
 					superClasses = filterByNamespace(superClasses);
 					logger.info("Super classes: " + superClasses);
 					
@@ -256,7 +262,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				QuerySolution qs;
 				while(rs.hasNext()){
 					qs = rs.next();
-					randomNegativeExamples.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+					randomNegativeExamples.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI())));
 				}
 				randomNegativeExamples.removeAll(negativeExamples);
 				negativeExamples.addAll(new ArrayList<>(randomNegativeExamples).subList(0, Math.min(randomNegativeExamples.size(), maxNrOfReturnedInstances - negativeExamples.size())));
@@ -266,7 +272,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
         return negativeExamples;
 	}
 	
-	private <T extends Description> Set<T> filterByNamespace(Set<T> classes){
+	private <T extends OWLClassExpression> Set<T> filterByNamespace(Set<T> classes){
 		if(namespace != null){
 			return Sets.filter(classes, new Predicate<T>() {
 				public boolean apply(T input){

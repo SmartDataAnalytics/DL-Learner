@@ -27,9 +27,14 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class SetManipulation {
+	
+	private static final OWLDataFactoryImpl df = new OWLDataFactoryImpl();
 
 	/**
 	 * shrinks a set to the limit fuzzy here means the elements will be randomly
@@ -154,7 +159,7 @@ public class SetManipulation {
 	public static SortedSet<OWLIndividual> stringToInd(SortedSet<String> set) {
 		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
 		for (String ind : set) {
-			ret.add(df.getOWLNamedIndividual(IRI.create(ind));
+			ret.add(df.getOWLNamedIndividual(IRI.create(ind)));
 		}
 		return ret;
 	}
@@ -162,7 +167,7 @@ public class SetManipulation {
 	public static SortedSet<OWLIndividual> stringToInd(Collection<String> individualsAsString) {
 		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
 		for (String ind : individualsAsString) {
-			ret.add(df.getOWLNamedIndividual(IRI.create(ind));
+			ret.add(df.getOWLNamedIndividual(IRI.create(ind)));
 		}
 		return ret;
 	}

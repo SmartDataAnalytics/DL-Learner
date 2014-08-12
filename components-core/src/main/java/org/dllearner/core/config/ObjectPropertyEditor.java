@@ -25,7 +25,11 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,8 +41,8 @@ import org.dllearner.core.owl.ObjectProperty;
  */
 public class ObjectPropertyEditor implements PropertyEditor {
 
-
-    private ObjectProperty value;
+	private OWLDataFactory df = new OWLDataFactoryImpl();
+    private OWLObjectProperty value;
 
     @Override
     public void setValue(Object value) {
@@ -75,7 +79,7 @@ public class ObjectPropertyEditor implements PropertyEditor {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        value = df.getOWLObjectProperty(IRI.create(text);
+        value = df.getOWLObjectProperty(IRI.create(text));
     }
 
     @Override

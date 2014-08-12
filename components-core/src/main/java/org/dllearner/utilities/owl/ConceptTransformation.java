@@ -58,8 +58,6 @@ public class ConceptTransformation {
 	public static long shorteningTimeNs = 0;
 	private static long shorteningTimeNsStart = 0;
 	
-	private static ConceptComparator descComp = new ConceptComparator();
-	
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	private static final OWLObjectDuplicator DUPLICATOR = new OWLObjectDuplicator(df);
 	private static final OWLClassExpressionCleaner CLASS_EXPRESSION_CLEANER = new OWLClassExpressionCleaner(df);
@@ -210,7 +208,7 @@ public class ConceptTransformation {
 	// liefert ein ev. verkürztes Konzept, wenn in Disjunktionen bzw.
 	// Konjunktionen Elemente mehrfach vorkommen
 	// (erstmal nicht-rekursiv implementiert)
-	public static OWLClassExpression getShortConceptNonRecursive(OWLClassExpression concept, ConceptComparator conceptComparator) {
+	public static OWLClassExpression getShortConceptNonRecursive(OWLClassExpression concept) {
 		return concept;
 	}
 	
@@ -220,20 +218,20 @@ public class ConceptTransformation {
 	 * @param conceptComparator A comparator for concepts.
 	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
 	 */
-	public static OWLClassExpression getShortConcept(OWLClassExpression concept, ConceptComparator conceptComparator) {
+	public static OWLClassExpression getShortConcept(OWLClassExpression concept) {
 		shorteningTimeNsStart = System.nanoTime();
 		// deep copy des Konzepts, da es nicht verändert werden darf
 		// (Nachteil ist, dass auch Konzepte kopiert werden, bei denen sich gar
 		// nichts ändert)
 		OWLClassExpression clone = DUPLICATOR.duplicateObject(concept);
-		clone = getShortConcept(clone, conceptComparator, 0);
+		clone = getShortConcept(clone, 0);
 		// return getShortConcept(concept, conceptComparator, 0);
 		shorteningTimeNs += System.nanoTime() - shorteningTimeNsStart;
 		return clone;
 	}
 	
 	// das Eingabekonzept darf nicht modifiziert werden
-	private static OWLClassExpression getShortConcept(OWLClassExpression concept, ConceptComparator conceptComparator, int recDepth) {
+	private static OWLClassExpression getShortConcept(OWLClassExpression concept, int recDepth) {
 		
 		//if(recDepth==0)
 		//	System.out.println(concept);

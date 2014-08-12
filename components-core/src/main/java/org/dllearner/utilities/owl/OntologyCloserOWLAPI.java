@@ -41,8 +41,10 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLPropertyAxiom;
@@ -73,7 +75,7 @@ public class OntologyCloserOWLAPI {
 	 */
 	public void applyNumberRestrictions() {
 		System.out.println("apply ExactCardinalityRestriction to Individuals");
-		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
+		Set<OWLObjectProperty> allRoles = this.rs.getObjectProperties();
 		System.out.println("found: " + allRoles.size() + " roles");
 		testForTransitiveProperties(true);
 
@@ -113,7 +115,7 @@ public class OntologyCloserOWLAPI {
 	 */
 	public void applyNumberRestrictionsConcise() {
 
-		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
+		Set<OWLObjectProperty> allRoles = this.rs.getObjectProperties();
 		testForTransitiveProperties(true);
 
 		// collect info for roles and individuals
@@ -189,7 +191,7 @@ public class OntologyCloserOWLAPI {
 	 */
 	public SortedSet<OWLIndividual> verifyConcept(String conceptStr) {
 
-		Description d;
+		OWLClassExpression d;
 		SimpleClock sc = new SimpleClock();
 		StringBuffer sb = new StringBuffer();
 		sb.append(conceptStr);
@@ -207,7 +209,7 @@ public class OntologyCloserOWLAPI {
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();
 			for (OWLIndividual individual : ind) {
-				System.out.print(OWLIndividual + "|");
+				System.out.print(individual + "|");
 			}
 
 		} catch (Exception e) {

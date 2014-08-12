@@ -33,8 +33,6 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
  */
 public class EvaluatedDescriptionPosNegComparator implements Comparator<EvaluatedDescriptionPosNeg> {
 
-	ConceptComparator cc = new ConceptComparator();
-	
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
@@ -54,7 +52,7 @@ public class EvaluatedDescriptionPosNegComparator implements Comparator<Evaluate
 			else if(length1 > length2)
 				return -1;
 			else
-				return cc.compare(ed1.getDescription(), ed2.getDescription());
+				return ed1.getDescription().compareTo(ed2.getDescription());
 		}
 	}
 

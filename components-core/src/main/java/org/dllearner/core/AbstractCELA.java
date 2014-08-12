@@ -28,7 +28,6 @@ import java.util.TreeSet;
 
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -60,7 +59,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	protected ConceptComparator descriptionComparator = new ConceptComparator();
 	protected String baseURI;
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory df = new OWLDataFactoryImpl();

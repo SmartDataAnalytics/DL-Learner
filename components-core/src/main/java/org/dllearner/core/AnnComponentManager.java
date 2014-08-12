@@ -269,7 +269,7 @@ public class AnnComponentManager {
 	@Deprecated
 	public boolean areValidComponentConstructorArguments(Class<? extends Component>... arguments) {
 		for(int i=0; i<arguments.length; i++) {
-			if(arguments[i].toStringID().compareTo(arguments[i+1].toStringID())<0) {
+			if(arguments[i].getName().compareTo(arguments[i+1].getName())<0) {
 				return false;
 			}
 		}

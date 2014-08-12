@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A set of descriptions, which is bound by a maximum
@@ -36,9 +36,7 @@ import org.dllearner.core.owl.Description;
  */
 public class DescriptionSet {
 
-	private ConceptComparator comp = new ConceptComparator();
-	
-	private SortedSet<Description> set = new TreeSet<Description>(comp);
+	private SortedSet<OWLClassExpression> set = new TreeSet<OWLClassExpression>();
 
 	private int maxSize;
 	
@@ -49,13 +47,13 @@ public class DescriptionSet {
 	public void add(OWLClassExpression ed) {
 		set.add(ed);
 		if(set.size()>maxSize) {
-			Iterator<Description> it = set.iterator();
+			Iterator<OWLClassExpression> it = set.iterator();
 			it.next();
 			it.remove();
 		}
 	}
 
-	public void addAll(Collection<Description> eds) {
+	public void addAll(Collection<OWLClassExpression> eds) {
 		for(OWLClassExpression ed : eds) {
 			add(ed);
 		}
@@ -64,7 +62,7 @@ public class DescriptionSet {
 	/**
 	 * @return the set
 	 */
-	public SortedSet<Description> getSet() {
+	public SortedSet<OWLClassExpression> getSet() {
 		return set;
 	}
 	

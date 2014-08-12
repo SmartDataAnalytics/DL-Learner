@@ -44,6 +44,8 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * A learning algorithm for EL, which will based on an

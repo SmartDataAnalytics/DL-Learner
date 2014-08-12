@@ -27,7 +27,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
@@ -74,7 +73,6 @@ import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 @ComponentAnn(name = "multiple criteria heuristic", shortName = "multiheuristic", version = 0.7)
 public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
-	private ConceptComparator conceptComparator = new ConceptComparator();
 //	private OCELConfigurator configurator;
 	
 	// heuristic parameters

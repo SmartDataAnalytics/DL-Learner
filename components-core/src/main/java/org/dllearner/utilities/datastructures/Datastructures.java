@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Conversion between different data structures.
@@ -71,19 +71,19 @@ public class Datastructures {
 		Iterator<OWLIndividual> i=individuals.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((Individual)i.next()).toStringID();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListRoles(Set<ObjectProperty> s){
+	public static String[] sortedSet2StringListRoles(Set<OWLObjectProperty> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<ObjectProperty> i=s.iterator();
+		Iterator<OWLObjectProperty> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((OWLObjectProperty)i.next()).toStringID();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
@@ -95,7 +95,7 @@ public class Datastructures {
 		Iterator<OWLClass> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((NamedClass)i.next()).toStringID();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;

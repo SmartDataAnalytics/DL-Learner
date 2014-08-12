@@ -21,7 +21,7 @@ package org.dllearner.core;
 
 import java.util.List;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * Basic interface for algorithms learning fuzzy OWL/DL class expressions.
@@ -38,7 +38,7 @@ public interface FuzzyClassExpressionLearningAlgorithm extends LearningAlgorithm
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions);
 	
 	/**
 	 * Return the best currently found concepts up to some maximum

@@ -26,11 +26,11 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.datastructures.SetManipulation;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 public class AutomaticNegativeExampleFinderOWL {
 
@@ -179,7 +179,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<OWLIndividual> positiveSet) {
 		logger.debug("making neg Examples from parallel classes");
-		SortedSet<Description> classes = new TreeSet<Description>();
+		SortedSet<OWLClassExpression> classes = new TreeSet<OWLClassExpression>();
 		this.fromParallelClasses.clear();
 		
 		for (OWLIndividual instance : positiveSet) {
@@ -229,7 +229,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	public void makeNegativeExamplesFromSuperClasses(OWLClass concept, int depth) {
 
 		fromSuperclasses.clear();
-		SortedSet<Description> superClasses = reasoningService.getSuperClasses(concept);
+		SortedSet<OWLClassExpression> superClasses = reasoningService.getSuperClasses(concept);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
 		for (OWLClassExpression oneSuperClass : superClasses) {

@@ -22,7 +22,7 @@ package org.dllearner.utilities.examples;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 
 

@@ -43,7 +43,6 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -162,8 +161,6 @@ public class ROLearner2 {
 	// evaluated descriptions
 //	private EvaluatedDescriptionSet evaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
-	// comparator used to create ordered sets of concepts
-	private ConceptComparator conceptComparator = new ConceptComparator();
 	// comparator for evaluated descriptions
 	private EvaluatedDescriptionPosNegComparator edComparator = new EvaluatedDescriptionPosNegComparator();
 
@@ -617,8 +614,7 @@ public class ROLearner2 {
 				// 1. short concept construction
 				if (useShortConceptConstruction) {
 					// kurzes Konzept konstruieren
-					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement,
-							conceptComparator);
+					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement);
 					int n = shortConcept.compareTo(concept);
 
 					// Konzepte sind gleich also Refinement improper

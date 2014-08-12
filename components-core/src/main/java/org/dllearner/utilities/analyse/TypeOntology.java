@@ -39,12 +39,12 @@ public class TypeOntology {
 			classes.add(itClass.next().getURI());
 		}
 
-		ExtendedIterator<OWLIndividual> itIndividuals = model.listIndividuals();
+		ExtendedIterator<Individual> itIndividuals = model.listIndividuals();
 		while (itIndividuals.hasNext()) {
 			individuals.add(itIndividuals.next().getURI());
 		}
 
-		ExtendedIterator<OWLDataProperty> itDataProperties = model
+		ExtendedIterator<DatatypeProperty> itDataProperties = model
 				.listDatatypeProperties();
 		while (itDataProperties.hasNext()) {
 			dataProperties.add(itDataProperties.next().getURI());

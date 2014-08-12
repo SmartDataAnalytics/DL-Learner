@@ -28,9 +28,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * This class takes a reasoner and individuals as input and detects
@@ -42,20 +42,20 @@ import org.dllearner.core.owl.ObjectProperty;
  */
 public class UsedEntitiesDetection {
 
-	Comparator<Set<ObjectProperty>> keyComp = new Comparator<Set<ObjectProperty>>() {
+	Comparator<Set<OWLObjectProperty>> keyComp = new Comparator<Set<OWLObjectProperty>>() {
 
 		@Override
-		public int compare(Set<ObjectProperty> key1, Set<ObjectProperty> key2) {
+		public int compare(Set<OWLObjectProperty> key1, Set<OWLObjectProperty> key2) {
 			// first criterion: size of key
 			int sizeDiff = key1.size() - key2.size();
 			if(sizeDiff == 0) {
-				Iterator<ObjectProperty> it1 = key1.iterator();
-				Iterator<ObjectProperty> it2 = key2.iterator();
+				Iterator<OWLObjectProperty> it1 = key1.iterator();
+				Iterator<OWLObjectProperty> it2 = key2.iterator();
 				// compare elements one by one (assumes that both use the same
 				// ordering, which is the case)
 				while(it1.hasNext()) {
-					ObjectProperty prop1 = it1.next();
-					ObjectProperty prop2 = it2.next();
+					OWLObjectProperty prop1 = it1.next();
+					OWLObjectProperty prop2 = it2.next();
 					int comp = prop1.compareTo(prop2);
 					if(comp != 0) {
 						return comp;
@@ -70,9 +70,9 @@ public class UsedEntitiesDetection {
 		
 	};
 	
-	private Map<Set<ObjectProperty>,Set<OWLClass>> usedClasses;
+	private Map<Set<OWLObjectProperty>,Set<OWLClass>> usedClasses;
 	
-	private Map<Set<ObjectProperty>,Set<ObjectProperty>> usedObjectProperties;
+	private Map<Set<OWLObjectProperty>,Set<OWLObjectProperty>> usedObjectProperties;
 	
 	private AbstractReasonerComponent reasoner;
 	private int maxDepth;
@@ -88,28 +88,28 @@ public class UsedEntitiesDetection {
 	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<OWLIndividual> individuals, int maxDepth) {
 		this.reasoner = reasoner;
 		this.maxDepth = maxDepth;
-		usedClasses = new TreeMap<Set<ObjectProperty>,Set<OWLClass>>(keyComp);
-		usedObjectProperties = new TreeMap<Set<ObjectProperty>,Set<ObjectProperty>>(keyComp);
+		usedClasses = new TreeMap<Set<OWLObjectProperty>,Set<OWLClass>>(keyComp);
+		usedObjectProperties = new TreeMap<Set<OWLObjectProperty>,Set<OWLObjectProperty>>(keyComp);
 		
-		Set<ObjectProperty> startKey = new TreeSet<ObjectProperty>();
+		Set<OWLObjectProperty> startKey = new TreeSet<OWLObjectProperty>();
 		computeUsedEntitiesRec(startKey, individuals);
 		
 	}
 
-	private void computeUsedEntitiesRec(Set<ObjectProperty> key, Set<OWLIndividual> individuals) {
+	private void computeUsedEntitiesRec(Set<OWLObjectProperty> key, Set<OWLIndividual> individuals) {
 		Set<OWLClass> types = new TreeSet<OWLClass>();
 //		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		// we must use the object property comparator to avoid double occurences of properties
-		Map<ObjectProperty,Set<OWLIndividual>> relations = new TreeMap<ObjectProperty,Set<OWLIndividual>>();
+		Map<OWLObjectProperty,Set<OWLIndividual>> relations = new TreeMap<OWLObjectProperty,Set<OWLIndividual>>();
 		
 		for(OWLIndividual individual : individuals) {
 			// add all types
 			types.addAll(reasoner.getTypes(individual));
 			
 			// compute outgoing properties
-			Map<ObjectProperty,Set<OWLIndividual>> map = reasoner.getObjectPropertyRelationships(individual);
-			for(Entry<ObjectProperty,Set<OWLIndividual>> entry : map.entrySet()) {
-				ObjectProperty prop = entry.getKey();
+			Map<OWLObjectProperty,Set<OWLIndividual>> map = reasoner.getObjectPropertyRelationships(individual);
+			for(Entry<OWLObjectProperty,Set<OWLIndividual>> entry : map.entrySet()) {
+				OWLObjectProperty prop = entry.getKey();
 				// we must use the individual comparator to avoid 
 				// multiple occurrences of the same individual
 				Set<OWLIndividual> inds = new TreeSet<OWLIndividual>(entry.getValue());
@@ -130,9 +130,9 @@ public class UsedEntitiesDetection {
 		
 		// recurse if limit not reached yet
 		if(key.size() < maxDepth) {
-			for(Entry<ObjectProperty,Set<OWLIndividual>> entry : relations.entrySet()) {
+			for(Entry<OWLObjectProperty,Set<OWLIndividual>> entry : relations.entrySet()) {
 				// construct new key (copy and add)
-				Set<ObjectProperty> newKey = new TreeSet<ObjectProperty>(key);
+				Set<OWLObjectProperty> newKey = new TreeSet<OWLObjectProperty>(key);
 				newKey.add(entry.getKey());
 				
 				// recursion
@@ -142,29 +142,29 @@ public class UsedEntitiesDetection {
 
 	}
 	
-	public Set<Set<ObjectProperty>> getKeys() {
+	public Set<Set<OWLObjectProperty>> getKeys() {
 		return usedClasses.keySet();
 	}
 	
 	/**
 	 * @return the usedClasses
 	 */
-	public Map<Set<ObjectProperty>, Set<OWLClass>> getUsedClasses() {
+	public Map<Set<OWLObjectProperty>, Set<OWLClass>> getUsedClasses() {
 		return usedClasses;
 	}
 
 	/**
 	 * @return the usedObjectProperties
 	 */
-	public Map<Set<ObjectProperty>, Set<ObjectProperty>> getUsedObjectProperties() {
+	public Map<Set<OWLObjectProperty>, Set<OWLObjectProperty>> getUsedObjectProperties() {
 		return usedObjectProperties;
 	}
 	
 	@Override
 	public String toString() {
 		String str = "";
-		Set<Set<ObjectProperty>> keys = getKeys();
-		for(Set<ObjectProperty> key : keys) {
+		Set<Set<OWLObjectProperty>> keys = getKeys();
+		for(Set<OWLObjectProperty> key : keys) {
 			str += key.toString() + ": \n";
 			str += "  classes: " + usedClasses.get(key) + "\n";
 			str += "  object properties: " + usedObjectProperties.get(key) + "\n";
