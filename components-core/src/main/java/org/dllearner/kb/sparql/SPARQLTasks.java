@@ -249,54 +249,6 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * get all instances for a complex concept / class OWLClassExpression in KBSyntax.
-	 * 
-	 * @param conceptKBSyntax
-	 *            A OWLClassExpression string in KBSyntax
-	 * @param sparqlResultLimit
-	 *            Limits the ResultSet size
-	 * @return SortedSet with the instance uris
-	 */
-	public SortedSet<String> retrieveInstancesForClassDescription(
-			String conceptKBSyntax, int sparqlResultLimit) {
-
-		String sparqlQueryString = "";
-		try {
-			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit, false, false);
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-		}
-		return queryAsSet(sparqlQueryString, "subject");
-	}
-
-	/**
-	 * same as <code>retrieveInstancesForClassDescription</code> including
-	 * RDFS Reasoning.
-	 * 
-	 * @param conceptKBSyntax
-	 *            A OWLClassExpression string in KBSyntax
-	 * @param sparqlResultLimit
-	 *            Limits the ResultSet size
-	 * @return SortedSet with the instance uris
-	 */
-	public SortedSet<String> retrieveInstancesForClassDescriptionIncludingSubclasses(
-			String conceptKBSyntax, int sparqlResultLimit, int maxDepth) {
-
-		String sparqlQueryString = "";
-		try {
-			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQueryIncludingSubclasses(conceptKBSyntax,
-							sparqlResultLimit, this, maxDepth);
-			
-
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-		}
-		return queryAsSet(sparqlQueryString, "subject");
-	}
-
-	/**
 	 * get all direct Classes of an instance.
 	 * 
 	 * @param instance

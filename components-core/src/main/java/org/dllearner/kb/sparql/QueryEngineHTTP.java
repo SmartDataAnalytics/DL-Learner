@@ -284,7 +284,7 @@ public class QueryEngineHTTP implements QueryExecution
         //Try to select language appropriately here based on the model content type
         Lang lang = WebContent.contentTypeToLang(actualContentType);
         if (! RDFLanguages.isTriples(lang))  throw new QueryException("Endpoint returned Content Type: " + actualContentType + " which is not a valid RDF Graph syntax");
-        model.read(in, null, Lang.RDFXML.toStringID()) ; 
+        model.read(in, null, Lang.RDFXML.getName()) ; 
         
         return model ;
     }

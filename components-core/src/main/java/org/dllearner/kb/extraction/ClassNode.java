@@ -47,7 +47,7 @@ public class ClassNode extends Node {
 		.getLogger(ClassNode.class);
 	
 	List<ObjectPropertyNode> classProperties = new ArrayList<ObjectPropertyNode>();
-	List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
+	List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
 	
 	public ClassNode(String uri) {
@@ -130,12 +130,12 @@ public class ClassNode extends Node {
 		String subject = getNTripleForm();
 		returnSet.add(subject+"<" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
 
-		for (OWLObjectPropertyNode one : classProperties) {
+		for (ObjectPropertyNode one : classProperties) {
 			returnSet.add(subject + one.getNTripleForm() + 
 					one.getBPart().getNTripleForm()+" .");
 			returnSet.addAll(one.getBPart().toNTriple());
 		}
-		for (OWLDataPropertyNode one : datatypeProperties) {
+		for (DatatypePropertyNode one : datatypeProperties) {
 			returnSet.add(subject+ one.getNTripleForm() + one.getNTripleFormOfB()
 					+ " .");
 		}
@@ -149,7 +149,7 @@ public class ClassNode extends Node {
 		OWLDataFactory factory =  owlAPIOntologyCollector.getFactory();
 		
 		OWLClass me =factory.getOWLClass(getIRI());
-		for (OWLObjectPropertyNode one : classProperties) {
+		for (ObjectPropertyNode one : classProperties) {
 			OWLClass c = factory.getOWLClass(one.getBPart().getIRI());
 			if(OWLVocabulary.isStringSubClassVocab(one.getURIString())){
 				owlAPIOntologyCollector.addAxiom(factory.getOWLSubClassOfAxiom(me, c));
@@ -166,7 +166,7 @@ public class ClassNode extends Node {
 			}
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
 		}
-		for (OWLDataPropertyNode one : datatypeProperties) {
+		for (DatatypePropertyNode one : datatypeProperties) {
 			//FIXME add languages
 			// watch for tail
 			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){

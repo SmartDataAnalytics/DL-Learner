@@ -149,15 +149,15 @@ public class ExtractionAlgorithm {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
 			logger.info("Get info for "+objectProperties.size() + " objectProperties");
-			for (OWLObjectPropertyNode node : objectProperties) {
+			for (ObjectPropertyNode node : objectProperties) {
 				if(stopCondition()){
 					break;
 				}
 				collectNodes.addAll(node.expandProperties(tupleAquisitor, configuration.getManipulator(), configuration.isDissolveBlankNodes()));
 			}
-			List<OWLDataPropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
+			List<DatatypePropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
 			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
-			for (OWLDataPropertyNode node : datatypeProperties) {
+			for (DatatypePropertyNode node : datatypeProperties) {
 				if(stopCondition()){
 					break;
 				}
@@ -302,8 +302,8 @@ public class ExtractionAlgorithm {
 		return properties;
 	}
 	
-	private static List<OWLDataPropertyNode> getDatatypeProperties(List<Node> l ){
-		List<OWLDataPropertyNode> properties = new ArrayList<OWLDataPropertyNode>();
+	private static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
+		List<DatatypePropertyNode> properties = new ArrayList<DatatypePropertyNode>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());

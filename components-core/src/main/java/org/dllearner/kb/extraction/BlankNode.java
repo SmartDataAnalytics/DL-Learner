@@ -50,7 +50,7 @@ public class BlankNode extends Node {
 	
 	private List<BlankNode> blankNodes =new ArrayList<BlankNode>();
 	private SortedSet<StringTuple> otherNodes = new TreeSet<StringTuple> ();
-	private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
+	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 	
 	//private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
 	//private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
@@ -233,7 +233,7 @@ public class BlankNode extends Node {
 		}
 		logger.debug("***************");
 		logger.debug("dtype ");
-		for (OWLDataPropertyNode d : datatypeProperties) {
+		for (DatatypePropertyNode d : datatypeProperties) {
 			logger.debug(d.getURIString()+" "+d.getNTripleFormOfB());
 		}
 		logger.debug("***************");

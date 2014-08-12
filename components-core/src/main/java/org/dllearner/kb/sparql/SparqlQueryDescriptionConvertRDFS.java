@@ -19,14 +19,17 @@
 
 package org.dllearner.kb.sparql;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Union;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectUnionOfImpl;
 
 
 /**
@@ -82,11 +85,11 @@ public class SparqlQueryDescriptionConvertRDFS {
 				currentconcept = "\"" + currentconcept + "\"";
 			// replace with union
 			else {
-				LinkedList<Description> nc = new LinkedList<Description>();
+				Set<OWLClassExpression> nc = new HashSet<OWLClassExpression>();
 				for (String one : subclasses) {
-					nc.add(df.getOWLClass(IRI.create(one));
+					nc.add(new OWLClassImpl(IRI.create(one)));
 				}
-				currentconcept = new Union(nc).toKBSyntaxString();
+				currentconcept = new OWLObjectUnionOfImpl(nc).toString();
 			}
 
 			returnValue = currentconcept + returnValue;

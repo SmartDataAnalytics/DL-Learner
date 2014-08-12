@@ -25,14 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.parser.KBParser;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
@@ -66,7 +60,7 @@ public class OntologyCloserOWLAPI {
 //		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
-		this.onto = reasoner.getOWLAPIOntologies().get(0);
+		this.onto = reasoner.getOntology();
 	}
 
 	/**
@@ -178,44 +172,6 @@ public class OntologyCloserOWLAPI {
 			System.out.println("No transitive Properties found");
 		}
 		return retval;
-	}
-
-	/*
-	 * public static void closeKB(KB kb) { new
-	 * OntologyCloserOWLAPI(kb).applyNumberRestrictions(); }
-	 */
-
-	/**
-	 * makes some retrieval queries
-	 * @param conceptStr
-	 */
-	public SortedSet<OWLIndividual> verifyConcept(String conceptStr) {
-
-		OWLClassExpression d;
-		SimpleClock sc = new SimpleClock();
-		StringBuffer sb = new StringBuffer();
-		sb.append(conceptStr);
-		conceptStr = sb.toString();
-		SortedSet<OWLIndividual> ind = new TreeSet<OWLIndividual>();
-		try {
-			d = KBParser.parseConcept(conceptStr);
-			System.out.println("\n*******************\nStarting retrieval");
-			System.out.println(d.toManchesterSyntaxString("",
-					new HashMap<String, String>()));
-			// System.out.println(d.toString());
-			sc.setTime();
-			this.rs.getIndividuals(d);
-
-			System.out.println("retrieved: " + ind.size() + " instances");
-			sc.printAndSet();
-			for (OWLIndividual individual : ind) {
-				System.out.print(individual + "|");
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return ind;
 	}
 
 	public void writeOWLFile(URI filename) {
