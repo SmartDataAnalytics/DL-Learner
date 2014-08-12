@@ -23,9 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 
 /**
@@ -42,26 +41,26 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	private ELDescriptionTreeComparator cmp = new ELDescriptionTreeComparator();
 	private RelevanceWeightings weightings;
 	private List<RelevanceMetric> relevanceMetrics;
-	private NamedClass classToDescribe;
+	private OWLClass classToDescribe;
 	
 	
-	public RelevanceWeightedStableHeuristic(NamedClass classToDescribe, RelevanceWeightings weightings, RelevanceMetric... relevanceMetrics) {
+	public RelevanceWeightedStableHeuristic(OWLClass classToDescribe, RelevanceWeightings weightings, RelevanceMetric... relevanceMetrics) {
 		this.classToDescribe = classToDescribe;
 		this.weightings = weightings;
 		this.relevanceMetrics = Arrays.asList(relevanceMetrics);
 	}
 	
-	public RelevanceWeightedStableHeuristic(NamedClass classToDescribe, RelevanceWeightings weightings, List<RelevanceMetric> relevanceMetrics) {
+	public RelevanceWeightedStableHeuristic(OWLClass classToDescribe, RelevanceWeightings weightings, List<RelevanceMetric> relevanceMetrics) {
 		this.classToDescribe = classToDescribe;
 		this.weightings = weightings;
 		this.relevanceMetrics = relevanceMetrics;
 	}
 	
-	public RelevanceWeightedStableHeuristic(NamedClass classToDescribe, RelevanceMetric... relevanceMetrics) {
+	public RelevanceWeightedStableHeuristic(OWLClass classToDescribe, RelevanceMetric... relevanceMetrics) {
 		this(classToDescribe, new DefaultRelevanceWeightings(), relevanceMetrics);
 	}
 	
-	public RelevanceWeightedStableHeuristic(NamedClass classToDescribe, List<RelevanceMetric> relevanceMetrics) {
+	public RelevanceWeightedStableHeuristic(OWLClass classToDescribe, List<RelevanceMetric> relevanceMetrics) {
 		this(classToDescribe, new DefaultRelevanceWeightings(), relevanceMetrics);
 	}
 	
@@ -82,13 +81,13 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	/**
 	 * @param classToDescribe the classToDescribe to set
 	 */
-	public void setClassToDescribe(NamedClass classToDescribe) {
+	public void setClassToDescribe(OWLClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 	
 	public double getNodeScore(SearchTreeNode node){
 		double score = node.getAccuracy();
-		Description d = node.getDescriptionTree().transformToDescription();
+		OWLClassExpression d = node.getDescriptionTree().transformToDescription();
 		for (RelevanceMetric metric : relevanceMetrics) {
 			score += weightings.getWeight(metric.getClass()) * metric.getRelevance(classToDescribe, d);
 		}

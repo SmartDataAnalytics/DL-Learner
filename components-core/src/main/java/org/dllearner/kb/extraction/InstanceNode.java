@@ -146,11 +146,11 @@ public class InstanceNode extends Node {
 	@Override
 	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
 		List<BlankNode> ret =  new ArrayList<BlankNode>();
-		for (ObjectPropertyNode one : objectProperties) {
+		for (OWLObjectPropertyNode one : objectProperties) {
 			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		}
 		
-		for (DatatypePropertyNode one : datatypeProperties) {
+		for (OWLDataPropertyNode one : datatypeProperties) {
 			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		}
 		return ret;
@@ -165,14 +165,14 @@ public class InstanceNode extends Node {
 			returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + one.getURIString() + ">.");
 			returnSet.addAll(one.toNTriple());
 		}
-		for (ObjectPropertyNode one : objectProperties) {
+		for (OWLObjectPropertyNode one : objectProperties) {
 			returnSet.add("<" + uri + "><" + one.getURIString() + "><" + one.getBPart().getURIString()
 					+ ">.");
 			returnSet.addAll(one.toNTriple());
 			returnSet.addAll(one.getBPart().toNTriple());
 		}
 		
-		for (DatatypePropertyNode one : datatypeProperties) {
+		for (OWLDataPropertyNode one : datatypeProperties) {
 			returnSet.add("<" + uri + "><" + one.getURIString() + "> " + one.getNTripleFormOfB()
 					+ " .");
 		}
@@ -196,7 +196,7 @@ public class InstanceNode extends Node {
 			//handover
 			one.toOWLOntology(owlAPIOntologyCollector);
 		}
-		for (ObjectPropertyNode one : objectProperties) {
+		for (OWLObjectPropertyNode one : objectProperties) {
 			OWLAxiom ax = null;
 			if(one.getURIString().equals(OWLVocabulary.OWL_DIFFERENT_FROM)){
 				OWLIndividual o = factory.getOWLNamedIndividual(one.getBPart().getIRI());
@@ -217,7 +217,7 @@ public class InstanceNode extends Node {
 			one.getBPart().toOWLOntology(owlAPIOntologyCollector);
 		}
 		
-		for (DatatypePropertyNode one : datatypeProperties) {
+		for (OWLDataPropertyNode one : datatypeProperties) {
 			OWLDataProperty p = factory.getOWLDataProperty(one.getIRI());
 			Literal ln = one.getBPart().getLiteral();
 			

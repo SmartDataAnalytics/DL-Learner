@@ -1,22 +1,37 @@
 package org.dllearner.algorithms.isle.index.semantic;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.EntityCandidateGenerator;
 import org.dllearner.algorithms.isle.TextDocumentGenerator;
-import org.dllearner.algorithms.isle.index.*;
+import org.dllearner.algorithms.isle.index.AnnotatedDocument;
+import org.dllearner.algorithms.isle.index.LinguisticAnnotator;
+import org.dllearner.algorithms.isle.index.SemanticAnnotator;
+import org.dllearner.algorithms.isle.index.SimpleEntityCandidatesTrie;
+import org.dllearner.algorithms.isle.index.TextDocument;
+import org.dllearner.algorithms.isle.index.TrieEntityCandidateGenerator;
+import org.dllearner.algorithms.isle.index.TrieLinguisticAnnotator;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
 import org.dllearner.algorithms.isle.wsd.StructureBasedWordSenseDisambiguation;
 import org.dllearner.algorithms.isle.wsd.WindowBasedContextExtractor;
 import org.dllearner.algorithms.isle.wsd.WordSenseDisambiguation;
-import org.dllearner.core.owl.Entity;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.*;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 
 /**
  * Interface for an index which is able to resolve a given entity's URI to the set of documents containing
@@ -28,7 +43,7 @@ import java.util.Set;
 public abstract class SemanticIndexGenerator {
 
 	static HashFunction hf = Hashing.md5();
-    private static final Logger logger = Logger.getLogger(SemanticIndexGenerator.class.getName());
+    private static final Logger logger = Logger.getLogger(SemanticIndexGenerator.class);
     private static boolean useCache = false;
     
     public static SemanticIndex generateIndex(Set<String> documents, OWLOntology ontology, WordSenseDisambiguation wordSenseDisambiguation,
@@ -126,7 +141,7 @@ public abstract class SemanticIndexGenerator {
             TextDocument textDocument = TextDocumentGenerator.getInstance().generateDocument(document);
             logger.debug("Processing document:" + textDocument);
             AnnotatedDocument annotatedDocument = semanticAnnotator.processDocument(textDocument);
-            for (Entity entity : annotatedDocument.getContainedEntities()) {
+            for (OWLEntity entity : annotatedDocument.getContainedEntities()) {
                 Set<AnnotatedDocument> existingAnnotatedDocuments = index.get(entity);
                 if (existingAnnotatedDocuments == null) {
                     existingAnnotatedDocuments = new HashSet<AnnotatedDocument>();

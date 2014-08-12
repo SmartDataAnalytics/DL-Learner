@@ -53,14 +53,14 @@ public class OntologyCloserOWLAPI {
 	OWLOntology onto;
 	OWLAPIReasoner rs;
 //	ReasonerComponent rs;
-	HashMap<Individual, Set<OWLObjectExactCardinality>> indToRestr;
+	HashMap<OWLIndividual, Set<OWLObjectExactCardinality>> indToRestr;
 	OWLDataFactory factory;
 	OWLOntologyManager manager;
 	public int numberOfStatementsChanged = 0;
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
 		this.rs = reasoner;
-		this.indToRestr = new HashMap<Individual, Set<OWLObjectExactCardinality>>();
+		this.indToRestr = new HashMap<OWLIndividual, Set<OWLObjectExactCardinality>>();
 //		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
@@ -77,20 +77,20 @@ public class OntologyCloserOWLAPI {
 		System.out.println("found: " + allRoles.size() + " roles");
 		testForTransitiveProperties(true);
 
-		for (ObjectProperty oneRole : allRoles) {
+		for (OWLObjectProperty oneRole : allRoles) {
 
-			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
+			Map<OWLIndividual, SortedSet<OWLIndividual>> allRoleMembers = this.rs
 					.getPropertyMembers(oneRole);
-			for (Individual oneInd : allRoleMembers.keySet()) {
-				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
+			for (OWLIndividual oneInd : allRoleMembers.keySet()) {
+				SortedSet<OWLIndividual> fillers = allRoleMembers.get(oneInd);
 				// only where roles exist
 				if (fillers.size() > 0) {
 					OWLObjectExactCardinality oecr = factory
 							.getOWLObjectExactCardinality(fillers.size(), factory.getOWLObjectProperty(IRI
-									.create(oneRole.getName())), factory.getOWLThing());
+									.create(oneRole.toStringID())), factory.getOWLThing());
 
 					OWLAxiom axiom = factory.getOWLClassAssertionAxiom(oecr, factory
-							.getOWLNamedIndividual(IRI.create(oneInd.getName())));
+							.getOWLNamedIndividual(IRI.create(oneInd.toStringID())));
 					AddAxiom addAxiom = new AddAxiom(this.onto, axiom);
 					try {
 						// add change
@@ -117,14 +117,14 @@ public class OntologyCloserOWLAPI {
 		testForTransitiveProperties(true);
 
 		// collect info for roles and individuals
-		for (ObjectProperty oneRole : allRoles) {
-			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
+		for (OWLObjectProperty oneRole : allRoles) {
+			Map<OWLIndividual, SortedSet<OWLIndividual>> allRoleMembers = this.rs
 					.getPropertyMembers(oneRole);
-			for (Individual oneInd : allRoleMembers.keySet()) {
-				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
+			for (OWLIndividual oneInd : allRoleMembers.keySet()) {
+				SortedSet<OWLIndividual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
 					OWLObjectExactCardinality oecr = factory.getOWLObjectExactCardinality(fillers.size(), factory.getOWLObjectProperty(IRI
-									.create(oneRole.getName())),
+									.create(oneRole.toStringID())),
 							factory.getOWLThing());
 					collectExObjRestrForInd(oneInd, oecr);
 				}
@@ -134,7 +134,7 @@ public class OntologyCloserOWLAPI {
 		Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
 		Set<OWLObjectExactCardinality> s = null;
 
-		for (Individual oneInd : indToRestr.keySet()) {
+		for (OWLIndividual oneInd : indToRestr.keySet()) {
 			s = indToRestr.get(oneInd);
 			for (OWLObjectExactCardinality oecr : s) {
 				target.add(oecr);
@@ -145,7 +145,7 @@ public class OntologyCloserOWLAPI {
 			target = new HashSet<OWLClassExpression>();
 
 			OWLAxiom axiom = factory.getOWLClassAssertionAxiom(intersection, factory
-					.getOWLNamedIndividual(IRI.create(oneInd.getName())));
+					.getOWLNamedIndividual(IRI.create(oneInd.toStringID())));
 			AddAxiom addAxiom = new AddAxiom(this.onto, axiom);
 			try {
 				manager.applyChange(addAxiom);
@@ -187,14 +187,14 @@ public class OntologyCloserOWLAPI {
 	 * makes some retrieval queries
 	 * @param conceptStr
 	 */
-	public SortedSet<Individual> verifyConcept(String conceptStr) {
+	public SortedSet<OWLIndividual> verifyConcept(String conceptStr) {
 
 		Description d;
 		SimpleClock sc = new SimpleClock();
 		StringBuffer sb = new StringBuffer();
 		sb.append(conceptStr);
 		conceptStr = sb.toString();
-		SortedSet<Individual> ind = new TreeSet<Individual>();
+		SortedSet<OWLIndividual> ind = new TreeSet<OWLIndividual>();
 		try {
 			d = KBParser.parseConcept(conceptStr);
 			System.out.println("\n*******************\nStarting retrieval");
@@ -206,8 +206,8 @@ public class OntologyCloserOWLAPI {
 
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();
-			for (Individual individual : ind) {
-				System.out.print(individual + "|");
+			for (OWLIndividual individual : ind) {
+				System.out.print(OWLIndividual + "|");
 			}
 
 		} catch (Exception e) {
@@ -225,7 +225,7 @@ public class OntologyCloserOWLAPI {
 		}
 	}
 
-	private boolean collectExObjRestrForInd(Individual ind,
+	private boolean collectExObjRestrForInd(OWLIndividual ind,
 			OWLObjectExactCardinality oecr) {
 		Set<OWLObjectExactCardinality> s = indToRestr.get(ind);
 

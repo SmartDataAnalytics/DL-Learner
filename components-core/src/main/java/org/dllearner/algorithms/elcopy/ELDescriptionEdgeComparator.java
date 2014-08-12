@@ -36,7 +36,7 @@ public class ELDescriptionEdgeComparator implements Comparator<ELDescriptionEdge
 	@Override
 	public int compare(ELDescriptionEdge edge1, ELDescriptionEdge edge2) {
 		// perform string comparison on node labels
-		int comp = edge1.getLabel().getURI().compareTo(edge2.getLabel().getURI());
+		int comp = edge1.getLabel().compareTo(edge2.getLabel());
 		if(comp==0) {
 			return nodeComp.compare(edge1.getNode(), edge2.getNode());
 		} else {

@@ -158,7 +158,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
 	SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
 	SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
-	SortedSet<Individual> individuals = new TreeSet<Individual>();	
+	SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();	
 	
 	// namespaces
 	private Map<String, String> prefixes = new TreeMap<String,String>();
@@ -220,7 +220,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
 		intDatatypeProperties = new TreeSet<OWLDataProperty>();
 		stringDatatypeProperties = new TreeSet<OWLDataProperty>();
-		individuals = new TreeSet<Individual>();	
+		individuals = new TreeSet<OWLIndividual>();	
 				
 		// create OWL API ontology manager
 		manager = OWLManager.createOWLOntologyManager();
@@ -428,7 +428,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
-	public SortedSet<Individual> getIndividuals() {
+	public SortedSet<OWLIndividual> getIndividuals() {
 		return individuals;
 	}
 
@@ -457,7 +457,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //				roleComparator);
 // 
 //		// refinement of atomic concepts
-//		for (ObjectProperty role : atomicRoles) {
+//		for (OWLObjectProperty role : atomicRoles) {
 //			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
 //			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
 //		}
@@ -479,7 +479,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //				roleComparator);
 // 
 //		// refinement of atomic concepts
-//		for (ObjectProperty role : atomicRoles) {
+//		for (OWLObjectProperty role : atomicRoles) {
 //			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
 //			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
 //		}
@@ -502,7 +502,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //				roleComparator);
 // 
 //		// refinement of atomic concepts
-//		for (DatatypeProperty role : datatypeProperties) {
+//		for (OWLDataProperty role : datatypeProperties) {
 //			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypePropertiesImpl(role));
 //			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypePropertiesImpl(role));
 //		}
@@ -517,19 +517,19 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 //	}		
 	
 	@Override
-	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
 		return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(subConcept),
 				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(superConcept)));			
 	}
 	
 	@Override
-	protected boolean isEquivalentClassImpl(Description class1, Description class2) {
+	protected boolean isEquivalentClassImpl(OWLClassExpression class1, OWLClassExpression class2) {
 		return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class1),
 				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class2)));		
 	}
 
 	@Override
-	protected TreeSet<Description> getSuperClassesImpl(Description concept) {
+	protected TreeSet<Description> getSuperClassesImpl(OWLClassExpression concept) {
 		NodeSet<OWLClass> classes = null;
 		
 		classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
@@ -538,7 +538,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<Description> getSubClassesImpl(Description concept) {
+	protected TreeSet<Description> getSubClassesImpl(OWLClassExpression concept) {
 		NodeSet<OWLClass> classes = null;
 		
 		classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
@@ -547,7 +547,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
+	protected TreeSet<ObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) {
 		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
 		properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
@@ -556,7 +556,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
+	protected TreeSet<ObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) {
 		NodeSet<OWLObjectPropertyExpression> properties = null;
 		
 		properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
@@ -565,7 +565,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<OWLDataProperty> getSuperPropertiesImpl(DatatypeProperty role) {
+	protected TreeSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
 		properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
@@ -574,7 +574,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected TreeSet<OWLDataProperty> getSubPropertiesImpl(DatatypeProperty role) {
+	protected TreeSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) {
 		NodeSet<OWLDataProperty> properties = null;
 		
 		properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
@@ -583,9 +583,9 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}	
 	
 	@Override
-	public boolean hasTypeImpl(Description concept, Individual individual) {
+	public boolean hasTypeImpl(OWLClassExpression concept, Individual individual) {
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
-		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+		OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.toStringID()));
 		
 		// commented by Josue to make be fuzzyDL and not Pellet to answer this method
 		// boolean crispReasonerOutput = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));		
@@ -598,11 +598,11 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept) {
+	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) {
 //		OWLDescription d = getOWLAPIDescription(concept);
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
 		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
-		SortedSet<Individual> inds = new TreeSet<Individual>();
+		SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
 		for(OWLNamedIndividual ind : individuals)
 			//ugly code
 			if(ind != null)
@@ -611,7 +611,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(Description concept) {
+	public SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(OWLClassExpression concept) {
 //		OWLDescription d = getOWLAPIDescription(concept);
 		OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
 		Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
@@ -624,10 +624,10 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Set<OWLClass> getTypesImpl(Individual individual) {
+	public Set<OWLClass> getTypesImpl(OWLIndividual individual) {
 		Set<Node<OWLClass>> result = null;
 		
-		result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())),false).getNodes();
+		result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.toStringID())),false).getNodes();
 		
 		return getFirstClassesNoTopBottom(result);
 	}
@@ -638,7 +638,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Description getDomainImpl(ObjectProperty objectProperty) {
+	public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
 		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 		
 			// Pellet returns a set of nodes of named classes, which are more
@@ -649,7 +649,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
+	public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
 		OWLDataProperty prop = OWLAPIConverter
 				.getOWLAPIDataProperty(datatypeProperty);
 
@@ -659,7 +659,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Description getRangeImpl(ObjectProperty objectProperty) {
+	public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
 		OWLObjectProperty prop = OWLAPIConverter
 				.getOWLAPIObjectProperty(objectProperty);
 
@@ -674,7 +674,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 
 	}
 	
-	private Description getDescriptionFromReturnedDomain(NodeSet<OWLClass> set) {
+	private OWLClassExpression getDescriptionFromReturnedDomain(NodeSet<OWLClass> set) {
 		if(set.isEmpty())
 			return new Thing();
 		
@@ -688,7 +688,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		}
 		for(OWLClassExpression desc : union){
 			boolean isSuperClass = false;
-			for(Description d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))){
+			for(OWLClassExpression d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))){
 				if(union.contains(OWLAPIConverter.getOWLAPIDescription(d))){
 					isSuperClass = true;
 					break;
@@ -708,18 +708,18 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
+	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty atomicRole) {
 		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(atomicRole);
-		Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
-		for(Individual i : individuals) {
-			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
+		Map<OWLIndividual, SortedSet<OWLIndividual>> map = new TreeMap<OWLIndividual, SortedSet<OWLIndividual>>();
+		for(OWLIndividual i : individuals) {
+			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.toStringID()));
 			
 			// get all related individuals via OWL API
 			Set<OWLNamedIndividual> inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
 			
 			
 			// convert data back to DL-Learner structures
-			SortedSet<Individual> is = new TreeSet<Individual>();
+			SortedSet<OWLIndividual> is = new TreeSet<OWLIndividual>();
 			for(OWLNamedIndividual oi : inds)
 				is.add(df.getOWLNamedIndividual(IRI.create(oi.toStringID()));
 			map.put(i, is);
@@ -728,8 +728,8 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
-		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+	protected Map<ObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
+		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.toStringID()));
 		Map<OWLObjectPropertyExpression, Set<OWLNamedIndividual>> mapAPI = new HashMap<OWLObjectPropertyExpression, Set<OWLNamedIndividual>>();
 		
 //		Map<OWLObjectPropertyExpression, Set<OWLIndividual>> mapAPI = ind.getObjectPropertyValues(ontology);
@@ -738,25 +738,25 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 			mapAPI.put(prop, reasoner.getObjectPropertyValues(ind, prop).getFlattened());
 		}
 		
-		Map<ObjectProperty,Set<Individual>> map = new TreeMap<ObjectProperty, Set<Individual>>();
+		Map<ObjectProperty,Set<OWLIndividual>> map = new TreeMap<ObjectProperty, Set<OWLIndividual>>();
 		for(Entry<OWLObjectPropertyExpression,Set<OWLNamedIndividual>> entry : mapAPI.entrySet()) {
 			ObjectProperty prop = OWLAPIConverter.convertObjectProperty(entry.getKey().asOWLObjectProperty());
-			Set<Individual> inds = OWLAPIConverter.convertIndividuals(entry.getValue());
+			Set<OWLIndividual> inds = OWLAPIConverter.convertIndividuals(entry.getValue());
 			map.put(prop, inds);
 		}
 		return map;
 	}
 	
 	@Override
-	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
-		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, ObjectProperty objectProperty) {
+		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.toStringID()));
 		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
 		Set<OWLNamedIndividual> inds = null;
 		
 		inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
 		
 		// convert data back to DL-Learner structures
-		SortedSet<Individual> is = new TreeSet<Individual>();
+		SortedSet<OWLIndividual> is = new TreeSet<OWLIndividual>();
 		for(OWLNamedIndividual oi : inds) {
 			is.add(df.getOWLNamedIndividual(IRI.create(oi.toStringID()));
 		}
@@ -764,8 +764,8 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 	
 	@Override
-	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
-		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+	public Set<Constant> getRelatedValuesImpl(OWLIndividual individual, DatatypeProperty datatypeProperty) {
+		OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.toStringID()));
 		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 		Set<OWLLiteral> constants = null;
 	
@@ -774,14 +774,14 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 		return OWLAPIConverter.convertConstants(constants);	
 	}	
 	
-	public Map<Individual, SortedSet<Double>> getDoubleValues(
+	public Map<OWLIndividual, SortedSet<Double>> getDoubleValues(
 			DatatypeProperty datatypeProperty) {
 		OWLDataProperty prop = OWLAPIConverter
 				.getOWLAPIDataProperty(datatypeProperty);
-		Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();
-		for (Individual i : individuals) {
+		Map<OWLIndividual, SortedSet<Double>> map = new TreeMap<OWLIndividual, SortedSet<Double>>();
+		for (OWLIndividual i : individuals) {
 			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI
-					.create(i.getName()));
+					.create(i.toStringID()));
 
 			// get all related individuals via OWL API
 			Set<OWLLiteral> inds = null;
@@ -800,11 +800,11 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}	
 	
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+	public Map<OWLIndividual, SortedSet<Constant>> getDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-		Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
-		for(Individual i : individuals) {
-			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
+		Map<OWLIndividual, SortedSet<Constant>> map = new TreeMap<OWLIndividual, SortedSet<Constant>>();
+		for(OWLIndividual i : individuals) {
+			OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.toStringID()));
 			
 			// get all related values via OWL API
 			Set<OWLLiteral> constants = null;
@@ -1032,7 +1032,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	}
 
 	@Override
-	public Set<Constant> getLabelImpl(Entity entity) {
+	public Set<Constant> getLabelImpl(OWLEntity entity) {
 		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
 		Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0),
 				factory.getRDFSLabel());
@@ -1076,7 +1076,7 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 * @return the asserted class definitions
 	 */
 	@Override
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc){
+	protected Set<Description> getAssertedDefinitionsImpl(OWLClass nc){
 		OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass();
 		Set<OWLClassExpression> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies.get(0).getImportsClosure()));
 		Set<Description> definitions = new HashSet<Description>();
@@ -1115,9 +1115,9 @@ public class FuzzyOWLAPIReasoner extends AbstractReasonerComponent {
 	 **************************************************************/
 	
 	@Override
-	public double hasTypeFuzzyMembershipImpl(Description description, FuzzyIndividual individual) {
+	public double hasTypeFuzzyMembershipImpl(OWLClassExpression description, FuzzyIndividual individual) {
 		OWLClassExpression desc = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
-		OWLIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));		
+		OWLIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.toStringID()));		
 		
 		double fuzzyReasonerOutput = ((FuzzyDLReasonerManager) reasoner).getFuzzyMembership(desc, ind);
 		

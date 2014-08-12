@@ -47,7 +47,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
  * 2-valued, because we only distinguish between covered and non-covered
  * examples. (A 3-valued problem distinguishes between covered examples,
  * examples covered by the negation of the concept, and all other examples.) The
- * 2-valued learning problem is often more useful for Description Logics due to
+ * 2-valued learning problem is often more useful for OWLClassExpression Logics due to
  * (the Open World Assumption and) the fact that negative knowledge, e.g. that a
  * person does not have a child, is or cannot be expressed.
  * 
@@ -533,7 +533,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			if (!getReasoner().hasType(description, example)) {
 				notCoveredPos++;
 				
-//				System.out.println("d:" + description + "; ex:" + example);
+//				System.out.println("d:" + OWLClassExpression + "; ex:" + example);
 				
 				if(notCoveredPos >= maxNotCovered) {
 					return -1;

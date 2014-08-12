@@ -3,11 +3,13 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
@@ -49,6 +51,7 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	private static final OWLClassExpressionUtils visitor = new OWLClassExpressionUtils();
 	private static int length = 0;
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
+	private static final OWLClassExpressionChildrenCollector CHILDREN_COLLECTOR = new OWLClassExpressionChildrenCollector();
 	
 	/**
 	 * Returns the length of a given class expression. Note that the current implementation
@@ -71,6 +74,10 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	public static int getDepth(OWLClassExpression ce){
 		int depth = ce.accept(DEPTH_FINDER);
 		return depth;
+	}
+	
+	public static Set<OWLClassExpression> getChildren(OWLClassExpression ce){
+		return ce.accept(CHILDREN_COLLECTOR);
 	}
 
 	/* (non-Javadoc)
@@ -329,5 +336,7 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 		Set<OWLFacetRestriction> facetRestrictions = node.getFacetRestrictions();
 		length += facetRestrictions.size();
 	}
+	
+	
 
 }

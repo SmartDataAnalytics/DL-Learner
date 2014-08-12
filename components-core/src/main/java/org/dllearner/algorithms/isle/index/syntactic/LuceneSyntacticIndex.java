@@ -32,7 +32,7 @@ import org.dllearner.algorithms.isle.index.TextDocument;
 import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
@@ -70,7 +70,7 @@ public class LuceneSyntacticIndex implements Index {
 	 * @see org.dllearner.algorithms.isle.SyntacticIndex#getDocuments(java.lang.String)
 	 */
 	@Override
-	public Set<AnnotatedDocument> getDocuments(Entity entity) {
+	public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
 		Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
 		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
@@ -124,7 +124,7 @@ public class LuceneSyntacticIndex implements Index {
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity entity) {
+	public long getNumberOfDocumentsFor(OWLEntity entity) {
 		return 0;
 	}
 
@@ -132,7 +132,7 @@ public class LuceneSyntacticIndex implements Index {
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity... entities) {
+	public long getNumberOfDocumentsFor(OWLEntity... entities) {
 		return 0;
 	}
 

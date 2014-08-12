@@ -44,7 +44,7 @@ public class Logging {
 		Enumeration<Logger> e = rep.getCurrentLoggers();		
 		while(e.hasMoreElements()) {
 			Logger l = e.nextElement();
-			String name = l.getName();
+			String name = l.toStringID();
 			Level level = l.getLevel();
 			Enumeration<Appender> appenders = l.getAllAppenders();
 			

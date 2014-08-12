@@ -22,11 +22,11 @@ package org.dllearner.algorithms.elcopy;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Property;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * Compares two EL description trees. It is a lexicographic order
+ * Compares two EL OWLClassExpression trees. It is a lexicographic order
  * according to the following criteria:
  * - number of children
  * - size of label
@@ -63,9 +63,9 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 					Iterator<OWLClass> it1 = node1.getLabel().descendingIterator();
 					Iterator<OWLClass> it2 = node2.getLabel().descendingIterator();
 					while(it1.hasNext()) {
-						NamedClass nc1 = it1.next();
-						NamedClass nc2 = it2.next();
-						compare = nc1.getName().compareTo(nc2.getName());
+						OWLClass nc1 = it1.next();
+						OWLClass nc2 = it2.next();
+						compare = nc1.toStringID().compareTo(nc2.toStringID());
 						
 					}
 				} else if(!node1.isClassNode() && !node2.isClassNode()){
@@ -80,9 +80,9 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 				// recursively compare all edges
 				for(int i=0; i<nrOfChildren1; i++) {
 					// compare by edge name
-					Property op1 = node1.getEdges().get(i).getLabel();
-					Property op2 = node2.getEdges().get(i).getLabel();
-					int compare1 = op1.getName().compareTo(op2.getName());
+					OWLProperty op1 = node1.getEdges().get(i).getLabel();
+					OWLProperty op2 = node2.getEdges().get(i).getLabel();
+					int compare1 = op1.toStringID().compareTo(op2.toStringID());
 					if(compare1 != 0)
 						return compare1;
 					

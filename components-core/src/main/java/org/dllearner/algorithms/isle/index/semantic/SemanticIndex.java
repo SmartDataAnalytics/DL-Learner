@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.Index;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Interface for an index which is able to resolve a given entity's URI to the set of documents containing
@@ -15,7 +15,7 @@ import org.dllearner.core.owl.Entity;
  * @author Lorenz Buehmann
  * @author Daniel Fleischhacker
  */
-public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> implements Index{
+public class SemanticIndex extends HashMap<OWLEntity, Set<AnnotatedDocument>> implements Index{
 
     private int nrOfDocuments;
 
@@ -25,7 +25,7 @@ public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> imple
      * @param entity entity to retrieve documents
      * @return documents referencing given entity
      */
-    public Set<AnnotatedDocument> getDocuments(Entity entity) {
+    public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
         Set<AnnotatedDocument> annotatedDocuments = get(entity);
         if (annotatedDocuments == null) {
             annotatedDocuments = new HashSet<AnnotatedDocument>();
@@ -39,7 +39,7 @@ public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> imple
      * @param entity entity to return number of referencing documents for
      * @return number of documents for the given entity in this index
      */
-    public int getNrOfDocumentsFor(Entity entity) {
+    public int getNrOfDocumentsFor(OWLEntity entity) {
         return get(entity).size();
     }
     
@@ -62,7 +62,7 @@ public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> imple
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity entity) {
+	public long getNumberOfDocumentsFor(OWLEntity entity) {
 		return getDocuments(entity).size();
 	}
 
@@ -70,7 +70,7 @@ public class SemanticIndex extends HashMap<Entity, Set<AnnotatedDocument>> imple
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
 	 */
 	@Override
-	public long getNumberOfDocumentsFor(Entity... entities) {
+	public long getNumberOfDocumentsFor(OWLEntity... entities) {
 		
 		Set<AnnotatedDocument> documents = getDocuments(entities[0]);
 		for (int i = 1; i < entities.length; i++) {

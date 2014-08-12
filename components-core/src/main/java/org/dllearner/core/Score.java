@@ -22,7 +22,7 @@ package org.dllearner.core;
 import java.io.Serializable;
 
 /**
- * The score class is used to store how well a class description did
+ * The score class is used to store how well a class OWLClassExpression did
  * on a learning problem. Depending on the learning problem at hand,
  * different criteria can be used. (Similar learning problems probably
  * score class descriptions/hypothesis in a similar way.)
@@ -41,9 +41,9 @@ public abstract class Score implements Serializable{
 
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class description solves a learning problem. 
+	 * class OWLClassExpression solves a learning problem. 
 	 * 
-	 * @see AbstractLearningProblem#getAccuracy(Description)
+	 * @see AbstractLearningProblem#getAccuracy(OWLClassExpression)
 	 * @return A value between 0 and 1 indicating the quality (of a class description).
 	 */	
 	public abstract double getAccuracy();

@@ -408,8 +408,8 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 			AllInstancesQuery query = new AllInstancesQuery(fuzzyConcept);
 			Solution solution = query.solve(fuzzyKB);
 			if(solution.isConsistentKB() && solution.getSolution() == 0){
-				List<Individual> individuals = query.getIndividuals();
-				for (Individual individual : individuals) {
+				List<OWLIndividual> individuals = query.getIndividuals();
+				for (OWLIndividual individual : individuals) {
 					
 				}
 			}
@@ -417,7 +417,7 @@ public class FuzzyDLReasonerManager implements OWLReasoner {
 		} catch (FuzzyOntologyException e1) {
 			e1.printStackTrace();
 		}
-//		for (Individual fuzzyIndividual : fuzzyKB.) {
+//		for (OWLIndividual fuzzyIndividual : fuzzyKB.) {
 //			// TODO this "query process" is repeated several times --> create a (private) method
 //			Query localQuery = new MinInstanceQuery(OWLAPI_fuzzyDLObjectParser.getFuzzyDLExpresion(cls), fuzzyIndividual);
 //			try {

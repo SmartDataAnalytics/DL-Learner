@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.dllearner.core.owl.Entity;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -56,24 +54,6 @@ public class StructuralEntityContext {
 	}
 	
 	/**
-	 * Returns a set of words that describe entities related to the given entity.
-	 * @param ontology
-	 * @param entity
-	 * @return
-	 */
-	public static Set<String> getContextInNaturalLanguage(OWLOntology ontology, Entity entity){
-		Set<String> context = new HashSet<String>();
-		
-		Set<OWLEntity> contextEntities = getContext(ontology, entity);
-		//add annotations for each entity
-		for (OWLEntity contextEntity : contextEntities) {
-			context.addAll(getAnnotations(ontology, contextEntity));
-		}
-		
-		return context;
-	}
-	
-	/**
 	 * Returns a set of entities that are structural related to the given entity.
 	 * @param ontology
 	 * @param entity
@@ -95,16 +75,6 @@ public class StructuralEntityContext {
 		context.add(entity);
 		
 		return context;
-	}
-	
-	/**
-	 * Returns a set of entities that are structural related to the given entity.
-	 * @param ontology
-	 * @param entity
-	 * @return
-	 */
-	public static Set<OWLEntity> getContext(OWLOntology ontology, Entity entity){
-		return getContext(ontology, OWLAPIConverter.getOWLAPIEntity(entity));
 	}
 	
 	public static Set<OWLEntity> getContext(OWLOntology ontology, OWLObjectProperty property){

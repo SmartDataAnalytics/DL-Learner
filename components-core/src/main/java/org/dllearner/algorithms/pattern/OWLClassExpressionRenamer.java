@@ -394,7 +394,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDataComplementOf desc) {
-		OWLDataRange OWLDataRange = desc.getDataRange();
+		OWLDataRange dataRange = desc.getDataRange();
 		dataRange = rename(dataRange);
 		renamedOWLObject = df.getOWLDataComplementOf(dataRange);
 	}

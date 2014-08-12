@@ -1,6 +1,6 @@
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Represents a scored entity. The score is produced from the path used to retrieve it from the candidates tree.
@@ -12,7 +12,7 @@ public class EntityScorePair implements Comparable<EntityScorePair> {
         return entity + " : " + score;
     }
 
-    private Entity entity;
+    private OWLEntity entity;
     private Double score;
 
     @Override
@@ -20,22 +20,22 @@ public class EntityScorePair implements Comparable<EntityScorePair> {
         int val = score.compareTo(o.score);
 
         if (val == 0) {
-            val = entity.getURI().toString().compareTo(o.entity.getURI().toString());
+            val = entity.compareTo(o.entity);
         }
 
         return val;
     }
 
-    public EntityScorePair(Entity entity, Double score) {
+    public EntityScorePair(OWLEntity entity, Double score) {
         this.entity = entity;
         this.score = score;
     }
 
-    public Entity getEntity() {
+    public OWLEntity getEntity() {
         return entity;
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(OWLEntity entity) {
         this.entity = entity;
     }
 

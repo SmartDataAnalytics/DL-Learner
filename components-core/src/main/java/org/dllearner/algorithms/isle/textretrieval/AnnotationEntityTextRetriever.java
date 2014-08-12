@@ -12,10 +12,7 @@ import java.util.Set;
 import org.dllearner.algorithms.isle.TextDocumentGenerator;
 import org.dllearner.algorithms.isle.index.LinguisticUtil;
 import org.dllearner.algorithms.isle.index.Token;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -80,20 +77,18 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	 * @see org.dllearner.algorithms.isle.EntityTextRetriever#getRelevantText(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public Map<List<Token>, Double> getRelevantText(Entity entity) {
+	public Map<List<Token>, Double> getRelevantText(OWLEntity entity) {
 		Map<List<Token>, Double> textWithWeight = new HashMap<List<Token>, Double>();
 		
-		OWLEntity e = OWLAPIConverter.getOWLAPIEntity(entity);
-		
 		for (OWLAnnotationProperty property : properties) {
-			Set<OWLAnnotation> annotations = e.getAnnotations(ontology, property);
+			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, property);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
 		            if (val.hasLang(language)) {
 		            	//trim
 		            	String label = val.getLiteral().trim();
-		            	if(entity instanceof NamedClass){
+		            	if(entity.isOWLClass()){
 		            		label = label.toLowerCase();
 		            	}
 		            	//remove content in brackets like (...)
@@ -109,7 +104,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		}
 		
 		if(textWithWeight.isEmpty() && useShortFormFallback){
-			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+			String shortForm = sfp.getShortForm(entity.getIRI());
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
 			textWithWeight.put(TextDocumentGenerator.getInstance().generateDocument(shortForm, determineHeadNoun), weight);
@@ -119,20 +114,18 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	}
 	
 	@Override
-	public Map<String, Double> getRelevantTextSimple(Entity entity) {
+	public Map<String, Double> getRelevantTextSimple(OWLEntity entity) {
 		Map<String, Double> textWithWeight = new HashMap<String, Double>();
 		
-		OWLEntity e = OWLAPIConverter.getOWLAPIEntity(entity);
-		
 		for (OWLAnnotationProperty property : properties) {
-			Set<OWLAnnotation> annotations = e.getAnnotations(ontology, property);
+			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, property);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
 		            if (val.hasLang(language)) {
 		            	//trim
 		            	String label = val.getLiteral().trim();
-		            	if(entity instanceof NamedClass){
+		            	if(entity.isOWLClass()){
 		            		label = label.toLowerCase();
 		            	}
 		            	//remove content in brackets like (...)
@@ -148,7 +141,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		}
 		
 		if(textWithWeight.isEmpty() && useShortFormFallback){
-			String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+			String shortForm = sfp.getShortForm(IRI.create(entity.toStringID()));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromCamelCase(shortForm));
 			shortForm = Joiner.on(" ").join(LinguisticUtil.getInstance().getWordsFromUnderscored(shortForm)).trim();
 			textWithWeight.put(shortForm, weight);
@@ -162,8 +155,8 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 	 * @return
 	 */
 	@Override
-	public Map<Entity, Set<List<Token>>> getRelevantText(OWLOntology ontology) {
-		Map<Entity, Set<List<Token>>> entity2RelevantText = new HashMap<>();
+	public Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology) {
+		Map<OWLEntity, Set<List<Token>>> entity2RelevantText = new HashMap<>();
 		
 		Set<OWLEntity> schemaEntities = new HashSet<OWLEntity>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
@@ -172,8 +165,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		schemaEntities.remove(OWL_THING);
 		
 		Map<List<Token>, Double> relevantText;
-		for (OWLEntity owlEntity : schemaEntities) {
-			Entity entity = OWLAPIConverter.getEntity(owlEntity);
+		for (OWLEntity entity : schemaEntities) {
 			relevantText = getRelevantText(entity);
 			entity2RelevantText.put(entity, relevantText.keySet());
 		}

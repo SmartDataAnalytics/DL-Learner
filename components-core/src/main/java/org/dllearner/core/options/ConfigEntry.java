@@ -44,7 +44,7 @@ public class ConfigEntry<T> {
 	}
 
 	public String getOptionName() {
-		return option.getName();
+		return option.toStringID();
 	}
 
 	public T getValue() {
@@ -57,12 +57,12 @@ public class ConfigEntry<T> {
 	 * @return a formatted string
 	 */
 	public String toConfString(String componentName) {
-		if (option.getName().equalsIgnoreCase("positiveExamples")) {
+		if (option.toStringID().equalsIgnoreCase("positiveExamples")) {
 			return option.getValueFormatting(value);
-		} else if (option.getName().equalsIgnoreCase("negativeExamples")) {
+		} else if (option.toStringID().equalsIgnoreCase("negativeExamples")) {
 			return option.getValueFormatting(value);
 		} 
-		return componentName.toString() + "." + option.getName() + " = "
+		return componentName.toString() + "." + option.toStringID() + " = "
 					+ option.getValueFormatting(value);
 	}
 	

@@ -249,10 +249,10 @@ public class SPARQLTasks {
 	}
 
 	/**
-	 * get all instances for a complex concept / class description in KBSyntax.
+	 * get all instances for a complex concept / class OWLClassExpression in KBSyntax.
 	 * 
 	 * @param conceptKBSyntax
-	 *            A description string in KBSyntax
+	 *            A OWLClassExpression string in KBSyntax
 	 * @param sparqlResultLimit
 	 *            Limits the ResultSet size
 	 * @return SortedSet with the instance uris
@@ -275,7 +275,7 @@ public class SPARQLTasks {
 	 * RDFS Reasoning.
 	 * 
 	 * @param conceptKBSyntax
-	 *            A description string in KBSyntax
+	 *            A OWLClassExpression string in KBSyntax
 	 * @param sparqlResultLimit
 	 *            Limits the ResultSet size
 	 * @return SortedSet with the instance uris

@@ -7,14 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.dllearner.algorithms.isle.index.Token;
-import org.dllearner.core.owl.Entity;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class EntityTokenizer extends HashMap<Entity, List<Token>>{
+public class EntityTokenizer extends HashMap<OWLEntity, List<Token>>{
 	
 	
 	

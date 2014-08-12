@@ -85,7 +85,7 @@ public class UsedEntitiesDetection {
 	 * @param individuals A set of individuals to start from.
 	 * @param depth The maximum depth for the search.
 	 */
-	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<Individual> individuals, int maxDepth) {
+	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<OWLIndividual> individuals, int maxDepth) {
 		this.reasoner = reasoner;
 		this.maxDepth = maxDepth;
 		usedClasses = new TreeMap<Set<ObjectProperty>,Set<OWLClass>>(keyComp);
@@ -96,23 +96,23 @@ public class UsedEntitiesDetection {
 		
 	}
 
-	private void computeUsedEntitiesRec(Set<ObjectProperty> key, Set<Individual> individuals) {
+	private void computeUsedEntitiesRec(Set<ObjectProperty> key, Set<OWLIndividual> individuals) {
 		Set<OWLClass> types = new TreeSet<OWLClass>();
 //		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		// we must use the object property comparator to avoid double occurences of properties
-		Map<ObjectProperty,Set<Individual>> relations = new TreeMap<ObjectProperty,Set<Individual>>();
+		Map<ObjectProperty,Set<OWLIndividual>> relations = new TreeMap<ObjectProperty,Set<OWLIndividual>>();
 		
-		for(Individual individual : individuals) {
+		for(OWLIndividual individual : individuals) {
 			// add all types
 			types.addAll(reasoner.getTypes(individual));
 			
 			// compute outgoing properties
-			Map<ObjectProperty,Set<Individual>> map = reasoner.getObjectPropertyRelationships(individual);
-			for(Entry<ObjectProperty,Set<Individual>> entry : map.entrySet()) {
+			Map<ObjectProperty,Set<OWLIndividual>> map = reasoner.getObjectPropertyRelationships(individual);
+			for(Entry<ObjectProperty,Set<OWLIndividual>> entry : map.entrySet()) {
 				ObjectProperty prop = entry.getKey();
 				// we must use the individual comparator to avoid 
 				// multiple occurrences of the same individual
-				Set<Individual> inds = new TreeSet<Individual>(entry.getValue());
+				Set<OWLIndividual> inds = new TreeSet<OWLIndividual>(entry.getValue());
 								
 				// if property exists, add the found individuals 
 				if(relations.containsKey(prop)) {
@@ -130,7 +130,7 @@ public class UsedEntitiesDetection {
 		
 		// recurse if limit not reached yet
 		if(key.size() < maxDepth) {
-			for(Entry<ObjectProperty,Set<Individual>> entry : relations.entrySet()) {
+			for(Entry<ObjectProperty,Set<OWLIndividual>> entry : relations.entrySet()) {
 				// construct new key (copy and add)
 				Set<ObjectProperty> newKey = new TreeSet<ObjectProperty>(key);
 				newKey.add(entry.getKey());

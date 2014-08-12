@@ -49,6 +49,11 @@ import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -88,7 +93,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
-	private Description startClass;
+	private OWLClassExpression startClass;
 	
 	private int maxClassExpressionDepth = 2;
 	
@@ -96,7 +101,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	private Set<OWLClass> ignoredConcepts = null;
 	
-	private NamedClass classToDescribe;
+	private OWLClass classToDescribe;
 		
 	private double noise;
 	
@@ -186,7 +191,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		// create start node
 		if(startClass == null){
-			startClass = Thing.instance;
+			startClass = df.getOWLThing();
 		}
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
@@ -224,13 +229,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a description in tree form
+	// evaluates a OWLClassExpression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
 		
 		// convert tree to standard description
-		Description description = descriptionTree.transformToDescription();
+		OWLClassExpression description = descriptionTree.transformToDescription();
 		if(isDescriptionAllowed(description)){
 			description = getNiceDescription(description);
 			timeMonitor.start();
@@ -254,7 +259,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				node.setScore(accuracy);
 			}
 			
-//			System.out.println(description + ":" + accuracy);
+//			System.out.println(OWLClassExpression + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
 				startNode = node;
@@ -270,7 +275,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// check whether we want to add it to the best evaluated descriptions;
 				// to do this we pick the worst considered evaluated description
 				// (remember that the set has limited size, so it's likely not the worst overall);
-				// the description has a chance to make it in the set if it has
+				// the OWLClassExpression has a chance to make it in the set if it has
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
 				if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
@@ -290,24 +295,27 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 * @param d
 	 * @return
 	 */
-	private Description getNiceDescription(OWLClassExpression d){
-		Description description = d.clone();
-		List<OWLClassExpression> children = description.getChildren();
-		for(int i=0; i<children.size(); i++) {
-			description.replaceChild(i, getNiceDescription(children.get(i)));
-		}
-		if(children.size()==0) {
-			return description;
-		} else if(description instanceof ObjectSomeRestriction) {
-			// \exists r.\bot \equiv \bot
-			if(description.getChild(0) instanceof Thing) {
-				Description range = reasoner.getRange((ObjectProperty) ((ObjectSomeRestriction) description).getRole());
-				description.replaceChild(0, range);
-			} else {
-				description.replaceChild(0, getNiceDescription(description.getChild(0)));
+	private OWLClassExpression getNiceDescription(OWLClassExpression d){
+		OWLClassExpression rewrittenClassExpression = d;
+		if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
+				newOperands.add(getNiceDescription(operand));
 			}
+			rewrittenClassExpression = df.getOWLObjectIntersectionOf(newOperands);
+		} else if(d instanceof OWLObjectSomeValuesFrom) {
+			// \exists r.\bot \equiv \bot
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			if(filler.isOWLThing()) {
+				OWLClassExpression range = reasoner.getRange(property);
+				filler = range;
+			} else if(filler.isAnonymous()){
+				filler = getNiceDescription(filler);
+			}
+			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(property, filler);
 		}
-		return description;
+		return rewrittenClassExpression;
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {
@@ -345,12 +353,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			}
 			
 			//non of the equivalent classes must occur on the first level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
 			if(classToDescribe != null){
 				toTest.add(classToDescribe);
 			}
 			while(!toTest.isEmpty()) {
-				Description d = toTest.pollFirst();
+				OWLClassExpression d = toTest.pollFirst();
 				if(occursOnFirstLevel(description, d)) {
 					return false;
 				}
@@ -359,12 +367,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		} else {
 			// none of the superclasses of the class to learn must appear on the
 			// outermost property level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
 			if(classToDescribe != null){
 				toTest.add(classToDescribe);
 			}
 			while(!toTest.isEmpty()) {
-				Description d = toTest.pollFirst();
+				OWLClassExpression d = toTest.pollFirst();
 				if(occursOnFirstLevel(description, d)) {
 					return false;
 				}
@@ -376,22 +384,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 		// (it can still be at higher depth, e.g. if intersections are nested in unions)
-		private boolean occursOnFirstLevel(OWLClassExpression description, Description clazz) {
-			if(description instanceof NamedClass) {
-				if(description.equals(clazz)) {
-					return true;
-				}
+		private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
+			if(description.containsConjunct(cls)) {
+				return true;
 			} 
-			
-			if(description instanceof Restriction) {
-				return false;
-			}
-			
-			for(OWLClassExpression child : description.getChildren()) {
-				if(occursOnFirstLevel(child, clazz)) {
-					return true;
-				}
-			}
 			
 			return false;
 		}
@@ -407,7 +403,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}	
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return getCurrentlyBestEvaluatedDescription().getDescription();
 	}
 
@@ -480,7 +476,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @return the startClass
 	 */
-	public Description getStartClass() {
+	public OWLClassExpression getStartClass() {
 		return startClass;
 	}
 	
@@ -501,7 +497,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @param classToDescribe the classToDescribe to set
 	 */
-	public void setClassToDescribe(NamedClass classToDescribe) {
+	public void setClassToDescribe(OWLClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 	

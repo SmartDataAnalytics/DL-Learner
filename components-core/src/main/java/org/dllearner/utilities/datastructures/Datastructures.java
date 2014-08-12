@@ -65,13 +65,13 @@ public class Datastructures {
 		
 	}
 	
-	public static String[] sortedSet2StringListIndividuals(Set<Individual> individuals){
+	public static String[] sortedSet2StringListIndividuals(Set<OWLIndividual> individuals){
 		
 		String[] ret=new String[individuals.size()];
-		Iterator<Individual> i=individuals.iterator();
+		Iterator<OWLIndividual> i=individuals.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((Individual)i.next()).getName();
+			ret[a++]=((Individual)i.next()).toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
@@ -83,7 +83,7 @@ public class Datastructures {
 		Iterator<ObjectProperty> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((ObjectProperty)i.next()).getName();
+			ret[a++]=((OWLObjectProperty)i.next()).toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
@@ -95,23 +95,23 @@ public class Datastructures {
 		Iterator<OWLClass> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((NamedClass)i.next()).getName();
+			ret[a++]=((NamedClass)i.next()).toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
 	}	
 	
-	public static Set<String> individualSetToStringSet(Set<Individual> individuals) {
+	public static Set<String> individualSetToStringSet(Set<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
-		for(Individual ind : individuals) {
+		for(OWLIndividual ind : individuals) {
 			ret.add(ind.toString());
 		}
 		return ret;
 	}	
 	
-	public static Set<String> individualListToStringSet(List<Individual> individuals) {
+	public static Set<String> individualListToStringSet(List<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
-		for(Individual ind : individuals) {
+		for(OWLIndividual ind : individuals) {
 			ret.add(ind.toString());
 		}
 		return ret;

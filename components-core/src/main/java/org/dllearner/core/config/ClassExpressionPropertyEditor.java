@@ -12,7 +12,7 @@ import org.dllearner.parser.ParseException;
 
 public class ClassExpressionPropertyEditor implements PropertyEditor {
 
-	private Description description;
+	private OWLClassExpression description;
 	
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener arg0) {
@@ -80,7 +80,7 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 
 	@Override
 	public void setValue(Object arg0) {
-		description = (Description) arg0;
+		description = (OWLClassExpression) arg0;
 	}
 
 	@Override

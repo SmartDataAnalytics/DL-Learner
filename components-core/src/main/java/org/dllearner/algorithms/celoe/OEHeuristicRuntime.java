@@ -40,7 +40,7 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	private double expansionPenaltyFactor = 0.1;
 	// bonus for being better than parent node
 	private double gainBonusFactor = 0.3;
-	// penalty if a node description has very many refinements since exploring 
+	// penalty if a node OWLClassExpression has very many refinements since exploring 
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;
 	

@@ -3,7 +3,6 @@
  */
 package org.dllearner.algorithms.qtl.util;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -121,7 +120,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
     				if(childLabel.equals("?")){//p some int
     					Set<Literal> literals = child.getLiterals();
-    					OWLDataRange OWLDataRange = null;
+    					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
     						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));

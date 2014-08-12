@@ -1,9 +1,9 @@
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
-
 import java.util.List;
 import java.util.Set;
+
+import org.semanticweb.owlapi.model.OWLEntity;
 
 public interface EntityCandidatesTrie {
 	
@@ -12,7 +12,7 @@ public interface EntityCandidatesTrie {
 	 * @param s
 	 * @param e
 	 */
-	public void addEntry(List<Token> s, Entity e);
+	public void addEntry(List<Token> s, OWLEntity e);
 	
 	
 	/**

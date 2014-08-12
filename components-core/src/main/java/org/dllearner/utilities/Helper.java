@@ -19,9 +19,9 @@
 
 package org.dllearner.utilities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,22 +33,15 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.owl.AssertionalAxiom;
-import org.dllearner.core.owl.ClassAssertionAxiom;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.ObjectCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -64,37 +57,13 @@ public class Helper {
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	// findet alle atomaren Konzepte in einem Konzept
-	public static List<OWLClass> getAtomicConcepts(Description concept) {
-		List<OWLClass> ret = new LinkedList<OWLClass>();
-		if (concept instanceof NamedClass) {
-			ret.add((OWLClass) concept);
-			return ret;
-		} else {
-			for (Description child : concept.getChildren()) {
-				ret.addAll(getAtomicConcepts(child));
-			}
-			return ret;
-		}
+	public static List<OWLClass> getAtomicConcepts(OWLClassExpression concept) {
+		return new ArrayList<OWLClass>(concept.getClassesInSignature());
 	}
 
 	// findet alle atomaren Rollen in einem Konzept
-	public static List<ObjectProperty> getAtomicRoles(Description concept) {
-		List<ObjectProperty> ret = new LinkedList<ObjectProperty>();
-
-		if (concept instanceof ObjectQuantorRestriction) {
-			ret.add(df.getOWLObjectProperty(IRI.create(((ObjectQuantorRestriction) concept).getRole().getName()));
-		} else if (concept instanceof ObjectCardinalityRestriction) {
-			ret.add(df.getOWLObjectProperty(IRI.create(((ObjectCardinalityRestriction) concept).getRole().getName()));
-		}
-
-		// auch NumberRestrictions und Quantifications können weitere Rollen
-		// enthalten,
-		// deshalb hier kein else-Zweig
-		for (Description child : concept.getChildren()) {
-			ret.addAll(getAtomicRoles(child));
-		}
-		return ret;
-
+	public static List<OWLObjectProperty> getAtomicRoles(OWLClassExpression concept) {
+		return new ArrayList<OWLObjectProperty>(concept.getObjectPropertiesInSignature());
 	}
 
 	// sucht, ob der übergebene String mit einem Prefix beginnt der
@@ -377,7 +346,7 @@ public class Helper {
 //			allowedConceptsTmp.addAll(rs.getAtomicConcepts());
 //			Iterator<AtomicConcept> it = allowedConceptsTmp.iterator();
 //			while (it.hasNext()) {
-//				String conceptName = it.next().getName();
+//				String conceptName = it.next().toStringID();
 //				// System.out.println(conceptName);
 //				// seltsame anon-Konzepte, die von Jena erzeugt werden
 //				// löschen
@@ -487,7 +456,7 @@ public class Helper {
 	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
 		Iterator<OWLClass> it = concepts.iterator();
 		while (it.hasNext()) {
-			String conceptName = it.next().getName();
+			String conceptName = it.next().toStringID();
 			
 			// ignore some concepts (possibly produced by Jena)
 			if (conceptName.startsWith("anon")) {
@@ -516,14 +485,14 @@ public class Helper {
 	public static Set<OWLClass> computeConcepts(AbstractReasonerComponent rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<OWLClass> concepts = rs.getNameClasses();
+		Set<OWLClass> concepts = rs.getClasses();
 //		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
 	public static Set<OWLClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<OWLClass> ignoredConcepts) {
-		Set<OWLClass> concepts = new TreeSet<OWLClass>(rs.getNamedClasses());
+		Set<OWLClass> concepts = new TreeSet<OWLClass>(rs.getClasses());
 //		Helper.removeUninterestingConcepts(concepts);
 		for (OWLClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
@@ -556,9 +525,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static ObjectProperty checkRoles(AbstractReasonerComponent rs, Set<ObjectProperty> roles) {
-		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
-		for (ObjectProperty ar : roles) {
+	public static OWLObjectProperty checkRoles(AbstractReasonerComponent rs, Set<OWLObjectProperty> roles) {
+		Set<OWLObjectProperty> existingRoles = rs.getObjectProperties();
+		for (OWLObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
 		}
@@ -572,8 +541,8 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(AbstractReasonerComponent rs, Set<OWLClass> concepts) {
-		Set<OWLClass> existingConcepts = rs.getNamedClasses();
+	public static OWLClass checkConcepts(AbstractReasonerComponent rs, Set<OWLClass> concepts) {
+		Set<OWLClass> existingConcepts = rs.getClasses();
 		for (OWLClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
@@ -589,19 +558,19 @@ public class Helper {
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
 		if(!rs.getClasses().isEmpty()) {
 			for (OWLClass atomicConcept : rs.getClasses()) {
-				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
+				aBox.atomicConceptsPos.put(atomicConcept.toStringID(), getStringSet(rs
 						.getIndividuals(atomicConcept)));
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
+				OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
+				aBox.atomicConceptsNeg.put(atomicConcept.toStringID(), getStringSet(rs
 						.getIndividuals(negatedAtomicConcept)));
-				aBox.concepts.add(atomicConcept.getName());
+				aBox.concepts.add(atomicConcept.toStringID());
 			}			
 		}
 
 		if(!rs.getObjectProperties().isEmpty()) {
-			for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-				aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
-				aBox.roles.add(atomicRole.getName());
+			for (OWLObjectProperty atomicRole : rs.getObjectProperties()) {
+				aBox.rolesPos.put(atomicRole.toStringID(), getStringMap(rs.getPropertyMembers(atomicRole)));
+				aBox.roles.add(atomicRole.toStringID());
 			}			
 		}
 

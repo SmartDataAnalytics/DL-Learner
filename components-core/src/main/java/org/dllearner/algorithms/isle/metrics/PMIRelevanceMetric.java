@@ -4,7 +4,7 @@
 package org.dllearner.algorithms.isle.metrics;
 
 import org.dllearner.algorithms.isle.index.Index;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
@@ -17,7 +17,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	}
 
 	@Override
-	public double getRelevance(Entity entityA, Entity entityB){
+	public double getRelevance(OWLEntity entityA, OWLEntity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);
@@ -38,7 +38,7 @@ public class PMIRelevanceMetric extends AbstractRelevanceMetric {
 	}
 	
 	@Override
-	public double getNormalizedRelevance(Entity entityA, Entity entityB){
+	public double getNormalizedRelevance(OWLEntity entityA, OWLEntity entityB){
 		long nrOfDocumentsA = index.getNumberOfDocumentsFor(entityA);
 		long nrOfDocumentsB = index.getNumberOfDocumentsFor(entityB);
 		long nrOfDocumentsAB = index.getNumberOfDocumentsFor(entityA, entityB);

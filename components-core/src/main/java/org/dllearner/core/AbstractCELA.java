@@ -146,7 +146,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
-	 * @return The best class description found by the learning algorithm so far.
+	 * @return The best class OWLClassExpression found by the learning algorithm so far.
 	 */
 	public abstract OWLClassExpression getCurrentlyBestDescription();
 	
@@ -194,7 +194,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * Returns the best descriptions obtained so far.
-	 * @return Best class description found so far.
+	 * @return Best class OWLClassExpression found so far.
 	 */
 	public abstract EvaluatedDescription getCurrentlyBestEvaluatedDescription();
 	
@@ -232,7 +232,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		TreeSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
 		for(EvaluatedDescription ed : currentlyBest.descendingSet()) {
-			// once we hit a description with a below threshold accuracy, we simply return
+			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
 //			if(ed.getAccuracy() < accuracyThreshold) {
@@ -246,7 +246,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			}
 			
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription())) {
-				// before we add the description we replace EXISTS r.TOP with
+				// before we add the OWLClassExpression we replace EXISTS r.TOP with
 				// EXISTS r.range(r) if range(r) is atomic
 				// (we need to clone, otherwise we change descriptions which could
 				// be in the search of the learning algorithm, which leads to

@@ -56,8 +56,8 @@ public class OntologyCloser {
 
 	// Set<KnowledgeSource> ks;
 	AbstractReasonerComponent rs;
-	HashMap<Individual, Set<ObjectExactCardinalityRestriction>> indToRestr;
-	HashMap<Individual, Set<Description>> indToNamedClass;
+	HashMap<OWLIndividual, Set<ObjectExactCardinalityRestriction>> indToRestr;
+	HashMap<OWLIndividual, Set<Description>> indToNamedClass;
 	HashSet<Description> classes;
 
 	public OntologyCloser(KB kb) {
@@ -74,7 +74,7 @@ public class OntologyCloser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.indToRestr = new HashMap<Individual, Set<ObjectExactCardinalityRestriction>>();
+		this.indToRestr = new HashMap<OWLIndividual, Set<ObjectExactCardinalityRestriction>>();
 		this.classes = new HashSet<Description>();
 //		this.rs = new ReasonerComponent(owlapi);
 		rs = owlapi;
@@ -110,16 +110,16 @@ public class OntologyCloser {
 	 */
 	public void applyNumberRestrictions() {
 		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
-		// Set<Individual> allind = this.rs.getIndividuals();
+		// Set<OWLIndividual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 
-		for (ObjectProperty oneRole : allRoles) {
+		for (OWLObjectProperty oneRole : allRoles) {
 
 			// System.out.println(oneRole.getClass());
-			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
+			Map<OWLIndividual, SortedSet<OWLIndividual>> allRoleMembers = this.rs
 					.getPropertyMembers(oneRole);
-			for (Individual oneInd : allRoleMembers.keySet()) {
-				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
+			for (OWLIndividual oneInd : allRoleMembers.keySet()) {
+				SortedSet<OWLIndividual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
 					ObjectExactCardinalityRestriction oecr = new ObjectExactCardinalityRestriction(
 							fillers.size(), oneRole, new Thing());
@@ -140,16 +140,16 @@ public class OntologyCloser {
 	 */
 	public void applyNumberRestrictionsConcise() {
 		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
-		// Set<Individual> allind = this.rs.getIndividuals();
+		// Set<OWLIndividual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 
-		for (ObjectProperty oneRole : allRoles) {
+		for (OWLObjectProperty oneRole : allRoles) {
 
 			// System.out.println(oneRole.getClass());
-			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
+			Map<OWLIndividual, SortedSet<OWLIndividual>> allRoleMembers = this.rs
 					.getPropertyMembers(oneRole);
-			for (Individual oneInd : allRoleMembers.keySet()) {
-				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
+			for (OWLIndividual oneInd : allRoleMembers.keySet()) {
+				SortedSet<OWLIndividual> fillers = allRoleMembers.get(oneInd);
 				if (fillers.size() > 0) {
 					ObjectExactCardinalityRestriction oecr = new ObjectExactCardinalityRestriction(
 							fillers.size(), oneRole, new Thing());
@@ -166,7 +166,7 @@ public class OntologyCloser {
 		LinkedList<Description> ll = new LinkedList<Description>();
 		Set<ObjectExactCardinalityRestriction> s = null;
 
-		for (Individual oneInd : indToRestr.keySet()) {
+		for (OWLIndividual oneInd : indToRestr.keySet()) {
 			s = indToRestr.get(oneInd);
 			for (ObjectExactCardinalityRestriction oecr : s) {
 				ll.add(oecr);
@@ -191,16 +191,16 @@ public class OntologyCloser {
 	 */
 	public void applyNumberRestrictionsNamed() {
 		Set<ObjectProperty> allRoles = this.rs.getObjectProperties();
-		// Set<Individual> allind = this.rs.getIndividuals();
+		// Set<OWLIndividual> allind = this.rs.getIndividuals();
 		testForTransitiveProperties(true);
 
-		for (ObjectProperty oneRole : allRoles) {
+		for (OWLObjectProperty oneRole : allRoles) {
 
 			// System.out.println(oneRole.getClass());
-			Map<Individual, SortedSet<Individual>> allRoleMembers = this.rs
+			Map<OWLIndividual, SortedSet<OWLIndividual>> allRoleMembers = this.rs
 					.getPropertyMembers(oneRole);
-			for (Individual oneInd : allRoleMembers.keySet()) {
-				SortedSet<Individual> fillers = allRoleMembers.get(oneInd);
+			for (OWLIndividual oneInd : allRoleMembers.keySet()) {
+				SortedSet<OWLIndividual> fillers = allRoleMembers.get(oneInd);
 				//if (fillers.size() > 0) {
 					ObjectExactCardinalityRestriction oecr = new ObjectExactCardinalityRestriction(
 							fillers.size(), oneRole, new Thing());
@@ -224,7 +224,7 @@ public class OntologyCloser {
 		LinkedList<Description> ll = new LinkedList<Description>();
 		Set<ObjectExactCardinalityRestriction> s = null;
 
-		for (Individual oneInd : indToRestr.keySet()) {
+		for (OWLIndividual oneInd : indToRestr.keySet()) {
 			s = indToRestr.get(oneInd);
 			for (ObjectExactCardinalityRestriction oecr : s) {
 				ll.add(oecr);
@@ -263,13 +263,13 @@ public class OntologyCloser {
 		new OntologyCloser(kb).applyNumberRestrictions();
 	}
 
-	public SortedSet<Individual> verifyConcept(String conceptStr) {
+	public SortedSet<OWLIndividual> verifyConcept(String conceptStr) {
 		Description d;
 		SimpleClock sc = new SimpleClock();
 		StringBuffer sb = new StringBuffer();
 		sb.append(conceptStr);
 		conceptStr = sb.toString();
-		SortedSet<Individual> ind = new TreeSet<Individual>();
+		SortedSet<OWLIndividual> ind = new TreeSet<OWLIndividual>();
 		try {
 			d = KBParser.parseConcept(conceptStr);
 			System.out.println("\n*******************\nStarting retrieval");
@@ -281,8 +281,8 @@ public class OntologyCloser {
 
 			System.out.println("retrieved: " + ind.size() + " instances");
 			sc.printAndSet();
-			for (Individual individual : ind) {
-				System.out.print(individual + "|");
+			for (OWLIndividual individual : ind) {
+				System.out.print(OWLIndividual + "|");
 			}
 
 		} catch (Exception e) {
@@ -291,7 +291,7 @@ public class OntologyCloser {
 		return ind;
 	}
 
-	private boolean collectExObjRestrForInd(Individual ind,
+	private boolean collectExObjRestrForInd(OWLIndividual ind,
 			ObjectExactCardinalityRestriction oecr) {
 		Set<ObjectExactCardinalityRestriction> s = indToRestr.get(ind);
 		if (s == null) {
@@ -303,7 +303,7 @@ public class OntologyCloser {
 	}
 	
 	@SuppressWarnings("unused")
-	private boolean collectDescriptionForInd(Individual ind,
+	private boolean collectDescriptionForInd(OWLIndividual ind,
 			Description d) {
 		Set<Description> s = indToNamedClass.get(ind);
 		if (s == null) {

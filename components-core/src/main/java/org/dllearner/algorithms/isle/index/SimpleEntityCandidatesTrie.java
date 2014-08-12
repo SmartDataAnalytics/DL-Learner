@@ -1,13 +1,17 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import net.didion.jwnl.data.POS;
+
 import org.dllearner.algorithms.isle.WordNet;
 import org.dllearner.algorithms.isle.textretrieval.EntityTextRetriever;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     TokenTree tree;
@@ -38,11 +42,11 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	
 	public void buildTrie(OWLOntology ontology) {
 		this.tree = new TokenTree();
-		Map<Entity, Set<List<Token>>> entity2TokenSet = entityTextRetriever.getRelevantText(ontology);
+		Map<OWLEntity, Set<List<Token>>> entity2TokenSet = entityTextRetriever.getRelevantText(ontology);
 		
 		
-		for (Entry<Entity, Set<List<Token>>> entry : entity2TokenSet.entrySet()) {
-			Entity entity = entry.getKey();
+		for (Entry<OWLEntity, Set<List<Token>>> entry : entity2TokenSet.entrySet()) {
+			OWLEntity entity = entry.getKey();
 			Set<List<Token>> tokenSet = entry.getValue();
 			for (List<Token> tokens : tokenSet) {
                 addAlternativeFormsFromWordNet(tokens);
@@ -57,7 +61,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 	 * @param entity
      * @param tokens
 	 */
-    private void addSubsequences(Entity entity, List<Token> tokens) {
+    private void addSubsequences(OWLEntity entity, List<Token> tokens) {
         tree.add(tokens, entity);
         for (int size = 1; size < tokens.size(); size++) {
             for (int start = 0; start < tokens.size() - size + 1; start++) {
@@ -105,11 +109,11 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
     }
 
     @Override
-	public void addEntry(List<Token> s, Entity e) {
+	public void addEntry(List<Token> s, OWLEntity e) {
         tree.add(s, e);
 	}
 
-    public void addEntry(List<Token> s, Entity e, List<Token> originalTokens) {
+    public void addEntry(List<Token> s, OWLEntity e, List<Token> originalTokens) {
         tree.add(s, e, originalTokens);
     }
 

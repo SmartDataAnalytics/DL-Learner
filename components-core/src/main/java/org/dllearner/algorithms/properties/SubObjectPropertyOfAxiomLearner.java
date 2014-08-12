@@ -19,7 +19,6 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -27,15 +26,12 @@ import java.util.SortedSet;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.SubObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,167 +41,170 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-@ComponentAnn(name="object subPropertyOf axiom learner", shortName="oplsubprop", version=0.1)
-public class SubObjectPropertyOfAxiomLearner extends AbstractAxiomLearningAlgorithm {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner.class);
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
+@ComponentAnn(name = "object subPropertyOf axiom learner", shortName = "oplsubprop", version = 0.1)
+public class SubObjectPropertyOfAxiomLearner extends
+		AbstractAxiomLearningAlgorithm<OWLSubObjectPropertyOfAxiom, OWLObjectPropertyAssertionAxiom> {
+
+	private static final Logger logger = LoggerFactory.getLogger(EquivalentObjectPropertyAxiomLearner.class);
+
 	private OWLObjectProperty propertyToDescribe;
-	
-	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks){
+
+	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
-		
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p1 ?o. FILTER NOT EXISTS{?s ?p ?o}}");
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o ; ?p_sup ?o}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_sup ?o}}");
+
 	}
 
 	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
+		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		if(returnOnlyNewAxioms){
-			//get existing domains
-			SortedSet<OWLObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
-			if(existingSuperProperties != null && !existingSuperProperties.isEmpty()){
-				for(ObjectProperty supProp : existingSuperProperties){
-					existingAxioms.add(new SubObjectPropertyAxiom(propertyToDescribe, supProp));
-				}
+	protected void getExistingAxioms() {
+		SortedSet<OWLObjectProperty> existingEquivalentProperties = reasoner
+				.getEquivalentProperties(propertyToDescribe);
+		if (existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()) {
+			for (OWLObjectProperty supProp : existingEquivalentProperties) {
+				existingAxioms.add(df.getOWLEquivalentObjectPropertiesAxiom(propertyToDescribe, supProp));
 			}
 		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
+		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
 			runSingleQueryMode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-	
-	private void runSingleQueryMode(){
+
+	private void runSingleQueryMode() {
 		int total = reasoner.getPopularity(propertyToDescribe);
-		
-		if(total > 0){
-			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.toStringID());
+
+		if (total > 0) {
+			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p",
+					propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
-			while(rs.hasNext()){
+			while (rs.hasNext()) {
 				qs = rs.next();
-				ObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI());
+				OWLObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
 				int cnt = qs.getLiteral("cnt").getInt();
-				if(!prop.equals(propertyToDescribe)){
-					currentlyBestAxioms.add(new EvaluatedAxiom(new SubObjectPropertyAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
+				if (!prop.equals(propertyToDescribe)) {
+					currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubObjectPropertyOfAxiom>(df
+							.getOWLSubObjectPropertyOfAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
 				}
 			}
 		}
 	}
-	
+
 	private void runSPARQL1_0_Mode() {
 		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
+		String baseQuery = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
 		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
 			workingModel.add(newModel);
 			// get number of triples
-			int all = (int)workingModel.size();
-			
+			int all = (int) workingModel.size();
+
 			if (all > 0) {
 				// get class and number of instances
 				query = "SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o.} GROUP BY ?p ORDER BY DESC(?cnt)";
 				ResultSet rs = executeSelectQuery(query, workingModel);
-				
+
 				currentlyBestAxioms.clear();
 				QuerySolution qs;
-				ObjectProperty prop;
-				while(rs.hasNext()){
+				OWLObjectProperty prop;
+				while (rs.hasNext()) {
 					qs = rs.next();
-					prop = df.getOWLObjectProperty(IRI.create(qs.get("p").asResource().getURI());
+					prop = df.getOWLObjectProperty(IRI.create(qs.get("p").asResource().getURI()));
 					//omit property to describe as it is trivial
-					if(prop.equals(propertyToDescribe)){
+					if (prop.equals(propertyToDescribe)) {
 						continue;
 					}
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new SubObjectPropertyAxiom(propertyToDescribe, prop),
-							computeScore(all, qs.get("cnt").asLiteral().getInt())));
+					currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubObjectPropertyOfAxiom>(df
+							.getOWLSubObjectPropertyOfAxiom(propertyToDescribe, prop), computeScore(all, qs.get("cnt")
+							.asLiteral().getInt())));
 				}
-				
+
 			}
 			offset += limit;
 			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
-	
+
 	@Override
-	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		SubObjectPropertyAxiom axiom = (SubObjectPropertyAxiom) evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
-		if(workingModel != null){
-			Set<OWLObject> posExamples = new HashSet<OWLObject>();
-			
-			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-			Individual subject;
-			Individual object;
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
-				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
-				posExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
-			}
-			
-			return posExamples;
+	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLSubObjectPropertyOfAxiom> evAxiom) {
+		OWLSubObjectPropertyOfAxiom axiom = evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("p_sup", axiom.getSuperProperty().asOWLObjectProperty().toStringID());
+
+		ResultSet rs;
+		if (workingModel != null) {
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 		}
+
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new HashSet<OWLObjectPropertyAssertionAxiom>();
+
+		OWLIndividual subject;
+		OWLIndividual object;
+		QuerySolution qs;
+		while (rs.hasNext()) {
+			qs = rs.next();
+			subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+		}
+
+		return posExamples;
 	}
-	
+
 	@Override
-	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		SubObjectPropertyAxiom axiom = (SubObjectPropertyAxiom) evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
-		if(workingModel != null){
-			Set<OWLObject> negExamples = new HashSet<OWLObject>();
-			
-			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-			Individual subject;
-			Individual object;
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI());
-				object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI());
-				negExamples.add(new ObjectPropertyAssertion(propertyToDescribe, subject, object));
-			}
-			
-			return negExamples;
+	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLSubObjectPropertyOfAxiom> evAxiom) {
+		OWLSubObjectPropertyOfAxiom axiom = evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("p_sup", axiom.getSuperProperty().asOWLObjectProperty().toStringID());
+
+		ResultSet rs;
+		if (workingModel != null) {
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		}
+
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new HashSet<OWLObjectPropertyAssertionAxiom>();
+
+		OWLIndividual subject;
+		OWLIndividual object;
+		QuerySolution qs;
+		while (rs.hasNext()) {
+			qs = rs.next();
+			subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+		}
+
+		return negExamples;
 	}
-	
-	public static void main(String[] args) throws Exception{
-		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/writer"));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
-	}
-	
+
 }

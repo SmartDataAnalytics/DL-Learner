@@ -55,7 +55,7 @@ public class OENode implements SearchTreeNode {
 	protected List<OENode> children = new LinkedList<OENode>();
 	
 	// the refinement count corresponds to the number of refinements of the
-	// description in this node - it is a better heuristic indicator than child count
+	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
 	private int refinementCount = 0;
 	

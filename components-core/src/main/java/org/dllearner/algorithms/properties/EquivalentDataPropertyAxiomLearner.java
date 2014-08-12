@@ -50,8 +50,8 @@ public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlg
 	
 	public EquivalentDataPropertyAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p1 ?o}}");
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o ; ?p_eq ?o .}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_eq ?o}}");
 		super.existingAxiomsTemplate = new ParameterizedSparqlString("SELECT ?p WHERE {?p owl:equivalentProperty ?p_eq .}");
 	}
 	

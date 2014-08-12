@@ -31,7 +31,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
- * An evaluated description for learning classes in ontologies.
+ * An evaluated OWLClassExpression for learning classes in ontologies.
  * 
  * @author Jens Lehmann
  *
@@ -45,8 +45,8 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	private ClassScore classScore;
 	
 	/**
-	 * Constructs an evaluated description for learning classes in ontologies.
-	 * @param description Description.
+	 * Constructs an evaluated OWLClassExpression for learning classes in ontologies.
+	 * @param OWLClassExpression Description.
 	 * @param score Score of description.
 	 */
 	public EvaluatedDescriptionClass(OWLClassExpression description, ClassScore score) {

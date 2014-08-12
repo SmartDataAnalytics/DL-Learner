@@ -26,7 +26,7 @@ import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 
 /**
- * Compares two EL description trees. It is a lexicographic order
+ * Compares two EL OWLClassExpression trees. It is a lexicographic order
  * according to the following criteria:
  * - number of children
  * - size of label
@@ -63,7 +63,7 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 				while(it1.hasNext()) {
 					NamedClass nc1 = it1.next();
 					NamedClass nc2 = it2.next();
-					int compare = nc1.getName().compareTo(nc2.getName());
+					int compare = nc1.toStringID().compareTo(nc2.toStringID());
 					if(compare != 0)
 						return compare;
 				}
@@ -73,7 +73,7 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 					// compare by edge name
 					ObjectProperty op1 = node1.getEdges().get(i).getLabel();
 					ObjectProperty op2 = node2.getEdges().get(i).getLabel();
-					int compare = op1.getName().compareTo(op2.getName());
+					int compare = op1.toStringID().compareTo(op2.toStringID());
 					if(compare != 0)
 						return compare;
 					

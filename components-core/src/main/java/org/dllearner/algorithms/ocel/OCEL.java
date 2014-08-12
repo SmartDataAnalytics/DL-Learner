@@ -34,18 +34,12 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -55,6 +49,9 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -128,7 +125,7 @@ public class OCEL extends AbstractCELA {
 //	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
-	private NamedClass startClass = null;
+	private OWLClass startClass = null;
 	private boolean useDataHasValueConstructor = false;
 	//refactor this
 	private static boolean usePropernessChecksDefault = false;
@@ -422,7 +419,7 @@ public class OCEL extends AbstractCELA {
 	}
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return algorithm.getBestSolution();
 	}
 	
@@ -585,11 +582,11 @@ public class OCEL extends AbstractCELA {
 		this.noisePercentage = noisePercentage;
 	}
 
-	public NamedClass getStartClass() {
+	public OWLClass getStartClass() {
 		return startClass;
 	}
 
-	public void setStartClass(NamedClass startClass) {
+	public void setStartClass(OWLClass startClass) {
 		this.startClass = startClass;
 	}
 

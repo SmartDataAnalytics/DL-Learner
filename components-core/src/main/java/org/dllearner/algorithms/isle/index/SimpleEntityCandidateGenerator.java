@@ -3,15 +3,13 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLOntology;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.dllearner.algorithms.isle.EntityCandidateGenerator;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
  * @author Lorenz Buehmann
@@ -19,17 +17,15 @@ import java.util.Set;
  */
 public class SimpleEntityCandidateGenerator extends EntityCandidateGenerator{
 	
-	private Set<Entity> allEntities = new HashSet<Entity>();
+	private Set<OWLEntity> allEntities = new HashSet<OWLEntity>();
 	
 	public SimpleEntityCandidateGenerator(OWLOntology ontology) {
 		super(ontology);
 		
-		Set<OWLEntity> owlEntities = new HashSet<OWLEntity>();
-		owlEntities.addAll(ontology.getClassesInSignature());
-		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
-		owlEntities.addAll(ontology.getDataPropertiesInSignature());
+		allEntities.addAll(ontology.getClassesInSignature());
+		allEntities.addAll(ontology.getObjectPropertiesInSignature());
+		allEntities.addAll(ontology.getDataPropertiesInSignature());
 		
-		allEntities.addAll(OWLAPIConverter.getEntities(owlEntities));
 	}
 
 	/* (non-Javadoc)
@@ -38,7 +34,7 @@ public class SimpleEntityCandidateGenerator extends EntityCandidateGenerator{
 	@Override
 	public Set<EntityScorePair> getCandidates(Annotation annotation) {
         HashSet<EntityScorePair> result = new HashSet<>();
-        for (Entity e : allEntities) {
+        for (OWLEntity e : allEntities) {
             result.add(new EntityScorePair(e, 1.0));
         }
         return result;

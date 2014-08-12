@@ -144,8 +144,8 @@ public class MathOperations {
 	}
 	
 	/**
-	 * Implements a cross product in the sense that each union description in the
-	 * base set is extended by each description in the new set. 
+	 * Implements a cross product in the sense that each union OWLClassExpression in the
+	 * base set is extended by each OWLClassExpression in the new set. 
 	 * 
 	 * Example:
 	 * baseSet = {A1 OR A2, A1 or A3}
@@ -192,7 +192,7 @@ public class MathOperations {
 	 * Note that the method does not work recursively, e.g. it return false 
 	 * for EXISTS r.(EXISTS r.A1 AND A2 AND EXISTS r.A3).
 	 * 
-	 * @param d Description to test.
+	 * @param d OWLClassExpression to test.
 	 * @return See description.
 	 */
 	public static boolean containsDoubleObjectSomeRestriction(OWLClassExpression d) {

@@ -40,9 +40,14 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.Union;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
- * Rewrites a description to an equivalent shorter description. Note that
+ * Rewrites a OWLClassExpression to an equivalent shorter description. Note that
  * minimizing is not a trivial operation and requires reasoning. The class
  * keeps an internal cache on reasoning results, i.e. if similar descriptions
  * are passed to the minimizer, then its performance will improve over time. 
@@ -52,11 +57,13 @@ import org.dllearner.core.owl.Union;
  */
 public class DescriptionMinimizer {
 	
-	private static final NamedClass OWL_THING = df.getOWLClass(IRI.create(Thing.uri);
+	private static OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	private static final OWLClass OWL_THING = df.getOWLThing();
 
 	private AbstractReasonerComponent reasoner;
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	private Map<Description,Map<Description,Boolean>> cachedSubclassOf = new TreeMap<Description,Map<Description,Boolean>>(conceptComparator);	
+	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedSubclassOf = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();	
 
 	private boolean beautify = true;
 	
@@ -67,32 +74,32 @@ public class DescriptionMinimizer {
 	/**
 	 * Method which minimizes the input description. The algorithm does not 
 	 * replace subdescriptions with named classes, e.g.
-	 * if the description "male \sqcap \exists hasChild.\top" is passed to the
+	 * if the OWLClassExpression "male \sqcap \exists hasChild.\top" is passed to the
 	 * algorithm and a class "father" is defined in the obvious way 
 	 * in the background knowledge, then
 	 * it will intentionally not return father. Instead, it preserves the
 	 * existing structure of the description, but tries to detect and delete
-	 * redundant parts within it. For instance, the description "male \sqcap
+	 * redundant parts within it. For instance, the OWLClassExpression "male \sqcap
 	 * father" is minimized to "father".
 	 * 
-	 * @param description The description to minimize.
+	 * @param OWLClassExpression The OWLClassExpression to minimize.
 	 * @return Minimized description.
 	 */
-	public Description minimizeClone(Description description) {
-		Description descriptionToMinimize = description.clone();
+	public OWLClassExpression minimizeClone(OWLClassExpression description) {
+		OWLClassExpression descriptionToMinimize = description.clone();
 		return minimize(descriptionToMinimize);
 	}
 	
 	/**
-	 * Same as {@link #minimizeClone(Description)}, but with no guarantee that
-	 * the input description remains unmodified.
-	 * @see #minimizeClone(Description)
-	 * @param description The description to minimize.
+	 * Same as {@link #minimizeClone(OWLClassExpression)}, but with no guarantee that
+	 * the input OWLClassExpression remains unmodified.
+	 * @see #minimizeClone(OWLClassExpression)
+	 * @param OWLClassExpression The OWLClassExpression to minimize.
 	 * @return Minimized description.
 	 */
-	public Description minimize(Description description) {
+	public OWLClassExpression minimize(OWLClassExpression description) {
 		// minimize all children of the description
-		List<Description> children = description.getChildren();
+		List<OWLClassExpression> children = description.getChildren();
 		for(int i=0; i<children.size(); i++) {
 			description.replaceChild(i, minimize(children.get(i)));
 		}
@@ -116,7 +123,7 @@ public class DescriptionMinimizer {
 			// we rewrite \forall r.\bot to \neg \exists r.\top
 			// which is longer but easier to understand for humans
 			if(beautify && description.getChild(0) instanceof Nothing) {
-				ObjectProperty p = (ObjectProperty)((ObjectAllRestriction)description).getRole();
+				ObjectProperty p = (OWLObjectProperty)((ObjectAllRestriction)description).getRole();
 				return new Negation(new ObjectSomeRestriction(p, Thing.instance));
 			}
 			return description;
@@ -136,7 +143,7 @@ public class DescriptionMinimizer {
 			} 			
 			// we rewrite <= 0 r C to \neg \exists r C - easier to read for humans
 			if(((ObjectMaxCardinalityRestriction)description).getCardinality() == 0) {
-				ObjectProperty p = (ObjectProperty)((ObjectMaxCardinalityRestriction)description).getRole();
+				ObjectProperty p = (OWLObjectProperty)((ObjectMaxCardinalityRestriction)description).getRole();
 				return new Negation(new ObjectSomeRestriction(p, description.getChild(0)));
 			}
 			return description;
@@ -193,14 +200,14 @@ public class DescriptionMinimizer {
 				}
 			}
 			
-			// no subclass relationships => description is already minimal
+			// no subclass relationships => OWLClassExpression is already minimal
 			return description;
 			
 			// the code below is buggy because in "A AND A AND C", it removes both As
 			
 //			List<Integer> toRemove = new LinkedList<Integer>();
 //			// intersection
-//			if(description instanceof Intersection) {
+//			if(OWLClassExpression instanceof Intersection) {
 //				// in an intersection, we have that D1 \sqcap D2 \equiv D1 if
 //				// D1 \sqsubseteq D2; this means we first check whether the
 //				// first element in an intersection is subclass of any other element in the
@@ -251,11 +258,11 @@ public class DescriptionMinimizer {
 //				return description;
 //			}
 		} else {
-			throw new Error("Cannot minimize description " + description + ".");
+			throw new Error("Cannot minimize OWLClassExpression " + description + ".");
 		}
 	}
 	
-	private boolean isSubclassOf(Description d1, Description d2) {
+	private boolean isSubclassOf(OWLClassExpression d1, OWLClassExpression d2) {
 		if(beautify && (d1 instanceof DatatypeSomeRestriction) && (d2 instanceof DatatypeSomeRestriction)){
 			DataRange dr1 = ((DatatypeSomeRestriction)d1).getDataRange();
 			DataRange dr2 = ((DatatypeSomeRestriction)d2).getDataRange();
@@ -279,7 +286,7 @@ public class DescriptionMinimizer {
 			Boolean result = reasoner.isSuperClassOf(d2, d1);
 						
 			// create new entry if necessary
-			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>(conceptComparator);
+			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>();
 			if(tmp == null)
 				cachedSubclassOf.put(d1, map1);
 			
@@ -291,8 +298,8 @@ public class DescriptionMinimizer {
 	}	
 	
 	public static void main(String[] args) throws Exception {
-		Description d1 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), Thing.instance);
-		Description d2 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), df.getOWLClass(IRI.create(Thing.uri.toString()));
+		OWLClassExpression d1 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), Thing.instance);
+		OWLClassExpression d2 = new ObjectSomeRestriction(df.getOWLObjectProperty(IRI.create("r"), df.getOWLClass(IRI.create(Thing.uri.toString()));
 		
 		System.out.println(d1.equals(d2));
 	}

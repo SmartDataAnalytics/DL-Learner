@@ -20,8 +20,8 @@
 
 package org.dllearner.algorithms.isle.metrics;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 
 public interface RelevanceMetric {
@@ -30,7 +30,7 @@ public interface RelevanceMetric {
 	 * @param entity2
 	 * @return
 	 */
-	double getRelevance(Entity entity1, Entity entity2);
+	double getRelevance(OWLEntity entity1, OWLEntity entity2);
 	
 	/**
 	 * Get  normalized relevance value in [0,1]	 * 
@@ -38,7 +38,7 @@ public interface RelevanceMetric {
 	 * @param entity2
 	 * @return
 	 */
-	double getNormalizedRelevance(Entity entity1, Entity entity2);
+	double getNormalizedRelevance(OWLEntity entity1, OWLEntity entity2);
 	
-	double getRelevance(Entity entity, Description desc);
+	double getRelevance(OWLEntity entity, OWLClassExpression desc);
 }

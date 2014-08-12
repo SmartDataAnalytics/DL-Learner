@@ -39,14 +39,14 @@ public class AutomaticNegativeExampleFinderOWL {
 
 	private AbstractReasonerComponent reasoningService;
 	
-	private SortedSet<Individual> fullPositiveSet;
+	private SortedSet<OWLIndividual> fullPositiveSet;
 
-	private SortedSet<Individual> fromRelated  = new TreeSet<Individual>();
-	private SortedSet<Individual> fromSuperclasses = new TreeSet<Individual>();
-	private SortedSet<Individual> fromParallelClasses = new TreeSet<Individual>();
-	private SortedSet<Individual> fromAllOther = new TreeSet<Individual>();
-	private SortedSet<Individual> fromDomain = new TreeSet<Individual>();
-	private SortedSet<Individual> fromRange = new TreeSet<Individual>();
+	private SortedSet<OWLIndividual> fromRelated  = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromSuperclasses = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromParallelClasses = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromAllOther = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromDomain = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromRange = new TreeSet<OWLIndividual>();
 	
 	static int poslimit = 10;
 	static int neglimit = 20;
@@ -60,10 +60,10 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param reasoningService
 	 */
 	public AutomaticNegativeExampleFinderOWL(
-			SortedSet<Individual> fullPositiveSet,
+			SortedSet<OWLIndividual> fullPositiveSet,
 			AbstractReasonerComponent reasoningService) {
 		super();
-		this.fullPositiveSet = new TreeSet<Individual>();
+		this.fullPositiveSet = new TreeSet<OWLIndividual>();
 		this.fullPositiveSet.addAll(fullPositiveSet);
 		this.reasoningService = reasoningService;
 
@@ -73,7 +73,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * see <code>  getNegativeExamples(int neglimit, boolean stable )</code>
 	 * @param neglimit
 	 */
-	public SortedSet<Individual> getNegativeExamples(int neglimit, boolean forceNegLimit ) {
+	public SortedSet<OWLIndividual> getNegativeExamples(int neglimit, boolean forceNegLimit ) {
 		return getNegativeExamples(neglimit, false, forceNegLimit);
 	}
 
@@ -86,8 +86,8 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 * @param forceNegLimit forces that exactly neglimit instances are returned by adding more instances
 	 */
-	public SortedSet<Individual> getNegativeExamples(int neglimit, boolean stable, boolean forceNegLimit ) {
-		SortedSet<Individual> negatives = new TreeSet<Individual>();
+	public SortedSet<OWLIndividual> getNegativeExamples(int neglimit, boolean stable, boolean forceNegLimit ) {
+		SortedSet<OWLIndividual> negatives = new TreeSet<OWLIndividual>();
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
 		negatives.addAll(fromSuperclasses);
@@ -136,10 +136,10 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param instances
 	 * @param objectNamespace
 	 */
-	public void makeNegativeExamplesFromRelatedInstances(SortedSet<Individual> instances,
+	public void makeNegativeExamplesFromRelatedInstances(SortedSet<OWLIndividual> instances,
 			String objectNamespace) {
 		logger.debug("making examples from related instances");
-		for (Individual oneInstance : instances) {
+		for (OWLIndividual oneInstance : instances) {
 			makeNegativeExamplesFromRelatedInstances(oneInstance, objectNamespace);
 		}
 		logger.debug("|-negExample size from related: " + fromRelated.size());
@@ -150,7 +150,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param oneInstance
 	 * @param objectnamespace
 	 */
-	private void makeNegativeExamplesFromRelatedInstances(Individual oneInstance, String objectnamespace) {
+	private void makeNegativeExamplesFromRelatedInstances(OWLIndividual oneInstance, String objectnamespace) {
 		// SortedSet<String> result = new TreeSet<String>();
 
 		//reasoningService.getRoleMembers(atomicRole)
@@ -167,7 +167,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * Gets all Classes from PosEx, gets Instances from these Classes, returns all
 	 * @param positiveSet
 	 */
-	public void makeNegativeExamplesFromParallelClasses(SortedSet<Individual> positiveSet){
+	public void makeNegativeExamplesFromParallelClasses(SortedSet<OWLIndividual> positiveSet){
 		makeNegativeExamplesFromClassesOfInstances(positiveSet);
 	}
 	
@@ -177,12 +177,12 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param positiveSet
 	 */
 	@SuppressWarnings("unused")
-	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<Individual> positiveSet) {
+	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<OWLIndividual> positiveSet) {
 		logger.debug("making neg Examples from parallel classes");
 		SortedSet<Description> classes = new TreeSet<Description>();
 		this.fromParallelClasses.clear();
 		
-		for (Individual instance : positiveSet) {
+		for (OWLIndividual instance : positiveSet) {
 			try{
 			// realization is not implemented in reasoningservice
 			//classes.addAll(reasoningService.realize()
@@ -191,7 +191,7 @@ public class AutomaticNegativeExampleFinderOWL {
 			}
 		}
 		logger.debug("getting negExamples from " + classes.size() + " parallel classes");
-		for (Description oneClass : classes) {
+		for (OWLClassExpression oneClass : classes) {
 			logger.debug(oneClass);
 			// rsc = new
 			// JenaResultSetConvenience(queryConcept("\""+oneClass+"\"",limit));
@@ -215,24 +215,24 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * if pos ex derive from one class, then neg ex are taken from a superclass
 	 * @param concept
 	 */
-	public void makeNegativeExamplesFromSuperClasses(NamedClass concept) {
+	public void makeNegativeExamplesFromSuperClasses(OWLClass concept) {
 		makeNegativeExamplesFromSuperClasses( concept, 0);
 	}
 	
 	/**
 	 * if pos ex derive from one class, then neg ex are taken from a superclass
-	 * CURRENTLY SAME METHOD AS makeNegativeExamplesFromSuperClasses(NamedClass concept)
+	 * CURRENTLY SAME METHOD AS makeNegativeExamplesFromSuperClasses(OWLClass concept)
 	 * but works quite often 
 	 * @param concept
 	 * @param depth PARAMETER CURRENTLY NOT USED, ONLY DIRECT SUPERCLASSES
 	 */
-	public void makeNegativeExamplesFromSuperClasses(NamedClass concept, int depth) {
+	public void makeNegativeExamplesFromSuperClasses(OWLClass concept, int depth) {
 
 		fromSuperclasses.clear();
 		SortedSet<Description> superClasses = reasoningService.getSuperClasses(concept);
 		logger.debug("making neg Examples from " + superClasses.size() + " superclasses");
 
-		for (Description oneSuperClass : superClasses) {
+		for (OWLClassExpression oneSuperClass : superClasses) {
 			logger.debug(oneSuperClass);
 			fromSuperclasses.addAll(reasoningService.getIndividuals(oneSuperClass));
 		}
@@ -247,7 +247,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param atomicRole
 	 */
 	
-	public void makeNegativeExamplesFromDomain(ObjectProperty atomicRole){
+	public void makeNegativeExamplesFromDomain(OWLObjectProperty atomicRole){
 		fromDomain.clear();
 		logger.debug("making Negative Examples from Domain of : "+atomicRole);
 		fromDomain.addAll(reasoningService.getPropertyMembers(atomicRole).keySet());
@@ -262,11 +262,11 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param atomicRole
 	 */
 
-	public void makeNegativeExamplesFromRange(ObjectProperty atomicRole){
+	public void makeNegativeExamplesFromRange(OWLObjectProperty atomicRole){
 		fromRange.clear();
 		logger.debug("making Negative Examples from Range of : "+atomicRole);
-		Collection<SortedSet<Individual>> tmp = reasoningService.getPropertyMembers(atomicRole).values();
-		for (SortedSet<Individual> set : tmp) {
+		Collection<SortedSet<OWLIndividual>> tmp = reasoningService.getPropertyMembers(atomicRole).values();
+		for (SortedSet<OWLIndividual> set : tmp) {
 			fromRange.addAll(set);
 		}
 		fromRange.removeAll(fullPositiveSet);

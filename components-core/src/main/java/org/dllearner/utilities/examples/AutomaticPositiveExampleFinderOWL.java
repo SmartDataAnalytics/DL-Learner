@@ -36,16 +36,16 @@ public class AutomaticPositiveExampleFinderOWL {
 	
 	private AbstractReasonerComponent reasoningService;
 	
-	private SortedSet<Individual> posExamples;
+	private SortedSet<OWLIndividual> posExamples;
 	
 	public AutomaticPositiveExampleFinderOWL(AbstractReasonerComponent reasoningService) {
 	
-		this.posExamples = new TreeSet<Individual>();
+		this.posExamples = new TreeSet<OWLIndividual>();
 		this.reasoningService = reasoningService;
 	}
 	
 	//QUALITY resultsize is not accounted for
-	public void makePositiveExamplesFromConcept(Description concept){
+	public void makePositiveExamplesFromConcept(OWLClassExpression concept){
 		logger.debug("making Positive Examples from Concept: "+concept);
 		this.posExamples.clear();
 		this.posExamples.addAll(reasoningService.getIndividuals(concept));
@@ -54,7 +54,7 @@ public class AutomaticPositiveExampleFinderOWL {
 	}
 	
 	
-	public SortedSet<Individual> getPosExamples() {
+	public SortedSet<OWLIndividual> getPosExamples() {
 		return posExamples;
 	}
 

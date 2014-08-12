@@ -3,10 +3,10 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
-
 import java.io.Serializable;
 import java.util.Set;
+
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
@@ -18,7 +18,7 @@ public interface AnnotatedDocument extends Document, Serializable{
 	 * Returns a set of entities which are contained in the document.
 	 * @return
 	 */
-	Set<Entity> getContainedEntities();
+	Set<OWLEntity> getContainedEntities();
 	
 	/**
 	 * Returns all annotations of the document.
@@ -32,5 +32,5 @@ public interface AnnotatedDocument extends Document, Serializable{
      * @param entity the entity to get frequency for
      * @return number of occurrences of given entity in this document
      */
-    int getEntityFrequency(Entity entity);
+    int getEntityFrequency(OWLEntity entity);
 }

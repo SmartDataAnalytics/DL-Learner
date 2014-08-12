@@ -74,6 +74,9 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -114,7 +117,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	private SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
 	private SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
 	private SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();	
-	private TreeSet<Individual> individuals;
+	private TreeSet<OWLIndividual> individuals;
 
 	// private ReasonerComponent rs;
 
@@ -123,24 +126,24 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	// we use sorted sets (map indices) here, because they have only log(n)
 	// complexity for checking whether an element is contained in them
 	// instances of classes
-	private Map<OWLClass, TreeSet<Individual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<Individual>>();
-	private Map<OWLClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<Individual>>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
 	// object property mappings
-	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
+	private Map<ObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<ObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>>();
 	// data property mappings
-	private Map<OWLDataProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Constant>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Constant>>> dpPos = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Constant>>>();
 		
 	
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
-	private Map<OWLDataProperty, TreeSet<Individual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
-	private Map<OWLDataProperty, TreeSet<Individual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<Individual>>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
-	private Map<OWLDataProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Double>>>();
-	private Map<OWLDataProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<Integer>>>();
-	private Map<OWLDataProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<Individual, SortedSet<String>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>>();
 
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
@@ -168,12 +171,12 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	public MaterializableFastInstanceChecker() {
 	}
 
-    public MaterializableFastInstanceChecker(TreeSet<Individual> individuals,
-			Map<OWLClass, TreeSet<Individual>> classInstancesPos,
-			Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos,
-			Map<OWLDataProperty, Map<Individual, SortedSet<Integer>>> id,
-			Map<OWLDataProperty, TreeSet<Individual>> bdPos,
-			Map<OWLDataProperty, TreeSet<Individual>> bdNeg,
+    public MaterializableFastInstanceChecker(TreeSet<OWLIndividual> individuals,
+			Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
+			Map<ObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos,
+			Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id,
+			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos,
+			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg,
 			KnowledgeSource... sources) {
 		super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
 		this.individuals = individuals;
@@ -200,27 +203,27 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		stringDatatypeProperties = rc.getStringDatatypeProperties();
 		atomicRoles = rc.getObjectProperties();
 		
-		for (NamedClass atomicConcept : rc.getNamedClasses()) {
-			TreeSet<Individual> pos = classInstancesPos.get(atomicConcept);
+		for (OWLClass atomicConcept : rc.getNamedClasses()) {
+			TreeSet<OWLIndividual> pos = classInstancesPos.get(atomicConcept);
 			if(pos != null){
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
 			} else {
-				classInstancesPos.put(atomicConcept, new TreeSet<Individual>());
+				classInstancesPos.put(atomicConcept, new TreeSet<OWLIndividual>());
 				classInstancesNeg.put(atomicConcept, individuals);
 			}
 		}
-		for(ObjectProperty p : atomicRoles){
+		for(OWLObjectProperty p : atomicRoles){
 			if(opPos.get(p) == null){
-				opPos.put(p, new HashMap<Individual, SortedSet<Individual>>());
+				opPos.put(p, new HashMap<OWLIndividual, SortedSet<OWLIndividual>>());
 			}
 		}
 		
-		for (DatatypeProperty dp : booleanDatatypeProperties) {
+		for (OWLDataProperty dp : booleanDatatypeProperties) {
 			if(bdPos.get(dp) == null){
-				bdPos.put(dp, new TreeSet<Individual>());
+				bdPos.put(dp, new TreeSet<OWLIndividual>());
 			}
 			if(bdNeg.get(dp) == null){
-				bdNeg.put(dp, new TreeSet<Individual>());
+				bdNeg.put(dp, new TreeSet<OWLIndividual>());
 			}
 			
 		}
@@ -260,7 +263,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		intDatatypeProperties = rc.getIntDatatypeProperties();
 		stringDatatypeProperties = rc.getStringDatatypeProperties();
 		atomicRoles = rc.getObjectProperties();
-		individuals = (TreeSet<Individual>) rc.getIndividuals();
+		individuals = (TreeSet<OWLIndividual>) rc.getIndividuals();
 
 		loadOrDematerialize();
 	}
@@ -325,12 +328,12 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 
 		//atomic concepts
 		logger.debug("dematerialising concepts");
-		for (NamedClass atomicConcept : rc.getNamedClasses()) {
-			SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
-			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
+		for (OWLClass atomicConcept : rc.getNamedClasses()) {
+			SortedSet<OWLIndividual> pos = rc.getIndividuals(atomicConcept);
+			classInstancesPos.put(atomicConcept, (TreeSet<OWLIndividual>) pos);
 
 			if (isDefaultNegation()) {
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
 			} else {
 				// Pellet needs approximately infinite time to answer
 				// negated queries
@@ -338,49 +341,49 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				// we have to
 				// be careful here
 				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) rc.getIndividuals(negatedAtomicConcept));
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) rc.getIndividuals(negatedAtomicConcept));
 			}
 		}
 
 		//atomic object properties
 		logger.debug("dematerialising object properties");
-		for (ObjectProperty atomicRole : atomicRoles) {
+		for (OWLObjectProperty atomicRole : atomicRoles) {
 			opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
 		}
 		
 		//atomic datatype properties
 		logger.debug("dematerialising datatype properties");
-		for (DatatypeProperty atomicRole : datatypeProperties) {
+		for (OWLDataProperty atomicRole : datatypeProperties) {
 			dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
 		}
 
 		//boolean datatype properties
-		for (DatatypeProperty dp : booleanDatatypeProperties) {
-			bdPos.put(dp, (TreeSet<Individual>) rc.getTrueDatatypeMembers(dp));
-			bdNeg.put(dp, (TreeSet<Individual>) rc.getFalseDatatypeMembers(dp));
+		for (OWLDataProperty dp : booleanDatatypeProperties) {
+			bdPos.put(dp, (TreeSet<OWLIndividual>) rc.getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<OWLIndividual>) rc.getFalseDatatypeMembers(dp));
 		}
 
 		//integer datatype properties
-		for (DatatypeProperty dp : intDatatypeProperties) {
+		for (OWLDataProperty dp : intDatatypeProperties) {
 			id.put(dp, rc.getIntDatatypeMembers(dp));
 		}
 
 		//double datatype properties
-		for (DatatypeProperty dp : doubleDatatypeProperties) {
+		for (OWLDataProperty dp : doubleDatatypeProperties) {
 			dd.put(dp, rc.getDoubleDatatypeMembers(dp));
 		}
 
 		//String datatype properties
-		for (DatatypeProperty dp : stringDatatypeProperties) {
+		for (OWLDataProperty dp : stringDatatypeProperties) {
 			sd.put(dp, rc.getStringDatatypeMembers(dp));
 		}			
 		
 		
 		if(materializeExistentialRestrictions){
 			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
-			for (NamedClass cls : atomicConcepts) {
-				TreeSet<Individual> individuals = classInstancesPos.get(cls);
-				Set<OWLClassExpression> superClass = materialization.materialize(cls.getName());
+			for (OWLClass cls : atomicConcepts) {
+				TreeSet<OWLIndividual> individuals = classInstancesPos.get(cls);
+				Set<OWLClassExpression> superClass = materialization.materialize(cls.toStringID());
 				for (OWLClassExpression sup : superClass) {
 					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
 				}
@@ -393,22 +396,22 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			OWLOntology ontology = rc.getReasoner().getRootOntology();
 			
 			Individual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd");
-			Map<Individual, SortedSet<Individual>> map = new HashMap<Individual, SortedSet<Individual>>();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<OWLIndividual, SortedSet<OWLIndividual>>();
 			for (Individual individual : individuals) {
-				SortedSet<Individual> objects = new TreeSet<Individual>();
+				SortedSet<OWLIndividual> objects = new TreeSet<OWLIndividual>();
 				objects.add(genericIndividual);
 				map.put(individual, objects);
 			}
-			for (NamedClass cls : atomicConcepts) {
+			for (OWLClass cls : atomicConcepts) {
 				classInstancesNeg.get(cls).add(genericIndividual);
 				if(OWLPunningDetector.hasPunning(ontology, cls)){
-					Individual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.getName());
+					Individual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.toStringID());
 					//for each x \in N_I with A(x) we add relatedTo(x,A)
-					SortedSet<Individual> individuals = classInstancesPos.get(cls);
+					SortedSet<OWLIndividual> individuals = classInstancesPos.get(cls);
 					for (Individual individual : individuals) {
-						SortedSet<Individual> objects = map.get(individual);
+						SortedSet<OWLIndividual> objects = map.get(individual);
 						if(objects == null){
-							objects = new TreeSet<Individual>();
+							objects = new TreeSet<OWLIndividual>();
 							map.put(individual, objects);
 						}
 						objects.add(clsAsInd);
@@ -427,24 +430,24 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		logger.debug("TBox dematerialised in " + dematDuration + " ms");
 	}
 	
-	private void fill(SortedSet<Individual> individuals, Description d){
+	private void fill(SortedSet<OWLIndividual> individuals, Description d){
 		if(d instanceof Intersection){
 			List<Description> children = d.getChildren();
-			for (Description child : children) {
+			for (OWLClassExpression child : children) {
 				fill(individuals, child);
 			}
 		} else if(d instanceof ObjectSomeRestriction){
-			ObjectProperty role = (ObjectProperty) ((ObjectSomeRestriction) d).getRole();
-			Map<Individual, SortedSet<Individual>> map = opPos.get(role);
+			ObjectProperty role = (OWLObjectProperty) ((ObjectSomeRestriction) d).getRole();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> map = opPos.get(role);
 			//create new individual as object value for each individual
-			SortedSet<Individual> newIndividuals = new TreeSet<Individual>();
+			SortedSet<OWLIndividual> newIndividuals = new TreeSet<OWLIndividual>();
 			int i = 0;
 			for (Individual individual : individuals) {
 				Individual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++);
 				newIndividuals.add(newIndividual);
-				SortedSet<Individual> values = map.get(individual);
+				SortedSet<OWLIndividual> values = map.get(individual);
 				if(values == null){
-					values = new TreeSet<Individual>();
+					values = new TreeSet<OWLIndividual>();
 					map.put(individual, values);
 				}
 				values.add(newIndividual);
@@ -459,7 +462,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
 	@Override
-	public boolean hasTypeImpl(Description description, Individual individual)
+	public boolean hasTypeImpl(OWLClassExpression description, Individual individual)
 			throws ReasoningMethodUnsupportedException {
 
 //		 System.out.println("FIC: " + description + " " + individual);
@@ -497,7 +500,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			// if the individual is instance of any of the subdescription of
 			// the union, we return true
 			List<Description> children = description.getChildren();
-			for (Description child : children) {
+			for (OWLClassExpression child : children) {
 				if (hasTypeImpl(child, individual)) {
 					return true;
 				}
@@ -507,7 +510,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			// if the individual is instance of all of the subdescription of
 			// the union, we return true
 			List<Description> children = description.getChildren();
-			for (Description child : children) {
+			for (OWLClassExpression child : children) {
 				if (!hasTypeImpl(child, individual)) {
 					return false;
 				}
@@ -519,12 +522,12 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
 			if(handlePunning && op == OWLPunningDetector.punningProperty && child.equals(df.getOWLClass(IRI.create(Thing.uri.toString()))){
 				return true;
 			}
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
 
 			if (mapping == null) {
 				logger.warn("Instance check of a description with an undefined property (" + op
@@ -532,7 +535,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				return false;
 			}
 			
-			SortedSet<Individual> roleFillers = mapping.get(individual);
+			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
 			if (roleFillers == null) {
 				return false;
 			}
@@ -548,16 +551,16 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
 
 			if (mapping == null) {
 				logger.warn("Instance check of a description with an undefinied property (" + op
 						+ ").");
 				return true;
 			}
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<OWLIndividual> roleFillers = opPos.get(op).get(individual);
 			
 			if (roleFillers == null) {
 				if(forallSemantics == ForallSemantics.Standard) {
@@ -586,9 +589,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
 
 			if (mapping == null) {
 				logger.warn("Instance check of a description with an undefinied property (" + op
@@ -599,8 +602,8 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
 			int nrOfFillers = 0;
 
-//			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			SortedSet<Individual> roleFillers = mapping.get(individual);
+//			SortedSet<OWLIndividual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
 //			System.out.println(roleFillers);
 			
 			// special case: there are always at least zero fillers
@@ -640,9 +643,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
 
 			if (mapping == null) {
 				logger.warn("Instance check of a description with an undefinied property (" + op
@@ -653,7 +656,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			int number = ((ObjectCardinalityRestriction) description).getNumber();
 			int nrOfFillers = 0;
 
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<OWLIndividual> roleFillers = opPos.get(op).get(individual);
 			// return true if there are none or not enough role fillers
 			if (roleFillers == null || roleFillers.size() < number) {
 				return true;
@@ -679,9 +682,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			return true;
 		} else if (description instanceof ObjectValueRestriction) {
 			Individual i = ((ObjectValueRestriction)description).getIndividual();
-			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			ObjectProperty op = (OWLObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
 			
-			Set<Individual> inds = opPos.get(op).get(individual);
+			Set<OWLIndividual> inds = opPos.get(op).get(individual);
 			return inds == null ? false : inds.contains(i);
 		} else if (description instanceof BooleanValueRestriction) {
 			DatatypeProperty dp = ((BooleanValueRestriction) description)
@@ -698,7 +701,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			}
 		} else if (description instanceof DatatypeSomeRestriction) {
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
-			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DatatypeProperty dp = (OWLDataProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
 			if(dr.isDatatype() 
 //					&& ((Datatype)dr).isTopDatatype()
@@ -735,11 +738,11 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
 	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return getIndividualsImplFast(concept);
 	}
 	
-	public SortedSet<Individual> getIndividualsImplStandard(Description concept)
+	public SortedSet<OWLIndividual> getIndividualsImplStandard(OWLClassExpression concept)
 		throws ReasoningMethodUnsupportedException {
 		if (concept instanceof NamedClass) {
 	 		return classInstancesPos.get((NamedClass) concept);
@@ -748,7 +751,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 	}
 	 
 	 	// return rs.retrieval(concept);
-	 	SortedSet<Individual> inds = new TreeSet<Individual>();
+	 	SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
 	 	for (Individual i : individuals) {
 	 		if (hasType(concept, i)) {
 	 			inds.add(i);
@@ -758,31 +761,31 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 	
 	@SuppressWarnings("unchecked")
-	public SortedSet<Individual> getIndividualsImplFast(Description description)
+	public SortedSet<OWLIndividual> getIndividualsImplFast(OWLClassExpression description)
 			throws ReasoningMethodUnsupportedException {
 		// policy: returned sets are clones, i.e. can be modified
 		// (of course we only have to clone the leafs of a class description tree)
 		if (description instanceof NamedClass) {
 			if(classInstancesPos.containsKey((NamedClass) description)){
-				return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+				return (TreeSet<OWLIndividual>) classInstancesPos.get((NamedClass) description).clone();
 			} else {
-				return new TreeSet<Individual>();
+				return new TreeSet<OWLIndividual>();
 			}
 		} else if (description instanceof Negation) {
 			if(description.getChild(0) instanceof NamedClass) {
-				return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
+				return (TreeSet<OWLIndividual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
 			}
 			// implement retrieval as default negation
-			return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
+			return Helper.difference((TreeSet<OWLIndividual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
 		} else if (description instanceof Thing) {
-			return (TreeSet<Individual>) individuals.clone();
+			return (TreeSet<OWLIndividual>) individuals.clone();
 		} else if (description instanceof Nothing) {
-			return new TreeSet<Individual>();
+			return new TreeSet<OWLIndividual>();
 		} else if (description instanceof Union) {
 			// copy instances of first element and then subtract all others
-			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			SortedSet<OWLIndividual> ret = getIndividualsImpl(description.getChild(0));
 			int childNr = 0;
-			for(Description child : description.getChildren()) {
+			for(OWLClassExpression child : description.getChildren()) {
 				if(childNr != 0) {
 					ret.addAll(getIndividualsImpl(child));
 				}
@@ -791,9 +794,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			return ret;
 		} else if (description instanceof Intersection) {
 			// copy instances of first element and then subtract all others
-			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
+			SortedSet<OWLIndividual> ret = getIndividualsImpl(description.getChild(0));
 			int childNr = 0;
-			for(Description child : description.getChildren()) {
+			for(OWLClassExpression child : description.getChildren()) {
 				if(childNr != 0) {
 					ret.retainAll(getIndividualsImpl(child));
 				}
@@ -801,21 +804,21 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			}
 			return ret;
 		} else if (description instanceof ObjectSomeRestriction) {
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 			
 			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
 			if (!(ope instanceof ObjectProperty)) {
 				throw new ReasoningMethodUnsupportedException("Retrieval for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);	
+			ObjectProperty op = (OWLObjectProperty) ope;
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);	
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-				SortedSet<Individual> inds = entry.getValue();
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				for(Individual ind : inds) {
 					if(targetSet.contains(ind)) {
 						returnSet.add(entry.getKey());
@@ -837,22 +840,22 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
 			// semantics)
 			
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(description.getChild(0));
 						
 			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
 			if (!(ope instanceof ObjectProperty)) {
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-//			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
-			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+			ObjectProperty op = (OWLObjectProperty) ope;
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
+//			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
+			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-				SortedSet<Individual> inds = entry.getValue();
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				for(Individual ind : inds) {
 					if(!targetSet.contains(ind)) {
 						returnSet.remove(entry.getKey());
@@ -867,18 +870,18 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(child);
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(child);
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 
 			int number = ((ObjectCardinalityRestriction) description).getNumber();			
 
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<Individual> inds = entry.getValue();
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(inds.size() < number) {
@@ -909,20 +912,20 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				throw new ReasoningMethodUnsupportedException("Instance check for description "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
+			ObjectProperty op = (OWLObjectProperty) ope;
 			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(child);
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(child);
 			// initially all individuals are in the return set and we then remove those
 			// with too many fillers			
-			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 
 			int number = ((ObjectCardinalityRestriction) description).getNumber();			
 
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<Individual> inds = entry.getValue();
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(number < inds.size()) {
@@ -950,12 +953,12 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			return returnSet;
 		} else if (description instanceof ObjectValueRestriction) {
 			Individual i = ((ObjectValueRestriction)description).getIndividual();
-			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+			ObjectProperty op = (OWLObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
 			
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(op);			
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 			
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				if(entry.getValue().contains(i)) {
 					returnSet.add(entry.getKey());
 				}
@@ -967,26 +970,26 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
 
 			if (value) {
-				return (TreeSet<Individual>) bdPos.get(dp).clone();
+				return (TreeSet<OWLIndividual>) bdPos.get(dp).clone();
 			} else {
-				return (TreeSet<Individual>) bdNeg.get(dp).clone();
+				return (TreeSet<OWLIndividual>) bdNeg.get(dp).clone();
 			}
 		} else if (description instanceof DatatypeSomeRestriction) {
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
-			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
+			DatatypeProperty dp = (OWLDataProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
 
-			Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();			
+			Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(dp);			
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();			
 
 			if (dr instanceof DoubleMaxValue) {
-				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+				for(Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
 					if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
 						returnSet.add(entry.getKey());
 					}
 				}				
 			} else if (dr instanceof DoubleMinValue) {
-				for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
+				for(Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
 					if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
 						returnSet.add(entry.getKey());
 					}
@@ -998,7 +1001,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 					+ description + " unsupported.");		
 			
 		// return rs.retrieval(concept);
-//		SortedSet<Individual> inds = new TreeSet<Individual>();
+//		SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
 //		for (Individual i : individuals) {
 //			if (hasType(concept, i)) {
 //				inds.add(i);
@@ -1023,7 +1026,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	@Override
-	public Set<ObjectProperty> getObjectProperties() {
+	public Set<OWLObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
@@ -1053,32 +1056,32 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}	
 	
 	@Override
-	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<Description> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperClassesImpl(concept);
 	}
 	
 	@Override
-	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<Description> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSubClassesImpl(concept);
 	}
 
 	@Override
-	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
-	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<ObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}
 	
 	@Override
-	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
-	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}	
 	
@@ -1088,7 +1091,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
 	@Override
-	public SortedSet<Individual> getIndividuals() {
+	public SortedSet<OWLIndividual> getIndividuals() {
 		return individuals;
 	}
 
@@ -1128,7 +1131,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 //	}
 
 	@Override
-	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(OWLClassExpression superConcept, Description subConcept) {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
@@ -1167,66 +1170,66 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
 	@Override
-	public Description getDomainImpl(ObjectProperty objectProperty) {
+	public Description getDomainImpl(OWLObjectProperty objectProperty) {
 		return rc.getDomain(objectProperty);
 	}
 
 	@Override
-	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
+	public Description getDomainImpl(OWLDataProperty datatypeProperty) {
 		return rc.getDomain(datatypeProperty);
 	}
 
 	@Override
-	public Description getRangeImpl(ObjectProperty objectProperty) {
+	public Description getRangeImpl(OWLObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
 	}
 	
 	@Override
-	public OWLDataRange getRangeImpl(DatatypeProperty datatypeProperty) {
+	public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
 		return rc.getRange(datatypeProperty);
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
+	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty atomicRole) {
 		return opPos.get(atomicRole);
 	}
 
 	@Override
-	public final SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getTrueDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return bdPos.get(datatypeProperty);
 	}
 	
 	@Override
-	public final SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getFalseDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return bdNeg.get(datatypeProperty);
 	}
 	
 	@Override
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
+	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(
 			DatatypeProperty datatypeProperty) {
 		return id.get(datatypeProperty);
 	}		
 	
 	@Override
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
+	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
 			DatatypeProperty datatypeProperty) {
 		return dd.get(datatypeProperty);
 	}	
 	
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
+	public Map<OWLIndividual, SortedSet<Constant>> getDatatypeMembersImpl(
 			DatatypeProperty datatypeProperty) {
 		return dpPos.get(datatypeProperty);
 //		return rc.getDatatypeMembersImpl(datatypeProperty);
 	}		
 	
 	@Override
-	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+	public Set<OWLIndividual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);
 	}
 	
 	@Override
-	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
+	protected Map<ObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(Individual individual) {
 		return rc.getObjectPropertyRelationships(individual);
 	}	
 	
@@ -1241,7 +1244,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}	
 	
 	@Override
-	public Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
+	public Set<Constant> getLabelImpl(OWLEntity entity) throws ReasoningMethodUnsupportedException {
 		return rc.getLabel(entity);
 	}	
 	
@@ -1277,7 +1280,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 	}
 
 	@Override
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
+	protected Set<Description> getAssertedDefinitionsImpl(OWLClass nc) {
 		return rc.getAssertedDefinitionsImpl(nc);
 	}
 

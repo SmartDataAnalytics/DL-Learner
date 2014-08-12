@@ -3,7 +3,7 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
@@ -11,14 +11,14 @@ import org.dllearner.core.owl.Entity;
  */
 public class SemanticAnnotation extends Annotation{
 	
-	private Entity entity;
+	private OWLEntity entity;
 	
-	public SemanticAnnotation(Annotation annotation, Entity entity) {
+	public SemanticAnnotation(Annotation annotation, OWLEntity entity) {
 		super(annotation.getReferencedDocument(), annotation.getTokens());
 		this.entity = entity;
 	}
 
-	public Entity getEntity() {
+	public OWLEntity getEntity() {
 		return entity;
 	}
 

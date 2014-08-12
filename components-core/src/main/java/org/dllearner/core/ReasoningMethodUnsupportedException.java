@@ -23,7 +23,7 @@ package org.dllearner.core;
  * Exception indicating that a reasoner implementation cannot support
  * the requested operation. Either the operation itself is not implemented
  * or does not support certain features, e.g. a reasoner could support
- * instance checks but not if the class description contains datatype
+ * instance checks but not if the class OWLClassExpression contains datatype
  * constructs.
  * 
  * @author Jens Lehmann

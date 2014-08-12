@@ -18,14 +18,14 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
+import java.util.Random;
+import java.util.Set;
+
 import org.dllearner.algorithms.isle.index.Annotation;
 import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.util.Random;
-import java.util.Set;
 
 /**
  * Disambiguation by randomly selecting one of the candidates (baseline method).
@@ -48,7 +48,7 @@ public class RandomWordSenseDisambiguation extends WordSenseDisambiguation {
 		int pos = random.nextInt(candidateEntities.size());
 		int i = 0;
 		for(EntityScorePair esp : candidateEntities) {
-            Entity e = esp.getEntity();
+            OWLEntity e = esp.getEntity();
             if (i == pos) {
                 return new SemanticAnnotation(annotation, e);
             }

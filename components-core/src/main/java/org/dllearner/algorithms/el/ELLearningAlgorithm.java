@@ -167,13 +167,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a description in tree form
+	// evaluates a OWLClassExpression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
 		
 		// convert tree to standard description
-		Description description = descriptionTree.transformToDescription();
+		Description OWLClassExpression = descriptionTree.transformToDescription();
 		description = getNiceDescription(description);
 		
 		double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
@@ -203,7 +203,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			// check whether we want to add it to the best evaluated descriptions;
 			// to do this we pick the worst considered evaluated description
 			// (remember that the set has limited size, so it's likely not the worst overall);
-			// the description has a chance to make it in the set if it has
+			// the OWLClassExpression has a chance to make it in the set if it has
 			// at least as high accuracy - if not we can save the reasoner calls
 			// for fully computing the evaluated description
 			if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
@@ -216,18 +216,18 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 	}
 	
-	private Description getNiceDescription(OWLClassExpression d){
-		Description description = d.clone();
+	private OWLClassExpression getNiceDescription(OWLClassExpression d){
+		Description OWLClassExpression = d.clone();
 		List<OWLClassExpression> children = description.getChildren();
 		for(int i=0; i<children.size(); i++) {
 			description.replaceChild(i, getNiceDescription(children.get(i)));
 		}
 		if(children.size()==0) {
 			return description;
-		} else if(description instanceof ObjectSomeRestriction) {
+		} else if(OWLClassExpression instanceof ObjectSomeRestriction) {
 			// \exists r.\bot \equiv \bot
 			if(description.getChild(0) instanceof Thing) {
-				Description range = reasoner.getRange((ObjectProperty) ((ObjectSomeRestriction) description).getRole());
+				Description range = reasoner.getRange((OWLObjectProperty) ((ObjectSomeRestriction) description).getRole());
 				description.replaceChild(0, range);
 			} else {
 				description.replaceChild(0, getNiceDescription(description.getChild(0)));
@@ -274,7 +274,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}	
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return getCurrentlyBestEvaluatedDescription().getDescription();
 	}
 

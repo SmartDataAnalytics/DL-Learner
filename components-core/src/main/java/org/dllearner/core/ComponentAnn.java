@@ -55,9 +55,9 @@ public @interface ComponentAnn {
     double version();
     
     /**
-     * An optional description of the component. This can be shown in tool tips,
+     * An optional OWLClassExpression of the component. This can be shown in tool tips,
      * help etc.
-     * @return The description of the component.
+     * @return The OWLClassExpression of the component.
      */
     String description() default "";
 }

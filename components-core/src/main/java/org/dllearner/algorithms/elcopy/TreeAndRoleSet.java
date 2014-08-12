@@ -21,10 +21,10 @@ package org.dllearner.algorithms.elcopy;
 
 import java.util.Set;
 
-import org.dllearner.core.owl.Property;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * Convenience class representing an EL description tree and a set of roles.
+ * Convenience class representing an EL OWLClassExpression tree and a set of roles.
  * 
  * @author Jens Lehmann
  *
@@ -32,9 +32,9 @@ import org.dllearner.core.owl.Property;
 public class TreeAndRoleSet {
 
 	private ELDescriptionTree tree;
-	private Set<Property> roles;
+	private Set<OWLProperty> roles;
 	
-	public TreeAndRoleSet(ELDescriptionTree tree, Set<Property> roles) {
+	public TreeAndRoleSet(ELDescriptionTree tree, Set<OWLProperty> roles) {
 		this.tree = tree;
 		this.roles = roles;
 	}
@@ -49,7 +49,7 @@ public class TreeAndRoleSet {
 	/**
 	 * @return the roles
 	 */
-	public Set<Property> getRoles() {
+	public Set<OWLProperty> getRoles() {
 		return roles;
 	}
 	

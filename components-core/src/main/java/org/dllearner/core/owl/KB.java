@@ -47,13 +47,13 @@ public class KB implements KBElement {
 	private Set<TerminologicalAxiom> tbox = new HashSet<TerminologicalAxiom>();
 	private Set<PropertyAxiom> rbox = new HashSet<PropertyAxiom>();
 	
-	public SortedSet<Individual> findAllIndividuals() {
-		SortedSet<Individual> individuals = new TreeSet<Individual>();
+	public SortedSet<OWLIndividual> findAllIndividuals() {
+		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
 		
 		for(Axiom axiom : abox) {
 			if(axiom instanceof ObjectPropertyAssertion) {
-				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual1());
-				individuals.add(((ObjectPropertyAssertion)axiom).getIndividual2());
+				individuals.add(((OWLObjectPropertyAssertion)axiom).getIndividual1());
+				individuals.add(((OWLObjectPropertyAssertion)axiom).getIndividual2());
 			} else if(axiom instanceof ClassAssertionAxiom) {
 				individuals.add(((ClassAssertionAxiom)axiom).getIndividual());
 			}	
@@ -67,7 +67,7 @@ public class KB implements KBElement {
 		
 		for(Axiom axiom : abox) {
 			if(axiom instanceof ObjectPropertyAssertion)
-				roleNames.add(((ObjectPropertyAssertion)axiom).getRole().getName());
+				roleNames.add(((OWLObjectPropertyAssertion)axiom).getRole().toStringID());
 		}
 		
 		for(Axiom axiom : tbox) {
@@ -82,17 +82,17 @@ public class KB implements KBElement {
 		
 		for(Axiom axiom : rbox) {
 			if(axiom instanceof SymmetricObjectPropertyAxiom)
-				roleNames.add(((SymmetricObjectPropertyAxiom)axiom).getRole().getName());
+				roleNames.add(((SymmetricObjectPropertyAxiom)axiom).getRole().toStringID());
 			else if(axiom instanceof TransitiveObjectPropertyAxiom)
-				roleNames.add(((TransitiveObjectPropertyAxiom)axiom).getRole().getName());
+				roleNames.add(((TransitiveObjectPropertyAxiom)axiom).getRole().toStringID());
 			else if(axiom instanceof FunctionalObjectPropertyAxiom)
-				roleNames.add(((FunctionalObjectPropertyAxiom)axiom).getRole().getName());	
+				roleNames.add(((FunctionalObjectPropertyAxiom)axiom).getRole().toStringID());	
 			else if(axiom instanceof SubObjectPropertyAxiom) {
-				roleNames.add(((SubObjectPropertyAxiom)axiom).getRole().getName());
-				roleNames.add(((SubObjectPropertyAxiom)axiom).getSubRole().getName());
+				roleNames.add(((SubObjectPropertyAxiom)axiom).getRole().toStringID());
+				roleNames.add(((SubObjectPropertyAxiom)axiom).getSubRole().toStringID());
 			} else if(axiom instanceof InverseObjectPropertyAxiom) {
-				roleNames.add(((InverseObjectPropertyAxiom)axiom).getRole().getName());
-				roleNames.add(((InverseObjectPropertyAxiom)axiom).getInverseRole().getName());
+				roleNames.add(((InverseObjectPropertyAxiom)axiom).getRole().toStringID());
+				roleNames.add(((InverseObjectPropertyAxiom)axiom).getInverseRole().toStringID());
 			}		
 		}
 		
@@ -103,13 +103,13 @@ public class KB implements KBElement {
 		return ret;		
 	}
 	
-	public Set<String> findAllRoleNames(Description concept) {
+	public Set<String> findAllRoleNames(OWLClassExpression concept) {
 		Set<String> ret = new TreeSet<String>();
 		
 		if(concept instanceof ObjectQuantorRestriction)
-			ret.add(((ObjectQuantorRestriction)concept).getRole().getName());
+			ret.add(((ObjectQuantorRestriction)concept).getRole().toStringID());
 		
-		for(Description child : concept.getChildren())
+		for(OWLClassExpression child : concept.getChildren())
 			ret.addAll(findAllRoleNames(child));		
 		
 		return ret;
@@ -145,14 +145,14 @@ public class KB implements KBElement {
 		return ret;
 	}
 	
-	private Set<String> findAllConceptNames(Description concept) {
+	private Set<String> findAllConceptNames(OWLClassExpression concept) {
 		Set<String> ret = new TreeSet<String>();
 
 		if(concept instanceof NamedClass) {
-			ret.add(((NamedClass)concept).getName());
+			ret.add(((NamedClass)concept).toStringID());
 		}
 			
-		for(Description child : concept.getChildren())
+		for(OWLClassExpression child : concept.getChildren())
 			ret.addAll(findAllConceptNames(child));
 
 		return ret;
@@ -251,30 +251,30 @@ public class KB implements KBElement {
 		return strbuff.toString();
 	}
 	
-	public Set<Individual> findRelatedIndividuals(Individual individual) {
-		return findRelatedIndividuals(individual, new TreeSet<Individual>());
+	public Set<OWLIndividual> findRelatedIndividuals(OWLIndividual individual) {
+		return findRelatedIndividuals(individual, new TreeSet<OWLIndividual>());
 	}
 	
 	@SuppressWarnings("unchecked")	
-	public Set<Individual> findRelatedIndividuals(Individual individual, TreeSet<Individual> searchedIndividuals) {
+	public Set<OWLIndividual> findRelatedIndividuals(OWLIndividual individual, TreeSet<OWLIndividual> searchedIndividuals) {
 		// Individual als durchsucht markieren (wir können nicht davon ausgehen,
 		// dass es sich um einen Individuenbaum handelt, also müssen wir dafür
 		// sorgen, dass jedes Individual nur einmal durchsucht wird)
 		searchedIndividuals.add(individual);
 		
 		// alle direkt mit diesem Individual verbundenen Individuals finden
-		TreeSet<Individual> connectedSet = new TreeSet<Individual>();
+		TreeSet<OWLIndividual> connectedSet = new TreeSet<OWLIndividual>();
 		for(AssertionalAxiom axiom : abox) {
 			if(axiom instanceof ObjectPropertyAssertion) {
-				ObjectPropertyAssertion ra = (ObjectPropertyAssertion)axiom;
+				ObjectPropertyAssertion ra = (OWLObjectPropertyAssertion)axiom;
 				if(ra.getIndividual1().equals(individual))
 					connectedSet.add(ra.getIndividual2());
 			}
 		}
 		
-		TreeSet<Individual> connectedSetCopy = (TreeSet<Individual>) connectedSet.clone();
+		TreeSet<OWLIndividual> connectedSetCopy = (TreeSet<OWLIndividual>) connectedSet.clone();
 		// rekursive Aufrufe
-		for(Individual i : connectedSetCopy) {
+		for(OWLIndividual i : connectedSetCopy) {
 			if(!searchedIndividuals.contains(i))
 				connectedSet.addAll(findRelatedIndividuals(i,searchedIndividuals));
 		}

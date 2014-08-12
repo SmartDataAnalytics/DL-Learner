@@ -111,7 +111,7 @@ public class PCELOE extends AbstractCELA {
 	private OENode startNode;
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
-	private Description startClass;
+	private OWLClassExpression startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
 //	private TreeSet<OWLClassExpression> descriptions;
@@ -122,13 +122,13 @@ public class PCELOE extends AbstractCELA {
 	// private boolean exactBestDescriptionEvaluation = false;
 	@ConfigOption(name = "singleSuggestionMode", defaultValue="false", description="Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.")
 	private boolean singleSuggestionMode;
-	private Description bestDescription;
+	private OWLClassExpression bestDescription;
 	private double bestAccuracy = Double.MIN_VALUE;
 	
-	private NamedClass classToDescribe;
+	private OWLClass classToDescribe;
 	// examples are either 1.) instances of the class to describe 2.) positive examples
 	// 3.) union of pos.+neg. examples depending on the learning problem at hand
-	private Set<Individual> examples;
+	private Set<OWLIndividual> examples;
 	
 	// CELOE was originally created for learning classes in ontologies, but also
 	// works for other learning problem types
@@ -185,13 +185,13 @@ public class PCELOE extends AbstractCELA {
 	@ConfigOption(name = "maxClassExpressionTests", defaultValue="0", description="The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTests = 0;
 
-	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
+	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", OWLClassExpression = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTestsAfterImprovement = 0;
 	
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", OWLClassExpression = "maximum execution of the algorithm in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 
-	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
+	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", OWLClassExpression = "maximum execution of the algorithm in seconds")
 	private int maxExecutionTimeInSecondsAfterImprovement = 0;
 	
 	@ConfigOption(name = "terminateOnNoiseReached", defaultValue="false", description="specifies whether to terminate when noise criterion is met")
@@ -385,9 +385,9 @@ public class PCELOE extends AbstractCELA {
 					startClass = candidate;
 					
 					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing description " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
+						logger.info("Reusing existing OWLClassExpression " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
 					} else {
-						logger.info("Generalised existing description " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
+						logger.info("Generalised existing OWLClassExpression " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
 					}
 					
 //					System.out.println("start class: " + startClass);
@@ -407,7 +407,7 @@ public class PCELOE extends AbstractCELA {
 					} else {
 						startClass = Thing.instance;
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a description in this case.");
+								"sensible to learn a OWLClassExpression in this case.");
 					}					
 				}
 			}				
@@ -419,7 +419,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
 		return ed == null ? null : ed.getDescription();
 	}
@@ -552,24 +552,24 @@ public class PCELOE extends AbstractCELA {
 			return false;
 		}
 		
-		// check whether the description is allowed
+		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
 			return false;
 		}
 		
 //		System.out.println("Test " + new Date());
-		// quality of description (return if too weak)
+		// quality of OWLClassExpression (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			logger.warn("Invalid accuracy value " + accuracy + " for description " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+			logger.warn("Invalid accuracy value " + accuracy + " for OWLClassExpression " + OWLClassExpression + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 			System.exit(0);
 		}
 		
 //		System.out.println("Test2 " + new Date());
 		expressionTests++;
 //		System.out.println("acc: " + accuracy);
-//		System.out.println(description + " " + accuracy);
+//		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
 		}
@@ -586,7 +586,7 @@ public class PCELOE extends AbstractCELA {
 		nodes.add(node);
 //		System.out.println("Test3 " + new Date());
 		
-		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
+		// in some cases (e.g. mutation) fully evaluating even a single OWLClassExpression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
 		if(singleSuggestionMode) {
 			if(accuracy > bestAccuracy) {
@@ -597,7 +597,7 @@ public class PCELOE extends AbstractCELA {
 			return true;
 		} 
 		
-//		System.out.println("description " + description + " accuracy " + accuracy);
+//		System.out.println("description " + OWLClassExpression + " accuracy " + accuracy);
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -656,7 +656,7 @@ public class PCELOE extends AbstractCELA {
 		return true;
 	}	
 	
-	// checks whether the description is allowed
+	// checks whether the OWLClassExpression is allowed
 	private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
 		if(isClassLearningProblem) {
 			if(isEquivalenceProblem) {
@@ -695,7 +695,7 @@ public class PCELOE extends AbstractCELA {
 				// transform [r,s] to \exists r.\exists s.\top
 				Description existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				for(Individual instance : examples) {
+				for(OWLIndividual instance : examples) {
 					if(reasoner.hasType(existentialContext, instance)) {
 //						System.out.println(instance + "  " + existentialContext);
 						fillerFound = true;
@@ -721,14 +721,14 @@ public class PCELOE extends AbstractCELA {
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
-	private boolean occursOnFirstLevel(OWLClassExpression description, Description clazz) {
-		if(description instanceof NamedClass) {
+	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression clazz) {
+		if(OWLClassExpression instanceof NamedClass) {
 			if(description.equals(clazz)) {
 				return true;
 			}
 		} 
 		
-		if(description instanceof Restriction) {
+		if(OWLClassExpression instanceof Restriction) {
 			return false;
 		}
 		
@@ -742,9 +742,9 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	// check whether the node is a potential solution candidate
-	private Description rewriteNode(OENode node) {
-		Description description = node.getDescription();
-		// minimize description (expensive!) - also performes some human friendly rewrites
+	private OWLClassExpression rewriteNode(OENode node) {
+		Description OWLClassExpression = node.getDescription();
+		// minimize OWLClassExpression (expensive!) - also performes some human friendly rewrites
 		Description niceDescription = description;
 		if(useMinimizer) {
 			synchronized (minimizer) {
@@ -861,7 +861,7 @@ public class PCELOE extends AbstractCELA {
 		this.operator = operator;
 	}
 
-	public Description getStartClass() {
+	public OWLClassExpression getStartClass() {
 		return startClass;
 	}
 

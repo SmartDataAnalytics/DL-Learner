@@ -53,7 +53,7 @@ import com.jamonapi.MonitorFactory;
 public class QTL2DisjunctiveMT extends AbstractCELA {
 	
 	
-	private static final Logger logger = Logger.getLogger(QTL2DisjunctiveMT.class.getName());
+	private static final Logger logger = Logger.getLogger(QTL2DisjunctiveMT.class);
 	
 	private LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
 	

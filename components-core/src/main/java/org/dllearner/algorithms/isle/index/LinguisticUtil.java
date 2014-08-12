@@ -1,11 +1,19 @@
 package org.dllearner.algorithms.isle.index;
 
-import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.DefaultLemmatizer;
-import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.Lemmatizer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import net.didion.jwnl.data.POS;
+
 import org.dllearner.algorithms.isle.WordNet;
 
-import java.util.*;
+import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.DefaultLemmatizer;
+import edu.northwestern.at.utils.corpuslinguistics.lemmatizer.Lemmatizer;
 
 /**
  * Provides shortcuts to commonly used linguistic operations

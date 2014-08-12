@@ -4,7 +4,7 @@
 package org.dllearner.algorithms.isle.metrics;
 
 import org.dllearner.algorithms.isle.index.Index;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Log Likelihood Ratio
@@ -24,7 +24,7 @@ public class LLRRelevanceMetric extends AbstractRelevanceMetric {
 	}
 
 	@Override
-	public synchronized double getRelevance(Entity entityA, Entity entityB){
+	public synchronized double getRelevance(OWLEntity entityA, OWLEntity entityB){
 		double fA = index.getNumberOfDocumentsFor(entityA);
 		double fB = index.getNumberOfDocumentsFor(entityB);
 		double N = index.getTotalNumberOfDocuments();
@@ -54,7 +54,7 @@ public class LLRRelevanceMetric extends AbstractRelevanceMetric {
 	}
 	
 	@Override
-	public synchronized double getNormalizedRelevance(Entity entityA, Entity entityB){
+	public synchronized double getNormalizedRelevance(OWLEntity entityA, OWLEntity entityB){
 		return Double.NaN;
 	}
 

@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.dllearner.core.owl.Property;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
  * A comparator implementation for the tree and role set convenience structure.
@@ -42,14 +42,14 @@ public class TreeAndRoleSetComparator implements Comparator<TreeAndRoleSet> {
 	public int compare(TreeAndRoleSet o1, TreeAndRoleSet o2) {
 		int comp = treeComp.compare(o1.getTree(), o2.getTree());
 		if(comp == 0) {
-			Set<Property> op1 = o1.getRoles();
-			Set<Property> op2 = o2.getRoles();
+			Set<OWLProperty> op1 = o1.getRoles();
+			Set<OWLProperty> op2 = o2.getRoles();
 			int sizeDiff = op1.size() - op2.size();
 			if(sizeDiff == 0) {
-				Iterator<Property> it1 = op1.iterator();
-				Iterator<Property> it2 = op2.iterator();
+				Iterator<OWLProperty> it1 = op1.iterator();
+				Iterator<OWLProperty> it2 = op2.iterator();
 				while(it1.hasNext()) {
-					int stringComp = it1.next().getURI().compareTo(it2.next().getURI());
+					int stringComp = it1.next().compareTo(it2.next());
 					if(stringComp != 0) {
 						return stringComp;
 					}

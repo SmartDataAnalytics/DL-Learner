@@ -12,8 +12,8 @@ public interface OntologyRepository {
     String getName();
 
     /**
-     * Gets a description of the location of the repository
-     * @return A human readable description of the repository location
+     * Gets a OWLClassExpression of the location of the repository
+     * @return A human readable OWLClassExpression of the repository location
      */
     String getLocation();
 

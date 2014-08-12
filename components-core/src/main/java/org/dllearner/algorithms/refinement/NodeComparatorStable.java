@@ -21,7 +21,6 @@ package org.dllearner.algorithms.refinement;
 
 import java.util.Comparator;
 
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
@@ -34,8 +33,6 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
  */
 public class NodeComparatorStable implements Comparator<Node> {
 
-	ConceptComparator conceptComparator = new ConceptComparator();
-	
 	// implementiert 
 	public int compare(Node n1, Node n2) {
 		

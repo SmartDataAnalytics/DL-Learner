@@ -68,7 +68,7 @@ public class OntologyClassRewriter {
 			Description newConceptInternal = KBParser.parseConcept(newConceptString);
 			
 			// umwandeln in interne KAON2-Darstellung (bereits im DL-Learner implementiert)
-			// Description newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
+			// OWLClassExpression newConceptKAON2 = KAON2Reasoner.getKAON2Description(newConceptInternal);
 			// OWLDescription newConceptOWLAPI = OWLAPIReasoner.getOWLAPIDescription(newConceptInternal);
 			OWLClassExpression newConceptOWLAPI = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(newConceptInternal);
 			

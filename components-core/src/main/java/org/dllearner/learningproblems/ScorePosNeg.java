@@ -25,7 +25,7 @@ import org.dllearner.core.Score;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
- * The score class is used to store how well a class description did
+ * The score class is used to store how well a class OWLClassExpression did
  * on a learning problem.
  * 
  * @author Jens Lehmann

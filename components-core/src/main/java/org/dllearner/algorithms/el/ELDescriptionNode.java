@@ -41,15 +41,15 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 /**
- * Represents an EL description tree, which corresponds to a
- * description in the EL description logic. Note that an EL description tree
- * can be a subtree of another EL description tree. In general,
- * an EL description tree is a tree where the node label is a set
+ * Represents an EL OWLClassExpression tree, which corresponds to a
+ * OWLClassExpression in the EL OWLClassExpression logic. Note that an EL OWLClassExpression tree
+ * can be a subtree of another EL OWLClassExpression tree. In general,
+ * an EL OWLClassExpression tree is a tree where the node label is a set
  * of named classes and the edges are labelled with a property.
  * 
  * In the documentation below "this node" refers to the root node
- * of this EL description (sub-)tree. One tree cannot be reused,
- * i.e. used as subtree in several description trees, as some of
+ * of this EL OWLClassExpression (sub-)tree. One tree cannot be reused,
+ * i.e. used as subtree in several OWLClassExpression trees, as some of
  * the associated variables (level, simulation) depend on the overall
  * tree. 
  * 
@@ -88,7 +88,7 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Constructs an EL description tree with empty root label.
+	 * Constructs an EL OWLClassExpression tree with empty root label.
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree) {
 		this(tree, new TreeSet<OWLClass>());
@@ -100,7 +100,7 @@ public class ELDescriptionNode {
 	}	
 	
 	/**
-	 * Constructs an EL description tree given its root label.
+	 * Constructs an EL OWLClassExpression tree given its root label.
 	 * @param label Label of the root node.
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<OWLClass> label) {
@@ -191,7 +191,7 @@ public class ELDescriptionNode {
 //		mon.stop();
 		
 		// add all classes in label
-		for(NamedClass nc : label) {
+		for(OWLClass nc : label) {
 			extendLabel(nc);
 		}
 		
@@ -200,7 +200,7 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Constructs an EL description tree given its root label and edges.
+	 * Constructs an EL OWLClassExpression tree given its root label and edges.
 	 * @param label Label of the root node.
 	 * @param edges Edges connected to the root node.
 	 */
@@ -221,9 +221,9 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Traverses the EL description tree upwards until it finds 
+	 * Traverses the EL OWLClassExpression tree upwards until it finds 
 	 * the root and returns it.
-	 * @return The root node of this EL description tree.
+	 * @return The root node of this EL OWLClassExpression tree.
 	 */
 	public ELDescriptionNode getRoot() {
 		ELDescriptionNode root = this;
@@ -240,7 +240,7 @@ public class ELDescriptionNode {
 	 * of the tree in unit tests. Use {@link #getLevel()} to get the 
 	 * level of the tree. 
 	 * @return The level of this node (or more specifically the root
-	 * node of this subtree) within the overall EL description tree.
+	 * node of this subtree) within the overall EL OWLClassExpression tree.
 	 */
 	public int computeLevel() {
 		ELDescriptionNode root = this;
@@ -257,18 +257,18 @@ public class ELDescriptionNode {
 	 * node labels are transformed to an {@link Intersection}
 	 * of {@link NamedClass}. Each edge is transformed to an 
 	 * {@link ObjectSomeRestriction}, where the property is the edge
-	 * label and the child description the subtree the edge points 
+	 * label and the child OWLClassExpression the subtree the edge points 
 	 * to. Edges are also added to the intersection. If the intersection
 	 * is empty, {@link Thing} is returned.
-	 * @return The description corresponding to this EL description tree.
+	 * @return The OWLClassExpression corresponding to this EL OWLClassExpression tree.
 	 */
-	public Description transformToDescription() {
+	public OWLClassExpression transformToDescription() {
 		int nrOfElements = label.size() + edges.size();
 		// leaf labeled with \emptyset stands for owl:Thing
 		if(nrOfElements == 0) {
 			return new Thing();
 		// we want to avoid intersections with only 1 element, so in this
-		// case we return either the NamedClass or ObjectSomeRestriction directly
+		// case we return either the OWLClass or ObjectSomeRestriction directly
 		} else if(nrOfElements == 1) {
 			if(label.size()==1) {
 				return label.first();
@@ -280,7 +280,7 @@ public class ELDescriptionNode {
 		// return an intersection of labels and edges
 		} else {
 			Intersection is = new Intersection();
-			for(NamedClass nc : label) {
+			for(OWLClass nc : label) {
 				is.addChild(nc);
 			}
 			for(ELDescriptionEdge edge : edges) {
@@ -329,7 +329,7 @@ public class ELDescriptionNode {
 	 * @param oldClass Class to remove from label.
 	 * @param newClass Class to add to label.
 	 */
-	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
+	public void replaceInLabel(OWLClass oldClass, OWLClass newClass) {
 		label.remove(oldClass);
 		label.add(newClass);
 		labelSimulationUpdate();
@@ -339,7 +339,7 @@ public class ELDescriptionNode {
 	 * Adds an entry to the node label.
 	 * @param newClass Class to add to label.
 	 */
-	public void extendLabel(NamedClass newClass) {
+	public void extendLabel(OWLClass newClass) {
 		label.add(newClass);
 		labelSimulationUpdate();
 		tree.size += 1;

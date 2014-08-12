@@ -30,7 +30,7 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
- * Represents a hierarchy of object properties (roles in Description Logics).
+ * Represents a hierarchy of object properties (roles in OWLClassExpression Logics).
  * 
  * @author Jens Lehmann
  *

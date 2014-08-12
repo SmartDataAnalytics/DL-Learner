@@ -269,7 +269,7 @@ public class AnnComponentManager {
 	@Deprecated
 	public boolean areValidComponentConstructorArguments(Class<? extends Component>... arguments) {
 		for(int i=0; i<arguments.length; i++) {
-			if(arguments[i].getName().compareTo(arguments[i+1].getName())<0) {
+			if(arguments[i].toStringID().compareTo(arguments[i+1].toStringID())<0) {
 				return false;
 			}
 		}
@@ -364,9 +364,9 @@ public class AnnComponentManager {
 	}	
 	
 	/**
-	 * Returns the description of a DL-Learner component.
+	 * Returns the OWLClassExpression of a DL-Learner component.
 	 * @param component
-	 * @return Description of the component.
+	 * @return OWLClassExpression of the component.
 	 */
 	public static String getDescription(Component component){
 		return getDescription(component.getClass());

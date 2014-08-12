@@ -25,9 +25,9 @@ import java.util.Set;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Entity;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * 
@@ -42,7 +42,7 @@ public class NLPHeuristic extends AbstractHeuristic{
 	private double expansionPenaltyFactor = 0.1;
 	// bonus for being better than parent node
 	private double gainBonusFactor = 0.3;
-	// penalty if a node description has very many refinements since exploring 
+	// penalty if a node OWLClassExpression has very many refinements since exploring 
 	// such a node is computationally very expensive
 	private double nodeRefinementPenalty = 0.0001;
 	// syntactic comparison as final comparison criterion
@@ -53,11 +53,11 @@ public class NLPHeuristic extends AbstractHeuristic{
 	
 	private double nlpBonusFactor = 1;
 	
-	private Map<Entity, Double> entityRelevance;
+	private Map<OWLEntity, Double> entityRelevance;
 	
 	public NLPHeuristic() {}
 	
-	public NLPHeuristic(Map<Entity,Double> entityRelevance) {
+	public NLPHeuristic(Map<OWLEntity,Double> entityRelevance) {
 		this.entityRelevance = entityRelevance;
 	}
 	
@@ -79,12 +79,12 @@ public class NLPHeuristic extends AbstractHeuristic{
 		
 		
 //		the NLP based scoring
-		Description expression = node.getExpression();//System.out.println(expression);
+		OWLClassExpression expression = node.getExpression();//System.out.println(expression);
 //		OWLClassExpression owlapiDescription = OWLAPIConverter.getOWLAPIDescription(expression);
-//		Set<Entity> entities = OWLAPIConverter.getEntities(owlapiDescription.getSignature());
-		Set<Entity> entities = expression.getSignature();
+//		Set<OWLEntity> entities = OWLAPIConverter.getEntities(owlapiDescription.getSignature());
+		Set<OWLEntity> entities = expression.getSignature();
 //		double sum = 0;
-//		for (Entity entity : entities) {
+//		for (OWLEntity entity : entities) {
 //			double relevance = entityRelevance.containsKey(entity) ? entityRelevance.get(entity) : 0;//System.out.println(entity + ":" + relevance);
 //			if(!Double.isInfinite(relevance)){
 //				sum += relevance;
@@ -98,14 +98,14 @@ public class NLPHeuristic extends AbstractHeuristic{
 	/**
 	 * @param entityRelevance the entityRelevance to set
 	 */
-	public void setEntityRelevance(Map<Entity, Double> entityRelevance) {
+	public void setEntityRelevance(Map<OWLEntity, Double> entityRelevance) {
 		this.entityRelevance = entityRelevance;
 	}
 	
 	/**
 	 * @return the entityRelevance
 	 */
-	public Map<Entity, Double> getEntityRelevance() {
+	public Map<OWLEntity, Double> getEntityRelevance() {
 		return entityRelevance;
 	}
 

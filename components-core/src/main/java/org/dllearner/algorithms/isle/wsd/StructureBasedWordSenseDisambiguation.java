@@ -20,7 +20,7 @@ import org.dllearner.algorithms.isle.index.SemanticAnnotation;
 import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.base.Joiner;
@@ -53,7 +53,7 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 		//filter out candidates for which the head noun does not match with the annotated token
 		for (Iterator<EntityScorePair> iterator = candidateEntities.iterator(); iterator.hasNext();) {
 			EntityScorePair entityPair = iterator.next();
-			Entity entity = entityPair.getEntity();
+			OWLEntity entity = entityPair.getEntity();
 			
 			Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 			
@@ -91,9 +91,9 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 			
 			//compare this context with the context of each entity candidate
 			double maxScore = Double.NEGATIVE_INFINITY;
-			Entity bestEntity = null;
+			OWLEntity bestEntity = null;
 			for (EntityScorePair entityScorePair : candidateEntities) {
-                Entity entity = entityScorePair.getEntity();
+				OWLEntity entity = entityScorePair.getEntity();
                 //get the context of the entity by analyzing the structure of the ontology
                 Set<String> entityContext = StructuralEntityContext.getContextInNaturalLanguage(ontology, entity);
                 //compute the VSM Cosine Similarity
@@ -133,5 +133,10 @@ public class StructureBasedWordSenseDisambiguation extends WordSenseDisambiguati
 			e.printStackTrace();
 		}
 		return score;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String s = "OWLEntity";
+		System.out.println(s.replace("^(OWL)Entity", "OWLEntity"));
 	}
 }

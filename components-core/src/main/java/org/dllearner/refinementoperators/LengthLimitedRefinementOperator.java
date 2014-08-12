@@ -21,7 +21,7 @@ package org.dllearner.refinementoperators;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.owl.Description;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
@@ -37,8 +37,8 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 * Optional refinement operation, where the learning algorithm can
 	 * specify an additional bound on the length of descriptions. 
 	 * 
-	 * @param description The description, which will be refined.
-	 * @param maxLength The maximum length of returned description, where length is defined by {@link Description#getLength()}.
+	 * @param OWLClassExpression The description, which will be refined.
+	 * @param maxLength The maximum length of returned description, where length is defined by {@link OWLClassExpressionUtils#getLength()}.
 	 * @return A set of refinements obeying the above restrictions.
 	 */
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength);
@@ -48,8 +48,8 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 * specify an additional bound on the length of descriptions and
 	 * a list of known refinements, which do not need to be returned. 
 	 * 
-	 * @param description The description, which will be refined.
-	 * @param maxLength The maximum length of returned description, where length is defined by {@link Description#getLength()}.
+	 * @param OWLClassExpression The description, which will be refined.
+	 * @param maxLength The maximum length of returned description, where length is defined by {@link OWLClassExpressionUtils#getLength()}.
 	 * @param knownRefinements A collection of known refinements, which do not need to be returned. 
 	 * @return A set of refinements obeying the above restrictions.
 	 */

@@ -52,37 +52,37 @@ public interface IndividualReasoner {
 	 * Checks whether <code>individual</code> is instance of <code>description</code>.
 	 * For instance, "Leipzig" may be an instance of "City".
 	 * 
-	 * @param description An OWL class description.
+	 * @param OWLClassExpression An OWL class description.
 	 * @param individual An individual.
-	 * @return True if the instance has the description as type and false otherwise.
+	 * @return True if the instance has the OWLClassExpression as type and false otherwise.
 	 */
 	public boolean hasType(OWLClassExpression description, OWLIndividual individual);
 	
 	/**
 	 * Performs instance checks on a set of instances (reasoners might be more
 	 * efficient than handling each check separately).
-	 * @param description An OWL class description.
+	 * @param OWLClassExpression An OWL class description.
 	 * @param individuals An individual.
 	 * @return The subset of those instances, which have the given type.
 	 */
 	public SortedSet<OWLIndividual> hasType(OWLClassExpression description, Set<OWLIndividual> individuals);
 	
 	/**
-	 * Gets all instances of a given class description in the knowledge base.
-	 * @param description An OWL class description.
+	 * Gets all instances of a given class OWLClassExpression in the knowledge base.
+	 * @param OWLClassExpression An OWL class description.
 	 * @return All instances of the class description.
 	 */
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description);
 	
 	/**
-	 * Performs a query for all instances of the given class description and
+	 * Performs a query for all instances of the given class OWLClassExpression and
 	 * its negation. (Note that in OWL it is possible that the reasoner can
 	 * neither deduce that an individual is instance of a class nor its 
 	 * negation.) This method might be more efficient that performing a 
 	 * two retrievals.
 	 * 
-	 * @param description An OWL class description.
-	 * @return All instances of the class description and its negation.
+	 * @param OWLClassExpression An OWL class description.
+	 * @return All instances of the class OWLClassExpression and its negation.
 	 */
 	public SortedSetTuple<OWLIndividual> doubleRetrieval(OWLClassExpression description);	
 	

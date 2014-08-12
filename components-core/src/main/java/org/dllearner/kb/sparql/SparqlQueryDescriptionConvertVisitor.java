@@ -104,23 +104,23 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
     
     /**
      * @param descriptionKBSyntax
-     *            description which is parsed and passed to getSparqlQuery(
-     *            Description description)
+     *            OWLClassExpression which is parsed and passed to getSparqlQuery(
+     *            OWLClassExpression description)
      * @return
      * @throws ParseException
      */
     public String getSparqlQuery(String descriptionKBSyntax) throws ParseException {
-        Description description = KBParser.parseConcept(descriptionKBSyntax);
+        OWLClassExpression description = KBParser.parseConcept(descriptionKBSyntax);
         return getSparqlQuery(description);
     }
     
     /**
-     * takes a description and transforms it into SPARQL
+     * takes a OWLClassExpression and transforms it into SPARQL
      * 
      * @param description
      * @return
      */
-    public String getSparqlQuery(Description description) {
+    public String getSparqlQuery(OWLClassExpression description) {
         description.accept(this);
         expandSubclasses();
         String ret = "";
@@ -273,11 +273,11 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
     
     public static String getSparqlQuery(String descriptionKBSyntax, int limit, boolean labels,
             boolean distinct) throws ParseException {
-        Description d = KBParser.parseConcept(descriptionKBSyntax);
+        OWLClassExpression d = KBParser.parseConcept(descriptionKBSyntax);
         return getSparqlQuery(d, limit, labels, distinct);
     }
     
-    public static String getSparqlQuery(Description description, int limit, boolean labels,
+    public static String getSparqlQuery(OWLClassExpression description, int limit, boolean labels,
             boolean distinct) {
         SparqlQueryDescriptionConvertVisitor visitor = new SparqlQueryDescriptionConvertVisitor();
         visitor.setDistinct(distinct);
@@ -293,9 +293,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
      * SparqlEndpoint se, Cache c, boolean simple)
      * 
      * @param descriptionKBSyntax
-     * @see #getSparqlQuery(Description description, int limit)
+     * @see #getSparqlQuery(OWLClassExpression description, int limit)
      * @param resultLimit
-     * @see #getSparqlQuery(Description description, int limit)
+     * @see #getSparqlQuery(OWLClassExpression description, int limit)
      * @param maxDepth
      * @throws ParseException
      */
@@ -316,7 +316,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
         SparqlQueryDescriptionConvertVisitor testVisitor = new SparqlQueryDescriptionConvertVisitor();
         String q = testVisitor.getSparqlQuery(ttt);
         System.out.println(q);
-        Description description = KBParser.parseConcept(ttt);
+        OWLClassExpression description = KBParser.parseConcept(ttt);
         System.out.println(description.toString());
         System.out.println(description.toKBSyntaxString());
         System.out.println(description.toKBSyntaxString(null, null));
@@ -337,7 +337,7 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
                 .asList(new String[] { "http://dbpedia.org/ontology/kingdom" })));
         String q = testVisitor.getSparqlQuery(ttt);
         System.out.println(q);
-        Description description = KBParser.parseConcept(ttt);
+        OWLClassExpression description = KBParser.parseConcept(ttt);
         System.out.println(description.toString());
         System.out.println(description.toKBSyntaxString());
         System.out.println(description.toKBSyntaxString(null, null));
@@ -601,9 +601,9 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
      * .ObjectValueRestriction)
      */
     public void visit(ObjectValueRestriction description) {
-        ObjectProperty op = (ObjectProperty) description.getRestrictedPropertyExpression();
+        ObjectProperty op = (OWLObjectProperty) description.getRestrictedPropertyExpression();
         Individual ind = description.getIndividual();
-        query += "\n?" + stack.peek() + " <" + op.getName() + "> <" + ind.getName() + "> ";
+        query += "\n?" + stack.peek() + " <" + op.toStringID() + "> <" + ind.toStringID() + "> ";
     }
     
     /*
@@ -626,10 +626,10 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
      * org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl
      * .NamedClass)
      */
-    public void visit(NamedClass description) {
+    public void visit(OWLClass description) {
         logger.trace("NamedClass");
-        query += "\n?" + stack.peek() + " a <" + description.getName() + "> ";
-        foundNamedClasses.add(description.getName());
+        query += "\n?" + stack.peek() + " a <" + description.toStringID() + "> ";
+        foundNamedClasses.add(description.toStringID());
     }
     
     /*

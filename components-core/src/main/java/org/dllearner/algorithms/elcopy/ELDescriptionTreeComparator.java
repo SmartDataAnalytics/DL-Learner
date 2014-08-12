@@ -22,7 +22,7 @@ package org.dllearner.algorithms.elcopy;
 import java.util.Comparator;
 
 /**
- * Compares two EL description trees by calling {@link ELDescriptionNodeComparator} 
+ * Compares two EL OWLClassExpression trees by calling {@link ELDescriptionNodeComparator} 
  * on their root nodes.
  * 
  * @author Jens Lehmann

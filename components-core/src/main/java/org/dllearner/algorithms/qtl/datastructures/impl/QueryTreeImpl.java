@@ -1443,7 +1443,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     				OWLDataProperty p = df.getOWLDataProperty(IRI.create((String) tree.getEdge(child)));
     				if(childLabel.equals("?")){//p some int
     					Set<Literal> literals = child.getLiterals();
-    					OWLDataRange OWLDataRange = null;
+    					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
     						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));

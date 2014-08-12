@@ -19,7 +19,7 @@
 
 package org.dllearner.algorithms.ocel;
 
-import java.util.List;
+import java.util.Set;
 
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
@@ -27,11 +27,10 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.DoubleEditor;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.owl.DatatypeSomeRestriction;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.utilities.owl.ConceptComparator;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 
 /**
  * This heuristic combines the following criteria to assign a
@@ -150,7 +149,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 		else
 			// we cannot return 0 here otherwise different nodes/concepts with the
 			// same score may be ignored (not added to a set because an equal element exists)
-			return conceptComparator.compare(node1.getConcept(), node2.getConcept());
+			return node1.getConcept().compareTo(node2.getConcept());
 	}
 
 	public double getNodeScore(ExampleBasedNode node) {
@@ -179,32 +178,33 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	// this function can be used to give some constructs a length bonus
 	// compared to their syntactic length
 	private int getHeuristicLengthBonus(OWLClassExpression description) {
+		
+		
 		int bonus = 0;
 		
-		// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
-		// as they provide no extra information
-		if(description instanceof Thing)
-			bonus = 1; //2;
-		
-		// we put a penalty on negations, because they often overfit
-		// (TODO: make configurable)
-		else if(description instanceof Negation) {
-			bonus = -negationPenalty;
+		Set<OWLClassExpression> nestedClassExpressions = description.getNestedClassExpressions();
+		for (OWLClassExpression expression : nestedClassExpressions) {
+			// do not count TOP symbols (in particular in ALL r.TOP and EXISTS r.TOP)
+			// as they provide no extra information
+			if(expression.isOWLThing())
+				bonus = 1; //2;
+			
+			// we put a penalty on negations, because they often overfit
+			// (TODO: make configurable)
+			else if(expression instanceof OWLObjectComplementOf) {
+				bonus = -negationPenalty;
+			}
+			
+//			if(OWLClassExpression instanceof BooleanValueRestriction)
+//				bonus = -1;
+			
+			// some bonus for doubles because they are already penalised by length 3
+			else if(expression instanceof OWLDataSomeValuesFrom) {
+//				System.out.println(description);
+				bonus = 3; //2;
+			}
 		}
 		
-//		if(description instanceof BooleanValueRestriction)
-//			bonus = -1;
-		
-		// some bonus for doubles because they are already penalised by length 3
-		else if(description instanceof DatatypeSomeRestriction) {
-//			System.out.println(description);
-			bonus = 3; //2;
-		}
-		
-		List<OWLClassExpression> children = description.getChildren();
-		for(OWLClassExpression child : children) {
-			bonus += getHeuristicLengthBonus(child);
-		}
 		return bonus;
 	}
 

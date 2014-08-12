@@ -20,7 +20,6 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,27 +31,24 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.SubClassAxiom;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -68,14 +64,12 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 @ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
-public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgorithm {
+public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgorithm<OWLObjectPropertyDomainAxiom, OWLIndividual> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner2.class);
 	
-	private Map<Individual, SortedSet<OWLClassExpression>> individual2Types;
+	private Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types;
 	
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private OWLObjectProperty propertyToDescribe;
 	
 	public ObjectPropertyDomainAxiomLearner2(SparqlEndpointKS ks){
@@ -89,38 +83,38 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 //		negExamplesQueryTemplate.clearParams();
 //		posExamplesQueryTemplate.clearParams();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		if(returnOnlyNewAxioms){
-			//get existing domains
-			Description existingDomain = reasoner.getDomain(propertyToDescribe);
-			if(existingDomain != null){
-				existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
-				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(existingDomain)){
-						for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-							existingAxioms.add(new ObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
-							logger.info("Existing domain(inferred): " + sup);
-						}
+	protected void getExistingAxioms() {
+		OWLClassExpression existingDomain = reasoner.getDomain(propertyToDescribe);
+		if(existingDomain != null){
+			existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+			if(reasoner.isPrepared()){
+				if(reasoner.getClassHierarchy().contains(existingDomain)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+						existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+						logger.info("Existing domain(inferred): " + sup);
 					}
-					
 				}
+				
 			}
 		}
-		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
 		runSPARQL1_0_Mode();
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void buildSampleFragment(){
@@ -155,18 +149,18 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		computeAxiomCandidates();
 		
 		//compute evidence score on the whole KB
-		List<Axiom> axioms = getCurrentlyBestAxioms();
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
+		List<OWLObjectPropertyDomainAxiom> axioms = getCurrentlyBestAxioms();
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<OWLObjectPropertyDomainAxiom>>();
 		//get total number of instances of A
 		int cntA = reasoner.getPopularity(propertyToDescribe);
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		for (Axiom axiom : axioms) {
+		for (OWLObjectPropertyDomainAxiom axiom : axioms) {
 			//get total number of instances of B
-			NamedClass domain = ((ObjectPropertyDomainAxiom)axiom).getDomain().asNamedClass();
+			OWLClass domain = axiom.getDomain().asOWLClass();
 			int cntB = reasoner.getPopularity(domain);
 			
 			//get number of instances of (A AND B)
-			Query query = converter.asCountQuery(new Intersection(domain, new ObjectSomeRestriction(propertyToDescribe, new Thing())));
+			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(domain, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
 //			System.out.println(query);
 			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
 			
@@ -182,13 +176,13 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			//F score
 			double fscore = Heuristics.getFScore(recall, precision, beta);
 			System.out.println(axiom + ":" + fscore + "(P=" + precision + "|R=" + recall + ")");
-			currentlyBestAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(fscore)));
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(axiom, new AxiomScore(fscore)));
 //			System.out.println(new EvaluatedAxiom(axiom, new AxiomScore(fscore)));
 		}
 	}
 	
 	private void computeAxiomCandidates() {
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
+		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<OWLObjectPropertyDomainAxiom>>();
 		// get number of distinct subjects
 		String query = "SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s a ?type.}";
 		ResultSet rs = executeSelectQuery(query, workingModel);
@@ -212,8 +206,9 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 				if (type.equals(OWL.Thing)) {
 					continue;
 				}
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyDomainAxiom(propertyToDescribe,
-						df.getOWLClass(IRI.create(type.getURI())), computeScore(all, qs.get("cnt").asLiteral().getInt())));
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
+						df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
+								computeScore(all, qs.get("cnt").asLiteral().getInt())));
 			}
 		}
 	}
@@ -224,9 +219,9 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	private void computeScore(Set<OWLObjectPropertyDomainAxiom> axioms){
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		for (ObjectPropertyDomainAxiom axiom : axioms) {
-			SubClassAxiom sub = axiom.asSubClassOfAxiom();
-			String subClassQuery = converter.convert("?s", sub.getSubConcept());
+		for (OWLObjectPropertyDomainAxiom axiom : axioms) {
+			OWLSubClassOfAxiom sub = axiom.asOWLSubClassOfAxiom();
+			String subClassQuery = converter.convert("?s", sub.getSubClass());
 		}
 	}
 	
@@ -262,8 +257,8 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 					if(type.equals(OWL.Thing)){
 						continue;
 					}
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new ObjectPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI())),
+					currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
+							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
 							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
 				
@@ -280,7 +275,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		if(reasoner.isPrepared()){
 			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
 				Statement st = iter.next();
-				Description cls = df.getOWLClass(IRI.create(st.getObject().asResource().getURI());
+				OWLClass cls = df.getOWLClass(IRI.create(st.getObject().asResource().getURI()));
 				if(reasoner.getClassHierarchy().contains(cls)){
 					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
 						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
@@ -292,15 +287,15 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	}
 	
 	@Override
-	public Set<OWLObject> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
+	public Set<OWLIndividual> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
+		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<OWLObject> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		ObjectPropertyDomainAxiom axiom = (ObjectPropertyDomainAxiom) evAxiom.getAxiom();
+	public Set<OWLIndividual> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
+		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getNegativeExamples(evAxiom);
 	}
@@ -314,11 +309,11 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks, "cache");
 		reasoner.prepareSubsumptionHierarchy();
-		
+		OWLDataFactory df = new OWLDataFactoryImpl();
 		
 		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
+		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.addFilterNamespace("http://dbpedia.org/ontology/");
 		l.init();
@@ -328,14 +323,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		
 		ObjectPropertyDomainAxiomLearner l2 = new ObjectPropertyDomainAxiomLearner(ks);
 		l2.setReasoner(reasoner);
-		l2.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
+		l2.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace")));
 		l2.setMaxExecutionTimeInSeconds(10);
 		l2.addFilterNamespace("http://dbpedia.org/ontology/");
 		l2.init();
 		l2.start();
 		System.out.println(l2.getCurrentlyBestEvaluatedAxioms(0.2));
 		System.out.println(l2.getBestEvaluatedAxiom());
-//		for (ObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
+//		for (OWLObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
 //			System.out.println(p);
 //			l.setPropertyToDescribe(p);
 //			l.setMaxExecutionTimeInSeconds(10);

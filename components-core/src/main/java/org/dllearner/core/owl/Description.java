@@ -28,31 +28,31 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLRuntimeException;
 
 /**
- * A class description is sometimes also called "complex class" or "concept". 
+ * A class OWLClassExpression is sometimes also called "complex class" or "concept". 
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class Description implements Cloneable, PropertyRange, KBElement{
+public abstract class OWLClassExpression implements Cloneable, PropertyRange, KBElement{
 	
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = -3439073654652166607L;
-	protected Description parent = null;
+	protected OWLClassExpression parent = null;
     protected List<Description> children = new LinkedList<Description>();
     
     public abstract int getArity();
     
     /**
-     * Calculate the number of nodes for this description tree (each
-     * description can be seen as a tree).
+     * Calculate the number of nodes for this OWLClassExpression tree (each
+     * OWLClassExpression can be seen as a tree).
      * 
      * @return The number of nodes.
      */
     public int getNumberOfNodes() {
         int sum = 1;
-        for (Description child : children)
+        for (OWLClassExpression child : children)
             sum += child.getNumberOfNodes();
         return sum;
     }
@@ -65,7 +65,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
      * like conjunction and disjunction.)
      * @return The selected subtree.
      */
-    public Description getSubtree(int i) {
+    public OWLClassExpression getSubtree(int i) {
         if (children.size() == 0)
             return this;
         else if (children.size() == 1) {
@@ -90,14 +90,14 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     }
     
     /**
-     * Calculates the description tree depth.
+     * Calculates the OWLClassExpression tree depth.
      * @return The depth of this description.
      */
     public int getDepth() {
         // compute the max over all children
         int depth = 1;
         
-        for(Description child : children) {
+        for(OWLClassExpression child : children) {
             int depthChild = child.getDepth();
             if(depthChild+1>depth)
                 depth = 1 + depthChild;
@@ -110,10 +110,10 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
      * Returns a clone of this description.
      */
 	@Override    
-    public Description clone() {
-        Description node = null;
+    public OWLClassExpression clone() {
+        OWLClassExpression node = null;
         try {
-            node = (Description) super.clone();
+            node = (OWLClassExpression) super.clone();
         } catch (CloneNotSupportedException e) {
             // should never happen
             throw new InternalError(e.toString());
@@ -124,8 +124,8 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         // correct, i.e. all parent links point to the new clones instead of the
         // old descriptions.
         node.children = new LinkedList<Description>();
-        for(Description child : children) {
-        	Description clonedChild = (Description) child.clone();
+        for(OWLClassExpression child : children) {
+        	Description clonedChild = (OWLClassExpression) child.clone();
         	node.addChild(clonedChild);
         }
 
@@ -133,37 +133,37 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     }    
     
     /**
-     * Adds a description as child of this one. The parent link
-     * of the description will point to this one. For instance,
-     * if the description is an intersection, then this method adds
+     * Adds a OWLClassExpression as child of this one. The parent link
+     * of the OWLClassExpression will point to this one. For instance,
+     * if the OWLClassExpression is an intersection, then this method adds
      * an element to the intersection, e.g. A AND B becomes A AND B
      * AND C. 
      * 
      * @param child The child description.
      */
-    public void addChild(Description child) {
+    public void addChild(OWLClassExpression child) {
         child.setParent(this);
         children.add(child);
     }
 
     /**
-     * Adds a child description at the specified index.
+     * Adds a child OWLClassExpression at the specified index.
      * 
-     * @see #addChild(Description)
+     * @see #addChild(OWLClassExpression)
      * @param index
      * @param child
      */
-    public void addChild(int index, Description child) {
+    public void addChild(int index, OWLClassExpression child) {
         child.setParent(this);
         children.add(index, child);
     }
 
     /**
-     * Remove the specified child description (its parent link is set
+     * Remove the specified child OWLClassExpression (its parent link is set
      * to null).
      * @param child The child to remove.
      */
-    public void removeChild(Description child) {
+    public void removeChild(OWLClassExpression child) {
     	child.setParent(null);
     	children.remove(child);
     }
@@ -173,13 +173,13 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     	children.remove(index);
     }
     
-    public void replaceChild(int index, Description newChild) {
+    public void replaceChild(int index, OWLClassExpression newChild) {
     	children.remove(index);
     	children.add(index, newChild);
     }
     
     /**
-     * Tests whether this description is at the root, i.e.
+     * Tests whether this OWLClassExpression is at the root, i.e.
      * does not have a parent.
      * 
      * @return True if this node is the root of a description, false otherwise.
@@ -188,11 +188,11 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         return (parent == null);
     }    
     
-    public Description getParent() {
+    public OWLClassExpression getParent() {
         return parent;
     }
 
-    public void setParent(Description parent) {
+    public void setParent(OWLClassExpression parent) {
         this.parent = parent;
     }
 
@@ -200,7 +200,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         return children;
     }
     
-    public Description getChild(int i) {
+    public OWLClassExpression getChild(int i) {
         return children.get(i);
     }
     
@@ -229,7 +229,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     	return true;
     };
 	
-	public NamedClass asNamedClass(){
+	public OWLClass asNamedClass(){
 		 throw new OWLRuntimeException(
 	                "Not an OWLClass.  This method should only be called if the isAnonymous method returns false!");
 	}
@@ -238,8 +238,8 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	 * Returns all named entities. 
 	 * @return
 	 */
-	public Set<Entity> getSignature(){
-		Set<Entity> entities = new HashSet<Entity>();
+	public Set<OWLEntity> getSignature(){
+		Set<OWLEntity> entities = new HashSet<OWLEntity>();
 		if(this instanceof NamedClass){
 			entities.add((NamedClass)this);
 		} else if(this instanceof Thing){
@@ -249,9 +249,9 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 		} else if(this instanceof Restriction){
 			PropertyExpression propertyExpression = ((Restriction)this).getRestrictedPropertyExpression();
 			if(propertyExpression instanceof ObjectProperty){
-				entities.add((ObjectProperty)propertyExpression);
+				entities.add((OWLObjectProperty)propertyExpression);
 			} else if(propertyExpression instanceof DatatypeProperty){
-				entities.add((DatatypeProperty)propertyExpression);
+				entities.add((OWLDataProperty)propertyExpression);
 			}
 			if(this instanceof ObjectSomeRestriction){
 				entities.addAll(getChild(0).getSignature());
@@ -261,7 +261,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 				entities.add((Individual)((ObjectValueRestriction)this).getValue());
 			}
 		} else {
-			for (Description child : children) { 
+			for (OWLClassExpression child : children) { 
 				entities.addAll(child.getSignature());
 			}
 		}
@@ -278,6 +278,6 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 	 */
 	public abstract String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes);
 	
-	public abstract void accept(DescriptionVisitor visitor);
+	public abstract void accept(OWLClassExpressionVisitor visitor);
 
 }

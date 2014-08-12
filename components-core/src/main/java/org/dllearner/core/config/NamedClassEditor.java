@@ -38,7 +38,7 @@ import org.dllearner.core.owl.NamedClass;
 public class NamedClassEditor implements PropertyEditor {
 
 
-    private NamedClass value;
+    private OWLClass value;
 
     @Override
     public void setValue(Object value) {
@@ -64,13 +64,13 @@ public class NamedClassEditor implements PropertyEditor {
     @Override
     public String getJavaInitializationString() {
         /** This returns the value needed to reconstitute the object from a string */
-        return value.getName();
+        return value.toStringID();
     }
 
     @Override
     public String getAsText() {
         /** Get the text value of this object - for displaying in GUIS, etc */
-        return value.getName();
+        return value.toStringID();
     }
 
     @Override

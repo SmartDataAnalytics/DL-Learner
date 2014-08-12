@@ -21,10 +21,14 @@ package org.dllearner.utilities.owl;
 
 import java.util.LinkedList;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * A property context is a utility class which specifies the
@@ -35,9 +39,11 @@ import org.dllearner.core.owl.Thing;
  * @author Jens Lehmann
  *
  */
-public class PropertyContext extends LinkedList<ObjectProperty> implements Comparable<PropertyContext> {
+public class PropertyContext extends LinkedList<OWLObjectProperty> implements Comparable<PropertyContext> {
 
 	private static final long serialVersionUID = -4403308689522524077L;
+	private static final OWLClass OWL_THING = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
@@ -51,7 +57,7 @@ public class PropertyContext extends LinkedList<ObjectProperty> implements Compa
 		}
 			
 		for(int i=0; i<size(); i++) {
-			int cmp = get(i).getName().compareTo(context.get(i).getName());
+			int cmp = get(i).toStringID().compareTo(context.get(i).toStringID());
 			if(cmp != 0) {
 				return cmp;
 			}
@@ -62,13 +68,13 @@ public class PropertyContext extends LinkedList<ObjectProperty> implements Compa
 
 	/**
 	 * Transforms context [r,s] to \exists r.\exists s.\top.
-	 * @return A description with existential quantifiers and \top corresponding
+	 * @return A OWLClassExpression with existential quantifiers and \top corresponding
 	 * to the context.
 	 */
-	public Description toExistentialContext() {
-		Description d = Thing.instance;
+	public OWLClassExpression toExistentialContext() {
+		OWLClassExpression d = OWL_THING;
 		for(int i = size()-1; i>=0; i--) {
-			d = new ObjectSomeRestriction(get(i), d);
+			d = df.getOWLObjectSomeValuesFrom(get(i), d);
 		}
 		return d;
 	}

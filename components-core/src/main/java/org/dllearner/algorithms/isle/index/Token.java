@@ -3,13 +3,13 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import com.google.common.collect.ComparisonChain;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.ComparisonChain;
 
 /**
  * @author Lorenz Buehmann

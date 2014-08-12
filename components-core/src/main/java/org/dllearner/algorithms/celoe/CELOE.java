@@ -42,10 +42,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Restriction;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -59,10 +55,11 @@ import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -70,6 +67,8 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -133,7 +132,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private OWLClass classToDescribe;
 	// examples are either 1.) instances of the class to describe 2.) positive examples
 	// 3.) union of pos.+neg. examples depending on the learning problem at hand
-	private Set<Individual> examples;
+	private Set<OWLIndividual> examples;
 	
 	// CELOE was originally created for learning classes in ontologies, but also
 	// works for other learning problem types
@@ -311,7 +310,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// start at owl:Thing by default
 		if(startClass == null) {
-			startClass = Thing.instance;
+			startClass = df.getOWLThing();
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
@@ -395,9 +394,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					OWLClassExpression existingDefinition = null;
 					int highestLength = 0;
 					for(OWLClassExpression exDef : existingDefinitions) {
-						if(exDef.getLength() > highestLength) {
+						if(OWLClassExpressionUtils.getLength(exDef) > highestLength) {
 							existingDefinition = exDef;
-							highestLength = exDef.getLength();
+							highestLength = OWLClassExpressionUtils.getLength(exDef);
 						}
 					}
 					
@@ -416,7 +415,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						candidate = startClassCandidates.pollFirst();
 						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
 							// add upward refinements to list
-							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, candidate.getLength());
+							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, OWLClassExpressionUtils.getLength(candidate));
 //							System.out.println("ref: " + refinements);
 							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
 //							Collections.reverse(refinementList);
@@ -430,9 +429,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					startClass = candidate;
 					
 					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing description " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
+						logger.info("Reusing existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
 					} else {
-						logger.info("Generalised existing description " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
+						logger.info("Generalised existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
 					}
 					
 //					System.out.println("start class: " + startClass);
@@ -446,13 +445,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				} else {
 					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
 					if(superClasses.size() > 1) {
-						startClass = new Intersection(new LinkedList<OWLClassExpression>(superClasses));
+						startClass = df.getOWLObjectIntersectionOf(superClasses);
 					} else if(superClasses.size() == 1){
 						startClass = (OWLClassExpression) superClasses.toArray()[0];
 					} else {
-						startClass = Thing.instance;
+						startClass = df.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a description in this case.");
+								"sensible to learn a OWLClassExpression in this case.");
 					}					
 				}
 			}				
@@ -535,11 +534,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			while(refinements.size() != 0) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
-				int length = refinement.getLength();
+				int length = OWLClassExpressionUtils.getLength(refinement);
 								
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
-				if(length > horizExp && refinement.getDepth() <= maxDepth) {
+				if(length > horizExp && OWLClassExpressionUtils.getLength(refinement) <= maxDepth) {
 					
 //					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
@@ -608,10 +607,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		Iterator<OENode> it = nodes.descendingIterator();
 		while(it.hasNext()) {
 			OENode node = it.next();
-			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < node.getDescription().getLength()) {
+			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 			} else {
-				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 				}
 			}
@@ -650,24 +649,24 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			return false;
 		}
 		
-		// check whether the description is allowed
+		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
 			return false;
 		}
 		
 //		System.out.println("Test " + new Date());
-		// quality of description (return if too weak)
+		// quality of OWLClassExpression (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			logger.warn("Invalid accuracy value " + accuracy + " for description " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+			logger.warn("Invalid accuracy value " + accuracy + " for OWLClassExpression " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 			System.exit(0);
 		}
 		
 //		System.out.println("Test2 " + new Date());
 		expressionTests++;
 //		System.out.println("acc: " + accuracy);
-//		System.out.println(description + " " + accuracy);
+//		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
 		}
@@ -684,7 +683,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		nodes.add(node);
 //		System.out.println("Test3 " + new Date());
 		
-		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
+		// in some cases (e.g. mutation) fully evaluating even a single OWLClassExpression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
 		if(singleSuggestionMode) {
 			if(accuracy > bestAccuracy) {
@@ -695,7 +694,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			return true;
 		} 
 		
-//		System.out.println("description " + description + " accuracy " + accuracy);
+//		System.out.println("description " + OWLClassExpression + " accuracy " + accuracy);
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -706,7 +705,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			double accThreshold = worst.getAccuracy();
 			isCandidate = 
 				(accuracy > accThreshold ||
-				(accuracy >= accThreshold && description.getLength() < worst.getDescriptionLength()));
+				(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
 		}
 		
 //		System.out.println(isCandidate);
@@ -714,8 +713,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
 			
-			Description niceDescription = rewriteNode(node);
-			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
+			OWLClassExpression niceDescription = rewriteNode(node);
+			ConceptTransformation.transformToOrderedForm(niceDescription);
 //			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
@@ -754,7 +753,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return true;
 	}	
 	
-	// checks whether the description is allowed
+	// checks whether the OWLClassExpression is allowed
 	private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
 		if(isClassLearningProblem) {
 			if(isEquivalenceProblem) {
@@ -765,7 +764,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			} else {
 				// none of the superclasses of the class to learn must appear on the
 				// outermost property level
-				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>(descriptionComparator);
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
 				toTest.add(classToDescribe);
 				while(!toTest.isEmpty()) {
 					OWLClassExpression d = toTest.pollFirst();
@@ -791,9 +790,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// should be at least on class instance which has a filler at the given context
 			for(PropertyContext context : contexts) {
 				// transform [r,s] to \exists r.\exists s.\top
-				Description existentialContext = context.toExistentialContext();
+				OWLClassExpression existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				for(Individual instance : examples) {
+				for(OWLIndividual instance : examples) {
 					if(reasoner.hasType(existentialContext, instance)) {
 //						System.out.println(instance + "  " + existentialContext);
 						fillerFound = true;
@@ -819,53 +818,43 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
-	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression clazz) {
-		if(description instanceof OWLClass) {
-			if(description.equals(clazz)) {
+	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
+		if(description.containsConjunct(cls) || 
+				(description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)description).getOperands().contains(cls))){
 				return true;
-			}
+			
 		} 
-		
-		if(description instanceof Restriction) {
-			return false;
-		}
-		
-		for(OWLClassExpression child : description.getChildren()) {
-			if(occursOnFirstLevel(child, clazz)) {
-				return true;
-			}
-		}
 		
 		return false;
 	}
 	
 	// check whether the node is a potential solution candidate
-	private Description rewriteNode(OENode node) {
-		Description description = node.getDescription();
-		// minimize description (expensive!) - also performs some human friendly rewrites
-		Description niceDescription;
+	private OWLClassExpression rewriteNode(OENode node) {
+		OWLClassExpression description = node.getDescription();
+		// minimize OWLClassExpression (expensive!) - also performs some human friendly rewrites
+		OWLClassExpression niceDescription;
 		if(useMinimizer) {
 			niceDescription = minimizer.minimizeClone(description);
 		} else {
 			niceDescription = description;
 		}
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
-		ConceptTransformation.replaceRange(niceDescription, reasoner);
+		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
 	}
 	
 	// check whether the node is a potential solution candidate
-		private Description rewriteNodeSimple(OENode node) {
-			Description description = node.getDescription();
-			// minimize description (expensive!) - also performs some human friendly rewrites
-			Description niceDescription;
+		private OWLClassExpression rewriteNodeSimple(OENode node) {
+			OWLClassExpression description = node.getDescription();
+			// minimize OWLClassExpression (expensive!) - also performs some human friendly rewrites
+			OWLClassExpression niceDescription;
 			if(useMinimizer) {
 				niceDescription = minimizer.minimizeClone(description);
 			} else {
 				niceDescription = description;
 			}
 			// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
-			ConceptTransformation.replaceRange(niceDescription, reasoner);
+			niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 			return niceDescription;
 		}
 	
@@ -906,7 +895,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@SuppressWarnings("unused")
 	private String bestDescriptionToString() {
 		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
-		return best.getDescription().toManchesterSyntaxString(baseURI, prefixes) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
+		return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
 	
 //	private String getTemporaryString(OWLClassExpression description) {
@@ -974,7 +963,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.operator = operator;
 	}
 
-	public Description getStartClass() {
+	public OWLClassExpression getStartClass() {
 		return startClass;
 	}
 

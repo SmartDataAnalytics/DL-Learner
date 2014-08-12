@@ -46,7 +46,7 @@ public class DescriptionSet {
 		this.maxSize = maxSize;
 	}
 	
-	public void add(Description ed) {
+	public void add(OWLClassExpression ed) {
 		set.add(ed);
 		if(set.size()>maxSize) {
 			Iterator<Description> it = set.iterator();
@@ -56,7 +56,7 @@ public class DescriptionSet {
 	}
 
 	public void addAll(Collection<Description> eds) {
-		for(Description ed : eds) {
+		for(OWLClassExpression ed : eds) {
 			add(ed);
 		}
 	}	

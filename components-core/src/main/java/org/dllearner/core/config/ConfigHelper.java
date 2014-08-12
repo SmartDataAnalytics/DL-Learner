@@ -64,7 +64,7 @@ public class ConfigHelper {
         			try {
 						PropertyEditor editor = (PropertyEditor) option.propertyEditorClass().newInstance();
 						editor.setAsText(configValue.toString());
-						Method method = component.getClass().getMethod("set" + Character.toUpperCase(f.getName().charAt(0)) + f.getName().substring(1), getClassForObject(editor.getValue()));
+						Method method = component.getClass().getMethod("set" + Character.toUpperCase(f.toStringID().charAt(0)) + f.toStringID().substring(1), getClassForObject(editor.getValue()));
 						method.invoke(component, editor.getValue());
 					} catch (IllegalArgumentException e) {
 						e.printStackTrace();
@@ -138,7 +138,7 @@ public class ConfigHelper {
 				try {
 					// we invoke the public getter instead of accessing a private field (may cause problem with SecurityManagers)
 					// use Spring BeanUtils TODO: might be unnecessarily slow because we already have the field?
-					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.getName()).getReadMethod().invoke(component);
+					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.toStringID()).getReadMethod().invoke(component);
 					optionValues.put(option, value);
 				} catch (IllegalArgumentException e1) {
 					e1.printStackTrace();

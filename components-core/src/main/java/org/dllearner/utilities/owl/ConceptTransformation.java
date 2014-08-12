@@ -19,8 +19,6 @@
 
 package org.dllearner.utilities.owl;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,16 +27,22 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Property;
-import org.dllearner.core.owl.Restriction;
-import org.dllearner.core.owl.Union;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
+import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.OWLRestriction;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 
-import com.hp.hpl.jena.ontology.ObjectProperty;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Concept transformation and concept checking methods.
@@ -56,78 +60,14 @@ public class ConceptTransformation {
 	
 	private static ConceptComparator descComp = new ConceptComparator();
 	
-	public static void cleanConceptNonRecursive(OWLClassExpression concept) {
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
+	private static final OWLObjectDuplicator DUPLICATOR = new OWLObjectDuplicator(df);
+	private static final OWLClassExpressionCleaner CLASS_EXPRESSION_CLEANER = new OWLClassExpressionCleaner(df);
+	
+	public static OWLClassExpression cleanConceptNonRecursive(OWLClassExpression concept) {
 		// cleaningTimeNsStart = System.nanoTime();
-		
-		if(concept instanceof Intersection || concept instanceof Union) {
-
-			List<OWLClassExpression> deleteChilds = new LinkedList<OWLClassExpression>();
-			
-			for(OWLClassExpression child : concept.getChildren()) {
-				if((concept instanceof Intersection && child instanceof Intersection)
-						|| (concept instanceof Union && child instanceof Union)) {
-					deleteChilds.add(child);
-				}
-			}
-			
-			for(OWLClassExpression dc : deleteChilds) {
-				// alle Kinder des zu löschenden Konzeptes hinzufügen
-				for(OWLClassExpression dcChild : dc.getChildren()) {
-					concept.addChild(dcChild);
-				}
-				// Konzept selber löschen
-				concept.removeChild(dc);
-			}
-			
-		}
-		
+		return concept.accept(CLASS_EXPRESSION_CLEANER);
 		// cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
-	}
-	
-	
-
-	// eliminiert Disjunktionen in Disjunktionen bzw. Konjunktionen in Konjunktionen
-	public static void cleanConcept(OWLClassExpression concept) {
-		
-		// Rekursion (verändert Eingabekonzept)
-		for(OWLClassExpression child : concept.getChildren()) {
-			cleanConcept(child);
-		}
-		
-		cleaningTimeNsStart = System.nanoTime();
-		/*
-		if(concept instanceof Bottom || concept instanceof Top || concept instanceof AtomicConcept)
-			return concept;
-		else if(concept instanceof Negation)
-			return new Negation(concept.getChild(0));
-		else if(concept instanceof Exists)
-			return new Exists(((Quantification)concept).getRole(),cleanConcept(concept.getChild(0)));
-		else if(concept instanceof All)
-			return new All(((Quantification)concept).getRole(),cleanConcept(concept.getChild(0)));
-		*/
-		if(concept instanceof Intersection || concept instanceof Union) {
-
-			List<OWLClassExpression> deleteChilds = new LinkedList<OWLClassExpression>();
-			
-			for(OWLClassExpression child : concept.getChildren()) {
-				if((concept instanceof Intersection && child instanceof Intersection)
-						|| (concept instanceof Union && child instanceof Union)) {
-					deleteChilds.add(child);
-				}
-			}
-			
-			for(OWLClassExpression dc : deleteChilds) {
-				// alle Kinder des zu löschenden Konzeptes hinzufügen
-				for(OWLClassExpression dcChild : dc.getChildren()) {
-					concept.addChild(dcChild);
-				}
-				// Konzept selber löschen
-				concept.removeChild(dc);
-			}
-			
-		}
-		cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
-			
 	}
 	
 	// wandelt ein Konzept in Negationsnormalform um
@@ -135,30 +75,11 @@ public class ConceptTransformation {
 		return concept.getNNF();
 	}
 	
-
-	@SuppressWarnings("unused")
-	private boolean containsTop(OWLClassExpression concept) {
-		for(OWLClassExpression c : concept.getChildren()) {
-			if(c instanceof Thing)
-				return true;
-		}
-		return false;
-	}
-	
-	@SuppressWarnings("unused")
-	private boolean containsBottom(OWLClassExpression concept) {
-		for(OWLClassExpression c : concept.getChildren()) {
-			if(c instanceof Nothing)
-				return true;
-		}
-		return false;
-	}	
-	
 	// nimmt Konzept in Negationsnormalform und wendet äquivalenzerhaltende
 	// Regeln an, die TOP und BOTTOM aus Disjunktion/Konjunktion entfernen
 	public static OWLClassExpression applyEquivalenceRules(OWLClassExpression concept) {
 		
-		Description conceptClone = (OWLClassExpression) concept.clone();
+		OWLClassExpression conceptClone = DUPLICATOR.duplicateObject(concept);
 		conceptClone.getChildren().clear();
 		
 		for(OWLClassExpression c : concept.getChildren()) {
@@ -168,49 +89,51 @@ public class ConceptTransformation {
 		// return conceptClone;		
 		
 		// TOP, BOTTOM in Disjunktion entfernen
-		if(concept instanceof Union) {
-			Iterator<OWLClassExpression> it = conceptClone.getChildren().iterator();
+		if(conceptClone instanceof OWLObjectUnionOf) {
+			List<OWLClassExpression> operands = ((OWLObjectUnionOf) conceptClone).getOperandsAsList();
+			Iterator<OWLClassExpression> it = operands.iterator();
 			while(it.hasNext()) {
-				Description c = it.next();
+				OWLClassExpression c = it.next();
 			// for(Concept c : concept.getChildren()) {
 				// TOP in Disjunktion => ganze Disjunktion äquivalent zu Top
-				if(c instanceof Thing)
-					return new Thing();
+				if(c.isOWLThing())
+					return df.getOWLThing();
 				// BOTTOM in Disjunktion => entfernen
-				else if(c instanceof Nothing)
+				else if(c.isOWLNothing())
 					it.remove();
 					
 			}
 			
 			// falls nur noch ein Kind übrig bleibt, dann entfällt
 			// MultiDisjunction
-			if(conceptClone.getChildren().size()==1)
-				return conceptClone.getChild(0);
+			if(operands.size()==1)
+				return operands.get(0);
 			
 			// falls keine Kinder übrig bleiben, dann war das letzte Kind
 			// BOTTOM
-			if(conceptClone.getChildren().size()==0)
-				return new Nothing();
+			if(operands.isEmpty())
+				return df.getOWLNothing();
 			
-		} else if(concept instanceof Intersection) {
-			Iterator<OWLClassExpression> it = conceptClone.getChildren().iterator();
+		} else if(conceptClone instanceof OWLObjectIntersectionOf) {
+			List<OWLClassExpression> operands = ((OWLObjectUnionOf) conceptClone).getOperandsAsList();
+			Iterator<OWLClassExpression> it = operands.iterator();
 			while(it.hasNext()) {
-				Description c = it.next();
+				OWLClassExpression c = it.next();
 				// TOP in Konjunktion => entfernen
-				if(c instanceof Thing)
+				if(c.isOWLThing())
 					it.remove();
 				// BOTTOM in Konjunktion => alles äquivalent zu BOTTOM
-				else if(c instanceof Nothing)
-					return new Nothing();							
+				else if(c.isOWLNothing())
+					return df.getOWLNothing();							
 			}
 			
-			if(conceptClone.getChildren().size()==1)
-				return conceptClone.getChild(0);
+			if(operands.size()==1)
+				return operands.get(0);
 			
 			// falls keine Kinder übrig bleiben, dann war das letzte Kind
 			// TOP
-			if(conceptClone.getChildren().size()==0)
-				return new Thing();					
+			if(operands.isEmpty())
+				return df.getOWLThing();					
 		}		
 		
 		return conceptClone;
@@ -218,11 +141,11 @@ public class ConceptTransformation {
 	
 	// TODO: aus Effizienzgründen könnte man noch eine nicht-rekursive Methode entwickeln, die
 	// nur die obere Ebene umwandelt
-	public static void transformToOrderedNegationNormalFormNonRecursive(OWLClassExpression concept, Comparator<OWLClassExpression> conceptComparator) {
+	public static void transformToOrderedNegationNormalFormNonRecursive(OWLClassExpression concept) {
 		// onnfTimeNsStart = System.nanoTime();
 		
 		// Liste der Kinder sortieren
-		Collections.sort(concept.getChildren(), conceptComparator);
+//		Collections.sort(concept.getChildren(), conceptComparator);
 		
 		// onnfTimeNs += System.nanoTime() - onnfTimeNsStart;
 	}
@@ -230,8 +153,9 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in geordnete Negationsnormalform um;
 	// es wird angenommen, dass das Eingabekonzept in Negationsnormalform und
 	// "sauber" ist
-	public static void transformToOrderedForm(OWLClassExpression concept, Comparator<OWLClassExpression> conceptComparator) {
+	public static void transformToOrderedForm(OWLClassExpression concept) {
 		
+		/**
 		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
 		for(OWLClassExpression child : concept.getChildren()) {
 			transformToOrderedForm(child, conceptComparator);
@@ -247,6 +171,7 @@ public class ConceptTransformation {
 		// Arrays.sort(childArray, conceptComparator);
 		// childList = Arrays.asList(childArray);
 		onnfTimeNs += System.nanoTime() - onnfTimeNsStart;
+		**/
 	}
 	/*
 	public static OWLClassExpression transformToMultiClean(OWLClassExpression concept) {
@@ -286,18 +211,7 @@ public class ConceptTransformation {
 	// Konjunktionen Elemente mehrfach vorkommen
 	// (erstmal nicht-rekursiv implementiert)
 	public static OWLClassExpression getShortConceptNonRecursive(OWLClassExpression concept, ConceptComparator conceptComparator) {
-		if(concept instanceof Union || concept instanceof Intersection) {
-			// Verkürzung geschieht einfach durch einfügen in eine geordnete Menge
-			Set<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>(conceptComparator);
-			newChildren.addAll(concept.getChildren());
-			// ev. geht das noch effizienter, wenn man keine neue Liste erstellen 
-			// muss(?) => Listen erstellen dürfte allerdings sehr schnell gehen
-			if(concept instanceof Intersection)
-				return new Intersection(new LinkedList<OWLClassExpression>(newChildren));
-			else
-				return new Union(new LinkedList<OWLClassExpression>(newChildren));
-		} else
-			return concept;
+		return concept;
 	}
 	
 	/**
@@ -311,7 +225,7 @@ public class ConceptTransformation {
 		// deep copy des Konzepts, da es nicht verändert werden darf
 		// (Nachteil ist, dass auch Konzepte kopiert werden, bei denen sich gar
 		// nichts ändert)
-		Description clone = (OWLClassExpression) concept.clone();
+		OWLClassExpression clone = DUPLICATOR.duplicateObject(concept);
 		clone = getShortConcept(clone, conceptComparator, 0);
 		// return getShortConcept(concept, conceptComparator, 0);
 		shorteningTimeNs += System.nanoTime() - shorteningTimeNsStart;
@@ -329,9 +243,9 @@ public class ConceptTransformation {
 		List<OWLClassExpression> tmp = new LinkedList<OWLClassExpression>(); 
 		Iterator<OWLClassExpression> it = concept.getChildren().iterator();
 		while(it.hasNext()) {
-			Description c = it.next();
+			OWLClassExpression c = it.next();
 			// concept.addChild(getShortConcept(c, conceptComparator));
-			Description newChild = getShortConcept(c, conceptComparator,recDepth+1);
+			OWLClassExpression newChild = getShortConcept(c, conceptComparator,recDepth+1);
 			// Vergleich, ob es sich genau um die gleichen Objekte handelt
 			// (es wird explizit == statt equals verwendet)
 			if(c != newChild) {
@@ -342,36 +256,36 @@ public class ConceptTransformation {
 		for(OWLClassExpression child : tmp)
 			concept.addChild(child);
 		
-		if(concept instanceof Union || concept instanceof Intersection) {
+		if(concept instanceof OWLNaryBooleanClassExpression) {
 			// Verkürzung geschieht einfach durch einfügen in eine geordnete Menge
-			SortedSet<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>(conceptComparator);
-			newChildren.addAll(concept.getChildren());
+			SortedSet<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>();
+			newChildren.addAll(((OWLNaryBooleanClassExpression) concept).getOperands());
 			// falls sich Kinderliste auf ein Element reduziert hat, dann gebe nur
 			// dieses Element zurück (umschließende Konjunktion/Disjunktion entfällt)
 			if(newChildren.size()==1)
 				return newChildren.first();
 			// ev. geht das noch effizienter, wenn man keine neue Liste erstellen 
 			// muss(?) => Listen erstellen dürfte allerdings sehr schnell gehen
-			if(concept instanceof Intersection)
-				return new Intersection(new LinkedList<OWLClassExpression>(newChildren));
+			if(concept instanceof OWLObjectIntersectionOf)
+				return df.getOWLObjectIntersectionOf(newChildren);
 			else
-				return new Union(new LinkedList<OWLClassExpression>(newChildren));
+				return df.getOWLObjectUnionOf(newChildren);
 		} else
 			return concept;
 	}	
 	
 	/**
-	 * Method to determine, whether a class description is minimal,
+	 * Method to determine, whether a class OWLClassExpression is minimal,
 	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
 	 * minimal.	This method performs heuristic sanity checks (it will
 	 * not try to find semantically equivalent shorter descriptions).
-	 * @param description Input description.
+	 * @param OWLClassExpression Input description.
 	 * @return True if a superfluous construct has been found.
 	 */
 	public static boolean isDescriptionMinimal(OWLClassExpression description) {
 		ConceptComparator cc = new ConceptComparator();
-		int length = description.getLength();
-		int length2 = ConceptTransformation.getShortConcept(description, cc).getLength();
+		int length = OWLClassExpressionUtils.getLength(description);
+		int length2 = OWLClassExpressionUtils.getLength(ConceptTransformation.getShortConcept(description, cc));
 		if(length2 < length)
 			return false;
 		if(ConceptTransformation.findEquivalences(description))
@@ -381,7 +295,7 @@ public class ConceptTransformation {
  
 	private static boolean findEquivalences(OWLClassExpression description) {
 		// \exists r.\bot \equiv \bot
-		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Nothing)
+		if(description instanceof OWLObjectSomeValuesFrom && description.getChild(0) instanceof Nothing)
 			return true;
 		// \forall r.\top \equiv \top
 		if(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Thing)
@@ -398,19 +312,31 @@ public class ConceptTransformation {
 	// replaces EXISTS hasChild.TOP with EXISTS hasChild.Person, 
 	// i.e. TOP is replaced by the range of the property; 
 	// this is semantically equivalent, but easier to read for some people
-	public static void replaceRange(OWLClassExpression description, AbstractReasonerComponent rs) {
-		if(description instanceof ObjectSomeRestriction && description.getChild(0) instanceof Thing) {
-			ObjectPropertyExpression p = ((ObjectSomeRestriction)description).getRole();
-			if(p instanceof OWLObjectProperty) {
-				// replace TOP with range of propery
-				description.removeChild(description.getChild(0));
-				description.addChild(rs.getRange((ObjectProperty)p));
+	public static OWLClassExpression replaceRange(OWLClassExpression description, AbstractReasonerComponent rs) {
+		OWLClassExpression rewrittenClassExpression = description;
+		if(description instanceof OWLNaryBooleanClassExpression){
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
+			for (OWLClassExpression operand : ((OWLNaryBooleanClassExpression) description).getOperands()) {
+				newOperands.add(replaceRange(operand, rs));
 			}
+			if(description instanceof OWLObjectIntersectionOf){
+				rewrittenClassExpression = df.getOWLObjectIntersectionOf(newOperands);
+			} else {
+				rewrittenClassExpression = df.getOWLObjectUnionOf(newOperands);
+			}
+		} else if(description instanceof OWLObjectSomeValuesFrom) {
+			// \exists r.\bot \equiv \bot
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
+			if(filler.isOWLThing()) {
+				OWLClassExpression range = rs.getRange(property);
+				filler = range;
+			} else if(filler.isAnonymous()){
+				filler = replaceRange(filler, rs);
+			}
+			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(property, filler);
 		}
-		
-		for(OWLClassExpression child : description.getChildren()) {
-			replaceRange(child, rs);
-		}
+		return rewrittenClassExpression;
 	}
 	
 	/**
@@ -423,12 +349,12 @@ public class ConceptTransformation {
 	 * otherwise.
 	 */
 	public static boolean isSubdescription(OWLClassExpression description, OWLClassExpression subDescription) {
-//		if(description instanceof Thing) {
+//		if(OWLClassExpression instanceof Thing) {
 //			return (subDescription instanceof Thing);
-//		} else if(description instanceof Nothing) {
+//		} else if(OWLClassExpression instanceof Nothing) {
 //			return (subDescription instanceof Thing);
-//		} else if(description instanceof NamedClass) {
-//			return ((subDescription instanceof NamedClass) && (((NamedClass)description).getName().equals(((NamedClass)subDescription).getName())));
+//		} else if(OWLClassExpression instanceof NamedClass) {
+//			return ((subDescription instanceof NamedClass) && (((NamedClass)description).toStringID().equals(((NamedClass)subDescription).toStringID())));
 //		}
 		
 		List<OWLClassExpression> children = description.getChildren();
@@ -436,9 +362,9 @@ public class ConceptTransformation {
 
 		// no children: both have to be equal
 		if(children.size()==0) {
-			return (descComp.compare(description, subDescription)==0);
+			return (description.compareTo(subDescription)==0);
 		// one child: both have to be of the same class, type, and the first
-		// child has to be sub description of the other child
+		// child has to be sub OWLClassExpression of the other child
 		} else if(children.size()==1) {
 			return (subChildren.size() == 1) && description.getClass().equals(subDescription.getClass()) && isSubdescription(children.get(0), subChildren.get(0));
 		// intersection or union
@@ -497,16 +423,15 @@ public class ConceptTransformation {
 	
 	/**
 	 * Counts occurrences of \forall in description.
-	 * @param description A description.
+	 * @param OWLClassExpression A description.
 	 * @return Number of \forall occurrences.
 	 */
 	public static int getForallOccurences(OWLClassExpression description) {
 		int count = 0;
-		if(description instanceof ObjectAllRestriction) {
-			count++;
-		}
-		for(OWLClassExpression child : description.getChildren()) {
-			count += getForallOccurences(child);
+		for (OWLClassExpression expression : description.getNestedClassExpressions()) {
+			if(expression instanceof OWLObjectAllValuesFrom) {
+				count++;
+			}
 		}
 		return count;
 	}
@@ -515,47 +440,50 @@ public class ConceptTransformation {
 	 * Gets the "contexts" of all \forall occurrences in a description. A context
 	 * is a set of properties, i.e. in \exists hasChild.\exists hasBrother.\forall hasChild.male,
 	 * the context of the only \forall occurrence is [hasChild, hasBrother, hasChild]. 
-	 * @param description A description.
+	 * @param OWLClassExpression A description.
 	 * @return Set of property contexts.
 	 */
 	public static SortedSet<PropertyContext> getForallContexts(OWLClassExpression description) {
 		return getForallContexts(description, new PropertyContext());
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private static SortedSet<PropertyContext> getForallContexts(OWLClassExpression description, PropertyContext currentContext) {
 		// the context changes if we have a restriction
-		if(description instanceof Restriction) {
-			Property op = (Property) ((Restriction)description).getRestrictedPropertyExpression();
-			// object restrictions
-			if(op instanceof OWLObjectProperty) {
+		if(description instanceof OWLRestriction) {
+			if(((OWLRestriction) description).isObjectRestriction()){
+				OWLObjectProperty op = ((OWLObjectPropertyExpression)((OWLRestriction) description).getProperty()).asOWLObjectProperty();
 				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
 				// if we have an all-restriction, we return it; otherwise we call the child
 				// (if it exists)
-				if(description instanceof ObjectAllRestriction) {
-					currentContextCopy.add((ObjectProperty)op);
+				if(description instanceof OWLObjectAllValuesFrom) {
+					OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
+					currentContextCopy.add(op);
 //					System.out.println("cc: " + currentContext);
 					TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
 					contexts.add(currentContextCopy);
-					contexts.addAll(getForallContexts(description.getChild(0), currentContextCopy));
+					contexts.addAll(getForallContexts(filler, currentContextCopy));
 					return contexts;
 				// restriction with one child
-				} else if(description.getChildren().size()>0) {
-					currentContextCopy.add((ObjectProperty)op);
-					return getForallContexts(description.getChild(0), currentContextCopy);
+				} else if(description instanceof OWLQuantifiedRestriction) {
+					OWLClassExpression filler = (OWLClassExpression) ((OWLQuantifiedRestriction) description).getFiller();
+					currentContextCopy.add(op);
+					return getForallContexts(filler, currentContextCopy);
 				// restrictions without a child (has value)
 				} else {
 					return new TreeSet<PropertyContext>();
 				}
-			// we have a data restriction => no \forall can occur in those
 			} else {
 				return new TreeSet<PropertyContext>();
 			}
 		// for non-restrictions, we collect contexts over all children
 		} else {
 			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
-			for(OWLClassExpression child : description.getChildren()) {
-//				System.out.println("testing child " + child + " " + currentContext);
-				contexts.addAll(getForallContexts(child, currentContext));
+			if(description instanceof OWLNaryBooleanClassExpression){
+				for(OWLClassExpression child : ((OWLNaryBooleanClassExpression) description).getOperands()) {
+//					System.out.println("testing child " + child + " " + currentContext);
+					contexts.addAll(getForallContexts(child, currentContext));
+				}
 			}
 			return contexts;
 		}

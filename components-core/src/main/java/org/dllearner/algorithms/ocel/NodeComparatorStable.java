@@ -21,7 +21,7 @@ package org.dllearner.algorithms.ocel;
 
 import java.util.Comparator;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
  * This comparator is stable, because it only takes covered examples, concept
@@ -33,8 +33,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
 
-	private ConceptComparator conceptComparator = new ConceptComparator();
-	
 	public int compare(ExampleBasedNode n1, ExampleBasedNode n2) {
 		
 		// make sure quality has been evaluated
@@ -48,15 +46,15 @@ public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
 				else if(classificationPointsN1<classificationPointsN2)
 					return -1;
 				else {
-					int lengthN1 = n1.getConcept().getLength();
-					int lengthN2 = n2.getConcept().getLength();
+					int lengthN1 = OWLClassExpressionUtils.getLength(n1.getConcept());
+					int lengthN2 = OWLClassExpressionUtils.getLength(n2.getConcept());
 					
 					if(lengthN1<lengthN2)
 						return 1;
 					else if(lengthN1>lengthN2)
 						return -1;
 					else
-						return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+						return n1.getConcept().compareTo(n2.getConcept());
 				}
 			} else {
 				if(n1.isTooWeak() && !n2.isTooWeak())
@@ -64,7 +62,7 @@ public class NodeComparatorStable implements Comparator<ExampleBasedNode> {
 				else if(!n1.isTooWeak() && n2.isTooWeak())
 					return 1;
 				else
-					return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+					return n1.getConcept().compareTo(n2.getConcept());
 			}
 		}
 		

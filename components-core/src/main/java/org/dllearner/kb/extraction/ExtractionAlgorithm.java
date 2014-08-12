@@ -149,7 +149,7 @@ public class ExtractionAlgorithm {
 			Monitor m = JamonMonitorLogger.getTimeMonitor(ExtractionAlgorithm.class, "TimeGetPropertyInformation").start();
 			List<ObjectPropertyNode> objectProperties = getObjectPropertyNodes(collectNodes);
 			logger.info("Get info for "+objectProperties.size() + " objectProperties");
-			for (ObjectPropertyNode node : objectProperties) {
+			for (OWLObjectPropertyNode node : objectProperties) {
 				if(stopCondition()){
 					break;
 				}
@@ -157,7 +157,7 @@ public class ExtractionAlgorithm {
 			}
 			List<OWLDataPropertyNode> datatypeProperties = getDatatypeProperties(collectNodes);
 			logger.info("Get info for "+datatypeProperties.size() + " datatypeProperties");
-			for (DatatypePropertyNode node : datatypeProperties) {
+			for (OWLDataPropertyNode node : datatypeProperties) {
 				if(stopCondition()){
 					break;
 				}

@@ -19,19 +19,13 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
-import java.util.ArrayList;
-
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.IrreflexiveObjectPropertyAxiom;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,70 +34,69 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.OWL2;
 
-@ComponentAnn(name="irreflexive objectproperty axiom learner", shortName="oplirrefl", version=0.1)
-public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
-	
+@ComponentAnn(name = "irreflexive objectproperty axiom learner", shortName = "oplirrefl", version = 0.1)
+public class IrreflexiveObjectPropertyAxiomLearner extends
+		AbstractAxiomLearningAlgorithm<OWLIrreflexiveObjectPropertyAxiom, OWLIndividual> {
+
 	private static final Logger logger = LoggerFactory.getLogger(IrreflexiveObjectPropertyAxiomLearner.class);
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
+
 	private OWLObjectProperty propertyToDescribe;
-	
+
 	private boolean declaredAsIrreflexive;
 
-	public IrreflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks){
+	public IrreflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
-		
-		posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?s ?p ?s} }");
+
+		posExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS {?s ?p ?s} }");
 		negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?s. }");
 	}
-	
+
 	public OWLObjectProperty getPropertyToDescribe() {
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		//check if property is already declared as irreflexive in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.IrreflexiveProperty.getURI());
-		declaredAsIrreflexive = executeAskQuery(query);
-		if(declaredAsIrreflexive) {
-			existingAxioms.add(new IrreflexiveObjectPropertyAxiom(propertyToDescribe));
+	protected void getExistingAxioms() {
+		declaredAsIrreflexive = reasoner.isIrreflexive(propertyToDescribe);
+		if (declaredAsIrreflexive) {
+			existingAxioms.add(df.getOWLIrreflexiveObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as irreflexive in knowledge base.");
 		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
+		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
-	
+
 	private void runSPARQL1_0_Mode() {
 		workingModel = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
+		String baseQuery = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(),
+				limit, offset);
 		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
 			workingModel.add(newModel);
 			// get all instance s with <s p o>
-			query = String.format(
-					"SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
-					propertyToDescribe);
+			query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}", propertyToDescribe);
 			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int all = 0;
@@ -115,7 +108,7 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 
 			// get number of instances s where not exists <s p s>
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER(?s != ?o)}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			rs = executeSelectQuery(query, workingModel);
 			int irreflexive = 0;
 			while (rs.hasNext()) {
@@ -125,47 +118,34 @@ public class IrreflexiveObjectPropertyAxiomLearner extends AbstractAxiomLearning
 
 			if (all > 0) {
 				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom(
-						new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
-						computeScore(all, irreflexive), declaredAsIrreflexive));
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLIrreflexiveObjectPropertyAxiom>(df
+						.getOWLIrreflexiveObjectPropertyAxiom(propertyToDescribe), computeScore(all, irreflexive),
+						declaredAsIrreflexive));
 			}
-			
+
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
+			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit,
+					offset);
 			newModel = executeConstructQuery(query);
 		}
 	}
-	
+
 	private void runSPARQL1_1_Mode() {
 		int total = reasoner.getPopularity(propertyToDescribe);
 
 		if (total > 0) {
 			int irreflexive = 0;
-			String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?s <%s> ?s}}", propertyToDescribe.toStringID(), propertyToDescribe.toStringID());
+			String query = String.format(
+					"SELECT (COUNT(DISTINCT ?s) AS ?irreflexive) WHERE {?s <%s> ?o. FILTER NOT EXISTS{?s <%s> ?s}}",
+					propertyToDescribe.toStringID(), propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			if (rs.hasNext()) {
 				irreflexive = rs.next().getLiteral("irreflexive").getInt();
 			}
-			
-			currentlyBestAxioms.add(new EvaluatedAxiom(
-					new IrreflexiveObjectPropertyAxiom(propertyToDescribe),
-					computeScore(total, irreflexive), declaredAsIrreflexive));
+
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLIrreflexiveObjectPropertyAxiom>(df
+					.getOWLIrreflexiveObjectPropertyAxiom(propertyToDescribe), computeScore(total, irreflexive),
+					declaredAsIrreflexive));
 		}
 	}
-	
-	public static void main(String[] args) throws Exception {
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql")));
-		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		reasoner.prepareSubsumptionHierarchy();
-		
-		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(ks);
-		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/author"));
-		l.init();
-		l.start();
-		
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(10, 0.75));
-	}
-	
 }

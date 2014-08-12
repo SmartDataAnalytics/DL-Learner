@@ -12,10 +12,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.isle.index.Token;
-import org.dllearner.core.owl.Entity;
 import org.dllearner.kb.OWLAPIOntology;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
@@ -47,13 +47,13 @@ public class RDFSLabelEntityTextRetriever extends AnnotationEntityTextRetriever{
 		OWLOntology ontology = man.loadOntology(IRI.create("http://www.semanticbible.com/2006/11/NTNames.owl"));
 		
 		RDFSLabelEntityTextRetriever labelRetriever = new RDFSLabelEntityTextRetriever(ontology);
-		Map<Entity, Set<List<Token>>> relevantText = labelRetriever.getRelevantText(ontology);
+		Map<OWLEntity, Set<List<Token>>> relevantText = labelRetriever.getRelevantText(ontology);
 		SortedMap<String, String> uri2Labels = new TreeMap<String, String>();
 		
-		for (Entry<Entity, Set<List<Token>>> entry : relevantText.entrySet()) {
-			Entity key = entry.getKey();
+		for (Entry<OWLEntity, Set<List<Token>>> entry : relevantText.entrySet()) {
+			OWLEntity key = entry.getKey();
 			Set<List<Token>> value = entry.getValue();
-			uri2Labels.put(key.getName(), value.iterator().next().get(0).getRawForm());
+			uri2Labels.put(key.toStringID(), value.iterator().next().get(0).getRawForm());
 		}
 		
 		StringBuilder csv = new StringBuilder();

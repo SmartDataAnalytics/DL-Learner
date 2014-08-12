@@ -38,13 +38,14 @@ import org.dllearner.algorithms.isle.index.Index;
 import org.dllearner.algorithms.isle.index.Token;
 import org.dllearner.algorithms.isle.textretrieval.AnnotationEntityTextRetriever;
 import org.dllearner.algorithms.isle.textretrieval.RDFSLabelEntityTextRetriever;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
@@ -55,7 +56,7 @@ import com.google.common.collect.Sets;
  */
 public class SolrSyntacticIndex implements Index{
 	
-	private static final Logger logger = Logger.getLogger(SolrSyntacticIndex.class.getName());
+	private static final Logger logger = Logger.getLogger(SolrSyntacticIndex.class);
 	
 	private SolrServer solr;
 	private AnnotationEntityTextRetriever textRetriever;
@@ -64,8 +65,9 @@ public class SolrSyntacticIndex implements Index{
 	
 	long totalNumberOfDocuments = -1;
 	
-	Map<Set<Entity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
+	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
 	private OWLOntology ontology;
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
 		this.ontology = ontology;
@@ -78,15 +80,15 @@ public class SolrSyntacticIndex implements Index{
 		logger.info("Loading cache...");
 		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
 			try {
-				cache = Collections.synchronizedMap((Map<Set<Entity>, Long>) ois.readObject());
+				cache = Collections.synchronizedMap((Map<Set<OWLEntity>, Long>) ois.readObject());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 		logger.info("...done.");
-		Entity e = df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics");
+		OWLEntity e = df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics"));
 		int i = 0;
-		for (Set<Entity> entities : cache.keySet()) {
+		for (Set<OWLEntity> entities : cache.keySet()) {
 			if(entities.contains(e)){
 				System.out.println(entities);
 				i++;
@@ -106,17 +108,16 @@ public class SolrSyntacticIndex implements Index{
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
-		final Map<Set<Entity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<Entity>, Long>());
+		final Map<Set<OWLEntity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
 		
 		//fA resp. fB
-		final Set<Entity> otherEntities = OWLAPIConverter.getEntities(owlEntities);
-		otherEntities.addAll(classes);
-		for (final Entity entity : otherEntities) {
+		owlEntities.addAll(classes);
+		for (final OWLEntity entity : owlEntities) {
 			executor.submit(new Runnable() {
 				
 				@Override
 				public void run() {
-					Set<Entity> entities = new HashSet<>();
+					Set<OWLEntity> entities = new HashSet<>();
 					entities.add(entity);
 					long f = getNumberOfDocumentsFor(entity);
 					frequencyCache.put(entities, f);
@@ -124,15 +125,15 @@ public class SolrSyntacticIndex implements Index{
 			});
 		}
 		//fAB
-		for (final NamedClass cls : classes) {
+		for (final OWLClass cls : classes) {
 			logger.info(cls);
-			for (final Entity entity : otherEntities) {
+			for (final OWLEntity entity : owlEntities) {
 				if(!cls.equals(entity)){
 					executor.submit(new Runnable() {
 						
 						@Override
 						public void run() {
-							Set<Entity> entities = new HashSet<>();
+							Set<OWLEntity> entities = new HashSet<>();
 							entities.add(cls);
 							entities.add(entity);
 							long fAB = getNumberOfDocumentsFor(cls, entity);
@@ -167,7 +168,7 @@ public class SolrSyntacticIndex implements Index{
 	 * @see org.dllearner.algorithms.isle.index.Index#getDocuments(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public Set<AnnotatedDocument> getDocuments(Entity entity) {
+	public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
 		Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
 		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
@@ -217,8 +218,8 @@ public class SolrSyntacticIndex implements Index{
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public synchronized long getNumberOfDocumentsFor(Entity entity) {
-		HashSet<Entity> entitySet = Sets.newHashSet(entity);
+	public synchronized long getNumberOfDocumentsFor(OWLEntity entity) {
+		HashSet<OWLEntity> entitySet = Sets.newHashSet(entity);
 		if(cache.containsKey(entitySet)){
 			return cache.get(entitySet);
 		}
@@ -251,15 +252,15 @@ public class SolrSyntacticIndex implements Index{
 	 * @see org.dllearner.algorithms.isle.index.Index#getNumberOfDocumentsFor(org.dllearner.core.owl.Entity[])
 	 */
 	@Override
-	public synchronized long getNumberOfDocumentsFor(Entity... entities) {
-		Set<Entity> entitiesSet = Sets.newHashSet(entities);
+	public synchronized long getNumberOfDocumentsFor(OWLEntity... entities) {
+		Set<OWLEntity> entitiesSet = Sets.newHashSet(entities);
 		if(cache.containsKey(entitiesSet)){
 			return cache.get(entitiesSet);
 		}
 		
 		Set<String> queryStringParts = new HashSet<>();
 		
-		for (Entity entity : entities) {
+		for (OWLEntity entity : entities) {
 			Map<String, Double> relevantText = textRetriever.getRelevantTextSimple(entity);
 			
 			String queryString = "(";
@@ -291,7 +292,7 @@ public class SolrSyntacticIndex implements Index{
 	}
 	
 	
-	public long getNumberOfDocumentsForTyped(NamedClass resourceClass, Entity entity) {
+	public long getNumberOfDocumentsForTyped(OWLClass resourceClass, OWLEntity entity) {
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
 		String queryString = "(";
@@ -310,7 +311,7 @@ public class SolrSyntacticIndex implements Index{
 		queryString += ")";System.out.println(queryString);
 		
 		SolrQuery query = new SolrQuery(
-				searchField + ":" + queryString + " AND " + typesField + ":" + quotedString(resourceClass.getName()));//System.out.println(query);
+				searchField + ":" + queryString + " AND " + typesField + ":" + quotedString(resourceClass.toStringID()));//System.out.println(query);
     	try {
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
@@ -331,9 +332,10 @@ public class SolrSyntacticIndex implements Index{
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("src/test/resources/org/dllearner/algorithms/isle/dbpedia_3.9.owl"));
 		SolrSyntacticIndex index = new SolrSyntacticIndex(ontology, solrServerURL, searchField);
 		index.loadCache(new File("entity_frequencies.obj"));
-		long n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics"));
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		long n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics")));
 		System.out.println(n);
-		n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics"), df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/largestCity"));
+		n = index.getNumberOfDocumentsFor(df.getOWLClass(IRI.create("http://dbpedia.org/ontology/Comics")), df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/largestCity")));
 		System.out.println(n);
 	}
 

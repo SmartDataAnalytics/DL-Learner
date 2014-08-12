@@ -19,7 +19,7 @@
 
 package org.dllearner.algorithms.ocel;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
  * This heuristic compares two nodes by computing a score
@@ -45,8 +45,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class FlexibleHeuristic implements ExampleBasedHeuristic {
 
-	// Vergleich von Konzepten, falls alle anderen Kriterien fehlschlagen
-	private ConceptComparator conceptComparator = new ConceptComparator();
 	private int nrOfNegativeExamples;
 	private double percentPerLengthUnit;
 	
@@ -66,10 +64,10 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 			
 			// alle scores sind negativ, größere scores sind besser
 			double score1 = -n1.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
-			score1 -= percentPerLengthUnit * n1.getConcept().getLength();
+			score1 -= percentPerLengthUnit * OWLClassExpressionUtils.getLength(n1.getConcept());
 			
 			double score2 = -n2.getCoveredNegatives().size()/(double)nrOfNegativeExamples;
-			score2 -= percentPerLengthUnit * n2.getConcept().getLength();
+			score2 -= percentPerLengthUnit * OWLClassExpressionUtils.getLength(n2.getConcept());
 			
 			double diff = score1 - score2;
 			
@@ -78,7 +76,7 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 			else if(diff<0)
 				return -1;
 			else
-				return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+				return n1.getConcept().compareTo(n2.getConcept());
 		}
 		
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");

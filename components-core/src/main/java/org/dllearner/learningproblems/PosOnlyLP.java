@@ -155,7 +155,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 //	}	
 	
 
-//	public int coveredPseudoNegativeExamplesOrTooWeak(Description concept) {
+//	public int coveredPseudoNegativeExamplesOrTooWeak(OWLClassExpression concept) {
 //		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
 //	}posOnlyLPLearningTests
 

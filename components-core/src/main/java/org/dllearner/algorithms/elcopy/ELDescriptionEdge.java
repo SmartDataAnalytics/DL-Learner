@@ -19,12 +19,11 @@
 
 package org.dllearner.algorithms.elcopy;
 
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Property;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * A (directed) edge in an EL description tree. It consists of an edge
- * label, which is an object property, and the EL description tree
+ * A (directed) edge in an EL OWLClassExpression tree. It consists of an edge
+ * label, which is an object property, and the EL OWLClassExpression tree
  * the edge points to.
  * 
  * @author Jens Lehmann
@@ -32,16 +31,16 @@ import org.dllearner.core.owl.Property;
  */
 public class ELDescriptionEdge {
 
-	private Property label;
+	private OWLProperty label;
 	
 	private ELDescriptionNode node;
 
 	/**
-	 * Constructs and edge given a label and an EL description tree.
+	 * Constructs and edge given a label and an EL OWLClassExpression tree.
 	 * @param label The label of this edge.
 	 * @param tree The tree the edge points to (edges are directed).
 	 */
-	public ELDescriptionEdge(Property label, ELDescriptionNode tree) {
+	public ELDescriptionEdge(OWLProperty label, ELDescriptionNode tree) {
 		this.label = label;
 		this.node = tree;
 	}
@@ -49,26 +48,26 @@ public class ELDescriptionEdge {
 	/**
 	 * @param label the label to set
 	 */
-	public void setLabel(Property label) {
+	public void setLabel(OWLProperty label) {
 		this.label = label;
 	}
 
 	/**
 	 * @return The label of this edge.
 	 */
-	public Property getLabel() {
+	public OWLProperty getLabel() {
 		return label;
 	}
 
 	/**
-	 * @return The EL description tree 
+	 * @return The EL OWLClassExpression tree 
 	 */
 	public ELDescriptionNode getNode() {
 		return node;
 	}
 	
 	public boolean isObjectProperty(){
-		return label instanceof ObjectProperty;
+		return label.isOWLObjectProperty();
 	}
 	
 	@Override

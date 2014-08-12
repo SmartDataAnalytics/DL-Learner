@@ -33,8 +33,8 @@ public class ConfWriter {
 
 	public String workingDir = "examples/stest/";
 
-	public void writeROLLearnerOWLFileInd(String filename, SortedSet<Individual> pos,
-			SortedSet<Individual> neg, String owlFile, SortedSet<String> ignoredConcepts) {
+	public void writeROLLearnerOWLFileInd(String filename, SortedSet<OWLIndividual> pos,
+			SortedSet<OWLIndividual> neg, String owlFile, SortedSet<String> ignoredConcepts) {
 
 		writeROLLearnerOWLFile(filename, toString(pos), toString(neg), owlFile, ignoredConcepts);
 	}
@@ -162,19 +162,19 @@ public class ConfWriter {
 		}
 	}
 
-	protected SortedSet<String> toString(SortedSet<Individual> set) {
+	protected SortedSet<String> toString(SortedSet<OWLIndividual> set) {
 		SortedSet<String> ret = new TreeSet<String>();
-		for (Individual ind : set) {
+		for (OWLIndividual ind : set) {
 			ret.add(ind.toString());
 		}
 		return ret;
 	}
 	
 	
-	public static String listExamples (boolean posOrNeg, SortedSet<Individual> s ){
+	public static String listExamples (boolean posOrNeg, SortedSet<OWLIndividual> s ){
 		StringBuffer sbuf = new StringBuffer();
 		String sign = (posOrNeg)?"+":"-";
-		for (Individual individual : s) {
+		for (OWLIndividual individual : s) {
 			sbuf.append(sign+"\""+individual+"\"\n");
 		}
 		

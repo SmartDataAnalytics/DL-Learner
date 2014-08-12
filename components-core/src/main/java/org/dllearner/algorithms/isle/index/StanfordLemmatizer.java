@@ -1,13 +1,13 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  *

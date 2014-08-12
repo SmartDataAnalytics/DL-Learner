@@ -43,7 +43,7 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 
 /**
- * Represents an EL description tree. Unlike {@link ELDescriptionNode}, this is
+ * Represents an EL OWLClassExpression tree. Unlike {@link ELDescriptionNode}, this is
  * a tree-wide structure, i.e. it does not implement the tree structure itself,
  * but is used to store information about the tree.
  * 
@@ -56,7 +56,7 @@ public class ELDescriptionTree implements Cloneable {
 	private static Logger logger = Logger.getLogger(ELDescriptionTree.class);
 	
 	// to simplify equivalence checks and minimisation, we
-	// attach a simulation relation to the description tree
+	// attach a simulation relation to the OWLClassExpression tree
 	// private Simulation simulation;
 
 	// max level = 0 means that there is no tree at all
@@ -87,12 +87,12 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	/**
-	 * Constructs an EL description tree from an EL description.
+	 * Constructs an EL OWLClassExpression tree from an EL description.
 	 * 
 	 * @param description
 	 *            A description
 	 */
-	public ELDescriptionTree(AbstractReasonerComponent rs, Description description) {
+	public ELDescriptionTree(AbstractReasonerComponent rs, OWLClassExpression description) {
 		this(rs);
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);
@@ -100,26 +100,26 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	private void constructTree(OWLClassExpression description, ELDescriptionNode node) {
-		if (description instanceof NamedClass) {
+		if (OWLClassExpression instanceof NamedClass) {
 			node.extendLabel((NamedClass) description);
-		} else if (description instanceof ObjectSomeRestriction) {
-			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) description).getRole();
+		} else if (OWLClassExpression instanceof ObjectSomeRestriction) {
+			ObjectProperty op = (OWLObjectProperty) ((ObjectSomeRestriction) description).getRole();
 			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<OWLClass>());
 			constructTree(description.getChild(0), newNode);
-		} else if (description instanceof Thing) {
+		} else if (OWLClassExpression instanceof Thing) {
 			// nothing needs to be done as an empty set is owl:Thing
-		} else if (description instanceof Intersection) {
+		} else if (OWLClassExpression instanceof Intersection) {
 			// loop through all elements of the intersection
 			for (OWLClassExpression child : description.getChildren()) {
 				if (child instanceof NamedClass) {
 					node.extendLabel((NamedClass) child);
 				} else if (child instanceof ObjectSomeRestriction) {
-					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) child).getRole();
+					ObjectProperty op = (OWLObjectProperty) ((ObjectSomeRestriction) child).getRole();
 					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
 							new TreeSet<OWLClass>());
 					constructTree(child.getChild(0), newNode);
 				} else {
-					throw new UnsupportedLanguageException(description + " specifically " + child,
+					throw new UnsupportedLanguageException(OWLClassExpression + " specifically " + child,
 							"EL");
 				}
 			}
@@ -140,7 +140,7 @@ public class ELDescriptionTree implements Cloneable {
 		return levelNodeMapping.get(level);
 	}
 
-	public Description transformToDescription() {
+	public OWLClassExpression transformToDescription() {
 		return rootNode.transformToDescription();
 	}
 
@@ -201,7 +201,7 @@ public class ELDescriptionTree implements Cloneable {
 			levelNodeMapping.put(level, set);
 			maxLevel++;
 		} else {
-			throw new RuntimeException("Inconsistent EL description tree structure.");
+			throw new RuntimeException("Inconsistent EL OWLClassExpression tree structure.");
 		}
 	}
 
@@ -326,7 +326,7 @@ public class ELDescriptionTree implements Cloneable {
 	private boolean isSublabel(NavigableSet<OWLClass> subLabel, NavigableSet<OWLClass> superLabel) {
 		// implemented according to definition in article
 		// (TODO can probably be done more efficiently)
-		for(NamedClass nc : superLabel) {
+		for(OWLClass nc : superLabel) {
 			if(!containsSubclass(nc, subLabel)) {
 				return false;
 			}
@@ -334,8 +334,8 @@ public class ELDescriptionTree implements Cloneable {
 		return true;
 	}
 	
-	private boolean containsSubclass(NamedClass superClass, NavigableSet<OWLClass> label) {
-		for(NamedClass nc : label) {
+	private boolean containsSubclass(OWLClass superClass, NavigableSet<OWLClass> label) {
+		for(OWLClass nc : label) {
 			if(subsumptionHierarchy.isSubclassOf(nc, superClass)) {
 				return true;
 			}
@@ -580,9 +580,9 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	/**
-	 * Returns a string of the tree description (without the overhead of converting
+	 * Returns a string of the tree OWLClassExpression (without the overhead of converting
 	 * the tree into a description).
-	 * @return A string for the description the tree stands for.  
+	 * @return A string for the OWLClassExpression the tree stands for.  
 	 */
 	public String toDescriptionString() {
 		return rootNode.toDescriptionString();

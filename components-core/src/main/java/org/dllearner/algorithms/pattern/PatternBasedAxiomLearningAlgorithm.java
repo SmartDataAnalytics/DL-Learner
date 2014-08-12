@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
@@ -52,7 +53,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
  * @author Lorenz Buehmann
  *
  */
-public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm{
+public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm<OWLAxiom, OWLObject>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(PatternBasedAxiomLearningAlgorithm.class);
 	
@@ -97,13 +98,19 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		this.cls = cls;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		
-		startTime = System.currentTimeMillis();
-		
-		logger.info("Pattern: " + pattern);
+	protected void getExistingAxioms() {
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
+logger.info("Pattern: " + pattern);
 		
 		//get the maximum modal depth in the pattern axioms
 		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(pattern);modalDepth++;
@@ -117,8 +124,6 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		for (OWLAxiom instantiation : instantiations) {
 			System.out.println(instantiation);
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private Set<OWLAxiom> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {

@@ -20,7 +20,7 @@
 package org.dllearner.algorithms.el;
 
 /**
- * A tuple of two EL description trees.
+ * A tuple of two EL OWLClassExpression trees.
  * 
  * @author Jens Lehmann
  *

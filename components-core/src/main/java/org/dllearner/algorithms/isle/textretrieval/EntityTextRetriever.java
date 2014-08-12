@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.isle.index.Token;
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 /**
@@ -42,19 +42,19 @@ public interface EntityTextRetriever {
 	 * The method retrieves a string or a set of strings, which is weighted by
 	 * importance with respect to the entity. For instance, an rdfs:label of
 	 * an entity can be given more weight than an rdfs:comment, which in turn 
-	 * can be more important than a description retrieved from a web page.
+	 * can be more important than a OWLClassExpression retrieved from a web page.
 	 *  
 	 * @param entity The entity to handle.
 	 * @return A weighted set of strings. For a value x, we need to have 0 <= x <= 1.
 	 */
-	public Map<List<Token>, Double> getRelevantText(Entity entity);
+	public Map<List<Token>, Double> getRelevantText(OWLEntity entity);
 	
-	public Map<Entity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
+	public Map<OWLEntity, Set<List<Token>>> getRelevantText(OWLOntology ontology);
 
 	/**
 	 * @param entity
 	 * @return
 	 */
-	Map<String, Double> getRelevantTextSimple(Entity entity);
+	Map<String, Double> getRelevantTextSimple(OWLEntity entity);
 	
 }

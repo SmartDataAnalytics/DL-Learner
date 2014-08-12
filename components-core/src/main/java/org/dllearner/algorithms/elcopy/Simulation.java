@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a simulation relation between EL description trees.
+ * Represents a simulation relation between EL OWLClassExpression trees.
  * 
  * @author Jens Lehmann
  *

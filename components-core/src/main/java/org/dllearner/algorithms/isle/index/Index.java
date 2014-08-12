@@ -5,7 +5,7 @@ package org.dllearner.algorithms.isle.index;
 
 import java.util.Set;
 
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
@@ -20,7 +20,7 @@ public interface Index {
      * @param searchString query specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
-	Set<AnnotatedDocument> getDocuments(Entity entity);
+	Set<AnnotatedDocument> getDocuments(OWLEntity entity);
 	
 	/**
      * Returns a set of documents based on how the underlying index is processing the given
@@ -29,7 +29,7 @@ public interface Index {
      * @param searchString query specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
-	long getNumberOfDocumentsFor(Entity entity);
+	long getNumberOfDocumentsFor(OWLEntity entity);
 	
 	/**
      * Returns a set of documents based on how the underlying index is processing the given
@@ -38,7 +38,7 @@ public interface Index {
      * @param searchString query specifying the documents to retrieve
      * @return set of documents retrieved based on the given query string
      */
-	long getNumberOfDocumentsFor(Entity... entities);
+	long getNumberOfDocumentsFor(OWLEntity... entities);
 
 	/**
      * Returns the total number of documents contained in the index.

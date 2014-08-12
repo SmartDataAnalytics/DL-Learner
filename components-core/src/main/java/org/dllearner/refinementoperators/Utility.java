@@ -91,7 +91,7 @@ public final class Utility {
 	 * Compute the set of applicable object properties for a 
 	 * given description. 
 	 * 
-	 * @param index The index is a description which determines
+	 * @param index The index is a OWLClassExpression which determines
 	 * which of the properties are applicable. Exactly those which
 	 * where the index and property domain are not disjoint are 
 	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
@@ -118,7 +118,7 @@ public final class Utility {
 	 * Compute the set of applicable data properties for a 
 	 * given description. 
 	 * 
-	 * @param index The index is a description which determines
+	 * @param index The index is a OWLClassExpression which determines
 	 * which of the properties are applicable. Exactly those which
 	 * where the index and property domain are not disjoint are 
 	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
@@ -278,7 +278,7 @@ public final class Utility {
 			if(!cachedDisjoints.containsKey(d2))
 				cachedDisjoints.put(d2, map2);
 			
-			// add result symmetrically in the description matrix
+			// add result symmetrically in the OWLClassExpression matrix
 			cachedDisjoints.get(d1).put(d2, result);
 			cachedDisjoints.get(d2).put(d1, result);
 			return result;

@@ -39,7 +39,7 @@ public class TypeOntology {
 			classes.add(itClass.next().getURI());
 		}
 
-		ExtendedIterator<Individual> itIndividuals = model.listIndividuals();
+		ExtendedIterator<OWLIndividual> itIndividuals = model.listIndividuals();
 		while (itIndividuals.hasNext()) {
 			individuals.add(itIndividuals.next().getURI());
 		}

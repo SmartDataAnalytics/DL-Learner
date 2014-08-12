@@ -3,19 +3,24 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.index.Annotation;
 import org.dllearner.algorithms.isle.index.EntityScorePair;
 import org.dllearner.algorithms.isle.index.SemanticAnnotation;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import java.util.HashSet;
-import java.util.Set;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -24,7 +29,7 @@ import java.util.Set;
 public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 	
 	
-	private static final Logger logger = Logger.getLogger(SimpleWordSenseDisambiguation.class.getName());
+	private static final Logger logger = Logger.getLogger(SimpleWordSenseDisambiguation.class);
 	
 	private IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
@@ -47,7 +52,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 		String token = annotation.getString().trim();
 		//check if annotation token matches label of entity or the part behind #(resp. /)
 		for (EntityScorePair entityScorePair : candidateEntities) {
-            Entity entity = entityScorePair.getEntity();
+			OWLEntity entity = entityScorePair.getEntity();
             Set<String> labels = getLabels(entity);
             for (String label : labels) {
                 if (label.equals(token)) {
@@ -55,7 +60,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
                     return new SemanticAnnotation(annotation, entity);
                 }
             }
-            String shortForm = sfp.getShortForm(IRI.create(entity.getURI()));
+            String shortForm = sfp.getShortForm(entity.getIRI());
             if (annotation.equals(shortForm)) {
                 logger.debug("Disambiguated entity: " + entity);
                 return new SemanticAnnotation(annotation, entity);
@@ -64,10 +69,9 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
         return null;
 	}
 	
-	private Set<String> getLabels(Entity entity){
+	private Set<String> getLabels(OWLEntity entity){
 		Set<String> labels = new HashSet<String>();
-		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
-		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(owlEntity.getIRI());
+		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(entity.getIRI());
 		for (OWLAnnotationAssertionAxiom annotation : axioms) {
 			if(annotation.getProperty().equals(annotationProperty)){
 				if (annotation.getValue() instanceof OWLLiteral) {
@@ -79,11 +83,10 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 		return labels;
 	}
 	
-	private Set<String> getRelatedWordPhrases(Entity entity){
+	private Set<String> getRelatedWordPhrases(OWLEntity entity){
 		//add the labels if exist
 		Set<String> relatedWordPhrases = new HashSet<String>();
-		OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
-		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(owlEntity.getIRI());
+		Set<OWLAnnotationAssertionAxiom> axioms = ontology.getAnnotationAssertionAxioms(entity.getIRI());
 		for (OWLAnnotationAssertionAxiom annotation : axioms) {
 			if(annotation.getProperty().equals(annotationProperty)){
 				if (annotation.getValue() instanceof OWLLiteral) {
@@ -94,7 +97,7 @@ public class SimpleWordSenseDisambiguation extends WordSenseDisambiguation{
 		}
 		//add the short form of the URI if no labels are available
 		if(relatedWordPhrases.isEmpty()){
-			relatedWordPhrases.add(sfp.getShortForm(IRI.create(entity.getURI())));
+			relatedWordPhrases.add(sfp.getShortForm(entity.getIRI()));
 		}
 		return relatedWordPhrases;
 	}

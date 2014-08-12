@@ -26,9 +26,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * 
@@ -49,8 +49,8 @@ public class ExampleBasedNode implements SearchTreeNode {
 	private static DecimalFormat df = new DecimalFormat();
 	
 	// example based variables
-	private Set<Individual> coveredPositives;
-	private Set<Individual> coveredNegatives;
+	private Set<OWLIndividual> coveredPositives;
+	private Set<OWLIndividual> coveredNegatives;
 //	private int coveredPositiveSize;
 //	private int coveredNegativeSize;
 	
@@ -59,7 +59,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.START;
 	
 	// all properties of a node in the search tree
-	private Description concept;
+	private OWLClassExpression concept;
 	private int horizontalExpansion;
 	// specifies whether the node is too weak (exceeds the max. nr allowed
 	// misclassifications of positive examples)
@@ -72,14 +72,13 @@ public class ExampleBasedNode implements SearchTreeNode {
 	private double expansionPenaltyFactor;
 	private int negationPenalty;
 	
-	private static ConceptComparator conceptComparator = new ConceptComparator();
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
 	// link to parent in search tree
 	private ExampleBasedNode parent = null;
 	private SortedSet<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
 	// apart from the child nodes, we also keep child concepts
-	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>(conceptComparator);
+	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
@@ -121,7 +120,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		this.qualityEvaluationMethod = qualityEvaluationMethod;
 	}
 
-	public void setCoveredExamples(Set<Individual> coveredPositives, Set<Individual> coveredNegatives) {
+	public void setCoveredExamples(Set<OWLIndividual> coveredPositives, Set<OWLIndividual> coveredNegatives) {
 		this.coveredPositives = coveredPositives;
 		this.coveredNegatives = coveredNegatives;
 		isQualityEvaluated = true;
@@ -179,7 +178,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	}
 	
 	public String getShortDescription(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String, String> prefixes) {
-		String ret = concept.toString(baseURI, prefixes) + " [";
+		String ret = OWLAPIRenderers.toManchesterOWLSyntax(concept) + " [";
 		
 		if(isTooWeak)
 			ret += "q:tw";
@@ -202,7 +201,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	}
 	
 	public String getShortDescriptionHTML(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
-		String ret = "<html><nobr> " + concept.toManchesterSyntaxString(baseURI,null) + " <i>[";
+		String ret = "<html><nobr> " + OWLAPIRenderers.toManchesterOWLSyntax(concept) + " <i>[";
 		
 		if(isTooWeak)
 			ret += "q:tw";
@@ -261,11 +260,11 @@ public class ExampleBasedNode implements SearchTreeNode {
 		return coveredPositives.size() - coveredNegatives.size();
 	}
 	
-	public Set<Individual> getCoveredPositives() {
+	public Set<OWLIndividual> getCoveredPositives() {
 		return coveredPositives;
 	}	
 	
-	public Set<Individual> getCoveredNegatives() {
+	public Set<OWLIndividual> getCoveredNegatives() {
 		return coveredNegatives;
 	}
 	
@@ -277,11 +276,11 @@ public class ExampleBasedNode implements SearchTreeNode {
 		return childConcepts;
 	}
 
-	public Description getConcept() {
+	public OWLClassExpression getConcept() {
 		return concept;
 	}	
 	
-	public Description getExpression() {
+	public OWLClassExpression getExpression() {
 		return getConcept();
 	}	
 	

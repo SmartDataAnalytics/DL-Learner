@@ -22,10 +22,10 @@ package org.dllearner.utilities.owl;
 import java.util.Comparator;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.reasoning.OWLPunningDetector;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
 /**
  * Comparator for evaluated descriptions, which orders them by
@@ -37,8 +37,6 @@ import org.dllearner.reasoning.OWLPunningDetector;
  */
 public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription> {
 
-	ConceptComparator cc = new ConceptComparator();
-	
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
@@ -62,19 +60,19 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 			else if(length1 > length2)
 				return -1;
 			else
-				return cc.compare(ed1.getDescription(), ed2.getDescription());
+				return ed1.getDescription().compareTo(ed2.getDescription());
 		}
 	}
 	
 	private int getLength(EvaluatedDescription ed){
 		int length = 0;
-		Description d = ed.getDescription();
-		if(d instanceof Intersection){
-			for (Description child : d.getChildren()) {
-				if(child instanceof ObjectSomeRestriction && ((ObjectSomeRestriction) child).getRole().asObjectProperty() == OWLPunningDetector.punningProperty){
-					length += child.getChild(0).getLength();
+		OWLClassExpression d = ed.getDescription();
+		if(d instanceof OWLNaryBooleanClassExpression){
+			for (OWLClassExpression child : ((OWLNaryBooleanClassExpression) d).getOperands()) {
+				if(child instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty() == OWLPunningDetector.punningProperty){
+					length += OWLClassExpressionUtils.getLength(((OWLObjectSomeValuesFrom)child).getFiller());
 				} else {
-					length += child.getLength();
+					length += OWLClassExpressionUtils.getLength(child);
 				}
 			}
 		}

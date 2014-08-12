@@ -431,8 +431,23 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
+	public boolean isSymmetric(OWLObjectProperty property){
+		String query = "ASK {<" + property + "> a <" + OWL2.SymmetricProperty.getURI() + ">}";
+		return qef.createQueryExecution(query).execAsk();
+	}
+	
 	public boolean isIrreflexive(OWLObjectProperty property){
 		String query = "ASK {<" + property + "> a <" + OWL2.IrreflexiveProperty.getURI() + ">}";
+		return qef.createQueryExecution(query).execAsk();
+	}
+	
+	public boolean isReflexive(OWLObjectProperty property){
+		String query = "ASK {<" + property + "> a <" + OWL2.ReflexiveProperty.getURI() + ">}";
+		return qef.createQueryExecution(query).execAsk();
+	}
+	
+	public boolean isTransitive(OWLObjectProperty property){
+		String query = "ASK {<" + property + "> a <" + OWL2.TransitiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 
@@ -938,7 +953,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit) {
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		
-//		if(!(description instanceof NamedClass)){
+//		if(!(OWLClassExpression instanceof NamedClass)){
 //			throw new UnsupportedOperationException("Only named classes are supported.");
 //		}
 		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();

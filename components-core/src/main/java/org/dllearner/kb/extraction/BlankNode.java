@@ -107,7 +107,7 @@ public class BlankNode extends Node {
 	public SortedSet<String> toNTriple() {
 		SortedSet<String> returnSet = new TreeSet<String>();
 		//String subject = getNTripleForm();
-		/*for (ObjectPropertyNode one : objectProperties) {
+		/*for (OWLObjectPropertyNode one : objectProperties) {
 			returnSet.add(subject + one.getNTripleForm() + one.getBPart().getNTripleForm()+" . ");
 			returnSet.addAll(one.getBPart().toNTriple());
 		}*/
@@ -233,7 +233,7 @@ public class BlankNode extends Node {
 		}
 		logger.debug("***************");
 		logger.debug("dtype ");
-		for (DatatypePropertyNode d : datatypeProperties) {
+		for (OWLDataPropertyNode d : datatypeProperties) {
 			logger.debug(d.getURIString()+" "+d.getNTripleFormOfB());
 		}
 		logger.debug("***************");
@@ -319,7 +319,7 @@ public class BlankNode extends Node {
 				return true;
 			}else if((n  instanceof ObjectPropertyNode )
 					&& 
-				((ObjectPropertyNode)n).getAPart().toString().equals(type)) {
+				((OWLObjectPropertyNode)n).getAPart().toString().equals(type)) {
 				return true;
 			}
 		}

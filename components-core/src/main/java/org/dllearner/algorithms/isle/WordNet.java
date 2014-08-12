@@ -1,15 +1,21 @@
 package org.dllearner.algorithms.isle;
 
-import net.didion.jwnl.JWNL;
-import net.didion.jwnl.JWNLException;
-import net.didion.jwnl.data.*;
-import net.didion.jwnl.data.list.*;
-import net.didion.jwnl.dictionary.Dictionary;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import net.didion.jwnl.JWNL;
+import net.didion.jwnl.JWNLException;
+import net.didion.jwnl.data.IndexWord;
+import net.didion.jwnl.data.POS;
+import net.didion.jwnl.data.PointerTarget;
+import net.didion.jwnl.data.PointerUtils;
+import net.didion.jwnl.data.Synset;
+import net.didion.jwnl.data.Word;
+import net.didion.jwnl.data.list.PointerTargetNode;
+import net.didion.jwnl.data.list.PointerTargetNodeList;
+import net.didion.jwnl.dictionary.Dictionary;
 
 public class WordNet {
 

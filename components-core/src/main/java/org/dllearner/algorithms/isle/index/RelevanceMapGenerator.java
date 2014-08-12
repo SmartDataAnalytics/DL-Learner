@@ -8,9 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +15,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.isle.metrics.RelevanceMetric;
 import org.dllearner.algorithms.isle.metrics.RelevanceUtils;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.hash.HashFunction;
@@ -35,17 +32,17 @@ import com.google.common.hash.Hashing;
 public abstract class RelevanceMapGenerator {
 
 	static HashFunction hf = Hashing.md5();
-    private static final Logger logger = Logger.getLogger(RelevanceMapGenerator.class.getName());
+    private static final Logger logger = Logger.getLogger(RelevanceMapGenerator.class);
     public static String cacheDirectory = "cache/relevance";
     
-    public static synchronized Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric, boolean cached){
+    public static synchronized Map<OWLEntity, Double> generateRelevanceMap(OWLClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric, boolean cached){
     	logger.info("Relevance Metric: " + relevanceMetric.getClass().getSimpleName());
-    	Map<Entity, Double> relevanceMap = null;
+    	Map<OWLEntity, Double> relevanceMap = null;
     	File folder = new File(cacheDirectory);
     	folder.mkdirs();
     	File file = null;
 		try {
-			file = new File(folder, URLEncoder.encode(cls.getName() + "-" + relevanceMetric.getClass().getSimpleName(), "UTF-8") + ".rel");
+			file = new File(folder, URLEncoder.encode(cls.toStringID() + "-" + relevanceMetric.getClass().getSimpleName(), "UTF-8") + ".rel");
 		} catch (UnsupportedEncodingException e2) {
 			e2.printStackTrace();
 		}
@@ -53,7 +50,7 @@ public abstract class RelevanceMapGenerator {
     		try {
     			logger.info("Loading relevance map from disk...");
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-				relevanceMap = (Map<Entity, Double>) ois.readObject();
+				relevanceMap = (Map<OWLEntity, Double>) ois.readObject();
 				ois.close();
 				logger.info("...done.");
 			} catch (Exception e) {
@@ -74,8 +71,8 @@ public abstract class RelevanceMapGenerator {
     	return relevanceMap;
     }
     
-    public static Map<RelevanceMetric, Map<Entity, Double>> generateRelevanceMaps(NamedClass cls, OWLOntology ontology, List<RelevanceMetric> relevanceMetrics, boolean cached){
-    	Map<RelevanceMetric, Map<Entity, Double>> metric2Map = new LinkedHashMap<>();
+    public static Map<RelevanceMetric, Map<OWLEntity, Double>> generateRelevanceMaps(OWLClass cls, OWLOntology ontology, List<RelevanceMetric> relevanceMetrics, boolean cached){
+    	Map<RelevanceMetric, Map<OWLEntity, Double>> metric2Map = new LinkedHashMap<>();
     	for (RelevanceMetric relevanceMetric : relevanceMetrics) {
     		try {
     			long start = System.currentTimeMillis();
@@ -90,7 +87,7 @@ public abstract class RelevanceMapGenerator {
     	return metric2Map;
     }
     
-    public static Map<Entity, Double> generateRelevanceMap(NamedClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric){
+    public static Map<OWLEntity, Double> generateRelevanceMap(OWLClass cls, OWLOntology ontology, RelevanceMetric relevanceMetric){
     	return generateRelevanceMap(cls, ontology, relevanceMetric, false);
     }
 }

@@ -35,13 +35,13 @@ public class LearningProblemUnsupportedException extends Exception {
 
 	public LearningProblemUnsupportedException(Class<? extends AbstractLearningProblem> problemClass, Class<? extends LearningAlgorithm> algorithmClass) {
 		super("Warning: No suitable constructor registered for algorithm "
-				+ algorithmClass.getName() + " and problem " + problemClass.getClass().getName() + ".");		
+				+ algorithmClass.toStringID() + " and problem " + problemClass.getClass().toStringID() + ".");		
 	}
 	
 	public LearningProblemUnsupportedException(Class<? extends AbstractLearningProblem> problemClass, Class<? extends LearningAlgorithm> algorithmClass, Collection<Class<? extends AbstractLearningProblem>> supportedProblems) {
 		super("Warning: No suitable constructor registered for algorithm "
-				+ algorithmClass.getName() + " and problem " + problemClass.getClass().getName()
-				+ ". Registered constructors for " + algorithmClass.getName() + ": "
+				+ algorithmClass.toStringID() + " and problem " + problemClass.getClass().toStringID()
+				+ ". Registered constructors for " + algorithmClass.toStringID() + ": "
 				+ supportedProblems + ".");		
 	}
 	

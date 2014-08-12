@@ -19,18 +19,13 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
-import java.util.ArrayList;
-
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +34,12 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.OWL2;
 
 @ComponentAnn(name="symmetric objectproperty axiom learner", shortName="oplsymm", version=0.1)
-public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
+public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm<OWLSymmetricObjectPropertyAxiom, OWLIndividual> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SymmetricObjectPropertyAxiomLearner.class);
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
 	private OWLObjectProperty propertyToDescribe;
 	
 	private boolean declaredAsSymmetric;
@@ -62,32 +55,32 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		return propertyToDescribe;
 	}
 
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
+	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		//check if property is already declared as symmetric in knowledge base
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL2.SymmetricProperty.getURI());
-		declaredAsSymmetric = executeAskQuery(query);
+	protected void getExistingAxioms() {
+		declaredAsSymmetric = reasoner.isSymmetric(propertyToDescribe);
 		if(declaredAsSymmetric) {
-			existingAxioms.add(new SymmetricObjectPropertyAxiom(propertyToDescribe));
+			existingAxioms.add(df.getOWLSymmetricObjectPropertyAxiom(propertyToDescribe));
 			logger.info("Property is already declared as symmetric in knowledge base.");
 		}
-		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
 		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
 			runSPARQL1_1_Mode();
 		} else {
 			runSPARQL1_0_Mode();
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private void runSPARQL1_0_Mode(){
@@ -101,7 +94,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			workingModel.add(newModel);
 			// get number of instances of s with <s p o>
 			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query, workingModel);
 			QuerySolution qs;
 			int total = 0;
@@ -110,7 +103,7 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 				total = qs.getLiteral("total").getInt();
 			}
 			query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			rs = executeSelectQuery(query, workingModel);
 			int symmetric = 0;
 			while(rs.hasNext()){
@@ -121,7 +114,8 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 			
 			if(total > 0){
 				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+				currentlyBestAxioms.add(new EvaluatedAxiom<OWLSymmetricObjectPropertyAxiom>(
+						df.getOWLSymmetricObjectPropertyAxiom(propertyToDescribe),
 						computeScore(total, symmetric), declaredAsSymmetric));
 			}
 			offset += limit;
@@ -136,25 +130,16 @@ public class SymmetricObjectPropertyAxiomLearner extends AbstractAxiomLearningAl
 		if(total > 0){
 			int symmetric = 0;
 			String query = "SELECT (COUNT(*) AS ?symmetric) WHERE {?s <%s> ?o. ?o <%s> ?s}";
-			query = query.replace("%s", propertyToDescribe.getURI().toString());
+			query = query.replace("%s", propertyToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			if(rs.hasNext()){
 				symmetric = rs.next().getLiteral("symmetric").getInt();
 			}
 			
-			currentlyBestAxioms.add(new EvaluatedAxiom(new SymmetricObjectPropertyAxiom(propertyToDescribe),
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSymmetricObjectPropertyAxiom>(
+					df.getOWLSymmetricObjectPropertyAxiom(propertyToDescribe),
 					computeScore(total, symmetric), declaredAsSymmetric));
 		}
 		
 	}
-	
-	public static void main(String[] args) throws Exception{
-		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(new SparqlEndpoint(new URL("http://factforge.net/sparql"))));//.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/industry"));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
-	}
-
 }

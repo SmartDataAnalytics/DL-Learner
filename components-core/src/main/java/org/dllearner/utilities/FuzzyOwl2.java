@@ -123,7 +123,7 @@ import fuzzyowl2.parser.Parser;
 
 
 /**
- * General class translating from OWL 2 into some fuzzy Description Logic language.
+ * General class translating from OWL 2 into some fuzzy OWLClassExpression Logic language.
  * Subclasses of Owl2ToFuzzyDescriptionLogic translate it into specific
  * languages, such as the language of fuzzyDL, the language of DeLorean...
  * The user must override most of the following methods:

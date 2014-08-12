@@ -82,7 +82,7 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		return asEvaluatedDescription();
 	}
 	/**
-	 * @param description the description to set
+	 * @param OWLClassExpression the OWLClassExpression to set
 	 */
 	public void setDescription(EvaluatedDescription description) {
 		this.description = description;

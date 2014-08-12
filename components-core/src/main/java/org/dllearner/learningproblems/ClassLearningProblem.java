@@ -45,7 +45,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
- * The problem of learning the description of an existing class
+ * The problem of learning the OWLClassExpression of an existing class
  * in an OWL ontology.
  * 
  * @author Jens Lehmann
@@ -58,7 +58,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
     private long nanoStartTime;
 	private int maxExecutionTimeInSeconds = 10;
 	
-	@ConfigOption(name = "classToDescribe", description="class of which a description should be learned", required=true)
+	@ConfigOption(name = "classToDescribe", description="class of which a OWLClassExpression should be learned", required=true)
 	private OWLClass classToDescribe;
 	
 	private List<OWLIndividual> classInstances;
@@ -113,7 +113,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	/*
 	public static Collection<ConfigOption<?>> createConfigOptions() {
 		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		URLConfigOption classToDescribeOption = new URLConfigOption("classToDescribe", "class of which a description should be learned", null, true, false);
+		URLConfigOption classToDescribeOption = new URLConfigOption("classToDescribe", "class of which a OWLClassExpression should be learned", null, true, false);
 		classToDescribeOption.setRefersToOWLClass(true);
 		options.add(classToDescribeOption);
 		StringConfigOption type = new StringConfigOption("type", "whether to learn an equivalence class or super class axiom","equivalence"); //  or domain/range of a property.
@@ -246,7 +246,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		
 		double recall = coveredInstances.size()/(double)classInstances.size();
 		double precision = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
-		// for each description with less than 100% coverage, we check whether it is
+		// for each OWLClassExpression with less than 100% coverage, we check whether it is
 		// leads to an inconsistent knowledge base
 		
 		double acc = 0;

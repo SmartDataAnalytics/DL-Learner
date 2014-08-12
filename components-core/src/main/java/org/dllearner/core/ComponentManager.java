@@ -124,7 +124,7 @@ public final class ComponentManager {
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
 		public int compare(Class<?> c1, Class<?> c2) {
-			return c1.getName().compareTo(c2.getName());
+			return c1.toStringID().compareTo(c2.toStringID());
 		}
 
 	};
@@ -197,7 +197,7 @@ public final class ComponentManager {
 			// make config options accessible by name
 			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
 			for (ConfigOption<?> option : options) {
-				byName.put(option.getName(), option);
+				byName.put(option.toStringID(), option);
 			}
 			componentOptionsByName.put(component, byName);
 			
@@ -473,8 +473,8 @@ public final class ComponentManager {
 		if (constructorArgument == null) {
 			throw new LearningProblemUnsupportedException(lp.getClass(), laClass, algorithmProblemsMapping.get(laClass));
 //			System.err.println("Warning: No suitable constructor registered for algorithm "
-//					+ laClass.getName() + " and problem " + lp.getClass().getName()
-//					+ ". Registered constructors for " + laClass.getName() + ": "
+//					+ laClass.toStringID() + " and problem " + lp.getClass().toStringID()
+//					+ ". Registered constructors for " + laClass.toStringID() + ": "
 //					+ algorithmProblemsMapping.get(laClass) + ".");
 //			return null;
 		}

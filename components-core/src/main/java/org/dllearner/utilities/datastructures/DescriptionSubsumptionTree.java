@@ -40,7 +40,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
  *
  */
 public class DescriptionSubsumptionTree {
-	private static final Logger logger = Logger.getLogger(DescriptionSubsumptionTree.class);
+	private static final Logger logger = Logger.getLogger(OWLClassExpressionSubsumptionTree.class);
 	/**
 	 * turns on logging
 	 */
@@ -146,16 +146,16 @@ public class DescriptionSubsumptionTree {
 
 
 		/**
-		 * @return the first, i.e. the shortest class description of this node
+		 * @return the first, i.e. the shortest class OWLClassExpression of this node
 		 */
 		public EvaluatedDescription getEvalDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first();
 		}
 
 		/**
-		 * @return the first, i.e. the shortest class description of this node
+		 * @return the first, i.e. the shortest class OWLClassExpression of this node
 		 */
-		public Description getDesc() {
+		public OWLClassExpression getDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first().getDescription();
 		}
 

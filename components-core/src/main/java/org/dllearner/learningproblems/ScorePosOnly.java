@@ -57,7 +57,7 @@ public class ScorePosOnly extends Score {
 	}
 
 	/**
-	 * Let C be the considered class description and A the class to learn. 
+	 * Let C be the considered class OWLClassExpression and A the class to learn. 
 	 * The addition number is calculated as the number of instances of C which are also
 	 * instances of A divided by the number of instances of C.
 	 * @return Additional instances of the class description.

@@ -31,7 +31,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import com.google.common.collect.ComparisonChain;
 
 /**
- * An evaluated description is a description and its score (with some
+ * An evaluated OWLClassExpression is a OWLClassExpression and its score (with some
  * convenience method and serialisation formats).
  * 
  * @author Jens Lehmann
@@ -49,8 +49,8 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
 	/**
-	 * Constructs an evaluated description using its score.
-	 * @param description The description, which was evaluated.
+	 * Constructs an evaluated OWLClassExpression using its score.
+	 * @param OWLClassExpression The description, which was evaluated.
 	 * @param score The score of the description.
 	 */
 	public EvaluatedDescription(OWLClassExpression description, Score score) {
@@ -76,7 +76,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	/**
 	 * Used for rewriting (simplification, beautification) of 
 	 * evaluated descriptions returned by the learning algorithm.
-	 * @param description The description to set.
+	 * @param OWLClassExpression The OWLClassExpression to set.
 	 */
 	public void setDescription(OWLClassExpression description) {
 		this.description = description;

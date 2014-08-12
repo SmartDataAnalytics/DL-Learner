@@ -1,11 +1,24 @@
 package org.dllearner.algorithms.isle.index;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
-
-import java.util.*;
 
 /**
  * Tree for finding longest matching Token sequence
@@ -17,7 +30,7 @@ public class TokenTree {
     public static final double ORIGINAL_FACTOR = 1.0d;
 
     private LinkedHashMap<Token, TokenTree> children;
-    private Set<Entity> entities;
+    private Set<OWLEntity> entities;
     private List<Token> originalTokens;
     private boolean ignoreStopWords = true;
 
@@ -42,7 +55,7 @@ public class TokenTree {
      * @param tokens   tokens to locate insertion point for entities
      * @param entities entities to add
      */
-    public void add(List<Token> tokens, Set<Entity> entities, List<Token> originalTokens) {
+    public void add(List<Token> tokens, Set<OWLEntity> entities, List<Token> originalTokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
             if (!ignoreStopWords || (ignoreStopWords && !t.isStopWord())) {
@@ -58,7 +71,7 @@ public class TokenTree {
         curNode.originalTokens = new ArrayList<>(originalTokens);
     }
 
-    public void add(List<Token> tokens, Set<Entity> entities) {
+    public void add(List<Token> tokens, Set<OWLEntity> entities) {
         add(tokens, entities, tokens);
     }
 
@@ -68,11 +81,11 @@ public class TokenTree {
      * @param tokens tokens to locate insertion point for entities
      * @param entity entity to add
      */
-    public void add(List<Token> tokens, Entity entity) {
+    public void add(List<Token> tokens, OWLEntity entity) {
         add(tokens, Collections.singleton(entity));
     }
 
-    public void add(List<Token> tokens, Entity entity, List<Token> originalTokens) {
+    public void add(List<Token> tokens, OWLEntity entity, List<Token> originalTokens) {
         add(tokens, Collections.singleton(entity), originalTokens);
     }
 
@@ -82,7 +95,7 @@ public class TokenTree {
      * @param tokens tokens to locate the information to get
      * @return located set of entities or null if token sequence not contained in tree
      */
-    public Set<Entity> get(List<Token> tokens) {
+    public Set<OWLEntity> get(List<Token> tokens) {
         TokenTree curNode = this;
         for (Token t : tokens) {
             TokenTree nextNode = getNextTokenTree(curNode, t);
@@ -99,7 +112,7 @@ public class TokenTree {
         getAllEntitiesScoredRec(tokens, 0, this, resEntities, 1.0);
 
         // only keep highest confidence for each entity
-        HashMap<Entity, Double> entityScores = new HashMap<>();
+        HashMap<OWLEntity, Double> entityScores = new HashMap<>();
 
         for (EntityScorePair p : resEntities) {
             if (!entityScores.containsKey(p.getEntity())) {
@@ -111,7 +124,7 @@ public class TokenTree {
         }
 
         TreeSet<EntityScorePair> result = new TreeSet<>();
-        for (Map.Entry<Entity, Double> e : entityScores.entrySet()) {
+        for (Map.Entry<OWLEntity, Double> e : entityScores.entrySet()) {
             result.add(new EntityScorePair(e.getKey(), e.getValue()));
         }
 
@@ -122,7 +135,7 @@ public class TokenTree {
                                         HashSet<EntityScorePair> resEntities, Double curScore) {
 
         if (curPosition == tokens.size()) {
-            for (Entity e : curTree.entities) {
+            for (OWLEntity e : curTree.entities) {
                 resEntities.add(new EntityScorePair(e, curScore));
             }
             return;
@@ -163,13 +176,13 @@ public class TokenTree {
         }
     }
 
-    public Set<Entity> getAllEntities(List<Token> tokens) {
-        HashSet<Entity> resEntities = new HashSet<>();
+    public Set<OWLEntity> getAllEntities(List<Token> tokens) {
+        HashSet<OWLEntity> resEntities = new HashSet<>();
         getAllEntitiesRec(tokens, 0, this, resEntities);
         return resEntities;
     }
 
-    public void getAllEntitiesRec(List<Token> tokens, int curPosition, TokenTree curTree, HashSet<Entity> resEntities) {
+    public void getAllEntitiesRec(List<Token> tokens, int curPosition, TokenTree curTree, HashSet<OWLEntity> resEntities) {
         if (curPosition == tokens.size()) {
             resEntities.addAll(curTree.entities);
             return;
@@ -222,7 +235,7 @@ public class TokenTree {
      * @param tokens token sequence to search for longest match
      * @return set of entities assigned to the longest matching token subsequence of the given token sequence
      */
-    public Set<Entity> getEntitiesForLongestMatch(List<Token> tokens) {
+    public Set<OWLEntity> getEntitiesForLongestMatch(List<Token> tokens) {
         TokenTree fallback = this.entities.isEmpty() ? null : this;
         TokenTree curNode = this;
 
@@ -237,7 +250,7 @@ public class TokenTree {
             }
         }
 
-        return fallback == null ? Collections.<Entity>emptySet() : fallback.entities;
+        return fallback == null ? Collections.<OWLEntity>emptySet() : fallback.entities;
     }
 
     /**
@@ -274,9 +287,10 @@ public class TokenTree {
         }
         ;
 
+        OWLDataFactory df = new OWLDataFactoryImpl();
         TokenTree tree = new TokenTree();
-        tree.add(tokens1, df.getOWLClass(IRI.create("TokenTree"));
-        tree.add(tokens2, df.getOWLClass(IRI.create("TokenizedTree"));
+        tree.add(tokens1, df.getOWLClass(IRI.create("TokenTree")));
+        tree.add(tokens2, df.getOWLClass(IRI.create("TokenizedTree")));
         System.out.println(tree);
 
         System.out.println(tree.getEntitiesForLongestMatch(tokens1));

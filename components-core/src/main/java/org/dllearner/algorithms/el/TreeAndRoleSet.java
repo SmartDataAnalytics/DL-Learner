@@ -24,7 +24,7 @@ import java.util.Set;
 import org.dllearner.core.owl.ObjectProperty;
 
 /**
- * Convenience class representing an EL description tree and a set of roles.
+ * Convenience class representing an EL OWLClassExpression tree and a set of roles.
  * 
  * @author Jens Lehmann
  *

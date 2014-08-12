@@ -100,7 +100,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private TreeSet<SearchTreeNode> candidates;
 	// all trees (for fast redundancy check)
 	private TreeSet<ELDescriptionTree> trees;
-	private NamedClass classToDescribe;
+	private OWLClass classToDescribe;
 	private double noise;
 	
 	@ConfigOption(name = "treeSearchTimeSeconds", defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
@@ -117,7 +117,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
-	private Description startClass;
+	private OWLClassExpression startClass;
 	
 //	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
@@ -126,8 +126,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private double posWeight = 1.2; // 2;
 	private int startPosExamplesSize;
 //	private int startNegExamplesSize;
-	private Set<Individual> currentPosExamples;
-	private Set<Individual> currentNegExamples;
+	private Set<OWLIndividual> currentPosExamples;
+	private Set<OWLIndividual> currentNegExamples;
 	private SearchTreeNode bestCurrentNode;
 	private double bestCurrentScore = 0;
 	private long treeStartTime;
@@ -252,7 +252,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				}
 				
 				// remove already covered examples
-				Iterator<Individual> it = currentPosExamples.iterator();
+				Iterator<OWLIndividual> it = currentPosExamples.iterator();
 				int posCov = 0;
 				while(it.hasNext()) {
 					Individual ind = it.next();
@@ -300,7 +300,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a description in tree form
+	// evaluates a OWLClassExpression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		
 		// redundancy check
@@ -344,7 +344,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 		// test coverage on current positive examples
 		int posCovered = 0;
-		for(Individual ind : currentPosExamples) {
+		for(OWLIndividual ind : currentPosExamples) {
 			if(reasoner.hasType(d, ind)) {
 				posCovered++;
 				score += 1;
@@ -363,7 +363,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 		// test coverage on current negative examples
 		int negCovered = 0;
-		for(Individual ind : currentNegExamples) {
+		for(OWLIndividual ind : currentNegExamples) {
 			if(reasoner.hasType(d, ind)) {
 				negCovered++;
 				score -= posWeight;
@@ -437,8 +437,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		currentSolution.clear();
 		bestEvaluatedDescription = learningProblem.evaluate(Thing.instance);
 		// we need to clone in order not to modify the learning problem
-		currentPosExamples = new TreeSet<Individual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
-		currentNegExamples = new TreeSet<Individual>(((PosNegLP)getLearningProblem()).getNegativeExamples());
+		currentPosExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
+		currentNegExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getNegativeExamples());
 		startPosExamplesSize = currentPosExamples.size();
 //		startNegExamplesSize = currentNegExamples.size();
 	}
@@ -454,7 +454,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}	
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return bestEvaluatedDescription.getDescription();
 	}
 	
@@ -470,7 +470,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return startNode;
 	}
 
-	public Description getStartClass() {
+	public OWLClassExpression getStartClass() {
 		return startClass;
 	}
 
@@ -519,7 +519,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	/**
 	 * @param classToDescribe the classToDescribe to set
 	 */
-	public void setClassToDescribe(NamedClass classToDescribe) {
+	public void setClassToDescribe(OWLClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
 	}
 }

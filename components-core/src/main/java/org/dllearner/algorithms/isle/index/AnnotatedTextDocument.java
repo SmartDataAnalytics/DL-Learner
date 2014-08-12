@@ -3,10 +3,10 @@
  */
 package org.dllearner.algorithms.isle.index;
 
-import org.dllearner.core.owl.Entity;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * @author Lorenz Buehmann
@@ -16,14 +16,14 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	
 	private TextDocument document;
 	private Set<SemanticAnnotation> annotations;
-	private Set<Entity> entities;
+	private Set<OWLEntity> entities;
 
 	
 	public AnnotatedTextDocument(TextDocument document, Set<SemanticAnnotation> annotations) {
 		this.document = document;
 		this.annotations = annotations;
 		
-		entities = new HashSet<Entity>();
+		entities = new HashSet<OWLEntity>();
 		for (SemanticAnnotation annotation : annotations) {
 			entities.add(annotation.getEntity());
 		}
@@ -57,7 +57,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getContainedEntities()
 	 */
 	@Override
-	public Set<Entity> getContainedEntities() {
+	public Set<OWLEntity> getContainedEntities() {
 		return entities;
 	}
 
@@ -73,7 +73,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 	 * @see org.dllearner.algorithms.isle.index.AnnotatedDocument#getEntityFrequency(org.dllearner.core.owl.Entity)
 	 */
 	@Override
-	public int getEntityFrequency(Entity entity) {
+	public int getEntityFrequency(OWLEntity entity) {
 		int cnt = 0;
 		for (SemanticAnnotation annotation : annotations) {
 			if(annotation.getEntity().equals(entity)){

@@ -50,7 +50,6 @@ public class FunctionalObjectPropertyAxiomLearner extends
 
 	private static final Logger logger = LoggerFactory.getLogger(FunctionalObjectPropertyAxiomLearner.class);
 
-	@ConfigOption(name = "propertyToDescribe", description = "", propertyEditorClass = ObjectPropertyEditor.class)
 	private OWLObjectProperty propertyToDescribe;
 
 	private boolean declaredAsFunctional;

@@ -1,14 +1,15 @@
 package org.dllearner.algorithms.isle.index;
 
-import com.google.common.collect.Lists;
-import org.dllearner.algorithms.isle.EntityCandidateGenerator;
-import org.dllearner.algorithms.isle.StopWordFilter;
-import org.semanticweb.owlapi.model.OWLOntology;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
+import org.dllearner.algorithms.isle.EntityCandidateGenerator;
+import org.dllearner.algorithms.isle.StopWordFilter;
+import org.semanticweb.owlapi.model.OWLOntology;
+
+import com.google.common.collect.Lists;
 
 /**
  * Generates candidates using a entity candidates prefix trie
@@ -60,8 +61,8 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     		int begin_i = annotation_i.getOffset();
     		int end_i = begin_i + annotation_i.getLength()-1;
     		String token_i = annotation_i.getString();
-    		Set<Entity> candidates_i = getCandidates(annotation_i);
-    		Set<Entity> newCandidates_i = new HashSet<Entity>();
+    		Set<OWLEntity> candidates_i = getCandidates(annotation_i);
+    		Set<OWLEntity> newCandidates_i = new HashSet<OWLEntity>();
     		
     		// Determine the annotations contained in the window
     		while ((sortedAnnotations.get(windowStart).getOffset()+sortedAnnotations.get(windowStart).getLength()-1)<(begin_i-window))
@@ -74,10 +75,10 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
     			if (j!=i) {
 	    			Annotation annotation_j = sortedAnnotations.get(j);
 	    			String token_j = annotation_j.getString();
-	    			Set<Entity> candidates_j = getCandidates(annotation_j);
-	    			Set<Entity> intersection = Sets.intersection(candidates_i, candidates_j);
-	    			Set<Entity> newCandidates_ij = new HashSet<Entity>();
-	    			for (Entity commonEntity: intersection) {
+	    			Set<OWLEntity> candidates_j = getCandidates(annotation_j);
+	    			Set<OWLEntity> intersection = Sets.intersection(candidates_i, candidates_j);
+	    			Set<OWLEntity> newCandidates_ij = new HashSet<OWLEntity>();
+	    			for (OWLEntity commonEntity: intersection) {
 	    				if (!(stopWordFilter.isStopWord(token_i) && stopWordFilter.isStopWord(token_j))) {
 		    				if (!token_i.contains(token_j) && !token_j.contains(token_i)) {
 		    					newCandidates_ij.add(commonEntity);

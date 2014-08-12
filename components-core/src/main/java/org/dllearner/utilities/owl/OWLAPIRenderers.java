@@ -58,7 +58,7 @@ public class OWLAPIRenderers {
 	/**
 	 * Converts an OWL API axiom to a Manchester OWL syntax string.
 	 * 
-	 * @param description Input OWLAxiom.
+	 * @param OWLClassExpression Input OWLAxiom.
 	 * @return Manchester OWL syntax string.
 	 */
 	public static String toManchesterOWLSyntax(OWLAxiom axiom) {
@@ -66,9 +66,9 @@ public class OWLAPIRenderers {
 	}	
 	
 	/**
-	 * Converts an OWL API description to a Manchester OWL syntax string.
+	 * Converts an OWL API OWLClassExpression to a Manchester OWL syntax string.
 	 * 
-	 * @param description Input OWLDescription.
+	 * @param OWLClassExpression Input OWLDescription.
 	 * @return Manchester OWL syntax string.
 	 */
 	public static String toManchesterOWLSyntax(OWLClassExpression description) {
@@ -80,9 +80,9 @@ public class OWLAPIRenderers {
 	}
 	
 	/**
-	 * Converts an OWL API description to an OWL/XML syntax string.
+	 * Converts an OWL API OWLClassExpression to an OWL/XML syntax string.
 	 * 
-	 * @param description Input OWLDescription.
+	 * @param OWLClassExpression Input OWLDescription.
 	 * @return OWL/XML syntax string.
 	 */
 	public static String toOWLXMLSyntax(OWLClassExpression description) {
