@@ -36,14 +36,11 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.Union;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown3;
-import org.dllearner.utilities.owl.DescriptionMinimizer;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -92,7 +89,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	Map<String,String> prefixes;
 	
 	private ELDown3 operator;
-	private DescriptionMinimizer minimizer;
+	private OWLClassExpressionMinimizer minimizer;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -138,7 +135,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private boolean instanceBasedDisjoints;
 
-	private DecimalFormat df = new DecimalFormat("0.00"); 
+	private DecimalFormat decFormat = new DecimalFormat("0.00"); 
 	
 	public ELLearningAlgorithmDisjunctive() {
 		
@@ -174,7 +171,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		trees = new TreeSet<ELDescriptionTree>(new ELDescriptionTreeComparator());
 		
 		if(startClass == null) {
-			startClass = Thing.instance;
+			startClass = df.getOWLThing();
 		}
 		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
@@ -183,7 +180,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 		
-		minimizer = new DescriptionMinimizer(reasoner);
+		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
 		
 		noise = noisePercentage/100d;
 	}	
@@ -239,15 +236,15 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 			if(bestCurrentScore > minimumTreeScore) {
 				// we found a tree (partial solution)
 				currentSolution.add(bestCurrentNode.getDescriptionTree());
-				Description bestDescription = bestCurrentNode.getDescriptionTree().transformToDescription();
-				Description bestCombinedDescription = bestDescription;
+				OWLClassExpression bestDescription = bestCurrentNode.getDescriptionTree().transformToDescription();
+				OWLClassExpression bestCombinedDescription = bestDescription;
 				// form union of trees found so far with 
 				if(treeCount==0) {
 					bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
 					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
 				} else {
-					if(!bestEvaluatedDescription.equals(Thing.instance)){
-						bestCombinedDescription = new Union(bestEvaluatedDescription.getDescription(), bestDescription);
+					if(!bestEvaluatedDescription.equals(df.getOWLThing())){
+						bestCombinedDescription = df.getOWLObjectUnionOf(bestEvaluatedDescription.getDescription(), bestDescription);
 					}
 					bestEvaluatedDescription = learningProblem.evaluate(bestCombinedDescription);
 					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
@@ -257,7 +254,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				Iterator<OWLIndividual> it = currentPosExamples.iterator();
 				int posCov = 0;
 				while(it.hasNext()) {
-					Individual ind = it.next();
+					OWLIndividual ind = it.next();
 					if(reasoner.hasType(bestDescription, ind)) {
 //						System.out.println("covered pos: " + ind);
 						it.remove();
@@ -267,17 +264,17 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				it = currentNegExamples.iterator();
 				int negCov = 0;
 				while(it.hasNext()) {
-					Individual ind = it.next();
+					OWLIndividual ind = it.next();
 					if(reasoner.hasType(bestDescription, ind)) {
 //						System.out.println("covered neg: " + ind);
 						it.remove();
 						negCov++;
 					}
 				}
-				logger.info("tree found: " + bestDescription.toManchesterSyntaxString(baseURI, prefixes) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
-				logger.info("combined accuracy: " + df .format(bestEvaluatedDescription.getAccuracy()));
+				logger.info("tree found: " + OWLAPIRenderers.toManchesterOWLSyntax(bestDescription) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
+				logger.info("combined accuracy: " + decFormat.format(bestEvaluatedDescription.getAccuracy()));
 			} else {
-				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + bestCurrentNode.getDescriptionTree().transformToDescription().toManchesterSyntaxString(baseURI, prefixes) + " with score " + bestCurrentNode.getScore());
+				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + OWLAPIRenderers.toManchesterOWLSyntax(bestCurrentNode.getDescriptionTree().transformToDescription()) + " with score " + bestCurrentNode.getScore());
 			}
 			
 			logger.info(trees.size() + " trees checked");
@@ -293,11 +290,11 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		}
 		
 		// simplify solution (in particular necessary when start class is specified)
-		Description niceDescription = minimizer.minimizeClone(bestEvaluatedDescription.getDescription());
+		OWLClassExpression niceDescription = minimizer.minimizeClone(bestEvaluatedDescription.getDescription());
 		bestEvaluatedDescription = learningProblem.evaluate(niceDescription);
 		
 		// print solution
-		logger.info("solution : " + bestEvaluatedDescription.getDescription().toManchesterSyntaxString(baseURI, prefixes) + "(acc: " + bestEvaluatedDescription.getAccuracy() + ")");
+		logger.info("solution : " + OWLAPIRenderers.toManchesterOWLSyntax(bestEvaluatedDescription.getDescription()) + "(acc: " + bestEvaluatedDescription.getAccuracy() + ")");
 		
 		isRunning = false;
 	}
@@ -340,7 +337,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	private double getTreeScore(ELDescriptionTree tree) {
 		
-		Description d = tree.transformToDescription();
+		OWLClassExpression d = tree.transformToDescription();
 		
 		double score = 0;
 		
@@ -437,7 +434,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		candidates.clear();
 		trees.clear();
 		currentSolution.clear();
-		bestEvaluatedDescription = learningProblem.evaluate(Thing.instance);
+		bestEvaluatedDescription = learningProblem.evaluate(df.getOWLThing());
 		// we need to clone in order not to modify the learning problem
 		currentPosExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
 		currentNegExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getNegativeExamples());

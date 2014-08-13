@@ -25,8 +25,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -36,8 +38,10 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -61,15 +65,14 @@ public class SPARQLTasks {
 	private final SparqlEndpoint sparqlEndpoint;
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
+	SPARQLReasoner reasoner;
 
 	/**
 	 * @param sparqlEndpoint
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
-//		super();
-		this.cache = null;
-		this.sparqlEndpoint = sparqlEndpoint;
+		this(null, sparqlEndpoint);
 	}
 
 	/**
@@ -79,9 +82,10 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
-//		super();
 		this.cache = cache;
 		this.sparqlEndpoint = sparqlEndpoint;
+		
+		reasoner = new SPARQLReasoner(sparqlEndpoint, null);
 	}
 
 	/**
@@ -563,6 +567,30 @@ public class SPARQLTasks {
 		//sc.printAndSet("reset");
 		return returnSet;
 
+	}
+	
+	/**
+	 * get all instances for a complex concept / class description in KBSyntax.
+	 * 
+	 * @param conceptKBSyntax
+	 *            A description string in KBSyntax
+	 * @param sparqlResultLimit
+	 *            Limits the ResultSet size
+	 * @return SortedSet with the instance uris
+	 */
+	public SortedSet<String> retrieveInstancesForClassDescription(
+			String conceptKBSyntax, int sparqlResultLimit) {
+		OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
+		String rootVariable = "subject";
+		String sparqlQueryString = "";
+		try {
+			Query query = conv.asQuery(rootVariable, new OWLClassImpl(IRI.create(conceptKBSyntax)));
+			query.setLimit(sparqlResultLimit);
+			sparqlQueryString = query.toString();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		return queryAsSet(sparqlQueryString, rootVariable);
 	}
 
 	public SparqlEndpoint getSparqlEndpoint() {

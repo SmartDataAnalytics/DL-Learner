@@ -56,9 +56,9 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
@@ -105,7 +105,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
 	private LengthLimitedRefinementOperator operator;
-	private DescriptionMinimizer minimizer;
+	private OWLClassExpressionMinimizer minimizer;
 	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
 	private boolean useMinimizer = true;
 	
@@ -306,7 +306,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			heuristic = new OEHeuristicRuntime();
 		}
 		
-		minimizer = new DescriptionMinimizer(reasoner);
+		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
 		
 		// start at owl:Thing by default
 		if(startClass == null) {

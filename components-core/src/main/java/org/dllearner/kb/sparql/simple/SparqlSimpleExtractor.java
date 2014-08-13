@@ -14,7 +14,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.KB;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -306,13 +305,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
     public void setTboxfilter(String tboxfilter) {
         this.tboxfilter = tboxfilter;
     }
-
-
-	@Override
-	public KB toKB() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public String toDIG(URI kbURI) {

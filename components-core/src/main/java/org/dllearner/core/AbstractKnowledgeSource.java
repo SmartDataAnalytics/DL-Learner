@@ -22,8 +22,6 @@ package org.dllearner.core;
 import java.io.File;
 import java.net.URI;
 
-import org.dllearner.core.owl.KB;
-
 /**
  * Represents a knowledge source component, e.g. OWL files, SPARQL Endpoints,
  * Linked Data.
@@ -32,13 +30,6 @@ import org.dllearner.core.owl.KB;
  *
  */
 public abstract class AbstractKnowledgeSource extends AbstractComponent implements KnowledgeSource {
-	
-	/**
-	 * Transforms this knowledge source into an internal knowledge base.
-	 * @return An internal Knowledge base or null if this knowledge source
-	 * does not support a conversion to an internal knowledge base.
-	 */
-	public abstract KB toKB();
 	
 	/**
 	 * Transforms this knowledge source to DIG 1.1 code according to

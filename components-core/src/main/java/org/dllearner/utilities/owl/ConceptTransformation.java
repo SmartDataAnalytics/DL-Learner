@@ -19,15 +19,14 @@
 
 package org.dllearner.utilities.owl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
@@ -37,7 +36,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
@@ -78,11 +76,11 @@ public class ConceptTransformation {
 	public static OWLClassExpression applyEquivalenceRules(OWLClassExpression concept) {
 		
 		OWLClassExpression conceptClone = DUPLICATOR.duplicateObject(concept);
-		conceptClone.getChildren().clear();
-		
-		for(OWLClassExpression c : concept.getChildren()) {
-			conceptClone.addChild(applyEquivalenceRules(c));
-		}		
+//		conceptClone.getChildren().clear();
+//		
+//		for(OWLClassExpression c : OWLClassExpressionUtils.getChildren(concept.getChildren()) {
+//			conceptClone.addChild(applyEquivalenceRules(c));
+//		}		
 		
 		// return conceptClone;		
 		
@@ -131,7 +129,9 @@ public class ConceptTransformation {
 			// falls keine Kinder übrig bleiben, dann war das letzte Kind
 			// TOP
 			if(operands.isEmpty())
-				return df.getOWLThing();					
+				return df.getOWLThing();
+			
+			return df.getOWLObjectIntersectionOf(new TreeSet<OWLClassExpression>(operands));
 		}		
 		
 		return conceptClone;
@@ -232,7 +232,9 @@ public class ConceptTransformation {
 	
 	// das Eingabekonzept darf nicht modifiziert werden
 	private static OWLClassExpression getShortConcept(OWLClassExpression concept, int recDepth) {
-		
+		//probably no longer necessary as OWL API uses sets for class expressions
+		return concept;
+		/**
 		//if(recDepth==0)
 		//	System.out.println(concept);
 		
@@ -243,7 +245,7 @@ public class ConceptTransformation {
 		while(it.hasNext()) {
 			OWLClassExpression c = it.next();
 			// concept.addChild(getShortConcept(c, conceptComparator));
-			OWLClassExpression newChild = getShortConcept(c, conceptComparator,recDepth+1);
+			OWLClassExpression newChild = getShortConcept(c, recDepth+1);
 			// Vergleich, ob es sich genau um die gleichen Objekte handelt
 			// (es wird explizit == statt equals verwendet)
 			if(c != newChild) {
@@ -270,6 +272,7 @@ public class ConceptTransformation {
 				return df.getOWLObjectUnionOf(newChildren);
 		} else
 			return concept;
+		**/
 	}	
 	
 	/**
@@ -281,9 +284,8 @@ public class ConceptTransformation {
 	 * @return True if a superfluous construct has been found.
 	 */
 	public static boolean isDescriptionMinimal(OWLClassExpression description) {
-		ConceptComparator cc = new ConceptComparator();
 		int length = OWLClassExpressionUtils.getLength(description);
-		int length2 = OWLClassExpressionUtils.getLength(ConceptTransformation.getShortConcept(description, cc));
+		int length2 = OWLClassExpressionUtils.getLength(ConceptTransformation.getShortConcept(description));
 		if(length2 < length)
 			return false;
 		if(ConceptTransformation.findEquivalences(description))
@@ -293,13 +295,13 @@ public class ConceptTransformation {
  
 	private static boolean findEquivalences(OWLClassExpression description) {
 		// \exists r.\bot \equiv \bot
-		if(description instanceof OWLObjectSomeValuesFrom && description.getChild(0) instanceof Nothing)
+		if(description instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom)description).getFiller().isOWLNothing())
 			return true;
 		// \forall r.\top \equiv \top
-		if(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Thing)
+		if(description instanceof OWLObjectAllValuesFrom && ((OWLObjectAllValuesFrom)description).getFiller().isOWLThing())
 			return true;
 		// check children
-		for(OWLClassExpression child : description.getChildren()) {
+		for(OWLClassExpression child : OWLClassExpressionUtils.getChildren(description)) {
 			if(findEquivalences(child))
 				return true;
 		}
@@ -355,8 +357,8 @@ public class ConceptTransformation {
 //			return ((subDescription instanceof NamedClass) && (((NamedClass)description).toStringID().equals(((NamedClass)subDescription).toStringID())));
 //		}
 		
-		List<OWLClassExpression> children = description.getChildren();
-		List<OWLClassExpression> subChildren = subDescription.getChildren();
+		List<OWLClassExpression> children = new ArrayList<OWLClassExpression>(OWLClassExpressionUtils.getChildren(description));
+		List<OWLClassExpression> subChildren = new ArrayList<OWLClassExpression>(OWLClassExpressionUtils.getChildren(subDescription));
 
 		// no children: both have to be equal
 		if(children.size()==0) {

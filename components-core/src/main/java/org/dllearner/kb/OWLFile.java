@@ -38,7 +38,6 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.URLConfigOption;
-import org.dllearner.core.owl.KB;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.URLencodeUTF8;
 import org.semanticweb.owlapi.model.IRI;
@@ -179,14 +178,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
         // currently no export functions implemented, so we just throw an exception
         throw new OntologyFormatUnsupportedException("export", format);
-    }
-
-    /* (non-Javadoc)
-      * @see org.dllearner.core.KnowledgeSource#toKB()
-      */
-    @Override
-    public KB toKB() {
-        throw new Error("OWL -> KB conversion not implemented yet.");
     }
 
     public String getBaseDir() {

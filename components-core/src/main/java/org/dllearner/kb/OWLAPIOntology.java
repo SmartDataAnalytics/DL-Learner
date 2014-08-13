@@ -27,7 +27,6 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.owl.KB;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.semanticweb.owlapi.model.IRI;
@@ -77,12 +76,6 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException 
 	{
 		
-	}
-	
-	@Override
-	public KB toKB()
-	{
-		throw new Error("OWL -> KB conversion not implemented yet.");
 	}
 	
 	@Override
