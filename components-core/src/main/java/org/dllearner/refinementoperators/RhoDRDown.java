@@ -19,6 +19,7 @@
 
 package org.dllearner.refinementoperators;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -503,7 +504,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		} else if (description instanceof OWLObjectIntersectionOf) {
-			Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperands();
+			List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
 			// refine one of the elements
 			for(OWLClassExpression child : operands) {
 				// refine the child; the new max length is the current max length minus
@@ -512,7 +513,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				tmp = refine(child, maxLength - OWLClassExpressionUtils.getLength(description) + OWLClassExpressionUtils.getLength(child),null,currDomain);
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					Set<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
+					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
 					newChildren.add(c);
 					newChildren.remove(child);
 					OWLClassExpression mc = df.getOWLObjectIntersectionOf(newChildren);
@@ -540,7 +541,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				
 				// construct union (see above)
 				for(OWLClassExpression c : tmp) {
-					Set<OWLClassExpression> newChildren = new HashSet<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
 					newChildren.remove(child);						
 					newChildren.add(c);
 					OWLObjectUnionOf md = df.getOWLObjectUnionOf(newChildren);
@@ -564,7 +565,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				} else {
 					// copy children list and remove a different element in each turn
 					for(int i=0; i<operands.size(); i++) {
-						Set<OWLClassExpression> newChildren = new HashSet<OWLClassExpression>(operands);
+						List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
 						newChildren.remove(i);						
 						OWLObjectUnionOf md = df.getOWLObjectUnionOf(newChildren);
 						refinements.add(md);
@@ -834,8 +835,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}	
 					
 					if(!skip) {
-						Set<OWLClassExpression> operands = Sets.newHashSet(description, c);
-						OWLObjectIntersectionOf mc = df.getOWLObjectIntersectionOf(operands);
+						OWLObjectIntersectionOf mc = df.getOWLObjectIntersectionOf(description, c);
 						
 						// clean and transform to ordered negation normal form
 						ConceptTransformation.cleanConceptNonRecursive(mc);
@@ -855,7 +855,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				System.exit(0);
 //			}
 //		}
-		
+		System.out.println("+++++\n" + description + "      " + maxLength);
+		System.out.println(refinements);
 		return refinements;		
 	}
 	

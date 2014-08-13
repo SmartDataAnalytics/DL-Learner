@@ -29,10 +29,15 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Test for component based design.
@@ -57,26 +62,34 @@ public class ComponentTest {
 		AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(source));
 		reasoner.init();
 		
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		PrefixManager pm = new DefaultPrefixManager("http://localhost/foo#");
+		
 		// create a learning problem and set positive and negative examples
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
-		Set<Individual> positiveExamples = new TreeSet<Individual>();
-		positiveExamples.add(new Individual("http://localhost/foo#heinz"));
-		positiveExamples.add(new Individual("http://localhost/foo#alex"));
-		Set<Individual> negativeExamples = new TreeSet<Individual>();
-		negativeExamples.add(new Individual("http://localhost/foo#jan"));
-		negativeExamples.add(new Individual("http://localhost/foo#anna"));
-		negativeExamples.add(new Individual("http://localhost/foo#hanna"));
+		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+		positiveExamples.add(df.getOWLNamedIndividual("heinz", pm));
+		positiveExamples.add(df.getOWLNamedIndividual("alex", pm));
+		Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+		negativeExamples.add(df.getOWLNamedIndividual("jan", pm));
+		negativeExamples.add(df.getOWLNamedIndividual("anna", pm));
+		negativeExamples.add(df.getOWLNamedIndividual("hanna", pm));
 		lp.setPositiveExamples(positiveExamples);
 		lp.setNegativeExamples(negativeExamples);
 		lp.init();
 		
 		// create the learning algorithm
-		AbstractCELA la = new OCEL(lp, reasoner);
+		OCEL la = new OCEL(lp, reasoner);
+		la.setMaxExecutionTimeInSeconds(60);
 		la.init();
 	
 		// start the algorithm and print the best concept found
 		la.start();
 		System.out.println(la.getCurrentlyBestEvaluatedDescriptions(10, 0.8, true));
+		/**
+		 * possible solution: (male AND (EXISTS hasSibling.EXISTS hasChild.TOP 
+		 *                    OR EXISTS married.EXISTS hasSibling.EXISTS hasChild.TOP))
+		 */
 	}
 
 }

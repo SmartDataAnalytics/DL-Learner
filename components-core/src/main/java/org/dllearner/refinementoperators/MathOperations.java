@@ -118,7 +118,7 @@ public class MathOperations {
 	 */
 	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
-		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
 		decompose(number, number, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}
@@ -133,7 +133,7 @@ public class MathOperations {
 	 * @return A two dimensional list constructed in {@link #getCombos(int)}.
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
-		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
 		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}	
@@ -172,10 +172,10 @@ public class MathOperations {
 			return retSet;
 		}
 		
-		Set<OWLClassExpression> operands;
+		List<OWLClassExpression> operands;
 		for(OWLObjectUnionOf md : baseSet) {
 			for(OWLClassExpression c : newSet) {
-				operands = md.getOperands();
+				operands = md.getOperandsAsList();
 				operands.add(c);
 				OWLObjectUnionOf mdNew = df.getOWLObjectUnionOf(operands);
 				retSet.add(mdNew);

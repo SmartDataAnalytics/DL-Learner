@@ -21,6 +21,7 @@
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>4.4.0</solr.version>
+        <owlapi.version>3.5.2-dllearner-SNAPSHOT</owlapi.version>
 	</properties>
 
 	<modules>
@@ -123,22 +124,22 @@
 			<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
-			<version>3.5.1</version>
+			<version>${owlapi.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-reasoner</artifactId>
-			<version>3.3</version>
+			<version>${owlapi.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-debugging</artifactId>
-			<version>3.3</version>
+			<version>${owlapi.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-util</artifactId>
-			<version>3.3</version>
+			<version>${owlapi.version}</version>
 		</dependency>
 
 			<dependency>
