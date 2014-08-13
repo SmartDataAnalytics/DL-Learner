@@ -500,17 +500,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 		
 		} else if (description instanceof Intersection) {
-			
-				System.out.println("REFINING: " + OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description));
 			// refine one of the elements
 			for(Description child : description.getChildren()) {
-				System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(child));
-				System.out.println(maxLength - description.getLength()+child.getLength());
 				// refine the child; the new max length is the current max length minus
 				// the currently considered concept plus the length of the child
 				// TODO: add better explanation
 				tmp = refine(child, maxLength - description.getLength()+child.getLength(),null,currDomain);
-				System.out.println(tmp);
 				// create new intersection
 				for(Description c : tmp) {
 					List<Description> newChildren = (List<Description>)((LinkedList<Description>)description.getChildren()).clone();
@@ -833,7 +828,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				System.exit(0);
 //			}
 //		}
-		
+		System.out.println("++++++++\nREFINING: " + description + "   maxLength:" + maxLength);
+		System.out.println(refinements);
 		return refinements;		
 	}
 	
