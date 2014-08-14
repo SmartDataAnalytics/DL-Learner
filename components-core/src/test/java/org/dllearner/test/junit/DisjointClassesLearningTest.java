@@ -3,11 +3,13 @@ package org.dllearner.test.junit;
 import junit.framework.TestCase;
 
 import org.dllearner.algorithms.DisjointClassesLearner;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 public class DisjointClassesLearningTest extends TestCase{
 	
@@ -29,7 +31,7 @@ public class DisjointClassesLearningTest extends TestCase{
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
 		l.setReasoner(reasoner);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Book"));
+		l.setClassToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
 		
 		l.start();
 		
@@ -41,8 +43,8 @@ public class DisjointClassesLearningTest extends TestCase{
 		l.setReasoner(reasoner);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		
-		for(Description cls : reasoner.getClassHierarchy().getMostGeneralClasses()){
-			l.setClassToDescribe((NamedClass)cls);
+		for(OWLClassExpression cls : reasoner.getClassHierarchy().getMostGeneralClasses()){
+			l.setClassToDescribe(cls.asOWLClass());
 			
 			l.start();
 			

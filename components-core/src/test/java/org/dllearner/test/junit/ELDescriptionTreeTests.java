@@ -24,22 +24,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.el.ELDescriptionNode;
-import org.dllearner.algorithms.el.ELDescriptionTree;
-import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
-import org.dllearner.algorithms.el.Simulation;
-import org.dllearner.algorithms.el.TreeTuple;
+import org.dllearner.algorithms.elcopy.ELDescriptionNode;
+import org.dllearner.algorithms.elcopy.ELDescriptionTree;
+import org.dllearner.algorithms.elcopy.ELDescriptionTreeComparator;
+import org.dllearner.algorithms.elcopy.Simulation;
+import org.dllearner.algorithms.elcopy.TreeTuple;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
  * Tests related to EL description tree including operations on
@@ -62,7 +65,7 @@ public final class ELDescriptionTreeTests {
 		s.addTuple(tuple1);
 		assertTrue(s.in(t2).size() == 1);
 //		assertTrue(s.out(t2).size() == 0);
-		ObjectProperty p = new ObjectProperty("p");
+		OWLObjectProperty p = new OWLObjectPropertyImpl(IRI.create("p"));
 		TreeSet<OWLClass> l3 = new TreeSet<OWLClass>();
 		ELDescriptionNode t3 = new ELDescriptionNode(t1,p,l3);
 		assertTrue(t3.getLevel() == 2);
@@ -73,7 +76,7 @@ public final class ELDescriptionTreeTests {
 	public void minimalityTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		// the following should be recognized as non-minimal
-		Description d = KBParser.parseConcept("(human AND (EXISTS has.animal AND EXISTS has.TOP))");
+		OWLClassExpression d = KBParser.parseConcept("(human AND (EXISTS has.animal AND EXISTS has.TOP))");
 		ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		assertFalse(tree.isMinimal());
@@ -82,7 +85,7 @@ public final class ELDescriptionTreeTests {
 	@Test
 	public void cloneTest() throws ParseException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
-		Description d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
+		OWLClassExpression d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
 		ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		// clone performance (false for simple unit test, true for clone performance test)

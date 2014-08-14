@@ -28,9 +28,13 @@ import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class PropertyLearningTest extends TestCase{
 	
@@ -38,13 +42,14 @@ public class PropertyLearningTest extends TestCase{
 	private int maxExecutionTimeInSeconds = 3;
 	private int nrOfAxioms = 3;
 	
-	private ObjectProperty functional = new ObjectProperty("http://dbpedia.org/ontology/league");
-	private ObjectProperty reflexive = new ObjectProperty("http://dbpedia.org/ontology/influencedBy");
-	private ObjectProperty symmetric = new ObjectProperty("http://dbpedia.org/ontology/influencedBy");
-	private ObjectProperty domain = new ObjectProperty("http://dbpedia.org/ontology/writer");
-	private ObjectProperty range = new ObjectProperty("http://dbpedia.org/ontology/writer");
-	private ObjectProperty subProperty = new ObjectProperty("http://dbpedia.org/ontology/author");
-	private ObjectProperty equivProperty = new ObjectProperty("http://dbpedia.org/ontology/academyAward");
+	OWLDataFactory df = new OWLDataFactoryImpl();
+	private OWLObjectProperty functional = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/league"));
+	private OWLObjectProperty reflexive = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/influencedBy"));
+	private OWLObjectProperty symmetric = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/influencedBy"));
+	private OWLObjectProperty domain = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/writer"));
+	private OWLObjectProperty range = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/writer"));
+	private OWLObjectProperty subProperty = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/author"));
+	private OWLObjectProperty equivProperty = df.getOWLObjectProperty(IRI.create( "http://dbpedia.org/ontology/academyAward"));
 	
 	
 	@Override

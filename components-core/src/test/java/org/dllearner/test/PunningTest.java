@@ -4,42 +4,35 @@
 package org.dllearner.test;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.MaterializableFastInstanceChecker;
 import org.dllearner.reasoning.OWLPunningDetector;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -85,13 +78,13 @@ public class PunningTest {
 		OWLDataFactory df = new OWLDataFactoryImpl();
 		
 		//check that A and B are both, individual and class
-		Set<Individual> posExamples = new HashSet<Individual>();
+		Set<OWLIndividual> posExamples = new HashSet<OWLIndividual>();
 		for (String uri : Sets.newHashSet("http://ex.org/TRABANT601#1234", "http://ex.org/S51#2345", "http://ex.org/MIFA23#3456")) {
-			posExamples.add(new Individual(uri));
+			posExamples.add(df.getOWLNamedIndividual(IRI.create(uri)));
 		}
-		Set<Individual> negExamples = new HashSet<Individual>();
+		Set<OWLIndividual> negExamples = new HashSet<OWLIndividual>();
 		for (String uri : Sets.newHashSet("http://ex.org/CLIPSO90MG#4567", "http://ex.org/SIEMENS425#567", "http://ex.org/TATRAT3#678")) {
-			negExamples.add(new Individual(uri));
+			negExamples.add(df.getOWLNamedIndividual(IRI.create(uri)));
 		}
 		
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -126,48 +119,48 @@ public class PunningTest {
 		System.out.println("Classes: " + ontology.getClassesInSignature());
 		System.out.println("Individuals: " + ontology.getIndividualsInSignature());
 		
-		Description d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"));
-		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
-		SortedSet<Individual> individuals = rc.getIndividuals(d);
+		PrefixManager pm = new DefaultPrefixManager("http://ex.org/");
+		OWLClass fahrzeug = df.getOWLClass("Fahrzeug", pm);
+		OWLClassExpression d = fahrzeug;
+		System.out.println(d);
+		SortedSet<OWLIndividual> individuals = rc.getIndividuals(d);
 		System.out.println(individuals);
 
-		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
-				OWLPunningDetector.punningProperty, Thing.instance));
-		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		d = df.getOWLObjectIntersectionOf(
+				fahrzeug, 
+				df.getOWLObjectSomeValuesFrom(OWLPunningDetector.punningProperty, df.getOWLThing()));
+		System.out.println(d);
 		individuals = rc.getIndividuals(d);
 		System.out.println(individuals);
 
-		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
-				OWLPunningDetector.punningProperty, new ObjectSomeRestriction(new ObjectProperty(
-						"http://ex.org/bereifung"), Thing.instance)));
-		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
-		individuals = rc.getIndividuals(d);
-		System.out.println(individuals);
-		
-		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
-				OWLPunningDetector.punningProperty, 
-//				new ObjectSomeRestriction(new ObjectProperty("http://ex.org/bereifung"), 
-						Thing.instance));
-		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		d = df.getOWLObjectIntersectionOf(
+				fahrzeug,
+				df.getOWLObjectSomeValuesFrom(
+						OWLPunningDetector.punningProperty,
+						df.getOWLObjectSomeValuesFrom(df.getOWLObjectProperty("bereifung", pm), df.getOWLThing())));
+		System.out.println(d);
 		individuals = rc.getIndividuals(d);
 		System.out.println(individuals);
 		
 		//get some refinements
 		System.out.println("###############");
 		System.out.println("Refinements:");
-		Set<Description> refinements = la.getOperator().refine(d, d.getLength() + 4);
-		for (Description ref : refinements) {
-			System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(ref));
+		Set<OWLClassExpression> refinements = la.getOperator().refine(d, OWLClassExpressionUtils.getLength(d) + 4);
+		for (OWLClassExpression ref : refinements) {
+			System.out.println(ref);
 			System.out.println(lp.getAccuracyOrTooWeak(ref, 0d));
 		}
 		System.out.println("###############");
 		
-
-		d = new Intersection(new NamedClass("http://ex.org/Fahrzeug"), new ObjectSomeRestriction(
-				OWLPunningDetector.punningProperty, new ObjectSomeRestriction(new ObjectProperty(
-						"http://ex.org/bereifung"), new ObjectSomeRestriction(OWLPunningDetector.punningProperty,
-						Thing.instance))));
-		System.out.println(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(d));
+		d = df.getOWLObjectIntersectionOf(
+				fahrzeug,
+				df.getOWLObjectSomeValuesFrom(
+						OWLPunningDetector.punningProperty,
+						df.getOWLObjectSomeValuesFrom(
+								df.getOWLObjectProperty("bereifung", pm),
+								df.getOWLObjectSomeValuesFrom(
+										OWLPunningDetector.punningProperty,df.getOWLThing()))));
+		System.out.println(d);
 		individuals = rc.getIndividuals(d);
 		System.out.println(individuals);
 //		List<? extends EvaluatedDescription> currentlyBestEvaluatedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(100);

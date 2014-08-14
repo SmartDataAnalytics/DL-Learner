@@ -23,15 +23,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * 
@@ -49,12 +52,13 @@ public class ReasonerTest {
 		fic.setSources(file);
 		fic.init();
 		
-		NamedClass doc = new NamedClass("http://nlp2rdf.lod2.eu/schema/string/Document");
-		ObjectProperty op = new ObjectProperty("http://nlp2rdf.lod2.eu/schema/string/subStringTrans");
-		ObjectSomeRestriction osr = new ObjectSomeRestriction(op,Thing.instance);
-		Intersection is = new Intersection(doc,osr);
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		OWLClass doc = df.getOWLClass(IRI.create("http://nlp2rdf.lod2.eu/schema/string/Document"));
+		OWLObjectProperty op = df.getOWLObjectProperty(IRI.create("http://nlp2rdf.lod2.eu/schema/string/subStringTrans"));
+		OWLObjectSomeValuesFrom osr = df.getOWLObjectSomeValuesFrom(op, df.getOWLThing());
+		OWLObjectIntersectionOf is = df.getOWLObjectIntersectionOf(doc,osr);
 		
-		Individual ind = new Individual("http://nlp2rdf.org/POS/2/offset_0_763_COPPER+STUDY+GROUP+C");
+		OWLIndividual ind = df.getOWLNamedIndividual(IRI.create("http://nlp2rdf.org/POS/2/offset_0_763_COPPER+STUDY+GROUP+C"));
 		
 //		System.out.println();
 		

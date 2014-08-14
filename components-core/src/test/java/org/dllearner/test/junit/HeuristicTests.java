@@ -44,6 +44,8 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * Tests for various heuristics employed in learning problems.
@@ -267,7 +269,7 @@ public class HeuristicTests {
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configureClassLP(ClassLearningProblem problem, NamedClass classToDescribe, HeuristicType accuracyMethod) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 		problem.setHeuristic(accuracyMethod);
 		problem.setUseApproximations(false);
@@ -276,7 +278,7 @@ public class HeuristicTests {
 	}
 	
 	// convencience method to set the learning problem to a desired configuration
-	private static void configureClassLP(ClassLearningProblem problem, NamedClass classToDescribe, HeuristicType accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 //		problem.getConfigurator().setType("superClass");
 		problem.setEquivalence(false);
@@ -288,13 +290,13 @@ public class HeuristicTests {
 	
 //	@SuppressWarnings("unchecked")
 	private static void configurePosNegStandardLP(PosNegLPStandard problem, Individual[] positiveExamples, Individual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
-		Set<Individual> s1 = new TreeSet<Individual>(Arrays.asList(positiveExamples));
-		Set<Individual> s2 = new TreeSet<Individual>(Arrays.asList(negativeExamples));
+		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
+		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
 		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod, useApproximations);
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<Individual> positiveExamples, Set<Individual> negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<OWLIndividual> positiveExamples, Set<OWLIndividual> negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
 		problem.setPositiveExamples(positiveExamples);
 		problem.setNegativeExamples(negativeExamples);
 		problem.setAccuracyMethod(accuracyMethod);

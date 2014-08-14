@@ -35,8 +35,6 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.parser.KBParser;
@@ -48,6 +46,11 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * A suite of JUnit tests related to refinement operators.
@@ -84,10 +87,10 @@ public class RefinementOperatorTests {
 			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 			op.init();
-			Description concept = KBParser.parseConcept(uri("Compound"));
-			Set<Description> results = op.refine(concept, 4, null);
+			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
+			Set<OWLClassExpression> results = op.refine(concept, 4, null);
 
-			for(Description result : results) {
+			for(OWLClassExpression result : results) {
 				System.out.println(result);
 			}
 			
@@ -116,11 +119,11 @@ public class RefinementOperatorTests {
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		op.init();
 		
-		Description concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
-		Set<Description> results = op.refine(concept,10);
+		OWLClassExpression concept = KBParser.parseConcept("(\"http://localhost/aris/sap_model.owl#EPC\" AND EXISTS \"http://localhost/aris/sap_model.owl#hasModelElements\".\"http://localhost/aris/sap_model.owl#Object\")");
+		Set<OWLClassExpression> results = op.refine(concept,10);
 
-		for(Description result : results) {
-			System.out.println(result.toString("http://localhost/aris/sap_model.owl#",null));
+		for(OWLClassExpression result : results) {
+			System.out.println(result);
 		}
 			
 		int desiredResultSize = 116;
@@ -142,8 +145,8 @@ public class RefinementOperatorTests {
 		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
 		
 		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
-		ignoredConcepts.add(new NamedClass("http://www.test.de/test#ZERO"));
-		ignoredConcepts.add(new NamedClass("http://www.test.de/test#ONE"));
+		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ZERO")));
+		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ONE")));
 		Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
 		
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts); 
@@ -157,11 +160,11 @@ public class RefinementOperatorTests {
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		op.init();
 		
-		Description concept = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND TOP)");
-		Set<Description> results = op.refine(concept,8);
+		OWLClassExpression concept = KBParser.parseConcept("EXISTS \"http://www.test.de/test#hasPiece\".EXISTS \"http://www.test.de/test#hasLowerRankThan\".(\"http://www.test.de/test#WRook\" AND TOP)");
+		Set<OWLClassExpression> results = op.refine(concept,8);
 
-		for(Description result : results) {
-			System.out.println(result.toString("http://www.test.de/test#",null));
+		for(OWLClassExpression result : results) {
+			System.out.println(result);
 		}
 			
 		int desiredResultSize = 8;
@@ -205,10 +208,10 @@ public class RefinementOperatorTests {
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		op.init();
 		
-		Description concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
+		OWLClassExpression concept = KBParser.parseConcept("(car AND EXISTS hasOwner.person)");
 //		Description concept = Thing.instance;
-		Set<Description> refinements = op.refine(concept, 6);
-		for(Description refinement : refinements) {
+		Set<OWLClassExpression> refinements = op.refine(concept, 6);
+		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}		
 	}
@@ -226,10 +229,10 @@ public class RefinementOperatorTests {
 		op.init();
 		
 //		Description concept = KBParser.parseConcept("((NOT \"http://ns.softwiki.de/req/Requirement\") OR (ALL \"http://ns.softwiki.de/req/isCreatedBy\".(NOT \"http://ns.softwiki.de/req/Creditor\")))");
-		Description concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
+		OWLClassExpression concept = KBParser.parseConcept("(NOT \"http://ns.softwiki.de/req/Requirement\" OR ALL \"http://ns.softwiki.de/req/isCreatedBy\".NOT \"http://ns.softwiki.de/req/Creditor\")");
 		System.out.println(concept);
-		Set<Description> refinements = op.refine(concept, 7);
-		for(Description refinement : refinements) {
+		Set<OWLClassExpression> refinements = op.refine(concept, 7);
+		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}		
 	}	
@@ -248,9 +251,9 @@ public class RefinementOperatorTests {
 		op.init();
 		
 		LengthLimitedRefinementOperator operator = new OperatorInverter(op);
-		Description concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
-		Set<Description> refinements = operator.refine(concept, 6);
-		for(Description refinement : refinements) {
+		OWLClassExpression concept = KBParser.parseConcept("(limo AND EXISTS hasOwner.man)");
+		Set<OWLClassExpression> refinements = operator.refine(concept, 6);
+		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}		
 		// we should get four upward refinements 
@@ -271,9 +274,9 @@ public class RefinementOperatorTests {
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 		op.init();
 		
-		NamedClass nc = new NamedClass("http://example.com/father#male");
-		Set<Description> refinements = op.refine(nc, 5);
-		for(Description refinement : refinements) {
+		OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
+		Set<OWLClassExpression> refinements = op.refine(nc, 5);
+		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}		
 		// refinements should be as follows:
