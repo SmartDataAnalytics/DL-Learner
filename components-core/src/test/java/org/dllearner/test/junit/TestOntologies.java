@@ -23,14 +23,14 @@ import java.util.Collections;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.KB;
-import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 /**
  * Some ontologies to simplify unit tests.
@@ -138,13 +138,13 @@ public final class TestOntologies {
 		} 
 		
 		try {	
-			ComponentManager cm = ComponentManager.getInstance();
+//			ComponentManager cm = ComponentManager.getInstance();
 			KnowledgeSource source;
 			
 			// parse KB string if one has been specified
 			if(!kbString.isEmpty() || ont.equals(TestOntology.EMPTY)) {
-				KB kb = KBParser.parseKBFile(kbString);
-				source = new KBFile(kb);
+				OWLOntology kb = KBParser.parseKBFile(kbString);
+				source = new OWLAPIOntology(kb);
 			// do nothing for empty ontology
 			} else {
 				source = new OWLFile(owlFile);
@@ -156,6 +156,8 @@ public final class TestOntologies {
 		} catch(ParseException e) {
 			e.printStackTrace();
 		} catch (ComponentInitException e) {
+			e.printStackTrace();
+		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
 		

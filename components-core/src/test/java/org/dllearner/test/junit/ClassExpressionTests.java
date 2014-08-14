@@ -22,47 +22,24 @@ package org.dllearner.test.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.Set;
-
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxClassExpressionParser;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.junit.Test;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.expression.OWLEntityChecker;
-import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.util.BidirectionalShortFormProvider;
-import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 
 /**
  * Tests on class expressins, e.g. transformations or tests on them.
@@ -73,63 +50,51 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class ClassExpressionTests {
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
-	PrefixManager pm = new DefaultPrefixManager("http://ex.org/");
+	PrefixManager pm = new DefaultPrefixManager("");
 	
 
 	@Test
-	public void minimizeTest1() throws ParseException, OWLOntologyCreationException {
-		String ontologyString = 
-				"Prefix: : <http://example.com/father#> "
-				+ "Ontology: <http://example.com/owl/families> "
-				+ "Class: male "
-				+ "ObjectProperty: hasChild";
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = man.loadOntologyFromOntologyDocument(new ByteArrayInputStream(ontologyString.getBytes()));
-		System.out.println(ontology.getClassesInSignature());
-		
-		ManchesterOWLSyntaxClassExpressionParser p = new ManchesterOWLSyntaxClassExpressionParser(man.getOWLDataFactory(), 
-				new ShortFormEntityChecker(new BidirectionalShortFormProviderAdapter(Collections.singleton(ontology), new SimpleShortFormProvider())));
-		OWLClassExpression ce = p.parse("male AND (male OR hasChild SOME Thing)");
-		System.out.println(ce);
-//		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER_OE);
-//		OWLClassExpressionMinimizer minimizer = new OWLClassExpressionMinimizer(df, reasoner);
-//		OWLClassExpression minD = minimizer.minimize(ce);
-//		assertTrue(minD.toString().equals("http://example.com/father#male"));
+	public void minimizeTest1() throws ParseException {
+		OWLClassExpression ce = KBParser.parseConcept("(\"http://example.com/father#male\" AND (\"http://example.com/father#male\" OR EXISTS \"http://example.com/father#hasChild\".TOP))");		
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER_OE);
+		OWLClassExpressionMinimizer minimizer = new OWLClassExpressionMinimizer(df, reasoner);
+		OWLClassExpression minD = minimizer.minimize(ce);
+		assertTrue(minD.toString().equals("http://example.com/father#male"));
 	}
 	
-//	@Test
-//	public void minimizeTest2() throws ParseException {
-//		// this tests for a bug, when in A AND A AND SOMETHING, both A were removed because they subsume 
-//		// each other, while in fact only one A should be removed
-//		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.MDM);
-//		DescriptionMinimizer minimizer = new DescriptionMinimizer(reasoner);
-//		OWLClass nc = new OWLClass("http://acl/BMV#MedicalThings");
-//		ObjectProperty op = new ObjectProperty("http://acl/BMV#refersSubstance");
-//		OWLClassExpression tmp1 = new ObjectAllRestriction(op,nc);
-//		OWLClassExpression d = new Intersection(nc,tmp1);
-//		OWLClassExpression d2 = new Intersection(nc,nc,tmp1);
-//		OWLClassExpression minD = minimizer.minimizeClone(d);
-//		OWLClassExpression minD2 = minimizer.minimizeClone(d2);
-//
-//		assertEquals(minD.toString(),minD2.toString());
-//	}	
-//	
-//	@Test
-//	public void subExpressionTest1() throws ParseException {
-//		OWLClassExpression d = KBParser.parseConcept("(\"http://example.com/father#male\" AND (\"http://example.com/father#male\" OR EXISTS \"http://example.com/father#hasChild\".TOP))");		
-//		OWLClassExpression d2 = KBParser.parseConcept("EXISTS \"http://example.com/father#hasChild\".TOP");
-//		assertTrue(ConceptTransformation.isSubdescription(d, d2));
-//		
-//		OWLClassExpression d3 = KBParser.parseConcept("(\"http://example.com/test#A\" AND (\"http://example.com/father#A\" AND EXISTS \"http://example.com/father#hasChild\".TOP))");		
-//		OWLClassExpression d4 = KBParser.parseConcept("EXISTS \"http://example.com/father#hasChild\".TOP");
-//		assertTrue(ConceptTransformation.isSubdescription(d3, d4));	
-//		
-//		// related to http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
-//		OWLClassExpression d5 = KBParser.parseConcept("(\"http://acl/BMV#MedicalThings\" AND (\"http://acl/BMV#MedicalThings\" AND ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"))");
-//		OWLClassExpression d6 = KBParser.parseConcept("ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"");
-//		assertTrue(ConceptTransformation.isSubdescription(d5, d6));	
-//		
-//	}
+	@Test
+	public void minimizeTest2() throws ParseException {
+		// this tests for a bug, when in A AND A AND SOMETHING, both A were removed because they subsume 
+		// each other, while in fact only one A should be removed
+		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.MDM);
+		OWLClassExpressionMinimizer minimizer = new OWLClassExpressionMinimizer(df, reasoner);
+		OWLClass nc = df.getOWLClass(IRI.create("http://acl/BMV#MedicalThings"));
+		OWLObjectProperty op = df.getOWLObjectProperty(IRI.create("http://acl/BMV#refersSubstance"));
+		OWLClassExpression tmp1 = df.getOWLObjectAllValuesFrom(op,nc);
+		OWLClassExpression d = df.getOWLObjectIntersectionOf(nc,tmp1);
+		OWLClassExpression d2 = df.getOWLObjectIntersectionOf(nc,nc,tmp1);
+		OWLClassExpression minD = minimizer.minimizeClone(d);
+		OWLClassExpression minD2 = minimizer.minimizeClone(d2);
+
+		assertEquals(minD.toString(),minD2.toString());
+	}	
+	
+	@Test
+	public void subExpressionTest1() throws ParseException {
+		OWLClassExpression d = KBParser.parseConcept("(\"http://example.com/father#male\" AND (\"http://example.com/father#male\" OR EXISTS \"http://example.com/father#hasChild\".TOP))");		
+		OWLClassExpression d2 = KBParser.parseConcept("EXISTS \"http://example.com/father#hasChild\".TOP");
+		assertTrue(ConceptTransformation.isSubdescription(d, d2));
+		
+		OWLClassExpression d3 = KBParser.parseConcept("(\"http://example.com/test#A\" AND (\"http://example.com/father#A\" AND EXISTS \"http://example.com/father#hasChild\".TOP))");		
+		OWLClassExpression d4 = KBParser.parseConcept("EXISTS \"http://example.com/father#hasChild\".TOP");
+		assertTrue(ConceptTransformation.isSubdescription(d3, d4));	
+		
+		// related to http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
+		OWLClassExpression d5 = KBParser.parseConcept("(\"http://acl/BMV#MedicalThings\" AND (\"http://acl/BMV#MedicalThings\" AND ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"))");
+		OWLClassExpression d6 = KBParser.parseConcept("ALL \"http://acl/BMV#refersSubstance\".\"http://acl/BMV#MedicalThings\"");
+		assertTrue(ConceptTransformation.isSubdescription(d5, d6));	
+		
+	}
 	
 	/**
 	 * We test a method, which delivers in which context all quantifiers occur
@@ -161,21 +126,21 @@ public class ClassExpressionTests {
 		// note: the assertions below use toString() which should usually be avoided, but since
 		// the toString() method of SortedSet is unlikely to change we use it here for convenience
 		// ALL p1.a1 => context: [[p1]]		
-		assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[p1]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[<p1>]]"));
 		// (a1 AND a2) OR ALL p1.a1 => [[p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[p1]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[<p1>]]"));
 		// p2 hasValue i1 => []
 		assertTrue(ConceptTransformation.getForallContexts(d4).isEmpty());
 		// ALL p2.ALL p1.a1 => [[p2],[p1,p2]]
-		assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[p2, p1], [p2]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[<p2>, <p1>], [<p2>]]"));
 		// ALL p1.p2 hasValue i1 => [[p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[p1]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[<p1>]]"));
 		// EXISTS p3.ALL p2.ALL p1.a1 => [[p3,p2],[p3,p2,p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[p3, p2, p1], [p3, p2]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[<p3>, <p2>, <p1>], [<p3>, <p2>]]"));
 		// (ALL p1.a1 OR ALL p2.ALL p1.a1)
-		assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[p2, p1], [p1], [p2]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[<p2>, <p1>], [<p1>], [<p2>]]"));
 		// ALL p1.(ALL p1.a1 OR ((a1 AND a2) OR ALL p1.a1)) => [[p1],[p1,p1],[p1,p2],[p1,p2,p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d9).toString().equals("[[p1, p2, p1], [p1, p1], [p1, p2], [p1]]"));
+		assertTrue(ConceptTransformation.getForallContexts(d9).toString().equals("[[<p1>, <p2>, <p1>], [<p1>, <p1>], [<p1>, <p2>], [<p1>]]"));
 		
 	}
 }
