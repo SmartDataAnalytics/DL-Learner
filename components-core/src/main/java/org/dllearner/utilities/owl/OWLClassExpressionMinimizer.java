@@ -81,7 +81,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
-		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands.size());
+		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
 		
 		for (int i = 0; i < operands.size(); i++) {
 			OWLClassExpression op1 = operands.get(i);
@@ -91,6 +91,8 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 				//remove operand if it is a super class
 				if(isSubClassOf(op1, op2)){
 					newOperands.remove(op2);
+				} else if(isSubClassOf(op2, op1)){
+					newOperands.remove(op1);
 				}
 			}
 		}
@@ -116,7 +118,32 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 	 */
 	@Override
 	public OWLClassExpression visit(OWLObjectUnionOf ce) {
-		return null;
+		List<OWLClassExpression> operands = ce.getOperandsAsList();
+		//replace operands by the short form
+		for (int i = 0; i < operands.size(); i++) {
+			operands.set(i, operands.get(i).accept(this));
+		}
+		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		
+		for (int i = 0; i < operands.size(); i++) {
+			OWLClassExpression op1 = operands.get(i);
+			for (int j = i + 1; j < operands.size(); j++) {
+				OWLClassExpression op2 = operands.get(j);
+				
+				//remove operand if it is a subclass
+				if(isSubClassOf(op2, op1)){
+					newOperands.remove(op2);
+				} else if(isSubClassOf(op1, op2)){
+					newOperands.remove(op1);
+				}
+			}
+		}
+		
+		if(newOperands.size() == 1){
+			return newOperands.iterator().next().accept(this);
+		}
+		
+		return df.getOWLObjectUnionOf(newOperands);
 	}
 
 	/* (non-Javadoc)

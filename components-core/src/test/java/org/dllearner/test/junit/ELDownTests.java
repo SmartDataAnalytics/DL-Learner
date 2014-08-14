@@ -127,7 +127,7 @@ public class ELDownTests {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			// eliminate conjunctions nested in other conjunctions
 			ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
 		}
@@ -168,7 +168,7 @@ public class ELDownTests {
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
 		for(OWLClassExpression refinement : refinements) {
 			boolean ok = desired.contains(refinement);			
-			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+			System.out.println(ok + ": " + refinement);
 			assertTrue(desired.contains(refinement));
 		}
 		

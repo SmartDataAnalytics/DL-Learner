@@ -57,9 +57,7 @@ public class AllTestsRunner {
 				"org.dllearner.test.junit.ELDescriptionTreeTests",
 				"org.dllearner.test.junit.ELDownTests",
 				"org.dllearner.test.junit.HeuristicTests",
-//				"org.dllearner.test.junit.OWLAPITests",
 				"org.dllearner.test.junit.ParserTests",
-				"org.dllearner.test.junit.ReasonerTests",
 				"org.dllearner.test.junit.RefinementOperatorTests",
 				"org.dllearner.test.junit.SimulationTests",
 				"org.dllearner.test.junit.UtilitiesTests");

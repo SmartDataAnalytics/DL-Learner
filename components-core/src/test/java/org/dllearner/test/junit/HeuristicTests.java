@@ -31,21 +31,23 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
-import org.dllearner.core.owl.ClassAssertionAxiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 /**
  * Tests for various heuristics employed in learning problems.
@@ -60,46 +62,48 @@ public class HeuristicTests {
 	private static double delta = 0.000001;
 	
 	@Test
-	public void classLearningTests() throws ComponentInitException, MalformedURLException {
+	public void classLearningTests() throws ComponentInitException, MalformedURLException, OWLOntologyCreationException {
 		// create artificial ontology
-		KB kb = new KB();
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		NamedClass[] nc = new NamedClass[5];
+		PrefixManager pm = new DefaultPrefixManager(ns);
+		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
-			nc[i] = new NamedClass(ns + "A" + i);
+			nc[i] = df.getOWLClass("A" + i, pm);
 		}
-		Individual[] ind = new Individual[100];
+		OWLIndividual[] ind = new OWLIndividual[100];
 		for(int i=0; i<100; i++) {
-			ind[i] = new Individual(ns + "i" + i);
+			ind[i] = df.getOWLNamedIndividual("i" + i, pm);
 		}
 		
 		// assert individuals to owl:Thing (such that they exist in the knowledge base)
 		for(int i=0; i<100; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(df.getOWLThing(),ind[i]));
 		}
 		
 		// A0 has 20 instances (i0 to i19) 
 		for(int i=0; i<20; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[i]));
 		}
 		
 		// A1 has 20 instances (i10 to i29)
 		for(int i=10; i<30; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[i]));
 		}
 		
 		// A2 has 40 instances (i10 to i49)
 		for(int i=10; i<50; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[2],ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[2],ind[i]));
 		}		
 		
 		// A3 has 5 instances (i8 to i12)
 		for(int i=8; i<13; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(nc[3],ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[3],ind[i]));
 		}
-		
 		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource ks = new KBFile(kb);
+		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
 		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		ClassLearningProblem problem = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		reasoner.init();
@@ -165,43 +169,46 @@ public class HeuristicTests {
 	}
 	
 	@Test
-	public void posNegLPLearningTests() throws ComponentInitException {
+	public void posNegLPLearningTests() throws ComponentInitException, OWLOntologyCreationException {
 		// create artificial ontology
-		KB kb = new KB();
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		NamedClass[] nc = new NamedClass[5];
+		PrefixManager pm = new DefaultPrefixManager(ns);
+		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
-			nc[i] = new NamedClass(ns + "A" + i);
+			nc[i] = df.getOWLClass("A" + i, pm);
 		}
-		Individual[] ind = new Individual[100];
+		OWLIndividual[] ind = new OWLIndividual[100];
 		for(int i=0; i<100; i++) {
-			ind[i] = new Individual(ns + "i" + i);
+			ind[i] = df.getOWLNamedIndividual("i" + i, pm);
 		}
 		
 		// assert individuals to owl:Thing (such that they exist in the knowledge base)
 		for(int i=0; i<100; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(df.getOWLThing(),ind[i]));
 		}
 		
 		// A0
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[0]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[1]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[5]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[0]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[1]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[5]));
 		
 		// A1
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[0]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[1]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[2]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[5]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[0]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[1]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[2]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[5]));
 		
 		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource ks = new KBFile(kb);
+		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
 		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
 		PosNegLPStandard problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		reasoner.init();		
 		
-		Individual[] pos1 = new Individual[] {ind[0], ind[1], ind[2], ind[3], ind[4]};
-		Individual[] neg1 = new Individual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
+		OWLIndividual[] pos1 = new OWLIndividual[] {ind[0], ind[1], ind[2], ind[3], ind[4]};
+		OWLIndividual[] neg1 = new OWLIndividual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
 		
 		// F-Measure and no approximations
 		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", false);
@@ -254,14 +261,14 @@ public class HeuristicTests {
 	
 	// the class learning problem provides several ways to get the accuracy of a description, this method
 	// tests all of those
-	private static void assertEqualsClassLP(ClassLearningProblem problem, Description description, double accuracy) {
+	private static void assertEqualsClassLP(ClassLearningProblem problem, OWLClassExpression description, double accuracy) {
 		assertEquals(accuracy, problem.getAccuracy(description), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
 		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);
 		assertEquals(accuracy, problem.evaluate(description).getAccuracy(), delta);
 	}
 	
-	private static void assertEqualsPosNegLPStandard(PosNegLPStandard problem, Description description, double accuracy) {
+	private static void assertEqualsPosNegLPStandard(PosNegLPStandard problem, OWLClassExpression description, double accuracy) {
 		assertEquals(accuracy, problem.getAccuracy(description), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
 		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);
@@ -289,7 +296,7 @@ public class HeuristicTests {
 	}
 	
 //	@SuppressWarnings("unchecked")
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, Individual[] positiveExamples, Individual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
 		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
 		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
 		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod, useApproximations);

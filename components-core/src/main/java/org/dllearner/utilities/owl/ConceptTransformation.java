@@ -66,6 +66,12 @@ public class ConceptTransformation {
 		// cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
 	}
 	
+	public static OWLClassExpression cleanConcept(OWLClassExpression concept) {
+		// cleaningTimeNsStart = System.nanoTime();
+		return concept.accept(CLASS_EXPRESSION_CLEANER);
+		// cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
+	}
+	
 	// wandelt ein Konzept in Negationsnormalform um
 	public static OWLClassExpression transformToNegationNormalForm(OWLClassExpression concept) {
 		return concept.getNNF();

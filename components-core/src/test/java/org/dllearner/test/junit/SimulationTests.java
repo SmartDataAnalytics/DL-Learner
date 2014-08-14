@@ -33,6 +33,12 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.parser.KBParser;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
  * We test whether level-restricted, non-reflexive simulations on
@@ -74,12 +80,12 @@ public class SimulationTests {
 		// perform test with empty background knowledge and A1 AND EXISTS r1.TOP AND EXISTS r2.TOP
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
-		NamedClass a1 = new NamedClass(uri("a1"));
+		OWLClass a1 = new OWLClassImpl(IRI.create(uri("a1")));
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		v1.extendLabel(a1);
-		ObjectProperty r1 = new ObjectProperty(uri("r1"));
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create(uri("r1")));
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r1, new TreeSet<OWLClass>());
-		ObjectProperty r2 = new ObjectProperty(uri("r2"));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create(uri("r2")));
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r2, new TreeSet<OWLClass>());
 				
 		assertEmpty(v1);
@@ -105,10 +111,10 @@ public class SimulationTests {
 	public void test3() {	
 		// background knowledge, concepts, roles
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.R1SUBR2);
-		ObjectProperty r1 = new ObjectProperty(uri("r1"));
-		NamedClass a1 = new NamedClass(uri("a1"));
-		NamedClass a2 = new NamedClass(uri("a2"));
-		ObjectProperty r2 = new ObjectProperty(uri("r2"));
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create(uri("r1")));
+		OWLClass a1 = new OWLClassImpl(IRI.create(uri("a1")));
+		OWLClass a2 = new OWLClassImpl(IRI.create(uri("a2")));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create(uri("r2")));
 		
 		// iteratively building up the tree (nodeNames is used for logging/debugging)
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
@@ -182,12 +188,12 @@ public class SimulationTests {
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 		
-		ObjectProperty r1 = new ObjectProperty(uri("r1"));
-		ObjectProperty r2 = new ObjectProperty(uri("r2"));
-		ObjectProperty r3 = new ObjectProperty(uri("r3"));
-		NamedClass a1 = new NamedClass(uri("a1"));
-		NamedClass a2 = new NamedClass(uri("a2"));
-		NamedClass a3 = new NamedClass(uri("a3"));		
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create(uri("r1")));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create(uri("r2")));
+		OWLObjectProperty r3 = new OWLObjectPropertyImpl(IRI.create(uri("r3")));
+		OWLClass a1 = new OWLClassImpl(IRI.create(uri("a1")));
+		OWLClass a2 = new OWLClassImpl(IRI.create(uri("a2")));
+		OWLClass a3 = new OWLClassImpl(IRI.create(uri("a3")));		
 
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		nodeNames.put(v1, "v1");
@@ -283,10 +289,10 @@ public class SimulationTests {
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 				
-		ObjectProperty r1 = new ObjectProperty(uri("r1"));
-		ObjectProperty r2 = new ObjectProperty(uri("r2"));
-		NamedClass a1 = new NamedClass(uri("a1"));
-		NamedClass a2 = new NamedClass(uri("a2"));
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create(uri("r1")));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create(uri("r2")));
+		OWLClass a1 = new OWLClassImpl(IRI.create(uri("a1")));
+		OWLClass a2 = new OWLClassImpl(IRI.create(uri("a2")));
 		
 		ELDescriptionNode v1 = new ELDescriptionNode(tree);
 		nodeNames.put(v1, "v1");
@@ -443,11 +449,11 @@ public class SimulationTests {
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		Map<ELDescriptionNode,String> nodeNames = new LinkedHashMap<ELDescriptionNode,String>();				
 		
-		ObjectProperty r1 = new ObjectProperty(uri("r1"));
-		ObjectProperty r2 = new ObjectProperty(uri("r2"));
-		ObjectProperty r3 = new ObjectProperty(uri("r3"));
-		ObjectProperty r4 = new ObjectProperty(uri("r4"));
-		ObjectProperty r5 = new ObjectProperty(uri("r5"));
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create(uri("r1")));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create(uri("r2")));
+		OWLObjectProperty r3 = new OWLObjectPropertyImpl(IRI.create(uri("r3")));
+		OWLObjectProperty r4 = new OWLObjectPropertyImpl(IRI.create(uri("r4")));
+		OWLObjectProperty r5 = new OWLObjectPropertyImpl(IRI.create(uri("r5")));
 	
 		ELDescriptionNode v22 = new ELDescriptionNode(tree);
 		nodeNames.put(v22, "v22");
@@ -665,10 +671,10 @@ public class SimulationTests {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		ELDescriptionTree tree = new ELDescriptionTree(rs);
 		
-		ObjectProperty has = new ObjectProperty(uri("has"));
-		ObjectProperty hasChild = new ObjectProperty(uri("hasChild"));
-		NamedClass human = new NamedClass(uri("human"));
-		NamedClass animal = new NamedClass(uri("animal"));		
+		OWLObjectProperty has = new OWLObjectPropertyImpl(IRI.create(uri("has")));
+		OWLObjectProperty hasChild = new OWLObjectPropertyImpl(IRI.create(uri("hasChild")));
+		OWLClass human = new OWLClassImpl(IRI.create(uri("human")));
+		OWLClass animal = new OWLClassImpl(IRI.create(uri("animal")));		
 		
 		ELDescriptionNode v1 = new ELDescriptionNode(tree, human);
 		new ELDescriptionNode(v1, has, animal);

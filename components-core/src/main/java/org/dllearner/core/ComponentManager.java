@@ -78,35 +78,30 @@ public final class ComponentManager {
     private static String componentsFile = "org/dllearner/components.ini";
     private static List<String> componentClasses = new ArrayList<String>  ( Arrays.asList(new String[]{
             "org.dllearner.kb.OWLFile",
-            "org.dllearner.kb.KBFile",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
             "org.dllearner.kb.OWLAPIOntology",
 //            "org.dllearner.kb.SparqlEndpointKS",
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
-            "org.dllearner.reasoning.DIGReasoner",
-            "org.dllearner.reasoning.FastRetrievalReasoner",
+//            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
             "org.dllearner.reasoning.FastInstanceChecker",
-            "org.dllearner.reasoning.ProtegeReasoner",
-            "org.dllearner.reasoning.PelletReasoner",
 //learning problems
             "org.dllearner.learningproblems.PosNegLPStandard",
-            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
-            "org.dllearner.learningproblems.PosNegLPStrict",
+//            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
+//            "org.dllearner.learningproblems.PosNegLPStrict",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
 //learning algorithms
-            "org.dllearner.algorithms.RandomGuesser",
-            "org.dllearner.algorithms.BruteForceLearner",
-            "org.dllearner.algorithms.refinement.ROLearner",
+//            "org.dllearner.algorithms.RandomGuesser",
+//            "org.dllearner.algorithms.BruteForceLearner",
+//            "org.dllearner.algorithms.ocel.ROLearner2",
             "org.dllearner.algorithms.ocel.OCEL",
-            "org.dllearner.algorithms.gp.GP",
-            "org.dllearner.algorithms.el.ELLearningAlgorithm",
-            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+//            "org.dllearner.algorithms.gp.GP",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithm",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
+//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
 
 	private static ComponentManager cm = null;	
