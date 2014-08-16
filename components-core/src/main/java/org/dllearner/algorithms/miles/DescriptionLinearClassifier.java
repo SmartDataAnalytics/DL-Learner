@@ -140,6 +140,7 @@ public class DescriptionLinearClassifier {
 			Instance instance = new DenseInstance(1.0, attValues);
 			data.add(instance);
 		}
+		System.out.println(data.toString());
 		if(writeArffFile ){
 			try {
 				writeArffFile(data, new File("./data/test.arff"));
