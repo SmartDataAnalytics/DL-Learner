@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.aksw.jena_sparql_api.concepts.Concept;
 import org.aksw.jena_sparql_api.concepts.ConceptUtils;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -20,7 +19,6 @@ import org.apache.jena.query.text.EntityDefinition;
 import org.apache.jena.query.text.TextDatasetFactory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -39,9 +37,12 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLModelIndex extends Index{
@@ -141,7 +142,7 @@ public class SPARQLModelIndex extends Index{
 		return model;
 	}
 
-	static SPARQLModelIndex createClassIndex(String endpoint)
+	static SPARQLModelIndex createOldClassIndex(String endpoint)
 	{
 		QueryExecutionFactoryHttp qef = new QueryExecutionFactoryHttp(endpoint);
 
@@ -166,7 +167,20 @@ public class SPARQLModelIndex extends Index{
 		return new SPARQLModelIndex(model);
 	}
 	
-	static SPARQLModelIndex createClassIndex2(String endpoint, String defaultGraph){
+	static SPARQLModelIndex createPropertyIndex(String endpoint, String defaultGraph)
+	{
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(RDF.Property,OWL.DatatypeProperty,OWL.ObjectProperty));
+	}
+	
+	static SPARQLModelIndex createClassIndex(String endpoint, String defaultGraph)
+	{		
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(OWL.Class,RDFS.Class));		
+	}
+	
+	/**
+	 * @param type fully qualified type without prefixes, e.g. http://www.w3.org/2002/07/owl#Class
+	 */
+	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types){
 		org.aksw.jena_sparql_api.core.QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint, defaultGraph);
 		qef = new QueryExecutionFactoryPaginated(qef);
 		
@@ -175,6 +189,11 @@ public class SPARQLModelIndex extends Index{
 		String labelValues = "<" + labelProperties.get(0) + ">";
 		for (int i = 1; i < labelProperties.size(); i++) {
 			labelValues += "," + "<" + labelProperties.get(i) + ">";
+		}
+				
+		String typeValues = "<" + types.get(0) + ">";
+		for (int i = 1; i < types.size(); i++) {
+			typeValues += "," + "<" + types.get(i) + ">";
 		}
 		
 		// filter for the languages
@@ -195,9 +214,9 @@ public class SPARQLModelIndex extends Index{
 //		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
 		
 		
-		String query = "CONSTRUCT {?s a <http://www.w3.org/2002/07/owl#Class> .?s ?p_label ?l .}"
+		String query = "CONSTRUCT {?s a ?type .?s ?p_label ?l .}"
 				+ " WHERE "
-				+ "{?s a <http://www.w3.org/2002/07/owl#Class> . "
+				+ "{?s a ?type . FILTER(?type IN ("+typeValues+"))"
 				+ "OPTIONAL{?s ?p_label ?l . FILTER(?p_label IN (" + labelValues + "))"
 						+ languagesFilter + "}}";
 		
