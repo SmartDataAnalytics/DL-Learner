@@ -2,7 +2,8 @@ package org.dllearner.common.index;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -69,8 +70,8 @@ private HttpSolrServer server;
 	}
 
 	@Override
-	public IndexResultSet getResourcesWithScores(String queryString, int limit, int offset) {
-		IndexResultSet rs = new IndexResultSet();
+	public SortedSet<IndexItem> getResourcesWithScores(String queryString, int limit, int offset) {
+		SortedSet<IndexItem> rs = new TreeSet<>();
 		
 		QueryResponse response;
 		try {
@@ -113,7 +114,7 @@ private HttpSolrServer server;
 				} else {
 					score = (Float) d.get("score");
 				}
-				rs.addItem(new IndexResultItem((String) d.get("uri"), (String) d.get("label"), score));
+				rs.add(new IndexItem((String) d.get("uri"), (String) d.get("label"), score));
 			}
 		} catch (SolrServerException e) {
 			e.printStackTrace();

@@ -3,7 +3,9 @@ package org.dllearner.common.index;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.SortedSet;
 import org.aksw.jena_sparql_api.concepts.Concept;
 import org.aksw.jena_sparql_api.concepts.ConceptUtils;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -107,8 +109,8 @@ public class SPARQLModelIndex extends Index{
 	}
 
 	@Override
-	public IndexResultSet getResourcesWithScores(String searchTerm, int limit, int offset) {
-		IndexResultSet irs = new IndexResultSet();
+	public SortedSet<IndexItem> getResourcesWithScores(String searchTerm, int limit, int offset) {
+		SortedSet<IndexItem> irs = new TreeSet<>();
 
 		queryTemplate.setLiteral("l", searchTerm);
 		ResultSet rs = executeSelect(queryTemplate.toString());
@@ -122,7 +124,7 @@ public class SPARQLModelIndex extends Index{
 
 				String uri = uriNode.asResource().getURI();
 				String label = labelNode.asLiteral().getLexicalForm();
-				irs.addItem(new IndexResultItem(uri, label, 1f));
+				irs.add(new IndexItem(uri, label, 1f));
 			}
 		}
 		return irs;
@@ -180,7 +182,8 @@ public class SPARQLModelIndex extends Index{
 	/**
 	 * @param type fully qualified type without prefixes, e.g. http://www.w3.org/2002/07/owl#Class
 	 */
-	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types){
+	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types)
+	{
 		org.aksw.jena_sparql_api.core.QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint, defaultGraph);
 		qef = new QueryExecutionFactoryPaginated(qef);
 		
@@ -212,7 +215,6 @@ public class SPARQLModelIndex extends Index{
 		}
 		languageValues += "}";
 //		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
-		
 		
 		String query = "CONSTRUCT {?s a ?type .?s ?p_label ?l .}"
 				+ " WHERE "

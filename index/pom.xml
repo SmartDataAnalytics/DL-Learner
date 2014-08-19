@@ -26,14 +26,30 @@
 			<artifactId>jena-text</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-		   <dependency>
-                <groupId>org.aksw.jena-sparql-api</groupId>
-                <artifactId>jena-sparql-api-core</artifactId>
-                <version>2.11.2-56</version>
-            </dependency>
-		   <dependency>
-		   	<groupId>junit</groupId>
-		   	<artifactId>junit</artifactId>
-		   </dependency>
+		<dependency>
+			<groupId>org.aksw.jena-sparql-api</groupId>
+			<artifactId>jena-sparql-api-core</artifactId>
+			<version>2.11.2-56</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.extjwnl</groupId>
+			<artifactId>extjwnl</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.extjwnl</groupId>
+			<artifactId>extjwnl-data-wn31</artifactId>
+			<version>1.1</version>
+		</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.14.4</version>
+		<!-- 		<scope>provided</scope> -->
+			</dependency>
 	</dependencies>
 </project>
