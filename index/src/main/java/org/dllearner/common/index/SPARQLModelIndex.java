@@ -3,8 +3,9 @@ package org.dllearner.common.index;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Map.Entry;
-
+import java.util.SortedSet;
 import org.aksw.jena_sparql_api.concepts.Concept;
 import org.aksw.jena_sparql_api.concepts.ConceptUtils;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -20,7 +21,6 @@ import org.apache.jena.query.text.EntityDefinition;
 import org.apache.jena.query.text.TextDatasetFactory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -39,9 +39,12 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLModelIndex extends Index{
@@ -52,7 +55,7 @@ public class SPARQLModelIndex extends Index{
 	public static final ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString(
 			"PREFIX text: <http://jena.apache.org/text#>"
 					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-					+ "SELECT ?s { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}"); 
+					+ "SELECT ?s ?label { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}"); 
 
 	//	protected String queryTemplate = "SELECT DISTINCT ?uri WHERE {\n" +
 	//			"?uri a ?type.\n" + 
@@ -68,14 +71,14 @@ public class SPARQLModelIndex extends Index{
 
 	public SPARQLModelIndex(Model model) {
 		Dataset ds1 = DatasetFactory.createMem() ;
-		
+
 		EntityDefinition entDef = new EntityDefinition("uri", "text", RDFS.label) ;
 		// Lucene, in memory.
 		Directory dir =  new RAMDirectory();
 		// Join together into a dataset
 		dataset = TextDatasetFactory.createLucene(ds1, dir, entDef);
-//		ds.setDefaultModel(model);
-	
+		//		ds.setDefaultModel(model);
+
 		dataset.begin(ReadWrite.WRITE);
 		try {
 			dataset.getDefaultModel().add(model);
@@ -83,31 +86,13 @@ public class SPARQLModelIndex extends Index{
 		} finally {
 			dataset.end();
 		}
-		
+
 		this.model = model;
 	}
 
 	@Override
-	public List<String> getResources(String searchTerm, int limit, int offset) {
-		List<String> resources = new ArrayList<String>();
-
-		queryTemplate.setLiteral("l", searchTerm);
-		ResultSet rs = executeSelect(queryTemplate.toString());
-
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			RDFNode uriNode = qs.get("s");
-			if(uriNode.isURIResource()){
-				resources.add(uriNode.asResource().getURI());
-			}
-		}
-		return resources;
-	}
-
-	@Override
-	public IndexResultSet getResourcesWithScores(String searchTerm, int limit, int offset) {
-		IndexResultSet irs = new IndexResultSet();
+	public SortedSet<IndexItem> getResourcesWithScores(String searchTerm, int limit, int offset) {
+		SortedSet<IndexItem> irs = new TreeSet<>();
 
 		queryTemplate.setLiteral("l", searchTerm);
 		ResultSet rs = executeSelect(queryTemplate.toString());
@@ -121,7 +106,7 @@ public class SPARQLModelIndex extends Index{
 
 				String uri = uriNode.asResource().getURI();
 				String label = labelNode.asLiteral().getLexicalForm();
-				irs.addItem(new IndexResultItem(uri, label, 1f));
+				irs.add(new IndexItem(uri, label, 1f));
 			}
 		}
 		return irs;
@@ -141,7 +126,7 @@ public class SPARQLModelIndex extends Index{
 		return model;
 	}
 
-	static SPARQLModelIndex createClassIndex(String endpoint)
+	static SPARQLModelIndex createOldClassIndex(String endpoint)
 	{
 		QueryExecutionFactoryHttp qef = new QueryExecutionFactoryHttp(endpoint);
 
@@ -165,18 +150,40 @@ public class SPARQLModelIndex extends Index{
 		}
 		return new SPARQLModelIndex(model);
 	}
-	
-	static SPARQLModelIndex createClassIndex2(String endpoint, String defaultGraph){
-		org.aksw.jena_sparql_api.core.QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint, defaultGraph);
-		qef = new QueryExecutionFactoryPaginated(qef);
-		
+
+	static SPARQLModelIndex createPropertyIndex(String endpoint, String defaultGraph)
+	{
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(RDF.Property,OWL.DatatypeProperty,OWL.ObjectProperty));
+	}
+
+	static SPARQLModelIndex createClassIndex(String endpoint, String defaultGraph)
+	{		
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(OWL.Class,RDFS.Class));		
+	}
+
+
+	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types)
+	{
+		return createIndex(new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(endpoint, defaultGraph),types);
+	}
+
+	/**
+	 * @param type fully qualified type without prefixes, e.g. http://www.w3.org/2002/07/owl#Class
+	 */
+	static SPARQLModelIndex createIndex(org.aksw.jena_sparql_api.core.QueryExecutionFactory qef,List<Resource> types)
+	{
 		// filter for the label properties
 		List<Property> labelProperties = Lists.newArrayList(RDFS.label);
 		String labelValues = "<" + labelProperties.get(0) + ">";
 		for (int i = 1; i < labelProperties.size(); i++) {
 			labelValues += "," + "<" + labelProperties.get(i) + ">";
 		}
-		
+
+		String typeValues = "<" + types.get(0) + ">";
+		for (int i = 1; i < types.size(); i++) {
+			typeValues += "," + "<" + types.get(i) + ">";
+		}
+
 		// filter for the languages
 		List<String> languages = Lists.newArrayList("en");
 		String languagesFilter = "FILTER(";
@@ -185,26 +192,25 @@ public class SPARQLModelIndex extends Index{
 			languagesFilter += "|| LANGMATCHES(LANG(?l),'" + languages.get(i) + "') ";
 		}
 		languagesFilter += ")";
-		
+
 		//SPARQL 1.1 VALUES based
 		String languageValues = "VALUES ?lang {";
 		for (String lang : languages) {
 			languageValues += "\"" + lang + "\" ";
 		}
 		languageValues += "}";
-//		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
-		
-		
-		String query = "CONSTRUCT {?s a <http://www.w3.org/2002/07/owl#Class> .?s ?p_label ?l .}"
+		//		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
+
+		String query = "CONSTRUCT {?s a ?type .?s ?p_label ?l .}"
 				+ " WHERE "
-				+ "{?s a <http://www.w3.org/2002/07/owl#Class> . "
+				+ "{?s a ?type . FILTER(?type IN ("+typeValues+"))"
 				+ "OPTIONAL{?s ?p_label ?l . FILTER(?p_label IN (" + labelValues + "))"
-						+ languagesFilter + "}}";
-		
+				+ languagesFilter + "}}";
+
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close();
-		
+
 		return new SPARQLModelIndex(model);
 	}
 
