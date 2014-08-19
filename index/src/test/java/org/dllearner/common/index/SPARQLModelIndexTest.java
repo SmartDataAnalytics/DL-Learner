@@ -7,6 +7,7 @@ import net.sf.extjwnl.data.POS;
 import net.sf.extjwnl.data.Synset;
 import net.sf.extjwnl.data.Word;
 import net.sf.extjwnl.dictionary.Dictionary;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.junit.Test;
 
 public class SPARQLModelIndexTest
@@ -29,21 +30,21 @@ public class SPARQLModelIndexTest
 	{
 		Dictionary d = Dictionary.getDefaultResourceInstance();
 //		
-		IndexWord iw = d.getIndexWord(POS.NOUN, "airports");
+		IndexWord iw = d.getIndexWord(POS.NOUN, "airport");
 		for(Synset sense: iw.getSenses())
 		{
 			System.out.println(sense);
 			for(Word word: sense.getWords()) System.out.println(word.getLemma());	
 		}
 //		System.out.println(d.getSynsetAt(POS.NOUN, "airport"));
-		
 	}
 	
 	@Test public void testWordNetIndex()
-	{
+	{ 
 		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org");
 		WordNetIndex wIndex = new WordNetIndex(index);
-		System.out.println(wIndex.getResources("City"));
+		System.out.println(wIndex.getResources("cities"));
+		System.out.println(wIndex.getResources("aerodromes"));
 	}
 
 }

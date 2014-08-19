@@ -49,6 +49,7 @@ private HttpSolrServer server;
 		this.secondarySearchField = secondarySearchField;
 	}
 	
+	/*
 	@Override
 	public List<String> getResources(String queryString, int limit, int offset) {
 		List<String> resources = new ArrayList<String>();
@@ -68,6 +69,7 @@ private HttpSolrServer server;
 		}
 		return resources;
 	}
+	*/
 
 	@Override
 	public SortedSet<IndexItem> getResourcesWithScores(String queryString, int limit, int offset) {

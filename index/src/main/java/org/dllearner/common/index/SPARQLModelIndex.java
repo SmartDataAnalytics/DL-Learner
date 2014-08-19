@@ -55,7 +55,7 @@ public class SPARQLModelIndex extends Index{
 	public static final ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString(
 			"PREFIX text: <http://jena.apache.org/text#>"
 					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-					+ "SELECT ?s { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}"); 
+					+ "SELECT ?s ?label { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}"); 
 
 	//	protected String queryTemplate = "SELECT DISTINCT ?uri WHERE {\n" +
 	//			"?uri a ?type.\n" + 
@@ -71,14 +71,14 @@ public class SPARQLModelIndex extends Index{
 
 	public SPARQLModelIndex(Model model) {
 		Dataset ds1 = DatasetFactory.createMem() ;
-		
+
 		EntityDefinition entDef = new EntityDefinition("uri", "text", RDFS.label) ;
 		// Lucene, in memory.
 		Directory dir =  new RAMDirectory();
 		// Join together into a dataset
 		dataset = TextDatasetFactory.createLucene(ds1, dir, entDef);
-//		ds.setDefaultModel(model);
-	
+		//		ds.setDefaultModel(model);
+
 		dataset.begin(ReadWrite.WRITE);
 		try {
 			dataset.getDefaultModel().add(model);
@@ -86,26 +86,8 @@ public class SPARQLModelIndex extends Index{
 		} finally {
 			dataset.end();
 		}
-		
+
 		this.model = model;
-	}
-
-	@Override
-	public List<String> getResources(String searchTerm, int limit, int offset) {
-		List<String> resources = new ArrayList<String>();
-
-		queryTemplate.setLiteral("l", searchTerm);
-		ResultSet rs = executeSelect(queryTemplate.toString());
-
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			RDFNode uriNode = qs.get("s");
-			if(uriNode.isURIResource()){
-				resources.add(uriNode.asResource().getURI());
-			}
-		}
-		return resources;
 	}
 
 	@Override
@@ -168,37 +150,40 @@ public class SPARQLModelIndex extends Index{
 		}
 		return new SPARQLModelIndex(model);
 	}
-	
+
 	static SPARQLModelIndex createPropertyIndex(String endpoint, String defaultGraph)
 	{
 		return createIndex(endpoint, defaultGraph, Lists.newArrayList(RDF.Property,OWL.DatatypeProperty,OWL.ObjectProperty));
 	}
-	
+
 	static SPARQLModelIndex createClassIndex(String endpoint, String defaultGraph)
 	{		
 		return createIndex(endpoint, defaultGraph, Lists.newArrayList(OWL.Class,RDFS.Class));		
 	}
-	
+
+
+	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types)
+	{
+		return createIndex(new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(endpoint, defaultGraph),types);
+	}
+
 	/**
 	 * @param type fully qualified type without prefixes, e.g. http://www.w3.org/2002/07/owl#Class
 	 */
-	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types)
+	static SPARQLModelIndex createIndex(org.aksw.jena_sparql_api.core.QueryExecutionFactory qef,List<Resource> types)
 	{
-		org.aksw.jena_sparql_api.core.QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint, defaultGraph);
-		qef = new QueryExecutionFactoryPaginated(qef);
-		
 		// filter for the label properties
 		List<Property> labelProperties = Lists.newArrayList(RDFS.label);
 		String labelValues = "<" + labelProperties.get(0) + ">";
 		for (int i = 1; i < labelProperties.size(); i++) {
 			labelValues += "," + "<" + labelProperties.get(i) + ">";
 		}
-				
+
 		String typeValues = "<" + types.get(0) + ">";
 		for (int i = 1; i < types.size(); i++) {
 			typeValues += "," + "<" + types.get(i) + ">";
 		}
-		
+
 		// filter for the languages
 		List<String> languages = Lists.newArrayList("en");
 		String languagesFilter = "FILTER(";
@@ -207,25 +192,25 @@ public class SPARQLModelIndex extends Index{
 			languagesFilter += "|| LANGMATCHES(LANG(?l),'" + languages.get(i) + "') ";
 		}
 		languagesFilter += ")";
-		
+
 		//SPARQL 1.1 VALUES based
 		String languageValues = "VALUES ?lang {";
 		for (String lang : languages) {
 			languageValues += "\"" + lang + "\" ";
 		}
 		languageValues += "}";
-//		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
-		
+		//		languagesFilter = languageValues + " FILTER(LANGMATCHES(LANG(?l), ?lang))";
+
 		String query = "CONSTRUCT {?s a ?type .?s ?p_label ?l .}"
 				+ " WHERE "
 				+ "{?s a ?type . FILTER(?type IN ("+typeValues+"))"
 				+ "OPTIONAL{?s ?p_label ?l . FILTER(?p_label IN (" + labelValues + "))"
-						+ languagesFilter + "}}";
-		
+				+ languagesFilter + "}}";
+
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close();
-		
+
 		return new SPARQLModelIndex(model);
 	}
 
