@@ -69,7 +69,7 @@ public class DescriptionLinearClassifier {
 		model = new J48();
 		try {
 			model.buildClassifier(data);
-			System.out.println(model);
+//			System.out.println(model);
 			
 //			AddExpression filter = new AddExpression();
 //			filter.setExpression("a1^2");
