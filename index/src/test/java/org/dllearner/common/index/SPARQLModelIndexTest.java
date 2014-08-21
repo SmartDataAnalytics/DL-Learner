@@ -7,7 +7,6 @@ import net.sf.extjwnl.data.POS;
 import net.sf.extjwnl.data.Synset;
 import net.sf.extjwnl.data.Word;
 import net.sf.extjwnl.dictionary.Dictionary;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.junit.Test;
 
 public class SPARQLModelIndexTest
@@ -15,13 +14,13 @@ public class SPARQLModelIndexTest
 
 	@Test public void testCreateClassIndex()
 	{
-		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org");
+		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org",0);
 		assertTrue(index.getResources("City").contains("http://linkedgeodata.org/ontology/City"));
 	}
 
 	@Test public void testCreatePropertyIndex()
 	{
-		SPARQLModelIndex index = SPARQLModelIndex.createPropertyIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org");
+		SPARQLModelIndex index = SPARQLModelIndex.createPropertyIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org",0);
 //		System.out.println(index.getResources("Restaurant"));
 		assertTrue(index.getResources("Restaurant").contains("http://linkedgeodata.org/ontology/Restaurant"));
 	}
@@ -41,10 +40,16 @@ public class SPARQLModelIndexTest
 	
 	@Test public void testWordNetIndex()
 	{ 
-		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org");
-		WordNetIndex wIndex = new WordNetIndex(index);
-		System.out.println(wIndex.getResources("cities"));
-		System.out.println(wIndex.getResources("aerodromes"));
+		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org",0);
+		WordNetIndex wIndex = new WordNetIndex(index);		
+		assertTrue(wIndex.getResources("cities").contains("http://linkedgeodata.org/ontology/City"));
+		assertTrue(wIndex.getResources("aerodromes").contains("http://linkedgeodata.org/ontology/Airport"));
+	}
+	
+	@Test public void testFuzzy()
+	{ 
+		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org",0.5f);
+		assertTrue(index.getResources("mirporg").get(0).equals("http://linkedgeodata.org/ontology/Airport"));
 	}
 
 }

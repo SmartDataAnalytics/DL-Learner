@@ -1,11 +1,13 @@
 package org.dllearner.common.index;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import org.aksw.jena_sparql_api.concepts.Concept;
 import org.aksw.jena_sparql_api.concepts.ConceptUtils;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -16,7 +18,6 @@ import org.aksw.jena_sparql_api.lookup.LookupServicePartition;
 import org.aksw.jena_sparql_api.lookup.LookupServiceUtils;
 import org.aksw.jena_sparql_api.mapper.AggLiteral;
 import org.aksw.jena_sparql_api.mapper.MappedConcept;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.jena.query.text.EntityDefinition;
 import org.apache.jena.query.text.TextDatasetFactory;
 import org.apache.lucene.store.Directory;
@@ -49,13 +50,18 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class SPARQLModelIndex extends Index{
 
-	private Model model;
+	//	private Model model;
 	private Dataset dataset;
+
+	final float minSimilarity;
 
 	public static final ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString(
 			"PREFIX text: <http://jena.apache.org/text#>"
 					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-					+ "SELECT ?s ?label { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}"); 
+					//					+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
+					+ "SELECT ?s ?label { ?s text:query (rdfs:label ?l 10) ;     rdfs:label ?label}");
+
+	private static final float	FUZZY_MULTIPLIER	= 0.8f; 
 
 	//	protected String queryTemplate = "SELECT DISTINCT ?uri WHERE {\n" +
 	//			"?uri a ?type.\n" + 
@@ -69,7 +75,16 @@ public class SPARQLModelIndex extends Index{
 	//			"FILTER(REGEX(STR(?label), '%s'))}\n" +
 	//			"LIMIT %d OFFSET %d";
 
-	public SPARQLModelIndex(Model model) {
+	/** Create an index using your own model saving you the time needed to import the model when using an endpoint.
+	 * If you only have an endpoint or want to index a subset of the triples,
+	 * use the static methods {@link #createIndex(String, String, List)}, {@link #createClassIndex(String, String)} or {@link #createPropertyIndex(String, String)}.
+	 * All triples (uri,rdfs:label,label) will be put into the index.   
+	 * @param model the jena model containing the rdf:label statements that you want to index. Changes to the model after the construtor call are probably not indexed.
+	 * @param minSimilarity Between 0 (maximum fuzzyness) and 1f (no fuzzy matching).
+	 */
+	public SPARQLModelIndex(Model model,float minSimilarity)
+	{
+		this.minSimilarity=minSimilarity;
 		Dataset ds1 = DatasetFactory.createMem() ;
 
 		EntityDefinition entDef = new EntityDefinition("uri", "text", RDFS.label) ;
@@ -79,26 +94,28 @@ public class SPARQLModelIndex extends Index{
 		dataset = TextDatasetFactory.createLucene(ds1, dir, entDef);
 		//		ds.setDefaultModel(model);
 
-		dataset.begin(ReadWrite.WRITE);
-		try {
-			dataset.getDefaultModel().add(model);
-			dataset.commit();
-		} finally {
-			dataset.end();
+		synchronized(model)
+		{
+			dataset.begin(ReadWrite.WRITE);
+			try {
+				dataset.getDefaultModel().add(model);
+				dataset.commit();
+			} finally {
+				dataset.end();
+			}
 		}
-
-		this.model = model;
+		//		this.model = model;
 	}
 
-	@Override
-	public SortedSet<IndexItem> getResourcesWithScores(String searchTerm, int limit, int offset) {
-		SortedSet<IndexItem> irs = new TreeSet<>();
-
+	private Map<String,IndexItem> getResourceMap(String searchTerm, int limit, int offset, float scoreAssignement)
+	{
+		Map<String,IndexItem> items = new HashMap<>();
 		queryTemplate.setLiteral("l", searchTerm);
 		ResultSet rs = executeSelect(queryTemplate.toString());
 
 		QuerySolution qs;
-		while(rs.hasNext()){
+		while(rs.hasNext())
+		{
 			qs = rs.next();
 			RDFNode uriNode = qs.get("s");
 			if(uriNode.isURIResource()){
@@ -106,10 +123,25 @@ public class SPARQLModelIndex extends Index{
 
 				String uri = uriNode.asResource().getURI();
 				String label = labelNode.asLiteral().getLexicalForm();
-				irs.add(new IndexItem(uri, label, 1f));
+				items.put(uri,new IndexItem(uri, label, scoreAssignement));
 			}
 		}
-		return irs;
+		return items;
+	}
+
+	@Override
+	public SortedSet<IndexItem> getResourcesWithScores(String searchTerm, int limit, int offset)
+	{
+		Map<String,IndexItem> itemMap = getResourceMap(searchTerm, limit, offset,1f);
+		SortedSet<IndexItem> items = new TreeSet<IndexItem>(itemMap.values());
+		if(minSimilarity<1f)
+		{
+			Map<String,IndexItem> fuzzyItems = getResourceMap(searchTerm+'~', limit, offset, FUZZY_MULTIPLIER);
+			Set<String> newUris = fuzzyItems.keySet();
+			newUris.removeAll(itemMap.keySet());			
+			for(String newUri: newUris) {items.add(fuzzyItems.get(newUri));}
+		}
+		return items;
 	}
 
 	private ResultSet executeSelect(String query) {
@@ -122,55 +154,54 @@ public class SPARQLModelIndex extends Index{
 		}
 	}
 
-	public Model getModel() {
-		return model;
-	}
+	//	public Model getModel() {
+	//		return model;
+	//	}
 
-	static SPARQLModelIndex createOldClassIndex(String endpoint)
+	//	static SPARQLModelIndex createOldClassIndex(String endpoint)
+	//	{
+	//		QueryExecutionFactoryHttp qef = new QueryExecutionFactoryHttp(endpoint);
+	//
+	//		ListService<Concept,Node> classService = new ListServiceConcept(qef);
+	//		List<Node> classNodes = classService.fetchData(ConceptUtils.listDeclaredClasses,null,null);
+	//		Concept concept = Concept.create("?s ?p ?l . Filter(?p = <http://www.w3.org/2000/01/rdf-schema#label>)", "s");
+	//
+	//		Var l = Var.alloc("l");
+	//		Query query = concept.asQuery();
+	//		query.getProject().add(l);
+	//		MappedConcept mappedConcept = new MappedConcept(concept, new AggLiteral(new ExprVar( l )));
+	//		LookupService<Node, NodeValue> labelService = LookupServiceUtils.createGeoLookupService(qef, mappedConcept);
+	//		labelService = LookupServicePartition.create(labelService, 30);
+	//
+	//		Map<Node, NodeValue> classLabels = labelService.lookup(classNodes);
+	//
+	//		Model model = ModelFactory.createDefaultModel();
+	//		for(Entry<Node, NodeValue> entry:classLabels.entrySet())
+	//		{
+	//			model.add(model.asStatement(new Triple(entry.getKey(), RDFS.label.asNode(), entry.getValue().asNode())));
+	//		}
+	//		return new SPARQLModelIndex(model);
+	//	}
+
+	public static SPARQLModelIndex createPropertyIndex(String endpoint, String defaultGraph,float minSimilarity)
 	{
-		QueryExecutionFactoryHttp qef = new QueryExecutionFactoryHttp(endpoint);
-
-		ListService<Concept,Node> classService = new ListServiceConcept(qef);
-		List<Node> classNodes = classService.fetchData(ConceptUtils.listDeclaredClasses,null,null);
-		Concept concept = Concept.create("?s ?p ?l . Filter(?p = <http://www.w3.org/2000/01/rdf-schema#label>)", "s");
-
-		Var l = Var.alloc("l");
-		Query query = concept.asQuery();
-		query.getProject().add(l);
-		MappedConcept mappedConcept = new MappedConcept(concept, new AggLiteral(new ExprVar( l )));
-		LookupService<Node, NodeValue> labelService = LookupServiceUtils.createGeoLookupService(qef, mappedConcept);
-		labelService = LookupServicePartition.create(labelService, 30);
-
-		Map<Node, NodeValue> classLabels = labelService.lookup(classNodes);
-
-		Model model = ModelFactory.createDefaultModel();
-		for(Entry<Node, NodeValue> entry:classLabels.entrySet())
-		{
-			model.add(model.asStatement(new Triple(entry.getKey(), RDFS.label.asNode(), entry.getValue().asNode())));
-		}
-		return new SPARQLModelIndex(model);
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(RDF.Property,OWL.DatatypeProperty,OWL.ObjectProperty),minSimilarity);
 	}
 
-	static SPARQLModelIndex createPropertyIndex(String endpoint, String defaultGraph)
-	{
-		return createIndex(endpoint, defaultGraph, Lists.newArrayList(RDF.Property,OWL.DatatypeProperty,OWL.ObjectProperty));
-	}
-
-	static SPARQLModelIndex createClassIndex(String endpoint, String defaultGraph)
+	public static SPARQLModelIndex createClassIndex(String endpoint, String defaultGraph,float minSimilarity)
 	{		
-		return createIndex(endpoint, defaultGraph, Lists.newArrayList(OWL.Class,RDFS.Class));		
+		return createIndex(endpoint, defaultGraph, Lists.newArrayList(OWL.Class,RDFS.Class),minSimilarity);		
 	}
 
-
-	static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types)
+	public static SPARQLModelIndex createIndex(String endpoint, String defaultGraph,List<Resource> types,float minSimilarity)
 	{
-		return createIndex(new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(endpoint, defaultGraph),types);
+		return createIndex(new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(endpoint, defaultGraph),types,minSimilarity);
 	}
 
 	/**
 	 * @param type fully qualified type without prefixes, e.g. http://www.w3.org/2002/07/owl#Class
 	 */
-	static SPARQLModelIndex createIndex(org.aksw.jena_sparql_api.core.QueryExecutionFactory qef,List<Resource> types)
+	static SPARQLModelIndex createIndex(org.aksw.jena_sparql_api.core.QueryExecutionFactory qef,List<Resource> types,float minSimilarity)
 	{
 		// filter for the label properties
 		List<Property> labelProperties = Lists.newArrayList(RDFS.label);
@@ -211,7 +242,7 @@ public class SPARQLModelIndex extends Index{
 		Model model = qe.execConstruct();
 		qe.close();
 
-		return new SPARQLModelIndex(model);
+		return new SPARQLModelIndex(model,minSimilarity);
 	}
 
 }

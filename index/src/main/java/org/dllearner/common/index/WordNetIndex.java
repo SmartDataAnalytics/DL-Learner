@@ -1,6 +1,5 @@
 package org.dllearner.common.index;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,13 +7,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
-import net.sf.extjwnl.data.POS;
 import net.sf.extjwnl.data.Synset;
 import net.sf.extjwnl.data.Word;
 import net.sf.extjwnl.dictionary.Dictionary;
-import net.sf.extjwnl.dictionary.MorphologicalProcessor;
-import net.sf.extjwnl.dictionary.morph.DefaultMorphologicalProcessor;
-import net.sf.extjwnl.util.factory.Param;
 
 /** doesn't handle offsets > 0*/
 public class WordNetIndex extends Index
@@ -23,17 +18,13 @@ public class WordNetIndex extends Index
 //	static final MorphologicalProcessor morphy;
 	static
 	{
-		try
-		{
-			d = Dictionary.getDefaultResourceInstance();
-//			morphy = new DefaultMorphologicalProcessor(d, Collections.<String,Param>emptyMap());
-		}
+		try	{d = Dictionary.getDefaultResourceInstance();}
 		catch (JWNLException e) {throw new RuntimeException(e);}
 	}
 
 	final Index index;	
 
-	protected static final float WORDNET_PENALTY_FACTOR = 0.67f; // wild guess, modify empirically later
+	protected static final float WORDNET_PENALTY_FACTOR = 0.9f; // wild guess, modify empirically later
 
 	public WordNetIndex(Index index) {this.index=index;}
 
