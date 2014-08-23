@@ -120,13 +120,18 @@ public class MILES {
 		
 		// 2. each x seconds get the top n concepts and validate the linear combination
 		Timer timer = new Timer();
-		timer.schedule(new LinearClassificationTask(), delay, period);
+		LinearClassificationTask linearClassificationTask = new LinearClassificationTask();
+		timer.schedule(linearClassificationTask, delay, period);
 		
 		try {
 			t.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		timer.cancel();
+		
+		// run the task one more time to ensure that we did it also with the final data
+		linearClassificationTask.run();
 	}
 	
 	class LinearClassificationTask extends TimerTask {

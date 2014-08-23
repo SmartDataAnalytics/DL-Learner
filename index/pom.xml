@@ -51,5 +51,15 @@
 				<version>1.14.4</version>
 		<!-- 		<scope>provided</scope> -->
 			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-suggest</artifactId>
+				<version>4.8.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-spellchecker</artifactId>
+				<version>3.6.2</version>
+			</dependency>
 	</dependencies>
 </project>

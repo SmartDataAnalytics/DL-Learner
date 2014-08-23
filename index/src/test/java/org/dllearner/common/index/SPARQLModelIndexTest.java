@@ -51,5 +51,4 @@ public class SPARQLModelIndexTest
 		SPARQLModelIndex index = SPARQLModelIndex.createClassIndex("http://linkedgeodata.org/sparql", "http://linkedgeodata.org",0.5f);
 		assertTrue(index.getResources("mirporg").get(0).equals("http://linkedgeodata.org/ontology/Airport"));
 	}
-
 }
