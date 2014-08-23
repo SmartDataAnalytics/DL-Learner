@@ -10,8 +10,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
-
-import com.hp.hpl.jena.ontology.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 class Materialization implements Serializable{
 		// we use sorted sets (map indices) here, because they have only log(n)
@@ -20,7 +19,7 @@ class Materialization implements Serializable{
 		public Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
 		public Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
 		// object property mappings
-		public Map<ObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<ObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>>();
+		public Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>>();
 		// data property mappings
 		public Map<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>> dpPos = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>>();
 			

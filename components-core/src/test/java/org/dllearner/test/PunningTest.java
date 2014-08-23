@@ -13,7 +13,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.MaterializableFastInstanceChecker;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLPunningDetector;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
@@ -90,7 +90,7 @@ public class PunningTest {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		MaterializableFastInstanceChecker rc = new MaterializableFastInstanceChecker(ks);
+		FastInstanceChecker rc = new FastInstanceChecker(ks);
 //		rc.setUseMaterializationCaching(false);
 		rc.setHandlePunning(true);
 		rc.setUseMaterializationCaching(false);

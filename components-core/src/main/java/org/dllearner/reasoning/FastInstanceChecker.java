@@ -19,7 +19,14 @@
 
 package org.dllearner.reasoning;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +45,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -62,9 +70,14 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -144,6 +157,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
     	NonEmpty, // p only C for instance a returns false if there is no fact p(a,x) for any x  
     	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \ in C  
     }
+    
+    private boolean materializeExistentialRestrictions = false;
+
+	private boolean useCaching = true;
+    private boolean handlePunning = true;
     
 	/**
 	 * Creates an instance of the fast instance checker.
@@ -253,64 +271,197 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			// because additional things need to
 			// be done (maybe this can be merge again with the
 			// FastRetrievalReasoner later)
-			long dematStartTime = System.currentTimeMillis();
+			
+	}
+	
+	private void loadOrDematerialize(){
+		if(useCaching){
+			File cacheDir = new File("cache");
+			cacheDir.mkdirs();
+			HashFunction hf = Hashing.md5();
+			Hasher hasher = hf.newHasher();
+			hasher.putBoolean(materializeExistentialRestrictions);
+			hasher.putBoolean(handlePunning);
+			for (OWLOntology ont : rc.getOWLAPIOntologies()) {
+				hasher.putInt(ont.getLogicalAxioms().hashCode());
+				hasher.putInt(ont.getAxioms().hashCode());
+			}
+			String filename = hasher.hash().toString() + ".obj";
+			
+			File cacheFile = new File(cacheDir, filename);
+			if(cacheFile.exists()){
+				logger.debug("Loading materialization from disk...");
+				try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))){
+					Materialization mat = (Materialization) ois.readObject();
+					classInstancesPos = mat.classInstancesPos;
+					classInstancesNeg = mat.classInstancesNeg;
+					opPos = mat.opPos;
+					dpPos = mat.dpPos;
+					bdPos = mat.bdPos;
+					bdNeg = mat.bdNeg;
+					dd = mat.dd;
+					id = mat.id;
+					sd = mat.sd;
+				} catch (ClassNotFoundException | IOException e) {
+					e.printStackTrace();
+				} 
+				logger.debug("done.");
+			} else {
+				materialize();
+				Materialization mat = new Materialization();
+				mat.classInstancesPos = classInstancesPos;
+				mat.classInstancesNeg = classInstancesNeg;
+				mat.opPos = opPos;
+				mat.dpPos = dpPos;
+				mat.bdPos = bdPos;
+				mat.bdNeg = bdNeg;
+				mat.dd = dd;
+				mat.id = id;
+				mat.sd = sd;
+				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cacheFile))){
+					oos.writeObject(mat);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
+		} else {
+			materialize();
+		}
+	}
+	
+	private void materialize(){
+		long dematStartTime = System.currentTimeMillis();
 
-			logger.debug("dematerialising concepts");
-			for (OWLClass atomicConcept : atomicConcepts) {
-				SortedSet<OWLIndividual> pos = rc.getIndividuals(atomicConcept);
-				classInstancesPos.put(atomicConcept, (TreeSet<OWLIndividual>) pos);
+		logger.debug("materialising concepts");
+		for (OWLClass atomicConcept : atomicConcepts) {
+			SortedSet<OWLIndividual> pos = rc.getIndividuals(atomicConcept);
+			classInstancesPos.put(atomicConcept, (TreeSet<OWLIndividual>) pos);
 
-				if (isDefaultNegation()) {
-					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
-				} else {
-					// Pellet needs approximately infinite time to answer
-					// negated queries
-					// on the carcinogenesis data set (and probably others), so
-					// we have to
-					// be careful here
-					OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
-					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) rc.getIndividuals(negatedAtomicConcept));
+			if (isDefaultNegation()) {
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
+			} else {
+				// Pellet needs approximately infinite time to answer
+				// negated queries
+				// on the carcinogenesis data set (and probably others), so
+				// we have to
+				// be careful here
+				OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) rc.getIndividuals(negatedAtomicConcept));
+			}
+
+		}
+
+		logger.debug("materialising object properties");
+
+		for (OWLObjectProperty atomicRole : atomicRoles) {
+//			System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
+			opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
+		}
+		
+		logger.debug("materialising datatype properties");
+		
+		for (OWLDataProperty atomicRole : datatypeProperties) {
+			dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
+		}
+
+		for (OWLDataProperty dp : booleanDatatypeProperties) {
+			bdPos.put(dp, (TreeSet<OWLIndividual>) rc.getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<OWLIndividual>) rc.getFalseDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : intDatatypeProperties) {
+			id.put(dp, rc.getIntDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : doubleDatatypeProperties) {
+			dd.put(dp, rc.getDoubleDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : stringDatatypeProperties) {
+			sd.put(dp, rc.getStringDatatypeMembers(dp));
+		}		
+		
+		if(materializeExistentialRestrictions){
+			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
+			for (OWLClass cls : atomicConcepts) {
+				TreeSet<OWLIndividual> individuals = classInstancesPos.get(cls);
+				Set<OWLClassExpression> superClass = materialization.materialize(cls.toStringID());
+				for (OWLClassExpression sup : superClass) {
+					fill(individuals, sup);
 				}
-
 			}
-
-			logger.debug("dematerialising object properties");
-
-			for (OWLObjectProperty atomicRole : atomicRoles) {
-//				System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
-				opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
+		}
+		
+		//materialize facts based on OWL punning, i.e.:
+				//for each A in N_C
+				if(handlePunning){
+					OWLOntology ontology = rc.getReasoner().getRootOntology();
+					
+					OWLIndividual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd"));
+					Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<OWLIndividual, SortedSet<OWLIndividual>>();
+					for (OWLIndividual individual : individuals) {
+						SortedSet<OWLIndividual> objects = new TreeSet<OWLIndividual>();
+						objects.add(genericIndividual);
+						map.put(individual, objects);
+					}
+					for (OWLClass cls : atomicConcepts) {
+						classInstancesNeg.get(cls).add(genericIndividual);
+						if(OWLPunningDetector.hasPunning(ontology, cls)){
+							OWLIndividual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.toStringID()));
+							//for each x \in N_I with A(x) we add relatedTo(x,A)
+							SortedSet<OWLIndividual> individuals = classInstancesPos.get(cls);
+							for (OWLIndividual individual : individuals) {
+								SortedSet<OWLIndividual> objects = map.get(individual);
+								if(objects == null){
+									objects = new TreeSet<OWLIndividual>();
+									map.put(individual, objects);
+								}
+								objects.add(clsAsInd);
+								
+							}
+						}
+					}
+					opPos.put(OWLPunningDetector.punningProperty, map);
+					atomicRoles = new TreeSet<OWLObjectProperty>(atomicRoles);
+					atomicRoles.add(OWLPunningDetector.punningProperty);
+					atomicRoles = Collections.unmodifiableSet(atomicRoles);
+//					individuals.add(genericIndividual);
+				}
+		
+		long dematDuration = System.currentTimeMillis() - dematStartTime;
+		logger.debug("TBox materialised in " + dematDuration + " ms");
+	}
+	
+	private void fill(SortedSet<OWLIndividual> individuals, OWLClassExpression d){
+		if(!d.isAnonymous()){
+			classInstancesPos.get(d).addAll(individuals);
+		} else if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) d).getOperands();
+			for (OWLClassExpression operand : operands) {
+				fill(individuals, operand);
 			}
+		} else if(d instanceof OWLObjectSomeValuesFrom){
+			OWLObjectProperty role = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> map = opPos.get(role);
+			//create new individual as object value for each individual
+			SortedSet<OWLIndividual> newIndividuals = new TreeSet<OWLIndividual>();
+			int i = 0;
+			for (OWLIndividual individual : individuals) {
+				OWLIndividual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++));
+				newIndividuals.add(newIndividual);
+				SortedSet<OWLIndividual> values = map.get(individual);
+				if(values == null){
+					values = new TreeSet<OWLIndividual>();
+					map.put(individual, values);
+				}
+				values.add(newIndividual);
+			}
+			fill(newIndividuals, filler);
 			
-			logger.debug("dematerialising datatype properties");
-			
-			for (OWLDataProperty atomicRole : datatypeProperties) {
-				dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
-			}
-
-			for (OWLDataProperty dp : booleanDatatypeProperties) {
-				bdPos.put(dp, (TreeSet<OWLIndividual>) rc.getTrueDatatypeMembers(dp));
-				bdNeg.put(dp, (TreeSet<OWLIndividual>) rc.getFalseDatatypeMembers(dp));
-			}
-
-			for (OWLDataProperty dp : intDatatypeProperties) {
-				id.put(dp, rc.getIntDatatypeMembers(dp));
-			}
-
-			for (OWLDataProperty dp : doubleDatatypeProperties) {
-				dd.put(dp, rc.getDoubleDatatypeMembers(dp));
-			}
-
-			for (OWLDataProperty dp : stringDatatypeProperties) {
-				sd.put(dp, rc.getStringDatatypeMembers(dp));
-			}			
-			
-			long dematDuration = System.currentTimeMillis() - dematStartTime;
-			logger.debug("TBox dematerialised in " + dematDuration + " ms");
-
-//		} catch (ReasoningMethodUnsupportedException e) {
-//			throw new ComponentInitException(
-//					"Underlying reasoner does not support all necessary reasoning methods.", e);
-//		}
+		} else {
+			throw new UnsupportedOperationException("Should not happen.");
+		}
 	}
 
 	@Override
@@ -358,6 +509,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
+			
+			if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
+				return true;
+			}
+			
 			SortedSet<OWLIndividual> roleFillers = opPos.get(property.asOWLObjectProperty()).get(individual);	
 			
 			if(roleFillers == null){
@@ -427,7 +583,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
 			
 			// return false if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < cardinality) {
+			if (roleFillers == null || (roleFillers.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
 				return false;
 			}
 
@@ -436,7 +592,8 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				index++;
 				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					nrOfFillers++;
-					if (nrOfFillers == cardinality) {
+					if (nrOfFillers == cardinality
+							|| (handlePunning && property == OWLPunningDetector.punningProperty)) {
 						return true;
 					}
 					// early abort: e.g. >= 10 hasStructure.Methyl;
@@ -1232,6 +1389,20 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
 	public void setForAllSemantics(ForallSemantics forallSemantics) {
 		this.forallSemantics = forallSemantics;
+	}
+	
+	/**
+	 * @param useCaching the useCaching to set
+	 */
+	public void setUseMaterializationCaching(boolean useCaching) {
+		this.useCaching = useCaching;
+	}
+	
+	/**
+	 * @param handlePunning the handlePunning to set
+	 */
+	public void setHandlePunning(boolean handlePunning) {
+		this.handlePunning = handlePunning;
 	}
 
 }
