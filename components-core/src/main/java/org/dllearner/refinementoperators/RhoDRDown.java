@@ -81,6 +81,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -839,10 +840,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}	
 					
 					if(!skip) {
-						OWLObjectIntersectionOf mc = df.getOWLObjectIntersectionOf(description, c);
+						List<OWLClassExpression> operands = Lists.newArrayList(description, c);
+						Collections.sort(operands);
+						OWLObjectIntersectionOf mc = df.getOWLObjectIntersectionOf(operands);
 						
 						// clean and transform to ordered negation normal form
-						ConceptTransformation.cleanConceptNonRecursive(mc);
+						mc = (OWLObjectIntersectionOf) ConceptTransformation.cleanConceptNonRecursive(mc);
 						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
 						
 						// last check before intersection is added

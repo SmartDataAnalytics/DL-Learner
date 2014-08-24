@@ -106,8 +106,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.clarkparsia</groupId>
-			<artifactId>pellet</artifactId>
+			<groupId>com.clarkparsia.pellet</groupId>
+			<artifactId>pellet-distribution</artifactId>
+			<type>pom</type>
 		</dependency>
 
 		<dependency>

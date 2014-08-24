@@ -19,11 +19,15 @@
 
 package org.dllearner.test.junit;
 
+import junit.framework.TestSuite;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 /**
  * Class designed to run all DL-Learner component tests. Note,
@@ -34,7 +38,8 @@ import org.junit.runner.JUnitCore;
  * @author Jens Lehmann
  * 
  */
-public class AllTestsRunner {
+public class AllTestsRunner{
+	
 
 	/**
 	 * use the following arguments (or similar): -Djava.library.path=lib/fact/32bit/ -Xmx2000m
@@ -42,7 +47,6 @@ public class AllTestsRunner {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		// create logger
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
@@ -52,15 +56,21 @@ public class AllTestsRunner {
 		logger.setLevel(Level.DEBUG);
 		
 		// runs everything except example test
-		JUnitCore.main("org.dllearner.test.junit.ClassExpressionTests",
-				"org.dllearner.test.junit.ComponentTests",
-				"org.dllearner.test.junit.ELDescriptionTreeTests",
-				"org.dllearner.test.junit.ELDownTests",
-				"org.dllearner.test.junit.HeuristicTests",
-				"org.dllearner.test.junit.ParserTests",
-				"org.dllearner.test.junit.RefinementOperatorTests",
-				"org.dllearner.test.junit.SimulationTests",
-				"org.dllearner.test.junit.UtilitiesTests");
+		Result result = JUnitCore.runClasses(
+				ClassExpressionTests.class,
+				ComponentTests.class,
+				ELDescriptionTreeTests.class,
+				ELDownTests.class,
+				HeuristicTests.class,
+				ParserTests.class,
+				RefinementOperatorTests.class,
+				SimulationTests.class,
+				UtilitiesTests.class);
+
+		for (Failure failure : result.getFailures()) {
+			System.err.println(failure.toString());
+		}
+		System.out.println(result.wasSuccessful());
 	}
 
 }

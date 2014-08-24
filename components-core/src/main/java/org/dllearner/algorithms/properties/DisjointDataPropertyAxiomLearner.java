@@ -19,6 +19,8 @@
 
 package org.dllearner.algorithms.properties;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +73,8 @@ public class DisjointDataPropertyAxiomLearner extends
 
 	// if true, we only consider properties with the same range
 	private boolean strictMode = true;
+	
+	private NumberFormat format = DecimalFormat.getPercentInstance();
 
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -121,39 +125,55 @@ public class DisjointDataPropertyAxiomLearner extends
 			return;
 		}
 
+		long start = System.currentTimeMillis();
 		run();
+		long end = System.currentTimeMillis();
+		System.out.println("Operation took " + (end - start) + "ms");
+		
+		start = System.currentTimeMillis();
+		runBatched();
+		end = System.currentTimeMillis();
+		System.out.println("Operation took " + (end - start) + "ms");
+		
 
 		// TODO detect existing axioms
 
-		// at first get all existing dataproperties in knowledgebase
-		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
-		allDataProperties.remove(propertyToDescribe);
-
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			// runSPARQL1_1_Mode();
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
+//		// at first get all existing dataproperties in knowledgebase
+//		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
+//		allDataProperties.remove(propertyToDescribe);
+//
+//		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
+//			// runSPARQL1_1_Mode();
+//			runSingleQueryMode();
+//		} else {
+//			runSPARQL1_0_Mode();
+//		}
 	}
 
 	private void run() {
+		// get the popularity of the property
+		int popularity = reasoner.getPopularity(propertyToDescribe);
+		
+		// we have to skip here if there are not triples with the property
+		if(popularity == 0){
+			logger.warn("Cannot compute disjointness statements for empty property " + propertyToDescribe);
+			return;
+		}
+		
 		// get rdfs:range of the property
 		OWLDataRange range = reasoner.getRange(propertyToDescribe);
 
-		// get the candidates
+		// get the candidates that have the same range 
 		SortedSet<OWLDataProperty> candidates = new TreeSet<OWLDataProperty>();
-
-		if (range != null && range.isDatatype()) {// use the range as filter for
-													// candidates to analyze
+		if (range != null && range.isDatatype()) {
 			String query = "SELECT ?p WHERE {?p rdfs:range <" + range.asOWLDatatype().toStringID() + ">}";
 			ResultSet rs = executeSelectQuery(query);
 			while (rs.hasNext()) {
 				OWLDataProperty p = df.getOWLDataProperty(IRI.create(rs.next().getResource("p").getURI()));
 				candidates.add(p);
 			}
-		} else {
-
+		} else {// we have to check all other properties
+			candidates = reasoner.getDatatypeProperties();
 		}
 		candidates.remove(propertyToDescribe);
 
@@ -161,19 +181,93 @@ public class DisjointDataPropertyAxiomLearner extends
 		ParameterizedSparqlString query = new ParameterizedSparqlString(
 				"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_dis ?o.}");
 		query.setIri("p", propertyToDescribe.toStringID());
+		int i = 0;
 		for (OWLDataProperty p : candidates) {
+			logger.info("Progress: " + format.format((double)i++/candidates.size()));
+			// get the popularity of the candidate
+			int candidatePopularity = reasoner.getPopularity(p);
+			
+			if(candidatePopularity == 0){// skip empty properties
+				logger.warn("Cannot compute disjointness statements for empty candidate property " + p);
+				continue;
+			}
+			
+			// get the number of overlapping triples, i.e. triples with the same subject and object
 			query.setIri("p_dis", p.toStringID());
 			ResultSet rs = executeSelectQuery(query.toString());
-			while (rs.hasNext()) {
-				int overlap = rs.next().getLiteral("overlap").getInt();
-				System.out.println(p + ":" + overlap);
-				if (overlap > 0) {
-					Set<OWLDataPropertyAssertionAxiom> negativeExamples = getNegativeExamples(new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(
-							df.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, p), new AxiomScore(1)));
-					System.out.println(negativeExamples);
-				}
-			}
+			int overlap = rs.next().getLiteral("overlap").getInt();
+			
+			// compute the estimated precision
+			double precision = accuracy(candidatePopularity, overlap);
+			
+			// compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			
+			// compute the final score
+			double score = 1 - fMEasure(precision, recall);
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(
+							df.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, p), 
+							new AxiomScore(score)));
 		}
+		logger.info("Progress: 100%");
+	}
+	
+	private void runBatched() {
+		// get the popularity of the property
+		int popularity = reasoner.getPopularity(propertyToDescribe);
+		
+		// we have to skip here if there are not triples with the property
+		if(popularity == 0){
+			logger.warn("Cannot compute disjointness statements for empty property " + propertyToDescribe);
+			return;
+		}
+		
+		// get rdfs:range of the property
+		OWLDataRange range = reasoner.getRange(propertyToDescribe);
+
+		// check for each candidate if an overlap exist
+		ParameterizedSparqlString query = new ParameterizedSparqlString(
+				"SELECT ?p_dis (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_dis ?o . ?p_dis a owl:DatatypeProperty; rdfs:range ?range .} GROUP BY ?p_dis");
+		query.setIri("p", propertyToDescribe.toStringID());
+		query.setIri("range", range.asOWLDatatype().toStringID());
+		System.out.println(query.asQuery());
+		int i = 0;
+		ResultSet rs = executeSelectQuery(query.toString());
+		
+		while (rs.hasNext()) {
+//			logger.info("Progress: " + format.format((double)i++/candidates.size()));
+			
+			QuerySolution qs = rs.next();
+			OWLDataProperty candidate = df.getOWLDataProperty(IRI.create(qs.getResource("p_dis").getURI()));
+			
+			// get the popularity of the candidate
+			int candidatePopularity = reasoner.getPopularity(candidate);
+			
+			if(candidatePopularity == 0){// skip empty properties
+				logger.warn("Cannot compute disjointness statements for empty candidate property " + candidate);
+				continue;
+			}
+			
+			// get the number of overlapping triples, i.e. triples with the same subject and object
+			int overlap = rs.next().getLiteral("overlap").getInt();
+			
+			// compute the estimated precision
+			double precision = accuracy(candidatePopularity, overlap);
+			
+			// compute the estimated recall
+			double recall = accuracy(popularity, overlap);
+			
+			// compute the final score
+			double score = 1 - fMEasure(precision, recall);
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(
+							df.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, candidate), 
+							new AxiomScore(score)));
+		}
+		logger.info("Progress: 100%");
 	}
 
 	private void runSingleQueryMode() {

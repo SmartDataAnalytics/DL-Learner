@@ -404,7 +404,7 @@ public class ELDescriptionNode {
 			}
 		// return an intersection of labels and edges
 		} else {
-			Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>();
 			for(OWLClass nc : label) {
 				operands.add(nc);
 			}

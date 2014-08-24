@@ -77,7 +77,7 @@ public final class ELDescriptionTreeTests {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE);
 		// the following should be recognized as non-minimal
 		OWLClassExpression d = KBParser.parseConcept("(human AND (EXISTS has.animal AND EXISTS has.TOP))");
-		ConceptTransformation.cleanConcept(d);
+		d = ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		assertFalse(tree.isMinimal());
 	}
@@ -86,7 +86,7 @@ public final class ELDescriptionTreeTests {
 	public void cloneTest() throws ParseException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.EMPTY);
 		OWLClassExpression d = KBParser.parseConcept("(male AND (human AND EXISTS hasChild.(female AND EXISTS hasChild.male)))");
-		ConceptTransformation.cleanConcept(d);
+		d = ConceptTransformation.cleanConcept(d);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, d);
 		// clone performance (false for simple unit test, true for clone performance test)
 		boolean testPerformance = false;

@@ -20,6 +20,7 @@
 package org.dllearner.reasoning;
 
 import java.net.MalformedURLException;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +86,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.reasoner.impl.DefaultNode;
+import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -100,8 +103,8 @@ import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently
- * supports three reasoners: FaCT++, HermiT and Pellet. FaCT++ is connected
- * using JNI and native libraries, while HermiT and Pellet are pure Java
+ * supports three reasoners: FaCT++, HermiT, Pellet, ELK, CEL and TrOWL. FaCT++ is connected
+ * using JNI and native libraries, while the others are pure Java
  * libraries.
  *
  * @author Jens Lehmann
@@ -147,6 +150,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private String reasonerTypeString = "pellet";
     @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
+    
+    private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
 
     public OWLAPIReasoner() {
@@ -381,7 +386,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     @Override
     protected TreeSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) {
         NodeSet<OWLClass> classes = reasoner.getSubClasses(concept, true);
-        return getFirstClasses(classes);
+        TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
+        subClasses.remove(df.getOWLNothing());
+		return subClasses;
     }
     
     private <T extends OWLObject> SortedSet<T> getRepresentativeEntities(NodeSet<T> nodeSet){

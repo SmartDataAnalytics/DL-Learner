@@ -53,13 +53,19 @@ public class ClassExpressionTests {
 	PrefixManager pm = new DefaultPrefixManager("");
 	
 
+	/**
+	 * We have 
+	 * male SubClassOf person
+	 * Domain(hasChild, person)
+	 * @throws ParseException
+	 */
 	@Test
 	public void minimizeTest1() throws ParseException {
 		OWLClassExpression ce = KBParser.parseConcept("(\"http://example.com/father#male\" AND (\"http://example.com/father#male\" OR EXISTS \"http://example.com/father#hasChild\".TOP))");		
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER_OE);
 		OWLClassExpressionMinimizer minimizer = new OWLClassExpressionMinimizer(df, reasoner);
 		OWLClassExpression minD = minimizer.minimize(ce);
-		assertTrue(minD.toString().equals("http://example.com/father#male"));
+		assertTrue(minD.equals(df.getOWLClass(IRI.create("http://example.com/father#male"))));
 	}
 	
 	@Test

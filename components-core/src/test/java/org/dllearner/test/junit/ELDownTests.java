@@ -126,7 +126,7 @@ public class ELDownTests {
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			// eliminate conjunctions nested in other conjunctions
-			ConceptTransformation.cleanConcept(tmp);
+			tmp = ConceptTransformation.cleanConcept(tmp);
 			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
@@ -161,10 +161,11 @@ public class ELDownTests {
 			System.out.println("average over " + runs + " runs:");
 			System.out.println(stat.prettyPrint("ms"));
 		}
-	
 		// number of refinements has to be correct and each produced
 		// refinement must be in the set of desired refinements
-		assertTrue(refinements.size() == desired.size());
+		assertTrue("number of refinements " + refinements.size() + " differs from expected number of refinements " + desired.size(),
+				refinements.size() == desired.size());
+		
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
 		for(OWLClassExpression refinement : refinements) {
 			boolean ok = desired.contains(refinement);			
@@ -247,7 +248,7 @@ public class ELDownTests {
 		
 		// input description
 		OWLClassExpression input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
-		ConceptTransformation.cleanConcept(input);
+		input = ConceptTransformation.cleanConcept(input);
 		
 		Set<String> desiredString = new TreeSet<String>();
 		desiredString.add("(human AND (animal AND (EXISTS hasChild.human AND EXISTS has.animal)))");
@@ -262,7 +263,7 @@ public class ELDownTests {
 		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
-			ConceptTransformation.cleanConcept(tmp);
+			tmp = ConceptTransformation.cleanConcept(tmp);
 			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
@@ -309,7 +310,7 @@ public class ELDownTests {
 		
 //		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#15.0\" AND (\"http://www.co-ode.org/ontologies/galen#30.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#5.0\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#6.0\")))");
 		OWLClassExpression input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#10.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#DomainAttribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#6.0\" AND \"http://www.co-ode.org/ontologies/galen#TopCategory\")) AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#TopCategory\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".TOP)))))");
-		ConceptTransformation.cleanConcept(input);
+		input = ConceptTransformation.cleanConcept(input);
 		
 		ELDown3 operator = new ELDown3(reasoner);
 		operator.refine(input);

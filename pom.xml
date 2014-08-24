@@ -142,11 +142,26 @@
 			<version>${owlapi.version}</version>
 		</dependency>
 
-			<dependency>
-				<groupId>com.clarkparsia</groupId>
-				<artifactId>pellet</artifactId>
-				<version>2.3.1</version>
-			</dependency>
+	<dependency>
+		<groupId>com.clarkparsia.pellet</groupId>
+		<artifactId>pellet-distribution</artifactId>
+		<version>2.3.2-SNAPSHOT</version>
+		<type>pom</type>
+		<exclusions>
+			<exclusion>
+				<groupId>com.clarkparsia.pellet</groupId>
+				<artifactId>pellet-cli</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>com.clarkparsia.pellet</groupId>
+				<artifactId>pellet-examples</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>com.clarkparsia.pellet</groupId>
+				<artifactId>pellet-test</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
 			
 			<dependency>
 			<groupId>eu.trowl</groupId>
