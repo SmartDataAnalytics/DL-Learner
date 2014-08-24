@@ -492,6 +492,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private OWLClassExpression asIntersection(NodeSet<OWLClass> nodeSet){
     	if(nodeSet.isEmpty() || nodeSet.isTopSingleton()){
     		return df.getOWLThing();
+    	} else if(nodeSet.isSingleton()){
+    		return nodeSet.iterator().next().getRepresentativeElement();
     	} else {
     		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>(nodeSet.getNodes().size());
     		for (Node<OWLClass> node : nodeSet) {

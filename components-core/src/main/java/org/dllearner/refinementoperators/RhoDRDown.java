@@ -464,8 +464,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 		// actions needing to be performed if this is the first time the
 		// current domain is used
-		if(!currDomain.isOWLThing() && !topARefinementsLength.containsKey(currDomain))
+		if(!currDomain.isOWLThing() && !topARefinementsLength.containsKey(currDomain)){
 			topARefinementsLength.put((OWLClass)currDomain, 0);
+		}
 		
 		// check whether using list or set makes more sense 
 		// here; and whether HashSet or TreeSet should be used
@@ -855,8 +856,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				System.exit(0);
 //			}
 //		}
-		System.out.println("+++++\n" + description + "      " + maxLength);
-		System.out.println(refinements);
+//		System.out.println("+++++\n" + description + "      " + maxLength);
+//		System.out.println(refinements);
 		return refinements;		
 	}
 	
