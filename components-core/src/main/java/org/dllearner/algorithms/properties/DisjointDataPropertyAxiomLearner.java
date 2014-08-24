@@ -130,10 +130,10 @@ public class DisjointDataPropertyAxiomLearner extends
 		long end = System.currentTimeMillis();
 		System.out.println("Operation took " + (end - start) + "ms");
 		
-		start = System.currentTimeMillis();
-		runBatched();
-		end = System.currentTimeMillis();
-		System.out.println("Operation took " + (end - start) + "ms");
+//		start = System.currentTimeMillis();
+//		runBatched();
+//		end = System.currentTimeMillis();
+//		System.out.println("Operation took " + (end - start) + "ms");
 		
 
 		// TODO detect existing axioms
@@ -229,7 +229,10 @@ public class DisjointDataPropertyAxiomLearner extends
 
 		// check for each candidate if an overlap exist
 		ParameterizedSparqlString query = new ParameterizedSparqlString(
-				"SELECT ?p_dis (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_dis ?o . ?p_dis a owl:DatatypeProperty; rdfs:range ?range .} GROUP BY ?p_dis");
+				"SELECT ?p_dis (COUNT(*) AS ?overlap) WHERE {"
+				+ "?s ?p ?o; ?p_dis ?o . "
+				+ "?p_dis a <http://www.w3.org/2002/07/owl#DatatypeProperty>; <http://www.w3.org/2000/01/rdf-schema#range> ?range .}"
+				+ " GROUP BY ?p_dis");
 		query.setIri("p", propertyToDescribe.toStringID());
 		query.setIri("range", range.asOWLDatatype().toStringID());
 		System.out.println(query.asQuery());
