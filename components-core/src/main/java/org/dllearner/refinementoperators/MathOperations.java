@@ -19,6 +19,7 @@
 
 package org.dllearner.refinementoperators;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -177,6 +178,7 @@ public class MathOperations {
 			for(OWLClassExpression c : newSet) {
 				operands = md.getOperandsAsList();
 				operands.add(c);
+				Collections.sort(operands);
 				OWLObjectUnionOf mdNew = df.getOWLObjectUnionOf(operands);
 				retSet.add(mdNew);
 			}

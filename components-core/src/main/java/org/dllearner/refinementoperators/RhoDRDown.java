@@ -500,8 +500,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				tmp = subHierarchy.getSuperClasses(operand);
 				
 				for(OWLClassExpression c : tmp) {
-					if(!c.isOWLThing() && !c.equals(OWL_THING))
+					if(!c.isOWLThing()){
 						refinements.add(df.getOWLObjectComplementOf(c));
+					}
 				}
 			}
 		} else if (description instanceof OWLObjectIntersectionOf) {
@@ -517,6 +518,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
 					newChildren.add(c);
 					newChildren.remove(child);
+					Collections.sort(newChildren);
 					OWLClassExpression mc = df.getOWLObjectIntersectionOf(newChildren);
 					
 					// clean concept and transform it to ordered negation normal form
@@ -545,6 +547,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
 					newChildren.remove(child);						
 					newChildren.add(c);
+					Collections.sort(newChildren);
 					OWLObjectUnionOf md = df.getOWLObjectUnionOf(newChildren);
 						
 					// transform to ordered negation normal form
