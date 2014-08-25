@@ -123,7 +123,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		progressMonitor.learningStarted(AxiomType.OBJECT_PROPERTY_DOMAIN.getName());
 		
 		// get the popularity of the property
-		popularity = reasoner.getPopularity(propertyToDescribe);
+		// We can not use the number of triples with the property because we formally we need the 
+		// number of distinct subjects occurring in the triple, and there might be subjects having 
+		// more than one triple with the property.
+		ParameterizedSparqlString query = new ParameterizedSparqlString(
+				"SELECT (COUNT(DISTINCT(?s)) as ?cnt) WHERE {?s ?p ?o .}");
+		query.setIri("p", propertyToDescribe.toStringID());
+		popularity = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
+		logger.info("popularity:" + popularity);
 
 		// we have to skip here if there are not triples with the property
 		if (popularity == 0) {
@@ -168,11 +175,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		Set<OWLClass> candidates = reasoner.getOWLClasses();
 		
 		// check for each candidate how often the subject belongs to it
-//		ParameterizedSparqlString query = new ParameterizedSparqlString(
-//						"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?o; a ?domain .}");
+		ParameterizedSparqlString query1 = new ParameterizedSparqlString(
+						"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type .}");
+		ParameterizedSparqlString query2 = new ParameterizedSparqlString(
+				"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type .}");
+		query2.setIri("p", propertyToDescribe.toStringID());
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		int i = 1;
-		for (OWLClass candidate : candidates) {
+		for (OWLClass candidate : candidates) {if(!candidate.toStringID().contains("/Film"))continue;
 			progressMonitor.learningProgressChanged(i++, candidates.size());
 			
 			//get total number of instances of B
@@ -184,10 +194,12 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			}
 			
 			//get number of instances of (A AND B)
-			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
+			query2.setIri("type", candidate.toStringID());
+			System.out.println(query2.toString());
+//			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
 			
-			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
-			
+			int cntAB = executeSelectQuery(query2.toString()).next().getLiteral("cnt").getInt();
+			System.out.println(candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 			//precision (A AND B)/B
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
 			
@@ -204,6 +216,8 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
 							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
 							new AxiomScore(score)));
+			
+			System.out.println(candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 		}
 	}
 	
