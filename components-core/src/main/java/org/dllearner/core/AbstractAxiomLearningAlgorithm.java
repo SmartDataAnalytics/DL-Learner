@@ -20,6 +20,8 @@
 package org.dllearner.core;
 
 import java.net.SocketTimeoutException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -89,7 +91,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
 	protected LearningProblem learningProblem;
-	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
+	private final Logger logger;
+	
+	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
 	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
 	protected int maxExecutionTimeInSeconds = 10;
@@ -131,9 +135,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 	
+//	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
+	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
+	
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<OWLAxiom>();
+		
+		logger = LoggerFactory.getLogger(this.getClass());
 	}
 	
 	@Override
@@ -205,6 +214,13 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 
 	public void setLimit(int limit) {
 		this.limit = limit;
+	}
+	
+	/**
+	 * @param progressMonitor the progressMonitor to set
+	 */
+	public void setProgressMonitor(AxiomLearningProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
 	}
 
 	@Override

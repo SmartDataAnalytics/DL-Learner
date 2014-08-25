@@ -799,7 +799,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public Set<OWLClass> getOWLClasses() {
-		Set<OWLClass> types = new HashSet<OWLClass>();
+		Set<OWLClass> types = new TreeSet<OWLClass>();
 		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>.}",OWL.Class.getURI());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;

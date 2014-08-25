@@ -25,13 +25,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
 import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
@@ -47,11 +45,9 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -145,20 +141,12 @@ public class CLI {
 		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
 		
 			if (performCrossValidation) {
-				//this test is added for PDLL algorithm since it does not use the PosNegLP			
-				try {
-					ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);
-					new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
+				PosNegLP lp = context.getBean(PosNegLP.class);
+				if(la instanceof QTL2){
+					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
+				} else {
+					new CrossValidation(la,lp,rs,nrOfFolds,false);	
 				}
-				catch (BeansException be) {
-					PosNegLP lp = context.getBean(PosNegLP.class);
-					if(la instanceof QTL2){
-						new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
-					} else {
-						new CrossValidation(la,lp,rs,nrOfFolds,false);	
-					}
-				}
-				
 			} else {
 				lp = context.getBean(AbstractLearningProblem.class);
 //				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();

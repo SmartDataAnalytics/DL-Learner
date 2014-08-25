@@ -35,9 +35,9 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
@@ -53,6 +53,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -74,8 +76,6 @@ public class DisjointDataPropertyAxiomLearner extends
 	// if true, we only consider properties with the same range
 	private boolean strictMode = true;
 	
-	private NumberFormat format = DecimalFormat.getPercentInstance();
-
 	public DisjointDataPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
 
@@ -119,47 +119,25 @@ public class DisjointDataPropertyAxiomLearner extends
 	 */
 	@Override
 	protected void learnAxioms() {
-		// we return here if the property is never used
-		popularity = reasoner.getPopularity(propertyToDescribe);
-		if (popularity == 0) {
-			return;
-		}
-
-		long start = System.currentTimeMillis();
-		run();
-		long end = System.currentTimeMillis();
-		System.out.println("Operation took " + (end - start) + "ms");
+		progressMonitor.learningStarted(AxiomType.DISJOINT_DATA_PROPERTIES.getName());
 		
-//		start = System.currentTimeMillis();
-//		runBatched();
-//		end = System.currentTimeMillis();
-//		System.out.println("Operation took " + (end - start) + "ms");
-		
-
-		// TODO detect existing axioms
-
-//		// at first get all existing dataproperties in knowledgebase
-//		allDataProperties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
-//		allDataProperties.remove(propertyToDescribe);
-//
-//		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-//			// runSPARQL1_1_Mode();
-//			runSingleQueryMode();
-//		} else {
-//			runSPARQL1_0_Mode();
-//		}
-	}
-
-	private void run() {
 		// get the popularity of the property
-		int popularity = reasoner.getPopularity(propertyToDescribe);
-		
+		popularity = reasoner.getPopularity(propertyToDescribe);
+
 		// we have to skip here if there are not triples with the property
-		if(popularity == 0){
+		if (popularity == 0) {
 			logger.warn("Cannot compute disjointness statements for empty property " + propertyToDescribe);
 			return;
 		}
+
+		run();
 		
+//		runBatched();
+		
+		progressMonitor.learningStopped();
+	}
+
+	private void run() {
 		// get rdfs:range of the property
 		OWLDataRange range = reasoner.getRange(propertyToDescribe);
 
@@ -181,14 +159,15 @@ public class DisjointDataPropertyAxiomLearner extends
 		ParameterizedSparqlString query = new ParameterizedSparqlString(
 				"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_dis ?o.}");
 		query.setIri("p", propertyToDescribe.toStringID());
-		int i = 0;
+		int i = 1;
 		for (OWLDataProperty p : candidates) {
-			logger.info("Progress: " + format.format((double)i++/candidates.size()));
+//			logger.info("Progress: " + format.format((double)i++/candidates.size()));
+			progressMonitor.learningProgressChanged(i++, candidates.size());
 			// get the popularity of the candidate
 			int candidatePopularity = reasoner.getPopularity(p);
 			
 			if(candidatePopularity == 0){// skip empty properties
-				logger.warn("Cannot compute disjointness statements for empty candidate property " + p);
+				logger.debug("Cannot compute disjointness statements for empty candidate property " + p);
 				continue;
 			}
 			
@@ -211,19 +190,13 @@ public class DisjointDataPropertyAxiomLearner extends
 							df.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, p), 
 							new AxiomScore(score)));
 		}
-		logger.info("Progress: 100%");
 	}
 	
+	/**
+	 * In this method we try to compute the overlap with each property in one single SPARQL query.
+	 * This method might be much slower as the query is much more complex.
+	 */
 	private void runBatched() {
-		// get the popularity of the property
-		int popularity = reasoner.getPopularity(propertyToDescribe);
-		
-		// we have to skip here if there are not triples with the property
-		if(popularity == 0){
-			logger.warn("Cannot compute disjointness statements for empty property " + propertyToDescribe);
-			return;
-		}
-		
 		// get rdfs:range of the property
 		OWLDataRange range = reasoner.getRange(propertyToDescribe);
 
@@ -236,13 +209,13 @@ public class DisjointDataPropertyAxiomLearner extends
 		query.setIri("p", propertyToDescribe.toStringID());
 		query.setIri("range", range.asOWLDatatype().toStringID());
 		System.out.println(query.asQuery());
-		int i = 0;
 		ResultSet rs = executeSelectQuery(query.toString());
-		
+		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
+	    int size = rsrw.size();
 		while (rs.hasNext()) {
-//			logger.info("Progress: " + format.format((double)i++/candidates.size()));
-			
 			QuerySolution qs = rs.next();
+			logger.info("Progress: " + format.format((double) rs.getRowNumber() / size));
+			
 			OWLDataProperty candidate = df.getOWLDataProperty(IRI.create(qs.getResource("p_dis").getURI()));
 			
 			// get the popularity of the candidate

@@ -33,21 +33,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
-import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
@@ -93,25 +93,25 @@ public class CrossValidation {
 		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
 				
 		// the training and test sets used later on
-		List<Set<Individual>> trainingSetsPos = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> trainingSetsNeg = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> testSetsPos = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> testSetsNeg = new LinkedList<Set<Individual>>();
+		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> testSetsPos = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<Set<OWLIndividual>>();
 		
 			// get examples and shuffle them too
-		Set<Individual> posExamples;
-		Set<Individual> negExamples;
+		Set<OWLIndividual> posExamples;
+		Set<OWLIndividual> negExamples;
 			if(lp instanceof PosNegLP){
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
 				negExamples = ((PosNegLP)lp).getNegativeExamples();
 			} else if(lp instanceof PosOnlyLP){
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
-				negExamples = new HashSet<Individual>();
+				negExamples = new HashSet<OWLIndividual>();
 			} else {
 				throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
 			}
-			List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-			List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
+			List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
+			List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
 			Collections.shuffle(posExamplesList, new Random(1));			
 			Collections.shuffle(negExamplesList, new Random(2));
 			
@@ -149,8 +149,8 @@ public class CrossValidation {
 				
 				// calculating training and test sets
 				for(int i=0; i<folds; i++) {
-					Set<Individual> testPos = getTestingSet(posExamplesList, splitsPos, i);
-					Set<Individual> testNeg = getTestingSet(negExamplesList, splitsNeg, i);
+					Set<OWLIndividual> testPos = getTestingSet(posExamplesList, splitsPos, i);
+					Set<OWLIndividual> testNeg = getTestingSet(negExamplesList, splitsNeg, i);
 					testSetsPos.add(i, testPos);
 					testSetsNeg.add(i, testNeg);
 					trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
@@ -165,15 +165,15 @@ public class CrossValidation {
 				for(int currFold=0; currFold<folds; currFold++) {
 					try {
 						final AbstractLearningProblem lpClone = (AbstractLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
-						final Set<Individual> trainPos = trainingSetsPos.get(currFold);
-						final Set<Individual> trainNeg = trainingSetsNeg.get(currFold);
-						final Set<Individual> testPos = testSetsPos.get(currFold);
-						final Set<Individual> testNeg = testSetsNeg.get(currFold);
+						final Set<OWLIndividual> trainPos = trainingSetsPos.get(currFold);
+						final Set<OWLIndividual> trainNeg = trainingSetsNeg.get(currFold);
+						final Set<OWLIndividual> testPos = testSetsPos.get(currFold);
+						final Set<OWLIndividual> testNeg = testSetsNeg.get(currFold);
 						if(lp instanceof PosNegLP){
 							((PosNegLP)lpClone).setPositiveExamples(trainPos);
 							((PosNegLP)lpClone).setNegativeExamples(trainNeg);
 						} else if(lp instanceof PosOnlyLP){
-							((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<Individual>(trainPos));
+							((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<OWLIndividual>(trainPos));
 						}
 						final AbstractCELA laClone = (AbstractCELA) la.getClass().getMethod("clone").invoke(la);
 						final int i = currFold;
@@ -208,16 +208,16 @@ public class CrossValidation {
 				}
 			} else {
 				for(int currFold=0; currFold<folds; currFold++) {
-					final Set<Individual> trainPos = trainingSetsPos.get(currFold);
-					final Set<Individual> trainNeg = trainingSetsNeg.get(currFold);
-					final Set<Individual> testPos = testSetsPos.get(currFold);
-					final Set<Individual> testNeg = testSetsNeg.get(currFold);
+					final Set<OWLIndividual> trainPos = trainingSetsPos.get(currFold);
+					final Set<OWLIndividual> trainNeg = trainingSetsNeg.get(currFold);
+					final Set<OWLIndividual> testPos = testSetsPos.get(currFold);
+					final Set<OWLIndividual> testNeg = testSetsNeg.get(currFold);
 					
 					if(lp instanceof PosNegLP){
 						((PosNegLP)lp).setPositiveExamples(trainPos);
 						((PosNegLP)lp).setNegativeExamples(trainNeg);
 					} else if(lp instanceof PosOnlyLP){
-						((PosOnlyLP)lp).setPositiveExamples(new TreeSet<Individual>(trainPos));
+						((PosOnlyLP)lp).setPositiveExamples(new TreeSet<OWLIndividual>(trainPos));
 					}
 					
 					validate(la, lp, rs, currFold, trainPos, trainNeg, testPos, testNeg);
@@ -236,7 +236,7 @@ public class CrossValidation {
 	}
 	
 	private void validate(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs,
-			int currFold, Set<Individual> trainPos, Set<Individual> trainNeg, Set<Individual> testPos, Set<Individual> testNeg){
+			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg){
 		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
 		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
 		String output = "";
@@ -256,11 +256,11 @@ public class CrossValidation {
 		long algorithmDuration = System.nanoTime() - algorithmStartTime;
 		runtime.addNumber(algorithmDuration/(double)1000000000);
 		
-		Description concept = la.getCurrentlyBestDescription();
+		OWLClassExpression concept = la.getCurrentlyBestDescription();
 		
-		Set<Individual> tmp = rs.hasType(concept, testPos);
-		Set<Individual> tmp2 = Helper.difference(testPos, tmp);
-		Set<Individual> tmp3 = rs.hasType(concept, testNeg);
+		Set<OWLIndividual> tmp = rs.hasType(concept, testPos);
+		Set<OWLIndividual> tmp2 = Helper.difference(testPos, tmp);
+		Set<OWLIndividual> tmp3 = rs.hasType(concept, testNeg);
 		
 		// calculate training accuracies 
 		int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainPos);
@@ -288,7 +288,7 @@ public class CrossValidation {
 //		System.out.println(precision);System.out.println(recall);
 		fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
 		
-		length.addNumber(concept.getLength());
+		length.addNumber(OWLClassExpressionUtils.getLength(concept));
 		
 		
 		output += "test set errors pos: " + tmp2 + "\n";
@@ -297,23 +297,23 @@ public class CrossValidation {
 		output += "  training: " + pos.size() + " positive and " + neg.size() + " negative examples";
 		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, " 
 				+ correctNegClassified + "/" + testNeg.size() + " correct negatives" + "\n";
-		output += "  concept: " + OWLAPIConverter.getOWLAPIDescription(concept).toString().replace("\n", " ") + "\n";
+		output += "  concept: " + concept.toString().replace("\n", " ") + "\n";
 		output += "  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)" + "\n";
-		output += "  length: " + df.format(concept.getLength()) + "\n";
+		output += "  length: " + df.format(OWLClassExpressionUtils.getLength(concept)) + "\n";
 		output += "  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s" + "\n";
 		
 		outputWriter(output);
 	}
 	
-	protected int getCorrectPosClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetPos) {
+	protected int getCorrectPosClassified(AbstractReasonerComponent rs, OWLClassExpression concept, Set<OWLIndividual> testSetPos) {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	protected int getCorrectNegClassified(AbstractReasonerComponent rs, Description concept, Set<Individual> testSetNeg) {
+	protected int getCorrectNegClassified(AbstractReasonerComponent rs, OWLClassExpression concept, Set<OWLIndividual> testSetNeg) {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
-	public static Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {
+	public static Set<OWLIndividual> getTestingSet(List<OWLIndividual> examples, int[] splits, int fold) {
 		int fromIndex;
 		// we either start from 0 or after the last fold ended
 		if(fold == 0)
@@ -325,13 +325,13 @@ public class CrossValidation {
 		
 //		System.out.println("from " + fromIndex + " to " + toIndex);
 		
-		Set<Individual> testingSet = new HashSet<Individual>();
+		Set<OWLIndividual> testingSet = new HashSet<OWLIndividual>();
 		// +1 because 2nd element is exclusive in subList method
 		testingSet.addAll(examples.subList(fromIndex, toIndex));
 		return testingSet;
 	}
 	
-	public static Set<Individual> getTrainingSet(Set<Individual> examples, Set<Individual> testingSet) {
+	public static Set<OWLIndividual> getTrainingSet(Set<OWLIndividual> examples, Set<OWLIndividual> testingSet) {
 		return Helper.difference(examples, testingSet);
 	}
 	

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -37,10 +38,13 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
@@ -71,6 +75,8 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	private Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types;
 	
 	private OWLObjectProperty propertyToDescribe;
+
+	private int popularity;
 	
 	public ObjectPropertyDomainAxiomLearner2(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -114,7 +120,20 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	 */
 	@Override
 	protected void learnAxioms() {
-		runSPARQL1_0_Mode();
+		progressMonitor.learningStarted(AxiomType.OBJECT_PROPERTY_DOMAIN.getName());
+		
+		// get the popularity of the property
+		popularity = reasoner.getPopularity(propertyToDescribe);
+
+		// we have to skip here if there are not triples with the property
+		if (popularity == 0) {
+			logger.warn("Cannot compute domain statements for empty property " + propertyToDescribe);
+			return;
+		}
+		
+		run();
+		
+//		runSPARQL1_0_Mode();
 	}
 	
 	private void buildSampleFragment(){
@@ -141,43 +160,97 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		}
 	}
 	
+	/**
+	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 */
 	private void run(){
-		//extract sample fragment from KB
-		buildSampleFragment();
+		// get the candidates
+		Set<OWLClass> candidates = reasoner.getOWLClasses();
 		
-		//generate a set of axiom candidates
-		computeAxiomCandidates();
-		
-		//compute evidence score on the whole KB
-		List<OWLObjectPropertyDomainAxiom> axioms = getCurrentlyBestAxioms();
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<OWLObjectPropertyDomainAxiom>>();
-		//get total number of instances of A
-		int cntA = reasoner.getPopularity(propertyToDescribe);
+		// check for each candidate how often the subject belongs to it
+//		ParameterizedSparqlString query = new ParameterizedSparqlString(
+//						"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?o; a ?domain .}");
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		for (OWLObjectPropertyDomainAxiom axiom : axioms) {
+		int i = 1;
+		for (OWLClass candidate : candidates) {
+			progressMonitor.learningProgressChanged(i++, candidates.size());
+			
 			//get total number of instances of B
-			OWLClass domain = axiom.getDomain().asOWLClass();
-			int cntB = reasoner.getPopularity(domain);
+			int cntB = reasoner.getPopularity(candidate);
+			
+			if(cntB == 0){// skip empty properties
+				logger.debug("Cannot compute domain statements for empty candidate class " + candidate);
+				continue;
+			}
 			
 			//get number of instances of (A AND B)
-			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(domain, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
-//			System.out.println(query);
+			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
+			
 			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
 			
 			//precision (A AND B)/B
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
 			
 			//recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(cntA, cntAB);
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
 			
 			//beta
 			double beta = 3.0;
 			
 			//F score
-			double fscore = Heuristics.getFScore(recall, precision, beta);
-			System.out.println(axiom + ":" + fscore + "(P=" + precision + "|R=" + recall + ")");
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(axiom, new AxiomScore(fscore)));
-//			System.out.println(new EvaluatedAxiom(axiom, new AxiomScore(fscore)));
+			double score = Heuristics.getFScore(recall, precision, beta);
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
+							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
+							new AxiomScore(score)));
+		}
+	}
+	
+	/**
+	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 */
+	private void runBatched(){
+		// get the candidates
+		Set<OWLClass> candidates = reasoner.getOWLClasses();
+		
+		// check for each candidate how often the subject belongs to it
+//		ParameterizedSparqlString query = new ParameterizedSparqlString(
+//						"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?o; a ?domain .}");
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		int i = 1;
+		for (OWLClass candidate : candidates) {
+			progressMonitor.learningProgressChanged(i++, candidates.size());
+			
+			//get total number of instances of B
+			int cntB = reasoner.getPopularity(candidate);
+			
+			if(cntB == 0){// skip empty properties
+				logger.debug("Cannot compute domain statements for empty candidate class " + candidate);
+				continue;
+			}
+			
+			//get number of instances of (A AND B)
+			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
+			
+			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
+			
+			//precision (A AND B)/B
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+			
+			//recall (A AND B)/A
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+			
+			//beta
+			double beta = 3.0;
+			
+			//F score
+			double score = Heuristics.getFScore(recall, precision, beta);
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
+							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
+							new AxiomScore(score)));
 		}
 	}
 	
