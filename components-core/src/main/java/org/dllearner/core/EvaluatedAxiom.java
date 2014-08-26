@@ -118,7 +118,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 	@Override
 	public int compareTo(EvaluatedAxiom<T> other) {
 		return ComparisonChain.start().
-				compare(score.getAccuracy(), other.getScore().getAccuracy()).
+				compare(other.getScore().getAccuracy(), score.getAccuracy()).
 				compare(axiom, other.getAxiom()).
 				result();
 	}

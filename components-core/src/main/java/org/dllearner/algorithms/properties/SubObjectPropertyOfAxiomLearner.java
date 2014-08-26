@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -32,40 +31,21 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name = "object subPropertyOf axiom learner", shortName = "oplsubprop", version = 0.1)
-public class SubObjectPropertyOfAxiomLearner extends
-		AbstractAxiomLearningAlgorithm<OWLSubObjectPropertyOfAxiom, OWLObjectPropertyAssertionAxiom> {
+public class SubObjectPropertyOfAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLSubObjectPropertyOfAxiom>{
 
-	private static final Logger logger = LoggerFactory.getLogger(EquivalentObjectPropertyAxiomLearner.class);
-
-	private OWLObjectProperty propertyToDescribe;
+	private final double BETA = 3.0;
 
 	public SubObjectPropertyOfAxiomLearner(SparqlEndpointKS ks) {
-		this.ks = ks;
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o ; ?p_sup ?o}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_sup ?o}}");
-
-	}
-
-	public OWLObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
-		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+		super(ks);
+		
+		super.beta = BETA;
 	}
 
 	/* (non-Javadoc)
@@ -73,25 +53,21 @@ public class SubObjectPropertyOfAxiomLearner extends
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLObjectProperty> existingEquivalentProperties = reasoner
-				.getEquivalentProperties(propertyToDescribe);
-		if (existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()) {
-			for (OWLObjectProperty supProp : existingEquivalentProperties) {
-				existingAxioms.add(df.getOWLEquivalentObjectPropertiesAxiom(propertyToDescribe, supProp));
+		SortedSet<OWLObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
+		if (existingSuperProperties != null && !existingSuperProperties.isEmpty()) {
+			for (OWLObjectProperty supProp : existingSuperProperties) {
+				existingAxioms.add(df.getOWLSubObjectPropertyOfAxiom(propertyToDescribe, supProp));
 			}
+			logger.info("Existing axioms:" + existingAxioms);
 		}
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 * @see org.dllearner.algorithms.properties.ObjectPropertyHierarchyAxiomLearner#getAxiom(org.semanticweb.owlapi.model.OWLObjectProperty, org.semanticweb.owlapi.model.OWLObjectProperty)
 	 */
 	@Override
-	protected void learnAxioms() {
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
+	public OWLSubObjectPropertyOfAxiom getAxiom(OWLObjectProperty property, OWLObjectProperty otherProperty) {
+		return df.getOWLSubObjectPropertyOfAxiom(property, otherProperty);
 	}
 
 	private void runSingleQueryMode() {

@@ -36,7 +36,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -101,12 +100,12 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<EvaluatedAxiom<OWLSubClassOfAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<OWLSubClassOfAxiom>>();
+		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<OWLSubClassOfAxiom>>();
 		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubClassOfAxiom>(df.getOWLSubClassOfAxiom(classToDescribe,
 					ed.getDescription()), new AxiomScore(ed.getAccuracy())));
 		}
-		return currentlyBestAxioms;
+		return new ArrayList<EvaluatedAxiom<OWLSubClassOfAxiom>>(currentlyBestAxioms);
 	}
 
 	@Override

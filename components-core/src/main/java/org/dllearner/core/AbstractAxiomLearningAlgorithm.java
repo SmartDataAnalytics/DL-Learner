@@ -49,6 +49,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -91,7 +92,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
 	protected LearningProblem learningProblem;
-	private final Logger logger;
+	protected final Logger logger;
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
@@ -106,8 +107,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected SPARQLReasoner reasoner;
 	private QueryExecutionFactory qef;
 	
-	protected List<EvaluatedAxiom<T>> currentlyBestAxioms;
-	protected SortedSet<OWLAxiom> existingAxioms;
+	protected SortedSet<EvaluatedAxiom<T>> currentlyBestAxioms;
+	protected SortedSet<T> existingAxioms;
 	protected int fetchedRows;
 	
 	protected long startTime;
@@ -138,9 +139,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 //	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
+	protected AxiomType<T> axiomType;
+	
 	
 	public AbstractAxiomLearningAlgorithm() {
-		existingAxioms = new TreeSet<OWLAxiom>();
+		existingAxioms = new TreeSet<T>();
 		
 		logger = LoggerFactory.getLogger(this.getClass());
 	}
@@ -155,6 +158,13 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     public void setLearningProblem(LearningProblem learningProblem) {
         this.learningProblem = learningProblem;
     }	
+    
+    /**
+	 * @return the axiomType
+	 */
+	public AxiomType getAxiomType() {
+		return axiomType;
+	}
 	
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
@@ -197,7 +207,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
 		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<T>>();
+		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
 		
 		if(returnOnlyNewAxioms){
 			getExistingAxioms();
@@ -284,8 +294,16 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		return bestAxioms;
 	}
 	
+	public EvaluatedAxiom<T> getCurrentlyBestEvaluatedAxiom() {
+		List<EvaluatedAxiom<T>> currentlyBestEvaluatedAxioms = getCurrentlyBestEvaluatedAxioms(1);
+		if(currentlyBestEvaluatedAxioms.isEmpty()){
+			return null;
+		}
+		return currentlyBestEvaluatedAxioms.get(0);
+	}
+	
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
+		return new ArrayList<EvaluatedAxiom<T>>(currentlyBestAxioms);
 	}
 
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {

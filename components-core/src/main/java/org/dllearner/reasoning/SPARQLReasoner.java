@@ -21,6 +21,7 @@ package org.dllearner.reasoning;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.extra.CacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
@@ -55,6 +57,7 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -65,6 +68,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,13 +79,17 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
@@ -92,6 +100,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
+	
+	public enum PopularityType {
+		CLASS, OBJECT_PROPERTY, DATA_PROPERTY;
+	}
 
 	@ConfigOption(name = "useCache", description = "Whether to use a DB cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
 	private boolean useCache = true;
@@ -102,10 +114,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private ClassHierarchy hierarchy;
 	private OntModel model;
 
-	private Map<OWLClass, Integer> classPopularityMap;
-	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap;
-	private Map<OWLDataProperty, Integer> dataPropertyPopularityMap;
-	private Map<OWLIndividual, Integer> individualPopularityMap;
+	private Map<OWLClass, Integer> classPopularityMap = new HashMap<OWLClass, Integer>();
+	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
+	private Map<OWLDataProperty, Integer> dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
+	private Map<OWLIndividual, Integer> individualPopularityMap = new HashMap<OWLIndividual, Integer>();
+	private boolean batchedMode = true;
+	private Set<PopularityType> precomputedPopularityTypes = new HashSet<SPARQLReasoner.PopularityType>();
 	
 	private boolean prepared = false;
 	
@@ -119,20 +133,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SPARQLReasoner(QueryExecutionFactory qef) {
 		this.qef = qef;
-		
-		classPopularityMap = new HashMap<OWLClass, Integer>();
-		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
-		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
-		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
 	}
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, String cacheDirectory) {
 		this.ks = ks;
-
-		classPopularityMap = new HashMap<OWLClass, Integer>();
-		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
-		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
-		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
 		
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
@@ -166,16 +170,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, CacheEx cache) {
 		this.ks = ks;
-
-		classPopularityMap = new HashMap<OWLClass, Integer>();
-		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
-		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
-		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
 		
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			qef = new QueryExecutionFactoryDelay(qef, 50);
 			qef = new QueryExecutionFactoryCacheEx(qef, cache);
+			
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
@@ -188,11 +189,18 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	public SPARQLReasoner(OntModel model) {
 		this.model = model;
-
-		classPopularityMap = new HashMap<OWLClass, Integer>();
-		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
-		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
-		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
+	}
+	
+	public void precomputePopularities(PopularityType... popularityTypes){
+		for (PopularityType popularityType : popularityTypes) {
+			switch (popularityType) {
+			case CLASS:precomputeClassPopularity();break;
+			case OBJECT_PROPERTY:precomputeObjectPropertyPopularity();break;
+			case DATA_PROPERTY:precomputeDataPropertyPopularity();break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public void precomputePopularity(){
@@ -200,49 +208,114 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		precomputeDataPropertyPopularity();
 		precomputeObjectPropertyPopularity();
 	}
+	
+	public boolean isPrecomputed(PopularityType popularityType){
+		return precomputedPopularityTypes.contains(popularityType);
+	}
 
-	public void precomputeClassPopularity(){
+	public void precomputeClassPopularity() {
+		if(isPrecomputed(PopularityType.CLASS)){
+			return;
+		}
 		logger.info("Precomputing class popularity ...");
 
-		Set<OWLClass> classes = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
-
-		ResultSet rs;
-		for(OWLClass nc : classes){
-			rs = executeSelectQuery(String.format(queryTemplate, nc.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			classPopularityMap.put(nc, cnt);
+		long start = System.currentTimeMillis();
+		
+		if (batchedMode) {
+			String query = "PREFIX owl:<http://www.w3.org/2002/07/owl#>  SELECT ?type (COUNT(?s) AS ?cnt) WHERE {?s a ?type . ?type a owl:Class .} GROUP BY ?type";
+			ResultSet rs = executeSelectQuery(query);
+			while (rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				if (qs.get("type").isURIResource()) {
+					OWLClass cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
+					int cnt = qs.getLiteral("cnt").getInt();
+					classPopularityMap.put(cls, cnt);
+				}
+			}
+		} else {
+			Set<OWLClass> classes = getOWLClasses();
+			String queryTemplate = "SELECT (COUNT(?s) AS ?cnt) WHERE {?s a <%s>}";
+			for (OWLClass cls : classes) {
+				ResultSet rs = executeSelectQuery(String.format(queryTemplate, cls.toStringID()));
+				int cnt = rs.next().getLiteral("cnt").getInt();
+				classPopularityMap.put(cls, cnt);
+			}
 		}
+		precomputedPopularityTypes.add(PopularityType.CLASS); 
+		
+		long end = System.currentTimeMillis();
+		
+		logger.info("... done in " + (end - start) + "ms.");
 	}
 
 	public void precomputeObjectPropertyPopularity(){
-		logger.info("Precomputing object property popularity ...");
-		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
-
-		Set<OWLObjectProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
-		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
-
-		ResultSet rs;
-		for(OWLObjectProperty op : properties){
-			rs = executeSelectQuery(String.format(queryTemplate, op.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			objectPropertyPopularityMap.put(op, cnt);
+		if(isPrecomputed(PopularityType.OBJECT_PROPERTY)){
+			return;
 		}
+		logger.info("Precomputing object property popularity ...");
+
+		long start = System.currentTimeMillis();
+		
+		if (batchedMode) {
+			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> . SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:ObjectProperty .} GROUP BY ?p";
+			ResultSet rs = executeSelectQuery(query);
+			while (rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				if (qs.get("p").isURIResource()) {
+					OWLObjectProperty property = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+					int cnt = qs.getLiteral("cnt").getInt();
+					objectPropertyPopularityMap.put(property, cnt);
+				}
+			}
+		} else {
+			Set<OWLObjectProperty> properties = getOWLObjectProperties();
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+			for (OWLObjectProperty property : properties) {
+				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
+				int cnt = rs.next().getLiteral("cnt").getInt();
+				objectPropertyPopularityMap.put(property, cnt);
+			}
+		}
+		precomputedPopularityTypes.add(PopularityType.OBJECT_PROPERTY); 
+		
+		long end = System.currentTimeMillis();
+		
+		logger.info("... done in " + (end - start) + "ms.");
 	}
 
 	public void precomputeDataPropertyPopularity(){
-		logger.info("Precomputing data property popularity ...");
-		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
-
-		Set<OWLDataProperty> properties = new SPARQLTasks(ks.getEndpoint()).getAllDataProperties();
-		String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
-
-		ResultSet rs;
-		for(OWLDataProperty dp : properties){
-			rs = executeSelectQuery(String.format(queryTemplate, dp.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			dataPropertyPopularityMap.put(dp, cnt);
+		if(isPrecomputed(PopularityType.DATA_PROPERTY)){
+			return;
 		}
+		logger.info("Precomputing data property popularity ...");
+
+		long start = System.currentTimeMillis();
+		
+		if (batchedMode) {
+			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> . SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:DatatypeProperty .} GROUP BY ?p";
+			ResultSet rs = executeSelectQuery(query);
+			while (rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				if (qs.get("p").isURIResource()) {
+					OWLDataProperty property = df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI()));
+					int cnt = qs.getLiteral("cnt").getInt();
+					dataPropertyPopularityMap.put(property, cnt);
+				}
+			}
+		} else {
+			Set<OWLDataProperty> properties = getOWLDataProperties();
+			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
+			for (OWLDataProperty property : properties) {
+				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
+				int cnt = rs.next().getLiteral("cnt").getInt();
+				dataPropertyPopularityMap.put(property, cnt);
+			}
+		}
+		precomputedPopularityTypes.add(PopularityType.DATA_PROPERTY); 
+		
+		long end = System.currentTimeMillis();
+		
+		logger.info("... done in " + (end - start) + "ms.");
 	}
 
 	public int getSubjectCountForProperty(OWLProperty p, long timeout){
@@ -797,18 +870,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		return properties;
 	}
-
-	public Set<OWLClass> getOWLClasses() {
-		Set<OWLClass> types = new TreeSet<OWLClass>();
-		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>.}",OWL.Class.getURI());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			types.add(df.getOWLClass(IRI.create(qs.getResource("class").getURI())));
-		}
-		return types;
-	}
 	
 	public Set<OWLClass> getNonEmptyOWLClasses() {
 		Set<OWLClass> types = new HashSet<OWLClass>();
@@ -820,6 +881,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			types.add(df.getOWLClass(IRI.create(qs.getResource("class").getURI())));
 		}
 		return types;
+	}
+
+	public Set<OWLClass> getOWLClasses() {
+		return getOWLClasses(null);
 	}
 	
 	public SortedSet<OWLClass> getOWLClasses(String namespace) {
@@ -838,20 +903,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return types;
 	}
 	
-	public Set<OWLObjectProperty> getOWLObjectProperties() {
-		Set<OWLObjectProperty> types = new HashSet<OWLObjectProperty>();
-		String query = String.format("SELECT DISTINCT ?p WHERE {?p a <%s>.}",OWL.ObjectProperty.getURI());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			types.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
-		}
-		return types;
+	public SortedSet<OWLObjectProperty> getOWLObjectProperties() {
+		return getOWLObjectProperties(null);
 	}
 	
 	public SortedSet<OWLObjectProperty> getOWLObjectProperties(String namespace) {
-		SortedSet<OWLObjectProperty> types = new TreeSet<OWLObjectProperty>();
+		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
 		String query = "SELECT DISTINCT ?p WHERE {?p a <" + OWL.ObjectProperty.getURI() + ">.";
 		if(namespace != null){
 			query += "FILTER(REGEX(STR(?p),'" + namespace + "'))";
@@ -861,9 +918,29 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			types.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
 		}
-		return types;
+		return properties;
+	}
+	
+	public Set<OWLDataProperty> getOWLDataProperties() {
+		return getOWLDataProperties(null);
+	}
+	
+	public SortedSet<OWLDataProperty> getOWLDataProperties(String namespace) {
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		String query = "SELECT DISTINCT ?p WHERE {?p a <" + OWL.DatatypeProperty.getURI() + ">.";
+		if(namespace != null){
+			query += "FILTER(REGEX(STR(?p),'" + namespace + "'))";
+		}
+		query += "}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI())));
+		}
+		return properties;
 	}
 
 	/**
@@ -1774,8 +1851,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return subProperties;
 	}
 
-	private ResultSet executeSelectQuery(String query){
-		logger.trace("Sending query \n {}", query);
+	private ResultSet executeSelectQuery(String queryString){
+		logger.trace("Sending query \n {}", queryString);
+		Query query = QueryFactory.create(queryString, Syntax.syntaxSPARQL_11);
 		QueryExecution qe = qef.createQueryExecution(query);
 		try
 		{

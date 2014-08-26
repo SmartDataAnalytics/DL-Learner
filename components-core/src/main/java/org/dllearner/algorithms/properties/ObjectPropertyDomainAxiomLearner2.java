@@ -58,6 +58,8 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -70,7 +72,16 @@ import com.hp.hpl.jena.vocabulary.RDF;
 @ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
 public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgorithm<OWLObjectPropertyDomainAxiom, OWLIndividual> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyDomainAxiomLearner2.class);
+	private static final ParameterizedSparqlString DISTINCT_SUBJECTS_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?s)) as ?cnt) WHERE {?s ?p ?o .}");
+	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type .}");
+	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type .}");
+	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
+			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type . ?type a owl:Class .} GROUP BY ?type");
+	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
+			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type . ?type a owl:Class .} GROUP BY ?type");
 	
 	private Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types;
 	
@@ -78,11 +89,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 
 	private int popularity;
 	
+	// a property domain axiom can formally be seen as a subclass axiom \exists r.\top \sqsubseteq \C 
+	// so we have to focus more on accuracy, which we can regulate via the parameter beta
+	double beta = 3.0;
+	
 	public ObjectPropertyDomainAxiomLearner2(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
-	
 	}
 	
 	public OWLObjectProperty getPropertyToDescribe() {
@@ -93,6 +107,12 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		this.propertyToDescribe = propertyToDescribe;
 //		negExamplesQueryTemplate.clearParams();
 //		posExamplesQueryTemplate.clearParams();
+		
+		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
 	}
 	
 	/* (non-Javadoc)
@@ -101,6 +121,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	@Override
 	protected void getExistingAxioms() {
 		OWLClassExpression existingDomain = reasoner.getDomain(propertyToDescribe);
+		logger.info("Existing domain: " + existingDomain);
 		if(existingDomain != null){
 			existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
 			if(reasoner.isPrepared()){
@@ -110,7 +131,6 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 						logger.info("Existing domain(inferred): " + sup);
 					}
 				}
-				
 			}
 		}
 	}
@@ -126,11 +146,8 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		// We can not use the number of triples with the property because we formally we need the 
 		// number of distinct subjects occurring in the triple, and there might be subjects having 
 		// more than one triple with the property.
-		ParameterizedSparqlString query = new ParameterizedSparqlString(
-				"SELECT (COUNT(DISTINCT(?s)) as ?cnt) WHERE {?s ?p ?o .}");
-		query.setIri("p", propertyToDescribe.toStringID());
-		popularity = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
-		logger.info("popularity:" + popularity);
+		popularity = executeSelectQuery(DISTINCT_SUBJECTS_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
+		logger.debug("popularity:" + popularity);
 
 		// we have to skip here if there are not triples with the property
 		if (popularity == 0) {
@@ -138,8 +155,8 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			return;
 		}
 		
-		run();
-		
+//		run();
+		runBatched();
 //		runSPARQL1_0_Mode();
 	}
 	
@@ -175,63 +192,6 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		Set<OWLClass> candidates = reasoner.getOWLClasses();
 		
 		// check for each candidate how often the subject belongs to it
-		ParameterizedSparqlString query1 = new ParameterizedSparqlString(
-						"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type .}");
-		ParameterizedSparqlString query2 = new ParameterizedSparqlString(
-				"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; rdf:type/rdfs:subClassOf* ?type .}");
-		query2.setIri("p", propertyToDescribe.toStringID());
-		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		int i = 1;
-		for (OWLClass candidate : candidates) {if(!candidate.toStringID().contains("/Film"))continue;
-			progressMonitor.learningProgressChanged(i++, candidates.size());
-			
-			//get total number of instances of B
-			int cntB = reasoner.getPopularity(candidate);
-			
-			if(cntB == 0){// skip empty properties
-				logger.debug("Cannot compute domain statements for empty candidate class " + candidate);
-				continue;
-			}
-			
-			//get number of instances of (A AND B)
-			query2.setIri("type", candidate.toStringID());
-			System.out.println(query2.toString());
-//			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
-			
-			int cntAB = executeSelectQuery(query2.toString()).next().getLiteral("cnt").getInt();
-			System.out.println(candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
-			//precision (A AND B)/B
-			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
-			
-			//recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			//beta
-			double beta = 3.0;
-			
-			//F score
-			double score = Heuristics.getFScore(recall, precision, beta);
-			
-			currentlyBestAxioms.add(
-					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
-							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
-							new AxiomScore(score)));
-			
-			System.out.println(candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
-		}
-	}
-	
-	/**
-	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
-	 */
-	private void runBatched(){
-		// get the candidates
-		Set<OWLClass> candidates = reasoner.getOWLClasses();
-		
-		// check for each candidate how often the subject belongs to it
-//		ParameterizedSparqlString query = new ParameterizedSparqlString(
-//						"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?o; a ?domain .}");
-		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		int i = 1;
 		for (OWLClass candidate : candidates) {
 			progressMonitor.learningProgressChanged(i++, candidates.size());
@@ -245,18 +205,15 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 			}
 			
 			//get number of instances of (A AND B)
-			Query query = converter.asCountQuery(df.getOWLObjectIntersectionOf(candidate, df.getOWLObjectSomeValuesFrom(propertyToDescribe, df.getOWLThing())));
-			
-			int cntAB = executeSelectQuery(query.toString()).next().getLiteral("cnt").getInt();
+			SUBJECTS_OF_TYPE_COUNT_QUERY.setIri("type", candidate.toStringID());
+			int cntAB = executeSelectQuery(SUBJECTS_OF_TYPE_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
+			logger.debug("Candidate:" + candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 			
 			//precision (A AND B)/B
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
 			
 			//recall (A AND B)/A
 			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			//beta
-			double beta = 3.0;
 			
 			//F score
 			double score = Heuristics.getFScore(recall, precision, beta);
@@ -268,8 +225,51 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		}
 	}
 	
+	/**
+	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 */
+	private void runBatched(){
+		
+		reasoner.precomputeClassPopularity();
+		
+		// get for each subject type the frequency
+		ResultSet rs = executeSelectQuery(SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.toString());
+		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
+		int size = rsrw.size();
+		rsrw.reset();
+		int i = 1;
+		while(rsrw.hasNext()){
+			QuerySolution qs = rsrw.next();
+			if(qs.getResource("type").isURIResource()){
+				progressMonitor.learningProgressChanged(i++, size);
+				
+				OWLClass candidate = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
+				
+				//get total number of instances of B
+				int cntB = reasoner.getPopularity(candidate);
+				
+				//get number of instances of (A AND B)
+				int cntAB = qs.getLiteral("cnt").getInt();
+				
+				//precision (A AND B)/B
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+				
+				//recall (A AND B)/A
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+				
+				//F score
+				double score = Heuristics.getFScore(recall, precision, beta);
+				
+				currentlyBestAxioms.add(
+						new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
+								df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
+								new AxiomScore(score)));
+				
+			}
+		}
+	}
+	
 	private void computeAxiomCandidates() {
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom<OWLObjectPropertyDomainAxiom>>();
 		// get number of distinct subjects
 		String query = "SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s a ?type.}";
 		ResultSet rs = executeSelectQuery(query, workingModel);

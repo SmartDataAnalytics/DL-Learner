@@ -85,7 +85,7 @@ private static final Logger logger = LoggerFactory.getLogger(SubDataPropertyOfAx
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
 			OWLDataProperty superProperty = df.getOWLDataProperty(IRI.create(qs.getResource("p_sup").getURI()));
-			existingAxioms.add(df.getOWLEquivalentDataPropertiesAxiom(propertyToDescribe, superProperty));
+			existingAxioms.add(df.getOWLSubDataPropertyOfAxiom(propertyToDescribe, superProperty));
 		}
 	}
 	
@@ -206,10 +206,10 @@ private static final Logger logger = LoggerFactory.getLogger(SubDataPropertyOfAx
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the estimated precision
-			double precision = accuracy(candidatePopularity, overlap);
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
 			
 			// compute the estimated recall
-			double recall = accuracy(popularity, overlap);
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
 			
 			// compute the final score
 			double score = fMEasure(precision, recall);

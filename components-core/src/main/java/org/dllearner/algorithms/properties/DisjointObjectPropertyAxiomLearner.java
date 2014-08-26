@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
@@ -53,12 +54,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 @ComponentAnn(name = "disjoint objectproperty axiom learner", shortName = "opldisjoint", version = 0.1)
-public class DisjointObjectPropertyAxiomLearner extends
-		AbstractAxiomLearningAlgorithm<OWLDisjointObjectPropertiesAxiom, OWLObjectPropertyAssertionAxiom> {
-
-	private static final Logger logger = LoggerFactory.getLogger(DisjointObjectPropertyAxiomLearner.class);
-
-	private OWLObjectProperty propertyToDescribe;
+public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLDisjointObjectPropertiesAxiom> {
 
 	private Set<OWLObjectProperty> allObjectProperties;
 
@@ -67,20 +63,12 @@ public class DisjointObjectPropertyAxiomLearner extends
 	private int popularity;
 
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
-		this.ks = ks;
+		super(ks);
 
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_dis ?o}}");
+				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_other ?o}}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o; ?p_dis ?o.}");
-	}
-
-	public OWLObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o; ?p_other ?o.}");
 	}
 
 	/*
@@ -91,34 +79,26 @@ public class DisjointObjectPropertyAxiomLearner extends
 	 */
 	@Override
 	protected void getExistingAxioms() {
+		SortedSet<OWLObjectProperty> existingDisjointProperties = reasoner.getEquivalentProperties(propertyToDescribe);
+		if (existingDisjointProperties != null && !existingDisjointProperties.isEmpty()) {
+			for (OWLObjectProperty eqProp : existingDisjointProperties) {
+				existingAxioms.add(df.getOWLDisjointObjectPropertiesAxiom(propertyToDescribe, eqProp));
+			}
+			logger.info("Existing axioms:" + existingAxioms);
+		}
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.ObjectPropertyHierarchyAxiomLearner#getAxiom(org.semanticweb.owlapi.model.OWLObjectProperty, org.semanticweb.owlapi.model.OWLObjectProperty)
 	 */
 	@Override
-	protected void learnAxioms() {
-		// we return here if the property is never used
-		popularity = reasoner.getPopularity(propertyToDescribe);
-		if (popularity == 0) {
-			return;
-		}
-
-		// TODO detect existing axioms
-
-		// at first get all existing dataproperties in knowledgebase
-		allObjectProperties = new SPARQLTasks(ks.getEndpoint()).getAllObjectProperties();
-		allObjectProperties.remove(propertyToDescribe);
-
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			// runSPARQL1_1_Mode();
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
+	public OWLDisjointObjectPropertiesAxiom getAxiom(OWLObjectProperty property, OWLObjectProperty otherProperty) {
+		return df.getOWLDisjointObjectPropertiesAxiom(property, otherProperty);
 	}
+	
+	public double computeScore(int candidatePopularity, int popularity, int overlap) {
+		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
+	};
 
 	private void runSingleQueryMode() {
 		// compute the overlap if exist
@@ -230,9 +210,9 @@ public class DisjointObjectPropertyAxiomLearner extends
 
 	}
 
-	private List<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> buildAxioms(
+	private SortedSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> buildAxioms(
 			Map<OWLObjectProperty, Integer> property2Count, Set<OWLObjectProperty> allProperties) {
-		List<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> axioms = new ArrayList<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>>();
+		SortedSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> axioms = new TreeSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>>();
 		Integer all = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 
@@ -304,70 +284,8 @@ public class DisjointObjectPropertyAxiomLearner extends
 		return axioms;
 	}
 
-	@Override
-	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(
-			EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom> evAxiom) {
-		OWLDisjointObjectPropertiesAxiom axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-		// we assume a single atomic property
-		OWLObjectProperty disjointProperty = axiom.getPropertiesMinus(propertyToDescribe).iterator().next()
-				.asOWLObjectProperty();
-		posExamplesQueryTemplate.setIri("p_dis", disjointProperty.toStringID());
-
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
-
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		}
-
-		while (rs.hasNext()) {
-			QuerySolution qs = rs.next();
-			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
-		}
-
-		return posExamples;
-	}
-
-	@Override
-	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(
-			EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom> evAxiom) {
-		OWLDisjointObjectPropertiesAxiom axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-		// we assume a single atomic property
-		OWLObjectProperty disjointProperty = axiom.getPropertiesMinus(propertyToDescribe).iterator().next()
-				.asOWLObjectProperty();
-		negExamplesQueryTemplate.setIri("p_dis", disjointProperty.toStringID());
-
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
-
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
-
-		while (rs.hasNext()) {
-			QuerySolution qs = rs.next();
-			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
-		}
-
-		return negExamples;
-	}
-
 	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-		// endpoint = new SparqlEndpoint(new
-		// URL("http://dbpedia.aksw.org:8902/sparql"),
-		// Collections.singletonList("http://dbpedia.org"),
-		// Collections.<String>emptyList()));
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));// .getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
 				.create("http://dbpedia.org/ontology/league")));

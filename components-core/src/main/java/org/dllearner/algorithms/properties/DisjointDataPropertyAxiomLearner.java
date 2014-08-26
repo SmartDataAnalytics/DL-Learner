@@ -356,9 +356,9 @@ public class DisjointDataPropertyAxiomLearner extends
 
 	}
 
-	private List<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>> buildAxioms(
+	private SortedSet<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>> buildAxioms(
 			Map<OWLDataProperty, Integer> property2Count, Set<OWLDataProperty> allProperties) {
-		List<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>> axioms = new ArrayList<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>>();
+		SortedSet<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>> axioms = new TreeSet<EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>>();
 		Integer all = property2Count.get(propertyToDescribe);
 		property2Count.remove(propertyToDescribe);
 
