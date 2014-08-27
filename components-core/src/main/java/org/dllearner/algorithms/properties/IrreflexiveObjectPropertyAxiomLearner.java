@@ -19,19 +19,11 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
-import java.util.Collections;
-
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 
@@ -58,17 +50,5 @@ public class IrreflexiveObjectPropertyAxiomLearner extends ObjectPropertyCharact
 	@Override
 	protected OWLIrreflexiveObjectPropertyAxiom getAxiom(OWLObjectProperty property) {
 		return df.getOWLIrreflexiveObjectPropertyAxiom(property);
-	}
-
-	public static void main(String[] args) throws Exception {
-		OWLDataFactory df = new OWLDataFactoryImpl();
-		IrreflexiveObjectPropertyAxiomLearner l = new IrreflexiveObjectPropertyAxiomLearner(new SparqlEndpointKS(
-				new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"),
-						Collections.singletonList("http://dbpedia.org"), Collections.<String> emptyList())));// .getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/spouse")));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
 }

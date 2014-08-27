@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -50,16 +51,16 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 	private static DecimalFormat df = new DecimalFormat("##0.0");
 	
 	private T axiom;
-	private Score score;
+	private AxiomScore score;
 	
 	private boolean asserted = false;
 	
-	public EvaluatedAxiom(T axiom, Score score) {
+	public EvaluatedAxiom(T axiom, AxiomScore score) {
 		this.axiom = axiom;
 		this.score = score;
 	}
 	
-	public EvaluatedAxiom(T axiom, Score score, boolean asserted) {
+	public EvaluatedAxiom(T axiom, AxiomScore score, boolean asserted) {
 		this.axiom = axiom;
 		this.score = score;
 		this.asserted = asserted;
@@ -69,7 +70,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 		return axiom;
 	}
 
-	public Score getScore() {
+	public AxiomScore getScore() {
 		return score;
 	}
 	

@@ -153,10 +153,10 @@ private static final Logger logger = LoggerFactory.getLogger(SubDataPropertyOfAx
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the estimated precision
-			double precision = accuracy(candidatePopularity, overlap);
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
 			
 			// compute the estimated recall
-			double recall = accuracy(popularity, overlap);
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
 			
 			// compute the final score
 			double score = Heuristics.getFScore(recall, precision, beta);
@@ -212,7 +212,7 @@ private static final Logger logger = LoggerFactory.getLogger(SubDataPropertyOfAx
 			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
 			
 			// compute the final score
-			double score = fMEasure(precision, recall);
+			double score = Heuristics.getFScore(recall, precision, beta);
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLSubDataPropertyOfAxiom>(

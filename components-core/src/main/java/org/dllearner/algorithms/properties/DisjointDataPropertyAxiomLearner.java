@@ -19,11 +19,7 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +33,7 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -177,13 +174,14 @@ public class DisjointDataPropertyAxiomLearner extends
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the estimated precision
-			double precision = accuracy(candidatePopularity, overlap);
-			
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
+
 			// compute the estimated recall
-			double recall = accuracy(popularity, overlap);
-			
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
 			// compute the final score
-			double score = 1 - fMEasure(precision, recall);
+			double score = 1 - Heuristics.getFScore(recall, precision);
+			
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(
@@ -230,13 +228,13 @@ public class DisjointDataPropertyAxiomLearner extends
 			int overlap = rs.next().getLiteral("overlap").getInt();
 			
 			// compute the estimated precision
-			double precision = accuracy(candidatePopularity, overlap);
-			
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
+
 			// compute the estimated recall
-			double recall = accuracy(popularity, overlap);
-			
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
 			// compute the final score
-			double score = 1 - fMEasure(precision, recall);
+			double score = 1 - Heuristics.getFScore(recall, precision);
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(
@@ -268,12 +266,15 @@ public class DisjointDataPropertyAxiomLearner extends
 			}
 			// get the overlap
 			int overlap = property2Overlap.containsKey(p) ? property2Overlap.get(p) : 0;
+			
 			// compute the estimated precision
-			double precision = accuracy(otherPopularity, overlap);
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(otherPopularity, overlap);
+
 			// compute the estimated recall
-			double recall = accuracy(popularity, overlap);
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
 			// compute the final score
-			double score = 1 - fMEasure(precision, recall);
+			double score = 1 - Heuristics.getFScore(recall, precision);
 
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(df
 					.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, p), new AxiomScore(score)));
@@ -373,23 +374,25 @@ public class DisjointDataPropertyAxiomLearner extends
 			double score;
 			if (usePropertyPopularity) {
 				int overlap = 0;
-				int pop;
+				int candidatePopularity;
 				if (ks.isRemote()) {
-					pop = reasoner.getPopularity(p);
+					candidatePopularity = reasoner.getPopularity(p);
 				} else {
 					Model model = ((LocalModelBasedSparqlEndpointKS) ks).getModel();
-					pop = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
+					candidatePopularity = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
 				}
 				// we skip classes with no instances
-				if (pop == 0)
+				if (candidatePopularity == 0)
 					continue;
 
-				// we compute the estimated precision
-				double precision = accuracy(pop, overlap);
-				// we compute the estimated recall
-				double recall = accuracy(popularity, overlap);
-				// compute the overall score
-				score = 1 - fMEasure(precision, recall);
+				// compute the estimated precision
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
+
+				// compute the estimated recall
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+				// compute the final score
+				score = 1 - Heuristics.getFScore(recall, precision);
 			} else {
 				score = 1;
 			}
@@ -404,23 +407,26 @@ public class DisjointDataPropertyAxiomLearner extends
 		for (Entry<OWLDataProperty, Integer> entry : sortByValues(property2Count)) {
 			p = entry.getKey();
 			int overlap = entry.getValue();
-			int pop;
+			int candidatePopularity;
 			if (ks.isRemote()) {
-				pop = reasoner.getPopularity(p);
+				candidatePopularity = reasoner.getPopularity(p);
 			} else {
 				Model model = ((LocalModelBasedSparqlEndpointKS) ks).getModel();
-				pop = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
+				candidatePopularity = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
 			}
 			// we skip classes with no instances
-			if (pop == 0)
+			if (candidatePopularity == 0)
 				continue;
 
 			// we compute the estimated precision
-			double precision = accuracy(pop, overlap);
-			// we compute the estimated recall
-			double recall = accuracy(popularity, overlap);
-			// compute the overall score
-			double score = 1 - fMEasure(precision, recall);
+			// compute the estimated precision
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
+
+			// compute the estimated recall
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+			// compute the final score
+			double score = 1 - Heuristics.getFScore(recall, precision);
 
 			evalAxiom = new EvaluatedAxiom<OWLDisjointDataPropertiesAxiom>(df.getOWLDisjointDataPropertiesAxiom(
 					propertyToDescribe, p), new AxiomScore(score));

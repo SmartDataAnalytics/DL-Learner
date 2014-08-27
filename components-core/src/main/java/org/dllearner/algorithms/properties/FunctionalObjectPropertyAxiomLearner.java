@@ -20,164 +20,90 @@
 package org.dllearner.algorithms.properties;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.OWL;
 
 @ComponentAnn(name = "functional objectproperty axiom learner", shortName = "oplfunc", version = 0.1)
 public class FunctionalObjectPropertyAxiomLearner extends
-		AbstractAxiomLearningAlgorithm<OWLFunctionalObjectPropertyAxiom, OWLIndividual> {
-
-	private static final Logger logger = LoggerFactory.getLogger(FunctionalObjectPropertyAxiomLearner.class);
-
-	private OWLObjectProperty propertyToDescribe;
-
-	private boolean declaredAsFunctional;
+		ObjectPropertyCharacteristicsAxiomLearner<OWLFunctionalObjectPropertyAxiom> {
 
 	public FunctionalObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
-		this.ks = ks;
-		posExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)} }");
-		negExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s WHERE {?s ?p ?o1. ?s ?p ?o2. FILTER(?o1 != ?o2)}");
+		super(ks);
+		
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT ?s (?o1 AS ?o) ?WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)}}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
+				"SELECT ?s ?o1 ?o2 WHERE {?s ?p ?o1. ?s ?p ?o2. FILTER(?o1 != ?o2)}");
+		
+		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
+					"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)}}");
+		
+		axiomType = AxiomType.FUNCTIONAL_OBJECT_PROPERTY;
+		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
 	}
-
-	public OWLObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
-		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner#getAxiom(org.semanticweb.owlapi.model.OWLObjectProperty)
 	 */
 	@Override
-	protected void getExistingAxioms() {
-		String query = String.format("ASK {<%s> a <%s>}", propertyToDescribe, OWL.FunctionalProperty.getURI());
-		declaredAsFunctional = executeAskQuery(query);
-		if (declaredAsFunctional) {
-			existingAxioms.add(df.getOWLFunctionalObjectPropertyAxiom(propertyToDescribe));
-			logger.info("Property is already declared as functional in knowledge base.");
-		}
+	protected OWLFunctionalObjectPropertyAxiom getAxiom(OWLObjectProperty property) {
+		return df.getOWLFunctionalObjectPropertyAxiom(property);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner#getNegativeExamples(org.dllearner.core.EvaluatedAxiom)
 	 */
 	@Override
-	protected void learnAxioms() {
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			runSPARQL1_1_Mode();
+	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(
+			EvaluatedAxiom<OWLFunctionalObjectPropertyAxiom> evaluatedAxiom) {
+		OWLFunctionalObjectPropertyAxiom axiom = evaluatedAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
+
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+
+		ResultSet rs;
+		if (workingModel != null) {
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
 		} else {
-			runSPARQL1_0_Mode();
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(),
-				limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			workingModel.add(newModel);
-			// get number of instances of s with <s p o>
-			query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s <%s> ?o.}",
-					propertyToDescribe.toStringID());
-			ResultSet rs = executeSelectQuery(query, workingModel);
-			QuerySolution qs;
-			int all = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				all = qs.getLiteral("all").getInt();
-			}
-
-			// get number of instances of s with <s p o> <s p o1> where o != o1
-			query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
-			query = query.replace("%s", propertyToDescribe.toStringID());
-			rs = executeSelectQuery(query, workingModel);
-			int functional = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				functional = qs.getLiteral("functional").getInt();
-			}
-
-			if (all > 0) {
-				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalObjectPropertyAxiom>(df
-						.getOWLFunctionalObjectPropertyAxiom(propertyToDescribe), computeScore(all, functional),
-						declaredAsFunctional));
-			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit,
-					offset);
-			newModel = executeConstructQuery(query);
-		}
-	}
-
-	private void runSPARQL1_1_Mode() {
-		// get number of instances of s with <s p o>
-		int numberOfSubjects = reasoner.getSubjectCountForProperty(propertyToDescribe);// TODO,
-																						// getRemainingRuntimeInMilliSeconds());
-		if (numberOfSubjects == -1) {
-			logger.warn("Early termination: Got timeout while counting number of distinct subjects for given property.");
-			return;
+			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		}
 
-		if (numberOfSubjects > 0) {
-			// get number of instances of s with <s p o> <s p o1> where o != o1
-			String query = "SELECT (COUNT(DISTINCT ?s) AS ?functional) WHERE {?s <%s> ?o1. FILTER NOT EXISTS {?s <%s> ?o2. FILTER(?o1 != ?o2)} }";
-			query = query.replace("%s", propertyToDescribe.toStringID());
-			ResultSet rs = executeSelectQuery(query);
-			QuerySolution qs;
-			int functional = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				functional = qs.getLiteral("functional").getInt();
-			}
-
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalObjectPropertyAxiom>(df
-					.getOWLFunctionalObjectPropertyAxiom(propertyToDescribe),
-					computeScore(numberOfSubjects, functional), declaredAsFunctional));
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			// ?o1
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o1").getURI()));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			// ?o2
+			object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o2").getURI()));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
 		}
+
+		return negExamples;
 	}
 
 	public static void main(String[] args) throws Exception {
 		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(
 				SparqlEndpoint.getEndpointDBpedia()));
 		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
-				.create("http://dbpedia.org/property/father")));
+				.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.setForceSPARQL_1_0_Mode(true);
 		l.init();
@@ -190,7 +116,5 @@ public class FunctionalObjectPropertyAxiomLearner extends
 			printSubset(l.getNegativeExamples(axiom), 10);
 			l.explainScore(axiom);
 		}
-
 	}
-
 }

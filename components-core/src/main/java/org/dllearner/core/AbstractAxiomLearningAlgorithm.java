@@ -105,7 +105,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected SparqlEndpointKS ks;
 	protected SPARQLReasoner reasoner;
-	private QueryExecutionFactory qef;
+	protected QueryExecutionFactory qef;
 	
 	protected SortedSet<EvaluatedAxiom<T>> currentlyBestAxioms;
 	protected SortedSet<T> existingAxioms;
@@ -472,28 +472,28 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
         return entries;
 	}
 	
-	protected Score computeScore(int total, int success){
+	protected AxiomScore computeScore(int total, int success){
 		if(success > total){
 			logger.warn("success value > total value");
 		}
 		success = Math.min(total, success);//TODO this is a workaround as Virtuoso sometimes returns wrong counts
 		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 		
-		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+		double accuracy = Heuristics.getConfidenceInterval95WaldAverage(total, success);
 	
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
-		return new AxiomScore(accuracy, confidence, total, success, total-success);
+		return new AxiomScore(accuracy, confidence, success, total-success);
 	}
-	
-	protected double accuracy(int total, int success){
-		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
-		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
-	}
-	
-	protected double fMEasure(double precision, double recall){
-		return 2 * precision * recall / (precision + recall);
-	}
+//	
+//	protected double accuracy(int total, int success){
+//		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+//		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
+//	}
+//	
+//	protected double fMEasure(double precision, double recall){
+//		return 2 * precision * recall / (precision + recall);
+//	}
 	
 	protected ResultSet fetchData(){
 		setChunkConditions();
@@ -592,19 +592,22 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public void explainScore(EvaluatedAxiom<T> evAxiom){
-		int posExampleCnt = getPositiveExamples(evAxiom).size();
-		int negExampleCnt = getNegativeExamples(evAxiom).size();
+		AxiomScore score = evAxiom.getScore();
+		int posExampleCnt = score.getNrOfPositiveExamples();
+		int negExampleCnt = score.getNrOfNegativeExamples();
 		int total = posExampleCnt + negExampleCnt;
 		StringBuilder sb = new StringBuilder();
 		String lb = "\n";
 		sb.append("######################################").append(lb);
 		sb.append("Explanation:").append(lb);
 		sb.append("Score(").append(evAxiom.getAxiom()).append(") = ").append(evAxiom.getScore().getAccuracy()).append(lb);
-		sb.append("Fragment size:\t").append(workingModel.size()).append(" triples").append(lb);
 		sb.append("Total number of resources:\t").append(total).append(lb);
 		sb.append("Number of positive examples:\t").append(posExampleCnt).append(lb);
 		sb.append("Number of negative examples:\t").append(negExampleCnt).append(lb);
-		sb.append("Complete data processed:\t").append(fullDataLoaded).append(lb);
+		sb.append("Based on sample:            \t").append(score.isSampleBased()).append(lb);
+		if(workingModel != null){
+			sb.append("Sample size(#triples):      \t").append(workingModel.size()).append(lb);
+		}
 		sb.append("######################################");
 		System.out.println(sb.toString());
 	}

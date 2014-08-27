@@ -6,8 +6,11 @@ package org.dllearner.algorithms.properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -17,11 +20,11 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyCharacteristicAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.OWL2;
 
 /**
  * @author Lorenz Buehmann
@@ -30,6 +33,9 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObjectPropertyCharacteristicAxiom> extends ObjectPropertyAxiomLearner<T>{
 
 	protected final ParameterizedSparqlString ALREADY_DECLARED_QUERY = new ParameterizedSparqlString("ASK {?p a ?type .}");
+	
+	protected final ParameterizedSparqlString GET_SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}");
 	
 	protected ParameterizedSparqlString POS_FREQUENCY_QUERY = null;
 	
@@ -48,6 +54,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		
 		POS_FREQUENCY_QUERY.setIri("p", propertyToDescribe.toStringID());
 		ALREADY_DECLARED_QUERY.setIri("p", propertyToDescribe.toStringID());
+		GET_SAMPLE_QUERY.setIri("p", propertyToDescribe.toStringID());
 		
 		IRI type;
 		if(axiomType.equals(AxiomType.SYMMETRIC_OBJECT_PROPERTY)){
@@ -89,7 +96,8 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 	 */
 	@Override
 	protected void run() {
-		runSPARQL1_1_Mode();
+		runSPARQL1_0_Mode();
+//		runSPARQL1_1_Mode();
 	}
 	
 	protected abstract T getAxiom(OWLObjectProperty property);
@@ -98,55 +106,67 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		boolean declared = !existingAxioms.isEmpty();
 		
 		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery = "CONSTRUCT {?s <%s> ?o.} WHERE {?s <%s> ?o} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(),
-				limit, offset);
-		Model newModel = executeConstructQuery(query);
+		
+		//TODO determine page size in super class or even better in the KB object
+		int DEFAULT_PAGE_SIZE = 10000;
+		long limit = DEFAULT_PAGE_SIZE; //PaginationUtils.adjustPageSize(qef, DEFAULT_PAGE_SIZE);
+		long offset = 0;
+		
+		Query query = GET_SAMPLE_QUERY.asQuery();
+		query.setLimit(limit);
+		Model newModel = executeConstructQuery(query.toString());
+		
 		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
 			workingModel.add(newModel);
 			
-			// get number of instances of s with <s p o>
-//			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-//			query = query.replace("%s", propertyToDescribe.toStringID());
-//			ResultSet rs = executeSelectQuery(query, workingModel);
-//			QuerySolution qs;
-//			int total = 0;
-//			while (rs.hasNext()) {
-//				qs = rs.next();
-//				total = qs.getLiteral("total").getInt();
-//			}
-			int total = (int) workingModel.size();
+			popularity = getPropertyPopularity(workingModel);
 			
 			// get number of pos examples
-			ResultSet rs = executeSelectQuery(POS_FREQUENCY_QUERY.toString(), workingModel);
-			int frequency = rs.next().getLiteral("cnt").getInt();
+			int frequency = getPositiveExamplesFrequency(workingModel);
 
-			if (total > 0) {
+			if (popularity > 0) {
 				currentlyBestAxioms.clear();
 				currentlyBestAxioms.add(new EvaluatedAxiom<T>(
 						getAxiom(propertyToDescribe), 
-						computeScore(popularity, frequency),
+						computeScore(popularity, frequency, true),
 						declared));
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit,
-					offset);
-			newModel = executeConstructQuery(query);
+			query.setOffset(offset);
+			newModel = executeConstructQuery(query.toString());
 		}
 	}
 	
 	private void runSPARQL1_1_Mode() {
 		boolean declared = !existingAxioms.isEmpty();
 		
-		ResultSet rs = executeSelectQuery(POS_FREQUENCY_QUERY.toString());
-		int frequency = rs.next().getLiteral("cnt").getInt();
+		int frequency = getPositiveExamplesFrequency();
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<T>(
 				getAxiom(propertyToDescribe), 
-				computeScore(popularity, frequency),
+				computeScore(popularity, frequency, false),
 				declared));
+	}
+	
+	protected int getPositiveExamplesFrequency(){
+		return getCountValue(POS_FREQUENCY_QUERY.toString());
+	}
+	
+	protected int getPositiveExamplesFrequency(Model model){
+		return getCountValue(POS_FREQUENCY_QUERY.toString(), model);
+	}
+	
+	protected AxiomScore computeScore(int total, int success, boolean sample){
+		if(success > total){
+			logger.warn("success value > total value");
+		}
+		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+		
+		double accuracy = Heuristics.getConfidenceInterval95WaldAverage(total, success);
+	
+		double confidence = confidenceInterval[1] - confidenceInterval[0];
+		
+		return new AxiomScore(accuracy, confidence, success, total-success, sample);
 	}
 	
 	@Override
