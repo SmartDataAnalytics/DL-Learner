@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
@@ -38,6 +40,7 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -210,11 +213,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//get the overlap
 			int overlap = class2Overlap.containsKey(cls) ? class2Overlap.get(cls) : 0;
 			//compute the estimated precision
-			double precision = accuracy(otherPopularity, overlap);
-			//compute the estimated recall
-			double recall = accuracy(popularity, overlap);
-			//compute the final score
-			double score = 1 - fMEasure(precision, recall);
+			// compute the estimated precision
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(otherPopularity, overlap);
+
+			// compute the estimated recall
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+			// compute the final score
+			double score = 1 - Heuristics.getFScore(recall, precision);
 
 			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, new AxiomScore(score)));
 		}
@@ -389,12 +395,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 				if (pop == 0)
 					continue;
 
-				//we compute the estimated precision
-				double precision = accuracy(pop, overlap);
-				//we compute the estimated recall
-				double recall = accuracy(popularity, overlap);
-				//compute the overall score
-				double score = 1 - fMEasure(precision, recall);
+				// compute the estimated precision
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(pop, overlap);
+
+				// compute the estimated recall
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+				// compute the final score
+				double score = 1 - Heuristics.getFScore(recall, precision);
 
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
 			} else {
@@ -424,12 +432,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 				if (pop == 0)
 					continue;
 
-				// we compute the estimated precision
-				double precision = accuracy(pop, overlap);
-				// we compute the estimated recall
-				double recall = accuracy(popularity, overlap);
-				// compute the overall score
-				double score = 1 - fMEasure(precision, recall);
+				// compute the estimated precision
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(pop, overlap);
+
+				// compute the estimated recall
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+				// compute the final score
+				double score = 1 - Heuristics.getFScore(recall, precision);
 
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
 			} else {
@@ -507,12 +517,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 					//get number of instances of (A and B)
 					int instanceCountAB = reasoner.getPopularity(df.getOWLObjectIntersectionOf(cls, sib));
 
-					//we compute the estimated precision
-					double precision = accuracy(instanceCountB, instanceCountAB);
-					//we compute the estimated recall
-					double recall = accuracy(instanceCountA, instanceCountAB);
-					//compute the overall score
-					double score = 1 - fMEasure(precision, recall);
+					// compute the estimated precision
+					double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);
+
+					// compute the estimated recall
+					double recall = Heuristics.getConfidenceInterval95WaldAverage(instanceCountA, instanceCountAB);
+
+					// compute the final score
+					double score = 1 - Heuristics.getFScore(recall, precision);
 
 					EvaluatedDescription evalDesc = new EvaluatedDescription(sib, new AxiomScore(score));
 					evaluatedDescriptions.add(evalDesc);
@@ -552,14 +564,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//get number of instances of (A and B)
 			int instanceCountAB = reasoner.getPopularity(df.getOWLObjectIntersectionOf(clsA, clsB));
 
-			//we compute the estimated precision
-			double precision = accuracy(instanceCountB, instanceCountAB);
+			// compute the estimated precision
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);
 
-			//we compute the estimated recall
-			double recall = accuracy(instanceCountA, instanceCountAB);
+			// compute the estimated recall
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(instanceCountA, instanceCountAB);
 
-			//compute the overall score
-			scoreValue = 1 - fMEasure(precision, recall);
+			// compute the final score
+			scoreValue = 1 - Heuristics.getFScore(recall, precision);
 
 		}
 
