@@ -152,6 +152,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				} catch (SQLException e) {
 					logger.error(e.getMessage(), e);
 				}
+			} else if(ks.getCache() != null){
+				qef = new QueryExecutionFactoryCacheEx(qef, ks.getCache());
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			
@@ -257,7 +259,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		long start = System.currentTimeMillis();
 		
 		if (batchedMode) {
-			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> . SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:ObjectProperty .} GROUP BY ?p";
+			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:ObjectProperty .} GROUP BY ?p";
 			ResultSet rs = executeSelectQuery(query);
 			while (rs.hasNext()) {
 				QuerySolution qs = rs.next();
@@ -292,7 +294,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		long start = System.currentTimeMillis();
 		
 		if (batchedMode) {
-			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> . SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:DatatypeProperty .} GROUP BY ?p";
+			String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o . ?p a owl:DatatypeProperty .} GROUP BY ?p";
 			ResultSet rs = executeSelectQuery(query);
 			while (rs.hasNext()) {
 				QuerySolution qs = rs.next();
