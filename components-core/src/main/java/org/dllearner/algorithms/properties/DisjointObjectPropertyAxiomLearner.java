@@ -19,41 +19,18 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
 @ComponentAnn(name = "disjoint objectproperty axiom learner", shortName = "opldisjoint", version = 0.1)
 public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLDisjointObjectPropertiesAxiom> {
-
-	private Set<OWLObjectProperty> allObjectProperties;
-
-	private boolean usePropertyPopularity = true;
-
-	private int popularity;
 
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
 		super(ks);
@@ -62,6 +39,8 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_other ?o}}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
 				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o; ?p_other ?o.}");
+		
+		axiomType = AxiomType.DISJOINT_OBJECT_PROPERTIES;
 	}
 
 	/*
@@ -72,10 +51,10 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLObjectProperty> existingDisjointProperties = reasoner.getEquivalentProperties(propertyToDescribe);
+		SortedSet<OWLObjectProperty> existingDisjointProperties = reasoner.getDisjointProperties(propertyToDescribe);
 		if (existingDisjointProperties != null && !existingDisjointProperties.isEmpty()) {
-			for (OWLObjectProperty eqProp : existingDisjointProperties) {
-				existingAxioms.add(df.getOWLDisjointObjectPropertiesAxiom(propertyToDescribe, eqProp));
+			for (OWLObjectProperty disProp : existingDisjointProperties) {
+				existingAxioms.add(df.getOWLDisjointObjectPropertiesAxiom(propertyToDescribe, disProp));
 			}
 			logger.info("Existing axioms:" + existingAxioms);
 		}
@@ -92,208 +71,4 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 	public double computeScore(int candidatePopularity, int popularity, int overlap) {
 		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
 	};
-
-	private void runSingleQueryMode() {
-		// compute the overlap if exist
-		Map<OWLObjectProperty, Integer> property2Overlap = new HashMap<OWLObjectProperty, Integer>();
-		String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p",
-				propertyToDescribe.toStringID());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			OWLObjectProperty prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
-			int cnt = qs.getLiteral("cnt").getInt();
-			property2Overlap.put(prop, cnt);
-		}
-		// for each property in knowledge base
-		for (OWLObjectProperty p : allObjectProperties) {
-			// get the popularity
-			int otherPopularity = reasoner.getPopularity(p);
-			if (otherPopularity == 0) {// skip empty properties
-				continue;
-			}
-			// get the overlap
-			int overlap = property2Overlap.containsKey(p) ? property2Overlap.get(p) : 0;
-			// compute the estimated precision
-			double precision = Heuristics.getConfidenceInterval95WaldAverage(otherPopularity, overlap);
-
-			// compute the estimated recall
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-			// compute the final score
-			double score = 1 - Heuristics.getFScore(recall, precision);
-
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>(df
-					.getOWLDisjointObjectPropertiesAxiom(propertyToDescribe, p), new AxiomScore(score)));
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
-		String countQuery = "SELECT ?p (COUNT(?s) AS ?count) WHERE {?s ?p ?o.} GROUP BY ?p";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
-		Model newModel = executeConstructQuery(query);
-		Map<OWLObjectProperty, Integer> result = new HashMap<OWLObjectProperty, Integer>();
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			workingModel.add(newModel);
-			OWLObjectProperty prop;
-			Integer oldCnt;
-			ResultSet rs = executeSelectQuery(countQuery, workingModel);
-			QuerySolution qs;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
-				int newCnt = qs.getLiteral("count").getInt();
-				oldCnt = result.get(prop);
-				if (oldCnt == null) {
-					oldCnt = Integer.valueOf(newCnt);
-				}
-				result.put(prop, oldCnt);
-				qs.getLiteral("count").getInt();
-			}
-			if (!result.isEmpty()) {
-				currentlyBestAxioms = buildAxioms(result, allObjectProperties);
-			}
-
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
-			newModel = executeConstructQuery(query);
-		}
-
-	}
-
-	private void runSPARQL1_1_Mode() {
-		// get properties and how often they occur
-		int limit = 1000;
-		int offset = 0;
-		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(?s) as ?count) WHERE {?p a owl:DatatypeProperty. ?s ?p ?o."
-				+ "{SELECT ?s ?o WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d}" + "}";
-		String query;
-		Map<OWLObjectProperty, Integer> result = new HashMap<OWLObjectProperty, Integer>();
-		OWLObjectProperty prop;
-		Integer oldCnt;
-		boolean repeat = true;
-
-		ResultSet rs = null;
-		while (!terminationCriteriaSatisfied() && repeat) {
-			query = String.format(queryTemplate, propertyToDescribe, limit, offset);
-			rs = executeSelectQuery(query);
-			QuerySolution qs;
-			repeat = false;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				prop = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
-				int newCnt = qs.getLiteral("count").getInt();
-				oldCnt = result.get(prop);
-				if (oldCnt == null) {
-					oldCnt = Integer.valueOf(newCnt);
-				} else {
-					oldCnt += newCnt;
-				}
-				result.put(prop, oldCnt);
-				repeat = true;
-			}
-			if (!result.isEmpty()) {
-				currentlyBestAxioms = buildAxioms(result, allObjectProperties);
-				offset += 1000;
-			}
-		}
-
-	}
-
-	private SortedSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> buildAxioms(
-			Map<OWLObjectProperty, Integer> property2Count, Set<OWLObjectProperty> allProperties) {
-		SortedSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>> axioms = new TreeSet<EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>>();
-		Integer all = property2Count.get(propertyToDescribe);
-		property2Count.remove(propertyToDescribe);
-
-		// get complete disjoint properties
-		Set<OWLObjectProperty> completeDisjointProperties = new TreeSet<OWLObjectProperty>(allProperties);
-		completeDisjointProperties.removeAll(property2Count.keySet());
-
-		EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom> evalAxiom;
-		// first create disjoint axioms with properties which not occur and give
-		// score of 1
-		for (OWLObjectProperty p : completeDisjointProperties) {
-			double score;
-			if (usePropertyPopularity) {
-				int overlap = 0;
-				int candidatePopularity;
-				if (ks.isRemote()) {
-					candidatePopularity = reasoner.getPopularity(p);
-				} else {
-					Model model = ((LocalModelBasedSparqlEndpointKS) ks).getModel();
-					candidatePopularity = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
-				}
-				// we skip classes with no instances
-				if (candidatePopularity == 0)
-					continue;
-
-				// compute the estimated precision
-				double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
-
-				// compute the estimated recall
-				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-				// compute the final score
-				score = 1 - Heuristics.getFScore(recall, precision);
-			} else {
-				score = 1;
-			}
-			evalAxiom = new EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>(df.getOWLDisjointObjectPropertiesAxiom(
-					propertyToDescribe, p), new AxiomScore(score));
-			axioms.add(evalAxiom);
-		}
-
-		// second create disjoint axioms with other properties and score 1 -
-		// (#occurence/#all)
-		OWLObjectProperty p;
-		for (Entry<OWLObjectProperty, Integer> entry : sortByValues(property2Count)) {
-			p = entry.getKey();
-			int overlap = entry.getValue();
-			int candidatePopularity;
-			if (ks.isRemote()) {
-				candidatePopularity = reasoner.getPopularity(p);
-			} else {
-				Model model = ((LocalModelBasedSparqlEndpointKS) ks).getModel();
-				candidatePopularity = model.listStatements(null, model.getProperty(p.toStringID()), (RDFNode) null).toSet().size();
-			}
-			// we skip classes with no instances
-			if (candidatePopularity == 0)
-				continue;
-
-			// compute the estimated precision
-			double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
-
-			// compute the estimated recall
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-			// compute the final score
-			double score = 1 - Heuristics.getFScore(recall, precision);
-
-			evalAxiom = new EvaluatedAxiom<OWLDisjointObjectPropertiesAxiom>(df.getOWLDisjointObjectPropertiesAxiom(
-					propertyToDescribe, p), new AxiomScore(score));
-		}
-
-		property2Count.put(propertyToDescribe, all);
-		return axioms;
-	}
-
-	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		DisjointObjectPropertyAxiomLearner l = new DisjointObjectPropertyAxiomLearner(new SparqlEndpointKS(endpoint));// .getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
-				.create("http://dbpedia.org/ontology/league")));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.init();
-		// l.getReasoner().precomputeObjectPropertyPopularity();
-		l.start();
-		for (EvaluatedAxiom ax : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE)) {
-			System.out.println(ax);
-		}
-	}
 }

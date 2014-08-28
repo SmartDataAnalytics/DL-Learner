@@ -923,7 +923,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return properties;
 	}
 	
-	public Set<OWLDataProperty> getOWLDataProperties() {
+	public SortedSet<OWLDataProperty> getOWLDataProperties() {
 		return getOWLDataProperties(null);
 	}
 	
@@ -1790,7 +1790,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public SortedSet<OWLObjectProperty> getEquivalentProperties(OWLObjectProperty objectProperty) {
-		SortedSet<OWLObjectProperty> superProperties = new TreeSet<OWLObjectProperty>();
+		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
 		String query = String.format("SELECT ?equ {<%s> <%s> ?equ. FILTER(isIRI(?equ))}", 
 				objectProperty.toStringID(),
 				OWL.equivalentProperty.getURI()
@@ -1799,9 +1799,24 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			superProperties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("equ").getURI())));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("equ").getURI())));
 		}
-		return superProperties;
+		return properties;
+	}
+	
+	public SortedSet<OWLObjectProperty> getDisjointProperties(OWLObjectProperty objectProperty) {
+		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
+		String query = String.format("SELECT ?equ {<%s> <%s> ?p. FILTER(isIRI(?p))}", 
+				objectProperty.toStringID(),
+				OWL2.propertyDisjointWith.getURI()
+				);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
+		}
+		return properties;
 	}
 
 	public SortedSet<OWLDataProperty> getEquivalentProperties(OWLDataProperty objectProperty) {
@@ -1849,6 +1864,21 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			subProperties.add(df.getOWLDataProperty(IRI.create(qs.getResource("sub").getURI())));
 		}
 		return subProperties;
+	}
+	
+	public SortedSet<OWLDataProperty> getDisjointProperties(OWLDataProperty objectProperty) {
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		String query = String.format("SELECT ?equ {<%s> <%s> ?p. FILTER(isIRI(?p))}", 
+				objectProperty.toStringID(),
+				OWL2.propertyDisjointWith.getURI()
+				);
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI())));
+		}
+		return properties;
 	}
 
 	private ResultSet executeSelectQuery(String queryString){
