@@ -156,19 +156,6 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		return getCountValue(POS_FREQUENCY_QUERY.toString(), model);
 	}
 	
-	protected AxiomScore computeScore(int total, int success, boolean sample){
-		if(success > total){
-			logger.warn("success value > total value");
-		}
-		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
-		
-		double accuracy = Heuristics.getConfidenceInterval95WaldAverage(total, success);
-	
-		double confidence = confidenceInterval[1] - confidenceInterval[0];
-		
-		return new AxiomScore(accuracy, confidence, success, total-success, sample);
-	}
-	
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<T> evAxiom) {
 		T axiom = evAxiom.getAxiom();

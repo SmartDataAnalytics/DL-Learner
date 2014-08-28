@@ -41,6 +41,8 @@ public class ReflexiveObjectPropertyAxiomLearner extends ObjectPropertyCharacter
 		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
 					"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?s .}");
 		
+		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
+		
 		axiomType = AxiomType.REFLEXIVE_OBJECT_PROPERTY;
 
 	}

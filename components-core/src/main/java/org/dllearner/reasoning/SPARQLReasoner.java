@@ -523,6 +523,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query = "ASK {<" + property + "> a <" + OWL2.TransitiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
+	
+	public boolean isFunctional(OWLDataProperty property){
+		String query = "ASK {<" + property + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
+		return qef.createQueryExecution(query).execAsk();
+	}
 
 	public final ClassHierarchy prepareSubsumptionHierarchyFast() {
 		logger.info("Preparing subsumption hierarchy ...");

@@ -55,8 +55,10 @@ public class FunctionalObjectPropertyAxiomLearner extends
 		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
 					"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o1. FILTER NOT EXISTS {?s ?p ?o2. FILTER(?o1 != ?o2)}}");
 		
-		axiomType = AxiomType.FUNCTIONAL_OBJECT_PROPERTY;
 		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
+		
+		axiomType = AxiomType.FUNCTIONAL_OBJECT_PROPERTY;
+		
 	}
 	
 	/* (non-Javadoc)

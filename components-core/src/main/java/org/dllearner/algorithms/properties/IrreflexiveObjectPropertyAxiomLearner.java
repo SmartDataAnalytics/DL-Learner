@@ -41,6 +41,8 @@ public class IrreflexiveObjectPropertyAxiomLearner extends ObjectPropertyCharact
 		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
 					"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o . FILTER NOT EXISTS {?s ?p ?s .} }");
 		
+		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
+		
 		axiomType = AxiomType.IRREFLEXIVE_OBJECT_PROPERTY;
 	}
 

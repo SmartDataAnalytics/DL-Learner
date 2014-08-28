@@ -473,17 +473,20 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	protected AxiomScore computeScore(int total, int success){
+		return computeScore(total, success, false);
+	}
+	
+	protected AxiomScore computeScore(int total, int success, boolean sample){
 		if(success > total){
 			logger.warn("success value > total value");
 		}
-		success = Math.min(total, success);//TODO this is a workaround as Virtuoso sometimes returns wrong counts
 		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 		
 		double accuracy = Heuristics.getConfidenceInterval95WaldAverage(total, success);
 	
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
-		return new AxiomScore(accuracy, confidence, success, total-success);
+		return new AxiomScore(accuracy, confidence, success, total-success, sample);
 	}
 //	
 //	protected double accuracy(int total, int success){
