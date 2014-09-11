@@ -1,12 +1,12 @@
 package org.dllearner.algorithms.qtl;
 
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.junit.Before;
 import org.junit.Test;
 
 public class QTLTest {
 	String cacheDirectory = "cache";
-	CacheEx cache;
+	CacheFrontend cache;
 
 	@Before
 	public void setUp() throws Exception {

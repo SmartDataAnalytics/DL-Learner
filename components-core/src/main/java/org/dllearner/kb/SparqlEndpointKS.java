@@ -25,10 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -50,7 +50,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
 public class SparqlEndpointKS implements KnowledgeSource {
 
 	private SparqlEndpoint endpoint;
-	private CacheEx cache;
+	private CacheFrontend cache;
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
 	private boolean initialized = false;
@@ -74,7 +74,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		this(endpoint, (String)null);
 	}
 	
-	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheEx cache) {
+	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheFrontend cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
 	}
@@ -84,8 +84,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		if(cacheDirectory != null){
 			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-				cache = new CacheExImpl(cacheBackend);
+				CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+				cache = new CacheFrontendImpl(cacheBackend);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {
@@ -94,14 +94,14 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		}
 	}
 	
-	public CacheEx getCache() {
+	public CacheFrontend getCache() {
 		return cache;
 	}
 	
 	/**
 	 * @param cache the cache to set
 	 */
-	public void setCache(CacheEx cache) {
+	public void setCache(CacheFrontend cache) {
 		this.cache = cache;
 	}
 	

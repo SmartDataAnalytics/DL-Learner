@@ -9,10 +9,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -51,8 +50,8 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 		if(cacheDir != null){
 			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
-				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				CacheBackend cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
+				CacheFrontendImpl cacheFrontend = new CacheFrontendImpl(cacheBackend);
 				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();

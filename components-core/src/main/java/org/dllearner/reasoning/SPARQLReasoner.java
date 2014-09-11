@@ -33,11 +33,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -72,6 +73,7 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -142,8 +144,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			if(cacheDirectory != null){
 				try {
 					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+					CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+					CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
 					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 				} catch (ClassNotFoundException e) {
 					logger.error(e.getMessage(), e);
@@ -162,11 +164,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this(new SparqlEndpointKS(endpoint), cacheDirectory);
 	}
 	
-	public SPARQLReasoner(SparqlEndpointKS ks, CacheCoreEx cacheBackend) {
-		this(ks, new CacheExImpl(cacheBackend));
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheBackend cacheBackend) {
+		this(ks, new CacheFrontendImpl(cacheBackend));
 	}
 	
-	public SPARQLReasoner(SparqlEndpointKS ks, CacheEx cache) {
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheFrontend cache) {
 		this.ks = ks;
 
 		classPopularityMap = new HashMap<NamedClass, Integer>();

@@ -41,10 +41,10 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -136,7 +136,7 @@ public class OWLAxiomPatternUsageEvaluation {
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private String cacheDirectory = "pattern-cache/db";
-	private CacheEx cache;
+	private CacheFrontend cache;
 	private SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	private QueryExecutionFactory qef;
 	
@@ -195,8 +195,8 @@ public class OWLAxiomPatternUsageEvaluation {
 			if(cacheDirectory != null){
 				try {
 					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-					cache = new CacheExImpl(cacheBackend);
+					CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+					cache = new CacheFrontendImpl(cacheBackend);
 					qef = new QueryExecutionFactoryCacheEx(qef, cache);
 					ks.setCache(cache);
 				} catch (ClassNotFoundException e) {

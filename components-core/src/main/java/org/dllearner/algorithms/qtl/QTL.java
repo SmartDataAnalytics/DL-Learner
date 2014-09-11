@@ -33,11 +33,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.collections15.ListUtils;
@@ -53,7 +55,6 @@ import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.util.SPARQLEndpointEx;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -77,8 +78,6 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
@@ -490,8 +489,8 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 				if(cacheDirectory != null){
 					try {
 						long timeToLive = TimeUnit.DAYS.toMillis(30);
-						CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-						CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+						CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
+						CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
 						qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
@@ -42,7 +42,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this(endpoint, cache.getCacheDirectory(), maxRecursionDepth);
 	}
 	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheEx cache) {
+	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		if(cache != null){
 			qef = new QueryExecutionFactoryCacheEx(qef, cache);
@@ -57,8 +57,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		if(cacheDir != null){
 			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
-				CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
+				CacheBackend cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
+				CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
 				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
