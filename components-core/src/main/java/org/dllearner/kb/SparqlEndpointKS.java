@@ -20,15 +20,12 @@
 package org.dllearner.kb;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -82,15 +79,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public SparqlEndpointKS(SparqlEndpoint endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
 		if(cacheDirectory != null){
-			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-				cache = new CacheFrontendImpl(cacheBackend);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+				cache = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
 		}
 	}
 	

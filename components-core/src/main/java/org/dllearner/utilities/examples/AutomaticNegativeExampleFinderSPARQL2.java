@@ -40,6 +40,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
 import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.core.owl.Description;
@@ -97,16 +98,9 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		
 		qef = new QueryExecutionFactoryHttp(se.getURL().toString(), se.getDefaultGraphURIs());
 		if(cacheDirectory != null){
-			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-				CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
+				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
 				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

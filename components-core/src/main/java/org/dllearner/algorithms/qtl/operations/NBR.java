@@ -22,8 +22,10 @@ import javax.xml.ws.http.HTTPException;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
 import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.log4j.Logger;
@@ -104,16 +106,9 @@ public class NBR<N> {
 		
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		if(cacheDirectory != null){
-			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-				CacheFrontendImpl cacheFrontend = new CacheFrontendImpl(cacheBackend);
+				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
 				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

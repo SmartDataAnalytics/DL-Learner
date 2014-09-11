@@ -38,7 +38,7 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -141,17 +141,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cacheDirectory != null){
-				try {
-					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-					CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
-					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-				} catch (ClassNotFoundException e) {
-					logger.error(e.getMessage(), e);
-				} catch (SQLException e) {
-					logger.error(e.getMessage(), e);
-				}
+			if (cacheDirectory != null) {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			

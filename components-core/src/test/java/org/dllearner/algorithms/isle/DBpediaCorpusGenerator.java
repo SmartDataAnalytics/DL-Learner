@@ -10,16 +10,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -80,16 +77,9 @@ public class DBpediaCorpusGenerator {
 		corpusDirectory.mkdirs();
 		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		try {
 			long timeToLive = TimeUnit.DAYS.toMillis(30);
-			CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-			CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
+			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
 			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		
 		//load the DBpedia ontology
 		OWLOntology ontology = loadDBpediaOntology();
@@ -133,16 +123,9 @@ public class DBpediaCorpusGenerator {
 		corpusDirectory.mkdirs();
 		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		try {
 			long timeToLive = TimeUnit.DAYS.toMillis(30);
-			CacheBackend cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-			CacheFrontend cacheFrontend = new CacheFrontendImpl(cacheBackend);
+			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
 			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		
 		//get a random set of instances for each class and their English label
 		for (NamedClass cls : classes) {

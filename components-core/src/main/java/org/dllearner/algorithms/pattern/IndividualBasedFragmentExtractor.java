@@ -9,9 +9,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.core.owl.NamedClass;
@@ -48,16 +47,9 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 		
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		if(cacheDir != null){
-			try {
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheBackend cacheBackend = CacheCoreH2.create(cacheDir, timeToLive, true);
-				CacheFrontendImpl cacheFrontend = new CacheFrontendImpl(cacheBackend);
+				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDir, true, timeToLive);
 				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDir);
