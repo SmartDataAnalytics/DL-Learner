@@ -192,11 +192,7 @@
 
 			<!--Available via central, we use the latest with minor mods to DL Learner
 				source (IE Dig related code) -->
-			<dependency>
-				<groupId>org.apache.jena</groupId>
-				<artifactId>jena-core</artifactId>
-				 <version>2.11.1</version>
-			</dependency>
+			
 			<!--SwingX is in central -->
 			<dependency>
 				<groupId>org.swinglabs</groupId>
@@ -261,11 +257,16 @@
 				<version>2.7</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.apache.jena</groupId>
+				<artifactId>jena-core</artifactId>
+				 <version>2.11.2</version>
+			</dependency>
 
 			<dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-arq</artifactId>
-				<version>2.11.0</version>
+				<version>2.11.2</version>
 			</dependency>
 
 			<dependency>
