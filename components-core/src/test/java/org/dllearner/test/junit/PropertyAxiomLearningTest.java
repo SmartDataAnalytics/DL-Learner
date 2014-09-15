@@ -20,18 +20,13 @@
 package org.dllearner.test.junit;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
-import org.coode.owlapi.rdfxml.parser.ObjectPropertyListItemTranslator;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
@@ -45,7 +40,6 @@ import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -61,12 +55,12 @@ import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
-import com.google.common.collect.Lists;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -74,8 +68,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 public class PropertyAxiomLearningTest extends TestCase{
 	
@@ -299,7 +291,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		OWLObjectProperty op = df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
 		
 		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
-		ks.setCache(new CacheExImpl(CacheCoreH2.create("cache", TimeUnit.DAYS.toMillis(1), true)));
+		ks.setCache(CacheUtilsH2.createCacheFrontend("cache", true, TimeUnit.DAYS.toMillis(1)));
 		
 		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		reasoner.init();

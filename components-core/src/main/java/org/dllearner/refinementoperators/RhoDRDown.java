@@ -514,6 +514,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// the currently considered concept plus the length of the child
 				// TODO: add better explanation
 				tmp = refine(child, maxLength - OWLClassExpressionUtils.getLength(description) + OWLClassExpressionUtils.getLength(child),null,currDomain);
+
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
 					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
@@ -862,7 +863,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				System.exit(0);
 //			}
 //		}
-//		System.out.println("+++++\n" + description + "      " + maxLength);
+//		System.out.println("++++++++\nREFINING: " + description + "   maxLength:" + maxLength);
 //		System.out.println(refinements);
 		return refinements;		
 	}

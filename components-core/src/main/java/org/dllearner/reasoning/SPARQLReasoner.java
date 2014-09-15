@@ -19,9 +19,7 @@
 
 package org.dllearner.reasoning;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,10 +31,10 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.extra.CacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheExImpl;
+import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -57,7 +55,6 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -68,7 +65,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +85,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
@@ -141,19 +136,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(cacheDirectory != null){
-				try {
-					long timeToLive = TimeUnit.DAYS.toMillis(30);
-					CacheCoreEx cacheBackend = CacheCoreH2.create(cacheDirectory, timeToLive, true);
-					CacheEx cacheFrontend = new CacheExImpl(cacheBackend);
-					qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-				} catch (ClassNotFoundException e) {
-					logger.error(e.getMessage(), e);
-				} catch (SQLException e) {
-					logger.error(e.getMessage(), e);
-				}
-			} else if(ks.getCache() != null){
-				qef = new QueryExecutionFactoryCacheEx(qef, ks.getCache());
+			if (cacheDirectory != null) {
+				long timeToLive = TimeUnit.DAYS.toMillis(30);
+				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			
@@ -166,11 +152,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this(new SparqlEndpointKS(endpoint), cacheDirectory);
 	}
 	
-	public SPARQLReasoner(SparqlEndpointKS ks, CacheCoreEx cacheBackend) {
-		this(ks, new CacheExImpl(cacheBackend));
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheBackend cacheBackend) {
+		this(ks, new CacheFrontendImpl(cacheBackend));
 	}
 	
-	public SPARQLReasoner(SparqlEndpointKS ks, CacheEx cache) {
+	public SPARQLReasoner(SparqlEndpointKS ks, CacheFrontend cache) {
 		this.ks = ks;
 		
 		if(ks.isRemote()){

@@ -19,6 +19,8 @@
 
 package org.dllearner.core.owl;
 
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
 /**
  * A class OWLClassExpression in its context, i.e. including a parent link (if any).
  * For instance, there is only one OWLClassExpression owl:Thing, but it can occur

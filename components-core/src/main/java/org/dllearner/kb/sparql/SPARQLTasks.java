@@ -708,7 +708,7 @@ public class SPARQLTasks {
 	}	
 	
 	public boolean supportsSPARQL_1_1(){
-		String query = "SELECT * WHERE {?s ?p ?o. {SELECT * WHERE {?s ?p ?o.} LIMIT 1} } LIMIT 1";
+		String query = "SELECT * WHERE {?s a ?o. {SELECT * WHERE {?s a ?o.} LIMIT 1} } LIMIT 1";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		try {
 			sq.send(false);
