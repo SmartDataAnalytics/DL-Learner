@@ -20,7 +20,6 @@
 package org.dllearner.reasoning;
 
 import java.net.MalformedURLException;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +41,7 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
@@ -164,6 +164,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     public OWLAPIReasoner(Set<KnowledgeSource> sources) {
         super(sources);
+    }
+    
+    public OWLAPIReasoner(OWLReasoner reasoner) {
+        this.reasoner = reasoner;
+        KnowledgeSource ks = new OWLAPIOntology(reasoner.getRootOntology());
+        sources = Collections.singleton(ks);
     }
 
     public static String getName() {
