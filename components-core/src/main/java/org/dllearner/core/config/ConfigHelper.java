@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.core.Component;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -209,13 +208,6 @@ public class ConfigHelper {
 		} else {
 			return obj.getClass();
 		}
-	}
-	
-	public static void main(String[] args) {
-		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(null);
-		ConfigHelper.configure(l, "maxExecutionTimeInSeconds", "11");
-		System.out.println(l.getMaxExecutionTimeInSeconds());
-		System.out.println(ConfigHelper.getConfigOptionValues(l));
 	}
 
 }
