@@ -125,7 +125,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 				currentlyBestAxioms.clear();
 				currentlyBestAxioms.add(new EvaluatedAxiom<T>(
 						getAxiom(propertyToDescribe), 
-						computeScore(popularity, frequency, true),
+						computeScore(popularity, frequency, useSample),
 						declared));
 			}
 			offset += limit;

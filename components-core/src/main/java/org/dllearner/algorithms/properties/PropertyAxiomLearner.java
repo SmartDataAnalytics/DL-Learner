@@ -6,14 +6,11 @@ package org.dllearner.algorithms.properties;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
-import org.dllearner.algorithms.pattern.TimeBasedFragmentExtractor;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.model.OWLPropertyAxiom;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -103,7 +100,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			
 			// we have to set up a new query execution factory working on our local model
 			QueryExecutionFactory globalQef = qef;
-			Model sample = ModelFactory.createDefaultModel();
+			sample = ModelFactory.createDefaultModel();
 			qef = new QueryExecutionFactoryModel(sample);
 			SPARQLReasoner globalReasoner = reasoner;
 			reasoner = new SPARQLReasoner(sample);

@@ -24,7 +24,6 @@ import java.util.Set;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -34,8 +33,8 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 @ComponentAnn(name="dataproperty domain axiom learner", shortName="dpldomain", version=0.1)
-public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorithm<OWLDataPropertyDomainAxiom, OWLIndividual> {
+public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyDomainAxiom> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyDomainAxiomLearner.class);
 	
@@ -66,10 +65,6 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
 	}
 	
-	public OWLDataProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
 	public void setPropertyToDescribe(OWLDataProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 	}
@@ -94,13 +89,13 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		}
 	}
 	
-	protected void learnAxioms() {
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-	};
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#run()
+	 */
+	@Override
+	protected void run() {
+		runSingleQueryMode();
+	}
 	
 	private void runSingleQueryMode(){
 		
@@ -117,7 +112,10 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 			OWLClass domain = df.getOWLClass(IRI.create((qs.getResource("type").getURI())));
 			int cnt = qs.getLiteral("cnt").getInt();
 			if(!domain.isOWLThing()){
-				currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, domain), computeScore(nrOfSubjects, cnt)));
+				currentlyBestAxioms.add(
+						new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
+								df.getOWLDataPropertyDomainAxiom(propertyToDescribe, domain), 
+								computeScore(nrOfSubjects, cnt, useSample)));
 			}
 		}
 	}
@@ -184,14 +182,14 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 	}
 	
 	@Override
-	public Set<OWLIndividual> getPositiveExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
+	public Set<OWLDataPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
 		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<OWLIndividual> getNegativeExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
+	public Set<OWLDataPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLDataPropertyDomainAxiom> evAxiom) {
 		OWLDataPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getNegativeExamples(evAxiom);
@@ -217,6 +215,8 @@ public class DataPropertyDomainAxiomLearner extends AbstractAxiomLearningAlgorit
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
 	}
+
+	
 	
 
 }

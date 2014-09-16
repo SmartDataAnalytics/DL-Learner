@@ -23,29 +23,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.SimpleLayout;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
-import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -206,7 +198,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
 							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
-							new AxiomScore(score)));
+							new AxiomScore(score, useSample)));
 		}
 	}
 	
@@ -248,7 +240,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
 								df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
-								new AxiomScore(score)));
+								new AxiomScore(score, useSample)));
 				
 			}
 		}
@@ -361,67 +353,15 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
 		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
+		posExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
 		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
+		negExamplesQueryTemplate.setIri("type", axiom.getDomain().asOWLClass().toStringID());
 		return super.getNegativeExamples(evAxiom);
-	}
-	
-	public static void main(String[] args) throws Exception{
-		org.apache.log4j.Logger.getRootLogger().addAppender(new ConsoleAppender(new SimpleLayout()));
-		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
-		org.apache.log4j.Logger.getLogger(DataPropertyDomainAxiomLearner.class).setLevel(Level.INFO);		
-		
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia(), "cache");
-		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks, "cache");
-		reasoner.prepareSubsumptionHierarchy();
-		OWLDataFactory df = new OWLDataFactoryImpl();
-		
-		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
-		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace")));
-		l.setMaxExecutionTimeInSeconds(20);
-		l.addFilterNamespace("http://dbpedia.org/ontology/");
-		l.init();
-		l.start();
-//		l.run();
-		System.out.println(l.getBestEvaluatedAxiom());
-		
-		ObjectPropertyDomainAxiomLearner l2 = new ObjectPropertyDomainAxiomLearner(ks);
-		l2.setReasoner(reasoner);
-		l2.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace")));
-		l2.setMaxExecutionTimeInSeconds(10);
-		l2.addFilterNamespace("http://dbpedia.org/ontology/");
-		l2.init();
-		l2.start();
-		System.out.println(l2.getCurrentlyBestEvaluatedAxioms(0.2));
-		System.out.println(l2.getBestEvaluatedAxiom());
-//		for (OWLObjectProperty p : reasoner.getOWLObjectProperties("http://dbpedia.org/ontology/")) {
-//			System.out.println(p);
-//			l.setPropertyToDescribe(p);
-//			l.setMaxExecutionTimeInSeconds(10);
-//			l.addFilterNamespace("http://dbpedia.org/ontology/");
-////			l.setReturnOnlyNewAxioms(true);
-//			l.init();
-////			l.start();
-//			l.run();
-//			List<EvaluatedAxiom> axioms = l.getCurrentlyBestEvaluatedAxioms(10, 0.5);
-////			System.out.println(axioms);
-//			System.out.println(l.getBestEvaluatedAxiom());
-//		}
-		
-		
-//		for(EvaluatedAxiom axiom : axioms){
-//			printSubset(l.getPositiveExamples(axiom), 10);
-//			printSubset(l.getNegativeExamples(axiom), 10);
-//			l.explainScore(axiom);
-//		}
 	}
 	
 }

@@ -129,6 +129,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected ParameterizedSparqlString iterativeQueryTemplate;
 	
+	protected Model sample;
+	
 	protected Model workingModel;
 	protected ParameterizedSparqlString posExamplesQueryTemplate;
 	protected ParameterizedSparqlString negExamplesQueryTemplate;
@@ -612,8 +614,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		sb.append("Number of positive examples:\t").append(posExampleCnt).append(lb);
 		sb.append("Number of negative examples:\t").append(negExampleCnt).append(lb);
 		sb.append("Based on sample:            \t").append(score.isSampleBased()).append(lb);
-		if(workingModel != null){
-			sb.append("Sample size(#triples):      \t").append(workingModel.size()).append(lb);
+		if(sample != null){
+			sb.append("Sample size(#triples):      \t").append(sample.size()).append(lb);
 		}
 		sb.append("######################################");
 		System.out.println(sb.toString());

@@ -158,7 +158,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
 							df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, candidate), 
-							new AxiomScore(score)));
+							new AxiomScore(score, useSample)));
 		}
 	}
 	
@@ -202,7 +202,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
 								df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, candidate), 
-								new AxiomScore(score)));
+								new AxiomScore(score, useSample)));
 				
 			}
 		}
@@ -273,14 +273,14 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyRangeAxiom> evAxiom) {
 		OWLObjectPropertyRangeAxiom axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+		posExamplesQueryTemplate.setIri("type", axiom.getRange().asOWLClass().toStringID());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyRangeAxiom> evAxiom) {
 		OWLObjectPropertyRangeAxiom axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+		negExamplesQueryTemplate.setIri("type", axiom.getRange().asOWLClass().toStringID());
 		return super.getNegativeExamples(evAxiom);
 	}
 }

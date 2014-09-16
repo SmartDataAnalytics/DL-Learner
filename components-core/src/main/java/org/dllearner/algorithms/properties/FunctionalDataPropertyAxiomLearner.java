@@ -19,24 +19,14 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.List;
-
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name="functional dataproperty axiom learner", shortName="dplfunc", version=0.1)
 public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner<OWLFunctionalDataPropertyAxiom> {
@@ -88,72 +78,13 @@ public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner
 	 */
 	@Override
 	protected void run() {
-		runSPARQL1_0_Mode();
-//		runSPARQL1_1_Mode();
-	}
-	
-	private void runSPARQL1_0_Mode() {
-		boolean declared = !existingAxioms.isEmpty();
-		
-		workingModel = ModelFactory.createDefaultModel();
-		
-		//TODO determine page size in super class or even better in the KB object
-		int DEFAULT_PAGE_SIZE = 10000;
-		long limit = DEFAULT_PAGE_SIZE; //PaginationUtils.adjustPageSize(qef, DEFAULT_PAGE_SIZE);
-		long offset = 0;
-		
-		Query query = GET_SAMPLE_QUERY.asQuery();
-		query.setLimit(limit);
-		Model newModel = executeConstructQuery(query.toString());
-		
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			workingModel.add(newModel);
-			
-			popularity = getPropertyPopularity(workingModel);
-			
-			// get number of pos examples
-			int frequency = getCountValue(POS_FREQUENCY_QUERY.toString(), workingModel);
-
-			if (popularity > 0) {
-				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
-						df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe), 
-						computeScore(popularity, frequency, true),
-						declared));
-			}
-			offset += limit;
-			query.setOffset(offset);
-			newModel = executeConstructQuery(query.toString());
-		}
-	}
-	
-	private void runSPARQL1_1_Mode() {
 		boolean declared = !existingAxioms.isEmpty();
 		
 		int frequency = getCountValue(POS_FREQUENCY_QUERY.toString());
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
 				df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe), 
-				computeScore(popularity, frequency, false),
+				computeScore(popularity, frequency, useSample),
 				declared));
-	}
-	
-	public static void main(String[] args) throws Exception {
-		FunctionalDataPropertyAxiomLearner l = new FunctionalDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLDataProperty(IRI.create("http://dbpedia.org/ontology/birthDate")));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.setForceSPARQL_1_0_Mode(true);
-		l.init();
-		l.start();
-		List<EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>> axioms = l.getCurrentlyBestEvaluatedAxioms(5);
-		System.out.println(axioms);
-		
-		for(EvaluatedAxiom<OWLFunctionalDataPropertyAxiom> axiom : axioms){
-			printSubset(l.getPositiveExamples(axiom), 10);
-			printSubset(l.getNegativeExamples(axiom), 10);
-			l.explainScore(axiom);
-			System.out.println(((AxiomScore)axiom.getScore()).getTotalNrOfExamples());
-			System.out.println(((AxiomScore)axiom.getScore()).getNrOfPositiveExamples());
-		}
 	}
 }
