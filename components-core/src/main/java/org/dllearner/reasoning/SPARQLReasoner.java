@@ -107,7 +107,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private SparqlEndpointKS ks;
 	private ClassHierarchy hierarchy;
-	private OntModel model;
+	private Model model;
 
 	private Map<OWLClass, Integer> classPopularityMap = new HashMap<OWLClass, Integer>();
 	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
@@ -175,8 +175,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this(ks, cache.getCacheDirectory());
 	}
 
-	public SPARQLReasoner(OntModel model) {
+	public SPARQLReasoner(Model model) {
 		this.model = model;
+		qef = new QueryExecutionFactoryModel(model);
 	}
 	
 	public void precomputePopularities(PopularityType... popularityTypes){
@@ -865,7 +866,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public Set<OWLClass> getNonEmptyOWLClasses() {
-		Set<OWLClass> types = new HashSet<OWLClass>();
+		Set<OWLClass> types = new TreeSet<OWLClass>();
 		String query = String.format("SELECT DISTINCT ?class WHERE {?class a <%s>. FILTER EXISTS{?a a ?class}}",OWL.Class.getURI());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;

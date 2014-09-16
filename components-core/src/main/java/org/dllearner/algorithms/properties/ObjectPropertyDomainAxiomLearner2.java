@@ -19,17 +19,13 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -43,14 +39,11 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -70,7 +63,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 @ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
-public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgorithm<OWLObjectPropertyDomainAxiom, OWLIndividual> {
+public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
 	
 	private static final ParameterizedSparqlString DISTINCT_SUBJECTS_COUNT_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(DISTINCT(?s)) as ?cnt) WHERE {?s ?p ?o .}");
@@ -85,10 +78,6 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	private Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types;
 	
-	private OWLObjectProperty propertyToDescribe;
-
-	private int popularity;
-	
 	// a property domain axiom can formally be seen as a subclass axiom \exists r.\top \sqsubseteq \C 
 	// so we have to focus more on accuracy, which we can regulate via the parameter beta
 	double beta = 3.0;
@@ -97,12 +86,13 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
-	}
 	
-	public OWLObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
+		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
+		
+		axiomType = AxiomType.OBJECT_PROPERTY_DOMAIN;
 	}
 
+	@Override
 	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
 		this.propertyToDescribe = propertyToDescribe;
 //		negExamplesQueryTemplate.clearParams();
@@ -113,6 +103,23 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
 		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
 		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return new ParameterizedSparqlString(
+				"PREFIX owl:<http://www.w3.org/2002/07/owl#> "
+				+ "CONSTRUCT "
+				+ "{?s ?p ?o; a ?cls1 . "
+				+ (strictOWLMode ? "?cls1 a owl:Class. " : "")
+				+ "} "
+				+ "WHERE "
+				+ "{?s ?p ?o; a ?cls1 . "
+				+ (strictOWLMode ? "?cls1 a owl:Class. " : "")
+				+ "}");
 	}
 	
 	/* (non-Javadoc)
@@ -133,31 +140,6 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 				}
 			}
 		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
-	 */
-	@Override
-	protected void learnAxioms() {
-		progressMonitor.learningStarted(AxiomType.OBJECT_PROPERTY_DOMAIN.getName());
-		
-		// get the popularity of the property
-		// We can not use the number of triples with the property because we formally we need the 
-		// number of distinct subjects occurring in the triple, and there might be subjects having 
-		// more than one triple with the property.
-		popularity = executeSelectQuery(DISTINCT_SUBJECTS_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
-		logger.debug("popularity:" + popularity);
-
-		// we have to skip here if there are not triples with the property
-		if (popularity == 0) {
-			logger.warn("Cannot compute domain statements for empty property " + propertyToDescribe);
-			return;
-		}
-		
-//		run();
-		runBatched();
-//		runSPARQL1_0_Mode();
 	}
 	
 	private void buildSampleFragment(){
@@ -186,10 +168,13 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	
 	/**
 	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 * 
+	 * A = \exists r.\top
+	 * B = C
 	 */
-	private void run(){
+	protected void run(){
 		// get the candidates
-		Set<OWLClass> candidates = reasoner.getOWLClasses();
+		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();
 		
 		// check for each candidate how often the subject belongs to it
 		int i = 1;
@@ -374,14 +359,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends AbstractAxiomLearningAlgo
 	}
 	
 	@Override
-	public Set<OWLIndividual> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
+	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
 		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<OWLIndividual> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
+	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyDomainAxiom> evAxiom) {
 		OWLObjectPropertyDomainAxiom axiom = evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("type", axiom.getDomain().toString());
 		return super.getNegativeExamples(evAxiom);

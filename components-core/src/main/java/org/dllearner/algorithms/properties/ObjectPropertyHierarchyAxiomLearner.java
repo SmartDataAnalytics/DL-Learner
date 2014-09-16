@@ -50,7 +50,6 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 					"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_other ?o . FILTER(?p != ?p_other)}");
 	
 	
-	
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
 	protected boolean strictMode = false;

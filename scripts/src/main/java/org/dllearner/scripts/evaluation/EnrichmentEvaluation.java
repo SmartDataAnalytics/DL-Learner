@@ -394,7 +394,7 @@ public class EnrichmentEvaluation {
 							int attempt = 0;
 							long startTime = 0;
 							boolean timeout = true;
-							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+							while(((AbstractAxiomLearningAlgorithm)learner).wasTimeout() && attempt++ < maxAttempts){
 								if(attempt > 1){
 									try {
 										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -408,7 +408,7 @@ public class EnrichmentEvaluation {
 								try {
 									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
-									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
+									timeout = ((AbstractAxiomLearningAlgorithm)learner).wasTimeout();
 								} catch (Exception e) {
 									if(e.getCause() instanceof SocketTimeoutException){
 										
@@ -483,7 +483,7 @@ public class EnrichmentEvaluation {
 					int attempt = 0;
 					long startTime = 0;
 					boolean timeout = true;
-					while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+					while(((AbstractAxiomLearningAlgorithm)learner).wasTimeout() && attempt++ < maxAttempts){
 						if(attempt > 1){
 							try {
 								logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -497,7 +497,7 @@ public class EnrichmentEvaluation {
 						try {
 							((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 							learner.start();
-							timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
+							timeout = ((AbstractAxiomLearningAlgorithm)learner).wasTimeout();
 						} catch (Exception e) {
 							if(e.getCause() instanceof SocketTimeoutException){
 								
@@ -581,7 +581,7 @@ public class EnrichmentEvaluation {
 							int attempt = 0;
 							
 							timeout = true;
-							while(((AbstractAxiomLearningAlgorithm)learner).isTimeout() && attempt++ < maxAttempts){
+							while(((AbstractAxiomLearningAlgorithm)learner).wasTimeout() && attempt++ < maxAttempts){
 								if(attempt > 1){
 									try {
 										logger.warn("Got timeout. Waiting " + delayInMilliseconds + " ms ...");
@@ -595,7 +595,7 @@ public class EnrichmentEvaluation {
 								try {
 									((AbstractAxiomLearningAlgorithm)learner).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 									learner.start();
-									timeout = ((AbstractAxiomLearningAlgorithm)learner).isTimeout();
+									timeout = ((AbstractAxiomLearningAlgorithm)learner).wasTimeout();
 								} catch (Exception e) {
 									e.printStackTrace();
 								}

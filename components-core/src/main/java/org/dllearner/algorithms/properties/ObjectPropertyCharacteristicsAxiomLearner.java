@@ -34,9 +34,6 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 
 	protected final ParameterizedSparqlString ALREADY_DECLARED_QUERY = new ParameterizedSparqlString("ASK {?p a ?type .}");
 	
-	protected final ParameterizedSparqlString GET_SAMPLE_QUERY = new ParameterizedSparqlString(
-			"CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}");
-	
 	protected ParameterizedSparqlString POS_FREQUENCY_QUERY = null;
 	
 	protected boolean declared;
@@ -96,8 +93,8 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 	 */
 	@Override
 	protected void run() {
-		runSPARQL1_0_Mode();
-//		runSPARQL1_1_Mode();
+//		runSPARQL1_0_Mode();
+		runSPARQL1_1_Mode();
 	}
 	
 	protected abstract T getAxiom(OWLObjectProperty property);

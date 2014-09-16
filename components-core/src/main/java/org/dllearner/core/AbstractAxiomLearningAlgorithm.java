@@ -273,8 +273,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
 	}
 	
-	public boolean isTimeout() {
+	public boolean wasTimeout() {
 		return timeout;
+	}
+	
+	public boolean isTimeout(){
+		return maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
 	}
 	
 	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,

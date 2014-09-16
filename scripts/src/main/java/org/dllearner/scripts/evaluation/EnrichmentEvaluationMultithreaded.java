@@ -437,7 +437,7 @@ public class EnrichmentEvaluationMultithreaded {
 		long startTime = 0;
 		boolean timeout = true;
 		String algName = AnnComponentManager.getName(algorithm);
-		while(((AbstractAxiomLearningAlgorithm)algorithm).isTimeout() && attempt++ < maxAttempts){
+		while(((AbstractAxiomLearningAlgorithm)algorithm).wasTimeout() && attempt++ < maxAttempts){
 			if(attempt > 1){
 				try {
 					logger.warn("Got timeout in " + algName + " for entity " + entity.getName() + ". Waiting " + delayInMilliseconds + " ms ...");
@@ -451,7 +451,7 @@ public class EnrichmentEvaluationMultithreaded {
 			try {
 				((AbstractAxiomLearningAlgorithm)algorithm).setForceSPARQL_1_0_Mode(attempt > nrOfAttemptsBeforeForceToSPARQL1_0_Mode);
 				algorithm.start();
-				timeout = ((AbstractAxiomLearningAlgorithm)algorithm).isTimeout();
+				timeout = ((AbstractAxiomLearningAlgorithm)algorithm).wasTimeout();
 			} catch (Exception e) {
 				if(e.getCause() instanceof SocketTimeoutException){
 					
