@@ -515,7 +515,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 
 				if (instanceCountB > 0) {
 					//get number of instances of (A and B)
-					int instanceCountAB = reasoner.getPopularity(df.getOWLObjectIntersectionOf(cls, sib));
+					int instanceCountAB = reasoner.getPopularityOf(df.getOWLObjectIntersectionOf(cls, sib));
 
 					// compute the estimated precision
 					double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);
@@ -562,7 +562,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 
 		if (instanceCountA > 0 && instanceCountB > 0) {
 			//get number of instances of (A and B)
-			int instanceCountAB = reasoner.getPopularity(df.getOWLObjectIntersectionOf(clsA, clsB));
+			int instanceCountAB = reasoner.getPopularityOf(df.getOWLObjectIntersectionOf(clsA, clsB));
 
 			// compute the estimated precision
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);

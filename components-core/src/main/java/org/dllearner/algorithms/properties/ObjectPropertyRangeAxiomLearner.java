@@ -39,9 +39,6 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 @ComponentAnn(name="objectproperty range learner", shortName="oplrange", version=0.1)
 public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyRangeAxiom> {
@@ -131,10 +128,12 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 		// check for each candidate how often the subject belongs to it
 		int i = 1;
 		for (OWLClass candidate : candidates) {
+			logger.debug("Candidate:" + candidate);
 			progressMonitor.learningProgressChanged(i++, candidates.size());
 			
 			//get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
+			logger.debug("Popularity:" + cntB);
 			
 			if(cntB == 0){// skip empty properties
 				logger.debug("Cannot compute range statements for empty candidate class " + candidate);
@@ -144,7 +143,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			//get number of instances of (A AND B)
 			OBJECTS_OF_TYPE_COUNT_QUERY.setIri("type", candidate.toStringID());
 			int cntAB = executeSelectQuery(OBJECTS_OF_TYPE_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
-			logger.debug("Candidate:" + candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
+			logger.debug("Overlap:" + cntB);
 			
 			//precision (A AND B)/B
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
@@ -205,68 +204,6 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 								new AxiomScore(score, useSample)));
 				
 			}
-		}
-	}
-	
-	private void runSingleQueryMode(){
-		
-		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.toStringID());
-		ResultSet rs = executeSelectQuery(query);
-		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
-		
-		query = String.format("SELECT ?type (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o . ?o a ?type . ?type a owl:Class} GROUP BY ?type", propertyToDescribe.toStringID());
-		rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			if(qs.get("type") != null){
-				OWLClass range = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-				int cnt = qs.getLiteral("cnt").getInt();
-				currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
-						df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
-			} 
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s <%s> ?o . ?o a ?type .} WHERE {?s <%s> ?o. ?o a ?type .} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			workingModel.add(newModel);
-			// get number of distinct subjects
-			query = "SELECT (COUNT(?o) AS ?all) WHERE {?s ?p ?o.}";
-			ResultSet rs = executeSelectQuery(query, workingModel);
-			QuerySolution qs;
-			int all = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				all = qs.getLiteral("all").getInt();
-			}
-			
-			// get class and number of instances
-//			query = "SELECT (DATATYPE(?o) AS ?dt) (COUNT(?o) AS ?cnt) WHERE{?s ?p ?o} GROUP BY DATATYPE(?o) ORDER BY DESC(?cnt)";
-			query = "SELECT ?type (COUNT(?o) AS ?cnt) " +
-					"WHERE {?s ?p ?o . ?o a ?type .} GROUP BY ?type";
-			rs = executeSelectQuery(query, workingModel);
-			
-			if (all > 0) {
-				currentlyBestAxioms.clear();
-				while(rs.hasNext()){
-					qs = rs.next();
-					Resource type = qs.get("type").asResource();
-					currentlyBestAxioms.add(new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
-							df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
-							computeScore(all, qs.get("cnt").asLiteral().getInt())));
-				}
-				
-			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit, offset);
-			newModel = executeConstructQuery(query);
 		}
 	}
 	

@@ -34,9 +34,9 @@ public class ReflexiveObjectPropertyAxiomLearner extends ObjectPropertyCharacter
 		super(ks);
 		
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s (?s AS ?o) WHERE {?s ?p ?s .}");
+				"SELECT ?s WHERE {?s ?p ?s .}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s (?s AS ?o) WHERE {?s ?p ?o . FILTER NOT EXISTS{?s ?p ?s .}");
+				"SELECT ?s WHERE {?s ?p ?o . FILTER NOT EXISTS{?s ?p ?s .}");
 		
 		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
 					"SELECT (COUNT(?s) AS ?cnt) WHERE {?s ?p ?s .}");

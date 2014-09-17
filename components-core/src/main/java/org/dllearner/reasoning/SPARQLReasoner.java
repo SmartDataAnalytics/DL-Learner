@@ -55,12 +55,14 @@ import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -74,7 +76,7 @@ import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -99,6 +101,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY;
 	}
+	
+	private static final ParameterizedSparqlString CLASS_POPULARITY_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(*) AS ?cnt) WHERE {?s a ?entity .}");
+	
+	private static final ParameterizedSparqlString PROPERTY_POPULARITY_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(*) AS ?cnt) WHERE {?s ?entity ?o .}");
+	
+	private static final ParameterizedSparqlString INDIVIDUAL_POPULARITY_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(*) AS ?cnt) WHERE {?entity ?p ?o .}");
+
 
 	@ConfigOption(name = "useCache", description = "Whether to use a DB cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
 	private boolean useCache = true;
@@ -109,6 +121,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private ClassHierarchy hierarchy;
 	private Model model;
 
+	private Map<OWLEntity, Integer> entityPopularityMap = new HashMap<OWLEntity, Integer>();
 	private Map<OWLClass, Integer> classPopularityMap = new HashMap<OWLClass, Integer>();
 	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
 	private Map<OWLDataProperty, Integer> dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
@@ -120,7 +133,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+	private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this(ks, (String)null);
@@ -128,6 +141,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SPARQLReasoner(QueryExecutionFactory qef) {
 		this.qef = qef;
+	}
+	
+	public SPARQLReasoner(QueryExecutionFactory qef, boolean useCache) {
+		this.qef = qef;
+		this.useCache = useCache;
 	}
 	
 	public SPARQLReasoner(SparqlEndpointKS ks, String cacheDirectory) {
@@ -358,68 +376,45 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		return cnt;
 	}
-
-	public int getPopularity(OWLClass nc){
-		if(classPopularityMap != null && classPopularityMap.containsKey(nc)){
-			return classPopularityMap.get(nc);
-		} else {
-			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s a <%s>}";
-
-			ResultSet rs = executeSelectQuery(String.format(queryTemplate, nc.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			classPopularityMap.put(nc, cnt);
-			return cnt;
-		}
-
-	}
 	
-	public int getPopularity(OWLClassExpression description){
+	public <T extends OWLEntity> int getPopularity(T entity){
+		Integer popularity = null;
+		
+		if(useCache){
+			popularity = entityPopularityMap.get(entity);
+		} 
+		
+		if(popularity == null){
+			ParameterizedSparqlString queryTemplate;
+			if(entity.isOWLClass()){
+				queryTemplate = CLASS_POPULARITY_QUERY;
+			} else if(entity.isOWLObjectProperty() || entity.isOWLDataProperty()){
+				queryTemplate = PROPERTY_POPULARITY_QUERY;
+			} else if(entity.isOWLNamedIndividual()){
+				queryTemplate = INDIVIDUAL_POPULARITY_QUERY;
+			} else {
+				throw new IllegalArgumentException("Popularity computation not supported for entity type " + entity.getEntityType().getName());
+			}
+
+			queryTemplate.setIri("entity", entity.toStringID());
+			ResultSet rs = executeSelectQuery(queryTemplate.toString());
+			
+			popularity = rs.next().getLiteral("cnt").getInt();
+			
+			entityPopularityMap.put(entity, popularity);
+		}
+		return popularity.intValue();
+	}
+
+	
+	
+	public int getPopularityOf(OWLClassExpression description){
 		if(classPopularityMap != null && classPopularityMap.containsKey(description)){
 			return classPopularityMap.get(description);
 		} else {
 			String query = converter.asCountQuery(description).toString();
 			ResultSet rs = executeSelectQuery(query);
 			int cnt = rs.next().getLiteral("cnt").getInt();
-			return cnt;
-		}
-	}
-
-	public int getPopularity(OWLObjectProperty op){
-		if(objectPropertyPopularityMap != null && objectPropertyPopularityMap.containsKey(op)){
-			return objectPropertyPopularityMap.get(op);
-		} else {
-			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
-
-			ResultSet rs = executeSelectQuery(String.format(queryTemplate, op.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			objectPropertyPopularityMap.put(op, cnt);
-			return cnt;
-		}
-
-	}
-
-	public int getPopularity(OWLDataProperty dp){
-		if(dataPropertyPopularityMap.containsKey(dp)){
-			return dataPropertyPopularityMap.get(dp);
-		} else {
-			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o}";
-			String query = String.format(queryTemplate, dp.toStringID());
-			ResultSet rs = executeSelectQuery(query);
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			dataPropertyPopularityMap.put(dp, cnt);
-			return cnt;
-		}
-	}
-	
-	public int getPopularity(OWLIndividual ind){
-		if(individualPopularityMap != null && individualPopularityMap.containsKey(ind)){
-			return individualPopularityMap.get(ind);
-		} else {
-			String queryTemplate = "SELECT (COUNT(*) AS ?cnt) WHERE {<%s> ?p ?o}";
-
-			ResultSet rs = executeSelectQuery(String.format(queryTemplate, ind.toStringID()));
-			int cnt = rs.next().getLiteral("cnt").getInt();
-			individualPopularityMap.put(ind, cnt);
 			return cnt;
 		}
 	}
@@ -754,9 +749,31 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	
-
-	public Set<OWLClass> getTypes() {
-		return getTypes((String)null);
+	/**
+	 * Returns the entity type of the given resource IRI, i.e. whether the resource
+	 * is a owl:Class, owl:ObjectProperty,owl:DatatypeProperty or owl:NamedIndividual.
+	 * @param iri
+	 * @return
+	 */
+	public EntityType<? extends OWLEntity> getOWLEntityType(String iri) {
+		ParameterizedSparqlString query = new ParameterizedSparqlString("SELECT ?type WHERE {?s a ?type .}");
+		query.setIri("s", iri);
+		ResultSet rs = executeSelectQuery(query.toString());
+		Set<EntityType<? extends OWLEntity>> entityTypes = new HashSet<EntityType<? extends OWLEntity>>();
+		while(rs.hasNext()){
+			QuerySolution qs = rs.next();
+			String uri = qs.getResource("type").getURI();
+			for(EntityType<? extends OWLEntity> entityType : EntityType.values()){
+				if(entityType.getIRI().toString().equals(uri)){
+					entityTypes.add(entityType);
+					break;
+				}
+			}
+		}
+		if(entityTypes.size() == 1){
+			return entityTypes.iterator().next();
+		}
+		return null;
 	}
 
 	public Set<OWLClass> getTypes(String namespace) {
@@ -1919,6 +1936,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	public void setUseCache(boolean useCache) {
 		this.useCache = useCache;
+	}
+	
+	public boolean supportsSPARQL1_1(){
+		try {
+			String query = "SELECT ?s WHERE {?s a <http://foo.org/A> . FILTER NOT EXISTS {?s a <http://foo.org/B>}} LIMIT 1";
+			ResultSet rs = executeSelectQuery(query);
+			return true;
+		} catch (Exception e) {
+			logger.error("Endpoint does not support SPARQL 1.1, e.g. FILTER NOT EXISTS", e);
+		}
+		return false;
 	}
 
 	/* (non-Javadoc)

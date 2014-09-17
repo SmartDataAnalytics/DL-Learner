@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.properties;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -66,7 +67,9 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 			type = OWLRDFVocabulary.OWL_REFLEXIVE_PROPERTY.getIRI();
 		} else if(axiomType.equals(AxiomType.IRREFLEXIVE_OBJECT_PROPERTY)){
 			type = OWLRDFVocabulary.OWL_IRREFLEXIVE_PROPERTY.getIRI();
-		} else {
+		} else if(axiomType.equals(AxiomType.TRANSITIVE_OBJECT_PROPERTY)){
+			type = OWLRDFVocabulary.OWL_TRANSITIVE_PROPERTY.getIRI();
+		}else {
 			throw new IllegalArgumentException("Axiom type cannot be " + axiomType);
 		}
 		ALREADY_DECLARED_QUERY.setIri("type", type.toString()); 
@@ -191,10 +194,12 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		}
 
+		List<String> vars = rs.getResultVars();
+		boolean onlySubject = vars.size() == 1;
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource(onlySubject ? "s" : "o").getURI()));
 			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
 		}
 

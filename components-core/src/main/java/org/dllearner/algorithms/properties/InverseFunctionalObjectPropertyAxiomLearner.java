@@ -48,12 +48,12 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends
 		super(ks);
 		
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s ?o ?WHERE {?o ?p ?s. FILTER NOT EXISTS {?o2 ?p ?s. FILTER(?o != ?o2)}}");
+				"SELECT ?s ?o ?WHERE {?s ?p ?o. FILTER NOT EXISTS {?s2 ?p ?o. FILTER(?s != ?s2)}}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString(
-				"SELECT ?s ?o1 ?o2 WHERE {?o1 ?p ?s. ?o2 ?p ?s. FILTER(?o1 != ?o2)}");
+				"SELECT ?s ?s2 ?o WHERE {?s ?p ?o. ?s2 ?p ?o. FILTER(?s != ?s2)}");
 		
 		super.POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
-					"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?o1 ?p ?s. FILTER NOT EXISTS {?o2 ?p ?s. FILTER(?o1 != ?o2)}}");
+					"SELECT (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o. FILTER NOT EXISTS {?s2 ?p ?o. FILTER(?s != ?s2)}}");
 //				"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?o1 ?p ?s. ?o2 ?p ?s. FILTER(?o1 != ?o2)}");
 		
 		axiomType = AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY;
@@ -79,22 +79,20 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends
 
 		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			// ?o1
-			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("o1").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
-			// ?o2
-			subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("o2").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			// ?o
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			// ?s
+			OWLIndividual subject1 = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			// ?s2
+			OWLIndividual subject2 = df.getOWLNamedIndividual(IRI.create(qs.getResource("s2").getURI()));
+			// ?s -> ?o
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject1, object));
+			// ?s2 -> ?o
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject2, object));
 		}
 
 		return negExamples;
@@ -102,11 +100,10 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends
 	
 	public static void main(String[] args) throws Exception {
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(
-				SparqlEndpoint.getEndpointDBpedia()));
+				SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
 		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
 				.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(5);
-		l.setForceSPARQL_1_0_Mode(true);
 		l.init();
 		l.start();
 		List<EvaluatedAxiom<OWLInverseFunctionalObjectPropertyAxiom>> axioms = l.getCurrentlyBestEvaluatedAxioms(5);

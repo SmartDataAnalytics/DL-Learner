@@ -5,7 +5,6 @@ package org.dllearner.algorithms.properties;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
-import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
@@ -103,11 +102,11 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			sample = ModelFactory.createDefaultModel();
 			qef = new QueryExecutionFactoryModel(sample);
 			SPARQLReasoner globalReasoner = reasoner;
-			reasoner = new SPARQLReasoner(sample);
+			reasoner = new SPARQLReasoner(qef, false);
 			
 			// get the page size 
 			//TODO put to base class
-			long pageSize = PaginationUtils.adjustPageSize(globalQef, 10000);
+			long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
 			
 			ParameterizedSparqlString sampleQueryTemplate = getSampleQuery();
 			sampleQueryTemplate.setIri("p", propertyToDescribe.toStringID());
@@ -120,7 +119,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 				
 				// get next sample
 				logger.debug("Extending sample...");
-				query.setOffset(i * pageSize);
+				query.setOffset(i++ * pageSize);
 				QueryExecution qe = globalQef.createQueryExecution(query);
 				Model tmp = qe.execConstruct();
 				sample.add(tmp);
@@ -132,8 +131,9 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 				popularity = getPropertyPopularity();
 				
 				// compute the axioms in each run to ensure any-time property of algorithm
-				run();
+//				run();
 			}
+			run();
 		} else {
 			run();
 		}
