@@ -137,7 +137,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		} else {
 			run();
 		}
-		
 		progressMonitor.learningStopped();
 	}
 	

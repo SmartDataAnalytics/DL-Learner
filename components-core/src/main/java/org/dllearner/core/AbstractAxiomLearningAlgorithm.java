@@ -218,6 +218,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		learnAxioms();
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+		logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
+		if(!currentlyBestAxioms.isEmpty()){
+			logger.info("Best axiom was " + currentlyBestAxioms.first());
+		}
+		
 	}
 
 	public int getLimit() {
