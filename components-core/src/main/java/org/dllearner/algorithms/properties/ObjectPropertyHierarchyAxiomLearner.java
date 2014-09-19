@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
@@ -49,6 +48,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	protected static final ParameterizedSparqlString GIVEN_PROPERTY_OVERLAP_QUERY = new ParameterizedSparqlString(
 					"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_other ?o . FILTER(?p != ?p_other)}");
 	
+	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> .} "
+			+ "WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }");
+	
 	
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
@@ -65,12 +68,20 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_other ?o}}");
 	}
 	
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		super.setPropertyToDescribe(propertyToDescribe);
+	public void setPropertyToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		GIVEN_PROPERTY_OVERLAP_QUERY.setIri("p", propertyToDescribe.toStringID());
-		PROPERTY_OVERLAP_QUERY.setIri("p", propertyToDescribe.toStringID());
-		PROPERTY_OVERLAP_WITH_RANGE_QUERY.setIri("p", propertyToDescribe.toStringID());
+		GIVEN_PROPERTY_OVERLAP_QUERY.setIri("p", entityToDescribe.toStringID());
+		PROPERTY_OVERLAP_QUERY.setIri("p", entityToDescribe.toStringID());
+		PROPERTY_OVERLAP_WITH_RANGE_QUERY.setIri("p", entityToDescribe.toStringID());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return SAMPLE_QUERY;
 	}
 	
 	protected void run() {
@@ -101,7 +112,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
-							getAxiom(propertyToDescribe, p), 
+							getAxiom(entityToDescribe, p), 
 							new AxiomScore(score, useSample)));
 		}
 	}
@@ -115,7 +126,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		String query;
 		if(strictMode){
 			// get rdfs:range of the property
-			OWLClassExpression range = reasoner.getRange(propertyToDescribe);
+			OWLClassExpression range = reasoner.getRange(entityToDescribe);
 			
 			if(range != null && !range.isAnonymous() && !range.isOWLThing()){
 				PROPERTY_OVERLAP_WITH_RANGE_QUERY.setIri("range", range.asOWLClass().toStringID());
@@ -148,7 +159,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
-							getAxiom(propertyToDescribe, candidate), 
+							getAxiom(entityToDescribe, candidate), 
 							new AxiomScore(score)));
 		}
 	}
@@ -178,10 +189,10 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 		if (strictMode) { // that have the same domain and range 
 			// get rdfs:domain of the property
-			OWLClassExpression domain = reasoner.getDomain(propertyToDescribe);
+			OWLClassExpression domain = reasoner.getDomain(entityToDescribe);
 
 			// get rdfs:range of the property
-			OWLClassExpression range = reasoner.getRange(propertyToDescribe);
+			OWLClassExpression range = reasoner.getRange(entityToDescribe);
 
 			String query = "SELECT ?p WHERE {?p a owl:ObjectProperty .";
 			if (domain != null && !domain.isAnonymous() && !domain.isOWLThing()) {
@@ -202,7 +213,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		} else {// we have to check all other properties
 			candidates = reasoner.getOWLObjectProperties();
 		}
-		candidates.remove(propertyToDescribe);
+		candidates.remove(entityToDescribe);
 		
 		return candidates;
 	}
@@ -210,11 +221,11 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<T> evAxiom) {
 		T axiom = evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+		posExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
 		
 		OWLObjectProperty otherProperty;
 		if(axiom instanceof OWLNaryPropertyAxiom){// we assume a single atomic property
-			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(propertyToDescribe).iterator().next()
+			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(entityToDescribe).iterator().next()
 					.asOWLObjectProperty();
 		} else {
 			otherProperty = ((OWLSubObjectPropertyOfAxiom) axiom).getSuperProperty().asOWLObjectProperty();
@@ -234,7 +245,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
 		return posExamples;
@@ -243,11 +254,11 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	@Override
 	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<T> evAxiom) {
 		T axiom = evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+		negExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
 		
 		OWLObjectProperty otherProperty;
 		if(axiom instanceof OWLNaryPropertyAxiom){// we assume a single atomic property
-			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(propertyToDescribe).iterator().next()
+			otherProperty = ((OWLNaryPropertyAxiom<OWLObjectPropertyExpression>) axiom).getPropertiesMinus(entityToDescribe).iterator().next()
 					.asOWLObjectProperty();
 		} else {
 			otherProperty = ((OWLSubObjectPropertyOfAxiom) axiom).getSuperProperty().asOWLObjectProperty();
@@ -267,7 +278,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
 		return negExamples;

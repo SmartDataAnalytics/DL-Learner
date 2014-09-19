@@ -92,10 +92,10 @@ public class FunctionalObjectPropertyAxiomLearner extends
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			// ?o1
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o1").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 			// ?o2
 			object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o2").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
 		return negExamples;
@@ -104,7 +104,7 @@ public class FunctionalObjectPropertyAxiomLearner extends
 	public static void main(String[] args) throws Exception {
 		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(
 				SparqlEndpoint.getEndpointDBpedia()));
-		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
+		l.setEntityToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
 				.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(20);
 		l.setForceSPARQL_1_0_Mode(true);

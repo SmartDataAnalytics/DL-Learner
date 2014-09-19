@@ -65,7 +65,7 @@ public class AsymmetricObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 		AsymmetricObjectPropertyAxiomLearner l = new AsymmetricObjectPropertyAxiomLearner(new SparqlEndpointKS(
 				new SparqlEndpoint(new URL("http://live.dbpedia.org/sparql"),
 						Collections.singletonList("http://dbpedia.org"), Collections.<String> emptyList())));// .getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/spouse")));
+		l.setEntityToDescribe(df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/spouse")));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.init();
 		l.start();

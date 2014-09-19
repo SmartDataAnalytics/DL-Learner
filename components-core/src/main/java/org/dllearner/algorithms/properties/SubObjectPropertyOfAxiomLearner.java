@@ -45,10 +45,10 @@ public class SubObjectPropertyOfAxiomLearner extends ObjectPropertyHierarchyAxio
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLObjectProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
+		SortedSet<OWLObjectProperty> existingSuperProperties = reasoner.getSuperProperties(entityToDescribe);
 		if (existingSuperProperties != null && !existingSuperProperties.isEmpty()) {
 			for (OWLObjectProperty supProp : existingSuperProperties) {
-				existingAxioms.add(df.getOWLSubObjectPropertyOfAxiom(propertyToDescribe, supProp));
+				existingAxioms.add(df.getOWLSubObjectPropertyOfAxiom(entityToDescribe, supProp));
 			}
 			logger.info("Existing axioms:" + existingAxioms);
 		}

@@ -45,10 +45,10 @@ public class EquivalentDataPropertyAxiomLearner extends DataPropertyHierarchyAxi
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLDataProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(propertyToDescribe);
+		SortedSet<OWLDataProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(entityToDescribe);
 		if (existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()) {
 			for (OWLDataProperty eqProp : existingEquivalentProperties) {
-				existingAxioms.add(df.getOWLEquivalentDataPropertiesAxiom(propertyToDescribe, eqProp));
+				existingAxioms.add(df.getOWLEquivalentDataPropertiesAxiom(entityToDescribe, eqProp));
 			}
 			logger.info("Existing axioms:" + existingAxioms);
 		}

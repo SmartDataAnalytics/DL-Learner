@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.learningproblems.Heuristics;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -21,11 +18,9 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyCharacteristicAxiom;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -47,12 +42,11 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 	 * @see org.dllearner.algorithms.properties.ObjectPropertyAxiomLearner#setPropertyToDescribe(org.semanticweb.owlapi.model.OWLObjectProperty)
 	 */
 	@Override
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		super.setPropertyToDescribe(propertyToDescribe);
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		POS_FREQUENCY_QUERY.setIri("p", propertyToDescribe.toStringID());
-		ALREADY_DECLARED_QUERY.setIri("p", propertyToDescribe.toStringID());
-		GET_SAMPLE_QUERY.setIri("p", propertyToDescribe.toStringID());
+		POS_FREQUENCY_QUERY.setIri("p", entityToDescribe.toStringID());
+		ALREADY_DECLARED_QUERY.setIri("p", entityToDescribe.toStringID());
 		
 		IRI type;
 		if(axiomType.equals(AxiomType.SYMMETRIC_OBJECT_PROPERTY)){
@@ -86,7 +80,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		// check if property is already declared as asymmetric in knowledge base
 		declared = executeAskQuery(ALREADY_DECLARED_QUERY.toString());
 		if (declared) {
-			existingAxioms.add(getAxiom(propertyToDescribe));
+			existingAxioms.add(getAxiom(entityToDescribe));
 			logger.info("Property is already declared as asymmetric in knowledge base.");
 		}
 	}
@@ -96,57 +90,17 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 	 */
 	@Override
 	protected void run() {
-//		runSPARQL1_0_Mode();
-		runSPARQL1_1_Mode();
-	}
-	
-	protected abstract T getAxiom(OWLObjectProperty property);
-	
-	private void runSPARQL1_0_Mode() {
-		boolean declared = !existingAxioms.isEmpty();
-		
-		workingModel = ModelFactory.createDefaultModel();
-		
-		//TODO determine page size in super class or even better in the KB object
-		int DEFAULT_PAGE_SIZE = 10000;
-		long limit = DEFAULT_PAGE_SIZE; //PaginationUtils.adjustPageSize(qef, DEFAULT_PAGE_SIZE);
-		long offset = 0;
-		
-		Query query = GET_SAMPLE_QUERY.asQuery();
-		query.setLimit(limit);
-		Model newModel = executeConstructQuery(query.toString());
-		
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			workingModel.add(newModel);
-			
-			popularity = getPropertyPopularity(workingModel);
-			
-			// get number of pos examples
-			int frequency = getPositiveExamplesFrequency(workingModel);
-
-			if (popularity > 0) {
-				currentlyBestAxioms.clear();
-				currentlyBestAxioms.add(new EvaluatedAxiom<T>(
-						getAxiom(propertyToDescribe), 
-						computeScore(popularity, frequency, useSample),
-						declared));
-			}
-			offset += limit;
-			query.setOffset(offset);
-			newModel = executeConstructQuery(query.toString());
-		}
-	}
-	
-	private void runSPARQL1_1_Mode() {
 		boolean declared = !existingAxioms.isEmpty();
 		
 		int frequency = getPositiveExamplesFrequency();
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<T>(
-				getAxiom(propertyToDescribe), 
+				getAxiom(entityToDescribe), 
 				computeScore(popularity, frequency, false),
 				declared));
 	}
+	
+	protected abstract T getAxiom(OWLObjectProperty property);
 	
 	protected int getPositiveExamplesFrequency(){
 		return getCountValue(POS_FREQUENCY_QUERY.toString());
@@ -174,7 +128,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
-			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
 		return posExamples;
@@ -200,7 +154,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
 			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource(onlySubject ? "s" : "o").getURI()));
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
 		return negExamples;

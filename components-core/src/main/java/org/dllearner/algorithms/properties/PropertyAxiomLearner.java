@@ -7,6 +7,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLogicalAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLProperty;
@@ -22,7 +23,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @author Lorenz Buehmann
  *
  */
-public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLLogicalAxiom, V extends OWLObject> extends AbstractAxiomLearningAlgorithm<T, V>{
+public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLLogicalAxiom, V extends OWLObject> extends AbstractAxiomLearningAlgorithm<T, V, S>{
 	
 	protected static final ParameterizedSparqlString TRIPLES_COUNT_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(*) as ?cnt) WHERE {?s ?p ?o .}");
@@ -38,26 +39,26 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	
 	protected ParameterizedSparqlString COUNT_QUERY = TRIPLES_COUNT_QUERY;
 	
-	protected S propertyToDescribe;
-	
 	protected int popularity;
 	
 	protected boolean useSample = true;
 	
 	protected boolean strictOWLMode = true;
 	
-	/**
-	 * @param propertyToDescribe the propertyToDescribe to set
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#setEntityToDescribe(org.semanticweb.owlapi.model.OWLEntity)
 	 */
-	public void setPropertyToDescribe(S propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+	@Override
+	public void setEntityToDescribe(S entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		posExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
-		negExamplesQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+		posExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
+		negExamplesQueryTemplate.setIri("p", entityToDescribe.toStringID());
 		
-		COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
+		COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
 	
 	/**
@@ -65,13 +66,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	 */
 	public void setStrictOWLMode(boolean strictOWLMode) {
 		this.strictOWLMode = strictOWLMode;
-	}
-	
-	/**
-	 * @return the propertyToDescribe
-	 */
-	public S getPropertyToDescribe() {
-		return propertyToDescribe;
 	}
 	
 	protected ParameterizedSparqlString getSampleQuery(){
@@ -90,7 +84,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 
 		// we have to skip here if there are not triples having the property as predicate
 		if (popularity == 0) {
-			logger.warn("Cannot compute statements for empty property " + propertyToDescribe);
+			logger.warn("Cannot compute statements for empty property " + entityToDescribe);
 			return;
 		}
 		
@@ -109,10 +103,11 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
 			
 			ParameterizedSparqlString sampleQueryTemplate = getSampleQuery();
-			sampleQueryTemplate.setIri("p", propertyToDescribe.toStringID());
+			sampleQueryTemplate.setIri("p", entityToDescribe.toStringID());
 			Query query = sampleQueryTemplate.asQuery();
 			query.setLimit(pageSize);
 			
+			logger.info("Generating sample...");
 			boolean isEmpty = false;
 			int i = 0;
 			while(!isTimeout() && !isEmpty){
@@ -133,6 +128,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 				// compute the axioms in each run to ensure any-time property of algorithm
 //				run();
 			}
+			logger.info("...done. Sample size:" + sample.size() + " triples");
 			run();
 		} else {
 			run();

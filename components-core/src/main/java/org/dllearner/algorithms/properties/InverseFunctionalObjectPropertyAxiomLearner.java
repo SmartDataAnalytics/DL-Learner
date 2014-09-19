@@ -90,9 +90,9 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends
 			// ?s2
 			OWLIndividual subject2 = df.getOWLNamedIndividual(IRI.create(qs.getResource("s2").getURI()));
 			// ?s -> ?o
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject1, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject1, object));
 			// ?s2 -> ?o
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject2, object));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject2, object));
 		}
 
 		return negExamples;
@@ -101,7 +101,7 @@ public class InverseFunctionalObjectPropertyAxiomLearner extends
 	public static void main(String[] args) throws Exception {
 		InverseFunctionalObjectPropertyAxiomLearner l = new InverseFunctionalObjectPropertyAxiomLearner(new SparqlEndpointKS(
 				SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
+		l.setEntityToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
 				.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(5);
 		l.init();

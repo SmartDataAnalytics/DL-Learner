@@ -45,10 +45,10 @@ public class SubDataPropertyOfAxiomLearner extends DataPropertyHierarchyAxiomLea
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLDataProperty> existingSuperProperties = reasoner.getSuperProperties(propertyToDescribe);
+		SortedSet<OWLDataProperty> existingSuperProperties = reasoner.getSuperProperties(entityToDescribe);
 		if (existingSuperProperties != null && !existingSuperProperties.isEmpty()) {
 			for (OWLDataProperty supProp : existingSuperProperties) {
-				existingAxioms.add(df.getOWLSubDataPropertyOfAxiom(propertyToDescribe, supProp));
+				existingAxioms.add(df.getOWLSubDataPropertyOfAxiom(entityToDescribe, supProp));
 			}
 			logger.info("Existing axioms:" + existingAxioms);
 		}

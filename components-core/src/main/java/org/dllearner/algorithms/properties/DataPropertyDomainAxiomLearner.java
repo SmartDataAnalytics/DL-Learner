@@ -57,7 +57,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataPropertyDomainAxiomLearner.class);
 	
-	private OWLDataProperty propertyToDescribe;
+	private OWLDataProperty entityToDescribe;
 	
 	public DataPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -65,8 +65,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
 	}
 	
-	public void setPropertyToDescribe(OWLDataProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+	public void setPropertyToDescribe(OWLDataProperty entityToDescribe) {
+		this.entityToDescribe = entityToDescribe;
 	}
 	
 	/* (non-Javadoc)
@@ -74,13 +74,13 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		OWLClassExpression existingDomain = reasoner.getDomain(propertyToDescribe);
+		OWLClassExpression existingDomain = reasoner.getDomain(entityToDescribe);
 		if(existingDomain != null){
-			existingAxioms.add(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, existingDomain));
+			existingAxioms.add(df.getOWLDataPropertyDomainAxiom(entityToDescribe, existingDomain));
 			if(reasoner.isPrepared()){
 				if(reasoner.getClassHierarchy().contains(existingDomain)){
 					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-						existingAxioms.add(df.getOWLDataPropertyDomainAxiom(propertyToDescribe, existingDomain));
+						existingAxioms.add(df.getOWLDataPropertyDomainAxiom(entityToDescribe, existingDomain));
 						logger.info("Existing domain(inferred): " + sup);
 					}
 				}
@@ -99,12 +99,12 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 	
 	private void runSingleQueryMode(){
 		
-		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.toStringID());
+		String query = String.format("SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}", entityToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
 		
 		query = String.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o. ?s a ?type.} GROUP BY ?type", 
-				propertyToDescribe.toStringID());
+				entityToDescribe.toStringID());
 		rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -114,7 +114,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			if(!domain.isOWLThing()){
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-								df.getOWLDataPropertyDomainAxiom(propertyToDescribe, domain), 
+								df.getOWLDataPropertyDomainAxiom(entityToDescribe, domain), 
 								computeScore(nrOfSubjects, cnt, useSample)));
 			}
 		}
@@ -125,7 +125,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		int limit = 1000;
 		int offset = 0;
 		String baseQuery  = "CONSTRUCT {?s a ?type.} WHERE {?s <%s> ?o. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
+		String query = String.format(baseQuery, entityToDescribe.toStringID(), limit, offset);
 		Model newModel = executeConstructQuery(query);
 		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
 			workingModel.add(newModel);
@@ -153,13 +153,13 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 						continue;
 					}
 					currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-							df.getOWLDataPropertyDomainAxiom(propertyToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
+							df.getOWLDataPropertyDomainAxiom(entityToDescribe, df.getOWLClass(IRI.create(type.getURI()))),
 							computeScore(all, qs.get("cnt").asLiteral().getInt())));
 				}
 				
 			}
 			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), limit, offset);
+			query = String.format(baseQuery, entityToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 			fillWithInference(newModel);
 		}
@@ -207,7 +207,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		
 		DataPropertyDomainAxiomLearner l = new DataPropertyDomainAxiomLearner(ks);
 		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new OWLDataPropertyImpl(IRI.create("http://dbpedia.org/ontology/AutomobileEngine/height")));
+		l.setEntityToDescribe(new OWLDataPropertyImpl(IRI.create("http://dbpedia.org/ontology/AutomobileEngine/height")));
 		l.setMaxExecutionTimeInSeconds(10);
 		l.addFilterNamespace("http://dbpedia.org/ontology/");
 //		l.setReturnOnlyNewAxioms(true);

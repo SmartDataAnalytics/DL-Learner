@@ -21,43 +21,53 @@ package org.dllearner.algorithms.properties;
 
 import java.util.SortedSet;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.AxiomScore;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 @ComponentAnn(name = "inverse objectproperty axiom learner", shortName = "oplinv", version = 0.1)
 public class InverseObjectPropertyAxiomLearner extends
-		AbstractAxiomLearningAlgorithm<OWLInverseObjectPropertiesAxiom, OWLObjectPropertyAssertionAxiom> {
-
-	private static final Logger logger = LoggerFactory.getLogger(InverseObjectPropertyAxiomLearner.class);
-
-	private OWLObjectProperty propertyToDescribe;
+		ObjectPropertyAxiomLearner<OWLInverseObjectPropertiesAxiom> {
+	
+	private static final ParameterizedSparqlString POS_EXAMPLES_QUERY = new ParameterizedSparqlString(
+			"SELECT ?p_inv ?s ?o WHERE { ?s ?p ?o . ?o ?p_inv ?s . FILTER(!sameTerm(?p, ?p_inv))}");
+	
+	private static final ParameterizedSparqlString NEG_EXAMPLES_QUERY = new ParameterizedSparqlString(
+			"SELECT ?p_inv ?s ?o WHERE { ?s ?p ?o . FILTER NOT EXISTS {?o ?p_inv ?s . FILTER(!sameTerm(?p, ?p_inv))}}");
+	
+	private static final ParameterizedSparqlString QUERY = new ParameterizedSparqlString(
+			"SELECT ?p_inv (COUNT(*) AS ?cnt) WHERE { ?s ?p ?o . ?o ?p_inv ?s . FILTER(!sameTerm(?p, ?p_inv))} GROUP BY ?p_inv");
+	
+	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT {?s ?p ?o . ?o ?p_inv ?s . } WHERE {?s ?p ?o . OPTIONAL{ ?o ?p_inv ?s . FILTER(!sameTerm(?p, ?p_inv))}}");
 
 	public InverseObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
-		this.ks = ks;
+		super.ks = ks;
+		
+		super.posExamplesQueryTemplate = POS_EXAMPLES_QUERY;
+		super.negExamplesQueryTemplate = NEG_EXAMPLES_QUERY;
+		
+		axiomType = AxiomType.INVERSE_OBJECT_PROPERTIES;
 	}
-
-	public OWLObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return SAMPLE_QUERY;
 	}
 
 	/* (non-Javadoc)
@@ -66,109 +76,43 @@ public class InverseObjectPropertyAxiomLearner extends
 	@Override
 	protected void getExistingAxioms() {
 		SortedSet<OWLObjectProperty> existingInverseObjectProperties = reasoner
-				.getInverseObjectProperties(propertyToDescribe);
+				.getInverseObjectProperties(entityToDescribe);
 		for (OWLObjectProperty invProp : existingInverseObjectProperties) {
-			existingAxioms.add(df.getOWLInverseObjectPropertiesAxiom(invProp, propertyToDescribe));
+			existingAxioms.add(df.getOWLInverseObjectPropertiesAxiom(invProp, entityToDescribe));
 		}
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#run()
 	 */
 	@Override
-	protected void learnAxioms() {
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			runSPARQL1_1_Mode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-	}
-
-	private void runSingleQueryMode() {
-		int total = reasoner.getPopularity(propertyToDescribe);
-
-		String query = String
-				.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p",
-						propertyToDescribe.toStringID());
-		ResultSet rs = executeSelectQuery(query);
+	protected void run() {
+		
+		ResultSet rs = executeSelectQuery(QUERY.toString());
 		QuerySolution qs;
 		while (rs.hasNext()) {
 			qs = rs.next();
+			
+			// candidate
+			OWLObjectProperty candidate = df.getOWLObjectProperty(IRI.create(qs.getResource("p_inv").getURI()));
+			
+			// frequency
+			int frequency = qs.getLiteral("cnt").getInt();
+			
+			// score
+			AxiomScore score = computeScore(popularity, frequency, useSample);
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLInverseObjectPropertiesAxiom>(df
-					.getOWLInverseObjectPropertiesAxiom(
-							df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())), propertyToDescribe),
-					computeScore(total, qs.getLiteral("cnt").getInt())));
+					.getOWLInverseObjectPropertiesAxiom(entityToDescribe, candidate), score
+					));
 		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery = "CONSTRUCT {?s <%s> ?o. ?o ?p ?s} WHERE {?s <%s> ?o. OPTIONAL{?o ?p ?s. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>}} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(),
-				limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			model.add(newModel);
-			// get number of instances of s with <s p o>
-			query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-			query = query.replace("%s", propertyToDescribe.toStringID());
-			ResultSet rs = executeSelectQuery(query, model);
-			QuerySolution qs;
-			int total = 0;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				total = qs.getLiteral("total").getInt();
-			}
-
-			query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s.} GROUP BY ?p",
-					propertyToDescribe.toStringID());
-			rs = executeSelectQuery(query, model);
-			while (rs.hasNext()) {
-				qs = rs.next();
-				currentlyBestAxioms.add(new EvaluatedAxiom<OWLInverseObjectPropertiesAxiom>(df
-						.getOWLInverseObjectPropertiesAxiom(
-								df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())), propertyToDescribe),
-						computeScore(total, qs.getLiteral("cnt").getInt())));
-			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.toStringID(), propertyToDescribe.toStringID(), limit,
-					offset);
-			newModel = executeConstructQuery(query);
-		}
-	}
-
-	private void runSPARQL1_1_Mode() {
-		String query = "SELECT (COUNT(*) AS ?total) WHERE {?s <%s> ?o.}";
-		query = query.replace("%s", propertyToDescribe.toStringID());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		int total = 0;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			total = qs.getLiteral("total").getInt();
-		}
-
-		query = String
-				.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?o ?p ?s. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>} GROUP BY ?p",
-						propertyToDescribe.toStringID());
-		rs = executeSelectQuery(query);
-		while (rs.hasNext()) {
-			qs = rs.next();
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLInverseObjectPropertiesAxiom>(df
-					.getOWLInverseObjectPropertiesAxiom(
-							df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())), propertyToDescribe),
-					computeScore(total, qs.getLiteral("cnt").getInt())));
-		}
-
 	}
 
 	public static void main(String[] args) throws Exception {
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 
 		InverseObjectPropertyAxiomLearner l = new InverseObjectPropertyAxiomLearner(ks);
-		l.setPropertyToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
+		l.setEntityToDescribe(new OWLDataFactoryImpl().getOWLObjectProperty(IRI
 				.create("http://dbpedia.org/ontology/routeEnd")));
 		l.setMaxExecutionTimeInSeconds(60);
 		//		l.setForceSPARQL_1_0_Mode(true);
@@ -178,5 +122,7 @@ public class InverseObjectPropertyAxiomLearner extends
 
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(10, 0.2));
 	}
+
+	
 
 }

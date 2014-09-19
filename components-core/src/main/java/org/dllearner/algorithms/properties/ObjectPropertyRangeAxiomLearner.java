@@ -69,15 +69,19 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 		
 		axiomType = AxiomType.OBJECT_PROPERTY_RANGE;
 	}
-
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#setEntityToDescribe(org.semanticweb.owlapi.model.OWLProperty)
+	 */
+	@Override
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		OBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
-		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
+		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
 	
 	/* (non-Javadoc)
@@ -85,14 +89,14 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		OWLClassExpression existingRange = reasoner.getRange(propertyToDescribe);
+		OWLClassExpression existingRange = reasoner.getRange(entityToDescribe);
 		if (existingRange != null) {
-			existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
+			existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(entityToDescribe, existingRange));
 			logger.info("Existing range: " + existingRange);
 			if (reasoner.isPrepared()) {
 				if (reasoner.getClassHierarchy().contains(existingRange)) {
 					for (OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)) {
-						existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
+						existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(entityToDescribe, existingRange));
 						logger.info("Existing range(inferred): " + sup);
 					}
 				}
@@ -156,7 +160,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
-							df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, candidate), 
+							df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
 							new AxiomScore(score, useSample)));
 		}
 	}
@@ -170,7 +174,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 		// query later on
 		reasoner.precomputeClassPopularity();
 		
-		// get for each subject type the frequency
+		// get for each object type the frequency
 		ResultSet rs = executeSelectQuery(OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.toString());
 		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
 		int size = rsrw.size();
@@ -200,7 +204,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 				
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
-								df.getOWLObjectPropertyRangeAxiom(propertyToDescribe, candidate), 
+								df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
 								new AxiomScore(score, useSample)));
 				
 			}

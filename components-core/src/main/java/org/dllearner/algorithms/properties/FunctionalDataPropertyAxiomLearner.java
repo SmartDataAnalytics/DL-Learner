@@ -55,22 +55,22 @@ public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		declaredAsFunctional = reasoner.isFunctional(propertyToDescribe);
+		declaredAsFunctional = reasoner.isFunctional(entityToDescribe);
 		if(declaredAsFunctional) {
-			existingAxioms.add(df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe));
-			logger.warn("Data property " + propertyToDescribe + " is already declared as functional in knowledge base.");
+			existingAxioms.add(df.getOWLFunctionalDataPropertyAxiom(entityToDescribe));
+			logger.warn("Data property " + entityToDescribe + " is already declared as functional in knowledge base.");
 		}
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#setPropertyToDescribe(org.semanticweb.owlapi.model.OWLProperty)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#setEntityToDescribe(org.semanticweb.owlapi.model.OWLProperty)
 	 */
 	@Override
-	public void setPropertyToDescribe(OWLDataProperty propertyToDescribe) {
-		super.setPropertyToDescribe(propertyToDescribe);
+	public void setEntityToDescribe(OWLDataProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		POS_FREQUENCY_QUERY.setIri("p", propertyToDescribe.toStringID());
-		GET_SAMPLE_QUERY.setIri("p", propertyToDescribe.toStringID());
+		POS_FREQUENCY_QUERY.setIri("p", entityToDescribe.toStringID());
+		GET_SAMPLE_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
 	
 	/* (non-Javadoc)
@@ -83,7 +83,7 @@ public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner
 		int frequency = getCountValue(POS_FREQUENCY_QUERY.toString());
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
-				df.getOWLFunctionalDataPropertyAxiom(propertyToDescribe), 
+				df.getOWLFunctionalDataPropertyAxiom(entityToDescribe), 
 				computeScore(popularity, frequency, useSample),
 				declared));
 	}

@@ -51,10 +51,10 @@ public class DisjointDataPropertyAxiomLearner extends DataPropertyHierarchyAxiom
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		SortedSet<OWLDataProperty> existingDisjointProperties = reasoner.getDisjointProperties(propertyToDescribe);
+		SortedSet<OWLDataProperty> existingDisjointProperties = reasoner.getDisjointProperties(entityToDescribe);
 		if (existingDisjointProperties != null && !existingDisjointProperties.isEmpty()) {
 			for (OWLDataProperty disProp : existingDisjointProperties) {
-				existingAxioms.add(df.getOWLDisjointDataPropertiesAxiom(propertyToDescribe, disProp));
+				existingAxioms.add(df.getOWLDisjointDataPropertiesAxiom(entityToDescribe, disProp));
 			}
 			logger.info("Existing axioms:" + existingAxioms);
 		}

@@ -54,7 +54,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "simple subclass learner", shortName = "clsub", version = 0.1)
-public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLIndividual> implements
+public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLIndividual, OWLClass> implements
 		ClassExpressionLearningAlgorithm {
 
 	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);

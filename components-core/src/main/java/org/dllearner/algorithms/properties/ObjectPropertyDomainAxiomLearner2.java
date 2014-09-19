@@ -71,16 +71,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 	}
 
 	@Override
-	public void setPropertyToDescribe(OWLObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
-//		negExamplesQueryTemplate.clearParams();
-//		posExamplesQueryTemplate.clearParams();
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		SUBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", propertyToDescribe.toStringID());
-		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
-		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", propertyToDescribe.toStringID());
+		DISTINCT_SUBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
+		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
 	
 	/* (non-Javadoc)
@@ -105,14 +103,14 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 	 */
 	@Override
 	protected void getExistingAxioms() {
-		OWLClassExpression existingDomain = reasoner.getDomain(propertyToDescribe);
+		OWLClassExpression existingDomain = reasoner.getDomain(entityToDescribe);
 		logger.info("Existing domain: " + existingDomain);
 		if(existingDomain != null){
-			existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+			existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(entityToDescribe, existingDomain));
 			if(reasoner.isPrepared()){
 				if(reasoner.getClassHierarchy().contains(existingDomain)){
 					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
-						existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, existingDomain));
+						existingAxioms.add(df.getOWLObjectPropertyDomainAxiom(entityToDescribe, existingDomain));
 						logger.info("Existing domain(inferred): " + sup);
 					}
 				}
@@ -159,7 +157,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
-							df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
+							df.getOWLObjectPropertyDomainAxiom(entityToDescribe, candidate), 
 							new AxiomScore(score, useSample)));
 		}
 	}
@@ -201,7 +199,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 				
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
-								df.getOWLObjectPropertyDomainAxiom(propertyToDescribe, candidate), 
+								df.getOWLObjectPropertyDomainAxiom(entityToDescribe, candidate), 
 								new AxiomScore(score, useSample)));
 				
 			}

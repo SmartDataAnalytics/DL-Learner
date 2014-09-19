@@ -66,7 +66,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
  *
  */
 @ComponentAnn(name = "disjoint classes learner", shortName = "cldisjoint", version = 0.1)
-public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDisjointClassesAxiom, OWLIndividual>
+public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDisjointClassesAxiom, OWLIndividual, OWLClass>
 		implements ClassExpressionLearningAlgorithm {
 
 	private static final Logger logger = LoggerFactory.getLogger(DisjointClassesLearner.class);

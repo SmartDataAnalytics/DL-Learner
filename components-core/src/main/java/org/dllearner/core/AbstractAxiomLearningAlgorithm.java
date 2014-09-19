@@ -55,6 +55,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Lorenz Bühmann
  * @author Jens Lehmann
  */
-public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
+public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject, E extends OWLEntity> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
@@ -142,6 +143,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
 	protected AxiomType<T> axiomType;
+	protected E entityToDescribe;
 	
 	
 	public AbstractAxiomLearningAlgorithm() {
@@ -160,6 +162,20 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     public void setLearningProblem(LearningProblem learningProblem) {
         this.learningProblem = learningProblem;
     }	
+    
+    /**
+	 * @param entityToDescribe the entityToDescribe to set
+	 */
+	public void setEntityToDescribe(E entityToDescribe) {
+		this.entityToDescribe = entityToDescribe;
+	}
+	
+	/**
+	 * @return the entityToDescribe
+	 */
+	public E getEntityToDescribe() {
+		return entityToDescribe;
+	}
     
     /**
 	 * @return the axiomType

@@ -42,6 +42,9 @@ import com.hp.hpl.jena.query.ResultSet;
 
 @ComponentAnn(name = "transitive objectproperty axiom learner", shortName = "opltrans", version = 0.1)
 public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLTransitiveObjectPropertyAxiom> {
+	
+	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT {?s ?p ?o . ?o ?p ?o1 . ?s ?p ?o1 .} WHERE {?s ?p ?o . ?o ?p ?o1 . OPTIONAL {?s ?p ?o1 .}}");
 
 	public TransitiveObjectPropertyAxiomLearner(SparqlEndpointKS ks) {
 		super(ks);
@@ -58,6 +61,7 @@ public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 		
 		POS_FREQUENCY_QUERY = new ParameterizedSparqlString(
 				"SELECT (COUNT(*) AS ?cnt) WHERE {?s ?p ?o1. ?o1 ?p ?o2. ?s ?p ?o2}");
+		
 	}
 
 	/* (non-Javadoc)
@@ -66,6 +70,14 @@ public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 	@Override
 	protected OWLTransitiveObjectPropertyAxiom getAxiom(OWLObjectProperty property) {
 		return df.getOWLTransitiveObjectPropertyAxiom(property);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return SAMPLE_QUERY;
 	}
 	
 	/* (non-Javadoc)
@@ -91,9 +103,9 @@ public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 			OWLIndividual object2 = df.getOWLNamedIndividual(IRI.create(qs.getResource("o2").getURI()));
 			
 			// ?s -> ?o1
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, subject, object1));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object1));
 			// ?o1 -> ?o2
-			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(propertyToDescribe, object1, object2));
+			negExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, object1, object2));
 		}
 
 		return negExamples;
@@ -102,7 +114,7 @@ public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 	public static void main(String[] args) throws Exception {
 		TransitiveObjectPropertyAxiomLearner l = new TransitiveObjectPropertyAxiomLearner(new SparqlEndpointKS(
 				SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/birthPlace")));
+		l.setEntityToDescribe(new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/birthPlace")));
 		l.setMaxExecutionTimeInSeconds(5);
 		l.init();
 		l.start();
