@@ -96,7 +96,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<T>(
 				getAxiom(entityToDescribe), 
-				computeScore(popularity, frequency, false),
+				computeScore(popularity, frequency, useSampling),
 				declared));
 	}
 	

@@ -145,6 +145,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected AxiomType<T> axiomType;
 	protected E entityToDescribe;
 	
+	protected boolean useSampling = true;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<T>();
@@ -175,6 +176,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	 */
 	public E getEntityToDescribe() {
 		return entityToDescribe;
+	}
+	
+	public void setUseSampling(boolean useSampling) {
+		this.useSampling = useSampling;
+	}
+	
+	public boolean isUseSampling() {
+		return useSampling;
 	}
     
     /**

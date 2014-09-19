@@ -115,7 +115,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
 								df.getOWLDataPropertyDomainAxiom(entityToDescribe, domain), 
-								computeScore(nrOfSubjects, cnt, useSample)));
+								computeScore(nrOfSubjects, cnt, useSampling)));
 			}
 		}
 	}

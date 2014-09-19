@@ -113,7 +113,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
 							getAxiom(entityToDescribe, p), 
-							new AxiomScore(score, useSample)));
+							new AxiomScore(score, useSampling)));
 		}
 	}
 	

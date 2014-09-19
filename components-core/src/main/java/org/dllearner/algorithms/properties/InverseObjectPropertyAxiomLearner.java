@@ -100,7 +100,7 @@ public class InverseObjectPropertyAxiomLearner extends
 			int frequency = qs.getLiteral("cnt").getInt();
 			
 			// score
-			AxiomScore score = computeScore(popularity, frequency, useSample);
+			AxiomScore score = computeScore(popularity, frequency, useSampling);
 			
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLInverseObjectPropertiesAxiom>(df
 					.getOWLInverseObjectPropertiesAxiom(entityToDescribe, candidate), score

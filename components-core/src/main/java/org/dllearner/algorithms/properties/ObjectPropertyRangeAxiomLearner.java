@@ -161,7 +161,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
 							df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
-							new AxiomScore(score, useSample)));
+							new AxiomScore(score, useSampling)));
 		}
 	}
 	
@@ -205,7 +205,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 				currentlyBestAxioms.add(
 						new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
 								df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
-								new AxiomScore(score, useSample)));
+								new AxiomScore(score, useSampling)));
 				
 			}
 		}

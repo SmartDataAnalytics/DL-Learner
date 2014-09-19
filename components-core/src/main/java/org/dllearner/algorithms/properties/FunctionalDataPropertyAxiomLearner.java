@@ -84,7 +84,7 @@ public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner
 
 		currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
 				df.getOWLFunctionalDataPropertyAxiom(entityToDescribe), 
-				computeScore(popularity, frequency, useSample),
+				computeScore(popularity, frequency, useSampling),
 				declared));
 	}
 }

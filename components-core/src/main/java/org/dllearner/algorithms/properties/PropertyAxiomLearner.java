@@ -41,8 +41,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	
 	protected int popularity;
 	
-	protected boolean useSample = true;
-	
 	protected boolean strictOWLMode = true;
 	
 	
@@ -88,7 +86,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			return;
 		}
 		
-		if(useSample){
+		if(useSampling){
 			logger.debug("Using sample mode.");
 			
 			// we have to set up a new query execution factory working on our local model
@@ -134,13 +132,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			run();
 		}
 		progressMonitor.learningStopped();
-	}
-	
-	/**
-	 * @param useSample the useSample to set
-	 */
-	public void setUseSample(boolean useSample) {
-		this.useSample = useSample;
 	}
 	
 	protected int getPropertyPopularity(){

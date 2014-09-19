@@ -108,7 +108,7 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyRangeAxiom>(
 					df.getOWLDataPropertyRangeAxiom(entityToDescribe, df.getOWLDatatype(IRI.create(datatypeURI))),
-					new AxiomScore(score, useSample)));
+					new AxiomScore(score, useSampling)));
 
 		}
 
