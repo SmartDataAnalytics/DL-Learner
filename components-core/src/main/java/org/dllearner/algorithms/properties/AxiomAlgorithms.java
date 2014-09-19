@@ -78,44 +78,47 @@ public class AxiomAlgorithms {
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_OBJECT_PROPERTY, EQUIVALENT_OBJECT_PROPERTIES, DISJOINT_OBJECT_PROPERTIES),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> .} "
+						+ "WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_CHARACTERISTICS_WITHOUT_TRANSITIVITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SYMMETRIC_OBJECT_PROPERTY, ASYMMETRIC_OBJECT_PROPERTY,
 						FUNCTIONAL_OBJECT_PROPERTY, INVERSE_FUNCTIONAL_OBJECT_PROPERTY, REFLEXIVE_OBJECT_PROPERTY, IRREFLEXIVE_OBJECT_PROPERTY),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_TRANSITITVITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(TRANSITIVE_OBJECT_PROPERTY),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?o ?p ?o1 . ?s ?p ?o1 .} "
+						+ "WHERE {?s ?p ?o . ?o ?p ?o1 . OPTIONAL {?s ?p ?o1 .}}"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_DOMAIN),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o; a ?cls . } WHERE {?s ?p ?o; a ?cls . }"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_RANGE_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_RANGE),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?o a ?cls . } WHERE {?s ?p ?o . ?o a ?cls . }"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES, DISJOINT_DATA_PROPERTIES),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?s ?p1 ?o .} WHERE {?s ?p ?o . OPTIONAL {?s ?p1 ?o .}"));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#DatatypeProperty> .} "
+						+ "WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_FUNCTIONALITY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(FUNCTIONAL_DATA_PROPERTY),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o.} WHERE {?s ?p ?o}"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(DATA_PROPERTY_DOMAIN),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o; a ?cls . } WHERE {?s ?p ?o; a ?cls . }"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_RANGE_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(DATA_PROPERTY_RANGE),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT {?s ?p ?o . ?o a ?cls . } WHERE {?s ?p ?o . ?o a ?cls . }"));
 		
 		public static final AxiomTypeCluster CLASS_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUBCLASS_OF, EQUIVALENT_CLASSES, DISJOINT_CLASSES),
-				new ParameterizedSparqlString(""));
+				new ParameterizedSparqlString("CONSTRUCT{?s a ?cls . ?s a ?cls1 .} WHERE {?s a ?cls . OPTIONAL {?s a ?cls1 .}"));
 	}
 
 	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes = 
