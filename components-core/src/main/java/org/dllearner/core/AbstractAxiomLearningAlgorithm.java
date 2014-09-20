@@ -64,7 +64,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -75,12 +74,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.expr.E_Regex;
-import com.hp.hpl.jena.sparql.expr.E_Str;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -104,16 +98,20 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	protected int maxFetchedRows;
 	
+	
 	protected SparqlEndpointKS ks;
+	// the instances which are set
+	private SPARQLReasoner ksReasoner;
+	private QueryExecutionFactory ksQef;
+	// the instances on which the algorithms are really applied
 	protected SPARQLReasoner reasoner;
 	protected QueryExecutionFactory qef;
 	
+	
 	protected SortedSet<EvaluatedAxiom<T>> currentlyBestAxioms;
 	protected SortedSet<T> existingAxioms;
-	protected int fetchedRows;
 	
 	protected long startTime;
-	protected int limit = 1000;
 	
 	protected boolean timeout = true;
 	
@@ -132,7 +130,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected Model sample;
 	
-	protected Model workingModel;
 	protected ParameterizedSparqlString posExamplesQueryTemplate;
 	protected ParameterizedSparqlString negExamplesQueryTemplate;
 	protected ParameterizedSparqlString existingAxiomsTemplate;
@@ -189,7 +186,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     /**
 	 * @return the axiomType
 	 */
-	public AxiomType getAxiomType() {
+	public AxiomType<T> getAxiomType() {
 		return axiomType;
 	}
 	
@@ -233,11 +230,18 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	public void start() {
 		logger.info("Start learning...");
 		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
+		
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
 		
 		if(returnOnlyNewAxioms){
 			getExistingAxioms();
+		}
+		
+		if(useSampling){
+			generateSample();
+		} else {
+			qef = ksQef;
+			reasoner = ksReasoner;
 		}
 		
 		learnAxioms();
@@ -249,13 +253,39 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 		
 	}
-
-	public int getLimit() {
-		return limit;
-	}
-
-	public void setLimit(int limit) {
-		this.limit = limit;
+	
+	private void generateSample(){
+		logger.info("Generating sample...");
+		sample = ModelFactory.createDefaultModel();
+		
+		// we have to set up a new query execution factory working on our local model
+		qef = new QueryExecutionFactoryModel(sample);
+		reasoner = new SPARQLReasoner(qef, false);
+		
+		// get the page size 
+		//TODO put to base class
+		long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
+		
+		ParameterizedSparqlString sampleQueryTemplate = getSampleQuery();
+		sampleQueryTemplate.setIri("p", entityToDescribe.toStringID());
+		Query query = sampleQueryTemplate.asQuery();
+		query.setLimit(pageSize);
+		
+		
+		boolean isEmpty = false;
+		int i = 0;
+		while(!isTimeout() && !isEmpty){
+			// get next sample
+			logger.debug("Extending sample...");
+			query.setOffset(i++ * pageSize);
+			QueryExecution qe = ksQef.createQueryExecution(query);
+			Model tmp = qe.execConstruct();
+			sample.add(tmp);
+			
+			// if last call returned empty model, we can leave loop
+			isEmpty = tmp.isEmpty();
+		}
+		logger.info("...done. Sample size: " + sample.size() + " triples");
 	}
 	
 	/**
@@ -295,6 +325,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	 * Learn new OWL axioms based on instance data.
 	 */
 	protected abstract void learnAxioms();
+	
+	/**
+	 * The SPARQL CONSTRUCT query used to generate a sample for the given axiom type  and entity.
+	 * @return
+	 */
+	protected abstract ParameterizedSparqlString getSampleQuery();
 
 	@Override
 	public List<T> getCurrentlyBestAxioms() {
@@ -399,7 +435,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		QueryExecution qe = qef.createQueryExecution(query);
 		try {
 			Model model = qe.execConstruct();
-			fetchedRows += model.size();
 			timeout = false;
 			if(model.size() == 0){
 				fullDataLoaded = true;
@@ -471,8 +506,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected boolean terminationCriteriaSatisfied(){
 		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
+		return  timeLimitExceeded ; 
 	}
 	
 	protected List<Entry<OWLClassExpression, Integer>> sortByValues(Map<OWLClassExpression, Integer> map, final boolean useHierachy){
@@ -534,48 +568,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 //		return 2 * precision * recall / (precision + recall);
 //	}
 	
-	protected ResultSet fetchData(){
-		setChunkConditions();
-		if(!fullDataLoaded){
-			Query query = buildQuery();
-			offset += chunkSize;
-			ResultSet rs = executeSelectQuery(query.toString());
-			chunkCount++;
-			return rs;
-		}
-		return new ResultSetMem();
-	}
-	
-	private void setChunkConditions() {
-		// adapt chunk size if needed
-		if (chunkCount == 1 && lastRowCount < chunkSize) {
-			logger.info("Adapting chunk size from " + chunkSize + " to " + lastRowCount);
-			chunkSize = lastRowCount;
-			offset = lastRowCount;
-		}
-
-		// check if full data was loaded
-		if(chunkCount != 0){
-			fullDataLoaded = (lastRowCount == 0) || (lastRowCount < chunkSize);
-			if (fullDataLoaded) {
-				logger.info("Loaded whole data. Early termination.");
-			}
-		}
-	}
-	
-	private Query buildQuery(){
-		Query query = iterativeQueryTemplate.asQuery();
-		for(String ns : allowedNamespaces){
-			((ElementGroup)query.getQueryPattern()).addElementFilter(
-					new ElementFilter(
-							new E_Regex(
-									new E_Str(new ExprVar(NodeFactory.createVariable("type"))),
-									ns, "")));
-		}
-		query.setLimit(chunkSize);
-		query.setOffset(offset);
-		return query;
-	}
 	
 	public void addFilterNamespace(String namespace){
 		allowedNamespaces.add(namespace);
@@ -583,12 +575,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	@SuppressWarnings("unchecked")
 	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
-		ResultSet rs;
-		if(workingModel != null){
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 		Set<OWLObject> posExamples = new TreeSet<OWLObject>();
 		
 		RDFNode node;
@@ -609,12 +596,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@SuppressWarnings("unchecked")
 	public Set<S> getNegativeExamples(EvaluatedAxiom<T> axiom){
 		
-		ResultSet rs;
-		if(workingModel != null){
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		
 		Set<OWLObject> negExamples = new TreeSet<OWLObject>();
 		
@@ -652,7 +634,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public long getEvaluatedFramentSize(){
-		return workingModel.size();
+		return sample.size();
 	}
 	
 	/**

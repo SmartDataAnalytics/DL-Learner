@@ -39,6 +39,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -106,11 +107,19 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return null;
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
 	 */
 	@Override
 	protected void learnAxioms() {
-logger.info("Pattern: " + pattern);
+		logger.info("Pattern: " + pattern);
 		
 		//get the maximum modal depth in the pattern axioms
 		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(pattern);modalDepth++;

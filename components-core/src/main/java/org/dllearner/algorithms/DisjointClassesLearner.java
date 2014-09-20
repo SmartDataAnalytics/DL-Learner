@@ -119,6 +119,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	public void setSuggestMostGeneralClasses(boolean suggestMostGeneralClasses) {
 		this.suggestMostGeneralClasses = suggestMostGeneralClasses;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+	}
 
 	/*
 	 * (non-Javadoc)

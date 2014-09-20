@@ -43,6 +43,7 @@ import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
@@ -113,6 +114,14 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
 		super.start();
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -153,22 +162,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	 */
 	@Override
 	protected void learnAxioms() {
-		if (!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()) {
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		Map<OWLIndividual, SortedSet<OWLClassExpression>> ind2Types = new HashMap<OWLIndividual, SortedSet<OWLClassExpression>>();
-		int limit = 1000;
-		boolean repeat = true;
-		while (!terminationCriteriaSatisfied() && repeat) {
-			repeat = addIndividualsWithTypes(ind2Types, limit, fetchedRows);
-			createEvaluatedDescriptions(ind2Types);
-			fetchedRows += 1000;
-		}
+		runSingleQueryMode();
 	}
 
 	private void runSingleQueryMode() {

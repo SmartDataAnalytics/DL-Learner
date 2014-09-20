@@ -6,6 +6,8 @@ package org.dllearner.algorithms.properties;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
@@ -62,14 +64,9 @@ public class MultiPropertyAxiomLearner {
 	
 	private long maxExecutionTimeMilliseconds = -1;
 
-
-
 	private QueryExecutionFactory qef;
 
-
-
 	private long startTime;
-	
 	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -77,7 +74,7 @@ public class MultiPropertyAxiomLearner {
 		qef = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
 	}
 	
-	public void generateAxioms(OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
+	public void generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
 		startTime = System.currentTimeMillis();
 		EntityType<?> entityType = entity.getEntityType();
 		
@@ -89,24 +86,40 @@ public class MultiPropertyAxiomLearner {
 		}
 		
 		Set<AxiomType<? extends OWLAxiom>> todo = Sets.intersection(axiomTypes,  possibleAxiomTypes);
-		Map<AxiomType<? extends OWLAxiom>, SparqlEndpointKS> axiomType2Ks = Maps.newHashMap();
+		final Map<AxiomType<? extends OWLAxiom>, SparqlEndpointKS> axiomType2Ks = Maps.newConcurrentMap();
 		
 		// compute samples for axiom types
 		if(useSampling){
 			Set<AxiomTypeCluster> sampleClusters = AxiomAlgorithms.getSameSampleClusters(entityType);
 			
-			for (AxiomTypeCluster cluster : sampleClusters) {
-				SetView<AxiomType<? extends OWLAxiom>> sampleAxiomTypes = Sets.intersection(cluster.getAxiomTypes(), todo);
+			ExecutorService tp = Executors.newFixedThreadPool(4);
+			
+			for (final AxiomTypeCluster cluster : sampleClusters) {
+				final SetView<AxiomType<? extends OWLAxiom>> sampleAxiomTypes = Sets.intersection(cluster.getAxiomTypes(), todo);
 				
 				if(!sampleAxiomTypes.isEmpty()){
-					Model sample = generateSample(entity, cluster);
+					tp.submit(new Runnable() {
+						
+						@Override
+						public void run() {
+							Model sample = generateSample(entity, cluster);
+							
+							SparqlEndpointKS sampleKs = new LocalModelBasedSparqlEndpointKS(sample);
+							
+							for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
+								axiomType2Ks.put(axiomType, sampleKs);
+							}
+						}
+					});
 					
-					SparqlEndpointKS sampleKs = new LocalModelBasedSparqlEndpointKS(sample);
-					
-					for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
-						axiomType2Ks.put(axiomType, sampleKs);
-					}
 				}
+			}
+			
+			try {
+				tp.shutdown();
+				tp.awaitTermination(1, TimeUnit.HOURS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -204,12 +217,13 @@ public class MultiPropertyAxiomLearner {
 		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://linkedspending.aksw.org/sparql"), "http://dbpedia.org");
 //		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(new SparqlEndpointKS(endpoint));
-		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/league"));
+		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/routeEnd"));
 		la.generateAxioms(
 				entity, 
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, 
 						AxiomType.OBJECT_PROPERTY_RANGE, 
-						AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY));
+						AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY, AxiomType.IRREFLEXIVE_OBJECT_PROPERTY,
+						AxiomType.INVERSE_OBJECT_PROPERTIES));
 	}
 
 }

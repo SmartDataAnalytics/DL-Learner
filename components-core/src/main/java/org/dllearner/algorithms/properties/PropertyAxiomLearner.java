@@ -86,51 +86,8 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 			return;
 		}
 		
-		if(useSampling){
-			logger.debug("Using sample mode.");
-			
-			// we have to set up a new query execution factory working on our local model
-			QueryExecutionFactory globalQef = qef;
-			sample = ModelFactory.createDefaultModel();
-			qef = new QueryExecutionFactoryModel(sample);
-			SPARQLReasoner globalReasoner = reasoner;
-			reasoner = new SPARQLReasoner(qef, false);
-			
-			// get the page size 
-			//TODO put to base class
-			long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
-			
-			ParameterizedSparqlString sampleQueryTemplate = getSampleQuery();
-			sampleQueryTemplate.setIri("p", entityToDescribe.toStringID());
-			Query query = sampleQueryTemplate.asQuery();
-			query.setLimit(pageSize);
-			
-			logger.info("Generating sample...");
-			boolean isEmpty = false;
-			int i = 0;
-			while(!isTimeout() && !isEmpty){
-				
-				// get next sample
-				logger.debug("Extending sample...");
-				query.setOffset(i++ * pageSize);
-				QueryExecution qe = globalQef.createQueryExecution(query);
-				Model tmp = qe.execConstruct();
-				sample.add(tmp);
-				
-				// if last call returned empty model, we can leave loop
-				isEmpty = tmp.isEmpty();
-				
-				// recompute popularity
-				popularity = getPropertyPopularity();
-				
-				// compute the axioms in each run to ensure any-time property of algorithm
-//				run();
-			}
-			logger.info("...done. Sample size:" + sample.size() + " triples");
-			run();
-		} else {
-			run();
-		}
+		run();
+		
 		progressMonitor.learningStopped();
 	}
 	

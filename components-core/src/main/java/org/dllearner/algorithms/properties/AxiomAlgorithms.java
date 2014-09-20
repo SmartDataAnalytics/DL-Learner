@@ -15,6 +15,7 @@ import static org.semanticweb.owlapi.model.AxiomType.EQUIVALENT_OBJECT_PROPERTIE
 import static org.semanticweb.owlapi.model.AxiomType.FUNCTIONAL_DATA_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.FUNCTIONAL_OBJECT_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.INVERSE_OBJECT_PROPERTIES;
 import static org.semanticweb.owlapi.model.AxiomType.IRREFLEXIVE_OBJECT_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.OBJECT_PROPERTY_DOMAIN;
 import static org.semanticweb.owlapi.model.AxiomType.OBJECT_PROPERTY_RANGE;
@@ -26,16 +27,12 @@ import static org.semanticweb.owlapi.model.AxiomType.SYMMETRIC_OBJECT_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.TRANSITIVE_OBJECT_PROPERTY;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.LearningAlgorithm;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -98,28 +95,32 @@ public class AxiomAlgorithms {
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_DOMAIN),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o; a ?cls . } WHERE {?s ?entity ?o; a ?cls . }"));
+				new ParameterizedSparqlString("PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?entity ?o; a ?cls . ?cls a owl:Class .} "
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?s a ?cls . ?cls a owl:Class .}}"));
 		
 		public static final AxiomTypeCluster OBJECT_PROPERTY_RANGE_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(OBJECT_PROPERTY_RANGE),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?o a ?cls . } WHERE {?s ?entity ?o . ?o a ?cls . }"));
+				new ParameterizedSparqlString("PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?entity ?o . ?o a ?cls . ?cls a owl:Class .} "
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?o a ?cls . ?cls a owl:Class .}}"));
+		
+		public static final AxiomTypeCluster INVERSE_OBJECT_PROPERTIES_CLUSTER = new AxiomTypeCluster(
+				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(INVERSE_OBJECT_PROPERTIES),
+				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?o ?p_inv ?s . } "
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?o ?p_inv ?s . }}"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES, DISJOINT_DATA_PROPERTIES),
 				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#DatatypeProperty> .} "
 						+ "WHERE {?s ?entity ?o . OPTIONAL{?s ?p1 ?o . FILTER(!sameTerm(?entity, ?p1))} }"));
 		
-		public static final AxiomTypeCluster DATA_PROPERTY_FUNCTIONALITY_CLUSTER = new AxiomTypeCluster(
-				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(FUNCTIONAL_DATA_PROPERTY),
+		public static final AxiomTypeCluster DATA_PROPERTY_RANGE_AND_FUNCTIONALITY_CLUSTER = new AxiomTypeCluster(
+				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(DATA_PROPERTY_RANGE, FUNCTIONAL_DATA_PROPERTY),
 				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o.} WHERE {?s ?entity ?o}"));
 		
 		public static final AxiomTypeCluster DATA_PROPERTY_DOMAIN_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(DATA_PROPERTY_DOMAIN),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o; a ?cls . } WHERE {?s ?entity ?o; a ?cls . }"));
-		
-		public static final AxiomTypeCluster DATA_PROPERTY_RANGE_CLUSTER = new AxiomTypeCluster(
-				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(DATA_PROPERTY_RANGE),
-				new ParameterizedSparqlString("CONSTRUCT {?s ?entity ?o . ?o a ?cls . } WHERE {?s ?entity ?o . ?o a ?cls . }"));
+				new ParameterizedSparqlString("PREFIX owl:<http://www.w3.org/2002/07/owl#> CONSTRUCT {?s ?entity ?o; a ?cls . ?cls a owl:Class .} "
+						+ "WHERE {?s ?entity ?o . OPTIONAL {?s a ?cls . ?cls a owl:Class .}}"));
 		
 		public static final AxiomTypeCluster CLASS_HIERARCHY_CLUSTER = new AxiomTypeCluster(
 				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUBCLASS_OF, EQUIVALENT_CLASSES, DISJOINT_CLASSES),
@@ -131,16 +132,20 @@ public class AxiomAlgorithms {
 
 	static {
 		// class axiom types
-		entityType2AxiomTypes.put(EntityType.CLASS, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUBCLASS_OF, EQUIVALENT_CLASSES, DISJOINT_CLASSES));
+		entityType2AxiomTypes.put(EntityType.CLASS, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+				SUBCLASS_OF, EQUIVALENT_CLASSES, DISJOINT_CLASSES));
 		
 		// object property axiom types
-		entityType2AxiomTypes.put(EntityType.OBJECT_PROPERTY, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_OBJECT_PROPERTY, EQUIVALENT_OBJECT_PROPERTIES, DISJOINT_OBJECT_PROPERTIES,
+		entityType2AxiomTypes.put(EntityType.OBJECT_PROPERTY, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+				SUB_OBJECT_PROPERTY, EQUIVALENT_OBJECT_PROPERTIES, DISJOINT_OBJECT_PROPERTIES,
 				SYMMETRIC_OBJECT_PROPERTY, ASYMMETRIC_OBJECT_PROPERTY,FUNCTIONAL_OBJECT_PROPERTY, 
 				INVERSE_FUNCTIONAL_OBJECT_PROPERTY, REFLEXIVE_OBJECT_PROPERTY, IRREFLEXIVE_OBJECT_PROPERTY, TRANSITIVE_OBJECT_PROPERTY,
-				OBJECT_PROPERTY_DOMAIN, OBJECT_PROPERTY_RANGE));
+				OBJECT_PROPERTY_DOMAIN, OBJECT_PROPERTY_RANGE,
+				INVERSE_OBJECT_PROPERTIES));
 		
 		// data property axiom types
-		entityType2AxiomTypes.put(EntityType.CLASS, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES, DISJOINT_DATA_PROPERTIES,
+		entityType2AxiomTypes.put(EntityType.CLASS, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+				SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES, DISJOINT_DATA_PROPERTIES,
 				FUNCTIONAL_DATA_PROPERTY, DATA_PROPERTY_DOMAIN, DATA_PROPERTY_RANGE));
 	}
 	
@@ -155,15 +160,15 @@ public class AxiomAlgorithms {
 						AxiomTypeCluster.OBJECT_PROPERTY_CHARACTERISTICS_WITHOUT_TRANSITIVITY_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_DOMAIN_CLUSTER,
 						AxiomTypeCluster.OBJECT_PROPERTY_RANGE_CLUSTER,
-						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITITVITY_CLUSTER));
+						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITITVITY_CLUSTER,
+						AxiomTypeCluster.INVERSE_OBJECT_PROPERTIES_CLUSTER));
 		
 		// data properties
 		sameSampleCluster.put(EntityType.DATA_PROPERTY,
 				Sets.newHashSet(
 						AxiomTypeCluster.DATA_PROPERTY_HIERARCHY_CLUSTER, 
 						AxiomTypeCluster.DATA_PROPERTY_DOMAIN_CLUSTER,
-						AxiomTypeCluster.DATA_PROPERTY_RANGE_CLUSTER,
-						AxiomTypeCluster.DATA_PROPERTY_FUNCTIONALITY_CLUSTER));
+						AxiomTypeCluster.DATA_PROPERTY_RANGE_AND_FUNCTIONALITY_CLUSTER));
 		
 		// classes
 		sameSampleCluster.put(EntityType.CLASS,
@@ -187,6 +192,7 @@ public class AxiomAlgorithms {
 		axiomType2Class.put(AxiomType.DISJOINT_OBJECT_PROPERTIES, DisjointObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.OBJECT_PROPERTY_DOMAIN, ObjectPropertyDomainAxiomLearner2.class);
 		axiomType2Class.put(AxiomType.OBJECT_PROPERTY_RANGE, ObjectPropertyRangeAxiomLearner.class);
+		axiomType2Class.put(AxiomType.INVERSE_OBJECT_PROPERTIES, InverseObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, FunctionalObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY, InverseFunctionalObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.REFLEXIVE_OBJECT_PROPERTY, ReflexiveObjectPropertyAxiomLearner.class);
