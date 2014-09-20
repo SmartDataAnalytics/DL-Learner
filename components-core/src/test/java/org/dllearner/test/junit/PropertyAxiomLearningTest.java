@@ -160,7 +160,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testObjectPropertyDomainAxiomLearning() throws Exception {
 		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(op1);
+		l.setEntityToDescribe(op1);
 		l.init();
 		l.start();
 
@@ -182,7 +182,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testSubPropertyOfAxiomLearning() throws Exception {
 		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(op1);
+		l.setEntityToDescribe(op1);
 		l.init();
 		l.start();
 		
@@ -204,7 +204,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testEquivalentObjectPropertiesAxiomLearning() throws Exception {
 		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(op1);
+		l.setEntityToDescribe(op1);
 		l.init();
 		l.start();
 		
@@ -231,7 +231,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testPropertyRangeAxiomLearning() throws Exception {
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(range);
+		l.setEntityToDescribe(range);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -240,7 +240,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testReflexivePropertyAxiomLearning() throws Exception {
 		ReflexiveObjectPropertyAxiomLearner l = new ReflexiveObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(reflexive);
+		l.setEntityToDescribe(reflexive);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -249,7 +249,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testFunctionalPropertyAxiomLearnining() throws Exception {
 		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(functional);
+		l.setEntityToDescribe(functional);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -258,7 +258,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testSymmetricPropertyAxiomLearning() throws Exception {
 		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(symmetric);
+		l.setEntityToDescribe(symmetric);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -271,7 +271,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testEquivalentDataPropertiesAxiomLearning() throws Exception {
 		EquivalentDataPropertyAxiomLearner l = new EquivalentDataPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(equivDataProperty);
+		l.setEntityToDescribe(equivDataProperty);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -280,7 +280,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	public void testDisjointDataPropertiesAxiomLearning() throws Exception {
 		DisjointDataPropertyAxiomLearner l = new DisjointDataPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setPropertyToDescribe(disDataProperty);
+		l.setEntityToDescribe(disDataProperty);
 		l.init();
 		l.start();
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
@@ -310,7 +310,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 			try {
 				Constructor<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>> constructor = cls.getConstructor(SparqlEndpointKS.class);
 				ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom> learner = (ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>) constructor.newInstance(ks);
-				learner.setPropertyToDescribe(op);
+				learner.setEntityToDescribe(op);
 				learner.init();
 				learner.start();
 				List<?> axioms = learner.getCurrentlyBestEvaluatedAxioms(10);
