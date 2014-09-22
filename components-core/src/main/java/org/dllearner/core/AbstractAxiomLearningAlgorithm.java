@@ -203,7 +203,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 
 	public void setReasoner(SPARQLReasoner reasoner) {
-		this.reasoner = reasoner;
+		this.ksReasoner = reasoner;
 	}
 
 	public boolean isReturnOnlyNewAxioms() {
@@ -309,8 +309,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			ksQef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
 		ks.init();
-		if(reasoner == null){
-			reasoner = new SPARQLReasoner(ksQef);
+		if(ksReasoner== null){
+			ksReasoner = new SPARQLReasoner(ksQef);
 		}
 		timeout = true;
 	}
