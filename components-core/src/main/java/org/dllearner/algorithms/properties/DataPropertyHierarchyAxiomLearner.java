@@ -239,12 +239,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 
 		Set<OWLDataPropertyAssertionAxiom> posExamples = new TreeSet<OWLDataPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
@@ -272,12 +267,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 
 		Set<OWLDataPropertyAssertionAxiom> negExamples = new TreeSet<OWLDataPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();

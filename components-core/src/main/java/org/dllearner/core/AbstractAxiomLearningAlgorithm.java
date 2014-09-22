@@ -299,18 +299,18 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	public void init() throws ComponentInitException {
 		if(ks.isRemote()){
 			SparqlEndpoint endpoint = ks.getEndpoint();
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			ksQef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 			if(ks.getCache() != null){
-				qef = new QueryExecutionFactoryCacheEx(qef, ks.getCache());
+				ksQef = new QueryExecutionFactoryCacheEx(ksQef, ks.getCache());
 			}
 //			qef = new QueryExecutionFactoryPaginated(qef, 10000);
 			
 		} else {
-			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			ksQef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
 		ks.init();
 		if(reasoner == null){
-			reasoner = new SPARQLReasoner((SparqlEndpointKS) ks);
+			reasoner = new SPARQLReasoner(ksQef);
 		}
 		timeout = true;
 	}

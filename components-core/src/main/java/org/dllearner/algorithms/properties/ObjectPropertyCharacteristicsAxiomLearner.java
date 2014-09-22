@@ -117,12 +117,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 
 		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
@@ -141,12 +136,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 
 		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 
 		List<String> vars = rs.getResultVars();
 		boolean onlySubject = vars.size() == 1;

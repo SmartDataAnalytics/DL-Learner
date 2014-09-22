@@ -180,7 +180,7 @@ public class AxiomAlgorithms {
 						AxiomTypeCluster.OBJECT_PROPERTY_TRANSITITVITY_CLUSTER));
 	}
 	
-	private static HashBiMap<AxiomType, Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>>> axiomType2Class = 
+	private static HashBiMap<AxiomType<? extends OWLAxiom>, Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>>> axiomType2Class = 
 			HashBiMap.create();
 	
 	static{
@@ -190,7 +190,7 @@ public class AxiomAlgorithms {
 		axiomType2Class.put(AxiomType.SUB_OBJECT_PROPERTY, SubObjectPropertyOfAxiomLearner.class);
 		axiomType2Class.put(AxiomType.EQUIVALENT_OBJECT_PROPERTIES, EquivalentObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.DISJOINT_OBJECT_PROPERTIES, DisjointObjectPropertyAxiomLearner.class);
-		axiomType2Class.put(AxiomType.OBJECT_PROPERTY_DOMAIN, ObjectPropertyDomainAxiomLearner2.class);
+		axiomType2Class.put(AxiomType.OBJECT_PROPERTY_DOMAIN, ObjectPropertyDomainAxiomLearner.class);
 		axiomType2Class.put(AxiomType.OBJECT_PROPERTY_RANGE, ObjectPropertyRangeAxiomLearner.class);
 		axiomType2Class.put(AxiomType.INVERSE_OBJECT_PROPERTIES, InverseObjectPropertyAxiomLearner.class);
 		axiomType2Class.put(AxiomType.FUNCTIONAL_OBJECT_PROPERTY, FunctionalObjectPropertyAxiomLearner.class);
@@ -208,7 +208,7 @@ public class AxiomAlgorithms {
 		axiomType2Class.put(AxiomType.FUNCTIONAL_DATA_PROPERTY, FunctionalDataPropertyAxiomLearner.class);
 	}
 	
-	public static Set<AxiomType<? extends OWLAxiom>> getAxiomTypes(EntityType entityType){
+	public static Set<AxiomType<? extends OWLAxiom>> getAxiomTypes(EntityType<? extends OWLEntity> entityType){
 		return entityType2AxiomTypes.get(entityType);
 	}
 	
@@ -216,7 +216,7 @@ public class AxiomAlgorithms {
 		return axiomType2Class.get(axiomType);
 	}
 	
-	public static Set<AxiomTypeCluster> getSameSampleClusters(EntityType entityType){
+	public static Set<AxiomTypeCluster> getSameSampleClusters(EntityType<? extends OWLEntity> entityType){
 		return sameSampleCluster.get(entityType);
 	}
 }

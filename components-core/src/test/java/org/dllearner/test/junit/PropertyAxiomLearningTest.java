@@ -35,7 +35,7 @@ import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner2;
+import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
@@ -158,7 +158,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	 * object property axioms
 	 */
 	public void testObjectPropertyDomainAxiomLearning() throws Exception {
-		ObjectPropertyDomainAxiomLearner2 l = new ObjectPropertyDomainAxiomLearner2(ks);
+		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setEntityToDescribe(op1);
 		l.init();

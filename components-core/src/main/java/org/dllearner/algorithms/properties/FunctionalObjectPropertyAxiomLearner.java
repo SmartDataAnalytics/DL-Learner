@@ -80,12 +80,7 @@ public class FunctionalObjectPropertyAxiomLearner extends
 
 		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();

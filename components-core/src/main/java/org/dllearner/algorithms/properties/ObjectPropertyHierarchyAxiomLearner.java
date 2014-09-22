@@ -234,12 +234,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
@@ -267,12 +262,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 
 		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
 
-		ResultSet rs;
-		if (workingModel != null) {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-		} else {
-			rs = executeSelectQuery(negExamplesQueryTemplate.toString());
-		}
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();

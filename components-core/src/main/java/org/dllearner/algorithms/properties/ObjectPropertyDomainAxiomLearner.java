@@ -43,10 +43,8 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
 @ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
-public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
+public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
 	
-	private static final ParameterizedSparqlString DISTINCT_SUBJECTS_COUNT_QUERY = new ParameterizedSparqlString(
-			"SELECT (COUNT(DISTINCT(?s)) as ?cnt) WHERE {?s ?p ?o .}");
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {?s ?p ?o; a ?type .}");
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY = new ParameterizedSparqlString(
@@ -60,7 +58,7 @@ public class ObjectPropertyDomainAxiomLearner2 extends ObjectPropertyAxiomLearne
 	// so we have to focus more on accuracy, which we can regulate via the parameter beta
 	double beta = 3.0;
 	
-	public ObjectPropertyDomainAxiomLearner2(SparqlEndpointKS ks){
+	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
