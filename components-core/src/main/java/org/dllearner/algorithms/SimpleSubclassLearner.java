@@ -58,10 +58,6 @@ import com.hp.hpl.jena.query.ResultSet;
 public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLIndividual, OWLClass> implements
 		ClassExpressionLearningAlgorithm {
 
-	private static final Logger logger = LoggerFactory.getLogger(SimpleSubclassLearner.class);
-
-	private OWLClass classToDescribe;
-
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
 
 	public SimpleSubclassLearner(SparqlEndpointKS ks) {
@@ -103,7 +99,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	public List<EvaluatedAxiom<OWLSubClassOfAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<OWLSubClassOfAxiom>>();
 		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubClassOfAxiom>(df.getOWLSubClassOfAxiom(classToDescribe,
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubClassOfAxiom>(df.getOWLSubClassOfAxiom(entityToDescribe,
 					ed.getDescription()), new AxiomScore(ed.getAccuracy())));
 		}
 		return new ArrayList<EvaluatedAxiom<OWLSubClassOfAxiom>>(currentlyBestAxioms);
@@ -132,7 +128,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	@Override
 	protected void getExistingAxioms() {
 		//get existing super classes
-		SortedSet<OWLClassExpression> existingSuperClasses = reasoner.getSuperClasses(classToDescribe);
+		SortedSet<OWLClassExpression> existingSuperClasses = reasoner.getSuperClasses(entityToDescribe);
 		if (!existingSuperClasses.isEmpty()) {
 			SortedSet<OWLClassExpression> inferredSuperClasses = new TreeSet<OWLClassExpression>();
 			for (OWLClassExpression assertedSup : existingSuperClasses) {
@@ -150,7 +146,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			existingSuperClasses.addAll(inferredSuperClasses);
 			logger.info("Existing super classes: " + existingSuperClasses);
 			for (OWLClassExpression sup : existingSuperClasses) {
-				existingAxioms.add(df.getOWLSubClassOfAxiom(classToDescribe, sup));
+				existingAxioms.add(df.getOWLSubClassOfAxiom(entityToDescribe, sup));
 			}
 		}
 	}
@@ -166,12 +162,12 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	}
 
 	private void runSingleQueryMode() {
-		int total = reasoner.getPopularity(classToDescribe);
+		int total = reasoner.getPopularity(entityToDescribe);
 
 		if (total > 0) {
 			String query = String
 					.format("SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a <%s>. ?s a ?type} GROUP BY ?type ORDER BY DESC(?cnt)",
-							classToDescribe.toStringID());
+							entityToDescribe.toStringID());
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			while (rs.hasNext()) {
@@ -179,7 +175,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 				if (!qs.get("type").isAnon()) {
 					OWLClass sup = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 					int overlap = qs.get("cnt").asLiteral().getInt();
-					if (!sup.isOWLThing() && !classToDescribe.equals(sup)) {//omit owl:Thing and the class to describe itself
+					if (!sup.isOWLThing() && !entityToDescribe.equals(sup)) {//omit owl:Thing and the class to describe itself
 						currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(sup, computeScore(total,
 								overlap)));
 					}
@@ -188,12 +184,12 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		}
 	}
 
-	public OWLClass getClassToDescribe() {
-		return classToDescribe;
+	public OWLClass getentityToDescribe() {
+		return entityToDescribe;
 	}
 
-	public void setClassToDescribe(OWLClass classToDescribe) {
-		this.classToDescribe = classToDescribe;
+	public void setentityToDescribe(OWLClass entityToDescribe) {
+		this.entityToDescribe = entityToDescribe;
 	}
 
 	private boolean addIndividualsWithTypes(Map<OWLIndividual, SortedSet<OWLClassExpression>> ind2Types, int limit,
@@ -203,10 +199,10 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		if (ks.supportsSPARQL_1_1()) {
 			query = String
 					.format("PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT DISTINCT ?ind ?type WHERE {?ind a ?type.?type a owl:Class. {SELECT ?ind {?ind a <%s>} LIMIT %d OFFSET %d}}",
-							classToDescribe.toStringID(), limit, offset);
+							entityToDescribe.toStringID(), limit, offset);
 		} else {
 			query = String.format("SELECT DISTINCT ?ind ?type WHERE {?ind a <%s>. ?ind a ?type} LIMIT %d OFFSET %d",
-					classToDescribe.toStringID(), limit, offset);
+					entityToDescribe.toStringID(), limit, offset);
 		}
 		ResultSet rs = executeSelectQuery(query);
 		OWLIndividual ind;
@@ -253,9 +249,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			}
 		}
 
-		//omit owl:Thing and classToDescribe
+		//omit owl:Thing and entityToDescribe
 		result.remove(df.getOWLThing());
-		result.remove(classToDescribe);
+		result.remove(entityToDescribe);
 
 		EvaluatedDescription evalDesc;
 		int total = individual2Types.keySet().size();
