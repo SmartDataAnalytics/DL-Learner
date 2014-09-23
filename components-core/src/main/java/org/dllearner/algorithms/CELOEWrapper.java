@@ -18,10 +18,12 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 
@@ -31,6 +33,7 @@ import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.shared.impl.JenaParameters;
 
 /**
  * A wrapper class for CELOE that allows for returning the result in forms of OWL axioms.
@@ -53,6 +56,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	public CELOEWrapper(SparqlEndpointKS ks) {
 		super.ks = ks;
 		useSampling = false;
+		
 	}
 
 	/* (non-Javadoc)
@@ -78,8 +82,6 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	 */
 	@Override
 	protected void learnAxioms() {
-		progressMonitor.learningStarted(axiomType);
-		
 		// get the popularity of the class
 		int popularity = reasoner.getPopularity(entityToDescribe);
 
@@ -111,8 +113,6 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		} catch (ComponentInitException e) {
 			logger.error("CELOE execution failed.", e);
 		}
-		
-		progressMonitor.learningStopped(axiomType);
 	}
 	
 	private OWLOntology buildFragment(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples){

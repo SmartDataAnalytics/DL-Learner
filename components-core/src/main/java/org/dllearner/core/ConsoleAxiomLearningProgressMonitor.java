@@ -36,7 +36,11 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	 */
 	@Override
 	public void learningStopped(AxiomType<? extends OWLAxiom> axiomType) {
-		System.out.println(" ... " + axiomType.getName() + " axioms finished");
+		System.out.print(" ... ");
+		if(axiomType != null){
+			System.out.print(axiomType.getName() + " axioms ");
+		}
+		System.out.println("finished");
 	}
 
 	/* (non-Javadoc)
@@ -64,8 +68,11 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	
 	@Override
 	public void learningFailed(AxiomType<? extends OWLAxiom> axiomType) {
-		System.err.println("Learning of " + axiomType.getName() + " axioms failed.");
-		
+		System.err.println("Learning ");
+		if(axiomType != null){
+			System.err.println("of " + axiomType.getName() + " axioms ");
+		}
+		System.err.println("failed.");
 	}
 
 }
