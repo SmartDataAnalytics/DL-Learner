@@ -158,10 +158,14 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 			//F score
 			double score = Heuristics.getFScore(recall, precision, beta);
 			
+			int nrOfPosExamples = cntAB;
+			
+			int nrOfNegExamples = popularity - cntAB;
+			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
 							df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
-							new AxiomScore(score, useSampling)));
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	

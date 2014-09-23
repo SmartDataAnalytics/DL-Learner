@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -14,6 +15,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
@@ -52,15 +54,13 @@ public class MultiPropertyAxiomLearner {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MultiPropertyAxiomLearner.class);
 	
-	
-	
 	private SparqlEndpointKS ks;
 	
 	private boolean useSampling = true;
 	private long pageSize = 10000;
 
-	private boolean multiThreaded = false;
-	private int maxNrOfThreads = 2;
+	private boolean multiThreaded = true;
+	private int maxNrOfThreads = 4;
 	
 	private long maxExecutionTimeMilliseconds = -1;
 
@@ -74,8 +74,11 @@ public class MultiPropertyAxiomLearner {
 		qef = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
 	}
 	
-	public void generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
+	public Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
 		startTime = System.currentTimeMillis();
+		
+		final Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> results = Maps.newConcurrentMap();
+		
 		EntityType<?> entityType = entity.getEntityType();
 		
 		// check for axiom types that are not for the given entity
@@ -86,53 +89,59 @@ public class MultiPropertyAxiomLearner {
 		}
 		
 		Set<AxiomType<? extends OWLAxiom>> todo = Sets.intersection(axiomTypes,  possibleAxiomTypes);
-		final Map<AxiomType<? extends OWLAxiom>, SparqlEndpointKS> axiomType2Ks = Maps.newConcurrentMap();
 		
 		// compute samples for axiom types
-		if(useSampling){
-			Set<AxiomTypeCluster> sampleClusters = AxiomAlgorithms.getSameSampleClusters(entityType);
+		Set<AxiomTypeCluster> sampleClusters = AxiomAlgorithms.getSameSampleClusters(entityType);
+		
+		ExecutorService tp = Executors.newFixedThreadPool(maxNrOfThreads);
+		
+		for (final AxiomTypeCluster cluster : sampleClusters) {
+			final SetView<AxiomType<? extends OWLAxiom>> sampleAxiomTypes = Sets.intersection(cluster.getAxiomTypes(), todo);
 			
-			ExecutorService tp = Executors.newFixedThreadPool(4);
-			
-			for (final AxiomTypeCluster cluster : sampleClusters) {
-				final SetView<AxiomType<? extends OWLAxiom>> sampleAxiomTypes = Sets.intersection(cluster.getAxiomTypes(), todo);
-				
-				if(!sampleAxiomTypes.isEmpty()){
-					tp.submit(new Runnable() {
-						
-						@Override
-						public void run() {
+			if(!sampleAxiomTypes.isEmpty()){
+				tp.submit(new Runnable() {
+					
+					@Override
+					public void run() {
+						SparqlEndpointKS ks = MultiPropertyAxiomLearner.this.ks;
+						if(useSampling){
 							Model sample = generateSample(entity, cluster);
-							
-							SparqlEndpointKS sampleKs = new LocalModelBasedSparqlEndpointKS(sample);
-							
-							for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
-								axiomType2Ks.put(axiomType, sampleKs);
+							ks = new LocalModelBasedSparqlEndpointKS(sample);
+						}
+						
+						for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
+							try {
+								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(entity, axiomType, ks);
+								results.put(axiomType, result);
+							} catch (Exception e) {
+								logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
 							}
 						}
-					});
-					
-				}
-			}
-			
-			try {
-				tp.shutdown();
-				tp.awaitTermination(1, TimeUnit.HOURS);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+					}
+				});
+				
 			}
 		}
 		
-		for (AxiomType<? extends OWLAxiom> axiomType : todo) {
-			try {
-				applyAlgorithm(entity, axiomType, useSampling ? axiomType2Ks.get(axiomType) : ks);
-			} catch (Exception e) {
-				logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
-			}
+		try {
+			tp.shutdown();
+			tp.awaitTermination(1, TimeUnit.HOURS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+//		
+//		for (AxiomType<? extends OWLAxiom> axiomType : todo) {
+//			try {
+//				applyAlgorithm(entity, axiomType, useSampling ? axiomType2Ks.get(axiomType) : ks);
+//			} catch (Exception e) {
+//				logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
+//			}
+//		}
+		
+		return results;
 	}
 	
-	private void applyAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType, SparqlEndpointKS ks) throws ComponentInitException{
+	private List<EvaluatedAxiom<OWLAxiom>> applyAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType, SparqlEndpointKS ks) throws ComponentInitException{
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		
 		AbstractAxiomLearningAlgorithm learner = null;
@@ -147,6 +156,8 @@ public class MultiPropertyAxiomLearner {
 		learner.setUseSampling(false);
 		learner.init();
 		learner.start();
+		
+		return learner.getCurrentlyBestEvaluatedAxioms();
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){

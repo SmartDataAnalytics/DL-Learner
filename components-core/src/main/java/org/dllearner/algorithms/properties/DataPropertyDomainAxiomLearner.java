@@ -144,10 +144,14 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			//F score
 			double score = Heuristics.getFScore(recall, precision, beta);
 			
+			int nrOfPosExamples = cntAB;
+			
+			int nrOfNegExamples = popularity - cntAB;
+			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
 							df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate), 
-							new AxiomScore(score, useSampling)));
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	

@@ -27,8 +27,8 @@ public class AxiomScore extends Score{
 	private double accuracy;
 	private double confidence;
 	
-	private int nrOfpositiveExamples = -1;
-	private int nrOfnegativeExamples = -1;
+	private int nrOfPositiveExamples = -1;
+	private int nrOfNegativeExamples = -1;
 	
 	private boolean sampleBased;
 	
@@ -51,15 +51,15 @@ public class AxiomScore extends Score{
 		this.sampleBased = sampleBased;
 	}
 	
-	public AxiomScore(double accuracy, double confidence, int nrOfpositiveExamples, int nrOfnegativeExamples) {
-		this(accuracy, confidence, nrOfpositiveExamples, nrOfnegativeExamples, false);
+	public AxiomScore(double accuracy, double confidence, int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		this(accuracy, confidence, nrOfPositiveExamples, nrOfNegativeExamples, false);
 	}
 	
-	public AxiomScore(double accuracy, double confidence, int nrOfpositiveExamples, int nrOfnegativeExamples, boolean sampleBased) {
+	public AxiomScore(double accuracy, double confidence, int nrOfPositiveExamples, int nrOfNegativeExamples, boolean sampleBased) {
 		this.accuracy = accuracy;
 		this.confidence = confidence;
-		this.nrOfpositiveExamples = nrOfpositiveExamples;
-		this.nrOfnegativeExamples = nrOfnegativeExamples;
+		this.nrOfPositiveExamples = nrOfPositiveExamples;
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		this.sampleBased = sampleBased;
 	}
 
@@ -81,7 +81,7 @@ public class AxiomScore extends Score{
 	}
 	
 	public int getTotalNrOfExamples() {
-		return nrOfpositiveExamples + nrOfnegativeExamples;
+		return nrOfPositiveExamples + nrOfNegativeExamples;
 	}
 	
 	/**
@@ -89,7 +89,7 @@ public class AxiomScore extends Score{
 	 * @return
 	 */
 	public int getNrOfPositiveExamples() {
-		return nrOfpositiveExamples;
+		return nrOfPositiveExamples;
 	}
 	
 	/**
@@ -97,7 +97,7 @@ public class AxiomScore extends Score{
 	 * @return
 	 */
 	public int getNrOfNegativeExamples() {
-		return nrOfnegativeExamples;
+		return nrOfNegativeExamples;
 	}
 
 }

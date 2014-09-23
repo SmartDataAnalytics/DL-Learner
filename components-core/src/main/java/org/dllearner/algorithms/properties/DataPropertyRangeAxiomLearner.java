@@ -105,10 +105,14 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 			 also the total number of literals with given datatype into account
 			 */
 			double score = precision;
-
+			
+			int nrOfPosExamples = frequency;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyRangeAxiom>(
 					df.getOWLDataPropertyRangeAxiom(entityToDescribe, df.getOWLDatatype(IRI.create(datatypeURI))),
-					new AxiomScore(score, useSampling)));
+					new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 
 		}
 

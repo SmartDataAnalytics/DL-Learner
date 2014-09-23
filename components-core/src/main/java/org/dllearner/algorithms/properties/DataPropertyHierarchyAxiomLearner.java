@@ -21,6 +21,7 @@ import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNaryPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -115,10 +116,14 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 			// compute the score
 			double score = computeScore(candidatePopularity, popularity, overlap);
 			
+			int nrOfPosExamples = overlap;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
 							getAxiom(entityToDescribe, p), 
-							new AxiomScore(score, useSampling)));
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	

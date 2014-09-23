@@ -255,23 +255,17 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
             rc = new OWLAPIReasoner(sources);
             rc.init();
         }
-//		try {
-			atomicConcepts = rc.getClasses();
-			datatypeProperties = rc.getDatatypeProperties();
-			booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
-			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
-			intDatatypeProperties = rc.getIntDatatypeProperties();
-			stringDatatypeProperties = rc.getStringDatatypeProperties();
-			atomicRoles = rc.getObjectProperties();
-			individuals = (TreeSet<OWLIndividual>) rc.getIndividuals();
-
-			// rs = new ReasonerComponent(rc);
-
-			// TODO: some code taken from Helper.createFlatABox, but pasted here
-			// because additional things need to
-			// be done (maybe this can be merge again with the
-			// FastRetrievalReasoner later)
-			
+		atomicConcepts = rc.getClasses();
+		datatypeProperties = rc.getDatatypeProperties();
+		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
+		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
+		intDatatypeProperties = rc.getIntDatatypeProperties();
+		stringDatatypeProperties = rc.getStringDatatypeProperties();
+		atomicRoles = rc.getObjectProperties();
+		individuals = (TreeSet<OWLIndividual>) rc.getIndividuals();
+		
+//		loadOrDematerialize();
+		materialize();
 	}
 	
 	private void loadOrDematerialize(){

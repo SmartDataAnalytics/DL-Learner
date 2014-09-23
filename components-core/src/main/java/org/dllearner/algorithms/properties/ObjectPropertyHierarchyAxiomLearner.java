@@ -110,10 +110,14 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			// compute the score
 			double score = computeScore(candidatePopularity, popularity, overlap);
 			
+			int nrOfPosExamples = overlap;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
 							getAxiom(entityToDescribe, p), 
-							new AxiomScore(score, useSampling)));
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	

@@ -321,7 +321,7 @@ public class ConceptTransformation {
 	public static OWLClassExpression replaceRange(OWLClassExpression description, AbstractReasonerComponent rs) {
 		OWLClassExpression rewrittenClassExpression = description;
 		if(description instanceof OWLNaryBooleanClassExpression){
-			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
 			for (OWLClassExpression operand : ((OWLNaryBooleanClassExpression) description).getOperands()) {
 				newOperands.add(replaceRange(operand, rs));
 			}
