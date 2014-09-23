@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.lucene.store.NRTCachingDirectory;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -119,10 +120,12 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
+		List<String> vars = rs.getResultVars();
+		boolean onlySubject = vars.size() == 1;
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLIndividual subject = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource("o").getURI()));
+			OWLIndividual object = df.getOWLNamedIndividual(IRI.create(qs.getResource(onlySubject ? "s" : "o").getURI()));
 			posExamples.add(df.getOWLObjectPropertyAssertionAxiom(entityToDescribe, subject, object));
 		}
 
