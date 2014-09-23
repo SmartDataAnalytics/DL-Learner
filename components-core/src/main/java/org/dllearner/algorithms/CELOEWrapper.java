@@ -78,7 +78,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	 */
 	@Override
 	protected void learnAxioms() {
-		progressMonitor.learningStarted(this.getClass().getName());
+		progressMonitor.learningStarted(axiomType);
 		
 		// get the popularity of the class
 		int popularity = reasoner.getPopularity(entityToDescribe);
@@ -112,7 +112,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 			logger.error("CELOE execution failed.", e);
 		}
 		
-		progressMonitor.learningStopped();
+		progressMonitor.learningStopped(axiomType);
 	}
 	
 	private OWLOntology buildFragment(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples){

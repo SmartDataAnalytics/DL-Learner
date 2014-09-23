@@ -6,6 +6,9 @@ package org.dllearner.core;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLAxiom;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -20,10 +23,10 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningStarted(java.lang.String)
 	 */
 	@Override
-	public void learningStarted(String algorithmName) {
+	public void learningStarted(AxiomType<? extends OWLAxiom> axiomType) {
 		System.out.print("Learning");
-		if(algorithmName != null){
-			System.out.print(" of " + algorithmName);
+		if(axiomType != null){
+			System.out.print(" of " + axiomType.getName() + " axioms");
 		}
 		System.out.println(" ...");
 	}
@@ -32,15 +35,15 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningStopped()
 	 */
 	@Override
-	public void learningStopped() {
-		System.out.println("    ... finished");
+	public void learningStopped(AxiomType<? extends OWLAxiom> axiomType) {
+		System.out.println(" ... " + axiomType.getName() + " axioms finished");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningProgressChanged(int, int)
 	 */
 	@Override
-	public void learningProgressChanged(int value, int max) {
+	public void learningProgressChanged(AxiomType<? extends OWLAxiom> axiomType, int value, int max) {
 		if (max > 0) {
             int percent = value * 100 / max;
             if (lastPercentage != percent) {
@@ -55,8 +58,14 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningTaskBusy()
 	 */
 	@Override
-	public void learningTaskBusy() {
-		System.out.println(" ...");
+	public void learningTaskBusy(AxiomType<? extends OWLAxiom> axiomType) {
+		System.out.println(axiomType.getName() + " ...");
+	}
+	
+	@Override
+	public void learningFailed(AxiomType<? extends OWLAxiom> axiomType) {
+		System.err.println("Learning of " + axiomType.getName() + " axioms failed.");
+		
 	}
 
 }

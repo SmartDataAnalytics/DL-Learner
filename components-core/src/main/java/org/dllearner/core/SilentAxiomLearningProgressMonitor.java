@@ -3,6 +3,9 @@
  */
 package org.dllearner.core;
 
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLAxiom;
+
 /**
  * An axiom learning progress monitor that is doing nothing.
  * @author Lorenz Buehmann
@@ -10,32 +13,36 @@ package org.dllearner.core;
  */
 public class SilentAxiomLearningProgressMonitor implements AxiomLearningProgressMonitor{
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningStarted(java.lang.String)
-	 */
 	@Override
-	public void learningStarted(String algorithmName) {
+	public void learningStarted(AxiomType<? extends OWLAxiom> axiomType) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningStopped()
-	 */
 	@Override
-	public void learningStopped() {
+	public void learningStopped(AxiomType<? extends OWLAxiom> axiomType) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningProgressChanged(int, int)
-	 */
 	@Override
-	public void learningProgressChanged(int value, int max) {
+	public void learningProgressChanged(AxiomType<? extends OWLAxiom> axiomType,
+			int value, int max) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AxiomLearningProgressMonitor#learningTaskBusy()
-	 */
 	@Override
-	public void learningTaskBusy() {
+	public void learningTaskBusy(AxiomType<? extends OWLAxiom> axiomType) {
+		// TODO Auto-generated method stub
+		
 	}
+
+	@Override
+	public void learningFailed(AxiomType<? extends OWLAxiom> axiomType) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
