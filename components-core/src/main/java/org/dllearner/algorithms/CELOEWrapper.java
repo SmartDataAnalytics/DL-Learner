@@ -3,6 +3,8 @@
  */
 package org.dllearner.algorithms;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -18,12 +20,16 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.dllearner.utilities.owl.OWLEntityTypeAdder;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+//import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
@@ -31,6 +37,8 @@ import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
  * A wrapper class for CELOE that allows for returning the result in forms of OWL axioms.
@@ -53,6 +61,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	public CELOEWrapper(SparqlEndpointKS ks) {
 		super.ks = ks;
 		useSampling = false;
+		
 	}
 
 	/* (non-Javadoc)
@@ -78,8 +87,6 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	 */
 	@Override
 	protected void learnAxioms() {
-		progressMonitor.learningStarted(this.getClass().getName());
-		
 		// get the popularity of the class
 		int popularity = reasoner.getPopularity(entityToDescribe);
 
@@ -96,7 +103,12 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		SortedSet<OWLIndividual> negExamples = Sets.newTreeSet();
 		
 		OWLOntology fragment = buildFragment(posExamples, negExamples);
-		
+		try {
+			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLOntologyFormat(), new FileOutputStream("/tmp/ont.owl"));
+		} catch (OWLOntologyStorageException | FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		try {
 			AbstractReasonerComponent rc = new FastInstanceChecker(new OWLAPIOntology(fragment));
 			rc.init();
@@ -111,8 +123,6 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		} catch (ComponentInitException e) {
 			logger.error("CELOE execution failed.", e);
 		}
-		
-		progressMonitor.learningStopped();
 	}
 	
 	private OWLOntology buildFragment(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples){
@@ -123,18 +133,18 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		filter.append("}");
 		
 		StringBuilder sb = new StringBuilder("CONSTRUCT {");
-		sb.append("?s0 ?p0 ?o0 .");
+		sb.append("?s0 ?p0 ?o0 . ?p0 a ?p_type0 .");
 		for (int i = 1; i < maxClassExpressionDepth; i++) {
 			sb.append("?o").append(i-1).append(" ?p").append(i).append(" ?o").append(i).append(" .");
 			sb.append("?p").append(i).append(" a ").append(" ?p_type").append(i).append(" .");
 		}
 		sb.append("} WHERE {");
-		sb.append("?s0 ?p0 ?o0 .");
+		sb.append("?s0 ?p0 ?o0 . OPTIONAL{?p0 a ?p_type0 .}");
 		
 		for (int i = 1; i < maxClassExpressionDepth; i++) {
 			sb.append("OPTIONAL {");
 			sb.append("?o").append(i-1).append(" ?p").append(i).append(" ?o").append(i).append(" .");
-			sb.append("?p").append(i).append(" a ").append(" ?p_type").append(i).append(" .");
+			sb.append("OPTIONAL{").append("?p").append(i).append(" a ").append(" ?p_type").append(i).append(" .}");
 		}
 		for (int i = 1; i < maxClassExpressionDepth; i++) {
 			sb.append("}");
@@ -147,6 +157,20 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		Model sample = qe.execConstruct();
 		qe.close();
 		
+		StmtIterator iter = sample.listStatements();
+		while(iter.hasNext()){
+			Statement st = iter.next();
+			if(st.getObject().isLiteral() && st.getObject().asLiteral().getDatatype() != null){
+				try {
+					st.getObject().asLiteral().getValue();
+				} catch (Exception e) {
+					iter.remove();
+				}
+			}
+		}
+		
+//		org.dllearner.utilities.owl.
+		OWLEntityTypeAdder.addEntityTypes(sample);
 		return OwlApiJenaUtils.getOWLOntology(sample);
 	}
 	
@@ -161,7 +185,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 	
 	public static void main(String[] args) throws Exception{
 		CELOEWrapper la = new CELOEWrapper(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Astronaut")));
+		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
 		la.init();
 		la.start();
 //		new CELOEWrapper(new SparqlEndpointKS(SPARqlend))

@@ -120,7 +120,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		// check for each candidate how often the subject belongs to it
 		int i = 1;
 		for (OWLClass candidate : candidates) {
-			progressMonitor.learningProgressChanged(i++, candidates.size());
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			//get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
@@ -171,7 +171,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		while(rsrw.hasNext()){
 			QuerySolution qs = rsrw.next();
 			if(qs.getResource("type").isURIResource()){
-				progressMonitor.learningProgressChanged(i++, size);
+				progressMonitor.learningProgressChanged(axiomType, i++, size);
 				
 				OWLClass candidate = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 				

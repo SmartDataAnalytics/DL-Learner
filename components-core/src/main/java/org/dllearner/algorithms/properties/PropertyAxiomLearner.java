@@ -68,8 +68,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	 */
 	@Override
 	protected void learnAxioms() {
-		progressMonitor.learningStarted(this.getClass().getName());
-		
 		// get the popularity of the property
 		popularity = getPropertyPopularity();
 
@@ -80,8 +78,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		}
 		
 		run();
-		
-		progressMonitor.learningStopped();
 	}
 	
 	protected int getPropertyPopularity(){

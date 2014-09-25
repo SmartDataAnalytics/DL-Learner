@@ -17,6 +17,7 @@ import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AxiomLearningProgressMonitor;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
@@ -71,6 +72,8 @@ public class MultiPropertyAxiomLearner {
 
 	private AxiomLearningProgressMonitor monitor;
 	
+	private AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
+	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
 		
@@ -81,8 +84,8 @@ public class MultiPropertyAxiomLearner {
 		this.qef = qef;
 	}
 	
-	public void setProgressMonitor(AxiomLearningProgressMonitor monitor){
-		this.monitor = monitor;
+	public void setProgressMonitor(AxiomLearningProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
 	}
 	
 	public Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
@@ -165,7 +168,7 @@ public class MultiPropertyAxiomLearner {
 		
 		learner.setEntityToDescribe(entity);
 		learner.setUseSampling(false);
-		learner.setProgressMonitor(monitor);
+		learner.setProgressMonitor(progressMonitor);
 		learner.init();
 		learner.start();
 		

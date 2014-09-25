@@ -244,7 +244,16 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			reasoner = ksReasoner;
 		}
 		
-		learnAxioms();
+		progressMonitor.learningStarted(axiomType);
+		try {
+			learnAxioms();
+		} catch (Exception e) {
+			progressMonitor.learningFailed(axiomType);
+			throw e;
+		} finally {
+			progressMonitor.learningStopped(axiomType);
+		}
+		progressMonitor.learningStopped(axiomType);
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 		logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");

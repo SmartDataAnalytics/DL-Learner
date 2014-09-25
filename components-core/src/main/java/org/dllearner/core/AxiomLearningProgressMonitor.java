@@ -3,6 +3,9 @@
  */
 package org.dllearner.core;
 
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLAxiom;
+
 /**
  * The AxiomLearningProgressMonitor interface should be implemented by objects that
  * wish to monitor the progress of an axiom learning algorithm. The learning algorithm whose progress is
@@ -48,10 +51,10 @@ public interface AxiomLearningProgressMonitor {
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
      * 
-     * @param algorithmName
-     *        The name of the algorithm
+     * @param axiomType
+     *        The type of axiom
      */
-    void learningStarted(String algorithmName);
+    void learningStarted(AxiomType<? extends OWLAxiom> axiomType);
 
     /**
      * Indicates that a previously started learning algorithm has now stopped. This method will
@@ -60,7 +63,7 @@ public interface AxiomLearningProgressMonitor {
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
      */
-    void learningStopped();
+    void learningStopped(AxiomType<? extends OWLAxiom> axiomType);
 
     /**
      * Indicates that the learning algorithm is part way through its task. This method
@@ -75,7 +78,7 @@ public interface AxiomLearningProgressMonitor {
      * @param max
      *        The total size of the learning algorithm task
      */
-    void learningProgressChanged(int value, int max);
+    void learningProgressChanged(AxiomType<? extends OWLAxiom> axiomType, int value, int max);
 
     /**
      * Indicates that the learning algorithm is busy performing a task whose size cannot
@@ -86,5 +89,7 @@ public interface AxiomLearningProgressMonitor {
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
      */
-    void learningTaskBusy();
+    void learningTaskBusy(AxiomType<? extends OWLAxiom> axiomType);
+    
+    void learningFailed(AxiomType<? extends OWLAxiom> axiomType);
 }

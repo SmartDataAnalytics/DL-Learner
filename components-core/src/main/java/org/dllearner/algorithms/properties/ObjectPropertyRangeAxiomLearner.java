@@ -133,7 +133,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 		int i = 1;
 		for (OWLClass candidate : candidates) {
 			logger.debug("Candidate:" + candidate);
-			progressMonitor.learningProgressChanged(i++, candidates.size());
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			//get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
@@ -187,7 +187,7 @@ public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<
 		while(rsrw.hasNext()){
 			QuerySolution qs = rsrw.next();
 			if(qs.getResource("type").isURIResource()){
-				progressMonitor.learningProgressChanged(i++, size);
+				progressMonitor.learningProgressChanged(axiomType, i++, size);
 				
 				OWLClass candidate = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 				

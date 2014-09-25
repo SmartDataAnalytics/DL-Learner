@@ -92,7 +92,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		// check for each candidate if an overlap exist
 		int i = 1;
 		for (OWLObjectProperty p : candidates) {
-			progressMonitor.learningProgressChanged(i++, candidates.size());
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			// get the popularity of the candidate
 			int candidatePopularity = reasoner.getPopularity(p);
@@ -148,7 +148,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	    rs = rsrw;
 		while (rs.hasNext()) {
 			QuerySolution qs = rsrw.next();
-			progressMonitor.learningProgressChanged(rs.getRowNumber(), size);
+			progressMonitor.learningProgressChanged(axiomType, rs.getRowNumber(), size);
 			
 			OWLObjectProperty candidate = df.getOWLObjectProperty(IRI.create(qs.getResource("p_other").getURI()));
 			
