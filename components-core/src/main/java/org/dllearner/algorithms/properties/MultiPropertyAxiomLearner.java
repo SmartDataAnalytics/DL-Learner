@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.AxiomLearningProgressMonitor;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
@@ -67,11 +68,21 @@ public class MultiPropertyAxiomLearner {
 	private QueryExecutionFactory qef;
 
 	private long startTime;
+
+	private AxiomLearningProgressMonitor monitor;
 	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
 		
 		qef = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
+	}
+	
+	public MultiPropertyAxiomLearner(QueryExecutionFactory qef) {
+		this.qef = qef;
+	}
+	
+	public void setProgressMonitor(AxiomLearningProgressMonitor monitor){
+		this.monitor = monitor;
 	}
 	
 	public Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
@@ -154,6 +165,7 @@ public class MultiPropertyAxiomLearner {
 		
 		learner.setEntityToDescribe(entity);
 		learner.setUseSampling(false);
+		learner.setProgressMonitor(monitor);
 		learner.init();
 		learner.start();
 		
