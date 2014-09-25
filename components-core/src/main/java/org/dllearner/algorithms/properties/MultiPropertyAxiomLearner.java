@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.properties;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.properties.AxiomAlgorithms.AxiomTypeCluster;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
+import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.AxiomLearningProgressMonitor;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
@@ -74,6 +76,12 @@ public class MultiPropertyAxiomLearner {
 	
 	private AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	
+	private Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> results;
+
+	private OWLEntity entity;
+
+	private Set<AxiomType<? extends OWLAxiom>> axiomTypes;
+	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
 		
@@ -88,10 +96,18 @@ public class MultiPropertyAxiomLearner {
 		this.progressMonitor = progressMonitor;
 	}
 	
-	public Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> generateAxioms(final OWLEntity entity, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
+	public void setEntityToDescribe(OWLEntity entity){
+		this.entity = entity;
+	}
+	
+	public void setAxiomTypes(Set<AxiomType<? extends OWLAxiom>> axiomTypes){
+		this.axiomTypes = axiomTypes;
+	}
+	
+	public void start(){
 		startTime = System.currentTimeMillis();
 		
-		final Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> results = Maps.newConcurrentMap();
+		results = Maps.newConcurrentMap();
 		
 		EntityType<?> entityType = entity.getEntityType();
 		
@@ -125,7 +141,7 @@ public class MultiPropertyAxiomLearner {
 						
 						for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
 							try {
-								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(entity, axiomType, ks);
+								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);
 								results.put(axiomType, result);
 							} catch (Exception e) {
 								logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
@@ -151,11 +167,26 @@ public class MultiPropertyAxiomLearner {
 //				logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
 //			}
 //		}
-		
-		return results;
 	}
 	
-	private List<EvaluatedAxiom<OWLAxiom>> applyAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType, SparqlEndpointKS ks) throws ComponentInitException{
+	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType) {
+		return new ArrayList<EvaluatedAxiom<OWLAxiom>>(results.get(axiomType));
+	}
+
+	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType, double accuracyThreshold) {
+		List<EvaluatedAxiom<OWLAxiom>> result = results.get(axiomType);
+		
+		List<EvaluatedAxiom<OWLAxiom>> bestAxioms = new ArrayList<EvaluatedAxiom<OWLAxiom>>();
+		for (EvaluatedAxiom<OWLAxiom> axiom : result) {
+			if(axiom.getScore().getAccuracy() >= accuracyThreshold){
+				bestAxioms.add(axiom);
+			}
+		}
+		
+		return bestAxioms;
+	}
+	
+	private List<EvaluatedAxiom<OWLAxiom>> applyAlgorithm(AxiomType<? extends OWLAxiom> axiomType, SparqlEndpointKS ks) throws ComponentInitException{
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		
 		AbstractAxiomLearningAlgorithm learner = null;
@@ -244,12 +275,13 @@ public class MultiPropertyAxiomLearner {
 //		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(new SparqlEndpointKS(endpoint));
 		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/routeEnd"));
-		la.generateAxioms(
-				entity, 
-				Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, 
-						AxiomType.OBJECT_PROPERTY_RANGE, 
-						AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY, AxiomType.IRREFLEXIVE_OBJECT_PROPERTY,
-						AxiomType.INVERSE_OBJECT_PROPERTIES));
+		la.setEntityToDescribe(entity);
+		la.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, 
+				AxiomType.OBJECT_PROPERTY_RANGE, 
+				AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY, AxiomType.IRREFLEXIVE_OBJECT_PROPERTY,
+				AxiomType.INVERSE_OBJECT_PROPERTIES));
+		la.start();
+		
 	}
 
 }
