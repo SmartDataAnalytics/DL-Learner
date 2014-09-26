@@ -157,7 +157,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		{
 			OWLDataOneOf o = (OWLDataOneOf) range;
 			Set<OWLLiteral> set = o.getValues();
-			if (set.isEmpty() == false)
+			if (!set.isEmpty())
 			{
 				OWLLiteral lit = set.iterator().next();
 				return "(= " + getDataPropertyName(p) + " " + lit.getLiteral() + ")";

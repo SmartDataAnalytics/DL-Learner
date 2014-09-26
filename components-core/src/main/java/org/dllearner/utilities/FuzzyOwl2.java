@@ -338,7 +338,7 @@ public class FuzzyOwl2
 	{
 		try
 		{
-			if (s.contains(" null") == false)
+			if (!s.contains(" null"))
 				out.println(s);
 		}
 		catch (NullPointerException ex)

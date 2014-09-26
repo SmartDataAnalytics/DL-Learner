@@ -27,19 +27,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.options.ConfigEntry;
@@ -398,9 +387,7 @@ public final class ComponentManager {
 	public <T extends AbstractReasonerComponent> T reasoner(Class<T> reasoner,
 			AbstractKnowledgeSource ... sources) {
 		Set<AbstractKnowledgeSource> s = new HashSet<AbstractKnowledgeSource>();
-		for(AbstractKnowledgeSource source : sources) {
-			s.add(source);
-		}
+        Collections.addAll(s, sources);
 		return reasoner(reasoner, s);
 	}	
 	

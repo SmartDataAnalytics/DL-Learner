@@ -49,7 +49,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	
 	private boolean useWeakGeneralisation = true;
 	
-	public <N> GreedyNBRStrategy(){
+	public GreedyNBRStrategy(){
 		random = new Random();
 	}
 

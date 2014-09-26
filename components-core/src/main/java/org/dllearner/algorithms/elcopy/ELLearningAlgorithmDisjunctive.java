@@ -393,12 +393,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 		long runTime = System.nanoTime() - treeStartTime;
 		double runTimeSeconds = runTime / (double) 1000000000;
-		
-		if(runTimeSeconds >= treeSearchTimeSeconds) {
-			return true;
-		} else {
-			return false;
-		}
+
+        return runTimeSeconds >= treeSearchTimeSeconds;
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {

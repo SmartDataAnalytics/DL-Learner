@@ -355,7 +355,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public boolean isTimeout(){
-		return maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
+		return maxExecutionTimeInSeconds != 0 && getRemainingRuntimeInMilliSeconds() <= 0;
 	}
 	
 	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,
@@ -677,11 +677,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		System.out.println(sb.toString());
 	}
 	
-	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, V value ){
-		T values = map.get(key);
+	protected <K,J extends Set<V>, V> void addToMap(Map<K, J> map, K key, V value ){
+		J values = map.get(key);
 		if(values == null){
 			try {
-				values = (T) value.getClass().newInstance();
+				values = (J) value.getClass().newInstance();
 				values.add(value);
 			}
 			catch (InstantiationException e) {e.printStackTrace();return;}
@@ -690,11 +690,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		values.add(value);
 	}
 	
-	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, Collection<V> newValues ){
-		T values = map.get(key);
+	protected <K,J extends Set<V>, V> void addToMap(Map<K, J> map, K key, Collection<V> newValues ){
+		J values = map.get(key);
 		if(values == null){
 			try {
-				values = (T) newValues.getClass().newInstance();
+				values = (J) newValues.getClass().newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

@@ -294,10 +294,8 @@ public class ConceptTransformation {
 		int length2 = OWLClassExpressionUtils.getLength(ConceptTransformation.getShortConcept(description));
 		if(length2 < length)
 			return false;
-		if(ConceptTransformation.findEquivalences(description))
-			return false;
-		return true;
-	}	
+        return !ConceptTransformation.findEquivalences(description);
+    }
  
 	private static boolean findEquivalences(OWLClassExpression description) {
 		// \exists r.\bot \equiv \bot

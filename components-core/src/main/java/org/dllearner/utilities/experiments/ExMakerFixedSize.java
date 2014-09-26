@@ -94,7 +94,7 @@ public class ExMakerFixedSize {
 		while (!posOld.isEmpty() && posTrain.size()< nrOfPos) {
 			String one;
 			if(randomize){
-				one = pickOneRandomly(posOld.toArray(new String[] {}));
+				one = pickOneRandomly(posOld.toArray(new String[posOld.size()]));
 			}else{
 				one = posOld.first();
 			}
@@ -106,7 +106,7 @@ public class ExMakerFixedSize {
 		while (!negOld.isEmpty() && negTrain.size()< nrOfNeg) {
 			String one;
 			if(randomize){
-				one = pickOneRandomly(negOld.toArray(new String[] {}));
+				one = pickOneRandomly(negOld.toArray(new String[negOld.size()]));
 			}else{
 				one = negOld.first();
 			}

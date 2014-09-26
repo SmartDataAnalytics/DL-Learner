@@ -821,7 +821,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean isTimeExpired(){
-		return maxExecutionTimeInSeconds <= 0 ? false : (System.currentTimeMillis() - startTime)/1000d >= maxExecutionTimeInSeconds;
+		return maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - startTime) / 1000d >= maxExecutionTimeInSeconds;
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){

@@ -144,7 +144,7 @@ public class StringFormatter {
 	      }
 	      int sz = str.length();
 	      for (int i = 0; i < sz; i++) {
-	          if ((Character.isWhitespace(str.charAt(i)) == false)) {
+	          if ((!Character.isWhitespace(str.charAt(i)))) {
 	              return false;
 	          }
 	      }

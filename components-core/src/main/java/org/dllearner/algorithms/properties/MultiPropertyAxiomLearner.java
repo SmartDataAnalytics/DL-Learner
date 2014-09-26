@@ -234,7 +234,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	private boolean isTimeout(){
-		return maxExecutionTimeMilliseconds <= 0 ? false : getRemainingRuntimeMilliSeconds() <= 0;
+		return maxExecutionTimeMilliseconds > 0 && getRemainingRuntimeMilliSeconds() <= 0;
 	}
 	
 	private long getRemainingRuntimeMilliSeconds(){

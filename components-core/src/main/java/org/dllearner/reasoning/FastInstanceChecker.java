@@ -535,11 +535,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
 			
 			if (roleFillers == null) {
-				if(forallSemantics == ForallSemantics.Standard) {
-					return true;	
-				} else {
-					return false;
-				}
+                return forallSemantics == ForallSemantics.Standard;
 			}
 			boolean hasCorrectFiller = false;
 			for (OWLIndividual roleFiller : roleFillers) {
@@ -838,7 +834,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 					if(targetSet.contains(ind)) {
 						returnSet.add(entry.getKey());
 						// once we found an individual, we do not need to check the others
-						continue; 
+						break;
 					}
 				}
 			}
@@ -877,7 +873,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				for(OWLIndividual ind : inds) {
 					if(!targetSet.contains(ind)) {
 						returnSet.remove(entry.getKey());
-						continue; 
+						break;
 					}
 				}
 			}

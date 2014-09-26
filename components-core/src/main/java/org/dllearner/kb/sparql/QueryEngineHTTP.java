@@ -213,15 +213,7 @@ public class QueryEngineHTTP implements QueryExecution
         HttpQuery httpQuery = makeHttpQuery() ;
         httpQuery.setAccept(selectContentType) ;
         InputStream in = httpQuery.exec() ;
-        
-        if ( false )
-        {
-            byte b[] = IO.readWholeFile(in) ;
-            String str = new String(b) ;
-            System.out.println(str) ;
-            in = new ByteArrayInputStream(b) ; 
-        }
-        
+
         retainedConnection = in; // This will be closed on close()
         
         //TODO: Find a way to auto-detect how to create the ResultSet based on the content type in use
