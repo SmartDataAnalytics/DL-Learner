@@ -150,7 +150,7 @@
 			<dependency>
 			<groupId>eu.trowl</groupId>
 			<artifactId>trowl-core</artifactId>
-			<version>1.0</version>
+			<version>1.4.0</version>
 		</dependency>
 
 			<dependency>
@@ -297,7 +297,7 @@
 			<dependency>
 				<groupId>net.sourceforge.owlapi.owllink</groupId>
 				<artifactId>owllink</artifactId>
-				<version>1.1.0</version>
+				<version>1.2.2</version>
 			</dependency>
 
 			<dependency>
@@ -393,13 +393,13 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.2.143</version>
+				<version>1.4.181</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.24</version>
+				<version>5.1.32</version>
 			</dependency>
 
 			<!--GWT Dependencies -->
@@ -412,7 +412,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>17.0</version>
+				<version>18.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.dumontierlab</groupId>
@@ -516,10 +516,10 @@
             </dependency>
 
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
-            </dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>3.3.2</version>
+</dependency>
             
 			<dependency>
 			    <groupId>gurobi</groupId>

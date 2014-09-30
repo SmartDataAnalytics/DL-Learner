@@ -591,7 +591,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
 		SPARQLReasoner sparqlReasoner = new SPARQLReasoner(ks, "cache");
-		sparqlReasoner.prepareSubsumptionHierarchy();
+//		sparqlReasoner.prepareSubsumptionHierarchy();
 		sparqlReasoner.precomputeClassPopularity();
 		l.setReasoner(sparqlReasoner);
 		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Actor"));
