@@ -5,6 +5,7 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,6 +82,8 @@ public class MultiPropertyAxiomLearner {
 	private OWLEntity entity;
 
 	private Set<AxiomType<? extends OWLAxiom>> axiomTypes;
+	
+	private Map<AxiomType<? extends OWLAxiom>, AbstractAxiomLearningAlgorithm> algorithms = new HashMap<>();
 	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -203,7 +206,21 @@ public class MultiPropertyAxiomLearner {
 		learner.init();
 		learner.start();
 		
+		algorithms.put(axiomType, learner);
+		
 		return learner.getCurrentlyBestEvaluatedAxioms();
+	}
+	
+	public Set<OWLObject> getPositives(AxiomType<? extends OWLAxiom> axiomType, EvaluatedAxiom<OWLAxiom> axiom){
+		AbstractAxiomLearningAlgorithm la = algorithms.get(axiomType);
+		Set<OWLObject> positiveExamples = la.getPositiveExamples(axiom);
+		return positiveExamples;
+	}
+
+	public Set<OWLObject> getNegatives(AxiomType<? extends OWLAxiom> axiomType, EvaluatedAxiom<OWLAxiom> axiom){
+		AbstractAxiomLearningAlgorithm la = algorithms.get(axiomType);
+		Set<OWLObject> negativeExamples = la.getNegativeExamples(axiom);
+		return negativeExamples;
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){
