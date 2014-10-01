@@ -896,7 +896,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return types;
 	}
 
-	public Set<OWLClass> getOWLClasses() {
+	public SortedSet<OWLClass> getOWLClasses() {
 		return getOWLClasses(null);
 	}
 	
@@ -1955,8 +1955,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 * @see org.dllearner.core.BaseReasoner#getNamedClasses()
 	 */
 	@Override
-	public Set<OWLClass> getClasses() {
-		return null;
+	public SortedSet<OWLClass> getClasses() {
+		SortedSet<OWLClass> classes = new TreeSet<OWLClass>();
+		String query = "SELECT DISTINCT ?cls WHERE {?s a ?cls .}";
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			classes.add(df.getOWLClass(IRI.create(qs.getResource("cls").getURI())));
+		}
+		return classes;
 	}
 
 	/* (non-Javadoc)

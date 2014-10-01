@@ -46,7 +46,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			+ " GROUP BY ?p_other");
 	
 	protected static final ParameterizedSparqlString GIVEN_PROPERTY_OVERLAP_QUERY = new ParameterizedSparqlString(
-					"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_other ?o . FILTER(?p != ?p_other)}");
+					"SELECT (COUNT(*) AS ?overlap) WHERE {?s ?p ?o; ?p_other ?o . }");
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> .} "
@@ -161,10 +161,14 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			// compute the score
 			double score = computeScore(candidatePopularity, popularity, overlap);
 
+			int nrOfPosExamples = overlap;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<T>(
 							getAxiom(entityToDescribe, candidate), 
-							new AxiomScore(score)));
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	

@@ -32,8 +32,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	
 	protected ParameterizedSparqlString COUNT_QUERY = TRIPLES_COUNT_QUERY;
 	
-	protected int popularity;
-	
 	protected boolean strictOWLMode = true;
 	
 	
@@ -68,15 +66,6 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	 */
 	@Override
 	protected void learnAxioms() {
-		// get the popularity of the property
-		popularity = getPropertyPopularity();
-
-		// we have to skip here if there are not triples having the property as predicate
-		if (popularity == 0) {
-			logger.warn("Cannot compute statements for empty property " + entityToDescribe);
-			return;
-		}
-		
 		run();
 	}
 	

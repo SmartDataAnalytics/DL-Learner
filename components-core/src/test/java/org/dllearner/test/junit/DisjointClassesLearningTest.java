@@ -31,7 +31,7 @@ public class DisjointClassesLearningTest extends TestCase{
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
 		l.setReasoner(reasoner);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		l.setClassToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
+		l.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
 		
 		l.start();
 		
@@ -44,7 +44,7 @@ public class DisjointClassesLearningTest extends TestCase{
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		
 		for(OWLClassExpression cls : reasoner.getClassHierarchy().getMostGeneralClasses()){
-			l.setClassToDescribe(cls.asOWLClass());
+			l.setEntityToDescribe(cls.asOWLClass());
 			
 			l.start();
 			

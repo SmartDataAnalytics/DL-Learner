@@ -143,6 +143,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected E entityToDescribe;
 	
 	protected boolean useSampling = true;
+	protected int popularity;
 	
 	public AbstractAxiomLearningAlgorithm() {
 		existingAxioms = new TreeSet<T>();
@@ -233,6 +234,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
 		
+		popularity = reasoner.getPopularity(entityToDescribe);
+		if(popularity == 0){
+			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + entityToDescribe.getEntityType().getName() + " " + entityToDescribe.toStringID());
+			return;
+		}
+		
 		if(returnOnlyNewAxioms){
 			getExistingAxioms();
 		}
@@ -318,10 +325,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			ksQef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
 		ks.init();
-		if(ksReasoner== null){
+		if(ksReasoner == null){
 			ksReasoner = new SPARQLReasoner(ksQef);
 		}
-		timeout = true;
+		reasoner = ksReasoner;
 	}
 	
 	/**
