@@ -161,7 +161,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
     private boolean materializeExistentialRestrictions = false;
 
 	private boolean useCaching = true;
-    private boolean handlePunning = true;
+    private boolean handlePunning = false;
     
 	/**
 	 * Creates an instance of the fast instance checker.
@@ -388,7 +388,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		
 		//materialize facts based on OWL punning, i.e.:
 				//for each A in N_C
-				if(handlePunning){
+				if(handlePunning && OWLPunningDetector.hasPunning(rc.getReasoner().getRootOntology())){
 					OWLOntology ontology = rc.getReasoner().getRootOntology();
 					
 					OWLIndividual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd"));
