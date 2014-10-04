@@ -320,10 +320,10 @@
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>collections</artifactId>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>util</artifactId>
-			</dependency>
+			</dependency> -->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
