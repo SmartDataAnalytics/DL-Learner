@@ -269,65 +269,8 @@ public class Enrichment {
 	public Enrichment(SparqlEndpoint se, Entity resource, double threshold, int nrOfAxiomsToLearn, 
 			boolean useInference, boolean verbose, int chunksize, 
 			int maxExecutionTimeInSeconds, boolean omitExistingAxioms) {
-		this.se = se;
-		this.resource = resource;
-		this.verbose = verbose;
-		this.threshold = threshold;
-		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
-		this.useInference = useInference;
-		this.chunksize = chunksize;
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-		this.omitExistingAxioms = omitExistingAxioms;
-		
-		try {
-			cacheDir = "cache" + File.separator + URLEncoder.encode(se.getURL().toString(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		cache = new ExtractionDBCache(cacheDir);
-		
-		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
-		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
-
-		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
-		
-		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-//		classAlgorithms.add(DisjointClassesLearner.class);
-//		classAlgorithms.add(SimpleSubclassLearner.class);
-		classAlgorithms.add(CELOE.class);		
-		
-		algorithmRuns = new LinkedList<AlgorithmRun>();
-		
-		learnedOWLAxioms = new HashSet<OWLAxiom>();
-		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
-		
-		// instantiate SPARQL endpoint wrapper component
-				ks = new SparqlEndpointKS(se);
-				try {
-					ks.init();
-					ks.setSupportsSPARQL_1_1(!iterativeMode);
-				} catch (ComponentInitException e) {
-					e.printStackTrace();
-				}
+		this(new SparqlEndpointKS(se), resource, threshold, nrOfAxiomsToLearn, useInference, verbose, chunksize,
+				maxExecutionTimeInSeconds, omitExistingAxioms);
 				
 	}
 	
