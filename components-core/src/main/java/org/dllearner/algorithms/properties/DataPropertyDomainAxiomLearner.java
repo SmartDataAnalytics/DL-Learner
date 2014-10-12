@@ -27,6 +27,7 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -65,6 +66,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
+		
+		axiomType = AxiomType.DATA_PROPERTY_DOMAIN;
 	}
 	
 	/* (non-Javadoc)

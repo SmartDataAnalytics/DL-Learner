@@ -76,6 +76,7 @@ import org.apache.log4j.SimpleLayout;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
@@ -87,6 +88,7 @@ import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.InverseObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
@@ -98,8 +100,10 @@ import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.AxiomLearningAlgorithm;
+import org.dllearner.core.AxiomLearningProgressMonitor;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -117,6 +121,7 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -130,6 +135,8 @@ import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -259,6 +266,8 @@ public class Enrichment {
 	private boolean processObjectProperties;
 	private boolean processDataProperties;
 	private boolean processClasses;
+	
+	AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
 	private OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 	
@@ -396,17 +405,20 @@ public class Enrichment {
 		this.iterativeMode = iterativeMode;
 	}
 	
+	public EntityType<? extends OWLEntity> getEntityType(String resourceURI) {
+		EntityType<? extends OWLEntity> entityType = reasoner.getOWLEntityType(resourceURI);
+		if(entityType != null){
+			return entityType;
+		} else {
+			throw new IllegalArgumentException("Could not detect type of entity");
+		}
+	}
+	
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
-						
-		// common helper objects
-		SPARQLTasks st = new SPARQLTasks(se);
-		
-		//check if endpoint supports SPARQL 1.1
-//		boolean supportsSPARQL_1_1 = st.supportsSPARQL_1_1();
-//		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
+		reasoner = new SPARQLReasoner(ks, cacheDir);
+		reasoner.init();
 		
 		if(useInference){
-			reasoner = new SPARQLReasoner(ks, cacheDir);
 			System.out.print("Precomputing subsumption hierarchy ... ");
 			long startTime = System.currentTimeMillis();
 			reasoner.prepareSubsumptionHierarchy();
@@ -434,59 +446,31 @@ public class Enrichment {
 				}
 			}
 			entities = 0;
+			
+			// process object properties
 			if(processObjectProperties){
-				Set<OWLObjectProperty> objectProperties = st.getAllObjectProperties();
+				Set<OWLObjectProperty> objectProperties = reasoner.getOWLObjectProperties();
 				filterByNamespaces(objectProperties);
-				for(OWLObjectProperty property : objectProperties) {
-					runObjectPropertyAlgorithms(ks, property);	
-					entities++;
-					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-						break;
-					}				
-				}
+				processProperties(objectProperties, AxiomAlgorithms.getAxiomTypes(EntityType.OBJECT_PROPERTY));
 				processedProperties.addAll(objectProperties);
 			}
+			
+			// process data properties
 			entities = 0;
 			if(processDataProperties){
-				Set<OWLDataProperty> dataProperties = st.getAllDataProperties();
+				Set<OWLDataProperty> dataProperties = reasoner.getOWLDataProperties();
 				filterByNamespaces(dataProperties);
-				for(OWLDataProperty property : dataProperties) {
-					runDataPropertyAlgorithms(ks, property);
-					entities++;
-					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-						break;
-					}					
-				}
+				processProperties(dataProperties, AxiomAlgorithms.getAxiomTypes(EntityType.DATA_PROPERTY));
 				processedProperties.addAll(dataProperties);
 			}
 			
-			//optionally, get all properties and infer its type
-			if(processPropertiesTypeInferred ){
-				reasoner.precomputePopularity();
-				Set<OWLProperty> properties = allowedNamespaces.isEmpty() ? reasoner.getProperties(true) : reasoner.getProperties(true, allowedNamespaces.iterator().next());
-				properties.removeAll(processedProperties);
-				filterByNamespaces(properties);
-				for(OWLProperty property : properties) {
-					if(property.isOWLObjectProperty()){
-						runObjectPropertyAlgorithms(ks, (OWLObjectProperty) property);
-						entities++;
-					} else if(property.isOWLDataProperty()){
-						runDataPropertyAlgorithms(ks, (OWLDataProperty) property);
-						entities++;
-					}
-					
-					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-						break;
-					}					
-				}
-			}
 		} else {
 			if(resource instanceof OWLObjectProperty) {
 				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.\n");
-				runObjectPropertyAlgorithms(ks, resource.asOWLObjectProperty());
+				processProperties(Sets.newHashSet(resource.asOWLObjectProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.OBJECT_PROPERTY));
 			} else if(resource instanceof OWLDataProperty) {
 				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.\n");
-				runDataPropertyAlgorithms(ks, resource.asOWLDataProperty());
+				processProperties(Sets.newHashSet(resource.asOWLDataProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.DATA_PROPERTY));
 			} else if(resource instanceof OWLClass) {
 				System.out.println(resource + " appears to be a class. Running appropriate algorithms.\n");
 				try {
@@ -498,6 +482,23 @@ public class Enrichment {
 				}			
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
+			}
+		}
+	}
+	
+	private void processProperties(Set<? extends OWLProperty> properties, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
+		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(ks);
+		la.setUseSampling(false);
+		la.setProgressMonitor(progressMonitor);
+		la.setAxiomTypes(axiomTypes);
+		for(OWLProperty property : properties) {
+			System.out.println("Processing property " + property.toStringID());
+			la.setEntityToDescribe(property);
+			la.start();
+			
+			for (AxiomType<? extends OWLAxiom> axiomType : axiomTypes) {
+				List<EvaluatedAxiom<OWLAxiom>> evaluatedAxioms = la.getCurrentlyBestEvaluatedAxioms(axiomType, threshold);
+				learnedEvaluatedAxioms.addAll(evaluatedAxioms);
 			}
 		}
 	}
@@ -568,20 +569,6 @@ public class Enrichment {
 			}
 		}
 	}
-	
-	private void runObjectPropertyAlgorithms(SparqlEndpointKS ks, OWLObjectProperty property) throws ComponentInitException {
-		System.out.println("Running algorithms for object property " + property);
-		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : objectPropertyAlgorithms) {
-			applyLearningAlgorithm(algorithmClass, ks, property);
-		}		
-	}
-	
-	private void runDataPropertyAlgorithms(SparqlEndpointKS ks, OWLDataProperty property) throws ComponentInitException {
-		System.out.println("Running algorithms for data property " + property);
-		for (Class<? extends AxiomLearningAlgorithm> algorithmClass : dataPropertyAlgorithms) {
-			applyLearningAlgorithm(algorithmClass, ks, property);
-		}		
-	}	
 	
 	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, OWLClass nc, boolean equivalence, boolean reuseKnowledgeSource) throws ComponentInitException {
 		// get instances of class as positive examples
@@ -673,7 +660,7 @@ public class Enrichment {
         		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom(axiom, score)); 
+        	learnedAxioms.add(new EvaluatedAxiom<OWLAxiom>(axiom, new AxiomScore(score.getAccuracy())));  
         }
         System.out.println(prettyPrint(learnedAxioms));	
         learnedEvaluatedAxioms.addAll(learnedAxioms);
@@ -732,7 +719,6 @@ public class Enrichment {
 		}
 		ConfigHelper.configure(learner, "maxExecutionTimeInSeconds",
 				maxExecutionTimeInSeconds);
-		((AbstractAxiomLearningAlgorithm)learner).setLimit(chunksize);
 		((AbstractAxiomLearningAlgorithm)learner).setReturnOnlyNewAxioms(omitExistingAxioms);
 		learner.init();
 		if(reasoner != null){
@@ -1150,7 +1136,7 @@ public class Enrichment {
 		"Maximum number of returned axioms per axiom type. Set it to -1 if all axioms above the threshold should be returned.").withOptionalArg() 
 		.ofType(Integer.class).defaultsTo(10);
 		parser.acceptsAll(asList("i", "inference"),
-				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(true);
+				"Specifies whether to use inference. If yes, the schema will be loaded into a reasoner and used for computing the scores.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		parser.acceptsAll(asList("iterative"),
 				"Specifies whether to use local fragments or single query mode.").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
 		parser.acceptsAll(asList("s", "serialize"), "Specify a file where the ontology with all axioms can be written.")
@@ -1218,11 +1204,13 @@ public class Enrichment {
 			}
 			//check if the URL is a file and if exists load it into a JENA model
 			try {
-				File file = new File(endpoint.toURI());
-				if(file.exists()){
-					Model kbModel = ModelFactory.createDefaultModel();
-					kbModel.read(new FileInputStream(file), null);
-					ks = new LocalModelBasedSparqlEndpointKS(kbModel);
+				if(isLocalFile(endpoint)){
+					File file = new File(endpoint.toURI());
+					if(file.exists()){
+						Model kbModel = ModelFactory.createDefaultModel();
+						kbModel.read(new FileInputStream(file), null);
+						ks = new LocalModelBasedSparqlEndpointKS(kbModel);
+					}
 				} else {
 					URI graph = null;
 					try {
@@ -1375,6 +1363,17 @@ public class Enrichment {
 			
 		}
 
+	}
+	
+	/** Whether the URL is a file in the local file system. */
+	public static boolean isLocalFile(java.net.URL url) {
+		String scheme = url.getProtocol();
+		return "file".equalsIgnoreCase(scheme) && !hasHost(url);
+	}
+
+	public static boolean hasHost(java.net.URL url) {
+		String host = url.getHost();
+		return host != null && !"".equals(host);
 	}
 	
 

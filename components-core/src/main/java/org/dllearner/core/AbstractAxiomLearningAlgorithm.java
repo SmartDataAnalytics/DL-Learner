@@ -260,7 +260,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		} finally {
 			progressMonitor.learningStopped(axiomType);
 		}
-		progressMonitor.learningStopped(axiomType);
 		
 		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 		logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
@@ -467,7 +466,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 	}
 	
-	protected ResultSet executeSelectQuery(String query) {
+	protected ResultSet executeSelectQuery(String query) {System.out.println(query);
 		logger.trace("Sending query\n{} ...", query);
 		
 		QueryExecution qe = qef.createQueryExecution(query);

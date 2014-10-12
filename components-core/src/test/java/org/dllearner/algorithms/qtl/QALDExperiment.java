@@ -79,14 +79,16 @@ public class QALDExperiment {
 	
 	List<String> datasetFiles = Lists.newArrayList(
 //			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/3/dbpedia-test.xml"
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
 			);
 	
 	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	static {
 		try {
-			endpoint = new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql"), "http://dbpedia.org");
+			endpoint = new SparqlEndpoint(new URL("http://dbpedia.org/sparql"), "http://dbpedia.org");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -122,7 +124,7 @@ public class QALDExperiment {
 		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
 		queryTreeFactory.setMaxDepth(maxDepth);
 		
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cacheDirectory);
+		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
 		
 		lggGenerator = new QTL2();// LGGGeneratorImpl<String>();
@@ -213,7 +215,7 @@ public class QALDExperiment {
 		List<QueryTree<String>> posExampleQueryTrees = getQueryTrees(positiveExamples);
 		
 		//generate noise
-		generateNoise1(sparqlQuery, posExampleQueryTrees);;
+		generateNoise1(sparqlQuery, posExampleQueryTrees);
 		
 		return posExampleQueryTrees;
 	}
@@ -351,6 +353,7 @@ public class QALDExperiment {
 	private List<String> loadSPARQLQueries(){
 		List<String> queries = new ArrayList<String>();
 		try {
+			int cnt = 0;
 			for(String file : datasetFiles){
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	            DocumentBuilder db = dbf.newDocumentBuilder();
@@ -383,7 +386,7 @@ public class QALDExperiment {
 	            		sparqlQuery = sparqlQuery.replace("OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }", "");
 	            		sparqlQuery = sparqlQuery.replace("?string", "");
 	            	}
-	            	
+	            	System.out.println(sparqlQuery);
 //	            	System.out.println(sparqlQuery);
 	            	// check if OUT OF SCOPE marked
 	            	boolean outOfScope = sparqlQuery.toUpperCase().contains("OUT OF SCOPE");
@@ -408,6 +411,7 @@ public class QALDExperiment {
 	                	ingoingLinks = !ingoingTriplePatterns.isEmpty();
 	            	}
 	            	
+	            	cnt++;
 	            	if(true
 	            			&& !aggregation 
 	            			&& !outOfScope 
@@ -422,6 +426,7 @@ public class QALDExperiment {
 	            		queries.add(sparqlQuery);
 	            	}
 	            }
+	            System.out.println(cnt);
 			}
             
 		} 

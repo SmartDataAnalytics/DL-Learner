@@ -25,6 +25,7 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
@@ -60,12 +61,13 @@ public class MultiPropertyAxiomLearner {
 	private static final Logger logger = LoggerFactory.getLogger(MultiPropertyAxiomLearner.class);
 	
 	private SparqlEndpointKS ks;
+	private SPARQLReasoner reasoner;
 	
 	private boolean useSampling = true;
 	private long pageSize = 10000;
 
 	private boolean multiThreaded = true;
-	private int maxNrOfThreads = 4;
+	private int maxNrOfThreads = 1;
 	
 	private long maxExecutionTimeMilliseconds = -1;
 
@@ -73,8 +75,6 @@ public class MultiPropertyAxiomLearner {
 
 	private long startTime;
 
-	private AxiomLearningProgressMonitor monitor;
-	
 	private AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	
 	private Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> results;
@@ -84,11 +84,15 @@ public class MultiPropertyAxiomLearner {
 	private Set<AxiomType<? extends OWLAxiom>> axiomTypes;
 	
 	private Map<AxiomType<? extends OWLAxiom>, AbstractAxiomLearningAlgorithm> algorithms = new HashMap<>();
+
+	
 	
 	public MultiPropertyAxiomLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
 		
 		qef = new QueryExecutionFactoryHttp(ks.getEndpoint().getURL().toString(), ks.getEndpoint().getDefaultGraphURIs());
+		
+		reasoner = new SPARQLReasoner(qef);
 	}
 	
 	public MultiPropertyAxiomLearner(QueryExecutionFactory qef) {
@@ -109,6 +113,13 @@ public class MultiPropertyAxiomLearner {
 	
 	public void start(){
 		startTime = System.currentTimeMillis();
+		
+		//check if entity is empty
+		int popularity = reasoner.getPopularity(entity);
+		if(popularity == 0){
+			logger.warn("Cannot make axiom suggestions for empty " + entity.getEntityType().getName() + " " + entity.toStringID());
+			return;
+		}
 		
 		results = Maps.newConcurrentMap();
 		
@@ -172,6 +183,10 @@ public class MultiPropertyAxiomLearner {
 //		}
 	}
 	
+	public Map<AxiomType<? extends OWLAxiom>, List<EvaluatedAxiom<OWLAxiom>>> getCurrentlyBestEvaluatedAxioms() {
+		return results;
+	}
+	
 	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType) {
 		return new ArrayList<EvaluatedAxiom<OWLAxiom>>(results.get(axiomType));
 	}
@@ -228,6 +243,7 @@ public class MultiPropertyAxiomLearner {
 		Model sample = ModelFactory.createDefaultModel();
 		
 		ParameterizedSparqlString sampleQueryTemplate = cluster.getSampleQuery();
+		sampleQueryTemplate.clearParam("entity");
 		sampleQueryTemplate.setIri("entity", entity.toStringID());
 		
 		Query query = sampleQueryTemplate.asQuery();

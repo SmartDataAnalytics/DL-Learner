@@ -43,7 +43,10 @@ import com.hp.hpl.jena.query.ResultSetRewindable;
 public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyRangeAxiom> {
 	
 	private static final ParameterizedSparqlString DATATYPE_FREQUENCY_QUERY = new ParameterizedSparqlString(
-			"SELECT (DATATYPE(?o) AS ?dt) (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s ?p ?o.} GROUP BY DATATYPE(?o)");
+			"SELECT  ?dt (count(distinct ?o) AS ?cnt)\n" + 
+			"WHERE\n" + 
+			"  { ?s ?p ?o }\n" + 
+			"GROUP BY (datatype(?o) AS ?dt)");
 	
 	public DataPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -84,12 +87,8 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 
 		// get the frequency for each datatype
 		ResultSet rs = executeSelectQuery(DATATYPE_FREQUENCY_QUERY.toString());
-		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
-		int size = rsrw.size();
-		rsrw.reset();
-		int i = 1;
-		while (rsrw.hasNext()) {
-			QuerySolution qs = rsrw.next();
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
 
 			// datatype
 			String datatypeURI = qs.getResource("dt").getURI();

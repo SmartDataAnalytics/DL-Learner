@@ -144,7 +144,7 @@ public class AxiomAlgorithms {
 				INVERSE_OBJECT_PROPERTIES));
 		
 		// data property axiom types
-		entityType2AxiomTypes.put(EntityType.CLASS, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+		entityType2AxiomTypes.put(EntityType.DATA_PROPERTY, Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
 				SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES, DISJOINT_DATA_PROPERTIES,
 				FUNCTIONAL_DATA_PROPERTY, DATA_PROPERTY_DOMAIN, DATA_PROPERTY_RANGE));
 	}
