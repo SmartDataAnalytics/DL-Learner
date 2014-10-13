@@ -1286,6 +1286,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			min = (l.getFloat() < min.getFloat()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
+    		} else if(l.getDatatype() == XSDDatatype.XSDgYear){
+    			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
     		} 
     	}
     	return min;
@@ -1304,6 +1306,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
     			max = (l.getFloat() > max.getFloat()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
+    			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
+    		} else if(l.getDatatype() == XSDDatatype.XSDgYear){
     			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
     		} 
     	}

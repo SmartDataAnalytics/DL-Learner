@@ -8,13 +8,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,15 +37,21 @@ import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.TriplePatternExtractor;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -107,7 +116,7 @@ public class QALDExperiment {
 	QueryTreeFactory<String> queryTreeFactory;
 	ConciseBoundedDescriptionGenerator cbdGen;
 //	private LGGGenerator<String> lggGenerator;
-	private QTL2 lggGenerator;
+	private QTL2 la;
 	
 	private Random rnd = new Random(123);
 	
@@ -127,7 +136,7 @@ public class QALDExperiment {
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
 		
-		lggGenerator = new QTL2();// LGGGeneratorImpl<String>();
+		la = new QTL2();// LGGGeneratorImpl<String>();
 	}
 	
 	public void run(){
@@ -135,52 +144,81 @@ public class QALDExperiment {
 		DescriptiveStatistics recallStats = new DescriptiveStatistics();
 		DescriptiveStatistics fMeasureStats = new DescriptiveStatistics();
 		
-		List<String> sparqlQueries = loadSPARQLQueries();
-		logger.info("Overall number of queries: " + sparqlQueries.size());
+//		List<String> sparqlQueries = loadSPARQLQueries();
+//		logger.info("Overall number of queries: " + sparqlQueries.size());
+		
+		List<String>  sparqlQueries = Lists.newArrayList("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology/> \n" + 
+				"PREFIX res: <http://dbpedia.org/resource/> \n" + 
+				"SELECT DISTINCT ?uri \n" + 
+				"WHERE { \n" + 
+				"        ?uri dbo:occupation res:Bandleader . \n" + 
+				"        ?uri dbo:instrument res:Trumpet . \n" + 
+				"}");
+		
+		// parameters
+		int maxNrOfExamples = 20;
+		int stepSize = 2;
+		double maxNoise = 0.7;
+		double noiseStepSize = 0.2;
 		
 		for (String sparqlQuery : sparqlQueries) {
-			try {
-					logger.info("Processing query\n" + sparqlQuery);
-					
-					//convert examples to query trees
-					List<QueryTree<String>> queryTrees = generateExamples(sparqlQuery, noise);
-					for (QueryTree<String> queryTree : queryTrees) {
-						logger.info(queryTree.getStringRepresentation());
+			logger.info("Processing query\n" + sparqlQuery);
+			
+			// loop of number of positive examples
+			for (int nrOfExamples = 3; nrOfExamples <= Math.min(nrOfExamples, maxNrOfExamples );
+					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples )) {
+				
+				// loop over noise value
+				for(double noise = 0.0; noise <= maxNoise; noise = Math.min(noise + noiseStepSize, maxNoise)){
+					try {
+						logger.info("#examples: " + nrOfExamples + "\nnoise: " + noise);
+						// generate examples
+						Set<OWLIndividual> generateExamples = generateExamples(sparqlQuery, nrOfExamples, noise);
+						
+						//run QTL
+						PosNegLPStandard lp = new PosNegLPStandard();
+						lp.setPositiveExamples(generateExamples);
+//						lp.init();
+						la = new QTL2(lp, qef);
+						la.setAllowedNamespaces(allowedNamespaces);
+						la.setIgnoredPropperties(ignoredProperties);
+						la.init();
+						la.start();
+
+						SortedSet<EvaluatedQueryTree<String>> solutions = la.getSolutions();
+						EvaluatedQueryTree<String> bestSolution = solutions.first();
+						logger.info("Got " + solutions.size() + " LGG query trees. Best computed LGG:\n" + bestSolution);
+
+						// find the best extensionally matching tree in the list
+						EvaluatedQueryTree<String> bestTree = findBestMatchingTree(solutions, sparqlQuery);
+
+						// convert to SPARQL query
+						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
+						logger.info("Learned Query:\n" + learnedSPARQLQuery);
+
+						double precision = precision(sparqlQuery, learnedSPARQLQuery);
+						precisionStats.addValue(precision);
+
+						double recall = recall(sparqlQuery, learnedSPARQLQuery);
+						recallStats.addValue(recall);
+
+						double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
+						fMeasureStats.addValue(fmeasure);
+
+						logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
+					} catch (Exception e) {
+						logger.error("Error occured.", e);
 					}
-					
-//					//run LGG
-//					List<EvaluatedQueryTree<String>> lggs = lggGenerator.computeLGG(queryTrees);
-//					EvaluatedQueryTree<String> bestLGG = lggs.get(0);
-//					logger.info("Got " + lggs.size() + " LGG query trees. Best computed LGG:\n" + bestLGG);
-//					
-//					//find the best extensionally matching tree in the list
-//					EvaluatedQueryTree<String> bestTree = findBestMatchingTree(lggs, sparqlQuery);
-//					
-//					//convert to SPARQL query
-//					String learnedSPARQLQuery = bestLGG.getTree().toSPARQLQueryString(true, false);
-//					logger.info("Learned Query:\n" + learnedSPARQLQuery);
-//					
-//					
-//					double precision = precision(sparqlQuery, learnedSPARQLQuery);
-//					precisionStats.addValue(precision);
-//					
-//					double recall = recall(sparqlQuery, learnedSPARQLQuery);
-//					recallStats.addValue(recall);
-//					
-//					double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
-//					fMeasureStats.addValue(fmeasure);
-//					
-//					logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
-			} catch (Exception e) {
-				logger.error("Error occured.", e);
+				}
 			}
 		}
 		logger.info("Overall Precision:\n" + precisionStats);
 		logger.info("Overall Recall:\n" + recallStats);
 		logger.info("Overall FMeasure:\n" + fMeasureStats);
 	}
+		
 	
-	private EvaluatedQueryTree<String> findBestMatchingTree(List<EvaluatedQueryTree<String>> trees, String targetSPARQLQuery){
+	private EvaluatedQueryTree<String> findBestMatchingTree(Collection<EvaluatedQueryTree<String>> trees, String targetSPARQLQuery){
 		logger.info("Finding best matching query tree...");
 		//get the tree with the highest fmeasure
 		EvaluatedQueryTree<String> bestTree = null;
@@ -196,6 +234,24 @@ public class QALDExperiment {
 			logger.info("Extensional fMeasure: " + fMeasure);
 		}
 		return bestTree;
+	}
+	
+	private Set<OWLIndividual> generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
+		//get all resources returned by the query
+		List<String> resources = getResult(sparqlQuery);
+		
+		//shuffle the list to avoid bias
+		Collections.shuffle(resources, new Random(123));
+		
+		//pick some positive examples from the list
+		List<String> positiveExamples = resources.subList(0, Math.min(maxNrOfExamples, resources.size()));
+		
+		Set<OWLIndividual> result = new HashSet<OWLIndividual>();
+		for (String posEx : positiveExamples) {
+			result.add(new OWLNamedIndividualImpl(IRI.create(posEx)));
+		}
+		
+		return result;
 	}
 	
 	private List<QueryTree<String>> generateExamples(String sparqlQuery, double noise){
@@ -386,7 +442,7 @@ public class QALDExperiment {
 	            		sparqlQuery = sparqlQuery.replace("OPTIONAL {?uri rdfs:label ?string. FILTER (lang(?string) = 'en') }", "");
 	            		sparqlQuery = sparqlQuery.replace("?string", "");
 	            	}
-	            	System.out.println(sparqlQuery);
+	            
 //	            	System.out.println(sparqlQuery);
 	            	// check if OUT OF SCOPE marked
 	            	boolean outOfScope = sparqlQuery.toUpperCase().contains("OUT OF SCOPE");
@@ -403,27 +459,30 @@ public class QALDExperiment {
 	            	boolean containsUNION = sparqlQuery.toUpperCase().contains("UNION");
 	            	
 	            	//check if projection variable is somewhere in object position
-	            	boolean ingoingLinks = false;
+	            	boolean hasIngoingLinks = false;
 	            	if(!outOfScope && !askQuery && !containsLimit && !containsFilter){
-	            		Query q = QueryFactory.create(sparqlQuery, Syntax.syntaxARQ);
+	            		Query q = QueryFactory.create("prefix owl:<http://www.w3.org/2002/07/owl#> " + sparqlQuery, Syntax.syntaxARQ);
 	                	List<Var> projectVars = q.getProjectVars();
 	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIngoingTriplePatterns(q, projectVars.get(0).asNode());
-	                	ingoingLinks = !ingoingTriplePatterns.isEmpty();
+	                	hasIngoingLinks = !ingoingTriplePatterns.isEmpty();
 	            	}
-	            	
-	            	cnt++;
+//	            	if(!hasIngoingLinks){
+//	            		System.out.println(sparqlQuery);
+//	            		cnt++;
+//	            	}
 	            	if(true
 	            			&& !aggregation 
 	            			&& !outOfScope 
 	            			&& !containsCount 
 	            			&& !askQuery 
-	            			&& !ingoingLinks 
+	            			&& !hasIngoingLinks 
 	            			&& !containsFilter
-	            			&& !containsUNION
+//	            			&& !containsUNION
 	            			&& onlydbo
 	            			&& (getResultCount(sparqlQuery) >= minNrOfPositiveExamples)
 	            			){
 	            		queries.add(sparqlQuery);
+	            		System.out.println(sparqlQuery);
 	            	}
 	            }
 	            System.out.println(cnt);

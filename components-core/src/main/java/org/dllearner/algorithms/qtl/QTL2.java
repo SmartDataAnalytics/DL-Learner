@@ -13,10 +13,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
@@ -28,6 +30,8 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
@@ -61,7 +65,7 @@ public class QTL2 extends AbstractCELA {
 	private List<QueryTree<String>> currentPosExampleTrees;
 	private List<QueryTree<String>> currentNegExampleTrees;
 	
-	private Map<QueryTree<String>, OWLIndividual> tree2Indivual;
+	private Map<QueryTree<String>, OWLIndividual> tree2Individual;
 
 	private double coverageWeight = 1;
 	private double specifityWeight = 0;
@@ -79,18 +83,40 @@ public class QTL2 extends AbstractCELA {
 	
 	private Monitor subMon;
 	private Monitor lggMon;
+
+	private QueryExecutionFactory qef;
+
+	private QueryTreeFactory<String> treeFactory;
+
+	private ConciseBoundedDescriptionGenerator cbdGen;
+
+	private Set<String> allowedNamespaces;
+
+	private Set<String> ignoredProperties;
 	
 	public QTL2() {}
 	
 	public QTL2(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
 		this.lp = learningProblem;
 		this.reasoner = reasoner;
-		
 	}
 	
 	public QTL2(PosNegLP lp, Model model) {
 		this.lp = lp;
 		this.model = model;
+	}
+	
+	public QTL2(PosNegLP lp, QueryExecutionFactory qef) {
+		this.lp = lp;
+		this.qef = qef;
+	}
+	
+	public void setAllowedNamespaces(Set<String> allowedNamespaces){
+		this.allowedNamespaces = allowedNamespaces;
+	}
+	
+	public void setIgnoredPropperties(Set<String> ignoredProperties){
+		this.ignoredProperties = ignoredProperties;
 	}
 	
 	/* (non-Javadoc)
@@ -99,8 +125,11 @@ public class QTL2 extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		logger.info("Initializing...");
-		treeCache = new QueryTreeCache(model);
-		tree2Indivual = new HashMap<QueryTree<String>, OWLIndividual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
+		treeFactory = new QueryTreeFactoryImpl();
+		treeFactory.addAllowedNamespaces(allowedNamespaces);
+		treeFactory.addIgnoredPropperties(ignoredProperties);
+		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		tree2Individual = new HashMap<QueryTree<String>, OWLIndividual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
 		
 		currentPosExampleTrees = new ArrayList<QueryTree<String>>(lp.getPositiveExamples().size());
 		currentNegExampleTrees = new ArrayList<QueryTree<String>>(lp.getNegativeExamples().size());
@@ -108,13 +137,15 @@ public class QTL2 extends AbstractCELA {
 		//get the query trees
 		QueryTree<String> queryTree;
 		for (OWLIndividual ind : lp.getPositiveExamples()) {
-			queryTree = treeCache.getQueryTree(ind.toStringID());
-			tree2Indivual.put(queryTree, ind);
+			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+			queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+			tree2Individual.put(queryTree, ind);
 			currentPosExampleTrees.add(queryTree);
 		}
 		for (OWLIndividual ind : lp.getNegativeExamples()) {
-			queryTree = treeCache.getQueryTree(ind.toStringID());
-			tree2Indivual.put(queryTree, ind);
+			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+			queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+			tree2Individual.put(queryTree, ind);
 			currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
 		}
 		
@@ -186,6 +217,10 @@ public class QTL2 extends AbstractCELA {
 		return solutions.first();
 	}
 	
+	public SortedSet<EvaluatedQueryTree<String>> getSolutions(){
+		return solutions;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
 	 */
@@ -208,6 +243,13 @@ public class QTL2 extends AbstractCELA {
 	 */
 	public QueryTreeCache getTreeCache() {
 		return treeCache;
+	}
+	
+	/**
+	 * @param treeCache the treeCache to set
+	 */
+	public void setTreeCache(QueryTreeCache treeCache) {
+		this.treeCache = treeCache;
 	}
 	
 	/* (non-Javadoc)
@@ -254,13 +296,13 @@ public class QTL2 extends AbstractCELA {
 		Collection<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
 		Set<OWLIndividual> uncoveredPosExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : uncoveredPositiveExampleTrees) {
-			uncoveredPosExamples.add(tree2Indivual.get(queryTree));
+			uncoveredPosExamples.add(tree2Individual.get(queryTree));
 		}
 		//compute negative examples which are covered by LGG
 		Collection<QueryTree<String>> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
 		Set<OWLIndividual> coveredNegExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : coveredNegativeExampleTrees) {
-			coveredNegExamples.add(tree2Indivual.get(queryTree));
+			coveredNegExamples.add(tree2Individual.get(queryTree));
 		}
 		//compute score
 		int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
@@ -284,7 +326,7 @@ public class QTL2 extends AbstractCELA {
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
-				uncoveredPosExamples, Sets.difference(lp.getPositiveExamples(), uncoveredPosExamples),
+				Sets.difference(lp.getPositiveExamples(), uncoveredPosExamples), uncoveredPosExamples,
 				coveredNegExamples, Sets.difference(lp.getNegativeExamples(), coveredNegExamples),
 				specifityScore, nrOfSpecificNodes);
 		
