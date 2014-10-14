@@ -4,29 +4,42 @@
 package org.dllearner.algorithms.properties;
 
 import static org.semanticweb.owlapi.model.AxiomType.ASYMMETRIC_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.CLASS_ASSERTION;
+import static org.semanticweb.owlapi.model.AxiomType.DATATYPE_DEFINITION;
+import static org.semanticweb.owlapi.model.AxiomType.DATA_PROPERTY_ASSERTION;
 import static org.semanticweb.owlapi.model.AxiomType.DATA_PROPERTY_DOMAIN;
 import static org.semanticweb.owlapi.model.AxiomType.DATA_PROPERTY_RANGE;
+import static org.semanticweb.owlapi.model.AxiomType.DIFFERENT_INDIVIDUALS;
 import static org.semanticweb.owlapi.model.AxiomType.DISJOINT_CLASSES;
 import static org.semanticweb.owlapi.model.AxiomType.DISJOINT_DATA_PROPERTIES;
 import static org.semanticweb.owlapi.model.AxiomType.DISJOINT_OBJECT_PROPERTIES;
+import static org.semanticweb.owlapi.model.AxiomType.DISJOINT_UNION;
 import static org.semanticweb.owlapi.model.AxiomType.EQUIVALENT_CLASSES;
 import static org.semanticweb.owlapi.model.AxiomType.EQUIVALENT_DATA_PROPERTIES;
 import static org.semanticweb.owlapi.model.AxiomType.EQUIVALENT_OBJECT_PROPERTIES;
 import static org.semanticweb.owlapi.model.AxiomType.FUNCTIONAL_DATA_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.FUNCTIONAL_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.HAS_KEY;
 import static org.semanticweb.owlapi.model.AxiomType.INVERSE_FUNCTIONAL_OBJECT_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.INVERSE_OBJECT_PROPERTIES;
 import static org.semanticweb.owlapi.model.AxiomType.IRREFLEXIVE_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.NEGATIVE_DATA_PROPERTY_ASSERTION;
+import static org.semanticweb.owlapi.model.AxiomType.NEGATIVE_OBJECT_PROPERTY_ASSERTION;
+import static org.semanticweb.owlapi.model.AxiomType.OBJECT_PROPERTY_ASSERTION;
 import static org.semanticweb.owlapi.model.AxiomType.OBJECT_PROPERTY_DOMAIN;
 import static org.semanticweb.owlapi.model.AxiomType.OBJECT_PROPERTY_RANGE;
 import static org.semanticweb.owlapi.model.AxiomType.REFLEXIVE_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.SAME_INDIVIDUAL;
 import static org.semanticweb.owlapi.model.AxiomType.SUBCLASS_OF;
 import static org.semanticweb.owlapi.model.AxiomType.SUB_DATA_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.SUB_OBJECT_PROPERTY;
+import static org.semanticweb.owlapi.model.AxiomType.SUB_PROPERTY_CHAIN_OF;
 import static org.semanticweb.owlapi.model.AxiomType.SYMMETRIC_OBJECT_PROPERTY;
 import static org.semanticweb.owlapi.model.AxiomType.TRANSITIVE_OBJECT_PROPERTY;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +62,42 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
  *
  */
 public class AxiomAlgorithms {
+	
+	 /** set of tbox axiom types */
+    public static final Set<AxiomType<? extends OWLAxiom>> TBoxAxiomTypes = Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+            Arrays.asList(SUBCLASS_OF, EQUIVALENT_CLASSES, DISJOINT_CLASSES,
+                    OBJECT_PROPERTY_DOMAIN, OBJECT_PROPERTY_RANGE,
+                    INVERSE_OBJECT_PROPERTIES, FUNCTIONAL_OBJECT_PROPERTY,
+                    INVERSE_FUNCTIONAL_OBJECT_PROPERTY,
+                    SYMMETRIC_OBJECT_PROPERTY, ASYMMETRIC_OBJECT_PROPERTY,
+                    TRANSITIVE_OBJECT_PROPERTY, REFLEXIVE_OBJECT_PROPERTY,
+                    IRREFLEXIVE_OBJECT_PROPERTY, DATA_PROPERTY_DOMAIN,
+                    DATA_PROPERTY_RANGE, FUNCTIONAL_DATA_PROPERTY,
+                    DATATYPE_DEFINITION, DISJOINT_UNION, HAS_KEY));
+    
+    /** set of abox axiom types */
+    public static final Set<AxiomType<? extends OWLAxiom>> ABoxAxiomTypes = Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+            Arrays.asList(CLASS_ASSERTION, SAME_INDIVIDUAL,
+                    DIFFERENT_INDIVIDUALS, OBJECT_PROPERTY_ASSERTION,
+                    NEGATIVE_OBJECT_PROPERTY_ASSERTION,
+                    DATA_PROPERTY_ASSERTION, NEGATIVE_DATA_PROPERTY_ASSERTION));
+    
+    /** set of rbox axiom types */
+    @SuppressWarnings("unchecked")
+	public static final Set<AxiomType<? extends OWLAxiom>> RBoxAxiomTypes = Sets.<AxiomType<? extends OWLAxiom>>newHashSet(
+    				TRANSITIVE_OBJECT_PROPERTY, DISJOINT_DATA_PROPERTIES,
+                    SUB_DATA_PROPERTY, EQUIVALENT_DATA_PROPERTIES,
+                    DISJOINT_OBJECT_PROPERTIES, SUB_OBJECT_PROPERTY,
+                    EQUIVALENT_OBJECT_PROPERTIES, SUB_PROPERTY_CHAIN_OF);
+    
+    /** set of tbox and rbox axiom types */
+    public static final Set<AxiomType<? extends OWLAxiom>> TBoxAndRBoxAxiomTypes = tboxAndRbox();
+
+    private static final Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
+        Set<AxiomType<?>> axioms = new HashSet<AxiomType<?>>(TBoxAxiomTypes);
+        axioms.addAll(RBoxAxiomTypes);
+        return axioms;
+    }
 	
 	static class AxiomTypeCluster {
 		private final Set<AxiomType<? extends OWLAxiom>> axiomTypes;
