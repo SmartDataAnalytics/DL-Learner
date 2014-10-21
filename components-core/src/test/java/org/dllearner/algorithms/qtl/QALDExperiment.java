@@ -35,6 +35,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.core.EvaluatedDescription;
@@ -132,6 +133,8 @@ public class QALDExperiment {
 		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
 		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
 		queryTreeFactory.setMaxDepth(maxDepth);
+		queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
+				Sets.newHashSet("bandleader", "play", "trumpet")));
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
@@ -156,6 +159,7 @@ public class QALDExperiment {
 				"}");
 		
 		// parameters
+		int minNrOfExamples = 3;
 		int maxNrOfExamples = 20;
 		int stepSize = 2;
 		double maxNoise = 0.7;
@@ -165,7 +169,7 @@ public class QALDExperiment {
 			logger.info("Processing query\n" + sparqlQuery);
 			
 			// loop of number of positive examples
-			for (int nrOfExamples = 3; nrOfExamples <= Math.min(nrOfExamples, maxNrOfExamples );
+			for (int nrOfExamples = minNrOfExamples; nrOfExamples <= Math.min(nrOfExamples, maxNrOfExamples );
 					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples )) {
 				
 				// loop over noise value
@@ -182,6 +186,7 @@ public class QALDExperiment {
 						la = new QTL2(lp, qef);
 						la.setAllowedNamespaces(allowedNamespaces);
 						la.setIgnoredPropperties(ignoredProperties);
+						la.setTreeFactory(queryTreeFactory);
 						la.init();
 						la.start();
 

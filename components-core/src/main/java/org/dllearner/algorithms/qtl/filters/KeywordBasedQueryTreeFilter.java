@@ -14,7 +14,7 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.AbstractStringMetric;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
-public class QuestionBasedQueryTreeFilter implements QueryTreeFilter{
+public class KeywordBasedQueryTreeFilter implements QueryTreeFilter{
 	
 	private Collection<String> questionWords;
 	
@@ -26,7 +26,7 @@ public class QuestionBasedQueryTreeFilter implements QueryTreeFilter{
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	public QuestionBasedQueryTreeFilter(Collection<String> questionWords){
+	public KeywordBasedQueryTreeFilter(Collection<String> questionWords){
 		this.questionWords = questionWords;
 		qGramMetric = new QGramsDistance();
 		levensteinMetric = new Levenshtein();

@@ -144,7 +144,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			// get the popularity of the candidate
 			int candidatePopularity = reasoner.getPopularity(cls);
 			
-			if(candidatePopularity == 0){// skip empty properties
+			if(candidatePopularity == 0){// skip empty classes
 				logger.warn("Cannot compute disjointness statements for empty candidate class " + cls);
 				continue;
 			}
@@ -153,7 +153,6 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			GIVEN_CLASS_OVERLAP_QUERY.setIri("cls_other", cls.toStringID());
 			ResultSet rs = executeSelectQuery(GIVEN_CLASS_OVERLAP_QUERY.toString());
 			int overlap = rs.next().getLiteral("overlap").getInt();
-			System.out.println(GIVEN_CLASS_OVERLAP_QUERY);
 			
 			// compute the score
 			double score = computeScore(candidatePopularity, popularity, overlap);

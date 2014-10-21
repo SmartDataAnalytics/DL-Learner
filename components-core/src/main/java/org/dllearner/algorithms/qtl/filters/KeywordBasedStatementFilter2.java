@@ -19,7 +19,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.Filter;
 
-public class QuestionBasedStatementFilter2 extends Filter<Statement> {
+public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	
 	private Set<String> questionWords;
 	
@@ -43,7 +43,7 @@ public class QuestionBasedStatementFilter2 extends Filter<Statement> {
 	
 	int cnt = 0;
 	
-	public QuestionBasedStatementFilter2(Set<String> questionWords){
+	public KeywordBasedStatementFilter2(Set<String> questionWords){
 		this.questionWords = questionWords;
 		qGramMetric = new QGramsDistance();
 		levensteinMetric = new Levenshtein();

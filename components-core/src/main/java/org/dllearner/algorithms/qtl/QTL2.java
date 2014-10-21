@@ -125,9 +125,11 @@ public class QTL2 extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		logger.info("Initializing...");
-		treeFactory = new QueryTreeFactoryImpl();
-		treeFactory.addAllowedNamespaces(allowedNamespaces);
-		treeFactory.addIgnoredPropperties(ignoredProperties);
+		if(treeFactory == null){
+			treeFactory = new QueryTreeFactoryImpl();
+			treeFactory.addAllowedNamespaces(allowedNamespaces);
+			treeFactory.addIgnoredPropperties(ignoredProperties);
+		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		tree2Individual = new HashMap<QueryTree<String>, OWLIndividual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
 		
@@ -250,6 +252,13 @@ public class QTL2 extends AbstractCELA {
 	 */
 	public void setTreeCache(QueryTreeCache treeCache) {
 		this.treeCache = treeCache;
+	}
+	
+	/**
+	 * @param treeFactory the treeFactory to set
+	 */
+	public void setTreeFactory(QueryTreeFactory<String> treeFactory) {
+		this.treeFactory = treeFactory;
 	}
 	
 	/* (non-Javadoc)

@@ -100,9 +100,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	
 	protected SparqlEndpointKS ks;
+	
 	// the instances which are set
 	private SPARQLReasoner ksReasoner;
 	private QueryExecutionFactory ksQef;
+	
 	// the instances on which the algorithms are really applied
 	protected SPARQLReasoner reasoner;
 	protected QueryExecutionFactory qef;
@@ -149,6 +151,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		existingAxioms = new TreeSet<T>();
 		
 		logger = LoggerFactory.getLogger(this.getClass());
+	}
+	
+	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
+		this.ksQef = qef;
 	}
 	
 	@Override
@@ -313,20 +319,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@Override
 	public void init() throws ComponentInitException {
 		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ks.getEndpoint();
-			ksQef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(ks.getCache() != null){
-				ksQef = new QueryExecutionFactoryCacheEx(ksQef, ks.getCache());
-			}
-//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-			
+			ksQef = ks.getQueryExecutionFactory();
 		} else {
 			ksQef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
-		ks.init();
 		if(ksReasoner == null){
 			ksReasoner = new SPARQLReasoner(ksQef);
 		}
+		ksReasoner.supportsSPARQL1_1();
 		reasoner = ksReasoner;
 	}
 	

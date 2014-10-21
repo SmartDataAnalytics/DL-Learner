@@ -24,8 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -63,6 +66,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 	
+	private QueryExecutionFactory qef;
+	
 	public SparqlEndpointKS() {
 		
 	}
@@ -71,21 +76,37 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		this(endpoint, (String)null);
 	}
 	
+	public SparqlEndpointKS(QueryExecutionFactory qef) {
+		this.qef = qef;
+	}
+	
 	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheFrontend cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
+		this.qef = 	new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+						endpoint.getDefaultGraphURIs());
+		if(cache != null){
+			this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
+		}
 	}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
+		this.qef = 	new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+				endpoint.getDefaultGraphURIs());
 		if(cacheDirectory != null){
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
 				cache = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+				this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
 	}
 	
 	public CacheFrontend getCache() {
 		return cache;
+	}
+	
+	public QueryExecutionFactory getQueryExecutionFactory() {
+		return qef;
 	}
 	
 	/**

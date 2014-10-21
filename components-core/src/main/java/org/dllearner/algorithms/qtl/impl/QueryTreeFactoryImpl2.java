@@ -32,8 +32,8 @@ import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter2;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter2;
 import org.dllearner.algorithms.qtl.filters.ZeroFilter;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -120,7 +120,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements, null);	
 	
-		QuestionBasedStatementFilter filter = (QuestionBasedStatementFilter)keepFilter;
+		KeywordBasedStatementFilter filter = (KeywordBasedStatementFilter)keepFilter;
 		Set<Statement> statements;
 		int diff = valueCount(resource2Statements) - maxEdges;
 		main:while(diff > 0){
@@ -173,7 +173,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 		SortedSet<Statement> statements;
 		while(it.hasNext()){
 			st = it.next();
-			String newSimilarToken = ((QuestionBasedStatementFilter2)keepFilter).getStatement2TokenMap().get(st);
+			String newSimilarToken = ((KeywordBasedStatementFilter2)keepFilter).getStatement2TokenMap().get(st);
 			System.out.println(st);
 			System.out.println(newSimilarToken);
 			if(!newSimilarToken.equals(oldSimilarToken) || newSimilarToken.equals("ALL")){

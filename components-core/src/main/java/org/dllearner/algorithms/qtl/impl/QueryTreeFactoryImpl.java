@@ -32,7 +32,7 @@ import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
 import org.dllearner.algorithms.qtl.filters.ZeroFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -42,12 +42,15 @@ import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -139,7 +142,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements);	
 	
-		QuestionBasedStatementFilter filter = (QuestionBasedStatementFilter)keepFilter;
+		KeywordBasedStatementFilter filter = (KeywordBasedStatementFilter)keepFilter;
 		Set<Statement> statements;
 		int diff = valueCount(resource2Statements) - maxEdges;
 		main:while(diff > 0){
@@ -175,6 +178,15 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 	}
 	
 	private QueryTreeImpl<String> createTreeOptimized(Resource s, Model model){
+		if(keepFilter != null){
+			Model filteredModel = ModelFactory.createDefaultModel();
+			ExtendedIterator<Statement> iter = model.listStatements().filterKeep(keepFilter);
+			while(iter.hasNext()){
+				Statement st = iter.next();
+				filteredModel.add(st);
+			}
+			model = filteredModel;
+		}
 		nodeId = 0;
 		SortedMap<String, SortedSet<Statement>> resource2Statements = new TreeMap<String, SortedSet<Statement>>();
 		

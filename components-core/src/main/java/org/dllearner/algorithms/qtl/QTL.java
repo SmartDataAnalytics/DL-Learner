@@ -48,7 +48,7 @@ import org.dllearner.algorithms.qtl.exception.EmptyLGGException;
 import org.dllearner.algorithms.qtl.exception.NegativeTreeCoverageExecption;
 import org.dllearner.algorithms.qtl.exception.TimeOutException;
 import org.dllearner.algorithms.qtl.filters.QueryTreeFilter;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
@@ -602,7 +602,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks, "cache");
 		qtl.setAllowedNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/"));
-		qtl.addQueryTreeFilter(new QuestionBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
+		qtl.addQueryTreeFilter(new KeywordBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
 		qtl.init();
 		qtl.start();
 		String query = qtl.getBestSPARQLQuery();
