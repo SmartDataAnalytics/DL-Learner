@@ -98,7 +98,8 @@ public class QALDExperiment {
 	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 	static {
 		try {
-			endpoint = new SparqlEndpoint(new URL("http://dbpedia.org/sparql"), "http://dbpedia.org");
+			endpoint = new SparqlEndpoint(new URL("\n" + 
+					"http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), "http://dbpedia.org");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -111,7 +112,7 @@ public class QALDExperiment {
 	String cacheDirectory = "cache";
 	
 	int minNrOfPositiveExamples = 5;
-	int maxDepth = 2;
+	int maxDepth = 3;
 	double noise = 0.4d;
 	
 	QueryTreeFactory<String> queryTreeFactory;
@@ -133,8 +134,8 @@ public class QALDExperiment {
 		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
 		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
 		queryTreeFactory.setMaxDepth(maxDepth);
-		queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
-				Sets.newHashSet("bandleader", "play", "trumpet")));
+//		queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
+//				Sets.newHashSet("bandleader", "play", "trumpet")));
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
@@ -162,18 +163,22 @@ public class QALDExperiment {
 		int minNrOfExamples = 3;
 		int maxNrOfExamples = 20;
 		int stepSize = 2;
-		double maxNoise = 0.7;
+		
+		
+		double[] noiseIntervals = {0.0, 0.2, 0.4, 0.6};
+		double minNoise = 0.0;
+		double maxNoise = 0.6;
 		double noiseStepSize = 0.2;
 		
 		for (String sparqlQuery : sparqlQueries) {
 			logger.info("Processing query\n" + sparqlQuery);
 			
 			// loop of number of positive examples
-			for (int nrOfExamples = minNrOfExamples; nrOfExamples <= Math.min(nrOfExamples, maxNrOfExamples );
+			for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamples ;
 					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples )) {
-				
 				// loop over noise value
-				for(double noise = 0.0; noise <= maxNoise; noise = Math.min(noise + noiseStepSize, maxNoise)){
+				for (int i = 0; i < noiseIntervals.length; i++) {
+					double noise = noiseIntervals[i];
 					try {
 						logger.info("#examples: " + nrOfExamples + "\nnoise: " + noise);
 						// generate examples
