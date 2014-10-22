@@ -1,18 +1,18 @@
-README
-======
-
 DL-Learner is a framework to perform machine learning rich semantic background 
 knowledge (usually in description logics, hence the "DL" in its name). Please
-check the home for details and examples.
+check the website for details and examples. Post to the mailing list if help
+is needed.
 
-Homepage: http://dl-learner.org
+Website: http://dl-learner.org
 Bugs & Feature Requests: https://github.com/AKSW/DL-Learner/issues
 Mailing Lists: http://sourceforge.net/mail/?group_id=203619
 Latest Release: https://github.com/AKSW/DL-Learner/releases
 
-Documentation for DL-Learner (e.g. various configuration options) can be found
-in the "doc" directory and at http://dl-learner.org. We recommend to read
-doc/manual.pdf to get started.
+Documentation for DL-Learner:
+ * please visit http://dl-learner.org for general information
+ * manual: http://dl-learner.org/files/dl-learner-manual.pdf
+ * components & config options: http://tiny.cc/dllearner-options
+ * Javadoc: http://dl-learner.org/javadoc
 
 DL-Learner is Open Source and licensed under the GNU General Public License 3.
 (Copyright (c) 2007-2014, Jens Lehmann).
