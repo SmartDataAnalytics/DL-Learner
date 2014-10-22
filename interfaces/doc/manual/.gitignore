@@ -1,0 +1,6 @@
+manual.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
