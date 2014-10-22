@@ -1,22 +1,21 @@
 README
 ======
 
-DL-Learner is a tool to learn Description Logic concepts from positive and 
-negative examples. Equivalently, it can learn OWL classes given objects as
-positive and negative instances.
+DL-Learner is a framework to perform machine learning rich semantic background 
+knowledge (usually in description logics, hence the "DL" in its name). Please
+check the home for details and examples.
 
 Homepage: http://dl-learner.org
-Sourceforge.net Project Page: http://sourceforge.net/projects/dl-learner/
-Bugs & Feature Requests: http://sourceforge.net/tracker/?group_id=203619
+Bugs & Feature Requests: https://github.com/AKSW/DL-Learner/issues
 Mailing Lists: http://sourceforge.net/mail/?group_id=203619
-Latest Release: http://sourceforge.net/projects/dl-learner/files/
+Latest Release: https://github.com/AKSW/DL-Learner/releases
 
 Documentation for DL-Learner (e.g. various configuration options) can be found
 in the "doc" directory and at http://dl-learner.org. We recommend to read
 doc/manual.pdf to get started.
 
 DL-Learner is Open Source and licensed under the GNU General Public License 3.
-(Copyright (c) 2007-2011, Jens Lehmann).
+(Copyright (c) 2007-2014, Jens Lehmann).
 
 DL-Learner uses several other libraries. An incomplete list is as follows:
   * OWL API (licensed under LGPL)
