@@ -6,7 +6,6 @@ package org.dllearner.algorithms.qtl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,20 +23,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
-import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
@@ -89,8 +82,8 @@ public class QALDExperiment {
 	
 	List<String> datasetFiles = Lists.newArrayList(
 //			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml",
+//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
+//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml",
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
 			);
@@ -99,7 +92,9 @@ public class QALDExperiment {
 	static {
 		try {
 			endpoint = new SparqlEndpoint(new URL("\n" + 
-					"http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), "http://dbpedia.org");
+					"http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+					"http://biomedical.org");
+//					"http://dbpedia.org");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -131,8 +126,8 @@ public class QALDExperiment {
 		}
 		
 		queryTreeFactory = new QueryTreeFactoryImpl();
-		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
-		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
+//		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
+//		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
 		queryTreeFactory.setMaxDepth(maxDepth);
 //		queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
 //				Sets.newHashSet("bandleader", "play", "trumpet")));
@@ -148,16 +143,16 @@ public class QALDExperiment {
 		DescriptiveStatistics recallStats = new DescriptiveStatistics();
 		DescriptiveStatistics fMeasureStats = new DescriptiveStatistics();
 		
-//		List<String> sparqlQueries = loadSPARQLQueries();
-//		logger.info("Overall number of queries: " + sparqlQueries.size());
+		List<String> sparqlQueries = loadSPARQLQueries();
+		logger.info("Overall number of queries: " + sparqlQueries.size());
 		
-		List<String>  sparqlQueries = Lists.newArrayList("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology/> \n" + 
-				"PREFIX res: <http://dbpedia.org/resource/> \n" + 
-				"SELECT DISTINCT ?uri \n" + 
-				"WHERE { \n" + 
-				"        ?uri dbo:occupation res:Bandleader . \n" + 
-				"        ?uri dbo:instrument res:Trumpet . \n" + 
-				"}");
+//		List<String>  sparqlQueries = Lists.newArrayList("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology/> \n" + 
+//				"PREFIX res: <http://dbpedia.org/resource/> \n" + 
+//				"SELECT DISTINCT ?uri \n" + 
+//				"WHERE { \n" + 
+//				"        ?uri dbo:occupation res:Bandleader . \n" + 
+//				"        ?uri dbo:instrument res:Trumpet . \n" + 
+//				"}");
 		
 		// parameters
 		int minNrOfExamples = 3;
@@ -393,14 +388,20 @@ public class QALDExperiment {
 	private List<String> getResult(String sparqlQuery){
 		List<String> resources = new ArrayList<String>();
 		
+		// we assume a single projection var
+		Query query = QueryFactory.create(sparqlQuery);
+		query.setPrefix("sider", "http://www4.wiwiss.fu-berlin.de/sider/resource/");
+		String projectVar = query.getProjectVars().get(0).getName();
+		System.out.println(query);
+		
 		ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			if(qs.get("uri").isURIResource()){
-				resources.add(qs.getResource("uri").getURI());
-			} else if(qs.get("uri").isLiteral()){
-				resources.add(qs.getLiteral("uri").toString());
+			if(qs.get(projectVar).isURIResource()){
+				resources.add(qs.getResource(projectVar).getURI());
+			} else if(qs.get(projectVar).isLiteral()){
+				resources.add(qs.getLiteral(projectVar).toString());
 			}
 		}
 		return resources;
@@ -468,10 +469,16 @@ public class QALDExperiment {
 	            	
 	            	boolean containsUNION = sparqlQuery.toUpperCase().contains("UNION");
 	            	
+	            	boolean containsSPARQL11 = sparqlQuery.toUpperCase().contains("MINUS");
+	            	
+	            	boolean singleProjectionVariable = true;
+	            	
 	            	//check if projection variable is somewhere in object position
 	            	boolean hasIngoingLinks = false;
 	            	if(!outOfScope && !askQuery && !containsLimit && !containsFilter){
 	            		Query q = QueryFactory.create("prefix owl:<http://www.w3.org/2002/07/owl#> " + sparqlQuery, Syntax.syntaxARQ);
+	                	
+	            		singleProjectionVariable = q.getProjectVars().size() == 1;
 	                	List<Var> projectVars = q.getProjectVars();
 	                	Set<Triple> ingoingTriplePatterns = triplePatternExtractor.extractIngoingTriplePatterns(q, projectVars.get(0).asNode());
 	                	hasIngoingLinks = !ingoingTriplePatterns.isEmpty();
@@ -481,10 +488,12 @@ public class QALDExperiment {
 //	            		cnt++;
 //	            	}
 	            	if(true
+	            			&& !containsSPARQL11
 	            			&& !aggregation 
 	            			&& !outOfScope 
 	            			&& !containsCount 
 	            			&& !askQuery 
+	            			&& singleProjectionVariable
 	            			&& !hasIngoingLinks 
 	            			&& !containsFilter
 //	            			&& !containsUNION
@@ -492,7 +501,6 @@ public class QALDExperiment {
 	            			&& (getResultCount(sparqlQuery) >= minNrOfPositiveExamples)
 	            			){
 	            		queries.add(sparqlQuery);
-	            		System.out.println(sparqlQuery);
 	            	}
 	            }
 	            System.out.println(cnt);
