@@ -9,19 +9,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.aksw.commons.util.Pair;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -47,7 +53,9 @@ import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -79,6 +87,19 @@ public class QALDExperiment {
 	
 	
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
+	
+	static Map<String, String> prefixes = new HashMap<String, String>();
+	
+	static {
+		prefixes.put("sider", "http://www4.wiwiss.fu-berlin.de/sider/resource/sider/");
+		prefixes.put("side_effects", "http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/");
+		prefixes.put("drug", "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/");
+		prefixes.put("diseasome", "http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/");
+		
+		prefixes.put("dbo", "http://dbpedia.org/ontology/");
+		prefixes.put("dbpedia", "http://dbpedia.org/resource/");
+		
+	}
 	
 	List<String> datasetFiles = Lists.newArrayList(
 //			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
@@ -199,7 +220,7 @@ public class QALDExperiment {
 
 						// convert to SPARQL query
 						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
-						logger.info("Learned Query:\n" + learnedSPARQLQuery);
+						logger.info("Learned Query:\n" + getPrefixedQuery(learnedSPARQLQuery));
 
 						double precision = precision(sparqlQuery, learnedSPARQLQuery);
 						precisionStats.addValue(precision);
@@ -230,9 +251,12 @@ public class QALDExperiment {
 		double bestFMeasure = -1;
 		for (EvaluatedQueryTree<String> tree : trees) {
 			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString();
-			logger.info(learnedSPARQLQuery);
+			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 			logger.info("Tree Score: " + tree.getScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
+			if(fMeasure == 1.0){
+				return tree;
+			}
 			if(fMeasure > bestFMeasure){
 				bestTree = tree;
 			}
@@ -388,11 +412,11 @@ public class QALDExperiment {
 	private List<String> getResult(String sparqlQuery){
 		List<String> resources = new ArrayList<String>();
 		
+		sparqlQuery = getPrefixedQuery(sparqlQuery);
+		
 		// we assume a single projection var
 		Query query = QueryFactory.create(sparqlQuery);
-		query.setPrefix("sider", "http://www4.wiwiss.fu-berlin.de/sider/resource/");
 		String projectVar = query.getProjectVars().get(0).getName();
-		System.out.println(query);
 		
 		ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
 		QuerySolution qs;
@@ -405,6 +429,28 @@ public class QALDExperiment {
 			}
 		}
 		return resources;
+	}
+	
+	private String simplifyQuery(String sparqlQuery){
+		Query query = QueryFactory.create(sparqlQuery);
+		
+		TriplePatternExtractor extractor = new TriplePatternExtractor();
+		Set<Triple> triplePatterns = extractor.extractTriplePattern(query);
+		
+		Map<Node, Multimap<Node, Node>> clusters = new HashMap<Node, Multimap<Node,Node>>();
+		for (Triple tp : triplePatterns) {
+			Node subject = tp.getSubject();
+			Node predicate = tp.getPredicate();
+			Node object = tp.getObject();
+			
+			Multimap<Node, Node> entries = clusters.get(subject);
+			if(entries == null){
+				entries = HashMultimap.create();
+			}
+			entries.put(predicate, object);
+		}
+		
+		return query.toString();
 	}
 	
 	private int getResultCount(String sparqlQuery){
@@ -503,7 +549,6 @@ public class QALDExperiment {
 	            		queries.add(sparqlQuery);
 	            	}
 	            }
-	            System.out.println(cnt);
 			}
             
 		} 
@@ -522,6 +567,27 @@ public class QALDExperiment {
 //		queries.clear();
 //		queries.add("select ?uri where {?uri a <http://dbpedia.org/ontology/Book>. ?uri <http://dbpedia.org/ontology/author> <http://dbpedia.org/resource/Dan_Brown>.}");
 		return queries;
+	}
+	
+	private String getPrefixedQuery(String sparqlQuery){
+		for (Entry<String, String> entry : prefixes.entrySet()) {
+			String prefix = entry.getKey();
+			String namespace = entry.getValue();
+			Pattern p = Pattern.compile("(<" + Pattern.quote(namespace) + "[.\\S]*>)");
+		    Matcher m = p.matcher(sparqlQuery);
+		    boolean matched = false;
+		    while (m.find()){
+		    	matched = true;
+		    	String resource = m.group(1);
+		    	String prefixedResource = resource.replace("<", "").replace(">", "");
+		    	prefixedResource = prefixedResource.replace(namespace, prefix + ":");
+		        sparqlQuery = sparqlQuery.replace(resource, prefixedResource);
+		    }
+		    if(matched){
+		    	sparqlQuery = "PREFIX " + prefix + ": <" + namespace + "> \n" + sparqlQuery;
+		    }
+		}
+		return QueryFactory.create(sparqlQuery).toString(Syntax.syntaxSPARQL_11);
 	}
 	
 	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
@@ -581,27 +647,14 @@ public class QALDExperiment {
 	}
 	
 	private double fMeasure(String referenceSparqlQuery, String learnedSPARQLQuery){
-		//get the reference resources
-		Set<String> referenceResources = new HashSet<String>();
-		ResultSet rs = qef.createQueryExecution(referenceSparqlQuery).execSelect();
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			if(qs.get("uri") != null){
-				referenceResources.add(qs.getResource("uri").getURI());
-			}
-		}
-		//get the learned resources
-		Set<String> learnedResources = new HashSet<String>();
-		rs = qef.createQueryExecution(learnedSPARQLQuery).execSelect();
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("x0") != null) {
-				learnedResources.add(qs.getResource("x0").getURI());
-			}
-		}
 		
-		int overlap = Sets.intersection(referenceResources, learnedResources).size();
+		//get the reference resources
+		List<String> referenceResources = getResult(referenceSparqlQuery);
+		
+		//get the learned resources
+		List<String> learnedResources = getResult(learnedSPARQLQuery);
+		
+		int overlap = Sets.intersection(Sets.newHashSet(referenceResources), Sets.newHashSet(learnedResources)).size();
 		
 		double precision = overlap / (double) learnedResources.size();
 		double recall = overlap / (double) referenceResources.size();
