@@ -3,6 +3,10 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,6 +30,7 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -49,6 +54,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
@@ -58,6 +64,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
@@ -77,32 +84,43 @@ import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
  */
 public class QALDExperiment {
 	
-	
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
-	List<String> datasetFiles = Lists.newArrayList(
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
-			);
-	
-	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-	static {
-		try {
-			endpoint = new SparqlEndpoint(new URL("\n" + 
-					"http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					"http://biomedical.org");
-//					"http://dbpedia.org");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+	enum Dataset {
+		DBPEDIA, BIOMEDICAL
 	}
+	
+	// DBpedia dataset related content
+	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	List<String> dbpediaQuestionFiles = Lists.newArrayList(
+//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml"
+			);
 	Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
 	Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
 			"http://dbpedia.org/ontology/wikiPageExtracted", "http://dbpedia.org/ontology/wikiPageModified");
 	
+	
+	// Biomedical dataset related content
+	static SparqlEndpoint biomedicalEndpoint;
+	static {
+		try {
+			biomedicalEndpoint = new SparqlEndpoint(
+					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+					"http://biomedical.org");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+	File localBiomedicalDataDir = new File("/home/user/work/datasets/qald4/biomedical");
+	List<String> biomedicalQuestionFiles = Lists.newArrayList(
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
+			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
+			);
+	
+	
+	List<String> questionFiles;
 	QueryExecutionFactory qef;
 	String cacheDirectory = "cache";
 	
@@ -110,32 +128,57 @@ public class QALDExperiment {
 	int maxDepth = 3;
 	double noise = 0.4d;
 	
-	QueryTreeFactory<String> queryTreeFactory;
-	ConciseBoundedDescriptionGenerator cbdGen;
-//	private LGGGenerator<String> lggGenerator;
+	private QueryTreeFactory<String> queryTreeFactory;
+	private ConciseBoundedDescriptionGenerator cbdGen;
 	private QTL2 la;
 	
 	private Random rnd = new Random(123);
 	
-	public QALDExperiment() {
-		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		if(cacheDirectory != null){
-				long timeToLive = TimeUnit.DAYS.toMillis(60);
-				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
-				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		}
-		
+	public QALDExperiment(Dataset dataset) {
 		queryTreeFactory = new QueryTreeFactoryImpl();
-//		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
-//		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
 		queryTreeFactory.setMaxDepth(maxDepth);
-//		queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
-//				Sets.newHashSet("bandleader", "play", "trumpet")));
+		
+		if(dataset == Dataset.DBPEDIA){
+			questionFiles = dbpediaQuestionFiles;
+			
+			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+			long timeToLive = TimeUnit.DAYS.toMillis(60);
+			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+			
+			// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
+			queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
+			queryTreeFactory.addIgnoredPropperties(ignoredProperties);
+//			queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
+//					Sets.newHashSet("bandleader", "play", "trumpet")));
+		} else if(dataset == Dataset.BIOMEDICAL){
+			questionFiles = biomedicalQuestionFiles;
+			
+			Model model = loadBiomedicalData();
+			qef = new QueryExecutionFactoryModel(model);
+		}
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
 		
-		la = new QTL2();// LGGGeneratorImpl<String>();
+		la = new QTL2();
+	}
+	
+	private Model loadBiomedicalData(){
+		logger.info("Loading QALD biomedical data from local directory " + localBiomedicalDataDir + " ...");
+		Model model = ModelFactory.createDefaultModel();
+		
+		for (File file : localBiomedicalDataDir.listFiles()) {
+			if(file.isFile() && file.getName().endsWith(".nt")){
+				try(FileInputStream is = new FileInputStream(file)){
+					model.read(is, null, "N-TRIPLES");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		logger.info("...done.");
+		return model;
 	}
 	
 	public void run(){
@@ -156,7 +199,7 @@ public class QALDExperiment {
 		
 		// parameters
 		int minNrOfExamples = 3;
-		int maxNrOfExamples = 20;
+		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
 		
@@ -167,10 +210,10 @@ public class QALDExperiment {
 		
 		for (String sparqlQuery : sparqlQueries) {
 			logger.info("Processing query\n" + sparqlQuery);
-			
+			int maxNrOfExamplesQuery = Math.min(getResultCount(sparqlQuery), maxNrOfExamples);
 			// loop of number of positive examples
-			for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamples ;
-					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples )) {
+			for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamplesQuery ;
+					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamplesQuery )) {
 				// loop over noise value
 				for (int i = 0; i < noiseIntervals.length; i++) {
 					double noise = noiseIntervals[i];
@@ -390,9 +433,7 @@ public class QALDExperiment {
 		
 		// we assume a single projection var
 		Query query = QueryFactory.create(sparqlQuery);
-		query.setPrefix("sider", "http://www4.wiwiss.fu-berlin.de/sider/resource/");
 		String projectVar = query.getProjectVars().get(0).getName();
-		System.out.println(query);
 		
 		ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
 		QuerySolution qs;
@@ -408,6 +449,7 @@ public class QALDExperiment {
 	}
 	
 	private int getResultCount(String sparqlQuery){
+		sparqlQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " + sparqlQuery;
 		int cnt = 0;
 		ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
 		while(rs.hasNext()){
@@ -421,7 +463,7 @@ public class QALDExperiment {
 		List<String> queries = new ArrayList<String>();
 		try {
 			int cnt = 0;
-			for(String file : datasetFiles){
+			for(String file : questionFiles){
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	            DocumentBuilder db = dbf.newDocumentBuilder();
 	            Document doc = db.parse(new URL(file).openStream());
@@ -469,7 +511,8 @@ public class QALDExperiment {
 	            	
 	            	boolean containsUNION = sparqlQuery.toUpperCase().contains("UNION");
 	            	
-	            	boolean containsSPARQL11 = sparqlQuery.toUpperCase().contains("MINUS");
+	            	boolean needsSPARQL11 = sparqlQuery.toUpperCase().contains("MINUS") || 
+	            			sparqlQuery.toUpperCase().contains("EXISTS");
 	            	
 	            	boolean singleProjectionVariable = true;
 	            	
@@ -488,7 +531,7 @@ public class QALDExperiment {
 //	            		cnt++;
 //	            	}
 	            	if(true
-	            			&& !containsSPARQL11
+	            			&& !needsSPARQL11
 	            			&& !aggregation 
 	            			&& !outOfScope 
 	            			&& !containsCount 
@@ -503,7 +546,6 @@ public class QALDExperiment {
 	            		queries.add(sparqlQuery);
 	            	}
 	            }
-	            System.out.println(cnt);
 			}
             
 		} 
@@ -526,26 +568,14 @@ public class QALDExperiment {
 	
 	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
 		// get the reference resources
-		Set<String> referenceResources = new HashSet<String>();
-		ResultSet rs = qef.createQueryExecution(referenceSparqlQuery).execSelect();
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("uri") != null) {
-				referenceResources.add(qs.getResource("uri").getURI());
-			}
-		}
-		// get the learned resources
-		Set<String> learnedResources = new HashSet<String>();
-		rs = qef.createQueryExecution(learnedSPARQLQuery).execSelect();
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("x0") != null) {
-				learnedResources.add(qs.getResource("x0").getURI());
-			}
-		}
+		List<String> referenceResources = getResult(referenceSparqlQuery);
 
-		int overlap = Sets.intersection(referenceResources, learnedResources).size();
+		// get the learned resources
+		List<String> learnedResources = getResult(learnedSPARQLQuery);
+
+		int overlap = Sets.intersection(
+				Sets.newHashSet(referenceResources),
+				Sets.newHashSet(learnedResources)).size();
 
 		double precision = overlap / (double) learnedResources.size();
 
@@ -554,26 +584,14 @@ public class QALDExperiment {
 	
 	private double recall(String referenceSparqlQuery, String learnedSPARQLQuery) {
 		// get the reference resources
-		Set<String> referenceResources = new HashSet<String>();
-		ResultSet rs = qef.createQueryExecution(referenceSparqlQuery).execSelect();
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("uri") != null) {
-				referenceResources.add(qs.getResource("uri").getURI());
-			}
-		}
-		// get the learned resources
-		Set<String> learnedResources = new HashSet<String>();
-		rs = qef.createQueryExecution(learnedSPARQLQuery).execSelect();
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("x0") != null) {
-				learnedResources.add(qs.getResource("x0").getURI());
-			}
-		}
+		List<String> referenceResources = getResult(referenceSparqlQuery);
 
-		int overlap = Sets.intersection(referenceResources, learnedResources).size();
+		// get the learned resources
+		List<String> learnedResources = getResult(learnedSPARQLQuery);
+
+		int overlap = Sets.intersection(
+				Sets.newHashSet(referenceResources),
+				Sets.newHashSet(learnedResources)).size();
 
 		double recall = overlap / (double) referenceResources.size();
 
@@ -581,30 +599,9 @@ public class QALDExperiment {
 	}
 	
 	private double fMeasure(String referenceSparqlQuery, String learnedSPARQLQuery){
-		//get the reference resources
-		Set<String> referenceResources = new HashSet<String>();
-		ResultSet rs = qef.createQueryExecution(referenceSparqlQuery).execSelect();
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			if(qs.get("uri") != null){
-				referenceResources.add(qs.getResource("uri").getURI());
-			}
-		}
-		//get the learned resources
-		Set<String> learnedResources = new HashSet<String>();
-		rs = qef.createQueryExecution(learnedSPARQLQuery).execSelect();
-		while (rs.hasNext()) {
-			qs = rs.next();
-			if (qs.get("x0") != null) {
-				learnedResources.add(qs.getResource("x0").getURI());
-			}
-		}
+		double precision = precision(referenceSparqlQuery, learnedSPARQLQuery);
 		
-		int overlap = Sets.intersection(referenceResources, learnedResources).size();
-		
-		double precision = overlap / (double) learnedResources.size();
-		double recall = overlap / (double) referenceResources.size();
+		double recall = recall(referenceSparqlQuery, learnedSPARQLQuery);
 		
 		double fMeasure = 0;
 		if(precision + recall > 0){
@@ -615,7 +612,8 @@ public class QALDExperiment {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		new QALDExperiment().run();
+//		new QALDExperiment(Dataset.DBPEDIA).run();
+		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
 	
 	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
