@@ -12,12 +12,14 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
@@ -62,10 +64,10 @@ public class QTL2 extends AbstractCELA {
 	
 	private double currentlyBestScore = 0d;
 
-	private List<QueryTree<String>> currentPosExampleTrees;
-	private List<QueryTree<String>> currentNegExampleTrees;
+	private List<QueryTree<String>> currentPosExampleTrees = new ArrayList<QueryTree<String>>();
+	private List<QueryTree<String>> currentNegExampleTrees = new ArrayList<QueryTree<String>>();
 	
-	private Map<QueryTree<String>, OWLIndividual> tree2Individual;
+	private Map<QueryTree<String>, OWLIndividual> tree2Individual = new HashMap<QueryTree<String>, OWLIndividual>();
 
 	private double coverageWeight = 1;
 	private double specifityWeight = 0;
@@ -131,25 +133,9 @@ public class QTL2 extends AbstractCELA {
 			treeFactory.addIgnoredPropperties(ignoredProperties);
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		tree2Individual = new HashMap<QueryTree<String>, OWLIndividual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
-		
-		currentPosExampleTrees = new ArrayList<QueryTree<String>>(lp.getPositiveExamples().size());
-		currentNegExampleTrees = new ArrayList<QueryTree<String>>(lp.getNegativeExamples().size());
 		
 		//get the query trees
-		QueryTree<String> queryTree;
-		for (OWLIndividual ind : lp.getPositiveExamples()) {
-			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-			queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
-			tree2Individual.put(queryTree, ind);
-			currentPosExampleTrees.add(queryTree);
-		}
-		for (OWLIndividual ind : lp.getNegativeExamples()) {
-			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-			queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
-			tree2Individual.put(queryTree, ind);
-			currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
-		}
+		generateQueryTrees();
 		
 		//some logging
 		subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
@@ -158,6 +144,56 @@ public class QTL2 extends AbstractCELA {
 		//console rendering of class expressions
 		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
 		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+	}
+	
+	private void generateQueryTrees(){
+		QueryTree<String> queryTree;
+		
+		// positive examples
+		if(currentPosExampleTrees.isEmpty()){
+			for (OWLIndividual ind : lp.getPositiveExamples()) {
+				Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+				tree2Individual.put(queryTree, ind);
+				currentPosExampleTrees.add(queryTree);
+			}
+		}
+		
+		// negative examples
+		if(currentNegExampleTrees.isEmpty()){
+			for (OWLIndividual ind : lp.getNegativeExamples()) {
+				Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+				tree2Individual.put(queryTree, ind);
+				currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
+			}
+		}
+	}
+	
+	/**
+	 * @param positiveExampleTrees the positive example trees to set
+	 */
+	public void setPositiveExampleTrees(Map<OWLIndividual,QueryTree<String>> positiveExampleTrees) {
+		this.currentPosExampleTrees = new ArrayList<>(positiveExampleTrees.values());
+		
+		for (Entry<OWLIndividual, QueryTree<String>> entry : positiveExampleTrees.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			QueryTree<String> tree = entry.getValue();
+			tree2Individual.put(tree, ind);
+		}
+	}
+	
+	/**
+	 * @param negativeExampleTrees the negative example trees to set
+	 */
+	public void setNegativeExampleTrees(Map<OWLIndividual,QueryTree<String>> negativeExampleTrees) {
+		this.currentNegExampleTrees = new ArrayList<>(negativeExampleTrees.values());
+		
+		for (Entry<OWLIndividual, QueryTree<String>> entry : negativeExampleTrees.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			QueryTree<String> tree = entry.getValue();
+			tree2Individual.put(tree, ind);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -176,11 +212,14 @@ public class QTL2 extends AbstractCELA {
 		EvaluatedQueryTree<String> currentElement;
 		do{
 			logger.trace("TODO list size: " + todoList.size());
+			
 			//pick best element from todo list
 			currentElement = todoList.poll();
+			
 			//generate the LGG between the chosen tree and each uncovered positive example
 			for (QueryTree<String> example : currentElement.getFalseNegatives()) {
 				QueryTree<String> tree = currentElement.getTree();
+				
 				//compute the LGG
 				lggMon.start();
 				QueryTree<String> lgg = lggGenerator.getLGG(tree, example);
@@ -198,14 +237,19 @@ public class QTL2 extends AbstractCELA {
 					todo(solution);
 					currentlyBestScore = solution.getScore();
 				}
-				
 			}
+			// once we have used the tree with each uncovered tree, we add it to the solutions list
 			solutions.add(currentElement);
+			System.err.println("AFTER ADDED");
+			for (EvaluatedQueryTree<String> evTree : solutions) {
+				System.err.println(evTree.getEvaluatedDescription());
+			}
+			
 //			todoList.remove(currentElement);
 		} while(!terminationCriteriaSatisfied());
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
-		logger.info("Best solution:\n" + getCurrentlyBestEvaluatedDescription());
+		logger.debug("Best solution:\n" + getCurrentlyBestEvaluatedDescription());
 		
 		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
 		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
@@ -213,6 +257,44 @@ public class QTL2 extends AbstractCELA {
 		logger.trace("Subsumption test time: " + subMon.getTotal() + "ms");
 		logger.trace("Avg. subsumption test time: " + subMon.getAvg() + "ms");
 		logger.trace("#Subsumption tests: " + subMon.getHits());
+	}
+	
+	/**
+	 * Add tree to todo list if not already contained in that list or the solutions.
+	 * @param solution
+	 */
+	private void todo(EvaluatedQueryTree<String> solution){
+		//check if not already contained in todo list
+		for (EvaluatedQueryTree<String> evTree : todoList) {
+			// this is a workaround as we have currently no equals method for
+			// trees based on the literal conversion strategy
+			// boolean sameTree = sameTrees(solution.getTree(),
+			// evTree.getTree());
+			boolean sameTree = evTree
+					.getEvaluatedDescription()
+					.getDescription()
+					.toString()
+					.equals(solution.getEvaluatedDescription().getDescription()
+							.toString());
+			if (sameTree) {
+				logger.warn("Not added to TODO list: Already contained in.");
+				return;
+			}
+		}
+//		//check if not already contained in todo list
+//		for (EvaluatedQueryTree<String> evTree : todoList) {
+//			if(sameTrees(solution.getTree(), evTree.getTree())){
+//				return;
+//			}
+//		}
+		//check if not already contained in solutions
+		for (EvaluatedQueryTree<String> evTree : solutions) {
+			if(sameTrees(solution.getTree(), evTree.getTree())){
+				return;
+			}
+		}
+		System.out.println("Add " + solution.asEvaluatedDescription());
+		todoList.add(solution);
 	}
 	
 	public EvaluatedQueryTree<String> getBestSolution(){
@@ -300,20 +382,23 @@ public class QTL2 extends AbstractCELA {
 	}
 
 	private EvaluatedQueryTree<String> evaluate(QueryTree<String> tree, boolean useSpecifity){
-		//1. get a score for the coverage = recall oriented
-		//compute positive examples which are not covered by LGG
+		// 1. get a score for the coverage = recall oriented
+		
+		// compute positive examples which are not covered by LGG
 		Collection<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
 		Set<OWLIndividual> uncoveredPosExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : uncoveredPositiveExampleTrees) {
 			uncoveredPosExamples.add(tree2Individual.get(queryTree));
 		}
-		//compute negative examples which are covered by LGG
+		
+		// compute negative examples which are covered by LGG
 		Collection<QueryTree<String>> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
 		Set<OWLIndividual> coveredNegExamples = new HashSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : coveredNegativeExampleTrees) {
 			coveredNegExamples.add(tree2Individual.get(queryTree));
 		}
-		//compute score
+		
+		// compute score
 		int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
 		double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
 		double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
@@ -322,7 +407,7 @@ public class QTL2 extends AbstractCELA {
 		
 		double coverageScore = recall;//Heuristics.getFScore(recall, precision);
 		
-		//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+		// 2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
 		int nrOfSpecificNodes = 0;
 		for (QueryTree<String> childNode : tree.getChildrenClosure()) {
 			if(!childNode.getUserObject().equals("?")){
@@ -353,7 +438,7 @@ public class QTL2 extends AbstractCELA {
 	private Collection<QueryTree<String>> getCoveredTrees(QueryTree<String> tree, List<QueryTree<String>> trees){
 		Collection<QueryTree<String>> coveredTrees = new ArrayList<QueryTree<String>>();
 		for (QueryTree<String> queryTree : trees) {
-			boolean subsumed = queryTree.isSubsumedBy(tree);
+			boolean subsumed = queryTree.isSubsumedBy(tree, LiteralNodeSubsumptionStrategy.DATATYPE);
 			if(subsumed){
 				coveredTrees.add(queryTree);
 			}
@@ -368,8 +453,10 @@ public class QTL2 extends AbstractCELA {
 	 * @return
 	 */
 	private Collection<QueryTree<String>> getUncoveredTrees(QueryTree<String> tree, List<QueryTree<String>> allTrees){
+//		System.out.println(tree.getStringRepresentation(true));
 		Collection<QueryTree<String>> uncoveredTrees = new ArrayList<QueryTree<String>>();
 		for (QueryTree<String> queryTree : allTrees) {
+//			System.out.println(queryTree.getStringRepresentation(false));
 			boolean subsumed = queryTree.isSubsumedBy(tree);
 			if(!subsumed){
 				uncoveredTrees.add(queryTree);
@@ -384,6 +471,7 @@ public class QTL2 extends AbstractCELA {
 	 * @param trees
 	 */
 	private void initTodoList(List<QueryTree<String>> posExamples, List<QueryTree<String>> negExamples){
+		logger.trace("Initializing TODO list ...");
 		todoList = new PriorityQueue<EvaluatedQueryTree<String>>();
 		solutions = new TreeSet<EvaluatedQueryTree<String>>();
 //		EvaluatedQueryTree<String> dummy = new EvaluatedQueryTree<String>(new QueryTreeImpl<String>((N)"TOP"), trees, 0d);
@@ -408,6 +496,7 @@ public class QTL2 extends AbstractCELA {
 			EvaluatedQueryTree<String> evaluatedQueryTree = evaluate(queryTree, false);
 			todoList.add(evaluatedQueryTree);
 		}
+		logger.trace("Done. TODO list size: " + todoList.size());
 	}
 
 	private boolean sameTrees(QueryTree<String> tree1, QueryTree<String> tree2){
@@ -418,25 +507,7 @@ public class QTL2 extends AbstractCELA {
 		return stop || todoList.isEmpty();
 	}
 	
-	/**
-	 * Add tree to todo list if not already contained in that list or the solutions.
-	 * @param solution
-	 */
-	private void todo(EvaluatedQueryTree<String> solution){
-		//check if not already contained in todo list
-		for (EvaluatedQueryTree<String> evTree : todoList) {
-			if(sameTrees(solution.getTree(), evTree.getTree())){
-				return;
-			}
-		}
-		//check if not already contained in solutions
-		for (EvaluatedQueryTree<String> evTree : solutions) {
-			if(sameTrees(solution.getTree(), evTree.getTree())){
-				return;
-			}
-		}
-		todoList.add(solution);
-	}
+	
 	
 	
 

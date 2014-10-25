@@ -488,6 +488,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
     		return false;
     	}
+    	if(isResourceNode() && tree.isResourceNode() && this.userObject.equals(tree.getUserObject())){
+    		return true;
+    	}
     	Object edge;
     	for(QueryTree<N> child : tree.getChildren()){
     		boolean isSubsumed = false;
@@ -499,6 +502,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			}
     		}
     		if(!isSubsumed){
+//    			System.err.println(child.getParent() + "--" + child.getParent().getEdge(child) + "-->" + child);
+//    			System.err.println(child.getStringRepresentation(true));
 				return false;
 			}
     	}
