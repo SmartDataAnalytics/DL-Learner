@@ -144,6 +144,7 @@ public class QTL2 extends AbstractCELA {
 		//console rendering of class expressions
 		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
 		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+		logger.info("Initialization finished.");
 	}
 	
 	private void generateQueryTrees(){

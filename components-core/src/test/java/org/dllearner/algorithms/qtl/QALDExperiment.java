@@ -51,7 +51,7 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.utilities.TriplePatternExtractor;
+import org.dllearner.utilities.QueryUtils;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -116,6 +116,15 @@ public class QALDExperiment {
 	
 	// DBpedia dataset related content
 	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+	static {
+		try {
+			endpoint = new SparqlEndpoint(
+					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+					"http://dbpedia.org");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
 	List<String> dbpediaQuestionFiles = Lists.newArrayList(
 //			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
@@ -136,7 +145,10 @@ public class QALDExperiment {
 			e.printStackTrace();
 		}
 	}
-	File localBiomedicalDataDir = new File("/home/user/work/datasets/qald4/biomedical");
+	File localBiomedicalDataDir = new File(
+			"/home/me/work/datasets/qald4/biomedical"
+//			"/home/user/work/datasets/qald4/biomedical"
+			);
 	List<String> biomedicalQuestionFiles = Lists.newArrayList(
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
 			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
@@ -148,8 +160,7 @@ public class QALDExperiment {
 	String cacheDirectory = "cache";
 	
 	int minNrOfPositiveExamples = 5;
-	int maxDepth = 3;
-	double noise = 0.4d;
+	int maxDepth = 2;
 	
 	private QueryTreeFactory<String> queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -221,14 +232,17 @@ public class QALDExperiment {
 //				"}");
 		
 		// parameters
-		int minNrOfExamples = 9;
-		int maxNrOfExamples = 10;
+		int minNrOfExamples = 3;
+		int maxNrOfExamples = 4;
 		int stepSize = 2;
 		
 		
 		double[] noiseIntervals = {
-//				0.0, 0.2,
-				0.4, 0.6};
+				0.0,
+//				0.2,
+//				0.4,
+//				0.6
+				};
 		double minNoise = 0.0;
 		double maxNoise = 0.6;
 		double noiseStepSize = 0.2;
@@ -377,7 +391,7 @@ public class QALDExperiment {
 				//a)add wrong negative examples
 				//b)take positive examples and modify relevant attributes
 				Random randomGen = new Random(123);
-				TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+				QueryUtils triplePatternExtractor = new QueryUtils();
 				List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(QueryFactory.create(sparqlQuery, Syntax.syntaxARQ)));
 				for (Entry<OWLIndividual, QueryTree<String>> entry : posExampleQueryTrees.entrySet()) {
 					double rnd = randomGen.nextDouble();
@@ -469,8 +483,7 @@ public class QALDExperiment {
 	
 	private List<String> getResult(String sparqlQuery){
 		List<String> resources = new ArrayList<String>();
-		
-		sparqlQuery = getPrefixedQuery(sparqlQuery);
+//		sparqlQuery = getPrefixedQuery(sparqlQuery);
 		
 		// we assume a single projection var
 		Query query = QueryFactory.create(sparqlQuery);
@@ -487,6 +500,85 @@ public class QALDExperiment {
 			}
 		}
 		return resources;
+	}
+	
+	private List<String> getResultSplitted(String sparqlQuery){
+		Query query = QueryFactory.create(sparqlQuery);
+		
+		Var targetVar = query.getProjectVars().get(0); // should be ?x0
+		
+		QueryUtils queryUtils = new QueryUtils();
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
+		for (Triple tp : triplePatterns) {
+			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
+		}
+		
+		// 1. get the outgoing triple patterns of the target var that do not have
+		// outgoing triple patterns
+		Set<Triple> fixedTriplePatterns = new HashSet<Triple>();
+		Set<Set<Triple>> clusters = new HashSet<Set<Triple>>();
+		Collection<Triple> targetVarTriplePatterns = var2TriplePatterns.get(targetVar);
+		boolean useSplitting = false;
+		for (Triple tp : targetVarTriplePatterns) {
+			if(tp.getObject().isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(tp.getObject()))){
+				fixedTriplePatterns.add(tp);
+			} else {
+				clusters.add(Sets.newHashSet(tp));
+				useSplitting = true;
+			}
+		}
+		
+		if(!useSplitting){
+			clusters.add(Sets.newHashSet(triplePatterns));
+		} else {
+			System.out.println("Splitting query\n" + query);
+			// 2. build clusters for other
+			for (Set<Triple> cluster : clusters) {
+				Triple representative = cluster.iterator().next();
+				cluster.addAll(var2TriplePatterns.get(Var.alloc(representative.getObject())));
+				cluster.addAll(fixedTriplePatterns);
+			}
+		}
+		
+		Set<String> resources = null;
+		// 3. run query for each cluster
+		for (Set<Triple> cluster : clusters) {
+			Set<String> resourcesTmp = new HashSet<String>();
+			
+			Query q = new Query();
+			q.addProjectVars(Collections.singleton(targetVar));
+			ElementTriplesBlock el = new ElementTriplesBlock();
+			for (Triple triple : cluster) {
+				el.addTriple(triple);
+			}
+			q.setQuerySelectType();
+			q.setQueryPattern(el);
+			
+			System.out.println(q);
+//			sparqlQuery = getPrefixedQuery(sparqlQuery);
+			
+			ResultSet rs = qef.createQueryExecution(q.toString()).execSelect();
+			QuerySolution qs;
+			while(rs.hasNext()){
+				qs = rs.next();
+				if(qs.get(targetVar.getName()).isURIResource()){
+					resourcesTmp.add(qs.getResource(targetVar.getName()).getURI());
+				} else if(qs.get(targetVar.getName()).isLiteral()){
+					resourcesTmp.add(qs.getLiteral(targetVar.getName()).toString());
+				}
+			}
+			
+			if(resources == null){
+				resources = resourcesTmp;
+			} else {
+				resources.retainAll(resourcesTmp);
+			}
+			
+		}
+		
+		return new ArrayList<String>(resources);
 	}
 	
 	private int getResultCount(String sparqlQuery){
@@ -511,7 +603,7 @@ public class QALDExperiment {
 	            doc.getDocumentElement().normalize();
 	            NodeList questionNodes = doc.getElementsByTagName("question");
 	            
-	            TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+	            QueryUtils triplePatternExtractor = new QueryUtils();
 	            
 	            for( int i = 0; i < questionNodes.getLength(); i++){
 	                
@@ -625,6 +717,7 @@ public class QALDExperiment {
 		    	sparqlQuery = "PREFIX " + prefix + ": <" + namespace + "> \n" + sparqlQuery;
 		    }
 		}
+		System.out.println(sparqlQuery); 
 		return QueryFactory.create(sparqlQuery).toString(Syntax.syntaxSPARQL_11);
 	}
 	
@@ -633,7 +726,7 @@ public class QALDExperiment {
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 
 		// get the learned resources
-		List<String> learnedResources = getResult(learnedSPARQLQuery);
+		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 
 		int overlap = Sets.intersection(
 				Sets.newHashSet(referenceResources),
@@ -649,7 +742,7 @@ public class QALDExperiment {
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 
 		// get the learned resources
-		List<String> learnedResources = getResult(learnedSPARQLQuery);
+		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 
 		int overlap = Sets.intersection(
 				Sets.newHashSet(referenceResources),
@@ -678,16 +771,16 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
-//		new QALDExperiment(Dataset.DBPEDIA).run();
-		new QALDExperiment(Dataset.BIOMEDICAL).run();
+		Logger.getLogger(QTL2.class).setLevel(Level.TRACE);
+		new QALDExperiment(Dataset.DBPEDIA).run();
+//		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
 	
 	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		
 		private boolean inOptionalClause;
 		private Stack<ElementGroup> parentGroup = new Stack<>();
-		private TriplePatternExtractor triplePatternExtractor = new TriplePatternExtractor();
+		private QueryUtils triplePatternExtractor = new QueryUtils();
 		private Triple triple;
 		Random randomGen = new Random(123);
 

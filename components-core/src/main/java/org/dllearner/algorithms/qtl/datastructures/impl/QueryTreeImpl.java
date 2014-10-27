@@ -535,8 +535,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			}
     		}
     		if(!isSubsumed){
-    			System.err.println(child.getParent() + "--" + child.getParent().getEdge(child) + "-->" + child);
-    			System.err.println(child.getStringRepresentation(true));
+//    			System.err.println(child.getParent() + "--" + child.getParent().getEdge(child) + "-->" + child);
+//    			System.err.println(child.getStringRepresentation(true));
 				return false;
 			}
     	}
@@ -1523,7 +1523,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         			OWLObjectProperty p = df.getOWLObjectProperty(IRI.create((String) tree.getEdge(child)));
         			OWLClassExpression filler;
         			if(child.isVarNode()){//p some C
-        				System.out.println(child + ":" + child.isVarNode() + ":" + child.isResourceNode());
+//        				System.out.println(child + ":" + child.isVarNode() + ":" + child.isResourceNode());
             			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child, literalNodeConversionStrategy);
             			if(fillerClassExpressions.isEmpty()){
             				filler = df.getOWLThing();
