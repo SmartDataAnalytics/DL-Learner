@@ -221,12 +221,14 @@ public class QALDExperiment {
 //				"}");
 		
 		// parameters
-		int minNrOfExamples = 3;
+		int minNrOfExamples = 9;
 		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
 		
-		double[] noiseIntervals = {0.0, 0.2, 0.4, 0.6};
+		double[] noiseIntervals = {
+//				0.0, 0.2,
+				0.4, 0.6};
 		double minNoise = 0.0;
 		double maxNoise = 0.6;
 		double noiseStepSize = 0.2;
@@ -290,6 +292,14 @@ public class QALDExperiment {
 						
 						logger.info("Position of best covering tree in list: " + position);
 						logger.info("Tree score: " + bestMatchingTree.getTreeScore());
+						
+						
+						System.out.println(bestSolution.getTree().getStringRepresentation(true));
+						System.out.println(bestSolution.getTree().asOWLClassExpression());
+						for (QueryTree<String>  uncoveredTree : bestSolution.getFalseNegatives()) {
+							logger.info(uncoveredTree.asOWLClassExpression());
+							System.out.println(uncoveredTree.isSubsumedBy(bestSolution.getTree()));
+						}
 						
 					} catch (Exception e) {
 						logger.error("Error occured.", e);
@@ -668,7 +678,7 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(QTL2.class).setLevel(Level.TRACE);
+		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
 //		new QALDExperiment(Dataset.DBPEDIA).run();
 		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

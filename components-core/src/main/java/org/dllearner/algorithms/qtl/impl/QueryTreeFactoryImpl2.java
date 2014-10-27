@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
@@ -240,7 +241,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 					if(!lit.getLanguage().isEmpty()){
 						sb.append("@").append(lit.getLanguage());
 					}
-					subTree = new QueryTreeImpl<String>(sb.toString());
+					subTree = new QueryTreeImpl<String>(sb.toString(), NodeType.LITERAL);
 //					subTree = new QueryTreeImpl<String>(lit.toString());
 					subTree.setId(nodeId++);
 					subTree.setIsLiteralNode(true);
@@ -248,7 +249,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 				} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-						subTree = new QueryTreeImpl<String>(st.getObject().toString());
+						subTree = new QueryTreeImpl<String>(st.getObject().toString(), NodeType.RESOURCE);
 						subTree.setIsResourceNode(true);
 						tree.addChild(subTree, st.getPredicate().toString());
 						fillTree(subTree, resource2Statements);

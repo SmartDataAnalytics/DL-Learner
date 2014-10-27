@@ -63,15 +63,8 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())
+		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription())
 		         .result();
-//		double diff = getScore() - other.getScore();
-//		if(diff == 0){
-//			return -1;
-//		} else if(diff > 0){
-//			return -1;
-//		} else {
-//			return 1;
-//		}
 	}
 	
 	

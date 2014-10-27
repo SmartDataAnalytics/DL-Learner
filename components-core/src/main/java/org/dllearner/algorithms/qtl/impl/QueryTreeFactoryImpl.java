@@ -30,6 +30,7 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
 import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
@@ -161,11 +162,10 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		}
 		
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
 		int depth = 0;
-		fillTree(tree, resource2Statements, depth);
+		fillTree(s.toString(), tree, resource2Statements, depth);
 				
-		tree.setUserObject("?");
 		return tree;
 	}
 	
@@ -192,11 +192,10 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements);	
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
 		int depth = 0;
-		fillTree(tree, resource2Statements, depth);
+		fillTree(s.toString(), tree, resource2Statements, depth);
 				
-		tree.setUserObject("?");
 		return tree;
 	}
 	
@@ -295,22 +294,22 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements);	
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>(s.toString());
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
 		tree.setId(nodeId++);
 		int depth = 0;
-		fillTree(tree, resource2Statements, depth);
+		fillTree(s.toString(), tree, resource2Statements, depth);
 				
 		tree.setUserObject("?");
 		return tree;
 	}
 	
-	private void fillTree(QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements, int depth){
+	private void fillTree(String root, QueryTreeImpl<String> tree, SortedMap<String, SortedSet<Statement>> resource2Statements, int depth){
 		depth++;
-			if(resource2Statements.containsKey(tree.getUserObject())){
+			if(resource2Statements.containsKey(root)){
 				QueryTreeImpl<String> subTree;
 				Property predicate;
 				RDFNode object;
-				for(Statement st : resource2Statements.get(tree.getUserObject())){
+				for(Statement st : resource2Statements.get(root)){
 					predicate = st.getPredicate();
 					object = st.getObject();
 					if(!predicateFilter.isRelevantResource(predicate.getURI())){
@@ -330,7 +329,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						if(!lit.getLanguage().isEmpty()){
 							sb.append("@").append(lit.getLanguage());
 						}
-						subTree = new QueryTreeImpl<String>(sb.toString());
+						subTree = new QueryTreeImpl<String>(sb.toString(), NodeType.LITERAL);
 //						subTree = new QueryTreeImpl<String>(lit.toString());
 						subTree.setId(nodeId++);
 						subTree.setIsLiteralNode(true);
@@ -347,12 +346,12 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						tree.addChild(subTree, st.getPredicate().toString());
 					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-							subTree = new QueryTreeImpl<String>(st.getObject().toString());
+							subTree = new QueryTreeImpl<String>(st.getObject().toString(), NodeType.RESOURCE);
 							subTree.setIsResourceNode(true);
 							subTree.setId(nodeId++);
 							tree.addChild(subTree, st.getPredicate().toString());
 							if(depth < maxDepth){
-								fillTree(subTree, resource2Statements, depth);
+								fillTree(st.getObject().toString(), subTree, resource2Statements, depth);
 							}
 							if(object.isAnon()){
 								subTree.setIsBlankNode(true);
@@ -362,11 +361,11 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					} else if(object.isAnon()){
 						if(depth < maxDepth &&
 								!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-							subTree = new QueryTreeImpl<String>(st.getObject().toString());
+							subTree = new QueryTreeImpl<String>(st.getObject().toString(), NodeType.RESOURCE);
 							subTree.setIsResourceNode(true);
 							subTree.setId(nodeId++);
 							tree.addChild(subTree, st.getPredicate().toString());
-							fillTree(subTree, resource2Statements, depth);
+							fillTree(st.getObject().toString(), subTree, resource2Statements, depth);
 						}
 					}
 				}
