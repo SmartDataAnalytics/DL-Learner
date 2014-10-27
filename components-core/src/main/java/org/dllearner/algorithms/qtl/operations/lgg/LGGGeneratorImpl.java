@@ -135,7 +135,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		QueryTree<N> lgg;
 		//firstly, we check if both root nodes are resource nodes and have the same URI, i.e. the trees describe the same resource 
 		//if YES all child nodes should be also the same and we can just return one of the two tree as LGG
-		if((tree1.isResourceNode() && tree2.isResourceNode() || tree1.isLiteralNode() && tree2.isLiteralNode()) 
+		if((tree1.isResourceNode() && tree2.isResourceNode() 
+				|| tree1.isLiteralNode() && tree2.isLiteralNode()) 
 				&& tree1.getUserObject().equals(tree2.getUserObject())){
 			if(logger.isDebugEnabled()){
 				logger.debug("Early termination. Tree 1(" + tree1 + ") and tree 2(" + tree2 + ") describe the same resource.");
@@ -144,7 +145,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //			return tree1;
 		}
 		//if NO we have to create a new tree as LGG and compute the LGG for the all child node pairs having the same edge to the parent nodes
-		lgg = new QueryTreeImpl<N>(tree1);
+		lgg = new QueryTreeImpl<N>((N) "?");
 //		if(tree1.isResourceNode() && tree2.isResourceNode()){
 //			lgg.setIsResourceNode(true);
 //		}
