@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +65,7 @@ import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -70,6 +73,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -90,6 +94,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author Lorenz Buehmann
@@ -98,6 +103,9 @@ import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 public class QALDExperiment {
 	
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
+	
+	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
+			"SELECT ?sup WHERE {?sub rdfs:subClassOf+ ?sup .}");
 	
 	enum Dataset {
 		DBPEDIA, BIOMEDICAL
@@ -233,14 +241,14 @@ public class QALDExperiment {
 		
 		// parameters
 		int minNrOfExamples = 3;
-		int maxNrOfExamples = 4;
+		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
 		
 		double[] noiseIntervals = {
 				0.0,
-//				0.2,
-//				0.4,
+				0.2,
+				0.4,
 //				0.6
 				};
 		double minNoise = 0.0;
@@ -504,6 +512,7 @@ public class QALDExperiment {
 	
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
+		logger.debug("Getting result set for\n" + query);
 		
 		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
@@ -515,6 +524,9 @@ public class QALDExperiment {
 			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
 		}
 		
+		// we keep only the most specific types for each var
+		filterOutGeneralTypes(var2TriplePatterns);
+		
 		// 1. get the outgoing triple patterns of the target var that do not have
 		// outgoing triple patterns
 		Set<Triple> fixedTriplePatterns = new HashSet<Triple>();
@@ -525,7 +537,18 @@ public class QALDExperiment {
 			if(tp.getObject().isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(tp.getObject()))){
 				fixedTriplePatterns.add(tp);
 			} else {
-				clusters.add(Sets.newHashSet(tp));
+				Set<Triple> cluster = new TreeSet<>(new Comparator<Triple>() {
+					@Override
+					public int compare(Triple o1, Triple o2) {
+						return ComparisonChain.start().
+						compare(o1.getSubject().toString(), o2.getSubject().toString()).
+						compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+						compare(o1.getObject().toString(), o2.getObject().toString()).
+						result();
+					}
+				});
+				cluster.add(tp);
+				clusters.add(cluster);
 				useSplitting = true;
 			}
 		}
@@ -533,7 +556,7 @@ public class QALDExperiment {
 		if(!useSplitting){
 			clusters.add(Sets.newHashSet(triplePatterns));
 		} else {
-			System.out.println("Splitting query\n" + query);
+			logger.debug("Query too complex. Splitting...");
 			// 2. build clusters for other
 			for (Set<Triple> cluster : clusters) {
 				Triple representative = cluster.iterator().next();
@@ -554,9 +577,10 @@ public class QALDExperiment {
 				el.addTriple(triple);
 			}
 			q.setQuerySelectType();
+			q.setDistinct(true);
 			q.setQueryPattern(el);
 			
-			System.out.println(q);
+			logger.debug(q);
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			
 			ResultSet rs = qef.createQueryExecution(q.toString()).execSelect();
@@ -579,6 +603,41 @@ public class QALDExperiment {
 		}
 		
 		return new ArrayList<String>(resources);
+	}
+	
+	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples){
+		for (Var var : var2Triples.keySet()) {
+			Collection<Triple> triples = var2Triples.get(var);
+			Set<Node> types2Remove = new HashSet<>();
+			for (Triple triple : triples) {
+				if(triple.getPredicate().matches(RDF.type.asNode()) && triple.getObject().isURI()){
+					types2Remove.addAll(getSuperClasses(triple.getObject()));
+				}
+			}
+			for (Iterator<Triple> iterator = triples.iterator(); iterator.hasNext();) {
+				Triple triple = iterator.next();
+				if(triple.getPredicate().matches(RDF.type.asNode()) && types2Remove.contains(triple.getObject())){
+					iterator.remove();
+				}
+			}
+		}
+	}
+	
+	private Set<Node> getSuperClasses(Node cls){
+		Set<Node> superClasses = new HashSet<Node>();
+		
+		superClassesQueryTemplate.setIri("sub", cls.getURI());
+		
+		String query = superClassesQueryTemplate.toString();
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
+		while(rs.hasNext()){
+			QuerySolution qs = rs.next();
+			superClasses.add(qs.getResource("sup").asNode());
+		}
+		qe.close();
+		
+		return superClasses;
 	}
 	
 	private int getResultCount(String sparqlQuery){
