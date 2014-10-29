@@ -185,7 +185,7 @@ public class QALDExperiment {
 			
 			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 			long timeToLive = TimeUnit.DAYS.toMillis(60);
-			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, false, timeToLive);
 			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
 			
 			// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
@@ -256,7 +256,7 @@ public class QALDExperiment {
 		double noiseStepSize = 0.2;
 		
 		for (String sparqlQuery : sparqlQueries) {
-			if(sparqlQueries.indexOf(sparqlQuery) != 1)continue;
+//			if(sparqlQueries.indexOf(sparqlQuery) != 1)continue;
 			logger.info("Processing query\n" + sparqlQuery);
 			int maxNrOfExamplesQuery = Math.min(getResultCount(sparqlQuery), maxNrOfExamples);
 			// loop of number of positive examples
@@ -404,14 +404,14 @@ public class QALDExperiment {
 				for (Entry<OWLIndividual, QueryTree<String>> entry : posExampleQueryTrees.entrySet()) {
 					double rnd = randomGen.nextDouble();
 					if(rnd <= noise){
-						logger.info("Modifying tree of " + entry.getKey());
+						logger.trace("Modifying tree of " + entry.getKey());
 						QueryTree<String> queryTree = entry.getValue();
 						//pick a random property to modify
 						Collections.shuffle(triplePatterns, randomGen);
 						Triple triplePattern = triplePatterns.get(0);
 						String predicate = triplePattern.getPredicate().getURI();
 						Node object = triplePattern.getObject();
-						logger.info("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
+						logger.trace("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
 						//get the corresponding edge in the tree
 						Set<Object> edges = queryTree.getEdges();
 						for (Object edge : edges) {
@@ -426,11 +426,10 @@ public class QALDExperiment {
 												queryTree.removeChild((QueryTreeImpl<String>) child);
 												similarTree.setId(id);
 												queryTree.addChild((QueryTreeImpl<String>) similarTree, edge);
-												logger.info("New edge <" + queryTree + ", " + predicate + ", " + similarTree + ">");
-												System.out.println(queryTree.getStringRepresentation(true));
+												logger.trace("New edge <" + queryTree + ", " + predicate + ", " + similarTree + ">");
 											} else {
 												child.setUserObject("http://dl-learner.org/qtl#noiseModification");
-												logger.info("New edge <" + queryTree + ", " + predicate + ", " + child + ">");
+												logger.trace("New edge <" + queryTree + ", " + predicate + ", " + child + ">");
 											}
 										} else if (child.isLiteralNode()) {
 											child.setUserObject("\"-999999\"^^<http://www.w3.org/2001/XMLSchema#integer>");
@@ -490,6 +489,7 @@ public class QALDExperiment {
 	}
 	
 	private List<String> getResult(String sparqlQuery){
+		logger.trace(sparqlQuery);
 		List<String> resources = new ArrayList<String>();
 //		sparqlQuery = getPrefixedQuery(sparqlQuery);
 		
@@ -568,8 +568,6 @@ public class QALDExperiment {
 		Set<String> resources = null;
 		// 3. run query for each cluster
 		for (Set<Triple> cluster : clusters) {
-			Set<String> resourcesTmp = new HashSet<String>();
-			
 			Query q = new Query();
 			q.addProjectVars(Collections.singleton(targetVar));
 			ElementTriplesBlock el = new ElementTriplesBlock();
@@ -582,24 +580,13 @@ public class QALDExperiment {
 			
 			logger.debug(q);
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
-			
-			ResultSet rs = qef.createQueryExecution(q.toString()).execSelect();
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				if(qs.get(targetVar.getName()).isURIResource()){
-					resourcesTmp.add(qs.getResource(targetVar.getName()).getURI());
-				} else if(qs.get(targetVar.getName()).isLiteral()){
-					resourcesTmp.add(qs.getLiteral(targetVar.getName()).toString());
-				}
-			}
+			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
 			
 			if(resources == null){
 				resources = resourcesTmp;
 			} else {
 				resources.retainAll(resourcesTmp);
 			}
-			
 		}
 		
 		return new ArrayList<String>(resources);
@@ -830,7 +817,8 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(QTL2.class).setLevel(Level.TRACE);
+		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
+		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.TRACE);
 		new QALDExperiment(Dataset.DBPEDIA).run();
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
