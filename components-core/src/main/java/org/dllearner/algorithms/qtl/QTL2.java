@@ -241,8 +241,9 @@ public class QTL2 extends AbstractCELA {
 			}
 			// once we have used the tree with each uncovered tree, we add it to the solutions list
 			logger.trace("Add to solutions: " + currentElement.getEvaluatedDescription());
-			solutions.add(currentElement);
-			
+			if(currentElement.getTreeScore().getCoveredPositives().size() >= 2){// only non trivial solutions
+				solutions.add(currentElement);
+			}
 		} while(!terminationCriteriaSatisfied());
 		
 		long endTime = System.currentTimeMillis();

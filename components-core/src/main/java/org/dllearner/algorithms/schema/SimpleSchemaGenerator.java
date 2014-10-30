@@ -61,7 +61,8 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 					List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
 					generatedAxioms.addAll(axioms);
 				} catch (Exception e) {
-					LOGGER.error("Exception occured.", e);
+					LOGGER.error("Exception occured for axiom type "
+							+ axiomType.getName() + " and entity " + entity + ".", e);
 					//TODO handle exception despite logging
 				}
 			}

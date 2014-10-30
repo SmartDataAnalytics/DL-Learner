@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -22,6 +25,7 @@ import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
  * @author Lorenz Buehmann 
@@ -38,20 +42,43 @@ public class SyntheticDataGenerator {
 	
 	char classCharacter = 'A';
 	
-	Random rnd = new Random(123);
+	RandomDataGenerator rnd = new RandomDataGenerator();
 	
 	OWLOntology ontology;
 	
-	public void createData(int nrOfClasses){
+	
+	/**
+	 * The simplest case: 
+	 * n classes 
+	 * connected in a chain 
+	 * by one single property
+	 * all with the same strength of connectivity
+	 * @param nrOfClasses
+	 */
+	public OWLOntology createData(int nrOfClasses, int nrOfConnectionsBetweenClasses){
 		try {
 			ontology = man.createOntology();
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
 		
+		// create the classes first
+		List<OWLClass> classes = new ArrayList<>(nrOfClasses);
 		for (int i = 0; i < nrOfClasses; i++) {
-			createClass(String.valueOf(classCharacter++));
+			OWLClass cls = createClass(String.valueOf(classCharacter++));
+			classes.add(cls);
 		}
+		
+		// create the single property
+		OWLObjectProperty property = createObjectProperty("p");
+		
+		// create chain of classes
+		for (int i = 0; i < classes.size()-1; i++) {
+			OWLClass source = classes.get(i);
+			OWLClass target = classes.get(i+1);
+			connect(source, target, property, nrOfConnectionsBetweenClasses);
+		}
+		return ontology;
 	}
 	
 	/**
@@ -82,7 +109,8 @@ public class SyntheticDataGenerator {
 		List<OWLIndividual> individuals = new ArrayList<OWLIndividual>();
 		
 		for (int i = 0; i < n; i++) {
-			OWLIndividual ind = df.getOWLNamedIndividual(sfp.getShortForm(cls.getIRI()) + i, pm);
+			OWLIndividual ind = df.getOWLNamedIndividual(sfp.getShortForm(cls.getIRI()).toLowerCase() + i, pm);
+			individuals.add(ind);
 			man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, ind));
 		}
 		
@@ -106,9 +134,11 @@ public class SyntheticDataGenerator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		char c = 'A';
-		c++;
-		System.out.println(++c);
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		SyntheticDataGenerator dataGenerator = new SyntheticDataGenerator();
+		
+		OWLOntology ontology = dataGenerator.createData(3, 10);
+		System.out.println(ontology.getLogicalAxioms());
 	}
 
 }

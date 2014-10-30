@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.crypto.spec.PSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -266,7 +267,7 @@ public class QALDExperiment {
 				for (int i = 0; i < noiseIntervals.length; i++) {
 					double noise = noiseIntervals[i];
 					try {
-						logger.info("#examples: " + nrOfExamples + "\nnoise: " + noise);
+						logger.info("#examples: " + nrOfExamples + " noise: " + noise);
 						// generate examples
 						Map<OWLIndividual, QueryTree<String>> generatedExamples = generateExamples(sparqlQuery, nrOfExamples, noise);
 						
@@ -289,7 +290,8 @@ public class QALDExperiment {
 						
 						// the best solution by QTL
 						EvaluatedQueryTree<String> bestSolution = solutions.get(0);
-//						logger.info("Got " + solutions.size() + " LGG query trees. Best computed tree:\n" + bestSolution);
+						logger.info("Got " + solutions.size() + " query trees.");
+						logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
 
 						// convert to SPARQL query
 						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
@@ -313,7 +315,11 @@ public class QALDExperiment {
 						int position = solutions.indexOf(bestMatchingTree);
 						
 						logger.info("Position of best covering tree in list: " + position);
-						logger.info("Tree score: " + bestMatchingTree.getTreeScore());
+						if(position != 0){
+							logger.info("Best cobvering solution:\n" + bestMatchingTree.asEvaluatedDescription());
+							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
+						}
+						
 						
 						
 						System.out.println(bestSolution.getTree().getStringRepresentation(true));
@@ -770,9 +776,17 @@ public class QALDExperiment {
 	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
+		if(referenceResources.isEmpty()){
+			System.err.println(referenceSparqlQuery);
+			return 0;
+		}
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
+		if(learnedResources.isEmpty()){
+			System.err.println(learnedSPARQLQuery);
+//			System.exit(0);
+		}
 
 		int overlap = Sets.intersection(
 				Sets.newHashSet(referenceResources),
