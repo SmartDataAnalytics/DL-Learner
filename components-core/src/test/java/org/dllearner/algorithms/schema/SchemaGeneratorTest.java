@@ -3,8 +3,10 @@
  */
 package org.dllearner.algorithms.schema;
 
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import junit.framework.TestCase;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -18,23 +20,30 @@ import com.hp.hpl.jena.rdf.model.Model;
  * @author Lorenz Buehmann 
  * @since Oct 25, 2014
  */
-public class SchemaGeneratorTest {
+public class SchemaGeneratorTest extends TestCase{
 	
 	SyntheticDataGenerator dataGenerator = new SyntheticDataGenerator();
-
+	
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		Logger.getLogger(SimpleSchemaGenerator.class).setLevel(Level.TRACE);
+	}
+	
 	/**
 	 * Test method for {@link org.dllearner.algorithms.schema.SchemaGenerator#generateSchema()}.
 	 */
 	@Test
 	public void testGenerateSchema() {
-		OWLOntology ontology = dataGenerator.createData(3, 20);
+		OWLOntology ontology = dataGenerator.createData(3, 100);
 		
 		Model model = OwlApiJenaUtils.getModel(ontology);
 		
-		QueryExecutionFactory qef = new QueryExecutionFactoryModel(model);
-		
-		AbstractSchemaGenerator schemaGenerator = new SimpleSchemaGenerator(qef);
-		schemaGenerator.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN));
+		SimpleSchemaGenerator schemaGenerator = new SimpleSchemaGenerator(model);
+		schemaGenerator.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, AxiomType.OBJECT_PROPERTY_RANGE));
+		schemaGenerator.setNrOfIterations(2);
 		schemaGenerator.generateSchema();
 	}
 

@@ -3,19 +3,21 @@
  */
 package org.dllearner.algorithms.schema;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AxiomLearningProgressMonitor;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -25,6 +27,11 @@ import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
 
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 
 /**
@@ -48,13 +55,25 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 			EntityType.CLASS, EntityType.OBJECT_PROPERTY, EntityType.DATA_PROPERTY);
 	
 	// the minimum accuracy threshold for generated axioms to be accepted
-	private int accuracyThreshold;
+	private double accuracyThreshold = 0.3;
 	
 	// the entities which are processed
 	protected SortedSet<OWLEntity> entities;
 	
+	// the knowledge base
+	private OntModel model;
+	
 	public AbstractSchemaGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
+		this.reasoner = new SPARQLReasoner(qef);
+		this.model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+	}
+	
+	public AbstractSchemaGenerator(Model model) {
+		// enable reasoning on model
+		OntModel infModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, model);
+		this.model = infModel;
+		this.qef = new QueryExecutionFactoryModel(this.model);
 		this.reasoner = new SPARQLReasoner(qef);
 	}
 	
@@ -116,6 +135,13 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		return entities;
 	}
 	
+	/**
+	 * @param accuracyThreshold the accuracyThreshold to set
+	 */
+	public void setAccuracyThreshold(double accuracyThreshold) {
+		this.accuracyThreshold = accuracyThreshold;
+	}
+	
 	protected List<OWLAxiom> applyLearningAlgorithm(OWLEntity entity, AxiomType<? extends OWLAxiom> axiomType) throws Exception{
 		// get the algorithm class
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
@@ -146,6 +172,15 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 		} catch (Exception e) {
 			throw new Exception("Generation of " + axiomType.getName() + " axioms failed.", e);
 		}
+	}
+	
+	/**
+	 * Add the axioms to the running knowledge base.
+	 * @param axioms
+	 */
+	protected void addToKnowledgebase(Set<OWLAxiom> axioms) {
+		Set<Statement> statements = OwlApiJenaUtils.asStatements(axioms);
+		model.add(new ArrayList<Statement>(statements));
 	}
 
 }

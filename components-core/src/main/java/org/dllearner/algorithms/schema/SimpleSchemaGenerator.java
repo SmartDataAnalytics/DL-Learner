@@ -9,19 +9,22 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * {@inheritDoc}
@@ -38,8 +41,19 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSchemaGenerator.class);
 	
+	// how often the enrichment process is executed
+	private int nrOfIterations = 1;
+
 	public SimpleSchemaGenerator(QueryExecutionFactory qef) {
 		super(qef);
+	}
+	
+	public SimpleSchemaGenerator(OWLOntology ontology) {
+		super(OwlApiJenaUtils.getModel(ontology));
+	}
+	
+	public SimpleSchemaGenerator(Model model) {
+		super(model);
 	}
 
 	/* (non-Javadoc)
@@ -47,39 +61,50 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 	 */
 	@Override
 	public Set<OWLAxiom> generateSchema() {
-		Set<OWLAxiom> generatedAxioms = new HashSet<>();
+		Set<OWLAxiom> generatedAxiomsTotal = new HashSet<>();
 		
 		// get the entities
 		SortedSet<OWLEntity> entities = getEntities();
 		
-		for (OWLEntity entity : entities) {// iterate over the entities
-			for (AxiomType<? extends OWLAxiom> axiomType : Sets.intersection(
-					AxiomAlgorithms.getAxiomTypes(entity.getEntityType()), axiomTypes)) {// iterate over the axiom types
+		// we repeat the whole process
+		for (int i = 0; i < nrOfIterations; i++) {
+			LOGGER.trace("Iteration " + (i+1) + " ...");
+			Set<OWLAxiom> generatedAxioms = new HashSet<>();
+			
+			// iterate over the entities
+			for (OWLEntity entity : entities) {
+				// get the applicable axiom types
+				SetView<AxiomType<? extends OWLAxiom>> applicableAxiomTypes = Sets.intersection(AxiomAlgorithms.getAxiomTypes(entity.getEntityType()), axiomTypes);
 				
-				// apply the appropriate learning algorithm
-				try {
-					List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
-					generatedAxioms.addAll(axioms);
-				} catch (Exception e) {
-					LOGGER.error("Exception occured for axiom type "
-							+ axiomType.getName() + " and entity " + entity + ".", e);
-					//TODO handle exception despite logging
+				// iterate over the axiom types
+				for (AxiomType<? extends OWLAxiom> axiomType : applicableAxiomTypes) {
+					// apply the appropriate learning algorithm
+					try {
+						List<OWLAxiom> axioms = applyLearningAlgorithm(entity, axiomType);
+						generatedAxioms.addAll(axioms);
+					} catch (Exception e) {
+						LOGGER.error("Exception occured for axiom type "
+								+ axiomType.getName() + " and entity " + entity + ".", e);
+						//TODO handle exception despite logging
+					}
 				}
 			}
+			
+			// add the generated axioms to the knowledge base
+			addToKnowledgebase(generatedAxioms);
+			
+			LOGGER.trace("Got " + Sets.difference(generatedAxioms, generatedAxiomsTotal).size()  + " new axioms.");
+			
+			// add to total set
+			generatedAxiomsTotal.addAll(generatedAxioms);
 		}
-		return generatedAxioms;
+		return generatedAxiomsTotal;
 	}
 	
-	public static void main(String[] args) {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp("http://live.dbpedia.org/sparql", "http://dbpedia.org");
-		
-		AbstractSchemaGenerator schemaGenerator = new SimpleSchemaGenerator(qef);
-		schemaGenerator.setEntities(Sets.<OWLEntity>newTreeSet(
-				Sets.newHashSet(
-						new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")),
-						new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/SoccerClub")),
-						new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/author")))));
-		Set<OWLAxiom> schemaAxioms = schemaGenerator.generateSchema();
-		System.out.println(schemaAxioms);
+	/**
+	 * @param nrOfIterations the nrOfIterations to set
+	 */
+	public void setNrOfIterations(int nrOfIterations) {
+		this.nrOfIterations = nrOfIterations;
 	}
 }
