@@ -93,7 +93,16 @@ public class SimpleSchemaGenerator extends AbstractSchemaGenerator{
 			// add the generated axioms to the knowledge base
 			addToKnowledgebase(generatedAxioms);
 			
-			LOGGER.trace("Got " + Sets.difference(generatedAxioms, generatedAxiomsTotal).size()  + " new axioms.");
+			// new axioms
+			SetView<OWLAxiom> newAxioms = Sets.difference(generatedAxioms, generatedAxiomsTotal);
+			
+			LOGGER.trace(newAxioms.isEmpty() ? "Got no new axioms." : ("Got " + newAxioms.size()  + " new axioms:"));
+			if(newAxioms.isEmpty()){ // terminate if iteration lead to no new axioms
+				if((i+1) < nrOfIterations)
+					LOGGER.trace("Early termination. Ignoring further iterations.");
+				break;
+			}
+			LOGGER.trace(newAxioms.toString());
 			
 			// add to total set
 			generatedAxiomsTotal.addAll(generatedAxioms);

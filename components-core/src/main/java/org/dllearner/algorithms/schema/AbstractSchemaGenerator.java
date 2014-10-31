@@ -15,6 +15,7 @@ import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AxiomLearningProgressMonitor;
 import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
+import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
@@ -45,7 +46,8 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	protected OWLProfile owlProfile = new OWL2DLProfile();
 	protected SPARQLReasoner reasoner;
 	
-	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
+//	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
+	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	
 	// the types of axioms to be processed
 	protected Set<AxiomType<? extends OWLAxiom>> axiomTypes = AxiomAlgorithms.TBoxAndRBoxAxiomTypes;
@@ -63,15 +65,18 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	// the knowledge base
 	private OntModel model;
 	
+	// the profile used for rule based inferencing
+	private OntModelSpec reasoningProfile = OntModelSpec.RDFS_MEM_RDFS_INF;
+	
 	public AbstractSchemaGenerator(QueryExecutionFactory qef) {
 		this.qef = qef;
 		this.reasoner = new SPARQLReasoner(qef);
-		this.model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF);
+		this.model = ModelFactory.createOntologyModel(reasoningProfile);
 	}
 	
 	public AbstractSchemaGenerator(Model model) {
 		// enable reasoning on model
-		OntModel infModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, model);
+		OntModel infModel = ModelFactory.createOntologyModel(reasoningProfile, model);
 		this.model = infModel;
 		this.qef = new QueryExecutionFactoryModel(this.model);
 		this.reasoner = new SPARQLReasoner(qef);

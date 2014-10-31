@@ -466,7 +466,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 	}
 	
-	protected ResultSet executeSelectQuery(String query) {System.out.println(query);
+	protected ResultSet executeSelectQuery(String query) {
 		logger.trace("Sending query\n{} ...", query);
 		
 		QueryExecution qe = qef.createQueryExecution(query);
