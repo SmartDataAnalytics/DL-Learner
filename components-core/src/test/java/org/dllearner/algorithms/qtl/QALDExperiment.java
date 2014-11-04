@@ -72,7 +72,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -86,7 +90,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
+import com.hp.hpl.jena.sparql.expr.E_Str;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
@@ -135,9 +143,8 @@ public class QALDExperiment {
 		}
 	}
 	List<String> dbpediaQuestionFiles = Lists.newArrayList(
-//			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald1/dbpedia-train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_multilingual_test.xml"
+			"org/dllearner/algorithms/qtl/qald-4_multilingual_train.xml",
+			"org/dllearner/algorithms/qtl/qald-4_multilingual_test.xml"
 			);
 	Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
 	Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
@@ -158,9 +165,10 @@ public class QALDExperiment {
 			"/home/me/work/datasets/qald4/biomedical"
 //			"/home/user/work/datasets/qald4/biomedical"
 			);
+	//http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/
 	List<String> biomedicalQuestionFiles = Lists.newArrayList(
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_train.xml",
-			"http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/qald-4_biomedical_test.xml"
+			"org/dllearner/algorithms/qtl/qald-4_biomedical_train.xml",
+			"org/dllearner/algorithms/qtl/qald-4_biomedical_test.xml"
 			);
 	
 	
@@ -584,7 +592,11 @@ public class QALDExperiment {
 			q.setDistinct(true);
 			q.setQueryPattern(el);
 			
+			q = rewriteForVirtuosoDateLiteralBug(q);
+			
 			logger.debug(q);
+			System.out.println(q);
+			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
 			
@@ -651,7 +663,7 @@ public class QALDExperiment {
 			for(String file : questionFiles){
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	            DocumentBuilder db = dbf.newDocumentBuilder();
-	            Document doc = db.parse(new URL(file).openStream());
+	            Document doc = db.parse(this.getClass().getClassLoader().getResourceAsStream(file));
 	            doc.getDocumentElement().normalize();
 	            NodeList questionNodes = doc.getElementsByTagName("question");
 	            
@@ -751,6 +763,65 @@ public class QALDExperiment {
 		return queries;
 	}
 	
+	private Query rewriteForVirtuosoDateLiteralBug(Query query){
+		QueryUtils queryUtils = new QueryUtils();
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
+			@Override
+			public int compare(Triple o1, Triple o2) {
+				return ComparisonChain.start().
+				compare(o1.getSubject().toString(), o2.getSubject().toString()).
+				compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+				compare(o1.getObject().toString(), o2.getObject().toString()).
+				result();
+			}
+		});
+		List<ElementFilter> filters = new ArrayList<>();
+		int cnt = 0;
+		for (Iterator<Triple> iter = triplePatterns.iterator(); iter.hasNext();) {
+			Triple tp = iter.next();
+			if(tp.getObject().isLiteral()){
+				RDFDatatype dt = tp.getObject().getLiteralDatatype();
+				if(dt != null && dt instanceof XSDAbstractDateTimeType){
+					iter.remove();
+					// new triple pattern with var as object
+					Node objectVar = NodeFactory.createVariable("date" + cnt++);
+					newTriplePatterns.add(Triple.create(
+							tp.getSubject(), 
+							tp.getPredicate(),
+							objectVar)
+							);
+					// filter with STR(?var) = lit
+					String lit = tp.getObject().getLiteralLexicalForm();
+					ElementFilter filter = new ElementFilter(new E_Equals(
+							new E_Str(new ExprVar(objectVar)), 
+							NodeValue.makeString(lit)));
+					filters.add(filter);
+				}
+			}
+		}
+		
+		newTriplePatterns.addAll(triplePatterns);
+		
+		Query q = new Query();
+		q.addProjectVars(query.getProjectVars());
+		ElementTriplesBlock tripleBlock = new ElementTriplesBlock();
+		for (Triple triple : newTriplePatterns) {
+			tripleBlock.addTriple(triple);
+		}
+		ElementGroup eg = new ElementGroup();
+		eg.addElement(tripleBlock);
+		for (ElementFilter filter : filters) {
+			eg.addElementFilter(filter);
+		}
+		q.setQuerySelectType();
+		q.setDistinct(true);
+		q.setQueryPattern(eg);
+		
+		return q;
+	}
+	
 	private String getPrefixedQuery(String sparqlQuery){
 		for (Entry<String, String> entry : prefixes.entrySet()) {
 			String prefix = entry.getKey();
@@ -785,9 +856,10 @@ public class QALDExperiment {
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			System.err.println(learnedSPARQLQuery);
-//			System.exit(0);
+			System.exit(0);
 		}
 
+		// get the overlapping resources
 		int overlap = Sets.intersection(
 				Sets.newHashSet(referenceResources),
 				Sets.newHashSet(learnedResources)).size();
@@ -832,7 +904,8 @@ public class QALDExperiment {
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
-		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.TRACE);
+		Logger.getLogger(QALDExperiment.class).setLevel(Level.TRACE);
+		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		new QALDExperiment(Dataset.DBPEDIA).run();
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

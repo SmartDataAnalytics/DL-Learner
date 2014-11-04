@@ -41,7 +41,7 @@ public class SchemaGeneratorTest extends TestCase{
 	 */
 	@Test
 	public void testGenerateSchema() {
-		OWLOntology ontology = dataGenerator.createData(10, 1000);
+		OWLOntology ontology = dataGenerator.createData(3, 1000);
 		
 		Model model = OwlApiJenaUtils.getModel(ontology);
 		
