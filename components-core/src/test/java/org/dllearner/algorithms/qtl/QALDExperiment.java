@@ -3,11 +3,11 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,19 +22,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.crypto.spec.PSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.aksw.commons.util.Pair;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -71,9 +68,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -91,6 +86,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
 import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
@@ -300,6 +296,7 @@ public class QALDExperiment {
 						EvaluatedQueryTree<String> bestSolution = solutions.get(0);
 						logger.info("Got " + solutions.size() + " query trees.");
 						logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
+						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
 						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
@@ -324,11 +321,9 @@ public class QALDExperiment {
 						
 						logger.info("Position of best covering tree in list: " + position);
 						if(position != 0){
-							logger.info("Best cobvering solution:\n" + bestMatchingTree.asEvaluatedDescription());
+							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 						}
-						
-						
 						
 						System.out.println(bestSolution.getTree().getStringRepresentation(true));
 						System.out.println(bestSolution.getTree().asOWLClassExpression());
@@ -355,6 +350,7 @@ public class QALDExperiment {
 		EvaluatedQueryTree<String> bestTree = null;
 		double bestFMeasure = -1;
 		for (EvaluatedQueryTree<String> tree : trees) {
+			System.out.println(tree.getTreeScore());
 			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString();
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
@@ -372,14 +368,32 @@ public class QALDExperiment {
 	}
 	
 	private Map<OWLIndividual, QueryTree<String>> generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
+		Random randomGen = new Random(123);
+		
 		// get all resources returned by the query
 		List<String> resources = getResult(sparqlQuery);
-
-		// shuffle the list to avoid bias
-		Collections.shuffle(resources, new Random(123));
 		
-		// pick some positive examples from the list
+		// pick some random positive examples from the list
+		Collections.shuffle(resources, randomGen);
 		List<String> examples = resources.subList(0, Math.min(maxNrOfExamples, resources.size()));
+		
+		// add some noise by using instances close to the positive examples
+		List<String> negativeExamples = new ArrayList<>(generateNegativeExamples(sparqlQuery));
+		Collections.shuffle(negativeExamples, randomGen);
+		List<String> newExamples = new ArrayList<String>();
+		for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
+			String posExample = iterator.next();
+			double rnd = randomGen.nextDouble();
+			if(rnd <= noise){
+				// remove the positive example
+				iterator.remove();
+				// add one of the negative examples
+				String negExample = negativeExamples.remove(0);
+				newExamples.add(negExample);
+				logger.trace("Replacing " + posExample + " by " + negExample);
+			}
+		}
+		examples.addAll(newExamples);
 		
 		// build query trees
 		Map<OWLIndividual, QueryTree<String>> queryTrees = new HashMap<>();
@@ -388,8 +402,8 @@ public class QALDExperiment {
 			queryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
 		}
 		
-		// add noise
-		generateNoiseAttributeLevel(sparqlQuery, queryTrees, noise);
+		// add noise by modifying the query trees
+//		generateNoiseAttributeLevel(sparqlQuery, queryTrees, noise);
 		
 		return queryTrees;
 	}
@@ -486,6 +500,74 @@ public class QALDExperiment {
 		posExampleQueryTrees.addAll(negExampleTrees);
 	}
 	
+	private Set<String> generateNegativeExamples(String queryString){
+		Query query = QueryFactory.create(queryString);
+		
+		// get the positive examples
+		List<String> posExamples = getResult(queryString);
+		
+		QueryUtils queryUtils = new QueryUtils();
+		
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Set<String> negExamples = new HashSet<String>();
+		// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
+		Set<Set<Triple>> powerSet = new TreeSet<>(new Comparator<Set<Triple>>() {
+
+			@Override
+			public int compare(Set<Triple> o1, Set<Triple> o2) {
+				return ComparisonChain.start().compare(o1.size(), o2.size()).compare(o1.hashCode(), o2.hashCode()).result();
+			}
+		});
+		powerSet.addAll(Sets.powerSet(triplePatterns));
+		
+		for (Set<Triple> set : powerSet) {
+			if(!set.isEmpty() && set.size() != triplePatterns.size()){
+				List<Triple> newTriplePatterns = new ArrayList<>(triplePatterns);
+				List<ElementFilter> filters = new ArrayList<ElementFilter>();
+				int cnt = 0;
+				for (Triple tp : set) {
+					if(tp.getObject().isURI() || tp.getObject().isLiteral()){
+						Node var = NodeFactory.createVariable("var" + cnt++);
+						Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
+						
+						newTriplePatterns.remove(tp);
+						newTriplePatterns.add(newTp);
+						
+						ElementFilter filter = new ElementFilter(new E_NotEquals(new ExprVar(var), NodeValue.makeNode(tp.getObject())));
+						filters.add(filter);
+					}
+				}
+				Query q = new Query();
+				q.addProjectVars(query.getProjectVars());
+				ElementTriplesBlock tripleBlock = new ElementTriplesBlock();
+				for (Triple triple : newTriplePatterns) {
+					tripleBlock.addTriple(triple);
+				}
+				ElementGroup eg = new ElementGroup();
+				eg.addElement(tripleBlock);
+				
+				for (ElementFilter filter : filters) {
+					eg.addElementFilter(filter);
+				}
+				
+				q.setQuerySelectType();
+				q.setDistinct(true);
+				q.setQueryPattern(eg);
+				
+				List<String> result = getResult(q.toString());
+				negExamples.addAll(result);
+			}
+		}
+		
+		negExamples.removeAll(posExamples);
+		if(negExamples.isEmpty()){
+			logger.error("Found no negative examples.");
+			System.exit(0);
+		}
+		return negExamples;
+	}
+	
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
 		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
 		
@@ -498,12 +580,23 @@ public class QALDExperiment {
 	
 	private QueryTree<String> getQueryTree(String resource){
 		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
+			cbd.write(baos, "TURTLE", null);
+			String modelAsString = new String(baos.toByteArray());
+			modelAsString = modelAsString.replace("NAN", "NaN");
+			Model newModel = ModelFactory.createDefaultModel();
+			newModel.read(new StringReader(modelAsString), null, "TURTLE");
+			cbd = newModel;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		QueryTree<String> tree = queryTreeFactory.getQueryTree(resource, cbd);
 		return tree;
 	}
 	
 	private List<String> getResult(String sparqlQuery){
-		logger.trace(sparqlQuery);
+//		logger.trace(sparqlQuery);
 		List<String> resources = new ArrayList<String>();
 //		sparqlQuery = getPrefixedQuery(sparqlQuery);
 		
@@ -526,7 +619,7 @@ public class QALDExperiment {
 	
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
-		logger.debug("Getting result set for\n" + query);
+		logger.trace("Getting result set for\n" + query);
 		
 		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
@@ -570,7 +663,7 @@ public class QALDExperiment {
 		if(!useSplitting){
 			clusters.add(Sets.newHashSet(triplePatterns));
 		} else {
-			logger.debug("Query too complex. Splitting...");
+			logger.trace("Query too complex. Splitting...");
 			// 2. build clusters for other
 			for (Set<Triple> cluster : clusters) {
 				Triple representative = cluster.iterator().next();
@@ -594,8 +687,7 @@ public class QALDExperiment {
 			
 			q = rewriteForVirtuosoDateLiteralBug(q);
 			
-			logger.debug(q);
-			System.out.println(q);
+			logger.trace(q);
 			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
@@ -676,7 +768,7 @@ public class QALDExperiment {
 	            	int id = Integer.valueOf(questionNode.getAttribute("id")); //if(id != 44)continue;
 //	            	String answerType = questionNode.getAttribute("answerType");
 	            	boolean aggregation = false;//Boolean.valueOf(questionNode.getAttribute("aggregation"));
-	            	boolean onlydbo = true;//Boolean.valueOf(questionNode.getAttribute("onlydbo"));
+	            	boolean onlydbo = Boolean.valueOf(questionNode.getAttribute("onlydbo"));
 	            	
 	            	
 	            	
@@ -738,6 +830,7 @@ public class QALDExperiment {
 	            			&& !containsFilter
 //	            			&& !containsUNION
 	            			&& onlydbo
+	            			
 	            			&& (getResultCount(sparqlQuery) >= minNrOfPositiveExamples)
 	            			){
 	            		queries.add(sparqlQuery);
@@ -904,7 +997,7 @@ public class QALDExperiment {
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
-		Logger.getLogger(QALDExperiment.class).setLevel(Level.TRACE);
+		Logger.getLogger(QALDExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		new QALDExperiment(Dataset.DBPEDIA).run();
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
