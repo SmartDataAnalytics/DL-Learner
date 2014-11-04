@@ -1,0 +1,1353 @@
+<?xml version="1.0" ?>
+<dataset id="qald-4_multilingual_test">
+
+<question aggregation="false" answertype="resource" id="1" onlydbo="true">
+<string lang="en"><![CDATA[Give me all taikonauts.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Taikonauten.]]></string>
+<string lang="es"><![CDATA[Dame todas las taikonautas.]]></string>
+<string lang="it"><![CDATA[Dammi tutte i taikonauti.]]></string>
+<string lang="fr"><![CDATA[Donnes-moi tous les taïkonautes.]]></string>
+<string lang="nl"><![CDATA[Toon alle taikonauten.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți taikonauții. ]]></string>
+<keywords lang="en"><![CDATA[taikonauts]]></keywords>
+<keywords lang="de"><![CDATA[Taikonauten]]></keywords>
+<keywords lang="es"><![CDATA[taikonautas]]></keywords>
+<keywords lang="it"><![CDATA[taikonauti]]></keywords>
+<keywords lang="fr"><![CDATA[taïkonautes]]></keywords>
+<keywords lang="nl"><![CDATA[taikonauten]]></keywords>
+<keywords lang="ro"><![CDATA[taikonaut]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:Astronaut .
+        ?uri dbo:nationality res:China .
+}
+]]></query>
+</question>
+
+<question aggregation="true" answertype="number" id="2" onlydbo="true">
+<string lang="en"><![CDATA[How many languages are spoken in Colombia?]]></string>
+<string lang="de"><![CDATA[Wieviele Sprachen werden in Kolumbien gesprochen?]]></string>
+<string lang="es"><![CDATA[¿Cuántos idiomas se hablan en Colombia?]]></string>
+<string lang="it"><![CDATA[Quante lingue sono parlate in Colombia?]]></string>
+<string lang="fr"><![CDATA[Combien de langues sont parlées au Colombie?]]></string>
+<string lang="nl"><![CDATA[Hoeveel talen worden er in Colombia gesproken?]]></string>
+<string lang="ro"><![CDATA[Câte limbi sunt vorbite în Columbia?]]></string>
+<keywords lang="en"><![CDATA[languages, Colombia]]></keywords>
+<keywords lang="de"><![CDATA[Sprachen, Kolumbien]]></keywords>
+<keywords lang="es"><![CDATA[idiomas, Colombia]]></keywords>
+<keywords lang="it"><![CDATA[lingue, Colombia]]></keywords>
+<keywords lang="fr"><![CDATA[langues, Colombie]]></keywords>
+<keywords lang="nl"><![CDATA[talen, Columbia]]></keywords>
+<keywords lang="ro"><![CDATA[limbi, Columbia]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT COUNT(DISTINCT ?uri) 
+WHERE {
+        ?uri rdf:type dbo:Language . 
+        res:Colombia dbo:language ?uri .
+}
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="3" onlydbo="true">
+<string lang="en"><![CDATA[Which poet wrote the most books?]]></string>
+<string lang="de"><![CDATA[Welcher Dichter hat die meisten Bücher geschrieben?]]></string>
+<string lang="es"><![CDATA[¿Que poeta ha escrito el mayor número de libros?]]></string>
+<string lang="it"><![CDATA[Quale poeta ha scritto il maggior numero di libri?]]></string>
+<string lang="fr"><![CDATA[Quel poète a écrit le plus de livres?]]></string>
+<string lang="nl"><![CDATA[Welke dichter heeft de meeste boeken geschreven?]]></string>
+<string lang="ro"><![CDATA[Ce poet a scris cel mai mare număr de cărți?]]></string>
+<keywords lang="en"><![CDATA[poet, most, books]]></keywords>
+<keywords lang="de"><![CDATA[Dichter, Bücher, die meisten]]></keywords>
+<keywords lang="es"><![CDATA[poeta, mayor número, libros]]></keywords>
+<keywords lang="it"><![CDATA[poeta, maggior numero, libri ]]></keywords>
+<keywords lang="fr"><![CDATA[poète, maximum, livres]]></keywords>
+<keywords lang="nl"><![CDATA[dichter, meeste boeken]]></keywords>
+<keywords lang="ro"><![CDATA[poet, cel mai mare număr, cărți]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri dbo:occupation res:Poet .
+        ?x dbo:author ?uri .
+        ?x rdf:type dbo:Book .
+}
+ORDER BY DESC(COUNT(?x))
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="true" answertype="number" id="4" onlydbo="true">
+<string lang="en"><![CDATA[How many programming languages are there?]]></string>
+<string lang="de"><![CDATA[Wieviele Programmiersprachen gibt es?]]></string>
+<string lang="es"><![CDATA[¿Cuántos lenguajes de programación existen?]]></string>
+<string lang="it"><![CDATA[Quanti linguaggi di programmazione esistono?]]></string>
+<string lang="fr"><![CDATA[Combien de langages de programmation existe-t-il?]]></string>
+<string lang="nl"><![CDATA[Hoeveel programmeertalen zijn er?]]></string>
+<string lang="ro"><![CDATA[Câte limbaje de programare există?]]></string>
+<keywords lang="en"><![CDATA[how many, programming languages]]></keywords>
+<keywords lang="de"><![CDATA[wieviele, Programmiersprachen]]></keywords>
+<keywords lang="es"><![CDATA[cuántos lenguajes programación]]></keywords>
+<keywords lang="it"><![CDATA[linguaggi di programmazione, esistere]]></keywords>
+<keywords lang="fr"><![CDATA[combien, langages de programmation]]></keywords>
+<keywords lang="nl"><![CDATA[hoeveel, programmeertalen]]></keywords>
+<keywords lang="ro"><![CDATA[limbaje de programare, există]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT COUNT(DISTINCT ?uri)
+WHERE {
+        ?uri rdf:type dbo:ProgrammingLanguage .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="5" onlydbo="true">
+<string lang="en"><![CDATA[Give me all Dutch parties.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Niederländischen Parteien.]]></string>
+<string lang="es"><![CDATA[Dame todos los partidos políticos holandeses]]></string>
+<string lang="it"><![CDATA[Dammi tutti i partiti politici olandesi.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les partis politiques néerlandais.]]></string>
+<string lang="nl"><![CDATA[Toon alle Nederlandse partijen.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toate partidele politice olandeze.]]></string>
+<keywords lang="en"><![CDATA[Dutch, party]]></keywords>
+<keywords lang="de"><![CDATA[Niederländisch, Partei]]></keywords>
+<keywords lang="es"><![CDATA[partidos políticos holandeses]]></keywords>
+<keywords lang="it"><![CDATA[partiti politici olandesi]]></keywords>
+<keywords lang="fr"><![CDATA[partis poliques, néerlandais]]></keywords>
+<keywords lang="nl"><![CDATA[Nederlandse partijen.]]></keywords>
+<keywords lang="ro"><![CDATA[partide politice olandeze]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:PoliticalParty .
+        ?uri dbo:country res:Netherlands .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="date" id="6" onlydbo="false">
+<string lang="en"><![CDATA[When was Carlo Giuliani shot?]]></string>
+<string lang="de"><![CDATA[Wann wurde Carlo Giuliani erschossen?]]></string>
+<string lang="es"><![CDATA[¿Cuándo fue disparado Carlo Giuliani?]]></string>
+<string lang="it"><![CDATA[Quando è stato ucciso Carlo Giuliani?]]></string>
+<string lang="fr"><![CDATA[Quand a été tué Carlo Giuliani?]]></string>
+<string lang="nl"><![CDATA[Wanneer werd Carlo Giuliani neergeschoten?]]></string>
+<string lang="ro"><![CDATA[Când a fost ucis Carlo Giuliani?]]></string>
+<keywords lang="en"><![CDATA[date, Carlo Giuliani, shot]]></keywords>
+<keywords lang="de"><![CDATA[Datum, Carlo Giuliani, erschossen]]></keywords>
+<keywords lang="es"><![CDATA[fecha, disparo, Carlo Giuliani]]></keywords>
+<keywords lang="it"><![CDATA[data, Carlo Giuliani, ucciso]]></keywords>
+<keywords lang="fr"><![CDATA[date de décès, Carlo Guiliani]]></keywords>
+<keywords lang="nl"><![CDATA[datum, Carlo Giuliani, neergeschoten]]></keywords>
+<keywords lang="ro"><![CDATA[dată, Carlo Giuliani, ucis]]></keywords>
+<query><![CDATA[
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?date
+WHERE {
+        res:Death_of_Carlo_Giuliani dbp:dateOfDeath ?date .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="boolean" id="7" onlydbo="true">
+<string lang="en"><![CDATA[Does the Isar flow into a lake?]]></string>
+<string lang="de"><![CDATA[Fließt die Isar in einen See?]]></string>
+<string lang="es"><![CDATA[¿Desemboca el Isar en un lago?]]></string>
+<string lang="it"><![CDATA[L'Isar sfocia in un lago?]]></string>
+<string lang="fr"><![CDATA[L'Isar se déverse-t-il dans un lac?]]></string>
+<string lang="nl"><![CDATA[Mondt de Isar uit in een meer?]]></string>
+<string lang="ro"><![CDATA[Isarul se varsă într-un lac?]]></string>
+<keywords lang="en"><![CDATA[Isar, flow, lake]]></keywords>
+<keywords lang="de"><![CDATA[Isar, fließt, See]]></keywords>
+<keywords lang="es"><![CDATA[Isar, desemboca, lago]]></keywords>
+<keywords lang="it"><![CDATA[Isar, sfociare, lago]]></keywords>
+<keywords lang="fr"><![CDATA[Isar, deverse, lac]]></keywords>
+<keywords lang="nl"><![CDATA[Isar, uitmonden, meer]]></keywords>
+<keywords lang="ro"><![CDATA[Isar, varsă, lac]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ASK
+WHERE {
+        ?x dbo:inflow res:Isar .
+        ?x rdf:type dbo:Lake . 
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="8" onlydbo="true">
+<string lang="en"><![CDATA[Which rivers flow into a German lake?]]></string>
+<string lang="de"><![CDATA[Welche Flüsse fließen in deutsche Seen?]]></string>
+<string lang="es"><![CDATA[¿Qué ríos desembocan en un lago alemán?]]></string>
+<string lang="it"><![CDATA[Quali fiumi sfociano in un lago tedesco?]]></string>
+<string lang="fr"><![CDATA[Quels cours d'eau se déversent-ils dans des lacs allemands?]]></string>
+<string lang="nl"><![CDATA[Welke rivieren stromen naar een Duits meer?]]></string>
+<string lang="ro"><![CDATA[Ce râuri se varsă într-un lac din Germania?]]></string>
+<keywords lang="en"><![CDATA[rivers, flow, German lake]]></keywords>
+<keywords lang="de"><![CDATA[Fluss, fließen, deutsch, See]]></keywords>
+<keywords lang="es"><![CDATA[ríos, desembocan, lago alemán]]></keywords>
+<keywords lang="it"><![CDATA[fiumi, sfociare, lago tedesco]]></keywords>
+<keywords lang="fr"><![CDATA[cours d'eaux, lacs allemands]]></keywords>
+<keywords lang="nl"><![CDATA[rivieren, stromen naar, Duits, meer]]></keywords>
+<keywords lang="ro"><![CDATA[râuri, varsă, lac din Germania]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:River .
+        ?x dbo:inflow ?uri .
+        ?x rdf:type dbo:Lake . 
+        ?x dbo:country res:Germany .
+}
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="9" onlydbo="false">
+<string lang="en"><![CDATA[How heavy is Jupiter's lightest moon?]]></string>
+<string lang="de"><![CDATA[Wie schwer ist Jupiters leichtester Mond?]]></string>
+<string lang="es"><![CDATA[¿Cuánto pesa el satélite más ligero de Júpiter?]]></string>
+<string lang="it"><![CDATA[¿Cuánto pesa il satellite più leggero di Giove?]]></string>
+<string lang="fr"><![CDATA[Combien pèse le satellite le plus léger de Jupiter?]]></string>
+<string lang="nl"><![CDATA[Hoe zwaar is de lichtste maan van Jupiter?]]></string>
+<string lang="ro"><![CDATA[Cât de greu este cel mai ușor satelit al lui Jupiter?]]></string>
+<keywords lang="en"><![CDATA[how heavy, Jupiter, moon, lightest]]></keywords>
+<keywords lang="de"><![CDATA[wie schwer, Jupiter, Mond, leichtester]]></keywords>
+<keywords lang="es"><![CDATA[peso, satélite más ligero, Júpiter]]></keywords>
+<keywords lang="it"><![CDATA[peso, satellite più leggero di Giove]]></keywords>
+<keywords lang="fr"><![CDATA[poids, satellite le plus léger, Jupiter]]></keywords>
+<keywords lang="nl"><![CDATA[hoe zwaar, Jupiter, maan, lichtste]]></keywords>
+<keywords lang="ro"><![CDATA[greu, Jupiter, satelit, cel mai ușor]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?n
+WHERE {
+        ?uri dbp:satelliteOf res:Jupiter .
+        ?uri dbo:mass ?n .
+}
+ORDER BY ASC(?n)
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="10" onlydbo="true">
+<string lang="en"><![CDATA[Who is the youngest Darts player?]]></string>
+<string lang="de"><![CDATA[Wer ist der jüngste Dartspieler?]]></string>
+<string lang="es"><![CDATA[¿Quién es el jugador mas jóven de dardos?]]></string>
+<string lang="it"><![CDATA[Chi è il giocatore di freccette più giovane?]]></string>
+<string lang="fr"><![CDATA[Quel est le joueur de fléchettes le plus jeune?]]></string>
+<string lang="nl"><![CDATA[Wie is de jongste dartsspeler?]]></string>
+<string lang="ro"><![CDATA[Cine este cel mai tânăr jucător de Darts?]]></string>
+<keywords lang="en"><![CDATA[Darts player, youngest]]></keywords>
+<keywords lang="de"><![CDATA[Dartspieler, jüngster]]></keywords>
+<keywords lang="es"><![CDATA[jugador más jóven dardos]]></keywords>
+<keywords lang="it"><![CDATA[giocatore di freccette, più giovane]]></keywords>
+<keywords lang="fr"><![CDATA[jouer de fléchettes, plus jeune]]></keywords>
+<keywords lang="nl"><![CDATA[jongste Darts speeler]]></keywords>
+<keywords lang="ro"><![CDATA[jucător de Darts, cel mai tânăr]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:DartsPlayer .
+        ?uri dbo:birthDate ?date .
+}
+ORDER BY DESC(?date)
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="11" onlydbo="true">
+<string lang="en"><![CDATA[Give me all animals that are extinct.]]></string>
+<string lang="de"><![CDATA[Gib mir alle ausgestorbenen Tierarten.]]></string>
+<string lang="es"><![CDATA[Dame todos los animales extintos]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli animali estinti.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les animaux éteints.]]></string>
+<string lang="nl"><![CDATA[Toon alle uitgestorven dieren.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toate animalele dispărute.]]></string>
+<keywords lang="en"><![CDATA[animal, extinct]]></keywords>
+<keywords lang="de"><![CDATA[Tierart, ausgestorben]]></keywords>
+<keywords lang="es"><![CDATA[animales extintos]]></keywords>
+<keywords lang="it"><![CDATA[animali estinti]]></keywords>
+<keywords lang="fr"><![CDATA[animaux éteints]]></keywords>
+<keywords lang="nl"><![CDATA[dieren, uitgestorven]]></keywords>
+<keywords lang="ro"><![CDATA[animal, dispărut]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:Animal .
+        ?uri dbo:conservationStatus "EX"@en .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="12" onlydbo="true">
+<string lang="en"><![CDATA[How many pages does War and Peace have?]]></string>
+<string lang="de"><![CDATA[Wieviele Seiten hat Krieg und Frieden?]]></string>
+<string lang="es"><![CDATA[¿Cuántas páginas tiene Guerra y Paz?]]></string>
+<string lang="it"><![CDATA[Quante pagine ha Guerra e Pace?]]></string>
+<string lang="fr"><![CDATA[Combien de pages a Guerre et Paix?]]></string>
+<string lang="nl"><![CDATA[Hoeveel pagina's heeft Oorlog en vrede?]]></string>
+<string lang="ro"><![CDATA[Câte pagini are Război și Pace?]]></string>
+<keywords lang="en"><![CDATA[how many, pages, War and Peace]]></keywords>
+<keywords lang="de"><![CDATA[wieviele, Seiten, Krieg und Frieden]]></keywords>
+<keywords lang="es"><![CDATA[número paginas, Guerra y Paz]]></keywords>
+<keywords lang="it"><![CDATA[pagine, Guerra e Pace]]></keywords>
+<keywords lang="fr"><![CDATA[nomber de pages, Guerre et Paix]]></keywords>
+<keywords lang="nl"><![CDATA[hoeveel pagina's, Oorlog en vrede]]></keywords>
+<keywords lang="ro"><![CDATA[câte pagini, Război și Pace]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?n
+WHERE {
+        res:War_and_Peace dbo:numberOfPages ?n .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="13" onlydbo="true">
+<string lang="en"><![CDATA[Which ingredients do I need for carrot cake?]]></string>
+<string lang="de"><![CDATA[Welche Zutaten brauche ich für Möhrenkuchen?]]></string>
+<string lang="es"><![CDATA[¿Qué ingredientes son necesarios para una tarta de zanahorias?]]></string>
+<string lang="it"><![CDATA[Di quali ingredienti ho bisogno per la torta di carote?]]></string>
+<string lang="fr"><![CDATA[Quels sont les ingrédients du gateau aux carottes?]]></string>
+<string lang="nl"><![CDATA[Welke ingrediënten heb ik nodig voor worteltaart?]]></string>
+<string lang="ro"><![CDATA[De ce ingrediente am nevoie pentru tort de morcovi?]]></string>
+<keywords lang="en"><![CDATA[carrot cake, ingredients]]></keywords>
+<keywords lang="de"><![CDATA[Möhrenkuchen, Zutaten]]></keywords>
+<keywords lang="es"><![CDATA[ingredientes, tarta de zanahorias?]]></keywords>
+<keywords lang="it"><![CDATA[ingredienti, torta di carote]]></keywords>
+<keywords lang="fr"><![CDATA[ingrédients, gateau aux carottes]]></keywords>
+<keywords lang="nl"><![CDATA[worteltaart, ingrediënten]]></keywords>
+<keywords lang="ro"><![CDATA[tort de morcovi, ingrediente]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Carrot_cake dbo:ingredient ?uri .
+}
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="14" onlydbo="true">
+<string lang="en"><![CDATA[What is the most frequent death cause?]]></string>
+<string lang="de"><![CDATA[Was ist die häufigste Todesursache?]]></string>
+<string lang="es"><![CDATA[¿Cual es la causa mortal más común?]]></string>
+<string lang="it"><![CDATA[Qual è la causa principale di morte?]]></string>
+<string lang="fr"><![CDATA[Quelle est la cause première de mortalité?]]></string>
+<string lang="nl"><![CDATA[Wat is de meest voorkomende doodsoorzaak?]]></string>
+<string lang="ro"><![CDATA[Care este cea mai frecventă cauză a deceselor?]]></string>
+<keywords lang="en"><![CDATA[death cause, most frequent]]></keywords>
+<keywords lang="de"><![CDATA[Todesursache, häufigste]]></keywords>
+<keywords lang="es"><![CDATA[causa mortal más frequente]]></keywords>
+<keywords lang="it"><![CDATA[causa principale di morte]]></keywords>
+<keywords lang="fr"><![CDATA[cause première, mortalité]]></keywords>
+<keywords lang="nl"><![CDATA[meest voorkomende doodsoorzaak]]></keywords>
+<keywords lang="ro"><![CDATA[cauză a deceselor, cea mai frecventă]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?x
+WHERE {
+        ?uri dbo:deathCause ?x . 
+}
+ORDER BY DESC(COUNT(DISTINCT ?uri)) 
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="15" onlydbo="true">
+<string lang="en"><![CDATA[Who has Tom Cruise been married to?]]></string>
+<string lang="de"><![CDATA[Mit wem war Tom Cruise verheiratet?]]></string>
+<string lang="es"><![CDATA[¿Quién ha estado casado con Tom Cruise?]]></string>
+<string lang="it"><![CDATA[Con chi è stato sposato Tom Cruise?]]></string>
+<string lang="fr"><![CDATA[Qui est l'épouse de Tom Cruise?]]></string>
+<string lang="nl"><![CDATA[Met wie was Tom Cruise getrouwd?]]></string>
+<string lang="ro"><![CDATA[Cu cine a fost căsătorit Tom Cruise?]]></string>
+<keywords lang="en"><![CDATA[Tom Cruise, married]]></keywords>
+<keywords lang="de"><![CDATA[Tom Cruise, verheiratet]]></keywords>
+<keywords lang="es"><![CDATA[esposas, Tom Cruise]]></keywords>
+<keywords lang="it"><![CDATA[Tom Cruise, mogli]]></keywords>
+<keywords lang="fr"><![CDATA[épouse, Tom Cruise]]></keywords>
+<keywords lang="nl"><![CDATA[Tom Cruise, getrouwd]]></keywords>
+<keywords lang="ro"><![CDATA[Tom Cruise, căsătorit]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri dbo:spouse res:Tom_Cruise.
+}
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="16" onlydbo="true">
+<string lang="en"><![CDATA[Who is the tallest player of the Atlanta Falcons?]]></string>
+<string lang="de"><![CDATA[Wer ist der größte Spieler der Atlanta Falcons?]]></string>
+<string lang="es"><![CDATA[¿Quién es el jugador más alto de los Atlanta Falcons?]]></string>
+<string lang="it"><![CDATA[Chi è il giocatore più alto degli Atlanta Falcons?]]></string>
+<string lang="fr"><![CDATA[Qui est le joueur le plus grand des Atlanta Falcons?]]></string>
+<string lang="nl"><![CDATA[Wie is de langste speler van de Atlanta Falcons?]]></string>
+<string lang="ro"><![CDATA[Cine este cel mai înalt jucător din Atlanta Falcons?]]></string>
+<keywords lang="en"><![CDATA[Atlanta Falcons, player, tallest]]></keywords>
+<keywords lang="de"><![CDATA[Atlanta Falcons, Spieler, größter]]></keywords>
+<keywords lang="es"><![CDATA[jugador más alto, Atlanta Falcons]]></keywords>
+<keywords lang="it"><![CDATA[giocatore più alto, Atlanta Falcons]]></keywords>
+<keywords lang="fr"><![CDATA[joueur le plus grand, Atlanta Falcons]]></keywords>
+<keywords lang="nl"><![CDATA[Atlanta Falcons, speler, langste]]></keywords>
+<keywords lang="ro"><![CDATA[Atlanta Falcons, jucător, cel mai înalt]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri dbo:team res:Atlanta_Falcons . 
+        ?uri dbo:height ?h .
+} 
+ORDER BY DESC(?h) 
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="17" onlydbo="true">
+<string lang="en"><![CDATA[What is the bridge with the longest span?]]></string>
+<string lang="de"><![CDATA[Welche Brücke hat die längste Spannweite?]]></string>
+<string lang="es"><![CDATA[¿Qué puente tiene el mayor largo del vano?]]></string>
+<string lang="it"><![CDATA[Qual è il ponte con la campata più lunga?]]></string>
+<string lang="fr"><![CDATA[Quel est le pont le plus large?]]></string>
+<string lang="nl"><![CDATA[Wat is de brug met de grootste spanwijdte?]]></string>
+<string lang="ro"><![CDATA[Care este podul cu cea mai mare deschidere?]]></string>
+<keywords lang="en"><![CDATA[bridge, longest span]]></keywords>
+<keywords lang="de"><![CDATA[Brücke, längste Spannweite]]></keywords>
+<keywords lang="es"><![CDATA[puente, mayor largo del vano]]></keywords>
+<keywords lang="it"><![CDATA[ponte, campata più lunga]]></keywords>
+<keywords lang="fr"><![CDATA[pont, le plus large]]></keywords>
+<keywords lang="nl"><![CDATA[brug, langste spanwijdte]]></keywords>
+<keywords lang="ro"><![CDATA[pod, cea mai mare deschidere]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:Bridge .
+        ?uri dbo:mainspan ?s . 
+} 
+ORDER BY DESC(?s) 
+OFFSET 0 LIMIT 1
+]]></query>
+</question>
+
+<question aggregation="true" answertype="resource" id="18" onlydbo="true">
+<string lang="en"><![CDATA[Give me all films produced by Steven Spielberg with a budget of at least $80 million.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Filme, die von Steven Spielberg produziert worden und ein Budget von mindestens 80 Millionen Dollar hatten.]]></string>
+<string lang="es"><![CDATA[Dame todas las películas producidas por Steven Spielberg con un presupuesto de al menos 80 milliones de dólares.]]></string>
+<string lang="it"><![CDATA[Dammi tutti i film prodotti da Steven Spielberg con un budget finale di produzione di almeno 80 milioni di dollari.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les films produit par Steven Spielberg ayant un budget d'au moins $80 millions.]]></string>
+<string lang="nl"><![CDATA[Toon alle films die door Steven Spielberg worden geproduceerd en die een budget van minstens 80 miljoen dollar hadden.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toate filmele produse de Steven Spielberg, cu un buget final de producție de cel puțin 80 milioane de dolari.]]></string>
+<keywords lang="en"><![CDATA[films, producer, Steven Spielberg, production budget, $80 million]]></keywords>
+<keywords lang="de"><![CDATA[Film, Produzent, Steven Spielberg, Budget, $80 Millionen]]></keywords>
+<keywords lang="es"><![CDATA[películas, productor, Steven Spielberg, presupuesto de al menos 80 milliones de dólares]]></keywords>
+<keywords lang="it"><![CDATA[film, produttore, Steven Spielberg, butget di produzione, 80 milioni di dollari]]></keywords>
+<keywords lang="fr"><![CDATA[films, Steven Spielberg, budget, au moins $80 millions]]></keywords>
+<keywords lang="nl"><![CDATA[films, geproduceert door, Steven Spielberg, budget, minstens 80 miljoen dollar]]></keywords>
+<keywords lang="ro"><![CDATA[filme, producător, Steven Spielberg, buget, 80 milioane de dolari]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:Film .
+        ?uri dbo:director res:Steven_Spielberg .
+        ?uri dbo:budget ?b .
+        FILTER( xsd:double(?b) >= 8.0E7 )
+}]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="boolean" id="19" onlydbo="true">
+<string lang="en"><![CDATA[Is Cola a beverage?]]></string>
+<string lang="de"><![CDATA[Ist Cola ein Getränk?]]></string>
+<string lang="es"><![CDATA[¿Es la Coca Cola una bebida?]]></string>
+<string lang="it"><![CDATA[La Cola è una bevanda?]]></string>
+<string lang="fr"><![CDATA[Le Coca est-il une boisson?]]></string>
+<string lang="nl"><![CDATA[Is cola een drank?]]></string>
+<string lang="ro"><![CDATA[Cola este o băutură? ]]></string>
+<keywords lang="en"><![CDATA[Cola, beverage]]></keywords>
+<keywords lang="de"><![CDATA[Cola, Getränk]]></keywords>
+<keywords lang="es"><![CDATA[Coca Cola, bebida]]></keywords>
+<keywords lang="it"><![CDATA[Cola, bevanda]]></keywords>
+<keywords lang="fr"><![CDATA[Coca, boisson]]></keywords>
+<keywords lang="nl"><![CDATA[Cola, drank]]></keywords>
+<keywords lang="ro"><![CDATA[Cola, băutură]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ASK 
+WHERE {
+        res:Cola rdf:type dbo:Beverage .
+}]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="20" onlydbo="true">
+<string lang="en"><![CDATA[Which actor was casted in the most movies?]]></string>
+<string lang="de"><![CDATA[Welcher Schauspieler spielte in den meisten Filmen mit?]]></string>
+<string lang="es"><![CDATA[¿Qué actor ha actuado en el mayor número de películas?]]></string>
+<string lang="it"><![CDATA[Quale attore è stato scritturato in piùfilm?]]></string>
+<string lang="fr"><![CDATA[Quel acteur a joué dans le plus de films?]]></string>
+<string lang="nl"><![CDATA[Welke acteur speelde in de meeste films?]]></string>
+<string lang="ro"><![CDATA[Ce actor a fost distribuit în cele mai multe filme?]]></string>
+<keywords lang="en"><![CDATA[actor, casted, most movies]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, meiste Filme]]></keywords>
+<keywords lang="es"><![CDATA[actor, mayor número de películas]]></keywords>
+<keywords lang="it"><![CDATA[attore, scritturato, maggior numero di film]]></keywords>
+<keywords lang="fr"><![CDATA[acteur, maximum de films]]></keywords>
+<keywords lang="nl"><![CDATA[acteur, spelen, meeste films]]></keywords>
+<keywords lang="ro"><![CDATA[actor, distribuit, cele mai multe filme]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:Actor .
+        ?f rdf:type dbo:Film .
+        ?f dbo:starring ?uri .
+} 
+ORDER BY DESC(COUNT(DISTINCT(?f))) 
+OFFSET 0 LIMIT 1
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="21" onlydbo="true">
+<string lang="en"><![CDATA[Where was Bach born?]]></string>
+<string lang="de"><![CDATA[Wo wurde Bach geboren?]]></string>
+<string lang="es"><![CDATA[¿Dónde nació Bach?]]></string>
+<string lang="it"><![CDATA[Dove è nato Bach?]]></string>
+<string lang="fr"><![CDATA[Où est né Bach?]]></string>
+<string lang="nl"><![CDATA[Waar was Bach geboren?]]></string>
+<string lang="ro"><![CDATA[Unde s-a născut Bach?]]></string>
+<keywords lang="en"><![CDATA[birthplace, Bach]]></keywords>
+<keywords lang="de"><![CDATA[Bach, geboren]]></keywords>
+<keywords lang="es"><![CDATA[Bach, lugar de nacimiento]]></keywords>
+<keywords lang="it"><![CDATA[Bach, luogo di nascita]]></keywords>
+<keywords lang="fr"><![CDATA[Lieu de naissance, Bach]]></keywords>
+<keywords lang="nl"><![CDATA[Bach, geboorteplaats]]></keywords>
+<keywords lang="ro"><![CDATA[locul nașterii, Bach]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+        res:Johann_Sebastian_Bach dbo:birthPlace ?uri .
+}]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="22" onlydbo="true">
+<string lang="en"><![CDATA[Which of Tim Burton's films had the highest budget?]]></string>
+<string lang="de"><![CDATA[Welcher von Tim Burtons Filmen hatte das höchste Budget?]]></string>
+<string lang="es"><![CDATA[¿Cuál es la película de Tim Burton con el mayor presupuesto?]]></string>
+<string lang="it"><![CDATA[Quali film di Tim Burton hanno avuto il budget più alto?]]></string>
+<string lang="fr"><![CDATA[Quel film de Tim Burton a le budget le plus haut?]]></string>
+<string lang="nl"><![CDATA[Welke van Tim Burton's films had het hoogste budget?]]></string>
+<string lang="ro"><![CDATA[Care dintre filmele lui Tom Burton a avut cel mai mare buget?]]></string>
+<keywords lang="en"><![CDATA[highest budget, film, Tim Burton]]></keywords>
+<keywords lang="de"><![CDATA[höchstes Budget, Film, Tim Burton]]></keywords>
+<keywords lang="es"><![CDATA[película de Tim Burton, mayor presupuesto]]></keywords>
+<keywords lang="it"><![CDATA[budget più alto, film, Tim Burton]]></keywords>
+<keywords lang="fr"><![CDATA[budget le plus haut, Tim Burton]]></keywords>
+<keywords lang="nl"><![CDATA[film, Tim Burton, hoogste budget]]></keywords>
+<keywords lang="ro"><![CDATA[cel mai mare buget, film, Tim Burton]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE { 
+        ?uri dbo:director res:Tim_Burton .
+        ?uri dbo:budget ?b .
+}
+ORDER BY ?b
+OFFSET 0 LIMIT 1
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="boolean" id="23" onlydbo="true">
+<string lang="en"><![CDATA[Does Abraham Lincoln's death place have a website?]]></string>
+<string lang="de"><![CDATA[Hat Abraham Lincolns Sterbeort eine Webseite?]]></string>
+<string lang="es"><![CDATA[¿Tiene el lugar de nacimiento de Abraham Lincol una página web?]]></string>
+<string lang="it"><![CDATA[Il luogo di morte di Abraham Lincoln ha un sito web?]]></string>
+<string lang="fr"><![CDATA[A le lieu de décès d'Abraham Lincoln une page Web?]]></string>
+<string lang="nl"><![CDATA[Heeft de stad waarin Abraham Lincoln is overleden een website?]]></string>
+<string lang="ro"><![CDATA[Locul morții lui Abraham Lincoln are un website?]]></string>
+<keywords lang="en"><![CDATA[Abraham Lincoln, death place, website]]></keywords>
+<keywords lang="de"><![CDATA[Abraham Lincoln, Sterbeort, Webseite]]></keywords>
+<keywords lang="es"><![CDATA[Abraham Lincoln, lugar de nacimiento, página web]]></keywords>
+<keywords lang="it"><![CDATA[Abraham Lincoln, luogo di morte, website]]></keywords>
+<keywords lang="fr"><![CDATA[Abraham Lincoln, lieu de décès, page Web]]></keywords>
+<keywords lang="nl"><![CDATA[Abraham Lincoln, stad, gestorven, website]]></keywords>
+<keywords lang="ro"><![CDATA[locul morții, Abraham Lincoln, website]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+ASK 
+WHERE {
+        res:Abraham_Lincoln dbo:deathPlace ?p .
+        ?p dbo:website ?w . 
+}
+]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="24" onlydbo="false">
+<string lang="en"><![CDATA[Who are the four youngest MVP basketball players?]]></string>
+<string lang="de"><![CDATA[Wer sind die vier jüngsten MVP Baskettballspieler?]]></string>
+<string lang="es"><![CDATA[¿Cuáles son los cuatro jugadores de baloncesto de categoría MVP más jóvenes?]]></string>
+<string lang="it"><![CDATA[Chi sono i quattro più giovani giocatori di maggior valore (MVP)?]]></string>
+<string lang="fr"><![CDATA[Quels sont les quatres plus jeunes MVP de basketball?]]></string>
+<string lang="nl"><![CDATA[Wie zijn de vier jongste MVP basketballers?]]></string>
+<string lang="ro"><![CDATA[Care sunt cei patru cei mai tineri jucători de baschet MVP?]]></string>
+<keywords lang="en"><![CDATA[four, youngest, MVP, basketball player]]></keywords>
+<keywords lang="de"><![CDATA[vier jüngsten, MVP, Basketballspieler]]></keywords>
+<keywords lang="es"><![CDATA[cuatro jugadores de baloncesto más jóvenes,categoría MVP]]></keywords>
+<keywords lang="it"><![CDATA[quattro, più giovani, giocatori di maggior valore (MVP)]]></keywords>
+<keywords lang="fr"><![CDATA[quatre plus jeunes, MVP, basketball]]></keywords>
+<keywords lang="nl"><![CDATA[vier jongste, MVP basketballers]]></keywords>
+<keywords lang="ro"><![CDATA[patru, cei mai tineri, MVP, jucători de baschet]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:BasketballPlayer .
+        ?uri dbo:birthDate ?date.
+        ?uri dbp:highlights ?h .
+        FILTER regex(?h,"MVP")
+} 
+ORDER BY DESC(?date) 
+OFFSET 0 LIMIT 4
+]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="25" onlydbo="false">
+<string lang="en"><![CDATA[What are the top-10 action role-playing video games according to IGN?]]></string>
+<string lang="de"><![CDATA[Was sind laut IGN die Top-10-Action-Rollenspiele?]]></string>
+<string lang="es"><![CDATA[¿Cuáles son los 10 mejores videojuegos de rol de acción según la IGN?]]></string>
+<string lang="it"><![CDATA[Quali sono i 10 migliori videogiochi di ruolo d'azione secondo l'IGN?]]></string>
+<string lang="fr"><![CDATA[Quels sont les 10 meilleurs jeux vidéos de rôle d'après IGN?]]></string>
+<string lang="nl"><![CDATA[Wat zijn de top-10 actie role-playing computerspellen volgens IGN?]]></string>
+<string lang="ro"><![CDATA[Care jocuri video se află în top-10 pentru acțiune și simulare, potrivit IGN?]]></string>
+<keywords lang="en"><![CDATA[top-10, action, role-playing games, IGN]]></keywords>
+<keywords lang="de"><![CDATA[Top-10-Action-Rollenspiele, IGN]]></keywords>
+<keywords lang="es"><![CDATA[10 mejores videojuegos de rol de acción,IGN]]></keywords>
+<keywords lang="it"><![CDATA[migliori 10, azione, giochi di ruolo, IGN]]></keywords>
+<keywords lang="fr"><![CDATA[jeux de rôle, jeux vidéos, IGN, top-10]]></keywords>
+<keywords lang="nl"><![CDATA[top-10 actie rollenspellen, IGN]]></keywords>
+<keywords lang="ro"><![CDATA[top-10, acțiune, ju=ocuri de simulare, IGN]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Category:Action_role-playing_video_games> .
+        ?uri dbp:ign ?score .
+} 
+ORDER BY DESC(?score) 
+LIMIT 10
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="26" onlydbo="true">
+<string lang="en"><![CDATA[Give me all actors who were born in Berlin.]]></string>
+<string lang="de"><![CDATA[Gib mir alle in Berlin geborenenen Schauspieler.]]></string>
+<string lang="es"><![CDATA[Dame todos los actores nacidos en Berlin.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli attori nati a Berlino.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les acteurs nés à Berlin.]]></string>
+<string lang="nl"><![CDATA[Toon alle acteurs die in Berlijn zijn geboren.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți actorii care s-au născut la Berlin.]]></string>
+<keywords lang="en"><![CDATA[actors, born, Berlin]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, geboren, Berlin]]></keywords>
+<keywords lang="es"><![CDATA[actores, nacidos, Berlin]]></keywords>
+<keywords lang="it"><![CDATA[attori, nati, Berlino]]></keywords>
+<keywords lang="fr"><![CDATA[acteurs, lieu de naissance, Berlin]]></keywords>
+<keywords lang="nl"><![CDATA[actuers, geboren, Berlijn]]></keywords>
+<keywords lang="ro"><![CDATA[actori, născut, Berlin]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:Actor .
+        ?uri dbo:birthPlace res:Berlin .
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="27" onlydbo="true">
+<string lang="en"><![CDATA[Give me all actors who were born in Paris after 1950.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Schauspieler, die nach 1950 in Paris geboren wurden.]]></string>
+<string lang="es"><![CDATA[Dame todos los actores nacidos en Paris después de 1950.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli attori nati a Parigi dopo il 1950.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les acteurs nés à Berlin après 1950.]]></string>
+<string lang="nl"><![CDATA[Toon alle acteurs die na 1950 in Parijs zijn geboren.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți actorii care s-au născut la Paris după 1950.]]></string>
+<keywords lang="en"><![CDATA[actors, born, Paris, after 1950]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, geboren, nach 1950, in Paris]]></keywords>
+<keywords lang="es"><![CDATA[actores,nacidos en Paris, después de 1950]]></keywords>
+<keywords lang="it"><![CDATA[attori, nati, dopo il 1950, a Parigi]]></keywords>
+<keywords lang="fr"><![CDATA[acteurs, lieu de naissance, Berlin, date de naissance, après 1950]]></keywords>
+<keywords lang="nl"><![CDATA[actuers, geboren, na 1950, in Parijs]]></keywords>
+<keywords lang="ro"><![CDATA[actori, născut, Paris, după 1950]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri 
+WHERE {
+        ?uri rdf:type dbo:Actor .
+        ?uri dbo:birthPlace res:Paris .
+        ?uri dbo:birthDate ?date .
+        FILTER ( ?date >= xsd:dateTime("1950-12-31T00:00:00Z")) 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="number" id="28" onlydbo="false">
+<string lang="en"><![CDATA[What was Brazil's lowest rank in the FIFA World Ranking?]]></string>
+<string lang="de"><![CDATA[Was war Brasiliens niedrigste Platzierung in der FIFA-Weltrangliste?]]></string>
+<string lang="es"><![CDATA[¿Cuál ha sido la posición de ranking más baja de Brasil en el ranking mundial de la FIFA?]]></string>
+<string lang="it"><![CDATA[Quale è stata la peggior posizione del Brasile nella classifica mondiale della FIFA?]]></string>
+<string lang="fr"><![CDATA[Quel est le ranking le plus bas atteint par le Brésil dans le classement mondial de la FIFA?]]></string>
+<string lang="nl"><![CDATA[Wat was de laagste plaatsing van het Braziliaans elftal in de FIFA-wereldranglijst?]]></string>
+<string lang="ro"><![CDATA[Care a fost cel mai mic loc ocupat de Brazilia în clasamentul mondială FIFA?]]></string>
+<keywords lang="en"><![CDATA[Brazil, lowest rank, FIFA World Ranking]]></keywords>
+<keywords lang="de"><![CDATA[Brasilien, niedrigste Platzierung, FIFA-Weltrangliste]]></keywords>
+<keywords lang="es"><![CDATA[Brasil, posición más baja, ranking mundial de la FIFA]]></keywords>
+<keywords lang="it"><![CDATA[Brasile, peggior posizione, classifica mondiale della FIFA]]></keywords>
+<keywords lang="fr"><![CDATA[raking, le plus bas, Brésil, classement, FIFA]]></keywords>
+<keywords lang="nl"><![CDATA[Braziliaans elftal, laagste plaatsing, FIFA-wereldranglijst]]></keywords>
+<keywords lang="ro"><![CDATA[Brazilia, cel mai mic loc, clasament mondial FIFA]]></keywords>
+<query><![CDATA[
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?n
+WHERE {
+        res:Brazil_national_football_team dbp:fifaMin ?n .
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="29" onlydbo="true">
+<string lang="en"><![CDATA[Give me all Australian metalcore bands.]]></string>
+<string lang="de"><![CDATA[Gib mir alle australischen Metalcore-Bands.]]></string>
+<string lang="es"><![CDATA[Dame todos los grupos australianos de metalcore.]]></string>
+<string lang="it"><![CDATA[Dammi tutte i gruppi metalcore australiani.]]></string>
+<string lang="fr"><![CDATA[Donnes les groupes de métalcode australiens.]]></string>
+<string lang="nl"><![CDATA[Toon alle Australisch metalcore bands.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toate trupele metalcore australiene.]]></string>
+<keywords lang="en"><![CDATA[Australian, metalcore bands]]></keywords>
+<keywords lang="de"><![CDATA[australisch, Metalcore-Bands]]></keywords>
+<keywords lang="es"><![CDATA[grupos australianos metalcore ]]></keywords>
+<keywords lang="it"><![CDATA[gruppi metalcore, australiani]]></keywords>
+<keywords lang="fr"><![CDATA[groupe, métalcode, australien]]></keywords>
+<keywords lang="nl"><![CDATA[Australisch, metalcore bands]]></keywords>
+<keywords lang="ro"><![CDATA[australian, trupe metalcore]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:Band .
+        ?uri dbo:genre res:Metalcore .
+      { ?uri dbo:hometown res:Australia . }
+      UNION 
+      { ?uri dbo:hometown ?h .
+        ?h dbo:country res:Australia . }
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="date" id="30" onlydbo="false">
+<string lang="en"><![CDATA[When is Halloween?]]></string>
+<string lang="de"><![CDATA[Wann ist Halloween?]]></string>
+<string lang="es"><![CDATA[¿Cuándo es Halloween?]]></string>
+<string lang="it"><![CDATA[Quand'è Halloween?]]></string>
+<string lang="fr"><![CDATA[Quand est Halloween?]]></string>
+<string lang="nl"><![CDATA[Wanneer is Halloween?]]></string>
+<string lang="ro"><![CDATA[Când este Halloween?]]></string>
+<keywords lang="en"><![CDATA[date, Halloween]]></keywords>
+<keywords lang="de"><![CDATA[Datum, Halloween ]]></keywords>
+<keywords lang="es"><![CDATA[fecha, Halloween]]></keywords>
+<keywords lang="it"><![CDATA[data, Halloween]]></keywords>
+<keywords lang="fr"><![CDATA[Halloween, date]]></keywords>
+<keywords lang="nl"><![CDATA[datum, halloween]]></keywords>
+<keywords lang="ro"><![CDATA[dată, Halloween]]></keywords>
+<query><![CDATA[
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?date
+WHERE {
+        res:Halloween dbp:date ?date . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="number" id="31" onlydbo="true">
+<string lang="en"><![CDATA[How many inhabitants does the largest city in Canada have?]]></string>
+<string lang="de"><![CDATA[Wieviele Einwohner hat die größte Stadt in Kanada?]]></string>
+<string lang="es"><![CDATA[¿Cuántos habitantes tiene la ciudad más grande de Canadá?]]></string>
+<string lang="it"><![CDATA[Quanti abitanti ha la città più grande del Canada?]]></string>
+<string lang="fr"><![CDATA[Combien d'habitants a large ville la plus grande du Canada?]]></string>
+<string lang="nl"><![CDATA[Hoeveel inwoners heeft de grootste stadt in Canada?]]></string>
+<string lang="ro"><![CDATA[Câți locuitori are cel mai are oraș din Canada?]]></string>
+<keywords lang="en"><![CDATA[inhabitants, largest city, Canada]]></keywords>
+<keywords lang="de"><![CDATA[Einwohner, größte Stadt, Kanada]]></keywords>
+<keywords lang="es"><![CDATA[número de habitantes, ciudad más grande de Canadá]]></keywords>
+<keywords lang="it"><![CDATA[abitanti, città più grande, Canada]]></keywords>
+<keywords lang="fr"><![CDATA[nombre dhabitants, ville la plus large, Canada]]></keywords>
+<keywords lang="nl"><![CDATA[inwoners, grootste, stad, Canada]]></keywords>
+<keywords lang="ro"><![CDATA[locuitori, cel mai mare oraș, Canada]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?num
+WHERE {
+        res:Canada dbo:largestCity ?city . 
+        ?city dbo:populationTotal ?num .
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="32" onlydbo="true">
+<string lang="en"><![CDATA[In which countries can you pay using the West African CFA franc?]]></string>
+<string lang="de"><![CDATA[In welchen Ländern kann ich mit dem CFA-Franc BCEAO bezahlen?]]></string>
+<string lang="es"><![CDATA[¿En qué páises se paga con el Franco CFA?]]></string>
+<string lang="it"><![CDATA[In quali stati si può pagare usando il West African CFA franc?]]></string>
+<string lang="fr"><![CDATA[Dans combien de pays peut-on payer aved les francs CFA ouest-africains?]]></string>
+<string lang="nl"><![CDATA[In welke landen kan je met de Westafrikaanse CFA-frank betalen?]]></string>
+<string lang="ro"><![CDATA[În ce țări poți plăti folosind francul CFA vest-african?]]></string>
+<keywords lang="en"><![CDATA[countries, pay, West African CFA franc]]></keywords>
+<keywords lang="de"><![CDATA[Land, bezahlen, CFA-Franc BCEAO]]></keywords>
+<keywords lang="es"><![CDATA[país, moneda, Franco CFA]]></keywords>
+<keywords lang="it"><![CDATA[stati, pagare, West African CFA franc]]></keywords>
+<keywords lang="fr"><![CDATA[nombre de pays, Franc CFA ouest-africain]]></keywords>
+<keywords lang="nl"><![CDATA[landen, betalen, CFA-frank]]></keywords>
+<keywords lang="ro"><![CDATA[țări, plăti, franc CFA vest-african]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+         ?uri dbo:currency res:West_African_CFA_franc . 
+}
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="33" onlydbo="false">
+<string lang="en"><![CDATA[Give me the capitals of all countries that the Himalayas run through.]]></string>
+<string lang="de"><![CDATA[Gib mir die Haupstädte aller Länder, über die sich der Himalaya erstreckt.]]></string>
+<string lang="es"><![CDATA[Dame las capitales de todos los países que atraviesa el Himalaya.]]></string>
+<string lang="it"><![CDATA[Dammi tutte le capitali degli stati attraversati dall'Himalaya.]]></string>
+<string lang="fr"><![CDATA[Donne-moi les capitales de tous les pays que l'Himalaya traverse.]]></string>
+<string lang="nl"><![CDATA[Toon de hoofdsteden van alle landen waardoor de Himalaya loopt.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toate țările traversate de Himalaya și capitalele lor.]]></string>
+<keywords lang="en"><![CDATA[countries Himalayas run through, capitals]]></keywords>
+<keywords lang="de"><![CDATA[Länder, erstrecken, Himalaya, Haupstadt]]></keywords>
+<keywords lang="es"><![CDATA[capital de países, atraviesa el Himalaya]]></keywords>
+<keywords lang="it"><![CDATA[capitali, stati attraversati dall'Himalaya]]></keywords>
+<keywords lang="fr"><![CDATA[capitales, pays, traversé, Himalaya]]></keywords>
+<keywords lang="nl"><![CDATA[Himalaya, lopen door, landen, hoofdsteden]]></keywords>
+<keywords lang="ro"><![CDATA[țări, traversate de Himalaya, capitale]]></keywords>
+<query><![CDATA[
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+         res:Himalayas dbp:country ?country . 
+         ?country dbo:capital ?uri .
+}  
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="34" onlydbo="true">
+<string lang="en"><![CDATA[Who was the first to climb Mount Everest?]]></string>
+<string lang="de"><![CDATA[Wer hat als erstes den Mount Everest bestiegen?]]></string>
+<string lang="es"><![CDATA[¿Quién fue el primero en ascender al Monte Everest?]]></string>
+<string lang="it"><![CDATA[Chi è stato il primo a scalare il Monte Everest?]]></string>
+<string lang="fr"><![CDATA[Qui est la première personne à conquerir le Mont Everest?]]></string>
+<string lang="nl"><![CDATA[Wie was de eerste die de Mount Everest beklom?]]></string>
+<string lang="ro"><![CDATA[Cine a fost primul om care a escaladat muntele Everest?]]></string>
+<keywords lang="en"><![CDATA[first, climb, mount Everest]]></keywords>
+<keywords lang="de"><![CDATA[Mount Everest, besteigen, erster]]></keywords>
+<keywords lang="es"><![CDATA[primero, ascender, Monte Everest]]></keywords>
+<keywords lang="it"><![CDATA[primo, scalare, Monte Everest]]></keywords>
+<keywords lang="fr"><![CDATA[première personne, Mont Everest]]></keywords>
+<keywords lang="nl"><![CDATA[Mount Everest, eerste, beklimmen]]></keywords>
+<keywords lang="ro"><![CDATA[primul, escaladat, muntele Everest]]></keywords>
+<query><![CDATA[
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?uri
+WHERE {
+          res:Mount_Everest dbo:firstAscentPerson ?uri . 
+}  
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="35" onlydbo="true">
+<string lang="en"><![CDATA[To which artistic movement did the painter of The Three Dancers belong?]]></string>
+<string lang="de"><![CDATA[Welcher Stilrichtung gehörte der Maler der Drei Tänzer an?]]></string>
+<string lang="es"><![CDATA[¿A qué estilo artístico pertenece el pintor de Los Tres Bailarines?]]></string>
+<string lang="it"><![CDATA[A quale movimento artistico apparteneva il pittore de I tre ballerini?]]></string>
+<string lang="fr"><![CDATA[A quel mouvement artistisque appartient le peintre de Les Trois Danceurs?]]></string>
+<string lang="nl"><![CDATA[Tot welke artistieke stijl behoort de schilder van de Drie Dansers?]]></string>
+<string lang="ro"><![CDATA[Cărui curent artistic îi aparține pictorul lucrării Trei dansatoare?]]></string>
+<keywords lang="en"><![CDATA[artistic movement, painter, The Three Dancers]]></keywords>
+<keywords lang="de"><![CDATA[Drei Tänzer, Maler, Stilrichtung]]></keywords>
+<keywords lang="es"><![CDATA[estilo artístico, pintor, Los Tres Bailarines]]></keywords>
+<keywords lang="it"><![CDATA[movimento artistico, pittore, I tre ballerini]]></keywords>
+<keywords lang="fr"><![CDATA[mouvement artistique, peintre, les trois danceurs]]></keywords>
+<keywords lang="nl"><![CDATA[Drie Dansers, schilder, stijl]]></keywords>
+<keywords lang="ro"><![CDATA[curent artistic, pictor, Trei dansatoare]]></keywords>
+<query><![CDATA[
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?uri
+WHERE {
+         res:The_Three_Dancers dbo:author ?person .
+         ?person dbo:movement ?uri .
+}  
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="36" onlydbo="true">
+<string lang="en"><![CDATA[Which pope succeeded John Paul II?]]></string>
+<string lang="de"><![CDATA[Welcher Papst folgte auf Johannes Paul II?]]></string>
+<string lang="es"><![CDATA[¿Qué papa fue el sucesor de Juan Pablo II?]]></string>
+<string lang="it"><![CDATA[Quale papa fu il successore di Giovanni Paolo II?]]></string>
+<string lang="fr"><![CDATA[Quel pape est le successeur du pape Jean-Paul II?]]></string>
+<string lang="nl"><![CDATA[Welke paus volgde Johannes Paul II op?]]></string>
+<string lang="ro"><![CDATA[Care papă i-a urmat lui Ioan Paul al II-lea?]]></string>
+<keywords lang="en"><![CDATA[pope, succeed, Johannes Paul II]]></keywords>
+<keywords lang="de"><![CDATA[Papst, folgt auf, Johannes Paul II]]></keywords>
+<keywords lang="es"><![CDATA[Papa, sucesor, Juan Pablo II]]></keywords>
+<keywords lang="it"><![CDATA[Papa, successore, Giovanni Paolo II]]></keywords>
+<keywords lang="fr"><![CDATA[successeur, Jean-Paul II]]></keywords>
+<keywords lang="nl"><![CDATA[paus, volgen, Johannes Paul II]]></keywords>
+<keywords lang="ro"><![CDATA[papă, urmat, Ioan Paul al II-lea]]></keywords>
+<query><![CDATA[
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX dbp: <http://dbpedia.org/property/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Pope_John_Paul_II dbp:successor ?uri .
+}
+]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="resource" id="37" onlydbo="true">
+<string lang="en"><![CDATA[What was the last movie with Alec Guinness?]]></string>
+<string lang="de"><![CDATA[Was war der letzte Film mit Alec Guinness?]]></string>
+<string lang="es"><![CDATA[¿Cuál fue la última película con Alec Guinness?]]></string>
+<string lang="it"><![CDATA[Qual è l'ultimo film con Alec Guinness?]]></string>
+<string lang="fr"><![CDATA[Quel est le dernier film d'Alec Guinness?]]></string>
+<string lang="nl"><![CDATA[Wat was de laatste film met Alec Guinness?]]></string>
+<string lang="ro"><![CDATA[Care a fost ultimul film cu Alec Guinness?]]></string>
+<keywords lang="en"><![CDATA[Alec Guinness, last, movie]]></keywords>
+<keywords lang="de"><![CDATA[Alec Guinness, letzter, Film]]></keywords>
+<keywords lang="es"><![CDATA[última película, Alec Guinness]]></keywords>
+<keywords lang="it"><![CDATA[Alec Guinness, ultimo film]]></keywords>
+<keywords lang="fr"><![CDATA[Alec Guiness, dernier film]]></keywords>
+<keywords lang="nl"><![CDATA[Alec Guinness, laatste, film]]></keywords>
+<keywords lang="ro"><![CDATA[Alec Guinness, ultim, film]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:Film . 
+        ?uri dbo:starring res:Alec_Guinness .
+        ?uri dbo:releaseDate ?date . 
+} 
+ORDER BY DESC(?date) 
+LIMIT 1
+]]>
+</query>
+</question>
+
+<question aggregation="true" answertype="number" id="38" onlydbo="false">
+<string lang="en"><![CDATA[How many James Bond movies are there?]]></string>
+<string lang="de"><![CDATA[Wieviele James-Bond-Filme gibt es?]]></string>
+<string lang="es"><![CDATA[¿Cuántas películas de James Bond existen?]]></string>
+<string lang="it"><![CDATA[Quanti film di James Bond ci sono stati?]]></string>
+<string lang="fr"><![CDATA[Combien de films de James Bond existe-t-il?]]></string>
+<string lang="nl"><![CDATA[Hoeveel James Bond films zijn er?]]></string>
+<string lang="ro"><![CDATA[Câte filme Jamesc Bond există?]]></string>
+<keywords lang="en"><![CDATA[how many, James Bond movies]]></keywords>
+<keywords lang="de"><![CDATA[wieviele, Jamee-Bond-Filme]]></keywords>
+<keywords lang="es"><![CDATA[número de películas, James Bond]]></keywords>
+<keywords lang="it"><![CDATA[quanti, film di James Bond]]></keywords>
+<keywords lang="fr"><![CDATA[nomber de films, James Bond]]></keywords>
+<keywords lang="nl"><![CDATA[hoeveel, James Bond films]]></keywords>
+<keywords lang="ro"><![CDATA[câte, filme James Bond]]></keywords>
+<query><![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX yago: <http://dbpedia.org/class/yago/> 
+SELECT COUNT(DISTINCT ?uri) 
+WHERE {
+        ?uri rdf:type yago:JamesBondFilms . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="39" onlydbo="false">
+<string lang="en"><![CDATA[Which actor played Chewbacca?]]></string>
+<string lang="de"><![CDATA[Welcher Schauspieler hat Chewbacca gespielt?]]></string>
+<string lang="es"><![CDATA[¿Qué actor hizo el papel de Chewbacca?]]></string>
+<string lang="it"><![CDATA[Quale attore ha recitato il ruolo di Chewbacca?]]></string>
+<string lang="fr"><![CDATA[Quel acteurs ont joué le role de Chewbacca?]]></string>
+<string lang="nl"><![CDATA[Welke acteur heeft Chewbacca gespeeld?]]></string>
+<string lang="ro"><![CDATA[Ce actor l-a jucat pe Chewbacca?]]></string>
+<keywords lang="en"><![CDATA[actor, play, Chewbacca]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, spielen, Chewbacca]]></keywords>
+<keywords lang="es"><![CDATA[actor,papel de Chewbacca]]></keywords>
+<keywords lang="it"><![CDATA[attore, recitare il ruolo, Chewbacca]]></keywords>
+<keywords lang="fr"><![CDATA[acteur, Chewbacca]]></keywords>
+<keywords lang="nl"><![CDATA[acteur, spelen, Chewbacca]]></keywords>
+<keywords lang="ro"><![CDATA[actor, jucat, Chewbacca]]></keywords>
+<query><![CDATA[
+PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Chewbacca dbp:portrayer ?uri . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="40" onlydbo="true">
+<string lang="en"><![CDATA[Give me the grandchildren of Bruce Lee.]]></string>
+<string lang="de"><![CDATA[Gib mir die Enkel von Bruce Lee.]]></string>
+<string lang="es"><![CDATA[Dame todos los nietos de Bruce Lee.]]></string>
+<string lang="it"><![CDATA[Dammi i nipoti di Bruce Lee.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les petit-enfants de Bruce Lee.]]></string>
+<string lang="nl"><![CDATA[Toon alle kleinkinderen van Bruce Lee.]]></string>
+<string lang="ro"><![CDATA[Dă-mi nepoții lui Bruce Lee.]]></string>
+<keywords lang="en"><![CDATA[Bruce Lee, grandchildren]]></keywords>
+<keywords lang="de"><![CDATA[Bruce Lee, Enkel]]></keywords>
+<keywords lang="es"><![CDATA[Bruce Lee, nietos]]></keywords>
+<keywords lang="it"><![CDATA[Bruce Lee, nipoti]]></keywords>
+<keywords lang="fr"><![CDATA[petit-enfants, Bruce Lee]]></keywords>
+<keywords lang="nl"><![CDATA[Bruce Lee, kleinkinderen]]></keywords>
+<keywords lang="ro"><![CDATA[Bruce Lee, nepoți]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        res:Bruce_Lee dbo:child ?child . 
+        ?child dbo:child ?uri .
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="41" onlydbo="true">
+<string lang="en"><![CDATA[Give me all writers that won the Nobel Prize in literature.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Schriftsteller, die den Literaturnobelpreis gewonnen haben.]]></string>
+<string lang="es"><![CDATA[Dame todos los escritores que hayan recibido el premio nobel de literatura.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli scrittori che hanno vinto il Premio Nobel della letteratura.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les auteurs qui ont gagné le prix Nobel de litérature.]]></string>
+<string lang="nl"><![CDATA[Toon alle schrijvers die de Nobelprijs in literatuur hebben gewonnen.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți scriitorii care au câștigat premiul Nobel pentru literatură.]]></string>
+<keywords lang="en"><![CDATA[writer, win, Nobel Prize in literature]]></keywords>
+<keywords lang="de"><![CDATA[Schritfsteller, Literaturnobelpreis]]></keywords>
+<keywords lang="es"><![CDATA[escritores, premio nobel de literatura]]></keywords>
+<keywords lang="it"><![CDATA[scrittori, Premio Nobel della Letteratura]]></keywords>
+<keywords lang="fr"><![CDATA[auteurs, prix Nobel de litérature]]></keywords>
+<keywords lang="nl"><![CDATA[schrijvers, Nobelprijs in literatuur, gewonnen]]></keywords>
+<keywords lang="ro"><![CDATA[scriitor, câștigat, premiul Nobel pentru literatură]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri rdf:type dbo:Writer .
+        ?uri dbo:award res:Nobel_Prize_in_Literature . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="string" id="42" onlydbo="true">
+<string lang="en"><![CDATA[What is the official color of the University of Oxford?]]></string>
+<string lang="de"><![CDATA[Was ist die offizielle Farbe der Universität Oxford?]]></string>
+<string lang="es"><![CDATA[¿Cuál es el color oficial de la Universidad de Oxford?]]></string>
+<string lang="it"><![CDATA[Qual è il colore ufficiale dell'Università di Oxford?]]></string>
+<string lang="fr"><![CDATA[Quelles sont les couleurs officielles de l'université d'Oxford?]]></string>
+<string lang="nl"><![CDATA[Wat is de officiële kleur van de universiteit Oxford?]]></string>
+<string lang="ro"><![CDATA[Care este culoarea oficială a Universității Oxford?]]></string>
+<keywords lang="en"><![CDATA[University of Oxford, official color]]></keywords>
+<keywords lang="de"><![CDATA[Universität Oxford, offizielle Farbe]]></keywords>
+<keywords lang="es"><![CDATA[Universidad de Oxford, color oficial]]></keywords>
+<keywords lang="it"><![CDATA[colore ufficiale, Università di Oxford]]></keywords>
+<keywords lang="fr"><![CDATA[couleurs officielles, université d'Oxford]]></keywords>
+<keywords lang="nl"><![CDATA[universiteit Oxford, officiële kleur]]></keywords>
+<keywords lang="ro"><![CDATA[Universitatea Oxford, culoare oficială]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?string
+WHERE {
+        res:University_of_Oxford dbo:officialSchoolColour ?string . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="43" onlydbo="true">
+<string lang="en"><![CDATA[Give me all Swedish oceanographers.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Schwedischen Ozeanographen.]]></string>
+<string lang="es"><![CDATA[Dame todos los oceanógrafos suecos.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli oceanografi svedesi.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les océanographes suédois.]]></string>
+<string lang="nl"><![CDATA[Toon alle Zweedse oceanograafen.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți oceanografii suedezi.]]></string>
+<keywords lang="en"><![CDATA[Swedish, oceanographer]]></keywords>
+<keywords lang="de"><![CDATA[Schwedisch, Ozeanographen]]></keywords>
+<keywords lang="es"><![CDATA[oceanógrafos suecos]]></keywords>
+<keywords lang="it"><![CDATA[svedesi, oceanografi]]></keywords>
+<keywords lang="fr"><![CDATA[Océanographes, suédois]]></keywords>
+<keywords lang="nl"><![CDATA[Zweedse, oceanograafen]]></keywords>
+<keywords lang="ro"><![CDATA[oceanograf, suedez]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri dbo:field res:Oceanography . 
+        ?uri dbo:birthPlace res:Sweden .        
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="number" id="44" onlydbo="true">
+<string lang="en"><![CDATA[How deep is Lake Placid?]]></string>
+<string lang="de"><![CDATA[Wie tief ist Lake Placid?]]></string>
+<string lang="es"><![CDATA[Cómo de hondo es el Lago Placid?]]></string>
+<string lang="it"><![CDATA[Quanto è profondo il Lake Placid?]]></string>
+<string lang="fr"><![CDATA[Quelle est la profondeur du lac Placid?]]></string>
+<string lang="nl"><![CDATA[Hoe diep is Lake Placid?]]></string>
+<string lang="ro"><![CDATA[Cât de adânc este lacul Placid?]]></string>
+<keywords lang="en"><![CDATA[Lake Placid, depth]]></keywords>
+<keywords lang="de"><![CDATA[Lake Placid, Tiefe]]></keywords>
+<keywords lang="es"><![CDATA[Lago Placid, profundidad]]></keywords>
+<keywords lang="it"><![CDATA[Lake Placid, profondità]]></keywords>
+<keywords lang="fr"><![CDATA[profondeur, lac Placid]]></keywords>
+<keywords lang="nl"><![CDATA[Lake Placid, diepte]]></keywords>
+<keywords lang="ro"><![CDATA[lacul Placid, adânc]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?n
+WHERE {
+        <http://dbpedia.org/resource/Lake_Placid_(Texas)> dbo:depth ?n . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="45" onlydbo="true">
+<string lang="en"><![CDATA[Is James Bond married?]]></string>
+<string lang="de"><![CDATA[Ist James Bond verheiratet?]]></string>
+<string lang="es"><![CDATA[¿Está James Bond casado?]]></string>
+<string lang="it"><![CDATA[James è Bond sposato?]]></string>
+<string lang="fr"><![CDATA[James Bond est-il marié?]]></string>
+<string lang="nl"><![CDATA[Is James Bond getrouwd?]]></string>
+<string lang="ro"><![CDATA[James Bond este căsătorit?]]></string>
+<keywords lang="en"><![CDATA[James Bond, married]]></keywords>
+<keywords lang="de"><![CDATA[James Bond, verheiratet]]></keywords>
+<keywords lang="es"><![CDATA[James Bond, casado]]></keywords>
+<keywords lang="it"><![CDATA[James Bond, sposato]]></keywords>
+<keywords lang="fr"><![CDATA[James Bond, marié]]></keywords>
+<keywords lang="nl"><![CDATA[James Bond, getrouwd]]></keywords>
+<keywords lang="ro"><![CDATA[James Bond, căsătorit]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+ASK 
+WHERE {
+        res:James_Bond dbo:spouse ?uri . 
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="uri" id="46" onlydbo="true">
+<string lang="en"><![CDATA[Which spaceflights were launched from Baikonur?]]></string>
+<string lang="de"><![CDATA[Welche Raumflüge sind von Baikonur gestartet?]]></string>
+<string lang="es"><![CDATA[¿Qué misiones espaciales partieron desde Baionur?]]></string>
+<string lang="it"><![CDATA[Quali viaggi spaziali furono lanciati da Baikonur?]]></string>
+<string lang="fr"><![CDATA[Quels navettes spatiales ont été lancées de Baikonur?]]></string>
+<string lang="nl"><![CDATA[Welke ruimtevluchten werden gestart vanuit Baikonur?]]></string>
+<string lang="ro"><![CDATA[Ce zboruri spațiale au fost lansate din Baikonur?]]></string>
+<keywords lang="en"><![CDATA[spaceflight, launched, Baikonur]]></keywords>
+<keywords lang="de"><![CDATA[Raumflüge, Start, Baikonur]]></keywords>
+<keywords lang="es"><![CDATA[misiones espaciales, salida, Baikonur]]></keywords>
+<keywords lang="it"><![CDATA[viaggi spaziali, lanciati, Baikonur]]></keywords>
+<keywords lang="fr"><![CDATA[navettes spatiales, lanchement, Baikonur]]></keywords>
+<keywords lang="nl"><![CDATA[ruimtevluchten, gestart, Baikonur]]></keywords>
+<keywords lang="ro"><![CDATA[zbor spațial, lansat, Baikonur]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri dbo:launchPad res:Baikonur_Cosmodrome .
+}
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="47" onlydbo="false">
+<string lang="en"><![CDATA[Give me all actors called Baldwin.]]></string>
+<string lang="de"><![CDATA[Gib mir alle Schauspieler, die Baldwin heißen.]]></string>
+<string lang="es"><![CDATA[Dame todos los actores llamados Baldwin.]]></string>
+<string lang="it"><![CDATA[Dammi tutti gli attori che si chiamano Baldwin.]]></string>
+<string lang="fr"><![CDATA[Donne-moi tous les acteurs appelés Baldwin.]]></string>
+<string lang="nl"><![CDATA[Toon alle acteurs die Baldwin heten.]]></string>
+<string lang="ro"><![CDATA[Dă-mi toți actorii numiți Baldwin.]]></string>
+<keywords lang="en"><![CDATA[actors, called, Baldwin]]></keywords>
+<keywords lang="de"><![CDATA[Schauspieler, heißen, Baldwin]]></keywords>
+<keywords lang="es"><![CDATA[actores, llamados Baldwin]]></keywords>
+<keywords lang="it"><![CDATA[attori, chiamarsi, Baldwin]]></keywords>
+<keywords lang="fr"><![CDATA[Acteury, appelés, Baldwin]]></keywords>
+<keywords lang="nl"><![CDATA[acteurs, heten, Baldwin]]></keywords>
+<keywords lang="ro"><![CDATA[actori, numit, Baldwin]]></keywords>
+<query><![CDATA[
+PREFIX dbo:  <http://dbpedia.org/ontology/>
+PREFIX res:  <http://dbpedia.org/resource/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri foaf:surname "Baldwin"@en . 
+      { ?uri dbo:occupation res:Actor . } 
+      UNION 
+      { ?uri rdf:type dbo:Actor . }
+}
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="48" onlydbo="true">
+<string lang="en"><![CDATA[What does CPU stand for?]]></string>
+<string lang="de"><![CDATA[Wofür steht CPU?]]></string>
+<string lang="es"><![CDATA[¿Qué abrevia CPU?]]></string>
+<string lang="it"><![CDATA[Che cosa significa CPU?]]></string>
+<string lang="fr"><![CDATA[Que veut dire CPU?]]></string>
+<string lang="nl"><![CDATA[Waarvoor staat de afkorting CPU?]]></string>
+<string lang="ro"><![CDATA[Ce înseamnă CPU?]]></string>
+<keywords lang="en"><![CDATA[CPU, stand for]]></keywords>
+<keywords lang="de"><![CDATA[CPU, stehen für]]></keywords>
+<keywords lang="es"><![CDATA[CPU, abreviación]]></keywords>
+<keywords lang="it"><![CDATA[CPU, significato]]></keywords>
+<keywords lang="fr"><![CDATA[CPU, signification]]></keywords>
+<keywords lang="nl"><![CDATA[CPU, staat voor]]></keywords>
+<keywords lang="ro"><![CDATA[CPU, înseamnă]]></keywords>
+<query><![CDATA[
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX res: <http://dbpedia.org/resource/>
+SELECT DISTINCT ?uri
+WHERE {
+        ?uri dbo:abbreviation "CPU"@en .
+} 
+]]>
+</query>
+</question>
+
+<question aggregation="false" answertype="resource" id="49" onlydbo="true">
+<string lang="en"><![CDATA[In which studio did the Beatles record their first album?]]></string>
+<string lang="de"><![CDATA[In welchem Studio haben die Beatles ihr erstes Album aufgenommen?]]></string>
+<string lang="es"><![CDATA[¿En qué estudio grabaron los Beatles su primer album?]]></string>
+<string lang="it"><![CDATA[In quali studio i Beatles hanno registrato il loro primo album?]]></string>
+<string lang="fr"><![CDATA[Dans quel studio a été enregistré le premier album des Beatles?]]></string>
+<string lang="nl"><![CDATA[In welke studio hadden de Beatles hun eerste album opgenomen?]]></string>
+<string lang="ro"><![CDATA[În ce studio au înregistrat Beatles primul lor albunm?]]></string>
+<keywords lang="en"><![CDATA[Beatles, record, first album, studio]]></keywords>
+<keywords lang="de"><![CDATA[Beatles, erstes Album, aufgenommen, Studio]]></keywords>
+<keywords lang="es"><![CDATA[Beatles, primer album, estudio]]></keywords>
+<keywords lang="it"><![CDATA[Beatles, registrare, primo album, studio]]></keywords>
+<keywords lang="fr"><![CDATA[Beatles, enregistré, premier album, studio]]></keywords>
+<keywords lang="nl"><![CDATA[Beatles, eerste album, opgenomen, studio]]></keywords>
+<keywords lang="ro"><![CDATA[Beatles, înregistrat, primul album, studio]]></keywords>
+<query><![CDATA[OUT OF SCOPE]]></query>
+</question>
+
+<question aggregation="false" answertype="resource" id="50" onlydbo="true">
+<string lang="en"><![CDATA[How many gold medals did Michael Phelps win at the 2008 Olympics?]]></string>
+<string lang="de"><![CDATA[Wieviele Goldmedaillen hat Michael Phelps während der Olympischen Spiele 2008 gewonnen?]]></string>
+<string lang="es"><![CDATA[¿Cuántas medallas de oro ganó Michael Phelps durante los juegos olímpicos de 2008?]]></string>
+<string lang="it"><![CDATA[Quante medaglie d'oro ha vinto Michael Phelps alle Olimpiadi del 2008?]]></string>
+<string lang="fr"><![CDATA[Combien de médailles d'or Michael Phelps a-t-il gagné aux jeux olympiques de 2008?]]></string>
+<string lang="nl"><![CDATA[Hoeveel gouden medailles heeft Michael Phelps op de Olympische Spelen van 2008 gewonnen?]]></string>
+<string lang="ro"><![CDATA[Câte medalii de aur a câștigat Michael Phelps la olimpiada din 2008?]]></string>
+<keywords lang="en"><![CDATA[Michael Phelps, gold medals, 2008 Olpympics]]></keywords>
+<keywords lang="de"><![CDATA[Michael Phelps, Goldmedaillen, Olympische Spiele 2008]]></keywords>
+<keywords lang="es"><![CDATA[Michael Phelps, medallas de oro, juegos olímpicos, 2008]]></keywords>
+<keywords lang="it"><![CDATA[Michael Phelps, medaglie d'oro, Olimpiadi del 2008]]></keywords>
+<keywords lang="fr"><![CDATA[Michael Phelps, médailles d'or, jeux olympiques, 2008]]></keywords>
+<keywords lang="nl"><![CDATA[Michael Phelps, gouden medailles, gewonnen, Olympische Spelen 2008]]></keywords>
+<keywords lang="ro"><![CDATA[Michael Phelps, medalii de aur, olimpiada din 2008]]></keywords>
+<query><![CDATA[OUT OF SCOPE]]></query>
+</question>
+</dataset>

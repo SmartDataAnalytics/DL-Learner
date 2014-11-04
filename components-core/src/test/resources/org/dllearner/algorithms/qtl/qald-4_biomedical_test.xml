@@ -1,0 +1,221 @@
+<?xml version="1.0" ?>
+<dataset id="qald-4_biomedical_test">
+
+<question id="1">
+<string lang="en"><![CDATA[Which genes are associated with Endothelin receptor type B?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/EDNRB>}
+]]>
+</query>
+</question>
+
+<question id="2">
+<string lang="en"><![CDATA[Which genes are associated with subtypes of rickets?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?z WHERE {?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseaseSubtypeOf> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/1004>. ?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> ?z. } 
+]]>
+</query>
+</question>
+
+<question id="3">
+<string lang="en"><![CDATA[Which drug has the highest number of side-effects?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y. } GROUP BY ?x ORDER BY DESC(COUNT(?y)) LIMIT 1
+]]>
+</query>
+</question>
+
+<question id="4">
+<string lang="en"><![CDATA[List drugs that lead to strokes and arthrosis.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?k. ?k <http://www.w3.org/2002/07/owl#sameAs> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/1098>. ?x <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> <http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/C0022408>}
+]]>
+</query>
+</question>
+
+
+<question id="5">
+<string lang="en"><![CDATA[Which drugs have a water solubility of 2.78e-01 mg/mL?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/predictedWaterSolubility> "2.78e-01 mg/mL".}
+]]>
+</query>
+</question>
+
+
+<question id="6">
+<string lang="en"><![CDATA[Give me the side-effects drugs with a solubility of 3.24e-02 mg/mL.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?k WHERE {?x <http://www.w3.org/2002/07/owl#sameAs> ?y. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/predictedWaterSolubility> "3.24e-02 mg/mL". ?y <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?k} 
+]]>
+</query>
+</question>
+
+
+<question id="7">
+<string lang="en"><![CDATA[Which diseases are associated with SAR1B?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?c WHERE {?c a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseases>. ?c <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/SAR1B>. }
+]]>
+</query>
+</question>
+
+
+<question id="8">
+<string lang="en"><![CDATA[Which experimental drugs interact with food?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugs>. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugType> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugtype/experimental>. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/foodInteraction> ?k. }
+]]>
+</query>
+</question>
+
+
+<question id="9">
+<string lang="en"><![CDATA[Which approved drugs interact with fibers?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugs>. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugType> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugtype/approved>. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/foodInteraction> ?k. FILTER (contains(str(?k), "fibers")) }
+]]>
+</query>
+</question>
+
+
+<question id="10">
+<string lang="en"><![CDATA[Which drugs interact with food and have HIV infections as side-effects?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugs>. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/foodInteraction> ?k. ?x <http://www.w3.org/2002/07/owl#sameAs> ?z. ?z <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> <http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/C0019693> }
+]]>
+</query>
+</question>
+
+
+<question id="11">
+<string lang="en"><![CDATA[Give me diseases whose possible drugs target the elongation factor 2.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?y. ?y <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/3341>} 
+]]>
+</query>
+</question>
+
+<question id="12">
+<string lang="en"><![CDATA[Which drugs achieve a protein binding of 100%?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/proteinBinding> "100%" } 
+]]>
+</query>
+</question>
+
+<question id="13">
+<string lang="en"><![CDATA[List illnesses that are treated by drugs whose mechanism of action involves norepinephrine and serotonin.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?a WHERE {?a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?x. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/mechanismOfAction> ?y. FILTER(contains(str(?y), "norepinephrine")) . FILTER(contains(str(?y), "serotonin")) } 
+]]>
+</query>
+</question>
+
+
+<question id="14">
+<string lang="en"><![CDATA[Which is the least common chromosome location?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?b WHERE {?a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/chromosomeLocation> ?b } GROUP BY (?b) ORDER BY ASC(COUNT(?a)) LIMIT 1
+]]>
+</query>
+</question>
+
+
+<question id="15">
+<string lang="en"><![CDATA[Are there drugs that target the Protein kinase C beta type?]]></string>
+<query><![CDATA[
+ASK WHERE {?a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/997> }
+]]>
+</query>
+</question>
+
+
+<question id="16">
+<string lang="en"><![CDATA[Give me all diseases of the connective tissue class.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?a WHERE {?a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/class> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseaseClass/Connective_tissue>. }
+]]>
+</query>
+</question>
+
+<question id="17">
+<string lang="en"><![CDATA[Which targets are involved in blood clotting?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?a WHERE {?a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/generalFunction> ?l. FILTER(contains(str(?l), "blood clotting"))}
+]]>
+</query>
+</question>
+
+<question id="18">
+<string lang="en"><![CDATA[List the number of distinct side-effects of drugs which target genes whose general function involves cell division.]]></string>
+<query><![CDATA[
+SELECT COUNT(DISTINCT ?y) WHERE {?x <http://www.w3.org/2002/07/owl#sameAs> ?z. ?z <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y. ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> ?a. ?a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/generalFunction> ?l. FILTER(contains(str(?l), "cell division"))}
+]]>
+</query>
+</question>
+
+<question id="19">
+<string lang="en"><![CDATA[Which drugs have no side-effects?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?z WHERE {{?z a <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/drugs>} MINUS {?z <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y.} }
+]]>
+</query>
+</question>
+
+
+<question id="20">
+<string lang="en"><![CDATA[List diseases whose possible drugs have no side effects.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?k WHERE {{?k <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?l. ?l <http://www.w3.org/2002/07/owl#sameAs> ?z. ?z a <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/drugs>} MINUS {?z <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y.} }
+]]>
+</query>
+</question>
+
+
+<question id="21">
+<string lang="en"><![CDATA[Give me the drug categories of Desoxyn.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?y WHERE {?k <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/brandName> "Desoxyn". ?k <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugCategory> ?y }
+]]>
+</query>
+</question>
+
+
+<question id="22">
+<string lang="en"><![CDATA[Give me drugs in the gaseous state.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?k WHERE {?k <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/state> "Gas" }
+]]>
+</query>
+</question>
+
+
+<question id="23">
+<string lang="en"><![CDATA[Which disease has the largest size?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?k WHERE {?k <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/size> ?l} ORDER BY DESC(?l) LIMIT 1
+]]>
+</query>
+</question>
+
+
+<question id="24">
+<string lang="en"><![CDATA[Which drugs have bipolar disorder as indication?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/indication> ?k. FILTER (contains (str(?k), "bipolar disorder")) }
+]]>
+</query>
+</question>
+
+
+<question id="25">
+<string lang="en"><![CDATA[Which diseases have a class degree of 11?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x WHERE {?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/classDegree> "11"^^<http://www.w3.org/2001/XMLSchema#int>}
+]]>
+</query>
+</question>
+
+
+</dataset>
