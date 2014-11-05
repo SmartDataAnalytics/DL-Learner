@@ -6,6 +6,7 @@ package org.dllearner.algorithms.qtl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -86,6 +87,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
@@ -171,7 +173,7 @@ public class QALDExperiment {
 	
 	List<String> questionFiles;
 	QueryExecutionFactory qef;
-	String cacheDirectory = "cache";
+	String cacheDirectory = "cache/qtl";
 	
 	int minNrOfPositiveExamples = 5;
 	int maxDepth = 2;
@@ -377,6 +379,7 @@ public class QALDExperiment {
 		// pick some random positive examples from the list
 		Collections.shuffle(resources, randomGen);
 		List<String> examples = resources.subList(0, Math.min(maxNrOfExamples, resources.size()));
+		logger.info("Pos. examples: " + examples);
 		
 		// add some noise by using instances close to the positive examples
 		List<String> negativeExamples = new ArrayList<>(generateNegativeExamples(sparqlQuery));
@@ -391,7 +394,7 @@ public class QALDExperiment {
 				// add one of the negative examples
 				String negExample = negativeExamples.remove(0);
 				newExamples.add(negExample);
-				logger.trace("Replacing " + posExample + " by " + negExample);
+				logger.info("Replacing " + posExample + " by " + negExample);
 			}
 		}
 		examples.addAll(newExamples);
@@ -565,7 +568,7 @@ public class QALDExperiment {
 		
 		negExamples.removeAll(posExamples);
 		if(negExamples.isEmpty()){
-			logger.error("Found no negative examples.");
+			logger.error("Found no negative example.");
 			System.exit(0);
 		}
 		return negExamples;
@@ -584,7 +587,7 @@ public class QALDExperiment {
 	private QueryTree<String> getQueryTree(String resource){
 		Model cbd = cbdGen.getConciseBoundedDescription(resource);
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
-			cbd.write(baos, "TURTLE", null);
+			cbd.write(baos, "N-TRIPLES", null);
 			String modelAsString = new String(baos.toByteArray());
 			modelAsString = modelAsString.replace("NAN", "NaN");
 			Model newModel = ModelFactory.createDefaultModel();
@@ -995,6 +998,36 @@ public class QALDExperiment {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		String query = "CONSTRUCT {\n" + 
+				"<http://dbpedia.org/resource/Freddie_Hubbard> ?p0 ?o0.\n" + 
+				"?o0 ?p1 ?o1.\n" + 
+				"}\n" + 
+				"WHERE {\n" + 
+				"<http://dbpedia.org/resource/Freddie_Hubbard> ?p0 ?o0.\n" + 
+				"OPTIONAL{\n" + 
+				"?o0 ?p1 ?o1.\n" + 
+				"}}";
+		
+		QueryEngineHTTP qe = new QueryEngineHTTP("http://akswnc3.informatik.uni-leipzig.de:8860/sparql", query);
+		qe.setDefaultGraphURIs(Lists.newArrayList("http://dbpedia.org"));
+		Model model = qe.execConstruct();
+		model.write(new FileOutputStream("/tmp/test.ttl"), "TURTLE", null);
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp("http://akswnc3.informatik.uni-leipzig.de:8860/sparql",
+				"http://dbpedia.org");
+		long timeToLive = TimeUnit.DAYS.toMillis(60);
+		CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend("/tmp/sparql-cache", false, timeToLive);
+		qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		cbdGen.setRecursionDepth(2);
+		
+		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Freddie_Hubbard");
+		cbd.write(new FileOutputStream("/tmp/test2.ttl"), "TURTLE", null);
+//		System.exit(0);
+		
+		
+		
+		
+		
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
