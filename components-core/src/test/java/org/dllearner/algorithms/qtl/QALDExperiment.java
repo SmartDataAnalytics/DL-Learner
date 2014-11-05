@@ -83,6 +83,7 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
@@ -534,16 +535,17 @@ public class QALDExperiment {
 						newTriplePatterns.remove(tp);
 						newTriplePatterns.add(newTp);
 						
-						ElementFilter filter = new ElementFilter(new E_NotEquals(new ExprVar(var), NodeValue.makeNode(tp.getObject())));
+						ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
+						triplesBlock.addTriple(tp);
+						ElementGroup eg = new ElementGroup();
+						eg.addElement(triplesBlock);
+						ElementFilter filter = new ElementFilter(new E_NotExists(eg));
 						filters.add(filter);
 					}
 				}
 				Query q = new Query();
 				q.addProjectVars(query.getProjectVars());
-				ElementTriplesBlock tripleBlock = new ElementTriplesBlock();
-				for (Triple triple : newTriplePatterns) {
-					tripleBlock.addTriple(triple);
-				}
+				ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(newTriplePatterns));
 				ElementGroup eg = new ElementGroup();
 				eg.addElement(tripleBlock);
 				
@@ -554,6 +556,7 @@ public class QALDExperiment {
 				q.setQuerySelectType();
 				q.setDistinct(true);
 				q.setQueryPattern(eg);
+				System.out.println(q);
 				
 				List<String> result = getResult(q.toString());
 				negExamples.addAll(result);
