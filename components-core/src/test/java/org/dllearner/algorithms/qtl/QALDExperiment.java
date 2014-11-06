@@ -515,67 +515,74 @@ public class QALDExperiment {
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
 		Set<String> negExamples = new HashSet<String>();
-		// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-		Set<Set<Triple>> powerSet = new TreeSet<>(new Comparator<Set<Triple>>() {
-
-			@Override
-			public int compare(Set<Triple> o1, Set<Triple> o2) {
-				return ComparisonChain.start().compare(o1.size(), o2.size()).compare(o1.hashCode(), o2.hashCode()).result();
-			}
-		});
-		powerSet.addAll(Sets.powerSet(triplePatterns));
 		
-		for (Set<Triple> set : powerSet) {
-			if(!set.isEmpty() && set.size() != triplePatterns.size()){
-				List<Triple> existingTriplePatterns = new ArrayList<>(triplePatterns);
-				List<Triple> newTriplePatterns = new ArrayList<>();
-				List<ElementFilter> filters = new ArrayList<ElementFilter>();
-				int cnt = 0;
-				for (Triple tp : set) {
-					if(tp.getObject().isURI() || tp.getObject().isLiteral()){
-						Node var = NodeFactory.createVariable("var" + cnt++);
-						Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
-						
-						existingTriplePatterns.remove(tp);
-						newTriplePatterns.add(newTp);
-						
-						ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
-						triplesBlock.addTriple(tp);
-						
-						ElementGroup eg = new ElementGroup();
-						eg.addElement(triplesBlock);
-						
-						ElementFilter filter = new ElementFilter(new E_NotExists(eg));
-						filters.add(filter);
+		if(triplePatterns.size() == 1){
+			Triple tp = triplePatterns.iterator().next();
+			Node var = NodeFactory.createVariable("var");
+			Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
+			
+			ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
+			triplesBlock.addTriple(newTp);
+			
+			ElementFilter filter = new ElementFilter(new E_NotEquals(new ExprVar(var), NodeValue.makeNode(tp.getObject())));
+			
+			ElementGroup eg = new ElementGroup();
+			eg.addElement(triplesBlock);
+			eg.addElementFilter(filter);
+			
+			Query q = new Query();
+			q.setQuerySelectType();
+			q.setDistinct(true);
+			q.addProjectVars(query.getProjectVars());
+			
+			q.setQueryPattern(eg);
+			System.out.println(q);
+			
+			List<String> result = getResult(q.toString());
+			negExamples.addAll(result);
+		} else {
+			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
+			Set<Set<Triple>> powerSet = new TreeSet<>(new Comparator<Set<Triple>>() {
+
+				@Override
+				public int compare(Set<Triple> o1, Set<Triple> o2) {
+					return ComparisonChain.start().compare(o1.size(), o2.size()).compare(o1.hashCode(), o2.hashCode()).result();
+				}
+			});
+			powerSet.addAll(Sets.powerSet(triplePatterns));
+			
+			for (Set<Triple> set : powerSet) {
+				if(!set.isEmpty() && set.size() != triplePatterns.size()){
+					List<Triple> existingTriplePatterns = new ArrayList<>(triplePatterns);
+					List<Triple> newTriplePatterns = new ArrayList<>();
+					List<ElementFilter> filters = new ArrayList<ElementFilter>();
+					int cnt = 0;
+					for (Triple tp : set) {
+						if(tp.getObject().isURI() || tp.getObject().isLiteral()){
+							Node var = NodeFactory.createVariable("var" + cnt++);
+							Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
+							
+							existingTriplePatterns.remove(tp);
+							newTriplePatterns.add(newTp);
+							
+							ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
+							triplesBlock.addTriple(tp);
+							
+							ElementGroup eg = new ElementGroup();
+							eg.addElement(triplesBlock);
+							
+							ElementFilter filter = new ElementFilter(new E_NotExists(eg));
+							filters.add(filter);
+						}
 					}
-				}
-				Query q = new Query();
-				q.setQuerySelectType();
-				q.setDistinct(true);
-				q.addProjectVars(query.getProjectVars());
-				List<Triple> allTriplePatterns = new ArrayList<Triple>(existingTriplePatterns);
-				allTriplePatterns.addAll(newTriplePatterns);
-				ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(allTriplePatterns));
-				ElementGroup eg = new ElementGroup();
-				eg.addElement(tripleBlock);
-				
-				for (ElementFilter filter : filters) {
-					eg.addElementFilter(filter);
-				}
-				
-				q.setQueryPattern(eg);
-				System.out.println(q);
-				
-				List<String> result = getResult(q.toString());
-				result.removeAll(posExamples);
-				
-				if(result.isEmpty()){
-					q = new Query();
+					Query q = new Query();
 					q.setQuerySelectType();
 					q.setDistinct(true);
 					q.addProjectVars(query.getProjectVars());
-					tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(existingTriplePatterns));
-					eg = new ElementGroup();
+					List<Triple> allTriplePatterns = new ArrayList<Triple>(existingTriplePatterns);
+					allTriplePatterns.addAll(newTriplePatterns);
+					ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(allTriplePatterns));
+					ElementGroup eg = new ElementGroup();
 					eg.addElement(tripleBlock);
 					
 					for (ElementFilter filter : filters) {
@@ -585,10 +592,30 @@ public class QALDExperiment {
 					q.setQueryPattern(eg);
 					System.out.println(q);
 					
-					result = getResult(q.toString());
+					List<String> result = getResult(q.toString());
 					result.removeAll(posExamples);
+					
+					if(result.isEmpty()){
+						q = new Query();
+						q.setQuerySelectType();
+						q.setDistinct(true);
+						q.addProjectVars(query.getProjectVars());
+						tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(existingTriplePatterns));
+						eg = new ElementGroup();
+						eg.addElement(tripleBlock);
+						
+						for (ElementFilter filter : filters) {
+							eg.addElementFilter(filter);
+						}
+						
+						q.setQueryPattern(eg);
+						System.out.println(q);
+						
+						result = getResult(q.toString());
+						result.removeAll(posExamples);
+					}
+					negExamples.addAll(result);
 				}
-				negExamples.addAll(result);
 			}
 		}
 		

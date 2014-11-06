@@ -348,12 +348,16 @@ public class QueryUtils extends ElementVisitorBase {
 			if(inOptionalClause){
 				if(tp.isTriple()){
 					optionalTriplePattern.add(tp.asTriple());
-					triple2Parent.put(tp.asTriple(), parents.peek());
+					if(!parents.isEmpty()){
+						triple2Parent.put(tp.asTriple(), parents.peek());
+					}
 				}
 			} else {
 				if(tp.isTriple()){
 					triplePattern.add(tp.asTriple());
-					triple2Parent.put(tp.asTriple(), parents.peek());
+					if(!parents.isEmpty()){
+						triple2Parent.put(tp.asTriple(), parents.peek());
+					}
 				}
 			}
 			
