@@ -612,7 +612,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				}
 			}
 		}
-		
 		// this should practically never be called, since for any reasonable learning
 		// task, we will always have at least one node with less than 100% accuracy
 		return nodes.last();

@@ -70,6 +70,7 @@ import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.RoleComparator;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
+import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
@@ -103,6 +104,8 @@ import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.BufferingMode;
+import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
 import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
 import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
@@ -113,10 +116,12 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.NullReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.ReasonerInternalException;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -132,7 +137,7 @@ import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently
- * supports three reasoners: FaCT++, HermiT and Pellet. FaCT++ is connected
+ * supports three reasoners: FaCT++, HermiT, ELK, TrOWL and Pellet. FaCT++ is connected
  * using JNI and native libraries, while HermiT and Pellet are pure Java
  * libraries.
  *
@@ -183,6 +188,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private String owlLinkURL;
 
 
+    private OWLReasoner fallbackReasoner;
+    private boolean useFallbackReasoner = false;
+    
     public OWLAPIReasoner() {
 
     }
@@ -306,7 +314,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Using FaCT++.");
         } else if (getReasonerTypeString().equals("hermit")) {
             // instantiate HermiT reasoner
             reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
@@ -320,6 +327,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         } else if (getReasonerTypeString().equals("elk")) {
             // instantiate ELK reasoner
             reasoner = new ElkReasonerFactory().createNonBufferingReasoner(ontology, conf);
+            Logger.getLogger(ElkReasoner.class).setLevel(Level.WARN);
         } else if (getReasonerTypeString().equals("cel")) {
             // instantiate CEL reasoner
             reasoner = new CelReasoner(ontology, conf);
@@ -337,6 +345,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //				e.printStackTrace();
                 throw new ComponentInitException(e);
             }
+        }
+        
+        if(useFallbackReasoner){
+        	fallbackReasoner = new StructuralReasoner(ontology, conf, BufferingMode.NON_BUFFERING);
         }
 
         /*
@@ -544,24 +556,53 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     protected boolean isEquivalentClassImpl(Description class1, Description class2) {
-        return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class1), OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class2)));
+        OWLClassExpression ce1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class1);
+		OWLClassExpression ce2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class2);
+		if(ce1.isAnonymous() && ce2.isAnonymous()){
+			return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(ce1, ce2));
+		} else if(ce1.isAnonymous()){
+			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce1);
+			return equivalentClasses.contains(ce2.asOWLClass());
+		} else if(ce2.isAnonymous()){
+			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce2);
+			return equivalentClasses.contains(ce1.asOWLClass());
+		} else {
+			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce2);
+			return equivalentClasses.contains(ce1.asOWLClass());
+		}
+		
+		
     }
 
     @Override
     protected TreeSet<Description> getSuperClassesImpl(Description concept) {
-        NodeSet<OWLClass> classes = null;
-
-        classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-
+        NodeSet<OWLClass> classes;
+		try {
+			classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+		} catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				classes = fallbackReasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstClasses(classes);
     }
 
     @Override
     protected TreeSet<Description> getSubClassesImpl(Description concept) {
-        NodeSet<OWLClass> classes = null;
-
-        classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-
+        NodeSet<OWLClass> classes;
+        try {
+        	classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+        } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				classes = fallbackReasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstClasses(classes);
     }
     
@@ -577,46 +618,91 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     @Override
     protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
         NodeSet<OWLObjectPropertyExpression> properties = null;
-
-        properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-
+        try {
+        	properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+	    } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				properties = fallbackReasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstObjectProperties(properties);
     }
 
     @Override
     protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
         NodeSet<OWLObjectPropertyExpression> properties = null;
-
-        properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-
+        try {
+        	properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+	    } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				properties = fallbackReasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstObjectProperties(properties);
     }
 
     @Override
     protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
         NodeSet<OWLDataProperty> properties = null;
-
-        properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-
+        try {
+        	properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+	    } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				properties = fallbackReasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstDatatypeProperties(properties);
     }
 
     @Override
     protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
         NodeSet<OWLDataProperty> properties = null;
-
-        properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-
+        try {
+        	properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+	    } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				properties = fallbackReasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
+			} else {
+				throw e;
+			}
+		} 
         return getFirstDatatypeProperties(properties);
     }
 
     @Override
     public boolean hasTypeImpl(Description concept, Individual individual) {
         OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
-        OWLIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-        if(concept instanceof  Thing) return true;
+        OWLNamedIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
+        
+        if(concept instanceof  Thing) {
+        	return true;
+        }
         if(concept instanceof NamedClass && ((NamedClass)concept).getName().contains("Error"))return false;
-        return reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
+        
+        boolean entailed;
+		try {
+			entailed = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
+		} catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				NodeSet<OWLClass> types = fallbackReasoner.getTypes(i, false);
+				entailed = types.getFlattened().contains(d);
+			} else {
+				throw e;
+			}
+		}
+        
+        return entailed;
     }
 
     @Override
@@ -634,9 +720,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     @Override
     public Set<NamedClass> getTypesImpl(Individual individual) {
         Set<Node<OWLClass>> result = null;
-
-        result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())), false).getNodes();
-
+        try {
+        	result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())), false).getNodes();
+	    } catch (Exception e) {
+			if(useFallbackReasoner){
+				logger.warn("Using fallback reasoner.");
+				result = fallbackReasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())), false).getNodes();
+			} else {
+				throw e;
+			}
+		} 
         return getFirstClassesNoTopBottom(result);
     }
 
@@ -653,59 +746,68 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         // general than the actual domain/range
         NodeSet<OWLClass> set;
 		try {
-			set = reasoner.getObjectPropertyDomains(prop, false);
-			return getDescriptionFromReturnedDomain(set);
-		} catch (InconsistentOntologyException e) {
-			e.printStackTrace();
-		} catch (FreshEntitiesException e) {
-			e.printStackTrace();
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		} catch (ReasonerInterruptedException e) {
-			e.printStackTrace();
-		} catch(de.tudresden.inf.lat.cel.owlapi.UnsupportedReasonerOperationInCelException e){
-			e.printStackTrace();
+			set = reasoner.getObjectPropertyDomains(prop, true);
+		} catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				set = fallbackReasoner.getObjectPropertyDomains(prop, true);
+			} else {
+				throw e;
+			}
 		}
-        return Thing.instance;
-
+		if(set.isEmpty() || set.getNodes().iterator().next().getSize() == 0){
+			return Thing.instance;
+		}
+		return getDescriptionFromReturnedDomain(set);
     }
 
     @Override
     public Description getDomainImpl(DatatypeProperty datatypeProperty) {
         OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
 
-        NodeSet<OWLClass> set = reasoner.getDataPropertyDomains(prop, true);
+        NodeSet<OWLClass> set;
+        try {
+        	set = reasoner.getDataPropertyDomains(prop, true);
+	    } catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				set = fallbackReasoner.getDataPropertyDomains(prop, true);
+			} else {
+				throw e;
+			}
+		}
+        if(set.isEmpty() || set.getNodes().iterator().next().getSize() == 0){
+			return Thing.instance;
+		}
         return getDescriptionFromReturnedDomain(set);
 
     }
 
-    @Override
-    public Description getRangeImpl(ObjectProperty objectProperty) {
-        OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
-
-        NodeSet<OWLClass> set;
+	@Override
+	public Description getRangeImpl(ObjectProperty objectProperty) {
+		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
+		
+		NodeSet<OWLClass> set;
 		try {
 			set = reasoner.getObjectPropertyRanges(prop, true);
-			 if (set.isEmpty()) return new Thing();
-		        OWLClass oc = set.iterator().next().getRepresentativeElement();
-		        if (oc.isOWLThing()) {
-		            return Thing.instance;
-		        }
-		        return new NamedClass(oc.toStringID());
-		} catch (InconsistentOntologyException e) {
-			e.printStackTrace();
-		} catch (FreshEntitiesException e) {
-			e.printStackTrace();
-		} catch (TimeOutException e) {
-			e.printStackTrace();
-		} catch (ReasonerInterruptedException e) {
-			e.printStackTrace();
-		} catch(de.tudresden.inf.lat.cel.owlapi.UnsupportedReasonerOperationInCelException e){
-			e.printStackTrace();
+		} catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				set = fallbackReasoner.getObjectPropertyRanges(prop, true);
+			} else {
+				throw e;
+			}
 		}
-       return Thing.instance;
 
-    }
+		if (set.isEmpty()) {
+			return Thing.instance;
+		}
+		Node<OWLClass> node = set.iterator().next();
+		if (node.getSize() == 0 || node.getRepresentativeElement().isOWLThing()) {
+			return Thing.instance;
+		}
+		return new NamedClass(node.getRepresentativeElement().toStringID());
+	}
     
     @Override
     public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
@@ -764,7 +866,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
 
             // get all related individuals via OWL API
-            Set<OWLNamedIndividual> inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
+			Set<OWLNamedIndividual> inds;
+			try {
+				inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
+			} catch (Exception e) {
+				if (useFallbackReasoner) {
+					logger.warn("Using fallback reasoner.");
+					inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
+				} else {
+					throw e;
+				}
+			}
 
             // convert data back to DL-Learner structures
             SortedSet<Individual> is = new TreeSet<Individual>();
@@ -785,9 +897,20 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //		Map<OWLObjectPropertyExpression, Set<OWLIndividual>> mapAPI = ind.getObjectPropertyValues(ontology);
         //no method found in the new reasoner interface, so we have to ask the reasoner for each property in the ontology
-        for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)) {
-            mapAPI.put(prop, reasoner.getObjectPropertyValues(ind, prop).getFlattened());
-        }
+		for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)) {
+			Set<OWLNamedIndividual> inds;
+			try {
+				inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
+			} catch (Exception e) {
+				if (useFallbackReasoner) {
+					logger.warn("Using fallback reasoner.");
+					inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
+				} else {
+					throw e;
+				}
+			}
+			mapAPI.put(prop, inds);
+		}
 
         Map<ObjectProperty, Set<Individual>> map = new TreeMap<ObjectProperty, Set<Individual>>();
         for (Entry<OWLObjectPropertyExpression, Set<OWLNamedIndividual>> entry : mapAPI.entrySet()) {
@@ -804,7 +927,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
         Set<OWLNamedIndividual> inds = null;
 
-        inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
+        try {
+        	inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
+        } catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
+			} else {
+				throw e;
+			}
+		}
 
         // convert data back to DL-Learner structures
         SortedSet<Individual> is = new TreeSet<Individual>();
@@ -820,8 +952,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
         Set<OWLLiteral> constants = null;
 
-        constants = reasoner.getDataPropertyValues(ind, prop);
-
+		try {
+			constants = reasoner.getDataPropertyValues(ind, prop);
+		} catch (Exception e) {
+			if (useFallbackReasoner) {
+				logger.warn("Using fallback reasoner.");
+				constants = fallbackReasoner.getDataPropertyValues(ind, prop);
+			} else {
+				throw e;
+			}
+		}
         return OWLAPIConverter.convertConstants(constants);
     }
 
@@ -972,6 +1112,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Some reasoner implementations do not support all operations yet.
+     * In that case a fallback reasoner based only on the asserted
+     * axioms can be enabled.
+	 * @param useFallbackReasoner whether to enable a fallback reasoner
+	 */
+	public void setUseFallbackReasoner(boolean useFallbackReasoner) {
+		this.useFallbackReasoner = useFallbackReasoner;
+	}
 
     /**
      * Test
