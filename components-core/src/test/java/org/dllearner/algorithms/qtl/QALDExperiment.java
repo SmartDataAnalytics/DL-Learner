@@ -328,13 +328,6 @@ public class QALDExperiment {
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 						}
 						
-						System.out.println(bestSolution.getTree().getStringRepresentation(true));
-						System.out.println(bestSolution.getTree().asOWLClassExpression());
-						for (QueryTree<String>  uncoveredTree : bestSolution.getFalseNegatives()) {
-							logger.info(uncoveredTree.asOWLClassExpression());
-							System.out.println(uncoveredTree.isSubsumedBy(bestSolution.getTree()));
-						}
-						
 					} catch (Exception e) {
 						logger.error("Error occured.", e);
 					}
