@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.apache.commons.collections15.ListUtils;
 
@@ -35,6 +36,10 @@ public class QueryUtils extends ElementVisitorBase {
 	private int unionCount = 0;
 	private int optionalCount = 0;
 	private int filterCount = 0;
+	
+	private Map<Triple, ElementGroup> triple2Parent = new HashMap<Triple, ElementGroup>();
+	
+	Stack<ElementGroup> parents = new Stack<ElementGroup>();
 	
 	/**
 	 * Returns all variables that occur in a triple pattern of the SPARQL query.
@@ -305,10 +310,12 @@ public class QueryUtils extends ElementVisitorBase {
 	
 	@Override
 	public void visit(ElementGroup el) {
+		parents.push(el);
 		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
 			Element e = iterator.next();
 			e.visit(this);
 		}
+		parents.pop();
 	}
 
 	@Override
@@ -328,6 +335,9 @@ public class QueryUtils extends ElementVisitorBase {
 			} else {
 				triplePattern.add(t);
 			}
+			if(!parents.isEmpty()){
+				triple2Parent.put(t, parents.peek());
+			}
 		}
 	}
 
@@ -336,12 +346,17 @@ public class QueryUtils extends ElementVisitorBase {
 		for (Iterator<TriplePath> iterator = el.patternElts(); iterator.hasNext();) {
 			TriplePath tp = iterator.next();
 			if(inOptionalClause){
-				optionalTriplePattern.add(tp.asTriple());
+				if(tp.isTriple()){
+					optionalTriplePattern.add(tp.asTriple());
+					triple2Parent.put(tp.asTriple(), parents.peek());
+				}
 			} else {
 				if(tp.isTriple()){
 					triplePattern.add(tp.asTriple());
+					triple2Parent.put(tp.asTriple(), parents.peek());
 				}
 			}
+			
 		}
 	}
 
@@ -369,6 +384,15 @@ public class QueryUtils extends ElementVisitorBase {
 
 	public int getFilterCount() {
 		return filterCount;
+	}
+	
+	/**
+	 * Returns the ElementGroup object containing the triple pattern.
+	 * @param triple
+	 * @return
+	 */
+	public ElementGroup getElementGroup(Triple triple){
+		return triple2Parent.get(triple);
 	}
 	
 	public static void main(String[] args) throws Exception {

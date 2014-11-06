@@ -527,7 +527,8 @@ public class QALDExperiment {
 		
 		for (Set<Triple> set : powerSet) {
 			if(!set.isEmpty() && set.size() != triplePatterns.size()){
-				List<Triple> newTriplePatterns = new ArrayList<>(triplePatterns);
+				List<Triple> existingTriplePatterns = new ArrayList<>(triplePatterns);
+				List<Triple> newTriplePatterns = new ArrayList<>();
 				List<ElementFilter> filters = new ArrayList<ElementFilter>();
 				int cnt = 0;
 				for (Triple tp : set) {
@@ -535,20 +536,26 @@ public class QALDExperiment {
 						Node var = NodeFactory.createVariable("var" + cnt++);
 						Triple newTp = Triple.create(tp.getSubject(), tp.getPredicate(), var);
 						
-						newTriplePatterns.remove(tp);
+						existingTriplePatterns.remove(tp);
 						newTriplePatterns.add(newTp);
 						
 						ElementTriplesBlock triplesBlock = new ElementTriplesBlock();
 						triplesBlock.addTriple(tp);
+						
 						ElementGroup eg = new ElementGroup();
 						eg.addElement(triplesBlock);
+						
 						ElementFilter filter = new ElementFilter(new E_NotExists(eg));
 						filters.add(filter);
 					}
 				}
 				Query q = new Query();
+				q.setQuerySelectType();
+				q.setDistinct(true);
 				q.addProjectVars(query.getProjectVars());
-				ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(newTriplePatterns));
+				List<Triple> allTriplePatterns = new ArrayList<Triple>(existingTriplePatterns);
+				allTriplePatterns.addAll(newTriplePatterns);
+				ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(allTriplePatterns));
 				ElementGroup eg = new ElementGroup();
 				eg.addElement(tripleBlock);
 				
@@ -556,12 +563,31 @@ public class QALDExperiment {
 					eg.addElementFilter(filter);
 				}
 				
-				q.setQuerySelectType();
-				q.setDistinct(true);
 				q.setQueryPattern(eg);
 				System.out.println(q);
 				
 				List<String> result = getResult(q.toString());
+				result.removeAll(posExamples);
+				
+				if(result.isEmpty()){
+					q = new Query();
+					q.setQuerySelectType();
+					q.setDistinct(true);
+					q.addProjectVars(query.getProjectVars());
+					tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(existingTriplePatterns));
+					eg = new ElementGroup();
+					eg.addElement(tripleBlock);
+					
+					for (ElementFilter filter : filters) {
+						eg.addElementFilter(filter);
+					}
+					
+					q.setQueryPattern(eg);
+					System.out.println(q);
+					
+					result = getResult(q.toString());
+					result.removeAll(posExamples);
+				}
 				negExamples.addAll(result);
 			}
 		}
