@@ -93,7 +93,6 @@ public class QTL2 extends AbstractCELA {
 	private ConciseBoundedDescriptionGenerator cbdGen;
 
 	private Set<String> allowedNamespaces;
-
 	private Set<String> ignoredProperties;
 	
 	public QTL2() {}

@@ -12,6 +12,7 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -64,11 +65,13 @@ import org.xml.sax.SAXException;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
@@ -232,60 +235,70 @@ public class QALDExperiment {
 	}
 	
 	public void run(){
-		DescriptiveStatistics precisionStats = new DescriptiveStatistics();
-		DescriptiveStatistics recallStats = new DescriptiveStatistics();
-		DescriptiveStatistics fMeasureStats = new DescriptiveStatistics();
 		
 		List<String> sparqlQueries = loadSPARQLQueries();
 		logger.info("Total number of queries: " + sparqlQueries.size());
-		
-//		List<String>  sparqlQueries = Lists.newArrayList("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX dbo: <http://dbpedia.org/ontology/> \n" + 
-//				"PREFIX res: <http://dbpedia.org/resource/> \n" + 
-//				"SELECT DISTINCT ?uri \n" + 
-//				"WHERE { \n" + 
-//				"        ?uri dbo:occupation res:Bandleader . \n" + 
-//				"        ?uri dbo:instrument res:Trumpet . \n" + 
-//				"}");
 		
 		// parameters
 		int minNrOfExamples = 3;
 		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
-		
 		double[] noiseIntervals = {
 				0.0,
-				0.2,
-				0.4,
+//				0.2,
+//				0.4,
 //				0.6
 				};
-		double minNoise = 0.0;
-		double maxNoise = 0.6;
-		double noiseStepSize = 0.2;
-		
-		for (String sparqlQuery : sparqlQueries) {
-//			if(sparqlQueries.indexOf(sparqlQuery) != 1)continue;
-			logger.info("Processing query\n" + sparqlQuery);
-			int maxNrOfExamplesQuery = Math.min(getResultCount(sparqlQuery), maxNrOfExamples);
-			// loop of number of positive examples
-			for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamplesQuery ;
-					nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamplesQuery )) {
-				// loop over noise value
-				for (int i = 0; i < noiseIntervals.length; i++) {
-					double noise = noiseIntervals[i];
+			
+		// loop of number of positive examples
+		for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamples; nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples)) {
+			
+			// loop over noise value
+			for (int i = 0; i < noiseIntervals.length; i++) {
+				
+				double noise = noiseIntervals[i];
+				
+				FileAppender appender = null;
+				try {
+					appender = new FileAppender(new SimpleLayout(), "log/qtl/qtl2-" + nrOfExamples + "-" + noise + ".log", false);
+					Logger.getRootLogger().addAppender(appender);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				
+				logger.info("#examples: " + nrOfExamples + " noise: " + noise);
+				
+				DescriptiveStatistics bestReturnedSolutionPrecisionStats = new DescriptiveStatistics();
+				DescriptiveStatistics bestReturnedSolutionRecallStats = new DescriptiveStatistics();
+				DescriptiveStatistics bestReturnedSolutionFMeasureStats = new DescriptiveStatistics();
+				
+				DescriptiveStatistics bestSolutionPrecisionStats = new DescriptiveStatistics();
+				DescriptiveStatistics bestSolutionRecallStats = new DescriptiveStatistics();
+				DescriptiveStatistics bestSolutionFMeasureStats = new DescriptiveStatistics();
+				
+				DescriptiveStatistics bestSolutionPositionStats = new DescriptiveStatistics();
+				
+				// loop over SPARQL queries
+				for (String sparqlQuery : sparqlQueries) {
+					if(!sparqlQuery.contains("Munich"))continue;
+					logger.info("Processing query\n" + sparqlQuery);
+					// some queries can return less examples
+					int possibleNrOfExamples = Math.min(getResultCount(sparqlQuery), nrOfExamples);
+					
 					try {
 						logger.info("#examples: " + nrOfExamples + " noise: " + noise);
 						// generate examples
-						Map<OWLIndividual, QueryTree<String>> generatedExamples = generateExamples(sparqlQuery, nrOfExamples, noise);
-						
-						// set the example trees to be able to use the create noisy trees instead
-						// of original ones
-						
-						//run QTL
+						Map<OWLIndividual, QueryTree<String>> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
+
+						// run QTL
 						PosNegLPStandard lp = new PosNegLPStandard();
 						lp.setPositiveExamples(generatedExamples.keySet());
-//						lp.init();
-						la = new QTL2(lp, qef);
+						
+						//						lp.init();
+//						la = new QTL2(lp, qef);
+						QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 						la.setAllowedNamespaces(allowedNamespaces);
 						la.setIgnoredPropperties(ignoredProperties);
 						la.setTreeFactory(queryTreeFactory);
@@ -293,8 +306,9 @@ public class QALDExperiment {
 						la.init();
 						la.start();
 
-						List<EvaluatedQueryTree<String>> solutions = new ArrayList<EvaluatedQueryTree<String>>(la.getSolutions());
-						
+						List<EvaluatedQueryTree<String>> solutions = new ArrayList<EvaluatedQueryTree<String>>(
+								la.getSolutions());
+
 						// the best solution by QTL
 						EvaluatedQueryTree<String> bestSolution = solutions.get(0);
 						logger.info("Got " + solutions.size() + " query trees.");
@@ -303,40 +317,67 @@ public class QALDExperiment {
 
 						// convert to SPARQL query
 						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
-//						logger.info("Learned Query:\n" + getPrefixedQuery(learnedSPARQLQuery));
-						
+
 						double precision = precision(sparqlQuery, learnedSPARQLQuery);
-						precisionStats.addValue(precision);
+						bestReturnedSolutionPrecisionStats.addValue(precision);
 
 						double recall = recall(sparqlQuery, learnedSPARQLQuery);
-						recallStats.addValue(recall);
+						bestReturnedSolutionRecallStats.addValue(recall);
 
 						double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
-						fMeasureStats.addValue(fmeasure);
-						
-						logger.info(String.format("P=%f\nR=%f\nF-Score=%f", precision, recall, fmeasure));
-						
+						bestReturnedSolutionFMeasureStats.addValue(fmeasure);
+
+						logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
+
 						// find the extensionally best matching tree in the list
 						EvaluatedQueryTree<String> bestMatchingTree = findBestMatchingTree(solutions, sparqlQuery);
 
 						// position of best tree in list of solutions
-						int position = solutions.indexOf(bestMatchingTree);
-						
+						int position = solutions.indexOf(bestMatchingTree) + 1;
+						bestSolutionPositionStats.addValue(position);
+
 						logger.info("Position of best covering tree in list: " + position);
-						if(position != 0){
+						if (position != 0) {
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
+							String bestLearnedSPARQLQuery = bestMatchingTree.getTree().toSPARQLQueryString(true, false);
+							precision = precision(sparqlQuery, bestLearnedSPARQLQuery);
+							recall = recall(sparqlQuery, bestLearnedSPARQLQuery);
+							fmeasure = fMeasure(sparqlQuery, bestLearnedSPARQLQuery);
+							logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
 						}
-						
+						bestSolutionRecallStats.addValue(recall);
+						bestSolutionPrecisionStats.addValue(precision);
+						bestSolutionFMeasureStats.addValue(fmeasure);
+
 					} catch (Exception e) {
 						logger.error("Error occured.", e);
 					}
 				}
+				
+				Logger.getRootLogger().removeAppender(appender);
+				
+				String result = "";
+				result += "\nOverall Precision:\n" + bestReturnedSolutionPrecisionStats;
+				result += "\nOverall Recall:\n" + bestReturnedSolutionRecallStats;
+				result += "\nOverall FMeasure:\n" + bestReturnedSolutionFMeasureStats;
+				result += "\nPositions of best solution:\n" + Arrays.toString(bestSolutionPositionStats.getValues());
+				result += "\nPosition of best solution stats:\n" + bestSolutionPositionStats;
+				
+				result += "\nOverall Precision of best solution:\n" + bestSolutionPrecisionStats;
+				result += "\nOverall Recall of best solution:\n" + bestSolutionRecallStats;
+				result += "\nOverall FMeasure of best solution:\n" + bestSolutionFMeasureStats;
+						
+				logger.info(result);
+				
+				try {
+					Files.write(result, new File("log/qtl/qtl2-" + nrOfExamples + "-" + noise + ".stats"), Charsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-		logger.info("Overall Precision:\n" + precisionStats);
-		logger.info("Overall Recall:\n" + recallStats);
-		logger.info("Overall FMeasure:\n" + fMeasureStats);
+		
 	}
 		
 	
@@ -374,23 +415,40 @@ public class QALDExperiment {
 		List<String> examples = resources.subList(0, Math.min(maxNrOfExamples, resources.size()));
 		logger.info("Pos. examples: " + examples);
 		
-		// add some noise by using instances close to the positive examples
 		List<String> negativeExamples = new ArrayList<>(generateNegativeExamples(sparqlQuery));
 		Collections.shuffle(negativeExamples, randomGen);
-		List<String> newExamples = new ArrayList<String>();
-		for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
-			String posExample = iterator.next();
-			double rnd = randomGen.nextDouble();
-			if(rnd <= noise){
-				// remove the positive example
-				iterator.remove();
-				// add one of the negative examples
-				String negExample = negativeExamples.remove(0);
-				newExamples.add(negExample);
-				logger.info("Replacing " + posExample + " by " + negExample);
+		
+		// add some noise by using instances close to the positive examples
+		// we have two ways of adding noise t_n
+		// 1: iterate over pos. examples and if random number is below t_n, replace the example
+		// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
+	
+		boolean probabilityBased = true;
+		
+		if (probabilityBased) {
+			// 1. way
+			List<String> newExamples = new ArrayList<String>();
+			for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
+				String posExample = iterator.next();
+				double rnd = randomGen.nextDouble();
+				if (rnd <= noise) {
+					// remove the positive example
+					iterator.remove();
+					// add one of the negative examples
+					String negExample = negativeExamples.remove(0);
+					newExamples.add(negExample);
+					logger.info("Replacing " + posExample + " by " + negExample);
+				}
 			}
+			examples.addAll(newExamples);
+		} else {
+			// 2. way
+			int nrOfPosExamples2Replace = (int) (noise * maxNrOfExamples);
+			List<String> posExamples2Replace = examples.subList(0, nrOfPosExamples2Replace);
+			examples.removeAll(posExamples2Replace);
+			List<String> negExamples4Replacement = negativeExamples.subList(0, nrOfPosExamples2Replace);
+			examples.addAll(negExamples4Replacement);
 		}
-		examples.addAll(newExamples);
 		
 		// build query trees
 		Map<OWLIndividual, QueryTree<String>> queryTrees = new HashMap<>();
@@ -417,84 +475,6 @@ public class QALDExperiment {
 			return similarTree;
 		}
 		return null;
-	}
-	
-	private void generateNoiseAttributeLevel(String sparqlQuery, Map<OWLIndividual, QueryTree<String>> posExampleQueryTrees, double noise){
-		//add some noise, i.e.
-				//a)add wrong negative examples
-				//b)take positive examples and modify relevant attributes
-				Random randomGen = new Random(123);
-				QueryUtils triplePatternExtractor = new QueryUtils();
-				List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(QueryFactory.create(sparqlQuery, Syntax.syntaxARQ)));
-				for (Entry<OWLIndividual, QueryTree<String>> entry : posExampleQueryTrees.entrySet()) {
-					double rnd = randomGen.nextDouble();
-					if(rnd <= noise){
-						logger.trace("Modifying tree of " + entry.getKey());
-						QueryTree<String> queryTree = entry.getValue();
-						//pick a random property to modify
-						Collections.shuffle(triplePatterns, randomGen);
-						Triple triplePattern = triplePatterns.get(0);
-						String predicate = triplePattern.getPredicate().getURI();
-						Node object = triplePattern.getObject();
-						logger.trace("Modifying edge <" + queryTree + ", " + predicate + ", " + object + ">");
-						//get the corresponding edge in the tree
-						Set<Object> edges = queryTree.getEdges();
-						for (Object edge : edges) {
-							if (predicate.equals(edge)) {
-								List<QueryTree<String>> children = queryTree.getChildren(edge);
-								for (QueryTree<String> child : children) {
-									if (child.getUserObject().replace("<", "").replace(">", "").equals(object.toString())) {
-										if (child.isResourceNode()) {
-											QueryTree<String> similarTree = getSimilarTree(child, predicate, 1);
-											if (similarTree != null) {
-												int id = child.getId();
-												queryTree.removeChild((QueryTreeImpl<String>) child);
-												similarTree.setId(id);
-												queryTree.addChild((QueryTreeImpl<String>) similarTree, edge);
-												logger.trace("New edge <" + queryTree + ", " + predicate + ", " + similarTree + ">");
-											} else {
-												child.setUserObject("http://dl-learner.org/qtl#noiseModification");
-												logger.trace("New edge <" + queryTree + ", " + predicate + ", " + child + ">");
-											}
-										} else if (child.isLiteralNode()) {
-											child.setUserObject("\"-999999\"^^<http://www.w3.org/2001/XMLSchema#integer>");
-											child.getLiterals().clear();
-											child.getLiterals().add(ResourceFactory.createTypedLiteral(-999999));
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-	}
-	
-	private void generateNoiseClassLevel(String sparqlQuery, List<QueryTree<String>> posExampleQueryTrees, double noise){
-		NegativeExampleSPARQLQueryGenerator negExGen = new NegativeExampleSPARQLQueryGenerator();
-		
-		// get the positive examples
-		List<String> posExamples = getResult(sparqlQuery);
-		
-		// generate a modified SPARQL query
-		Query query = negExGen.generateSPARQLQuery(QueryFactory.create(sparqlQuery));
-		query.setLimit(1000);
-		
-		// get a random number of negative examples
-		List<String> negExamples = getResult(query.toString());
-		negExamples.removeAll(posExamples);
-		Collections.shuffle(negExamples);
-		
-		//replace some of the query trees of the positive examples with negative related ones
-		List<QueryTree<String>> negExampleTrees = new ArrayList<>();
-		for (Iterator<QueryTree<String>> iterator = posExampleQueryTrees.iterator(); iterator.hasNext();) {
-			QueryTree<String> tree = iterator.next();
-			if(rnd.nextDouble() <= noise){
-				QueryTree<String> newTree = getQueryTree(negExamples.remove(0));
-				negExampleTrees.add(newTree);
-				iterator.remove();
-			}
-		}
-		posExampleQueryTrees.addAll(negExampleTrees);
 	}
 	
 	private Set<String> generateNegativeExamples(String queryString){
@@ -529,7 +509,7 @@ public class QALDExperiment {
 			q.addProjectVars(query.getProjectVars());
 			
 			q.setQueryPattern(eg);
-			System.out.println(q);
+//			System.out.println(q);
 			
 			List<String> result = getResult(q.toString());
 			negExamples.addAll(result);
@@ -583,7 +563,7 @@ public class QALDExperiment {
 					}
 					
 					q.setQueryPattern(eg);
-					System.out.println(q);
+//					System.out.println(q);
 					
 					List<String> result = getResult(q.toString());
 					result.removeAll(posExamples);
@@ -602,7 +582,7 @@ public class QALDExperiment {
 						}
 						
 						q.setQueryPattern(eg);
-						System.out.println(q);
+//						System.out.println(q);
 						
 						result = getResult(q.toString());
 						result.removeAll(posExamples);

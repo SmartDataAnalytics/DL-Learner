@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
@@ -40,6 +41,22 @@ public class QueryUtils extends ElementVisitorBase {
 	private Map<Triple, ElementGroup> triple2Parent = new HashMap<Triple, ElementGroup>();
 	
 	Stack<ElementGroup> parents = new Stack<ElementGroup>();
+	
+	public static String addPrefix(String queryString, Map<String, String> prefix2Namespace){
+		Query query = QueryFactory.create(queryString);
+		for (Entry<String, String> entry : prefix2Namespace.entrySet()) {
+			String prefix = entry.getKey();
+			String namespace = entry.getValue();
+			query.setPrefix(prefix, namespace);
+		}
+		return query.toString();
+	}
+	
+	public static String addPrefixes(String queryString, String prefix, String namespace){
+		Query query = QueryFactory.create(queryString);
+		query.setPrefix(prefix, namespace);
+		return query.toString();
+	}
 	
 	/**
 	 * Returns all variables that occur in a triple pattern of the SPARQL query.
