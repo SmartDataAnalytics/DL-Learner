@@ -808,7 +808,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					if(!skip) {
 						Intersection mc = new Intersection();
 						mc.addChild(description);
-						mc.addChild(c);				
+						mc.addChild(c);
 						
 						// clean and transform to ordered negation normal form
 						ConceptTransformation.cleanConceptNonRecursive(mc);
@@ -1560,19 +1560,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
-		Boolean tmp2 = null;
+		Boolean disjoint = null;
 		if(tmp != null)
-			tmp2 = tmp.get(d2);
+			disjoint = tmp.get(d2);
 		
 //		System.out.println("| " + tmp + " " + tmp2);
 		
-		if(tmp2==null) {
-			Boolean result;
+		if(disjoint==null) {
 			if(instanceBasedDisjoints) {
-				result = isDisjointInstanceBased(d1,d2);
+				disjoint = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				result = reasoner.isSuperClassOf(new Nothing(), d);		
+				disjoint = reasoner.isSuperClassOf(new Nothing(), d);		
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
@@ -1588,14 +1587,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				cachedDisjoints.put(d2, map2);
 			
 			// add result symmetrically in the description matrix
-			cachedDisjoints.get(d1).put(d2, result);
-			cachedDisjoints.get(d2).put(d1, result);
-//			System.out.println("---");
-			return result;
-		} else {
+			cachedDisjoints.get(d1).put(d2, disjoint);
+			cachedDisjoints.get(d2).put(d1, disjoint);
+		} 
 //			System.out.println("===");
-			return tmp2;
-		}
+			return disjoint;
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {

@@ -8,11 +8,11 @@ import java.io.File;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -27,10 +27,12 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 public class ReasonerTests {
 	
 	public static void main(String[] args) throws Exception {
-		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(ElkReasoner.class).setLevel(Level.WARN);
+		Logger.getRootLogger().setLevel(Level.OFF);
+		Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
 		
-		String[] reasonerImplementations = new String[]{"elk"};//, "trowl", "fact", "hermit", "pellet"};
+		String[] reasonerImplementations = new String[]{"elk", "trowl", "fact", "hermit", "pellet"};
+		
+		int maxExecutionTimeInSeconds = 10;
 		
 		String ontologyURL = "../examples/swore/swore.rdf";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -49,13 +51,19 @@ public class ReasonerTests {
 				reasoner.setReasonerTypeString(reasonerImpl);
 				reasoner.setUseFallbackReasoner(true);
 				reasoner.init();
+				Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
 				
-				ClassLearningProblem lp = new ClassLearningProblem(reasoner);
+				FastInstanceChecker closedWorldReasoner = new FastInstanceChecker(ks);
+				closedWorldReasoner.setReasonerComponent(reasoner);
+				closedWorldReasoner.init();
+				
+				ClassLearningProblem lp = new ClassLearningProblem(closedWorldReasoner);
 				lp.setClassToDescribe(classToDescribe);
+				lp.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 				lp.init();
 				
-				CELOE la = new CELOE(lp, reasoner);
-				la.setMaxExecutionTimeInSeconds(10);
+				CELOE la = new CELOE(lp, closedWorldReasoner);
+				la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 				la.init();
 				
 				la.start();

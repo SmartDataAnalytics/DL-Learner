@@ -551,7 +551,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-        return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(subConcept), OWLAPIDescriptionConvertVisitor.getOWLClassExpression(superConcept)));
+    	OWLClassExpression sub = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(subConcept);
+		OWLClassExpression sup = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(superConcept);
+		try {
+			return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(sub, sup));
+		} catch (Exception e){
+			if(sup.isAnonymous()){
+				return false;
+			}
+			NodeSet<OWLClass> superClasses = reasoner.getSuperClasses(sub, false);
+			return superClasses.containsEntity(sup.asOWLClass());
+		}
     }
 
     @Override
@@ -995,7 +1005,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
 
             // get all related values via OWL API
-            Set<OWLLiteral> constants = reasoner.getDataPropertyValues(ind, prop);
+            Set<OWLLiteral> constants;
+            try {
+            	constants = reasoner.getDataPropertyValues(ind, prop);
+			} catch (Exception e) {
+				if (useFallbackReasoner) {
+					logger.warn("Using fallback reasoner.");
+					constants = fallbackReasoner.getDataPropertyValues(ind, prop);
+				} else {
+					throw e;
+				}
+			}
 
             // convert data back to DL-Learner structures
             SortedSet<Constant> is = new TreeSet<Constant>();
