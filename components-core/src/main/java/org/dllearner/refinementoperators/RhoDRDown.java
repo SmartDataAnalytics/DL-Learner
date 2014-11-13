@@ -1480,7 +1480,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					applicableRoles.add(role);
 				}
 				
-		}System.out.println(domain + ":" + applicableRoles);
+		}
 		appOP.put(domain, applicableRoles);
 		
 		// boolean datatype properties
