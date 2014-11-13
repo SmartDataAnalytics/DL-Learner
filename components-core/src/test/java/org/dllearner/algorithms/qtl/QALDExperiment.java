@@ -11,20 +11,25 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -73,6 +78,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -92,9 +98,11 @@ import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
 import com.hp.hpl.jena.sparql.expr.E_Str;
+import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.syntax.Element;
@@ -718,7 +726,6 @@ public class QALDExperiment {
 			q.setQueryPattern(el);
 			
 			q = rewriteForVirtuosoDateLiteralBug(q);
-			
 			logger.trace(q);
 			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
@@ -904,24 +911,36 @@ public class QALDExperiment {
 		});
 		List<ElementFilter> filters = new ArrayList<>();
 		int cnt = 0;
+		// <s p o>
 		for (Iterator<Triple> iter = triplePatterns.iterator(); iter.hasNext();) {
 			Triple tp = iter.next();
 			if(tp.getObject().isLiteral()){
 				RDFDatatype dt = tp.getObject().getLiteralDatatype();
 				if(dt != null && dt instanceof XSDAbstractDateTimeType){
 					iter.remove();
-					// new triple pattern with var as object
+					// new triple pattern <s p ?var> 
 					Node objectVar = NodeFactory.createVariable("date" + cnt++);
 					newTriplePatterns.add(Triple.create(
 							tp.getSubject(), 
 							tp.getPredicate(),
 							objectVar)
 							);
-					// filter with STR(?var) = lit
+					// add FILTER(STR(?var) = lexicalform(o))
 					String lit = tp.getObject().getLiteralLexicalForm();
-					ElementFilter filter = new ElementFilter(new E_Equals(
+					Object literalValue = tp.getObject().getLiteralValue();
+					Expr filterExpr = new E_Equals(
 							new E_Str(new ExprVar(objectVar)), 
-							NodeValue.makeString(lit)));
+							NodeValue.makeString(lit));
+					if(literalValue instanceof XSDDateTime){
+						Calendar calendar = ((XSDDateTime) literalValue).asCalendar();
+						Date date = new Date(calendar.getTimeInMillis() + TimeUnit.HOURS.toMillis(2));   
+						SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");          
+						String inActiveDate = format1.format(date);
+						filterExpr = new E_LogicalOr(filterExpr, new E_Equals(
+							new E_Str(new ExprVar(objectVar)), 
+							NodeValue.makeString(inActiveDate)));
+					}
+					ElementFilter filter = new ElementFilter(filterExpr);
 					filters.add(filter);
 				}
 			}

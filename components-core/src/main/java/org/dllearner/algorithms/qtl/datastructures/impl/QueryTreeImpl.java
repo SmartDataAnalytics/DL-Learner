@@ -587,10 +587,18 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     private boolean subsumes(Set<Literal> subsumer, Set<Literal> subsumee, LiteralNodeSubsumptionStrategy strategy){
+    	if(subsumer.isEmpty() || subsumee.isEmpty()){
+    		return false;
+    	}
     	if(strategy == LiteralNodeSubsumptionStrategy.DATATYPE){
     		//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			
+			if(subsumerDatatype == null || subsumeeDatatype == null) {
+				return false;
+			}
+			
 			return subsumerDatatype.equals(subsumeeDatatype);
 		} else if(strategy == LiteralNodeSubsumptionStrategy.ENUMERATION){
 			return subsumer.containsAll(subsumee);
@@ -598,6 +606,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			
+			if(subsumerDatatype == null || subsumeeDatatype == null) {
+				return false;
+			}
+			
 			if(!subsumerDatatype.equals(subsumeeDatatype)){
 				return false;
 			}
