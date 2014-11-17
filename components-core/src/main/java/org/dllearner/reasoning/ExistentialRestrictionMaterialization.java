@@ -39,6 +39,8 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
@@ -50,10 +52,14 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
  */
 public class ExistentialRestrictionMaterialization {
 	
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ExistentialRestrictionMaterialization.SuperClassFinder.class);
 	
 	private OWLOntology ontology;
 	private OWLReasoner reasoner;
 	private OWLDataFactory df;
+	
+	Set<OWLClassExpression> visited = new HashSet<>();
 
 	public ExistentialRestrictionMaterialization(OWLOntology ontology) {
 		this.ontology = ontology;
@@ -110,6 +116,8 @@ public class ExistentialRestrictionMaterialization {
 		}
 		
 		private void computeSuperClasses(OWLClass cls){
+			visited.add(cls);
+			
 			String s = "";
 			for(int i = 0; i < indent; i++){
 				s += "   ";
@@ -127,8 +135,12 @@ public class ExistentialRestrictionMaterialization {
 			
 			//go subsumption hierarchy up for each directly asserted super class
 			for (OWLClassExpression sup : superClassExpressions) {
-				sup.accept(this);
-				superClasses.addAll(stack.pop());
+				if(!visited.contains(sup)){
+					sup.accept(this);
+					superClasses.addAll(stack.pop());
+				} else {
+					LOGGER.warn("Cycle detected:" + sup + " in " + visited);
+				}
 			}
 			
 			stack.push(superClasses);
@@ -140,7 +152,10 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLClass ce) {
-			computeSuperClasses(ce);
+			if(!visited.contains(ce)){
+				visited.add(ce);
+				computeSuperClasses(ce);
+			}
 		}
 
 		/* (non-Javadoc)
@@ -190,12 +205,19 @@ public class ExistentialRestrictionMaterialization {
 			Set<OWLClassExpression> newRestrictions = new HashSet<OWLClassExpression>();
 			newRestrictions.add(ce);
 			OWLClassExpression filler = ce.getFiller();
-			filler.accept(this);
-			Set<OWLClassExpression> fillerSuperClassExpressions = stack.pop();
-			for (OWLClassExpression fillerSup : fillerSuperClassExpressions) {
-				newRestrictions.add(df.getOWLObjectSomeValuesFrom(ce.getProperty(), fillerSup));
+			
+			if(!visited.contains(filler)){
+				filler.accept(this);
+				Set<OWLClassExpression> fillerSuperClassExpressions = stack.pop();
+				for (OWLClassExpression fillerSup : fillerSuperClassExpressions) {
+					newRestrictions.add(df.getOWLObjectSomeValuesFrom(ce.getProperty(), fillerSup));
+				}
+				stack.push(newRestrictions);
+			} else {
+				//TODO how to handle cycles?
+				LOGGER.warn("Cycle detected:" + filler + " in " + visited);
 			}
-			stack.push(newRestrictions);
+			
 		}
 
 		/* (non-Javadoc)
@@ -305,6 +327,7 @@ public class ExistentialRestrictionMaterialization {
 				+ ":A rdfs:subClassOf [ a owl:Restriction; owl:onProperty :r; owl:someValuesFrom :B]."
 				+ ":B rdfs:subClassOf :C."
 				+ ":C rdfs:subClassOf [ a owl:Restriction; owl:onProperty :r; owl:someValuesFrom :D]."
+				+ ":D rdfs:subClassOf :A ."
 				+ ":a a :A.";
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
