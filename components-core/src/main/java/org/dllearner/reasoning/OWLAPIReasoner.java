@@ -691,12 +691,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public boolean hasTypeImpl(Description concept, Individual individual) {
+    	if(concept instanceof  Thing) {
+        	return true;
+        }
+    	
         OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
         OWLNamedIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
         
-        if(concept instanceof  Thing) {
-        	return true;
-        }
         if(concept instanceof NamedClass && ((NamedClass)concept).getName().contains("Error"))return false;
         
         boolean entailed;
@@ -705,8 +706,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		} catch (Exception e) {
 			if (useFallbackReasoner) {
 				logger.warn("Using fallback reasoner.");
-				NodeSet<OWLClass> types = fallbackReasoner.getTypes(i, false);
-				entailed = types.getFlattened().contains(d);
+				NodeSet<OWLNamedIndividual> instances = fallbackReasoner.getInstances(d, true);
+				entailed = instances.containsEntity(i);
 			} else {
 				throw e;
 			}

@@ -73,7 +73,13 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -153,8 +159,10 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
     
     private boolean materializeExistentialRestrictions = false;
 
-	private boolean useCaching = true;
-    private boolean handlePunning = true;
+	private boolean useCaching = false;
+    private boolean handlePunning = false;
+    
+    private GenericIndividualGenerator individualGenerator = new GenericIndividualGenerator();
 
     public enum ForallSemantics { 
     	Standard, // standard all quantor
@@ -375,6 +383,49 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			sd.put(dp, rc.getStringDatatypeMembers(dp));
 		}			
 		
+		// class assertion axioms with complex concepts
+		List<OWLOntology> ontologies = rc.getOWLAPIOntologies();
+		for (OWLOntology ontology : ontologies) {
+			Set<OWLClassAssertionAxiom> axioms = ontology.getAxioms(AxiomType.CLASS_ASSERTION);
+			for (OWLClassAssertionAxiom axiom : axioms) {
+				OWLIndividual ind = axiom.getIndividual();
+				OWLClassExpression ce = axiom.getClassExpression();
+				if(ce instanceof OWLObjectSomeValuesFrom){
+					OWLObjectPropertyExpression propertyExpression = ((OWLObjectSomeValuesFrom) ce).getProperty();
+					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
+					if(!propertyExpression.isAnonymous()){
+						ObjectProperty prop = new ObjectProperty(propertyExpression.asOWLObjectProperty().toStringID());
+						
+						Map<Individual, SortedSet<Individual>> map = opPos.get(prop);
+						if(map == null){
+							map = new HashMap<Individual, SortedSet<Individual>>();
+							opPos.put(prop, map);
+						}
+						
+						Individual individual = new Individual(ind.toStringID());
+						SortedSet<Individual> values = map.get(individual);
+						if(values == null){
+							values = new TreeSet<Individual>();
+							map.put(individual, values);
+						}
+						
+						if(values.isEmpty()){
+							Individual newIndividual = individualGenerator.newIndividual();
+							values.add(newIndividual);
+							
+							if(!filler.isOWLThing()){
+								if(!filler.isAnonymous()){
+									NamedClass cls = new NamedClass(filler.asOWLClass().toStringID());
+									classInstancesPos.get(cls).add(newIndividual);
+								}
+							}
+						}
+					} else {
+						
+					}
+				}
+			}
+		}
 		
 		if(materializeExistentialRestrictions){
 			logger.debug("Materializing existential restrictions ...");
@@ -441,9 +492,8 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			Map<Individual, SortedSet<Individual>> map = opPos.get(role);
 			//create new individual as object value for each individual
 			SortedSet<Individual> newIndividuals = new TreeSet<Individual>();
-			int i = 0;
 			for (Individual individual : individuals) {
-				Individual newIndividual = new Individual("http://dllearner.org#genInd_" + i++);
+				Individual newIndividual = individualGenerator.newIndividual();
 				newIndividuals.add(newIndividual);
 				SortedSet<Individual> values = map.get(individual);
 				if(values == null){
