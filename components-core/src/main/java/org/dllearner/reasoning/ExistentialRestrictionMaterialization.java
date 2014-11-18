@@ -4,6 +4,7 @@
 package org.dllearner.reasoning;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,8 +60,6 @@ public class ExistentialRestrictionMaterialization {
 	private OWLReasoner reasoner;
 	private OWLDataFactory df;
 	
-	Set<OWLClassExpression> visited = new HashSet<>();
-
 	public ExistentialRestrictionMaterialization(OWLOntology ontology) {
 		this.ontology = ontology;
 		
@@ -90,6 +89,8 @@ public class ExistentialRestrictionMaterialization {
 		OWLDataFactory df;
 		boolean onlyIfExistentialOnPath = true;
 		
+		private Set<OWLClassExpression> visitedClassExpressions;
+		
 		int indent = 0;
 
 		public SuperClassFinder() {
@@ -97,6 +98,7 @@ public class ExistentialRestrictionMaterialization {
 		}
 		
 		public Set<OWLClassExpression> getSuperClasses(OWLClass cls){
+			visitedClassExpressions = new HashSet<>();
 //			System.out.println("#################");
 			map.clear();
 			computeSuperClasses(cls);
@@ -116,7 +118,7 @@ public class ExistentialRestrictionMaterialization {
 		}
 		
 		private void computeSuperClasses(OWLClass cls){
-			visited.add(cls);
+			visitedClassExpressions.add(cls);
 			
 			String s = "";
 			for(int i = 0; i < indent; i++){
@@ -135,11 +137,12 @@ public class ExistentialRestrictionMaterialization {
 			
 			//go subsumption hierarchy up for each directly asserted super class
 			for (OWLClassExpression sup : superClassExpressions) {
-				if(!visited.contains(sup)){
+				if(!visitedClassExpressions.contains(sup)){
+					visitedClassExpressions.add(sup);
 					sup.accept(this);
 					superClasses.addAll(stack.pop());
 				} else {
-					LOGGER.warn("Cycle detected:" + sup + " in " + visited);
+//					LOGGER.warn("Cycle detected:" + sup + " in " + visitedClassExpressions);
 				}
 			}
 			
@@ -152,10 +155,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLClass ce) {
-			if(!visited.contains(ce)){
-				visited.add(ce);
-				computeSuperClasses(ce);
-			}
+			computeSuperClasses(ce);
 		}
 
 		/* (non-Javadoc)
@@ -204,9 +204,13 @@ public class ExistentialRestrictionMaterialization {
 		public void visit(OWLObjectSomeValuesFrom ce) {
 			Set<OWLClassExpression> newRestrictions = new HashSet<OWLClassExpression>();
 			newRestrictions.add(ce);
+			
+			stack.push(newRestrictions);
+			
+			// process the filler concept
 			OWLClassExpression filler = ce.getFiller();
 			
-			if(!visited.contains(filler)){
+			if(!visitedClassExpressions.contains(filler)){
 				filler.accept(this);
 				Set<OWLClassExpression> fillerSuperClassExpressions = stack.pop();
 				for (OWLClassExpression fillerSup : fillerSuperClassExpressions) {
@@ -215,7 +219,7 @@ public class ExistentialRestrictionMaterialization {
 				stack.push(newRestrictions);
 			} else {
 				//TODO how to handle cycles?
-				LOGGER.warn("Cycle detected:" + filler + " in " + visited);
+//				LOGGER.warn("Cycle detected:" + filler + " in " + visitedClassExpressions);
 			}
 			
 		}
@@ -274,6 +278,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLDataSomeValuesFrom ce) {
+			stack.push(Collections.<OWLClassExpression>singleton(ce));
 		}
 
 		/* (non-Javadoc)

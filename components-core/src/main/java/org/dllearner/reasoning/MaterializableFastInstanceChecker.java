@@ -377,14 +377,17 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		
 		
 		if(materializeExistentialRestrictions){
+			logger.debug("Materializing existential restrictions ...");
 			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
-			for (NamedClass cls : atomicConcepts) {
+			int cnt = 0;
+			for (NamedClass cls : atomicConcepts) {System.out.println(cnt++ + "/" + atomicConcepts.size());
 				TreeSet<Individual> individuals = classInstancesPos.get(cls);
 				Set<OWLClassExpression> superClass = materialization.materialize(cls.getName());
 				for (OWLClassExpression sup : superClass) {
 					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
 				}
 			}
+			logger.debug("...done.");
 		}
 		
 		//materialize facts based on OWL punning, i.e.:
