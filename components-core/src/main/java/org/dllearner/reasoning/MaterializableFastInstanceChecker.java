@@ -73,17 +73,30 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.ClassExpressionType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -423,11 +436,13 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 								if(!filler.isAnonymous()){
 									NamedClass cls = new NamedClass(filler.asOWLClass().toStringID());
 									classInstancesPos.get(cls).add(newIndividual);
-									// get all super classes
-									SortedSet<Description> superClasses = getSuperClasses(cls);
-									for (Description sup : superClasses) {
-										classInstancesPos.get(sup).add(newIndividual);
+									// get all super classes and add genInd to each
+									Set<OWLClass> superClasses = rc.getReasoner().getSuperClasses(ce, false).getFlattened();
+									superClasses.remove(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
+									for (OWLClass sup : superClasses) {
+										classInstancesPos.get(OWLAPIConverter.convertClass(sup)).add(newIndividual);
 									}
+									
 								}
 							}
 						}
