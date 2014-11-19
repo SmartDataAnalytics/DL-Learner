@@ -387,9 +387,11 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		List<OWLOntology> ontologies = rc.getOWLAPIOntologies();
 		for (OWLOntology ontology : ontologies) {
 			Set<OWLClassAssertionAxiom> axioms = ontology.getAxioms(AxiomType.CLASS_ASSERTION);
+			// for each axiom C(x)
 			for (OWLClassAssertionAxiom axiom : axioms) {
 				OWLIndividual ind = axiom.getIndividual();
 				OWLClassExpression ce = axiom.getClassExpression();
+				// if C is of type 'r some D'
 				if(ce instanceof OWLObjectSomeValuesFrom){
 					OWLObjectPropertyExpression propertyExpression = ((OWLObjectSomeValuesFrom) ce).getProperty();
 					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
@@ -409,14 +411,23 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 							map.put(individual, values);
 						}
 						
+						// if there is not already at least one entry r(x,o) we add
+						// r(x,o_genid)
 						if(values.isEmpty()){
 							Individual newIndividual = individualGenerator.newIndividual();
 							values.add(newIndividual);
 							
+							// if D != owl:Thing and D is atomic, we add D_i(o_genid)
+							// for all D_i \sqsubseteq D
 							if(!filler.isOWLThing()){
 								if(!filler.isAnonymous()){
 									NamedClass cls = new NamedClass(filler.asOWLClass().toStringID());
 									classInstancesPos.get(cls).add(newIndividual);
+									// get all super classes
+									SortedSet<Description> superClasses = getSuperClasses(cls);
+									for (Description sup : superClasses) {
+										classInstancesPos.get(sup).add(newIndividual);
+									}
 								}
 							}
 						}

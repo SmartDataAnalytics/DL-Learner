@@ -20,8 +20,10 @@
 package org.dllearner.learningproblems;
 
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.dllearner.core.Score;
+import org.dllearner.core.owl.Entity;
 import org.dllearner.core.owl.Individual;
 
 /**
@@ -31,17 +33,17 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public abstract class ScorePosNeg extends Score {
+public abstract class ScorePosNeg<T extends Entity> extends Score {
 	
 	private static final long serialVersionUID = -4646131678864109469L;
 
 	public abstract double getScoreValue();
 	
 	// example coverage
-	public abstract Set<Individual> getCoveredPositives();
-	public abstract Set<Individual> getCoveredNegatives();
-	public abstract Set<Individual> getNotCoveredPositives();
-	public abstract Set<Individual> getNotCoveredNegatives();	
+	public abstract Set<T> getCoveredPositives();
+	public abstract Set<T> getCoveredNegatives();
+	public abstract Set<T> getNotCoveredPositives();
+	public abstract Set<T> getNotCoveredNegatives();	
 	
 	/**
 	 * The score of a concept depends on how good it classifies the

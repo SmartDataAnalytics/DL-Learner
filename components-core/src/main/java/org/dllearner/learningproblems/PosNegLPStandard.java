@@ -248,7 +248,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 * @return Corresponding Score object.
 	 */
 	@Override
-	public ScorePosNeg computeScore(Description concept) {
+	public ScorePosNeg<Individual> computeScore(Description concept) {
 		if(useOldDIGOptions) {
 			if (isUseRetrievalForClassification()) {
 				SortedSet<Individual> posClassified = getReasoner().getIndividuals(concept);
@@ -266,7 +266,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					if (!posClassified.contains(negExample))
 						negAsNeg.add(negExample);
 				}
-				return new ScoreTwoValued(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos, negAsNeg);
+				return new ScoreTwoValued<Individual>(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos, negAsNeg);
 			// instance checks for classification
 			} else {		
 				Set<Individual> posAsPos = new TreeSet<Individual>();
@@ -286,7 +286,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					
 					// System.out.println("pos classified: " + posClassified);
 					
-					return new ScoreTwoValued(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
+					return new ScoreTwoValued<Individual>(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
 							negAsNeg);
 				} else {
 					
@@ -303,7 +303,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 						else
 							negAsNeg.add(example);
 					}
-					return new ScoreTwoValued(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
+					return new ScoreTwoValued<Individual>(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
 							negAsNeg);
 				}
 			}
@@ -331,7 +331,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			// TODO: this computes accuracy twice - more elegant method should be implemented 
 			double accuracy = getAccuracyOrTooWeakExact(concept,1);
 			
-			return new ScoreTwoValued(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
+			return new ScoreTwoValued<Individual>(concept.getLength(), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
 						negAsNeg, accuracy);
 		}
 
@@ -715,7 +715,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 */
 	@Override
 	public EvaluatedDescription evaluate(Description description) {
-		ScorePosNeg score = computeScore(description);
+		ScorePosNeg<Individual> score = computeScore(description);
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 

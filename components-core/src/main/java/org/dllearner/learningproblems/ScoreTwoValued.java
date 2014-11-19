@@ -21,7 +21,7 @@ package org.dllearner.learningproblems;
 
 import java.util.Set;
 
-import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Entity;
 
 /**
  * Calculates accuracy and score (with respect to some length penalty) of
@@ -35,26 +35,26 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public class ScoreTwoValued extends ScorePosNeg {
+public class ScoreTwoValued<T extends Entity> extends ScorePosNeg<T> {
 
 	private static final long serialVersionUID = 6264873890324824550L;
 	
-	private Set<Individual> posAsPos;	
-    private Set<Individual> posAsNeg;
-    private Set<Individual> negAsPos;
-    private Set<Individual> negAsNeg;    
+	private Set<T> posAsPos;	
+    private Set<T> posAsNeg;
+    private Set<T> negAsPos;
+    private Set<T> negAsNeg;    
     private double score;
     private double accuracy;
     private int nrOfExamples;
     private int conceptLength;
     private double percentPerLengthUnit;
 	
-	public ScoreTwoValued(Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
+	public ScoreTwoValued(Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg) {
 		this(0,0,posAsPos,posAsNeg,negAsPos,negAsNeg);
 	}    
     
 	@Deprecated
-	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
+	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg) {
     	this.conceptLength = conceptLength;
     	this.percentPerLengthUnit = percentPerLengthUnit;
 		this.posAsPos = posAsPos;
@@ -65,7 +65,7 @@ public class ScoreTwoValued extends ScorePosNeg {
 		computeScore();
 	}
 	
-	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg, double accuracy) {
+	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg, double accuracy) {
     	this.conceptLength = conceptLength;
     	this.percentPerLengthUnit = percentPerLengthUnit;
 		this.posAsPos = posAsPos;
@@ -113,28 +113,28 @@ public class ScoreTwoValued extends ScorePosNeg {
 	}
 
 	@Override
-	public Set<Individual> getCoveredNegatives() {
+	public Set<T> getCoveredNegatives() {
 		return negAsPos;
 	}
 
 	@Override
-	public Set<Individual> getCoveredPositives() {
+	public Set<T> getCoveredPositives() {
 		return posAsPos;
 	}
 	
 	@Override
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<T> getNotCoveredPositives() {
 		return posAsNeg;
 	}
 	
 	@Override
-	public Set<Individual> getNotCoveredNegatives() {
+	public Set<T> getNotCoveredNegatives() {
 		return negAsNeg;
 	}		
 	
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
-		return new ScoreTwoValued(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
+	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
+		return new ScoreTwoValued<T>(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
 	}
 	
 	/**

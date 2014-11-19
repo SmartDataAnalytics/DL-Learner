@@ -320,7 +320,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			// TODO: this computes accuracy twice - more elegant method should be implemented 
 			double accuracy = getAccuracyOrTooWeakExact(concept,1);
 			
-			return new ScoreTwoValued(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
+			return new ScoreTwoValued<Individual>(concept.getLength(), percentPerLengthUnit, posAsPos, posAsNeg, negAsPos,
 						negAsNeg, accuracy);
 		}
 	}
