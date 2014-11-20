@@ -4,15 +4,12 @@
 package org.dllearner.test;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
@@ -24,10 +21,10 @@ import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.MaterializableFastInstanceChecker;
-import org.dllearner.reasoning.OWLPunningDetector;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -39,7 +36,6 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.owllink.parser.OWLlinkDescriptionElementHandler;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 

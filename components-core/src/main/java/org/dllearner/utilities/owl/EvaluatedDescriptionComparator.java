@@ -25,7 +25,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Intersection;
 import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.reasoning.OWLPunningDetector;
 
 /**
  * Comparator for evaluated descriptions, which orders them by
