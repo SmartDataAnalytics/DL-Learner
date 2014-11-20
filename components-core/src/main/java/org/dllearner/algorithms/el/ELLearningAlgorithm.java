@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.el;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
@@ -77,6 +79,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
+
+	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	private boolean writeSearchTree = false;
+
+	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	private String searchTreeFile = "log/searchTree.txt";
+
+	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	private boolean replaceSearchTree = false;
 	
 	private double noise;
 	
@@ -127,6 +138,14 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		operator = new ELDown2(reasoner, instanceBasedDisjoints);
 		
 		noise = noisePercentage/100d;
+		
+		if(writeSearchTree) {
+			File f = new File(searchTreeFile );
+			if(f.getParentFile() != null){
+				f.getParentFile().mkdirs();
+			}
+			Files.clearFile(f);
+		}
 	}	
 	
 	@Override
@@ -158,6 +177,17 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				logger.trace("Choosen node " + best);
 				logger.trace(startNode.getTreeString());
 				logger.trace("Loop " + loop + " completed.");
+			}
+			
+			// writing the search tree (if configured)
+			if (writeSearchTree) {
+				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
+				treeString += startNode.getTreeString();
+
+				if (replaceSearchTree)
+					Files.createFile(new File(searchTreeFile), treeString);
+				else
+					Files.appendToFile(new File(searchTreeFile), treeString);
 			}
 		}
 		
@@ -337,4 +367,28 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		this.noisePercentage = noisePercentage;
 	}
 
+	public boolean isWriteSearchTree() {
+		return writeSearchTree;
+	}
+
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+
+	public String getSearchTreeFile() {
+		return searchTreeFile;
+	}
+
+	public void setSearchTreeFile(String searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+	
+	public boolean isReplaceSearchTree() {
+		return replaceSearchTree;
+	}
+
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
+	}	
+	
 }
