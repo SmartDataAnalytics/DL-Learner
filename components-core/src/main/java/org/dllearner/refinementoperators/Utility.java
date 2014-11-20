@@ -292,6 +292,12 @@ public final class Utility {
 	}	
 	
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
+		if(d1 instanceof Nothing || d2 instanceof Nothing){
+			return true;
+		}
+		if(d1 instanceof Thing || d2 instanceof Thing){
+			return false;
+		}
 		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
 		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
 		for(Individual d1Instance : d1Instances) {

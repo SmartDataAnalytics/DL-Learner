@@ -198,6 +198,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			SearchTreeNode best = candidates.pollLast();
 			// apply operator
 			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
+			
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
 //				System.out.println("refinement: " + refinement);

@@ -86,6 +86,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -335,7 +337,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 
 		//atomic concepts
 		logger.debug("dematerialising concepts");
-		for (NamedClass atomicConcept : rc.getNamedClasses()) {
+		Set<NamedClass> classes = rc.getNamedClasses();
+		int i = 1;
+		for (NamedClass atomicConcept : classes) {
 			SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 
