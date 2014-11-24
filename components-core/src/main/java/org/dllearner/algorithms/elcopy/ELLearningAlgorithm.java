@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.elcopy;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -47,6 +47,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 
@@ -85,6 +86,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
+	
+	@ConfigOption(name="writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	private boolean writeSearchTree = false;
+	
+	@ConfigOption(name="searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	private String searchTreeFile = "log/searchTree.txt";
+	
+	@ConfigOption(name="replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	private boolean replaceSearchTree = false;
 	
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
@@ -216,6 +226,24 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				logger.trace("Choosen node " + best);
 				logger.trace(startNode.getTreeString());
 				logger.trace("Loop " + loop + " completed.");
+			}
+			
+			// writing the seach tree (if configured)
+			if (writeSearchTree) {
+			    String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
+			    if (refinements.size() > 1) {
+			        treeString += "all expanded nodes:\n";
+		        for (ELDescriptionTree elDescTree : refinements) {
+                        treeString += "   " + elDescTree.toDescriptionString() + "\n";
+                    }
+			    }
+			    treeString += startNode.getTreeString();
+			    treeString += "\n";
+			    
+			    if (replaceSearchTree)
+			        Files.createFile(new File(searchTreeFile), treeString);
+			    else
+			        Files.appendToFile(new File(searchTreeFile), treeString);
 			}
 		}
 		
@@ -527,4 +555,27 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
 
+	public boolean isWriteSearchTree() {
+	    return writeSearchTree;
+	}
+	
+	public void setWriteSearchTree(boolean writeSearchTree) {
+	    this.writeSearchTree = writeSearchTree;
+	}
+	
+	public String getSearchTreeFile() {
+	    return searchTreeFile;
+	}
+	
+	public void setSearchTreeFile(String searchTreeFile) {
+	    this.searchTreeFile = searchTreeFile;
+	}
+	
+	public boolean isReplaceSearchTree() {
+	    return replaceSearchTree;
+	}
+	
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+	    this.replaceSearchTree = replaceSearchTree;
+	}
 }
