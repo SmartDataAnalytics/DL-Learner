@@ -35,7 +35,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 public class Reactome {
     private static final Logger logger = Logger.getLogger(Reactome.class);
-    private static final String kbPathStr = "/tmp/tr.owl";
+    private static final String kbPathStr = "/home/jl/tmp/tr.owl";
     private static final List<String> posExampleUris = new ArrayList<String>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
@@ -3220,9 +3220,11 @@ public class Reactome {
         celoe.setReplaceSearchTree(true);
         
         ELLearningAlgorithm elLa = new ELLearningAlgorithm(lp, rc);
-        elLa.setTreeSearchTimeSeconds(1000);
-        elLa.setNoisePercentage(100d);
-        la = elLa;//celoe;
+
+        elLa.setNoisePercentage(1.0);
+        elLa.setWriteSearchTree(true);
+        elLa.setReplaceSearchTree(true);
+        la = elLa; // celoe;
 //        Description startClass = new NamedClass("http://dl-learner.org/smallis/Allelic_info");
         logger.debug("finished initializing learning algorithm");
         logger.debug("initializing operator...");

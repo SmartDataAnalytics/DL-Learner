@@ -39,8 +39,8 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.common.index.ModelGenerator;
-import org.dllearner.common.index.ModelGenerator.Strategy;
+//import org.dllearner.common.index.ModelGenerator;
+//import org.dllearner.common.index.ModelGenerator.Strategy;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -92,6 +92,12 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+/**
+ * FIXME: I just commented out all lines that caused errors. So, this class
+ * won't work as expected!!!
+ *  
+ * @author patrick
+ */
 public class SPARQLSampleDebugging {
 	
 	private SparqlEndpoint endpoint;
@@ -636,8 +642,8 @@ public class SPARQLSampleDebugging {
 		model.read(in, null);
 		
 		//read data
-		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
-		model.add(modelGen.createModel("http://dbpedia.org/resource/Leipzig", Strategy.CHUNKS, depth));
+//		ModelGenerator modelGen = new ModelGenerator(endpoint, cache);
+//		model.add(modelGen.createModel("http://dbpedia.org/resource/Leipzig", Strategy.CHUNKS, depth));
 
 		//query for conflicts
 		String queryString = "SELECT ?s WHERE {?type1 <" + OWL.disjointWith + "> ?type2. ?s a ?type1. ?s a ?type2.} LIMIT 1";
