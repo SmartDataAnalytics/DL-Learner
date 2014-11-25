@@ -63,9 +63,11 @@ import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
@@ -73,6 +75,8 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -115,7 +119,7 @@ import org.semanticweb.owlapi.util.Version;
  * </p>
  * This is a simple structural reasoner that essentially answers with told information.  It is incomplete.
  */
-public class StructuralReasoner extends OWLReasonerBase {
+public class StructuralReasonerExtended extends OWLReasonerBase {
 
     private final ClassHierarchyInfo classHierarchyInfo = new ClassHierarchyInfo();
 
@@ -132,15 +136,18 @@ public class StructuralReasoner extends OWLReasonerBase {
 
     private boolean prepared = false;
 
+	private OWLDataFactory df;
+
     /**
      * @param rootOntology the ontology
      * @param configuration the reasoner configuration
      * @param bufferingMode the buffering mode
      */
-    public StructuralReasoner(OWLOntology rootOntology, OWLReasonerConfiguration configuration, BufferingMode bufferingMode) {
+    public StructuralReasonerExtended(OWLOntology rootOntology, OWLReasonerConfiguration configuration, BufferingMode bufferingMode) {
         super(rootOntology, configuration, bufferingMode);
         pm = configuration.getProgressMonitor()==null?new NullReasonerProgressMonitor():configuration.getProgressMonitor();
         prepareReasoner();
+        df = rootOntology.getOWLOntologyManager().getOWLDataFactory();
     }
 
     @Override
@@ -245,7 +252,73 @@ public class StructuralReasoner extends OWLReasonerBase {
 
     @Override
     public boolean isEntailed(OWLAxiom axiom) throws ReasonerInterruptedException, UnsupportedEntailmentTypeException, TimeOutException, AxiomNotInProfileException, FreshEntitiesException, InconsistentOntologyException {
-        return getRootOntology().containsAxiomIgnoreAnnotations(axiom, true);
+    	boolean containsAxiom = getRootOntology().containsAxiom(axiom, true);
+		
+		if(containsAxiom){
+			return true;
+		}
+    	
+    	if (axiom instanceof OWLClassAssertionAxiom) {// extension of OWL API code
+			ensurePrepared();
+
+			OWLClassExpression ce = ((OWLClassAssertionAxiom) axiom).getClassExpression();
+			OWLIndividual individual = ((OWLClassAssertionAxiom) axiom).getIndividual();
+
+			if (ce.isOWLThing()) {
+				return true;
+			} else if (ce.isOWLNothing()) {
+				return false;
+			} else if (!ce.isAnonymous()) {
+				OWLClass cls = ce.asOWLClass();
+				Set<OWLClass> clses = new HashSet<OWLClass>();
+				clses.add(cls);
+				clses.addAll(getSubClasses(cls, false).getFlattened());
+				
+				for (OWLClass curCls : clses) {
+					boolean contained = getRootOntology().containsAxiom(df.getOWLClassAssertionAxiom(curCls, individual), true);
+					if (contained) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				if (ce instanceof OWLObjectIntersectionOf) {
+					Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) ce).getOperands();
+					for (OWLClassExpression op : operands) {
+						if(!isEntailed(df.getOWLClassAssertionAxiom(op, individual))){
+							return false;
+						}
+					}
+					return true;
+				} else if (ce instanceof OWLObjectUnionOf) {
+					Set<OWLClassExpression> operands = ((OWLObjectUnionOf) ce).getOperands();
+					for (OWLClassExpression op : operands) {
+						if(isEntailed(df.getOWLClassAssertionAxiom(op, individual))){
+							return true;
+						}
+					}
+					return false;
+				} else if (ce instanceof OWLObjectSomeValuesFrom) {
+					OWLObjectPropertyExpression ope = ((OWLObjectSomeValuesFrom) ce).getProperty();
+					
+					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
+					
+					Set<OWLIndividualAxiom> axioms = getRootOntology().getAxioms(individual);
+					
+					for (OWLIndividualAxiom curAx : axioms) {
+						if(curAx instanceof OWLObjectPropertyAssertionAxiom && 
+								ope.equals(((OWLObjectPropertyAssertionAxiom) curAx).getProperty())) {
+							
+							OWLIndividual object = ((OWLObjectPropertyAssertionAxiom) curAx).getObject();
+							return isEntailed(df.getOWLClassAssertionAxiom(filler, object));
+						}
+					}
+					return false;
+				}
+			}
+		}
+    	
+    	return false;
     }
 
     @Override
@@ -526,6 +599,60 @@ public class StructuralReasoner extends OWLReasonerBase {
                     }
                 }
             }
+        } else { // extension of OWL API implementation
+        	if(ce instanceof OWLObjectIntersectionOf){
+        		List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) ce).getOperandsAsList();
+        		
+        		Set<Node<OWLNamedIndividual>> tmp = new HashSet<Node<OWLNamedIndividual>>();
+        		
+        		tmp.addAll(getInstances(operands.get(0), direct).getNodes());
+        		
+        		for (int i = 1; i < operands.size(); i++) {
+        			tmp.retainAll(getInstances(operands.get(i), direct).getNodes());
+				}
+        	} else if(ce instanceof OWLObjectUnionOf){
+        		Set<OWLClassExpression> operands = ((OWLObjectUnionOf) ce).getOperands();
+        		
+        		for (OWLClassExpression op : operands) {
+					result.addAllNodes(getInstances(op, direct).getNodes());
+				}
+        	} else if(ce instanceof OWLObjectSomeValuesFrom){
+        		System.out.println(ce);
+        		OWLObjectPropertyExpression ope = ((OWLObjectSomeValuesFrom) ce).getProperty();
+        		OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
+                Set<OWLObjectPropertyExpression> properties = new HashSet<OWLObjectPropertyExpression>();
+                properties.add(ope.asOWLObjectProperty());
+                if (!direct) {
+                    properties.addAll(getSubObjectProperties(ope, false).getFlattened());
+                }
+        		for (OWLOntology ontology : getRootOntology().getImportsClosure()) {
+                    for (OWLObjectPropertyExpression curProp : properties) {
+                        Set<OWLAxiom> referencingAxioms = ontology.getReferencingAxioms(curProp.asOWLObjectProperty());
+                        int i = 0;
+						for (OWLAxiom axiom : referencingAxioms) {
+                        	if(axiom instanceof OWLObjectPropertyAssertionAxiom){
+                        		// check if object is instance of filler 
+                        		OWLIndividual object = ((OWLObjectPropertyAssertionAxiom) axiom).getObject();
+                        		if(!object.isAnonymous()){
+                        			if(filler.isOWLThing() || getInstances(filler, false).containsEntity(object.asOWLNamedIndividual())){
+                        				OWLIndividual subject = ((OWLObjectPropertyAssertionAxiom) axiom).getSubject();
+                                        if (!subject.isAnonymous()) {
+                                            if (getIndividualNodeSetPolicy().equals(IndividualNodeSetPolicy.BY_SAME_AS)) {
+                                                result.addNode(getSameIndividuals(subject.asOWLNamedIndividual()));
+                                            }
+                                            else {
+                                                result.addNode(new OWLNamedIndividualNode(subject.asOWLNamedIndividual()));
+                                            }
+                                        }
+                        			}
+                        		}
+                        	}
+                        }
+                    }
+                }
+        	} else if(ce instanceof OWLObjectAllValuesFrom){
+        		
+        	}
         }
         return result;
     }

@@ -31,7 +31,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.algorithms.elcopy.ELDescriptionEdge;
 import org.dllearner.algorithms.elcopy.ELDescriptionEdgeComparator;
 import org.dllearner.algorithms.elcopy.ELDescriptionNode;
@@ -52,9 +51,8 @@ import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.Property;
 import org.dllearner.core.owl.Thing;
-
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //import com.jamonapi.Monitor;
 //import com.jamonapi.MonitorFactory;
@@ -81,7 +79,7 @@ import com.jamonapi.MonitorFactory;
 @SuppressWarnings("unused")
 public class ELDown3 extends RefinementOperatorAdapter {
 
-	private static Logger logger = Logger.getLogger(ELDown3.class);	
+	private static Logger logger = LoggerFactory.getLogger(ELDown3.class);	
 	
 	private AbstractReasonerComponent rs;
 	
@@ -194,6 +192,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 
 	// operation 1: label extension
 	private List<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		logger.trace("extending label of " + v);
 //		Monitor mon = MonitorFactory.start("extend label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 				
@@ -207,7 +206,6 @@ public class ELDown3 extends RefinementOperatorAdapter {
 		
 		// call ncc (see paper)
 		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
-		
 //		System.out.println("index: " + index + " label: " + v.getLabel());
 //		System.out.println("candidates: " + candidates);
 		
@@ -228,6 +226,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// operation 2: label refinement
 	private List<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		logger.trace("refining label of " + v);
 //		Monitor mon = MonitorFactory.start("refine label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
@@ -255,6 +254,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// operation 3: refine edge
 	private List<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		logger.trace("refining edge of " + v);
 //		Monitor mon = MonitorFactory.start("refine edge");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 
@@ -307,6 +307,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// new version of as
 	private Collection<ELDescriptionTree> attachSubtree2(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+		logger.trace("attaching subtree to " + v);
 //		Monitor mon = MonitorFactory.start("attach tree");
 		Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
 		
@@ -404,6 +405,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// new version of as
 		private Collection<ELDescriptionTree> attachSubtreeDatatypeProperties(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
+			logger.trace("attaching subtree to " + v);
 //			Monitor mon = MonitorFactory.start("attach tree");
 			Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
 			// create and initialise M

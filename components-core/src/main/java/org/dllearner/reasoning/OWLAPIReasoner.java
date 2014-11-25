@@ -348,7 +348,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
         
         if(useFallbackReasoner){
-        	fallbackReasoner = new StructuralReasoner(ontology, conf, BufferingMode.NON_BUFFERING);
+        	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
         }
 
         /*
@@ -706,8 +706,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		} catch (Exception e) {
 			if (useFallbackReasoner) {
 				logger.warn("Using fallback reasoner.");
-				NodeSet<OWLNamedIndividual> instances = fallbackReasoner.getInstances(d, true);
-				entailed = instances.containsEntity(i);
+//				NodeSet<OWLNamedIndividual> instances = fallbackReasoner.getInstances(d, true);
+//				entailed = instances.containsEntity(i);
+				entailed = fallbackReasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
 			} else {
 				throw e;
 			}

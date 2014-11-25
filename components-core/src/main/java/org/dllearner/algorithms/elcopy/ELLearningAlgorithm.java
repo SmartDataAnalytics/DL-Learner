@@ -198,7 +198,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			SearchTreeNode best = candidates.pollLast();
 			// apply operator
 			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
-			
+			logger.trace("#Refinements: " + refinements.size());
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
@@ -232,10 +232,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		// convert tree to standard description
 		Description description = descriptionTree.transformToDescription();
+		
 		if(isDescriptionAllowed(description)){
 			description = getNiceDescription(description);
 			timeMonitor.start();
 			double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
+			System.out.println(description + ":" + accuracy);
 			timeMonitor.stop();
 //			if(timeMonitor.getLastValue() > max){
 //				max = timeMonitor.getLastValue();

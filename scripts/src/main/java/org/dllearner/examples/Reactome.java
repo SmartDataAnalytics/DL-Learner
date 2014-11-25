@@ -20,13 +20,17 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.MaterializableFastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 
 public class Reactome {
@@ -3216,7 +3220,8 @@ public class Reactome {
         celoe.setReplaceSearchTree(true);
         
         ELLearningAlgorithm elLa = new ELLearningAlgorithm(lp, rc);
-        elLa.setNoisePercentage(1.0);
+        elLa.setTreeSearchTimeSeconds(1000);
+        elLa.setNoisePercentage(100d);
         la = elLa;//celoe;
 //        Description startClass = new NamedClass("http://dl-learner.org/smallis/Allelic_info");
         logger.debug("finished initializing learning algorithm");
@@ -3245,6 +3250,7 @@ public class Reactome {
     private static void setUp() {
         logger.setLevel(Level.DEBUG);
         Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
+        Logger.getLogger(ELDown3.class).setLevel(Level.TRACE);
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
     }
     
