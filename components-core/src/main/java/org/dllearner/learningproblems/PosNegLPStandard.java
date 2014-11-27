@@ -545,7 +545,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 				notCoveredNeg++;
 			}
 		}
-		System.out.println(description + "|FN:" + notCoveredPos + "|FP:" + (negativeExamples.size()-notCoveredNeg));
+//		System.out.println(description + "|FN:" + notCoveredPos + "|FP:" + (negativeExamples.size()-notCoveredNeg));
 		
 //		System.out.println("not covered pos: " + notCoveredPos);
 //		System.out.println("not covered neg: " + notCoveredNeg);
