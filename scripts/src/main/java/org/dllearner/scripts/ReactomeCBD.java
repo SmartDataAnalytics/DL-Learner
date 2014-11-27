@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
@@ -16,9 +15,11 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReactomeCBD {
-    private static final Logger logger = Logger.getLogger(ReactomeCBD.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReactomeCBD.class);
     private static String dumpFilePath = "/tmp/tr.owl";
     private static String cbdFilePath = "/tmp/tr_cbd.owl";
     private static int cbdDepth = 30;
@@ -44,13 +45,14 @@ public class ReactomeCBD {
         OWLOntology ontology = man.loadOntologyFromOntologyDocument(new File(dumpFilePath));
         logger.info("Done");
         OWLAxiomCBDGenerator cbdGenartor = new OWLAxiomCBDGenerator(ontology);
+        cbdGenartor.setFetchCompleteRelatedTBox(true);
 
         OWLOntology cbdOnt = man.createOntology();
 
         for (String uri : exampleUris) {
             logger.info("Creating cbd for " + uri + "...");
             Set<OWLAxiom> cbdAxioms = cbdGenartor.getCBD(factory.getOWLNamedIndividual(IRI.create(uri)), cbdDepth);
-            logger.info("  Done. Adding it to main CBD dataset...");
+            logger.info("  Done. Adding {} axioms to main CBD dataset...", cbdAxioms.size());
             man.addAxioms(cbdOnt, cbdAxioms);
             logger.info("  Also done");
         }

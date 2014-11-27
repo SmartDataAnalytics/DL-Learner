@@ -15,7 +15,11 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.core.owl.ObjectSomeRestriction;
+import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.MaterializableFastInstanceChecker;
@@ -92,17 +96,20 @@ public class ReactomeMinimal {
         AbstractReasonerComponent rc = cwReasoner;
 
         logger.debug("initializing learning problem...");
-        PosNegLPStandard lp = new PosNegLPStandard(baseReasoner);
+        PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
         lp.init();
         logger.debug("finished initializing learning problem");
+        
+        Description d = new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/RO_0002234"), Thing.instance);
+        System.out.println(d + ":" + lp.getAccuracyOrTooWeak(d, 1.0));
 
         logger.debug("initializing learning algorithm...");
         AbstractCELA la;
 
         OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
-        heuristic.setExpansionPenaltyFactor(0.1);
+        heuristic.setExpansionPenaltyFactor(0.01);
 
         CELOE celoe = new CELOE(lp, rc);
         celoe.setHeuristic(heuristic);
