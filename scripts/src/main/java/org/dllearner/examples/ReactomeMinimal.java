@@ -17,6 +17,8 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
+import org.dllearner.core.owl.Intersection;
+import org.dllearner.core.owl.NamedClass;
 import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
@@ -102,20 +104,23 @@ public class ReactomeMinimal {
         lp.init();
         logger.debug("finished initializing learning problem");
         
-        Description d = new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/RO_0002234"), Thing.instance);
+        Description d = new Intersection(
+        		new NamedClass("http://purl.obolibrary.org/obo/GO_0016773"),
+        		new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/BFO_0000066"), Thing.instance)
+        		);
         System.out.println(d + ":" + lp.getAccuracyOrTooWeak(d, 1.0));
-
+        
         logger.debug("initializing learning algorithm...");
         AbstractCELA la;
 
         OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
-        heuristic.setExpansionPenaltyFactor(0.01);
+        heuristic.setExpansionPenaltyFactor(0.1);
 
         CELOE celoe = new CELOE(lp, rc);
         celoe.setHeuristic(heuristic);
-        celoe.setMaxExecutionTimeInSeconds(300);
+        celoe.setMaxExecutionTimeInSeconds(600);
         celoe.setNoisePercentage(50);
-        celoe.setMaxNrOfResults(10);
+        celoe.setMaxNrOfResults(100);
         celoe.setWriteSearchTree(true);
         celoe.setReplaceSearchTree(true);
 
@@ -140,6 +145,10 @@ public class ReactomeMinimal {
         op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
         op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
         op.init();
+        Set<Description> refinements = op.refine(d, 6);
+        for (Description ref : refinements) {
+			System.out.println(ref + ":" + lp.getAccuracyOrTooWeak(ref, 1.0));
+		}
         logger.debug("finished initializing operator");
         if(la instanceof CELOE)
         	((CELOE) la).setOperator(op);
