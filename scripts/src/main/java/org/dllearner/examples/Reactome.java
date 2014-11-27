@@ -35,7 +35,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 public class Reactome {
     private static final Logger logger = Logger.getLogger(Reactome.class);
-    private static final String kbPathStr = "/home/jl/tmp/tr.owl";
+    private static final String kbPathStr = "/tmp/tr.owl";
     private static final List<String> posExampleUris = new ArrayList<String>(Arrays.asList(
             "http://www.reactome.org/biopax/48887#BiochemicalReaction670",
             "http://www.reactome.org/biopax/48887#BiochemicalReaction1968",
@@ -3193,13 +3193,14 @@ public class Reactome {
         cwReasoner.setHandlePunning(false);
         cwReasoner.setUseMaterializationCaching(false);
         cwReasoner.setMaterializeExistentialRestrictions(true);
-//        cwReasoner.init();
+        cwReasoner.init();
         logger.debug("finished initializing reasoner component");
         
-        AbstractReasonerComponent rc = baseReasoner;//cwReasoner;
+//        AbstractReasonerComponent rc = baseReasoner;
+        AbstractReasonerComponent rc = cwReasoner;
         
         logger.debug("initializing learning problem...");
-        PosNegLPStandard lp = new PosNegLPStandard(baseReasoner);
+        PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
         lp.init();

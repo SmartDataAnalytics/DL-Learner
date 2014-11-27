@@ -79,6 +79,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -698,17 +699,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
         OWLNamedIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
         
-        if(concept instanceof NamedClass && ((NamedClass)concept).getName().contains("Error"))return false;
-        
+//        if(concept instanceof NamedClass && ((NamedClass)concept).getName().contains("Error"))return false;
+        OWLClassAssertionAxiom axiom = factory.getOWLClassAssertionAxiom(d, i);
         boolean entailed;
 		try {
-			entailed = reasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
+			entailed = reasoner.isEntailed(axiom);
 		} catch (Exception e) {
 			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
+				logger.warn("Using fallback reasoner for query {}", axiom);
 //				NodeSet<OWLNamedIndividual> instances = fallbackReasoner.getInstances(d, true);
 //				entailed = instances.containsEntity(i);
-				entailed = fallbackReasoner.isEntailed(factory.getOWLClassAssertionAxiom(d, i));
+				entailed = fallbackReasoner.isEntailed(axiom);
 			} else {
 				throw e;
 			}

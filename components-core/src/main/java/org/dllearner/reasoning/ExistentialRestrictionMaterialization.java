@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
@@ -138,6 +139,7 @@ public class ExistentialRestrictionMaterialization {
 			//go subsumption hierarchy up for each directly asserted super class
 			for (OWLClassExpression sup : superClassExpressions) {
 				if(!visitedClassExpressions.contains(sup)){
+//					System.out.println(sup);
 					visitedClassExpressions.add(sup);
 					sup.accept(this);
 					superClasses.addAll(stack.pop());
@@ -236,6 +238,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectHasValue ce) {
+			stack.push(Sets.<OWLClassExpression>newHashSet(ce));
 		}
 
 		/* (non-Javadoc)
@@ -264,6 +267,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectHasSelf ce) {
+			stack.push(Sets.<OWLClassExpression>newHashSet(ce));
 		}
 
 		/* (non-Javadoc)

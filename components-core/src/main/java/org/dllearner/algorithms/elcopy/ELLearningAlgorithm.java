@@ -265,7 +265,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			description = getNiceDescription(description);
 			timeMonitor.start();
 			double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
-			System.out.println(description + ":" + accuracy);
 			timeMonitor.stop();
 //			if(timeMonitor.getLastValue() > max){
 //				max = timeMonitor.getLastValue();

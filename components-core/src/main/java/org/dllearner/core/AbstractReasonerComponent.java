@@ -30,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.Constant;
@@ -53,6 +52,8 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.dllearner.utilities.owl.RoleComparator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -87,7 +88,7 @@ import com.google.common.collect.Sets;
  */
 public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent {
 
-	public static Logger logger = Logger.getLogger(AbstractReasonerComponent.class);
+	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 
 	// statistical data for particular reasoning operations
 	private long instanceCheckReasoningTimeNs = 0;
