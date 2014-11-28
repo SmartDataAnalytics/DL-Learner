@@ -128,6 +128,7 @@ import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -378,7 +379,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
             throw new ComponentInitException("Inconsistent ontologies.");
         }
-
+        
         factory = manager.getOWLDataFactory();
 
 //		try {

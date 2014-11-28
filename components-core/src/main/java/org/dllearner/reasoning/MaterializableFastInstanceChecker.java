@@ -76,6 +76,7 @@ import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -85,6 +86,8 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -265,6 +268,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			rc = new OWLAPIReasoner(sources);
 			rc.init();
 		}
+		
 		atomicConcepts = rc.getNamedClasses();
 		datatypeProperties = rc.getDatatypeProperties();
 		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
@@ -399,7 +403,6 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				OWLClassExpression ce = axiom.getClassExpression();
 				// if C is of type 'r some D'
 				if(ce instanceof OWLObjectSomeValuesFrom){
-					System.out.println(axiom);
 					OWLObjectPropertyExpression propertyExpression = ((OWLObjectSomeValuesFrom) ce).getProperty();
 					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
 					if(!propertyExpression.isAnonymous()){
@@ -429,11 +432,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 							if(!filler.isOWLThing()){
 								if(!filler.isAnonymous()){
 									NamedClass cls = new NamedClass(filler.asOWLClass().toStringID());
-									System.out.println(cls);
 									classInstancesPos.get(cls).add(newIndividual);
 									// get all super classes and add genInd to each
-									Set<OWLClass> superClasses = rc.getReasoner().getSuperClasses(ce, false).getFlattened();
-									System.out.println(superClasses);
+									Set<OWLClass> superClasses = rc.getReasoner().getSuperClasses(filler, false).getFlattened();
 									superClasses.remove(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
 									for (OWLClass sup : superClasses) {
 										classInstancesPos.get(OWLAPIConverter.convertClass(sup)).add(newIndividual);
