@@ -399,6 +399,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				OWLClassExpression ce = axiom.getClassExpression();
 				// if C is of type 'r some D'
 				if(ce instanceof OWLObjectSomeValuesFrom){
+					System.out.println(axiom);
 					OWLObjectPropertyExpression propertyExpression = ((OWLObjectSomeValuesFrom) ce).getProperty();
 					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
 					if(!propertyExpression.isAnonymous()){
@@ -428,9 +429,11 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 							if(!filler.isOWLThing()){
 								if(!filler.isAnonymous()){
 									NamedClass cls = new NamedClass(filler.asOWLClass().toStringID());
+									System.out.println(cls);
 									classInstancesPos.get(cls).add(newIndividual);
 									// get all super classes and add genInd to each
 									Set<OWLClass> superClasses = rc.getReasoner().getSuperClasses(ce, false).getFlattened();
+									System.out.println(superClasses);
 									superClasses.remove(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLThing());
 									for (OWLClass sup : superClasses) {
 										classInstancesPos.get(OWLAPIConverter.convertClass(sup)).add(newIndividual);
@@ -454,7 +457,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				TreeSet<Individual> individuals = classInstancesPos.get(cls);
 				Set<OWLClassExpression> superClass = materialization.materialize(cls.getName());
 				for (OWLClassExpression sup : superClass) {
-//					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
+					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
 				}
 			}
 			logger.debug("...done.");

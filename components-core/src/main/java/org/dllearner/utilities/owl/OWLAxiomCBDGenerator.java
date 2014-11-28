@@ -659,6 +659,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 	 */
 	@Override
 	public void visit(OWLObjectSomeValuesFrom ce) {
+		System.out.println(ce);
 		ce.getFiller().accept(this);
 	}
 
