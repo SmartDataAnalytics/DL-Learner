@@ -56,6 +56,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -120,6 +122,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private ClassHierarchy subsumptionHierarchy = null;
 	private ObjectPropertyHierarchy roleHierarchy = null;
 	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
+	
+	protected Monitor monitor = MonitorFactory.getTimeMonitor("reasoner");
 
 	/**
 	 * The underlying knowledge sources.
@@ -194,6 +198,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		nrOfSubsumptionHierarchyQueries = 0;
 		otherReasoningTimeNs = 0;
 		overallReasoningTimeNs = 0;
+		
+		monitor.reset();
 	}
 
 	/**

@@ -141,7 +141,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 //		}
 		
 		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
-			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
+			logger.error("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
 		}
 		
 	}

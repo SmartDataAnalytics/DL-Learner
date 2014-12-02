@@ -37,7 +37,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -76,7 +75,6 @@ import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -84,13 +82,11 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -116,7 +112,7 @@ import com.google.common.hash.Hashing;
 @ComponentAnn(name = "materializable fast instance checker", shortName = "mat-fic", version = 0.9)
 public class MaterializableFastInstanceChecker extends AbstractReasonerComponent {
 
-	private static Logger logger = Logger.getLogger(MaterializableFastInstanceChecker.class);
+	private static Logger logger = LoggerFactory.getLogger(MaterializableFastInstanceChecker.class);
 
 //	private boolean defaultNegation = true;
 
@@ -340,7 +336,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		long dematStartTime = System.currentTimeMillis();
 
 		//atomic concepts
-		logger.debug("dematerialising concepts");
+		logger.debug("Materialising concepts...");
 		Set<NamedClass> classes = rc.getNamedClasses();
 		int i = 1;
 		for (NamedClass atomicConcept : classes) {
@@ -359,18 +355,21 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) rc.getIndividuals(negatedAtomicConcept));
 			}
 		}
-
+		logger.debug("...finished materialising concepts.");
+		
 		//atomic object properties
-		logger.debug("dematerialising object properties");
+		logger.debug("Materialising object properties...");
 		for (ObjectProperty atomicRole : atomicRoles) {
 			opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
 		}
+		logger.debug("...finished materialising object properties.");
 		
 		//atomic datatype properties
-		logger.debug("dematerialising datatype properties");
+		logger.debug("Materialising data properties...");
 		for (DatatypeProperty atomicRole : datatypeProperties) {
 			dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
 		}
+		logger.debug("...finished materialising data properties.");
 
 		//boolean datatype properties
 		for (DatatypeProperty dp : booleanDatatypeProperties) {
@@ -454,14 +453,15 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			logger.debug("Materializing existential restrictions ...");
 			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
 			int cnt = 1;
-			for (NamedClass cls : atomicConcepts) {System.out.println(cnt++ + "/" + atomicConcepts.size());
+			for (NamedClass cls : atomicConcepts) {
+				logger.debug(cnt++ + "/" + atomicConcepts.size());
 				TreeSet<Individual> individuals = classInstancesPos.get(cls);
 				Set<OWLClassExpression> superClass = materialization.materialize(cls.getName());
 				for (OWLClassExpression sup : superClass) {
 					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
 				}
 			}
-			logger.debug("...done.");
+			logger.debug("...finished materializing existential restrictions.");
 		}
 		
 		//materialize facts based on OWL punning, i.e.:
@@ -529,6 +529,8 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			
 		} else if(d instanceof NamedClass){
 			classInstancesPos.get(d).addAll(individuals);
+		} else if(d instanceof Thing){
+			
 		} else {
 			throw new UnsupportedOperationException("Should not happen.");
 		}

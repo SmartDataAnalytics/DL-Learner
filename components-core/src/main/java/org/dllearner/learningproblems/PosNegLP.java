@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -35,6 +34,8 @@ import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 /**
@@ -42,7 +43,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
  *
  */
 public abstract class PosNegLP extends AbstractLearningProblem {
-	private static Logger logger = Logger.getLogger(PosNegLP.class);
+	protected static Logger logger = LoggerFactory.getLogger(PosNegLP.class);
 
 	protected Set<Individual> positiveExamples = new TreeSet<Individual>();
 	protected Set<Individual> negativeExamples = new TreeSet<Individual>();

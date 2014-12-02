@@ -132,7 +132,8 @@ public class ExistentialRestrictionMaterialization {
 			
 			//get the directly asserted super classes
 			Set<OWLClassExpression> superClassExpressions = cls.getSuperClasses(ontology);
-			
+			//and the superclasses from equivalence axioms
+			superClassExpressions.addAll(cls.getEquivalentClasses(ontology));
 			//omit trivial super class
 			superClassExpressions.remove(cls);
 			

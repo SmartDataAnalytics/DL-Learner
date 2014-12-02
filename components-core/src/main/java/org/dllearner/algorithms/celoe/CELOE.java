@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,7 +32,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -69,8 +69,11 @@ import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Charsets;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -92,7 +95,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOE extends AbstractCELA implements Cloneable{
 
-	private static Logger logger = Logger.getLogger(CELOE.class);
+	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
 //	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
@@ -426,9 +429,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					startClass = candidate;
 					
 					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing description " + startClass.toManchesterSyntaxString(baseURI, prefixes) + " as start class for learning algorithm.");
+						logger.info("Reusing existing description {} as start class for learning algorithm.", startClass.toManchesterSyntaxString(baseURI, prefixes));
 					} else {
-						logger.info("Generalised existing description " + existingDefinition.toManchesterSyntaxString(baseURI, prefixes) + " to " + startClass.toManchesterSyntaxString(baseURI, prefixes) + ", which is used as start class for the learning algorithm.");
+						logger.info("Generalised existing description {} to {}, which is used as start class for the learning algorithm.", 
+								existingDefinition.toManchesterSyntaxString(baseURI, prefixes), startClass.toManchesterSyntaxString(baseURI, prefixes));
 					}
 					
 //					System.out.println("start class: " + startClass);
@@ -447,8 +451,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						startClass = (Description) superClasses.toArray()[0];
 					} else {
 						startClass = Thing.instance;
-						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a description in this case.");
+						logger.warn("{} is equivalent to owl:Thing. Usually, it is not " +
+								"sensible to learn a description in this case.", classToDescribe);
 					}					
 				}
 			}				
@@ -568,10 +572,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				treeString += startNode.toTreeString(baseURI, prefixes);
 				treeString += "\n";
 
-				if (replaceSearchTree)
-					Files.createFile(new File(searchTreeFile), treeString);
-				else
-					Files.appendToFile(new File(searchTreeFile), treeString);
+				File file = new File(searchTreeFile);
+				
+				try {
+					if (replaceSearchTree){
+						com.google.common.io.Files.write(treeString, file, Charsets.UTF_8);
+					} else {
+						com.google.common.io.Files.append(treeString, file, Charsets.UTF_8);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			
 //			System.out.println(loop);
@@ -658,7 +669,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			logger.warn("Invalid accuracy value " + accuracy + " for description " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+			logger.warn("Invalid accuracy value {} for description {}. This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.",
+					accuracy, description);
 			System.exit(0);
 		}
 		
