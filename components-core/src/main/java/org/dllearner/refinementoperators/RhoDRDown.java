@@ -33,7 +33,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
@@ -75,7 +74,8 @@ import org.dllearner.core.owl.Union;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
@@ -100,8 +100,7 @@ import com.google.common.collect.Sets;
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
-	private static Logger logger = Logger
-	.getLogger(RhoDRDown.class);
+	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	
 	private static final NamedClass OWL_THING = new NamedClass(Thing.uri);
 	
@@ -346,7 +345,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				Set<Constant> frequentInds = new TreeSet<Constant>();
 				for(Constant i : dpMap.keySet()) {
 					if(dpMap.get(i) >= frequencyThreshold) {
-						logger.trace("adding value "+i+", because "+dpMap.get(i) +">="+frequencyThreshold);
+						logger.trace("adding value "+ i + ", because "+dpMap.get(i) +">="+frequencyThreshold);
 						frequentInds.add(i);
 					}
 				}
