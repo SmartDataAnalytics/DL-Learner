@@ -188,6 +188,29 @@ public class MyMonKey  implements MonKey{
 	        return getUnits();
 	    }
 
+		/* (non-Javadoc)
+		 * @see com.jamonapi.MonKeyItem#setInstanceName(java.lang.String)
+		 */
+		@Override
+		public void setInstanceName(String instanceName) {
+		}
+
+		/* (non-Javadoc)
+		 * @see com.jamonapi.MonKeyItem#getInstanceName()
+		 */
+		@Override
+		public String getInstanceName() {
+			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see com.jamonapi.MonKey#getSize()
+		 */
+		@Override
+		public int getSize() {
+			return 0;
+		}
+
 	    
 	
 }
