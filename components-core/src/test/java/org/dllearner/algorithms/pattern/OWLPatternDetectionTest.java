@@ -4,9 +4,8 @@ import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
 import org.junit.Test;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
-
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 
 public class OWLPatternDetectionTest {

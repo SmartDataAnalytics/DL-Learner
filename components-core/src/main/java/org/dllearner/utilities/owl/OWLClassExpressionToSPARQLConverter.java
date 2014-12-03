@@ -13,6 +13,7 @@ import java.util.TreeSet;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
@@ -58,7 +59,6 @@ import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -770,5 +770,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		query = converter.asQuery(rootVar, expr, Sets.newHashSet(propR, propS)).toString();
 		System.out.println(expr + "\n" + query);
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
+	 */
+	@Override
+	public void visit(OWLAnnotationProperty property) {
 	}
 }

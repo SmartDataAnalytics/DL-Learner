@@ -6,9 +6,8 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -73,10 +72,13 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 	public void setAsText(String s) throws IllegalArgumentException {
 		// we assume that the start class string is given in Manchester syntax
 //		System.out.println("parser string: " + arg0);
+		ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(
+				new OWLDataFactoryImpl(false, false), 
+				null);
 		try {
-			description = new ManchesterOWLSyntaxEditorParser(new OWLDataFactoryImpl(), s).parseClassExpression();
+			description = parser.parse(s);
 //			System.out.println("parsed: " + description);
-		} catch (ParserException e) {
+		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
 	}

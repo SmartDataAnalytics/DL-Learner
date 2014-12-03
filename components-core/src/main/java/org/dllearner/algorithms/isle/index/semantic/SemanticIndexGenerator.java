@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
@@ -107,7 +109,7 @@ public abstract class SemanticIndexGenerator {
         Set<String> documents = new HashSet<String>();
         for (OWLEntity entity : schemaEntities) {
             String label = null;
-            Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, annotationProperty);
+            Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(annotationProperty, ontology);
             for (OWLAnnotation annotation : annotations) {
                 if (annotation.getValue() instanceof OWLLiteral) {
                     OWLLiteral val = (OWLLiteral) annotation.getValue();

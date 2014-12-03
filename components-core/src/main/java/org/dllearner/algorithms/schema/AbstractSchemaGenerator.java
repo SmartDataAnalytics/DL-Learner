@@ -14,7 +14,6 @@ import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AxiomLearningProgressMonitor;
-import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
 import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
@@ -26,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
+import org.semanticweb.owlapi.profiles.Profiles;
 
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -95,13 +95,13 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	 * @param axiomTypes the axiom types to set
 	 */
 	public void setAxiomTypes(OWLProfile owlProfile) {
-		if(owlProfile == OWLProfile.OWL2_EL){
+		if(owlProfile == Profiles.OWL2_EL){
 			
-		} else if(owlProfile == OWLProfile.OWL2_RL){
+		} else if(owlProfile == Profiles.OWL2_RL){
 			
-		} else if(owlProfile == OWLProfile.OWL2_QL){
+		} else if(owlProfile == Profiles.OWL2_QL){
 			
-		} else if(owlProfile == OWLProfile.OWL2_DL){
+		} else if(owlProfile == Profiles.OWL2_DL){
 			
 		} else {
 			throw new IllegalArgumentException("OWL profile " + owlProfile.getName() + " not supported.");

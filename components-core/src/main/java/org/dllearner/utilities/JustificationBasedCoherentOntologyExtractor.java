@@ -39,7 +39,7 @@ import org.apache.log4j.SimpleLayout;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -644,8 +644,8 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 		logger.info("Writing to disk...");
 		long startTime = System.currentTimeMillis();
 		try {
-			ontology.getOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
-			diffOntology.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream("log/" + diffFileName)));
+			ontology.getOWLOntologyManager().saveOntology(ontology, new RDFXMLDocumentFormat(), new BufferedOutputStream(new FileOutputStream(fileName)));
+			diffOntology.getOWLOntologyManager().saveOntology(diffOntology, new RDFXMLDocumentFormat(), new BufferedOutputStream(new FileOutputStream("log/" + diffFileName)));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
@@ -811,7 +811,7 @@ public class JustificationBasedCoherentOntologyExtractor implements CoherentOnto
 	public OWLOntology getModule(OWLEntity entity){
 		OWLOntology module = null;
 		try {
-			module = OWLManager.createOWLOntologyManager().createOntology(ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.TOP_OF_BOT));
+			module = OWLManager.createOWLOntologyManager().createOntology(ModularityUtils.extractModule(incoherentOntology, Collections.singleton(entity), ModuleType.STAR));
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

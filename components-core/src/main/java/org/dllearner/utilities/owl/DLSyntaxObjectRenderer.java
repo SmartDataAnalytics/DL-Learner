@@ -39,28 +39,28 @@ package org.dllearner.utilities.owl;
  * limitations under the License.
  */
 
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FACET_RESTRICTION_SEPARATOR;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.AND;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.BOTTOM;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.COMMA;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.COMP;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.DISJOINT_WITH;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.EQUAL;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.EQUIVALENT_TO;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.EXISTS;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.FORALL;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.IMPLIES;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.IN;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.INVERSE;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.MAX;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.MIN;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.NOT;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.NOT_EQUAL;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.OR;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.SELF;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.SUBCLASS;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.TOP;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.WEDGE;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.AND;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.BOTTOM;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.COMMA;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.COMP;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.DISJOINT_WITH;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.EQUAL;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.EQUIVALENT_TO;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.EXISTS;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.FORALL;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.IMPLIES;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.IN;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.INVERSE;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.MAX;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.MIN;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.NOT;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.NOT_EQUAL;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.OR;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.SELF;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.SUBCLASS;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.TOP;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.WEDGE;
+import static org.semanticweb.owlapi.util.OWLAPIPreconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,14 +68,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
+
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
+import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax;
 
 /**
  * Extended version of the DLSyntaxObjectRenderer class in OWL API. Extension is
@@ -86,7 +88,8 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax;
  * @author Matthew Horridge, The University Of Manchester, Bio-Health
  *         Informatics Group, Date: 10-Feb-2008
  */
-public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisitor {
+public class DLSyntaxObjectRenderer extends OWLObjectVisitorAdapter implements
+OWLObjectRenderer, OWLObjectVisitor {
 
 	private ShortFormProvider shortFormProvider;
 	private IRIShortFormProvider iriShortFormProvider;
@@ -367,7 +370,8 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 		writePropertyAssertion(axiom);
 	}
 
-	private void writeFunctionalProperty(OWLPropertyExpression<?, ?> property) {
+	private void writeFunctionalProperty(@Nonnull OWLPropertyExpression property) {
+		checkNotNull(property, "property cannot be null");
 		write(TOP);
 		writeSpace();
 		write(SUBCLASS);
@@ -626,20 +630,20 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 		writeQuantifiedRestriction(desc, FORALL);
 	}
 
-	private <R extends OWLPropertyRange, P extends OWLPropertyExpression<R, P>, V extends OWLObject> void writeValueRestriction(
-			OWLHasValueRestriction<R, P, V> restriction) {
-		write(EXISTS);
-		writeSpace();
-		restriction.getProperty().accept(this);
-		writeRestrictionSeparator();
-		write("{");
-		restriction.getValue().accept(this);
-		write("}");
-	}
+	private <V extends OWLObject> void writeValueRestriction(
+            OWLHasValueRestriction<V> restriction, OWLPropertyExpression p) {
+        write(EXISTS);
+        writeSpace();
+        p.accept(this);
+        writeRestrictionSeparator();
+        write("{");
+        restriction.getFiller().accept(this);
+        write("}");
+    }
 
 	@Override
-	public void visit(OWLObjectHasValue desc) {
-		writeValueRestriction(desc);
+	public void visit(OWLObjectHasValue ce) {
+		writeValueRestriction(ce, ce.getProperty());
 	}
 
 	@Override
@@ -691,8 +695,8 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 	}
 
 	@Override
-	public void visit(OWLDataHasValue desc) {
-		writeValueRestriction(desc);
+	public void visit(OWLDataHasValue ce) {
+		writeValueRestriction(ce, ce.getProperty());
 	}
 
 	@Override
@@ -733,7 +737,7 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 	        write("[");
 	        for (OWLFacetRestriction facetRestriction : node.getFacetRestrictions()) {
 				facetRestriction.accept(this);
-				write(" " + FACET_RESTRICTION_SEPARATOR.toString() + " ");
+				write(" " + DLSyntax.COMMA + " ");
 			}
 	        write("]");
 		}

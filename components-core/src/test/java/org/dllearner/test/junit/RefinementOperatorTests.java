@@ -110,7 +110,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
-		ToStringRenderer.getInstance().setRenderer(new uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer());
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
 		reasoner.init();
 		baseURI = reasoner.getBaseURI();

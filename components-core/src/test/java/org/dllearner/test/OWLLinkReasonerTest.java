@@ -20,13 +20,10 @@
 package org.dllearner.test;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.OWLFunctionalSyntaxOntologyFormat;
-import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;

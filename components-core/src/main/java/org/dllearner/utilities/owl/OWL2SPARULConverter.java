@@ -22,10 +22,11 @@ package org.dllearner.utilities.owl;
 import java.util.Collection;
 import java.util.List;
 
-import org.coode.owlapi.rdf.model.AbstractTranslator;
-import org.coode.owlapi.rdf.model.RDFLiteralNode;
-import org.coode.owlapi.rdf.model.RDFNode;
-import org.coode.owlapi.rdf.model.RDFResourceNode;
+import org.semanticweb.owlapi.io.RDFLiteral;
+import org.semanticweb.owlapi.io.RDFNode;
+import org.semanticweb.owlapi.io.RDFResource;
+import org.semanticweb.owlapi.io.RDFResourceBlankNode;
+import org.semanticweb.owlapi.io.RDFResourceIRI;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -33,10 +34,11 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
 
 public class OWL2SPARULConverter
 		extends
-		AbstractTranslator<RDFNode, RDFResourceNode, RDFResourceNode, RDFLiteralNode> {
+		AbstractTranslator<RDFNode, RDFResource, RDFResource, RDFLiteral> {
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
@@ -87,35 +89,29 @@ public class OWL2SPARULConverter
 	}
 
 	@Override
-	protected void addTriple(RDFResourceNode subject, RDFResourceNode pred,
+	protected void addTriple(RDFResource subject, RDFResource pred,
 			RDFNode object) {
 		sb.append(subject).append(" ").append(pred).append(" ").append(object);
 
 	}
 
 	@Override
-	protected RDFResourceNode getAnonymousNode(Object key) {
-		return new RDFResourceNode(System.identityHashCode(key));
+	protected RDFResource getAnonymousNode(Object key) {
+		return new RDFResourceBlankNode(System.identityHashCode(key));
 	}
 
 	@Override
-	protected RDFResourceNode getPredicateNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResource getPredicateNode(IRI iri) {
+		return new RDFResourceIRI(iri);
 	}
 
 	@Override
-	protected RDFResourceNode getResourceNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResource getResourceNode(IRI iri) {
+		return new RDFResourceIRI(iri);
 	}
 
 	@Override
-	protected RDFLiteralNode getLiteralNode(OWLLiteral literal) {
-		if (literal.getDatatype() != null) {
-			return new RDFLiteralNode(literal.toString(), literal.getDatatype()
-					.getIRI());
-		} else {
-			return new RDFLiteralNode(literal.toString(), literal.getLang());
-		}
-
+	protected RDFLiteral getLiteralNode(OWLLiteral literal) {
+		return new RDFLiteral(literal);
 	}
 }

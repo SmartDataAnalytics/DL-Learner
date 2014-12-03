@@ -1502,7 +1502,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     					Set<Literal> literals = child.getLiterals();
     					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
-    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
+    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getIRI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     					} else {
     						if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.DATATYPE){
@@ -1510,7 +1510,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                     			RDFDatatype datatype = lit.getDatatype();
                     			String datatypeURI;
                     			if(datatype == null){
-                    				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
+                    				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getIRI().toString();
                     			} else {
                     				datatypeURI = datatype.getURI();
                     			}

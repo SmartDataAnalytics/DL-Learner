@@ -21,7 +21,6 @@ package org.dllearner.reasoning;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.xml.transform.OutputKeys;
@@ -59,8 +58,6 @@ public class OWLAPIDIGConverter {
 //			ret = xml2string(doc);
 
 		}catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 

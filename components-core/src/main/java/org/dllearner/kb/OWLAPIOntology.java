@@ -62,7 +62,7 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
     		if(ontology.getOntologyID().isAnonymous()){
     			iri = IRI.generateDocumentIRI();
     		} else {
-    			iri = ontology.getOntologyID().getOntologyIRI();
+    			iri = ontology.getOntologyID().getOntologyIRI().or(IRI.generateDocumentIRI());
     		}
 			copy = manager.createOntology(iri, Collections.singleton(ontology));
 		} catch (OWLOntologyCreationException e) {

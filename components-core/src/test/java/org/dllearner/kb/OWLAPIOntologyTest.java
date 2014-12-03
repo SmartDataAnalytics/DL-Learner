@@ -26,7 +26,7 @@ public class OWLAPIOntologyTest {
 
     private OWLOntology createOntology() throws OWLOntologyCreationException, IOException {
         // Set up the ontology here and hide its manager - the test needs to use a different ontology manager on reconstitution
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl());
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         Resource owlFile = new ClassPathResource("/org/dllearner/kb/owl-api-ontology-data.owl");
         return manager.loadOntologyFromOntologyDocument(owlFile.getInputStream());
     }
@@ -39,7 +39,7 @@ public class OWLAPIOntologyTest {
         
         OWLAPIOntology testSubject = new OWLAPIOntology(ontology);
 
-        OWLOntology result = testSubject.createOWLOntology(OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl()));
+        OWLOntology result = testSubject.createOWLOntology(OWLManager.createOWLOntologyManager());
         
         assertNotNull(result);
         assertNotSame(ontology,result);

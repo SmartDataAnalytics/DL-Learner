@@ -41,10 +41,11 @@ import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
+import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.search.EntitySearcher;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -152,10 +153,10 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
 		
 			for(OWLClass cls : unsatClasses){
 				reset();
-				for(OWLClassExpression equi : cls.getEquivalentClasses(ontology)){
+				for(OWLClassExpression equi : EntitySearcher.getEquivalentClasses(cls, ontology)){
 					equi.accept(this);
 				}
-				for(OWLClassExpression sup : cls.getSuperClasses(ontology)){
+				for(OWLClassExpression sup : EntitySearcher.getSuperClasses(cls, ontology)){
 					sup.accept(this);
 				}
 				for(Integer depth : depth2UniversalRestrictionPropertyMap.keySet()){
@@ -231,7 +232,7 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
 	}
 	
 
-	private void checkObjectRestriction(OWLQuantifiedRestriction<OWLClassExpression,OWLObjectPropertyExpression,OWLClassExpression> restr){
+	private void checkObjectRestriction(OWLQuantifiedObjectRestriction restr){
 		OWLClassExpression filler = restr.getFiller();
 		
 			if(filler.isAnonymous()){

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -89,6 +90,7 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
@@ -503,7 +505,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Set<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
 					if (annotations != null)
 					{
 						if (annotations.size() > 1)
@@ -526,7 +528,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Set<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -547,7 +549,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Set<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -578,7 +580,7 @@ public class FuzzyOwl2
 				if (ent.isOWLClass())
 				{
 					OWLClass cls = ent.asOWLClass();
-					Set<OWLAnnotation> annotations = cls.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " class annotations for " + cls + ".");
@@ -742,7 +744,7 @@ public class FuzzyOwl2
 					else // if (ent.isOWLDataProperty() )
 						prop = ent.asOWLDataProperty();
 	
-					Set<OWLAnnotation> annotations = prop.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " property annotations for " + prop + ".");

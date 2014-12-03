@@ -8,6 +8,7 @@ public abstract class AbstractAxiomScoreCalculator extends OWLAxiomVisitorExAdap
 	protected QueryExecutionFactory qef;
 
 	public AbstractAxiomScoreCalculator(QueryExecutionFactory qef) {
+		super(0d);
 		this.qef = qef;
 	}
 

@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.isle.textretrieval;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.IRIShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
@@ -81,7 +83,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		Map<List<Token>, Double> textWithWeight = new HashMap<List<Token>, Double>();
 		
 		for (OWLAnnotationProperty property : properties) {
-			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, property);
+			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(property, ontology);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
@@ -118,7 +120,7 @@ public class AnnotationEntityTextRetriever implements EntityTextRetriever{
 		Map<String, Double> textWithWeight = new HashMap<String, Double>();
 		
 		for (OWLAnnotationProperty property : properties) {
-			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, property);
+			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(property, ontology);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();

@@ -3,13 +3,12 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
@@ -335,6 +334,13 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	public void visit(OWLDatatypeRestriction node) {
 		Set<OWLFacetRestriction> facetRestrictions = node.getFacetRestrictions();
 		length += facetRestrictions.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
+	 */
+	@Override
+	public void visit(OWLAnnotationProperty property) {
 	}
 	
 	

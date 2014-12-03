@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.PrefixDocumentFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.IRI;
@@ -58,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -70,7 +73,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
@@ -86,13 +88,12 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.semanticweb.owlapi.reasoner.impl.DefaultNode;
-import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
+import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -191,7 +192,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         // create OWL API ontology manager - make sure we use a new data factory so that we don't default to the static one which can cause problems in a multi threaded environment.
         df = new OWLDataFactoryImpl();
-        manager = OWLManager.createOWLOntologyManager(df);
+        manager = OWLManager.createOWLOntologyManager();
 
         prefixes = new TreeMap<String, String>();
 
@@ -201,7 +202,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 owlAPIOntologies.add(ontology);
             }else{
                 //This reasoner requires an ontology to process
-                throw new ComponentInitException("OWL API Reasoner Requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
+                throw new ComponentInitException("OWL API Reasoner requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
             }
 
             atomicConcepts.addAll(ontology.getClassesInSignature(true));
@@ -213,10 +214,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // guarantee that the base URI is from one of those sources (there
             // can't be more than one); but we will take care that all prefixes are
             // correctly imported
-            OWLOntologyFormat format = manager.getOntologyFormat(ontology);
-            if (format instanceof PrefixOWLOntologyFormat) {
-                prefixes.putAll(((PrefixOWLOntologyFormat) format).getPrefixName2PrefixMap());
-                baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
+            OWLDocumentFormat format = manager.getOntologyFormat(ontology);
+            if (format instanceof PrefixDocumentFormat) {
+                prefixes.putAll(((PrefixDocumentFormat) format).getPrefixName2PrefixMap());
+                baseURI = ((PrefixDocumentFormat) format).getDefaultPrefix();
                 prefixes.remove("");
             }
         }
@@ -264,6 +265,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         } else if (getReasonerTypeString().equals("trowl")) {
             // instantiate TrOWL reasoner
         	reasonerFactory = new RELReasonerFactory();
+        } else if (getReasonerTypeString().equals("jfact")) {
+        	reasonerFactory = new JFactFactory();
         } else {
         	reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
         	URL url = null;
@@ -293,7 +296,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         // read in primitives
         for (OWLDataProperty dataProperty : datatypeProperties) {
-            Set<OWLDataRange> ranges = dataProperty.getRanges(owlAPIOntologies);
+            Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
 			Iterator<OWLDataRange> it = ranges.iterator();
 			if (it.hasNext()) {
 				OWLDataRange range = it.next();
@@ -756,7 +759,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public Set<OWLLiteral> getLabelImpl(OWLEntity entity) {
-        Set<OWLAnnotation> labelAnnotations = entity.getAnnotations(ontology, df.getRDFSLabel());
+        Collection<OWLAnnotation> labelAnnotations = EntitySearcher.getAnnotations(df.getRDFSLabel(), ontology);
         Set<OWLLiteral> annotations = new HashSet<OWLLiteral>();
         for (OWLAnnotation label : labelAnnotations) {
             annotations.add((OWLLiteral) label.getValue());
@@ -796,8 +799,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
      */
     @Override
     protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass cls) {
-        Set<OWLClassExpression> definitions = cls.getEquivalentClasses(ontology);
-        return definitions;
+        Collection<OWLClassExpression> definitions = EntitySearcher.getEquivalentClasses(cls, ontology);
+        return new HashSet<>(definitions);
     }
 
     /**

@@ -11,6 +11,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnonymousIndividual;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -424,6 +425,13 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLDatatypeRestriction desc) {
 		renamedOWLObject = desc;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
+	 */
+	@Override
+	public void visit(OWLAnnotationProperty property) {
 	}
 
 }

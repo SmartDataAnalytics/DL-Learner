@@ -26,7 +26,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -123,7 +123,7 @@ public class GreedyCohaerencyExtractor {
 			
 		}
 		try {
-			manager.saveOntology(coherentOntology, new RDFXMLOntologyFormat(), new BufferedOutputStream(new FileOutputStream(new File(target))));
+			manager.saveOntology(coherentOntology, new RDFXMLDocumentFormat(), new BufferedOutputStream(new FileOutputStream(new File(target))));
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {

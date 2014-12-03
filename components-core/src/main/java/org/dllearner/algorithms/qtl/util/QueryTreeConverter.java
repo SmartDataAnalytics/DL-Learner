@@ -16,6 +16,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -58,7 +59,6 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -122,7 +122,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     					Set<Literal> literals = child.getLiterals();
     					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
-    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
+    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getIRI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     					} else {
     						for (LiteralNodeConversionStrategy strategy : LiteralNodeConversionStrategy.values()) {
@@ -131,7 +131,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
                         			RDFDatatype datatype = lit.getDatatype();
                         			String datatypeURI;
                         			if(datatype == null){
-                        				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
+                        				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getIRI().toString();
                         			} else {
                         				datatypeURI = datatype.getURI();
                         			}

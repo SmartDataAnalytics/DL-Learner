@@ -153,14 +153,16 @@
 			<groupId>org.semanticweb.hermit</groupId>
 			<artifactId>hermit</artifactId>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>jfact</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
 		</dependency>
-
-
 
 		<dependency>
 			<groupId>junit</groupId>

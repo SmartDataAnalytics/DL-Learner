@@ -152,7 +152,7 @@ public class ObjectPropertyNode extends PropertyNode {
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentObjectPropertiesAxiom(tmp));
 				
 			}else if(one.a.toString().equals(OWLVocabulary.RDFS_LABEL)){
-				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLStringLiteral(one.b.toString()));
+				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(one.b.toString()));
 				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
 				owlAPIOntologyCollector.addAxiom(ax);
 			}else if(one.b.isLiteral()){

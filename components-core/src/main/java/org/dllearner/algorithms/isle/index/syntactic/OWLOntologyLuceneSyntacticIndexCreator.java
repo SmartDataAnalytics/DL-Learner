@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.isle.index.syntactic;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -70,7 +72,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		
 		for (OWLEntity entity : schemaEntities) {
 			String label = null;
-			Set<OWLAnnotation> annotations = entity.getAnnotations(ontology, annotationProperty);
+			Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(annotationProperty, ontology);
 			for (OWLAnnotation annotation : annotations) {
 				if (annotation.getValue() instanceof OWLLiteral) {
 		            OWLLiteral val = (OWLLiteral) annotation.getValue();
