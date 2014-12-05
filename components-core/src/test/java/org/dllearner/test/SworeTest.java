@@ -34,7 +34,9 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.HermiT.examples.MaterialiseInferences;
 
 /**
  * Test for learning on SWORE ontology.
@@ -51,7 +53,6 @@ public class SworeTest {
 	 */
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		
-		// get singleton instance of component manager
 		ComponentManager cm = ComponentManager.getInstance();
 		
 		// create knowledge source
@@ -61,7 +62,11 @@ public class SworeTest {
 		source.init();
 		
 		// create OWL API reasoning service with standard settings
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+//		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
+//		reasoner.init();
+		
+		// set up a closed-world reasoner
+		AbstractReasonerComponent reasoner = new FastInstanceChecker(source);
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples

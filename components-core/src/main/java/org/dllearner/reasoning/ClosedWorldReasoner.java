@@ -37,7 +37,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -45,6 +44,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.learn.UsedEntitiesDetection;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -71,10 +71,14 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
+import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -98,27 +102,19 @@ import com.google.common.hash.Hashing;
  * 
  */
 @ComponentAnn(name = "fast instance checker", shortName = "fic", version = 0.9)
-public class FastInstanceChecker extends AbstractReasonerComponent {
+public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
-	private static Logger logger = Logger.getLogger(FastInstanceChecker.class);
+	private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasoner.class);
+	
+	// the underlying base reasoner implementation
+	private OWLAPIReasoner baseReasoner;
+	
+	// we use an extra set for object properties because of punning option
+	private Set<OWLObjectProperty> objectProperties;
 
-//	private boolean defaultNegation = true;
-
-	private Set<OWLClass> atomicConcepts;
-	private Set<OWLObjectProperty> atomicRoles;
-	private Set<OWLDataProperty> datatypeProperties;
-	private Set<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
-	private Set<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
-	private Set<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
-	private Set<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();	
+	
 	private TreeSet<OWLIndividual> individuals;
 
-	// private ReasonerComponent rs;
-
-	private OWLAPIReasoner rc;
-
-	// we use sorted sets (map indices) here, because they have only log(n)
-	// complexity for checking whether an element is contained in them
 	// instances of classes
 	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
 	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
@@ -146,30 +142,30 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
 
-    @ConfigOption(name = "forAllRetrievalSemantics", description = "This option controls how to interpret the all quantifier in forall r.C. The standard option is" +
-            "to return all those which do not have an r-filler not in C. The domain semantics is to use those" +
-            "which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to"+
-            "use those which have at least one r-filler and do not have an r-filler not in C.",defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
+    @ConfigOption(name = "forAllRetrievalSemantics", description = "This option controls how to interpret the all quantifier in forall r.C. " +
+    		"The standard option is to return all those which do not have an r-filler not in C. " +
+    		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
+    		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",
+    		defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
     private ForallSemantics forallSemantics = ForallSemantics.Standard;
 
     public enum ForallSemantics { 
     	Standard, // standard all quantor
     	NonEmpty, // p only C for instance a returns false if there is no fact p(a,x) for any x  
-    	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \ in C  
+    	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \in C  
     }
     
     private boolean materializeExistentialRestrictions = false;
-
 	private boolean useCaching = true;
     private boolean handlePunning = false;
     
 	/**
 	 * Creates an instance of the fast instance checker.
 	 */
-	public FastInstanceChecker() {
+	public ClosedWorldReasoner() {
 	}
 
-    public FastInstanceChecker(TreeSet<OWLIndividual> individuals,
+    public ClosedWorldReasoner(TreeSet<OWLIndividual> individuals,
 			Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
 			Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos,
 			Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id,
@@ -184,24 +180,16 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		this.bdPos = bdPos;
 		this.bdNeg = bdNeg;
 		
-		if(rc == null){
-            rc = new OWLAPIReasoner(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
+		if(baseReasoner == null){
+            baseReasoner = new OWLAPIReasoner(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
             try {
-				rc.init();
+				baseReasoner.init();
 			} catch (ComponentInitException e) {
 				e.printStackTrace();
 			}
         }
 		
-		atomicConcepts = rc.getClasses();
-		datatypeProperties = rc.getDatatypeProperties();
-		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
-		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
-		intDatatypeProperties = rc.getIntDatatypeProperties();
-		stringDatatypeProperties = rc.getStringDatatypeProperties();
-		atomicRoles = rc.getObjectProperties();
-		
-		for (OWLClass atomicConcept : atomicConcepts) {
+		for (OWLClass atomicConcept : baseReasoner.getClasses()) {
 			TreeSet<OWLIndividual> pos = classInstancesPos.get(atomicConcept);
 			if(pos != null){
 				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
@@ -211,13 +199,13 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}
 		}
 		
-		for(OWLObjectProperty p : atomicRoles){
+		for(OWLObjectProperty p : baseReasoner.getObjectProperties()){
 			if(opPos.get(p) == null){
 				opPos.put(p, new HashMap<OWLIndividual, SortedSet<OWLIndividual>>());
 			}
 		}
 		
-		for (OWLDataProperty dp : booleanDatatypeProperties) {
+		for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
 			if(bdPos.get(dp) == null){
 				bdPos.put(dp, new TreeSet<OWLIndividual>());
 			}
@@ -228,11 +216,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		}
 	}
 
-	public FastInstanceChecker(Set<KnowledgeSource> sources) {
+	public ClosedWorldReasoner(Set<KnowledgeSource> sources) {
         super(sources);
     }
 
-    public FastInstanceChecker(KnowledgeSource... sources) {
+    public ClosedWorldReasoner(KnowledgeSource... sources) {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
     
@@ -251,18 +239,14 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	@Override
 	public void init() throws ComponentInitException {
 
-        if(rc == null){
-            rc = new OWLAPIReasoner(sources);
-            rc.init();
+        if(baseReasoner == null){
+            baseReasoner = new OWLAPIReasoner(sources);
+            baseReasoner.init();
         }
-		atomicConcepts = rc.getClasses();
-		datatypeProperties = rc.getDatatypeProperties();
-		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
-		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
-		intDatatypeProperties = rc.getIntDatatypeProperties();
-		stringDatatypeProperties = rc.getStringDatatypeProperties();
-		atomicRoles = rc.getObjectProperties();
-		individuals = (TreeSet<OWLIndividual>) rc.getIndividuals();
+		
+        objectProperties = baseReasoner.getObjectProperties();
+        
+		individuals = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals();
 		
 //		loadOrDematerialize();
 		materialize();
@@ -276,7 +260,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			Hasher hasher = hf.newHasher();
 			hasher.putBoolean(materializeExistentialRestrictions);
 			hasher.putBoolean(handlePunning);
-			for (OWLOntology ont : rc.getOWLAPIOntologies()) {
+			for (OWLOntology ont : baseReasoner.getOWLAPIOntologies()) {
 				hasher.putInt(ont.getLogicalAxioms().hashCode());
 				hasher.putInt(ont.getAxioms().hashCode());
 			}
@@ -327,60 +311,62 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		long dematStartTime = System.currentTimeMillis();
 
 		logger.debug("materialising concepts");
-		for (OWLClass atomicConcept : atomicConcepts) {
-			if(!atomicConcept.getIRI().isReservedVocabulary()){
-				SortedSet<OWLIndividual> pos = rc.getIndividuals(atomicConcept);
-				classInstancesPos.put(atomicConcept, (TreeSet<OWLIndividual>) pos);
+		for (OWLClass cls : baseReasoner.getClasses()) {
+			if(!cls.getIRI().isReservedVocabulary()){
+				SortedSet<OWLIndividual> pos = baseReasoner.getIndividuals(cls);
+				classInstancesPos.put(cls, (TreeSet<OWLIndividual>) pos);
 
 				if (isDefaultNegation()) {
-					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
+					/*
+					 *  we should avoid this operation because it returns a new
+					 *  set and thus could lead to memory issues
+					 *  Instead, we could later answer '\neg A(x)' by just check
+					 *  for A(x) and return the inverse. 
+					 */
+//					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
 				} else {
-					// Pellet needs approximately infinite time to answer
-					// negated queries
-					// on the carcinogenesis data set (and probably others), so
-					// we have to
-					// be careful here
-					OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
-					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) rc.getIndividuals(negatedAtomicConcept));
+					OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(cls);
+					classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedAtomicConcept));
 				}
 			} else {
-				System.err.println(atomicConcept);
+				System.err.println(cls);
 			}
 		}
 
-		logger.debug("materialising object properties");
-
-		for (OWLObjectProperty atomicRole : atomicRoles) {
-//			System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
-			opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
+		// materialize the object property facts
+		logger.debug("materialising object properties ...");
+		for (OWLObjectProperty objProp : baseReasoner.getObjectProperties()) {
+			opPos.put(objProp, baseReasoner.getPropertyMembers(objProp));
 		}
+		logger.debug("finished materialising object properties.");
 		
+		// materialize the data property facts
 		logger.debug("materialising datatype properties");
-		
-		for (OWLDataProperty atomicRole : datatypeProperties) {
-			dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
+		for (OWLDataProperty dp : baseReasoner.getDatatypeProperties()) {
+			dpPos.put(dp, baseReasoner.getDatatypeMembers(dp));
 		}
 
-		for (OWLDataProperty dp : booleanDatatypeProperties) {
-			bdPos.put(dp, (TreeSet<OWLIndividual>) rc.getTrueDatatypeMembers(dp));
-			bdNeg.put(dp, (TreeSet<OWLIndividual>) rc.getFalseDatatypeMembers(dp));
+		for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
+			bdPos.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<OWLIndividual>) baseReasoner.getFalseDatatypeMembers(dp));
 		}
 
-		for (OWLDataProperty dp : intDatatypeProperties) {
-			id.put(dp, rc.getIntDatatypeMembers(dp));
+		for (OWLDataProperty dp : baseReasoner.getIntDatatypeProperties()) {
+			id.put(dp, baseReasoner.getIntDatatypeMembers(dp));
 		}
 
-		for (OWLDataProperty dp : doubleDatatypeProperties) {
-			dd.put(dp, rc.getDoubleDatatypeMembers(dp));
+		for (OWLDataProperty dp : baseReasoner.getDoubleDatatypeProperties()) {
+			dd.put(dp, baseReasoner.getDoubleDatatypeMembers(dp));
 		}
 
-		for (OWLDataProperty dp : stringDatatypeProperties) {
-			sd.put(dp, rc.getStringDatatypeMembers(dp));
+		for (OWLDataProperty dp : baseReasoner.getStringDatatypeProperties()) {
+			sd.put(dp, baseReasoner.getStringDatatypeMembers(dp));
 		}		
+		logger.debug("finished materialising data properties.");
 		
 		if(materializeExistentialRestrictions){
-			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
-			for (OWLClass cls : atomicConcepts) {
+			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(baseReasoner.getReasoner().getRootOntology());
+			for (OWLClass cls : baseReasoner.getClasses()) {
 				TreeSet<OWLIndividual> individuals = classInstancesPos.get(cls);
 				Set<OWLClassExpression> superClass = materialization.materialize(cls.toStringID());
 				for (OWLClassExpression sup : superClass) {
@@ -391,8 +377,8 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		
 		//materialize facts based on OWL punning, i.e.:
 				//for each A in N_C
-				if(handlePunning && OWLPunningDetector.hasPunning(rc.getReasoner().getRootOntology())){
-					OWLOntology ontology = rc.getReasoner().getRootOntology();
+				if(handlePunning && OWLPunningDetector.hasPunning(baseReasoner.getReasoner().getRootOntology())){
+					OWLOntology ontology = baseReasoner.getReasoner().getRootOntology();
 					
 					OWLIndividual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd"));
 					Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<OWLIndividual, SortedSet<OWLIndividual>>();
@@ -401,7 +387,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 						objects.add(genericIndividual);
 						map.put(individual, objects);
 					}
-					for (OWLClass cls : atomicConcepts) {
+					for (OWLClass cls : baseReasoner.getClasses()) {
 						classInstancesNeg.get(cls).add(genericIndividual);
 						if(OWLPunningDetector.hasPunning(ontology, cls)){
 							OWLIndividual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.toStringID()));
@@ -419,9 +405,9 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 						}
 					}
 					opPos.put(OWLPunningDetector.punningProperty, map);
-					atomicRoles = new TreeSet<OWLObjectProperty>(atomicRoles);
-					atomicRoles.add(OWLPunningDetector.punningProperty);
-					atomicRoles = Collections.unmodifiableSet(atomicRoles);
+					objectProperties = new TreeSet<OWLObjectProperty>(objectProperties);
+					objectProperties.add(OWLPunningDetector.punningProperty);
+					objectProperties = Collections.unmodifiableSet(objectProperties);
 //					individuals.add(genericIndividual);
 				}
 		
@@ -474,7 +460,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()) {
-				return classInstancesNeg.get(operand).contains(individual);
+				if(isDefaultNegation()){
+					return !classInstancesPos.get(operand).contains(individual);
+				} else {
+					return classInstancesNeg.get(operand).contains(individual);
+				}
 			} else {
 				if(isDefaultNegation()) {
 					return !hasTypeImpl(operand, individual);
@@ -511,14 +501,14 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				return true;
 			}
 			
-			SortedSet<OWLIndividual> roleFillers = opPos.get(property.asOWLObjectProperty()).get(individual);	
+			SortedSet<OWLIndividual> values = opPos.get(property).get(individual);	
 			
-			if(roleFillers == null){
+			if(values == null){
 				return false;
 			}
 			
-			for (OWLIndividual roleFiller : roleFillers) {
-				if (hasTypeImpl(fillerConcept, roleFiller)) {
+			for (OWLIndividual value : values) {
+				if (hasTypeImpl(fillerConcept, value)) {
 					return true;
 				}
 			}
@@ -533,16 +523,17 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+			SortedSet<OWLIndividual> values = opPos.get(property).get(individual);
 			
-			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
-			
-			if (roleFillers == null) {
+			// if there is no value, by standard semantics we have to return TRUE
+			if (values == null) {
                 return forallSemantics == ForallSemantics.Standard;
 			}
+			
+			
 			boolean hasCorrectFiller = false;
-			for (OWLIndividual roleFiller : roleFillers) {
-				if (hasTypeImpl(fillerConcept, roleFiller)) {
+			for (OWLIndividual value : values) {
+				if (hasTypeImpl(fillerConcept, value)) {
 					hasCorrectFiller = true;
 				} else {
 					return false;
@@ -1095,7 +1086,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public Set<OWLClass> getClasses() {
-		return atomicConcepts;
+		return baseReasoner.getClasses();
 	}
 
 	/*
@@ -1105,62 +1096,62 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public Set<OWLObjectProperty> getObjectProperties() {
-		return atomicRoles;
+		return objectProperties;
 	}
 
 	@Override
 	public Set<OWLDataProperty> getDatatypePropertiesImpl() {
-		return datatypeProperties;
+		return baseReasoner.getDatatypeProperties();
 	}
 
 	@Override
 	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
-		return booleanDatatypeProperties;
+		return baseReasoner.getBooleanDatatypeProperties();
 	}
 
 	@Override
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
-		return doubleDatatypeProperties;
+		return baseReasoner.getDoubleDatatypeProperties();
 	}
 
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
-		return intDatatypeProperties;
+		return baseReasoner.getIntDatatypeProperties();
 	}
 
 	@Override
 	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
-		return stringDatatypeProperties;
+		return baseReasoner.getStringDatatypeProperties();
 	}	
 	
 	@Override
 	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
-		return rc.getSuperClassesImpl(concept);
+		return baseReasoner.getSuperClassesImpl(concept);
 	}
 	
 	@Override
 	protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
-		return rc.getSubClassesImpl(concept);
+		return baseReasoner.getSubClassesImpl(concept);
 	}
 
 	@Override
 	protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
-		return rc.getSuperPropertiesImpl(role);
+		return baseReasoner.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
 	protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
-		return rc.getSubPropertiesImpl(role);
+		return baseReasoner.getSubPropertiesImpl(role);
 	}
 	
 	@Override
 	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
-		return rc.getSuperPropertiesImpl(role);
+		return baseReasoner.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
 	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
-		return rc.getSubPropertiesImpl(role);
+		return baseReasoner.getSubPropertiesImpl(role);
 	}	
 	
 	/*
@@ -1213,7 +1204,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
-		return rc.isSuperClassOfImpl(superConcept, subConcept);
+		return baseReasoner.isSuperClassOfImpl(superConcept, subConcept);
 	}
 
 	/*
@@ -1223,7 +1214,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public String getBaseURI() {
-		return rc.getBaseURI();
+		return baseReasoner.getBaseURI();
 	}
 
 	/*
@@ -1233,38 +1224,38 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public Map<String, String> getPrefixes() {
-		return rc.getPrefixes();
+		return baseReasoner.getPrefixes();
 	}
 	
 	public void setPrefixes(Map<String, String> prefixes) {
-		rc.setPrefixes(prefixes);
+		baseReasoner.setPrefixes(prefixes);
 	}
 	
 	/**
 	 * @param baseURI the baseURI to set
 	 */
 	public void setBaseURI(String baseURI) {
-		rc.setBaseURI(baseURI);
+		baseReasoner.setBaseURI(baseURI);
 	}
 
 	@Override
 	public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
-		return rc.getDomain(objectProperty);
+		return baseReasoner.getDomain(objectProperty);
 	}
 
 	@Override
 	public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
-		return rc.getDomain(datatypeProperty);
+		return baseReasoner.getDomain(datatypeProperty);
 	}
 
 	@Override
 	public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
-		return rc.getRange(objectProperty);
+		return baseReasoner.getRange(objectProperty);
 	}
 	
 	@Override
 	public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
-		return rc.getRange(datatypeProperty);
+		return baseReasoner.getRange(datatypeProperty);
 	}
 
 	@Override
@@ -1300,27 +1291,27 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	
 	@Override
 	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
-		return rc.getRelatedIndividuals(individual, objectProperty);
+		return baseReasoner.getRelatedIndividuals(individual, objectProperty);
 	}
 	
 	@Override
 	protected Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
-		return rc.getObjectPropertyRelationships(individual);
+		return baseReasoner.getObjectPropertyRelationships(individual);
 	}	
 	
 	@Override
 	public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		return rc.getRelatedValues(individual, datatypeProperty);
+		return baseReasoner.getRelatedValues(individual, datatypeProperty);
 	}	
 	
 	@Override
 	public boolean isSatisfiableImpl() {
-		return rc.isSatisfiable();
+		return baseReasoner.isSatisfiable();
 	}	
 	
 	@Override
 	public Set<OWLLiteral> getLabelImpl(OWLEntity entity) throws ReasoningMethodUnsupportedException {
-		return rc.getLabel(entity);
+		return baseReasoner.getLabel(entity);
 	}	
 	
 	/*
@@ -1330,7 +1321,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public void releaseKB() {
-		rc.releaseKB();
+		baseReasoner.releaseKB();
 	}
 
 //	@Override
@@ -1343,7 +1334,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	protected Set<OWLClass> getTypesImpl(OWLIndividual individual) {
-		return rc.getTypesImpl(individual);
+		return baseReasoner.getTypesImpl(individual);
 	}
 
 	/* (non-Javadoc)
@@ -1351,21 +1342,21 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 */
 	@Override
 	public boolean remainsSatisfiableImpl(OWLAxiom axiom) {
-		return rc.remainsSatisfiableImpl(axiom);
+		return baseReasoner.remainsSatisfiableImpl(axiom);
 	}
 
 	@Override
 	protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass nc) {
-		return rc.getAssertedDefinitionsImpl(nc);
+		return baseReasoner.getAssertedDefinitionsImpl(nc);
 	}
 
     public OWLAPIReasoner getReasonerComponent() {
-        return rc;
+        return baseReasoner;
     }
 
     @Autowired(required = false)
     public void setReasonerComponent(OWLAPIReasoner rc) {
-        this.rc = rc;
+        this.baseReasoner = rc;
     }
 
     public boolean isDefaultNegation() {

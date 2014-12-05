@@ -27,7 +27,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -36,16 +35,19 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
- * The problem of learning the OWLClassExpression of an existing class
+ * The problem of learning the OWL class expression of an existing class
  * in an OWL ontology.
  * 
  * @author Jens Lehmann
@@ -54,11 +56,11 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 @ComponentAnn(name = "ClassLearningProblem", shortName = "clp", version = 0.6)
 public class ClassLearningProblem extends AbstractLearningProblem {
 	
-	private static Logger logger = Logger.getLogger(ClassLearningProblem.class);
+	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
 	private int maxExecutionTimeInSeconds = 10;
 	
-	@ConfigOption(name = "classToDescribe", description="class of which a OWLClassExpression should be learned", required=true)
+	@ConfigOption(name = "classToDescribe", description="class of which an OWL class expression should be learned", required=true)
 	private OWLClass classToDescribe;
 	
 	private List<OWLIndividual> classInstances;
@@ -835,6 +837,10 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 
 	public void setClassToDescribe(OWLClass classToDescribe) {
 		this.classToDescribe = classToDescribe;
+	}
+	
+	public void setClassToDescribe(IRI classIRI) {
+		this.classToDescribe = df.getOWLClass(classIRI);
 	}
 
 	/* (non-Javadoc)

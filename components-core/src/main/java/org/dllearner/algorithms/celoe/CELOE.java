@@ -294,7 +294,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			usedConcepts = Helper.computeConcepts(reasoner);
 		}
-		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 //		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
@@ -712,7 +711,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 //		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
-			
 			OWLClassExpression niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription);
 //			Description niceDescription = node.getDescription();

@@ -778,7 +778,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}	
 	
 	@Override
-	public final SortedSet<OWLDataProperty> getDatatypeProperties() {
+	public final Set<OWLDataProperty> getDatatypeProperties() {
 		try {
 			return getDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -787,13 +787,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<OWLDataProperty> getDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<OWLDataProperty> getBooleanDatatypeProperties() {
+	public final Set<OWLDataProperty> getBooleanDatatypeProperties() {
 		try {
 			return getBooleanDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -806,13 +806,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	// the method right here by iterating over all data properties and
 	// querying their ranges. At least, this should be done once we have a
 	// reasoner independant of OWL API with datatype support.
-	protected SortedSet<OWLDataProperty> getBooleanDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<OWLDataProperty> getIntDatatypeProperties() {
+	public final Set<OWLDataProperty> getIntDatatypeProperties() {
 		try {
 			return getIntDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -821,13 +821,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<OWLDataProperty> getIntDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getIntDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<OWLDataProperty> getDoubleDatatypeProperties() {
+	public final Set<OWLDataProperty> getDoubleDatatypeProperties() {
 		try {
 			return getDoubleDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -836,13 +836,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<OWLDataProperty> getDoubleDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<OWLDataProperty> getStringDatatypeProperties() {
+	public final Set<OWLDataProperty> getStringDatatypeProperties() {
 		try {
 			return getStringDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -851,7 +851,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<OWLDataProperty> getStringDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getStringDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	

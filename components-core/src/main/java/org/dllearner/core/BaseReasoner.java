@@ -74,14 +74,14 @@ public interface BaseReasoner {
 	 * Gets all data properties in the knowledge base, e.g. hasIncome, height.
 	 * @return All data properties in KB.
 	 */
-	public SortedSet<OWLDataProperty> getDatatypeProperties();
+	public Set<OWLDataProperty> getDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:boolean.
 	 * @see org.dllearner.core.owl.Datatype#BOOLEAN
 	 * @return Boolean data properties in KB.
 	 */
-	public SortedSet<OWLDataProperty> getBooleanDatatypeProperties();
+	public Set<OWLDataProperty> getBooleanDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:double.
@@ -90,7 +90,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#DOUBLE
 	 * @return Double data properties in KB.
 	 */
-	public SortedSet<OWLDataProperty> getDoubleDatatypeProperties();
+	public Set<OWLDataProperty> getDoubleDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:int.
@@ -99,7 +99,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#INT
 	 * @return Integer data properties in KB.
 	 */
-	public SortedSet<OWLDataProperty> getIntDatatypeProperties();
+	public Set<OWLDataProperty> getIntDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:string.
@@ -108,7 +108,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#String
 	 * @return String data properties in KB.
 	 */
-	public SortedSet<OWLDataProperty> getStringDatatypeProperties();	
+	public Set<OWLDataProperty> getStringDatatypeProperties();	
 	
 	/**
 	 * Gets all individuals in the knowledge base, e.g. Eric, London, Car829. 

@@ -75,6 +75,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
@@ -98,6 +99,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -135,11 +138,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     Set<OWLClass> atomicConcepts = new TreeSet<OWLClass>();
     Set<OWLObjectProperty> atomicRoles = new TreeSet<OWLObjectProperty>();
     SortedSet<OWLDataProperty> datatypeProperties = new TreeSet<OWLDataProperty>();
-    SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
-    SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
-    SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
-    SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
     SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
+    
+    private Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 
     // namespaces
     private Map<String, String> prefixes = new TreeMap<String, String>();
@@ -184,10 +189,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         atomicConcepts = new TreeSet<OWLClass>();
         atomicRoles = new TreeSet<OWLObjectProperty>();
         datatypeProperties = new TreeSet<OWLDataProperty>();
-        booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
-        doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
-        intDatatypeProperties = new TreeSet<OWLDataProperty>();
-        stringDatatypeProperties = new TreeSet<OWLDataProperty>();
         individuals = new TreeSet<OWLIndividual>();
 
         // create OWL API ontology manager - make sure we use a new data factory so that we don't default to the static one which can cause problems in a multi threaded environment.
@@ -205,10 +206,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 throw new ComponentInitException("OWL API Reasoner requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
             }
 
-            atomicConcepts.addAll(ontology.getClassesInSignature(true));
-            atomicRoles.addAll(ontology.getObjectPropertiesInSignature(true));
-            datatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
-            individuals.addAll(ontology.getIndividualsInSignature(true));
+            atomicConcepts.addAll(ontology.getClassesInSignature(Imports.INCLUDED));
+            atomicRoles.addAll(ontology.getObjectPropertiesInSignature(Imports.INCLUDED));
+            datatypeProperties.addAll(ontology.getDataPropertiesInSignature(Imports.INCLUDED));
+            individuals.addAll(ontology.getIndividualsInSignature(Imports.INCLUDED));
 
             // if several knowledge sources are included, then we can only
             // guarantee that the base URI is from one of those sources (there
@@ -294,32 +295,32 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         df = manager.getOWLDataFactory();
 
-        // read in primitives
         for (OWLDataProperty dataProperty : datatypeProperties) {
             Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
 			Iterator<OWLDataRange> it = ranges.iterator();
 			if (it.hasNext()) {
 				OWLDataRange range = it.next();
-				if (range.isDatatype()) {
-					IRI iri = ((OWLDatatype) range).getIRI();
-					if (iri.equals(OWL2Datatype.XSD_BOOLEAN.getIRI()))
-						booleanDatatypeProperties.add(dataProperty);
-					else if (iri.equals(OWL2Datatype.XSD_DOUBLE.getIRI()))
-						doubleDatatypeProperties.add(dataProperty);
-					else if (iri.equals(OWL2Datatype.XSD_INT.getIRI()) || iri.equals(OWL2Datatype.XSD_INTEGER.getIRI()))
-						intDatatypeProperties.add(dataProperty);
-					else if (iri.equals(OWL2Datatype.XSD_STRING.getIRI()))
-						stringDatatypeProperties.add(dataProperty);
+				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
+					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
 				}
 			} else {
-				stringDatatypeProperties.add(dataProperty);
+				datatype2Properties.put(OWL2Datatype.XSD_STRING, dataProperty);
 			}
-            datatypeProperties.add(dataProperty);
         }
 
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
+        
+        
+        // remove classes that are built-in entities
+		Iterator<OWLClass> it = atomicConcepts.iterator();
+		while (it.hasNext()) {
+			OWLClass cls = (OWLClass) it.next();
+			if(cls.getIRI().isReservedVocabulary()){
+				it.remove();
+			}
+		}
     }
 
     /* (non-Javadoc)
@@ -337,7 +338,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    public SortedSet<OWLDataProperty> getDatatypePropertiesImpl() {
+    public Set<OWLDataProperty> getDatatypePropertiesImpl() {
         return datatypeProperties;
     }
 
@@ -397,6 +398,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         NodeSet<OWLClass> classes = reasoner.getSubClasses(concept, true);
         TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
         subClasses.remove(df.getOWLNothing());
+        // remove built-in entites sometimes returned as subclasses of owl:Thing
+        if(concept.isOWLThing()){
+        	Iterator<OWLClassExpression> it = subClasses.iterator();
+        	while (it.hasNext()) {
+				OWLClassExpression ce = (OWLClassExpression) it.next();
+				if(!ce.isAnonymous() && ce.asOWLClass().getIRI().isReservedVocabulary()){
+					it.remove();
+				}
+			}
+        }
 		return subClasses;
     }
     
@@ -674,37 +685,25 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return roles;
     }
 
-    /**
-     * @return the booleanDatatypeProperties
-     */
     @Override
-    public SortedSet<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
-        return booleanDatatypeProperties;
-    }
+	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_BOOLEAN);
+	}
 
-    /**
-     * @return the doubleDatatypeProperties
-     */
-    @Override
-    public SortedSet<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
-        return doubleDatatypeProperties;
-    }
+	@Override
+	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_DOUBLE);
+	}
 
-    /**
-     * @return the intDatatypeProperties
-     */
-    @Override
-    public SortedSet<OWLDataProperty> getIntDatatypePropertiesImpl() {
-        return intDatatypeProperties;
-    }
+	@Override
+	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_INT);
+	}
 
-    /**
-     * @return the intDatatypeProperties
-     */
-    @Override
-    public SortedSet<OWLDataProperty> getStringDatatypePropertiesImpl() {
-        return stringDatatypeProperties;
-    }
+	@Override
+	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_STRING);
+	}
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getBaseURI()
