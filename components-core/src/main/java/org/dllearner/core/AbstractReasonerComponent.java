@@ -19,6 +19,8 @@
 
 package org.dllearner.core;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,6 +90,8 @@ import com.google.common.collect.Sets;
 public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent {
 
 	public static Logger logger = Logger.getLogger(AbstractReasonerComponent.class);
+	
+	private static final NumberFormat numberFormat = NumberFormat.getInstance();
 
 	// statistical data for particular reasoning operations
 	private long instanceCheckReasoningTimeNs = 0;
@@ -520,6 +524,21 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+	
+	@Override
+	public final Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLIndividual individual) {
+		try {
+			return getDataPropertyRelationshipsImpl(individual);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 			
 	
 	@Override
@@ -629,6 +648,66 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 				}
 			}
 			ret.put(e.getKey(), valuesDouble);
+		}
+		return ret;
+	}
+	
+	@Override
+	public final <T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
+			OWLDataProperty datatypeProperty, Class<T> clazz) {
+		try {
+			return getNumericDatatypeMembersImpl(datatypeProperty, clazz);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	protected <T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty, Class<T> clazz) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
+			SortedSet<T> numericValues = new TreeSet<T>();
+			for (OWLLiteral lit : values) {
+				try {
+					numericValues.add((T) numberFormat.parse(lit.getLiteral()));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+			ret.put(e.getKey(), numericValues);
+		}
+		return ret;
+	}
+	
+	@Override
+	public final <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
+		try {
+			return getNumericDatatypeMembersImpl(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	protected <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
+			SortedSet<T> numericValues = new TreeSet<T>();
+			for (OWLLiteral lit : values) {
+				try {
+					numericValues.add((T) numberFormat.parse(lit.getLiteral()));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+			ret.put(e.getKey(), numericValues);
 		}
 		return ret;
 	}
@@ -805,8 +884,23 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	// TODO Even if there is a small performance penalty, we could implement
 	// the method right here by iterating over all data properties and
 	// querying their ranges. At least, this should be done once we have a
-	// reasoner independant of OWL API with datatype support.
+	// reasoner independent of OWL API with datatype support.
 	protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	@Override
+	public final Set<OWLDataProperty> getNumericDataProperties() {
+		try {
+			return getNumericDataPropertiesImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Set<OWLDataProperty> getNumericDataPropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}

@@ -153,6 +153,20 @@ public interface IndividualReasoner {
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
+	 * values which can be parsed as given Number class.
+	 * @see #getDatatypeMembers(OWLDataProperty)
+	 * @param datatypeProperty A data property.
+	 * @param clazz a Java Number subtype.
+	 * @return The mapping between individuals and numeric values of given type through the given property.
+	 */
+	<T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty, Class<T> clazz);
+	/**
+	 * @param datatypeProperty
+	 * @return
+	 */
+	<T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty);
+	/**
+	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as boolean value. Only "true" or "false" are 
 	 * accepted. If other values occur, a warning will be issued.
 	 * @see #getDatatypeMembers(OWLDataProperty)
@@ -191,5 +205,11 @@ public interface IndividualReasoner {
 	 * @return The mapping between individuals and string values through the given property.
 	 */
 	public Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembers(OWLDataProperty datatypeProperty);
-	
+
+	/**
+	 * @param individual
+	 * @return
+	 */
+	Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLIndividual individual);
+
 }

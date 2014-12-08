@@ -19,6 +19,7 @@
 
 package org.dllearner.refinementoperators;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +35,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
@@ -76,6 +76,8 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -104,8 +106,7 @@ import com.google.common.collect.Sets;
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
-	private static Logger logger = Logger
-	.getLogger(RhoDRDown.class);
+	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 	
 	private static final OWLClass OWL_THING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_THING.getIRI());
@@ -122,7 +123,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<OWLDataProperty,OWLClassExpression>();
 	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<OWLObjectProperty,OWLClassExpression>();
 	
-	// maximum number of fillers for eeach role
+	// maximum number of fillers for each role
 	private Map<OWLObjectProperty,Integer> maxNrOfFillers = new TreeMap<OWLObjectProperty,Integer>();
 	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
 	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
@@ -162,20 +163,26 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// object properties, boolean datatypes, and double datatypes)
 	private Map<OWLClass, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClass, Set<OWLObjectProperty>>();
 	private Map<OWLClass, Set<OWLDataProperty>> appBD = new TreeMap<OWLClass, Set<OWLDataProperty>>();
-	private Map<OWLClass, Set<OWLDataProperty>> appDD = new TreeMap<OWLClass, Set<OWLDataProperty>>();
+	private Map<OWLClass, Set<OWLDataProperty>> appNumeric = new TreeMap<OWLClass, Set<OWLDataProperty>>();
 	private Map<OWLClass, Set<OWLDataProperty>> appSD = new TreeMap<OWLClass, Set<OWLDataProperty>>();
-	private Map<OWLClass, Set<OWLDataProperty>> appID = new TreeMap<OWLClass, Set<OWLDataProperty>>();
 	
 	// most general applicable properties
 	private Map<OWLClass,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClass,Set<OWLObjectProperty>>();
 	private Map<OWLClass,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClass,Set<OWLDataProperty>>();
-	private Map<OWLClass,Set<OWLDataProperty>> mgdd = new TreeMap<OWLClass,Set<OWLDataProperty>>();
+	private Map<OWLClass,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClass,Set<OWLDataProperty>>();
 	private Map<OWLClass,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClass,Set<OWLDataProperty>>();
-	private Map<OWLClass,Set<OWLDataProperty>> mgid = new TreeMap<OWLClass,Set<OWLDataProperty>>();
 	
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<Double>> splits = new TreeMap<OWLDataProperty,List<Double>>();
+	
+	private Map<OWLDataProperty,List<Byte>> splitsByte = new TreeMap<OWLDataProperty,List<Byte>>();
+	private Map<OWLDataProperty,List<Short>> splitsShort = new TreeMap<OWLDataProperty,List<Short>>();
 	private Map<OWLDataProperty,List<Integer>> splitsInt = new TreeMap<OWLDataProperty,List<Integer>>();
+	private Map<OWLDataProperty,List<Long>> splitsLong = new TreeMap<OWLDataProperty,List<Long>>();
+	private Map<OWLDataProperty,List<Float>> splitsFloat = new TreeMap<OWLDataProperty,List<Float>>();
+	private Map<OWLDataProperty,List<Double>> splitsDouble = new TreeMap<OWLDataProperty,List<Double>>();
+	
+	private Map<OWLDataProperty,List<Number>> splitsNumber = new TreeMap<OWLDataProperty,List<Number>>();
 	private int maxNrOfSplits = 10;
 	
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -221,6 +228,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	
 	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useIntDatatypes = true;
+	
+	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	private boolean useNumericDatatypes = true;
 	
 	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useStringDatatypes = false;
@@ -365,14 +375,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 //		System.out.println("freqDataValues: " + frequentDataValues);
 		
-		// compute splits for double datatype properties
-		for(OWLDataProperty dp : reasoner.getDoubleDatatypeProperties()) {
+		// compute splits for numeric data properties
+		for (OWLDataProperty dp : reasoner.getNumericDataProperties()) {
 			computeSplits(dp);
 		}
 		
-		// compute splits for integer datatype properties
-		for (OWLDataProperty dp : reasoner.getIntDatatypeProperties()) {
-			computeSplitsInt(dp);
+		// compute splits for double datatype properties
+		for(OWLDataProperty dp : reasoner.getDoubleDatatypeProperties()) {
+			computeSplits(dp);
 		}
 		
 		// determine the maximum number of fillers for each role
@@ -1134,26 +1144,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}				
 		}		
 		
-		if(useDoubleDatatypes) {
+		if(useNumericDatatypes) {
 			Set<OWLDataProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
 			
 			for(OWLDataProperty dp : doubleDPs) {
 				if(splits.get(dp).size() > 0) {
 					double min = splits.get(dp).get(0);
 					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
-				}
-			}
-		}
-		
-		if(useIntDatatypes) {
-			Set<OWLDataProperty> intDPs = reasoner.getIntDatatypeProperties();
-			
-			for(OWLDataProperty dp : intDPs) {
-				if(splitsInt.get(dp).size() > 0) {
-					int min = splitsInt.get(dp).get(0);
-					int max = splitsInt.get(dp).get(splitsInt.get(dp).size()-1);
 					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
 					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
 				}
@@ -1279,26 +1276,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}				
 		}		
 		
-		if(useDoubleDatatypes) {
-			Set<OWLDataProperty> doubleDPs = mgdd.get(nc);
+		if(useNumericDatatypes) {
+			Set<OWLDataProperty> numericDPs = mgNumeric.get(nc);
 			
-			for(OWLDataProperty dp : doubleDPs) {
+			for(OWLDataProperty dp : numericDPs) {
 				if(splits.get(dp).size() > 0) {
 					double min = splits.get(dp).get(0);
 					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
-				}
-			}
-		}
-		
-		if(useIntDatatypes) {
-			Set<OWLDataProperty> intDPs = mgid.get(nc);
-			
-			for(OWLDataProperty dp : intDPs) {
-				if(splitsInt.get(dp).size() > 0) {
-					int min = splitsInt.get(dp).get(0);
-					int max = splitsInt.get(dp).get(splitsInt.get(dp).size()-1);
 					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
 					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
 				}
@@ -1433,9 +1417,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// initialise mgr, mgbd, mgdd, mgsd
 		mgr.put(domain, new TreeSet<OWLObjectProperty>());
 		mgbd.put(domain, new TreeSet<OWLDataProperty>());
-		mgdd.put(domain, new TreeSet<OWLDataProperty>());
+		mgNumeric.put(domain, new TreeSet<OWLDataProperty>());
 		mgsd.put(domain, new TreeSet<OWLDataProperty>());
-		mgid.put(domain, new TreeSet<OWLDataProperty>());
 		
 		SortedSet<OWLObjectProperty> mostGeneral = reasoner.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
@@ -1443,13 +1426,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// we make the (reasonable) assumption here that all sub and super
 		// datatype properties have the same type (e.g. boolean, integer, double)
 		Set<OWLDataProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
-		Set<OWLDataProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, reasoner.getDoubleDatatypeProperties());
-		Set<OWLDataProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
-		Set<OWLDataProperty> mostGeneralIDP = Helper.intersection(mostGeneralDP, reasoner.getIntDatatypeProperties());
+		Set<OWLDataProperty> mostGeneralNumericDPs = Helper.intersection(mostGeneralDP, reasoner.getNumericDataProperties());
+		Set<OWLDataProperty> mostGeneralStringDPs = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
-		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
-		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
-		computeMgidRecursive(domain, mostGeneralIDP, mgid.get(domain));
+		computeMostGeneralNumericDPRecursive(domain, mostGeneralNumericDPs, mgNumeric.get(domain));
+		computeMostGeneralStringDPRecursive(domain, mostGeneralStringDPs, mgsd.get(domain));
 	}
 	
 	private void computeMgrRecursive(OWLClass domain, Set<OWLObjectProperty> currProperties, Set<OWLObjectProperty> mgrTmp) {
@@ -1470,32 +1451,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 	}	
 	
-	private void computeMgddRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
+	
+	private void computeMostGeneralNumericDPRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
 		for(OWLDataProperty prop : currProperties) {
-			if(appDD.get(domain).contains(prop))
+			if(appNumeric.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
-				computeMgddRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
+				computeMostGeneralNumericDPRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
 		}
-	}		
-	
-	private void computeMgsdRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgsdTmp) {
+	}
+	private void computeMostGeneralStringDPRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
 		for(OWLDataProperty prop : currProperties) {
 			if(appSD.get(domain).contains(prop))
-				mgsdTmp.add(prop);
+				mgddTmp.add(prop);
 			else
-				computeMgsdRecursive(domain, reasoner.getSubProperties(prop), mgsdTmp);
+				computeMostGeneralStringDPRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
 		}
-	}	
-	
-	private void computeMgidRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgidTmp) {
-		for(OWLDataProperty prop : currProperties) {
-			if(appID.get(domain).contains(prop))
-				mgidTmp.add(prop);
-			else
-				computeMgidRecursive(domain, reasoner.getSubProperties(prop), mgidTmp);
-		}
-	}	
+	}
 	
 	// computes the set of applicable properties for a given class
 	private void computeApp(OWLClass domain) {
@@ -1536,17 +1508,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		appBD.put(domain, applicableBDPs);	
 		
-		// double datatype properties
-		Set<OWLDataProperty> mostGeneralDDPs = reasoner.getDoubleDatatypeProperties();
-		Set<OWLDataProperty> applicableDDPs = new TreeSet<OWLDataProperty>();
-		for(OWLDataProperty role : mostGeneralDDPs) {
-//			Description d = (OWLClass) rs.getDomain(role);
+		// numeric data properties
+		Set<OWLDataProperty> mostGeneralNumericDPs = reasoner.getNumericDataProperties();
+		Set<OWLDataProperty> applicableNumericDPs = new TreeSet<OWLDataProperty>();
+		for(OWLDataProperty role : mostGeneralNumericDPs) {
+			// get domain of property
 			OWLClassExpression d = reasoner.getDomain(role);
-//			System.out.println("domain: " + d);
+			// check if it's not disjoint with current class expression
 			if(!isDisjoint(domain,d))
-				applicableDDPs.add(role);
+				applicableNumericDPs.add(role);
 		}
-		appDD.put(domain, applicableDDPs);	
 		
 		// string datatype properties
 		Set<OWLDataProperty> mostGeneralSDPs = reasoner.getStringDatatypeProperties();
@@ -1560,17 +1531,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		appSD.put(domain, applicableSDPs);	
 		
-		// integer datatype properties
-				Set<OWLDataProperty> mostGeneralIDPs = reasoner.getIntDatatypeProperties();
-				Set<OWLDataProperty> applicableIDPs = new TreeSet<OWLDataProperty>();
-				for(OWLDataProperty role : mostGeneralIDPs) {
-//					Description d = (OWLClass) rs.getDomain(role);
-					OWLClassExpression d = reasoner.getDomain(role);
-//					System.out.println("domain: " + d);
-					if(!isDisjoint(domain,d))
-						applicableIDPs.add(role);
-				}
-				appID.put(domain, applicableIDPs);
 	}
 	
 	// returns true if the intersection contains elements disjoint
@@ -1722,37 +1682,47 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.exit(0);
 	}
 	
-	private void computeSplitsInt(OWLDataProperty dp) {
-		Set<Integer> valuesSet = new TreeSet<Integer>();
+	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
+		Set<T> valuesSet = new TreeSet<T>();
 //		Set<OWLIndividual> individuals = rs.getIndividuals();
-		Map<OWLIndividual,SortedSet<Integer>> valueMap = reasoner.getIntDatatypeMembers(dp);
+		Map<OWLIndividual, SortedSet<T>> valueMap = reasoner.getNumericDatatypeMembers(dp);
+		
 		// add all values to the set (duplicates will be remove automatically)
-		for(Entry<OWLIndividual,SortedSet<Integer>> e : valueMap.entrySet())
+		for(Entry<OWLIndividual, SortedSet<T>> e : valueMap.entrySet()){
 			valuesSet.addAll(e.getValue());
+		}
+		
 		// convert set to a list where values are sorted
-		List<Integer> values = new LinkedList<Integer>(valuesSet);
+		List<T> values = new LinkedList<T>(valuesSet);
 		Collections.sort(values);
 		
 		int nrOfValues = values.size();
-		// create split set
-		List<Integer> splitsDP = new LinkedList<Integer>();
-		for(int splitNr=0; splitNr < Math.min(maxNrOfSplits,nrOfValues-1); splitNr++) {
-			int index;
-			if(nrOfValues<=maxNrOfSplits)
-				index = splitNr;
-			else
-				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
-			
-			int value = values.get(index);
-			splitsDP.add(value);
-		}
-		splitsInt.put(dp, splitsDP);
 		
-//		System.out.println(values);
-//		System.out.println(splits);
-//		System.exit(0);
+		// create split set
+		List<T> splitsDP = new LinkedList<T>();
+		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
+			int index;
+			if (nrOfValues <= maxNrOfSplits) {
+				index = splitNr;
+			} else {
+				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
+			}
+			T number1 = values.get(index);
+			T number2 = values.get(index + 1);
+			
+			T avg = avg(number1, number2);
+			
+			splitsDP.add(avg);
+		}
+//		splitsNumber.put(dp, splitsDP);
 	}
-
+	
+	private <T extends Number & Comparable<Number>> T avg(T number1, T number2){
+		return (T) BigDecimal.valueOf(number1.doubleValue()).
+				add(BigDecimal.valueOf(number2.doubleValue()).divide(
+						BigDecimal.valueOf(0.5d)));
+	}
+	
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;
 	}

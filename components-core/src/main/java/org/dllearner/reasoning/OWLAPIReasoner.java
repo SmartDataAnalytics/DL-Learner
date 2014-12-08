@@ -101,6 +101,7 @@ import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -295,6 +296,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         df = manager.getOWLDataFactory();
 
+        Set<OWLDataProperty> numericDataProperties = new HashSet<OWLDataProperty>();
         for (OWLDataProperty dataProperty : datatypeProperties) {
             Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
 			Iterator<OWLDataRange> it = ranges.iterator();
@@ -302,6 +304,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				OWLDataRange range = it.next();
 				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
 					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
+					
+					if(isNumericDatatype(range.asOWLDatatype())) {
+						numericDataProperties.add(dataProperty);
+					}
 				}
 			} else {
 				datatype2Properties.put(OWL2Datatype.XSD_STRING, dataProperty);
@@ -321,6 +327,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				it.remove();
 			}
 		}
+    }
+    
+    private boolean isNumericDatatype(OWLDatatype datatype){
+    	if(!datatype.isBuiltIn()){
+    		return false;
+    	}
+    	Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
+    			OWL2Datatype.XSD_BYTE, 
+    			OWL2Datatype.XSD_SHORT,
+    			OWL2Datatype.XSD_INT, 
+    			OWL2Datatype.XSD_INTEGER,
+    			OWL2Datatype.XSD_LONG,
+    			OWL2Datatype.XSD_DOUBLE, 
+    			OWL2Datatype.XSD_FLOAT
+    			);
+    	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
+		return numericDatatypes.contains(builtInDatatype);
     }
 
     /* (non-Javadoc)

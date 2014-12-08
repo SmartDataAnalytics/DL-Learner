@@ -564,15 +564,15 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 			int nrOfFillers = 0;
 
-			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
+			SortedSet<OWLIndividual> values = mapping.get(individual);
 			
 			// return false if there are none or not enough role fillers
-			if (roleFillers == null || (roleFillers.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
+			if (values == null || (values.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
 				return false;
 			}
 
 			int index = 0;
-			for (OWLIndividual roleFiller : roleFillers) {
+			for (OWLIndividual roleFiller : values) {
 				index++;
 				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					nrOfFillers++;
@@ -584,7 +584,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					// if there are 11 fillers and 2 are not Methyl, the result
 					// is false
 				} else {
-					if (roleFillers.size() - index < cardinality) {
+					if (values.size() - index < cardinality) {
 						return false;
 					}
 				}
@@ -631,7 +631,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			return true;
 		} else if (description instanceof OWLObjectHasValue) {
 			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
-			OWLIndividual value = ((OWLObjectHasValue)description).getValue();
+			OWLIndividual value = ((OWLObjectHasValue)description).getFiller();
 			
 			if (property.isAnonymous()) {
 				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
@@ -725,7 +725,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			}
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
-			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 			
 			if (property.isAnonymous()) {
 				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "

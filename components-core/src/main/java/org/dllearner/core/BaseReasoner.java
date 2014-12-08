@@ -93,6 +93,12 @@ public interface BaseReasoner {
 	public Set<OWLDataProperty> getDoubleDatatypeProperties();
 	
 	/**
+	 * Gets all data properties with numeric range 
+	 * @return Numeric data properties in KB.
+	 */
+	public Set<OWLDataProperty> getNumericDataProperties();
+	
+	/**
 	 * Gets all data properties with range xsd:int.
 	 * TODO We could extend this to all types, which can be parsed into
 	 * Integers, e.g. xsd:integer, xsd:negativeInteger, xsd:nonNegativeInteger etc.
