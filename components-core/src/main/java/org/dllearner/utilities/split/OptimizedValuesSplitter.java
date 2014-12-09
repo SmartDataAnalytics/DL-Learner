@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -18,14 +19,16 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.springframework.core.GenericTypeResolver;
 
 /**
  * @author Lorenz Buehmann
  *
  */
-public class OptimizedValuesSplitter extends AbstractValuesSplitter{
+public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends AbstractValuesSplitter{
 
 	private PosNegLP lp;
+	private Class<T> clazz;
 
 	/**
 	 * @param reasoner
@@ -33,91 +36,101 @@ public class OptimizedValuesSplitter extends AbstractValuesSplitter{
 	public OptimizedValuesSplitter(AbstractReasonerComponent reasoner, PosNegLP lp) {
 		super(reasoner);
 		this.lp = lp;
+		
+		clazz = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), OptimizedValuesSplitter.class);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.utilities.split.ValuesSplitter#computeSplits()
 	 */
 	@Override
-	public Map<OWLDataProperty, List<Double>> computeSplits() {
-		Map<OWLDataProperty, List<Double>> result = new HashMap<OWLDataProperty, List<Double>>();
+	public Map<OWLDataProperty, List<T>> computeSplits() {
+		Map<OWLDataProperty, List<T>> result = new HashMap<OWLDataProperty, List<T>>();
 		
-		Map<OWLDataProperty, Set<OWLLiteral>> relations = new HashMap<OWLDataProperty, Set<OWLLiteral>>();
+		Map<OWLDataProperty, SortedSet<T>> relations = new HashMap<OWLDataProperty, SortedSet<T>>();
 		
-		// generate relations for positive examples
-		for (OWLIndividual ind : lp.getPositiveExamples()) {
-			Map<OWLDataProperty, Set<OWLLiteral>> individualRelations = reasoner.getDataPropertyRelationships(ind);
-
-			for (OWLDataProperty dp : individualRelations.keySet()) {
+		// get the used values for each positive and negative example
+		for (OWLDataProperty dp : numericDataProperties) {
+			Map<OWLIndividual, SortedSet<T>> numericDatatypeMembers = reasoner.getNumericDatatypeMembers(dp, clazz);
+			
+			// generate relations for positive examples
+			for (OWLIndividual ind : lp.getPositiveExamples()) {
 				if (relations.keySet().contains(dp)) {
-					relations.get(dp).addAll(individualRelations.get(dp));
+					relations.get(dp).addAll(relations.get(dp));
 				} else {
-					relations.put(dp, individualRelations.get(dp));
+					relations.put(dp, relations.get(dp));
+				}
+			}
+			// generate relation for negative examples
+			for (OWLIndividual ind : lp.getNegativeExamples()) {
+				if (relations.keySet().contains(dp)) {
+					relations.get(dp).addAll(relations.get(dp));
+				} else {
+					relations.put(dp, relations.get(dp));
 				}
 			}
 		}
-
-		// generate relation for negative examples
-		for (OWLIndividual ind : lp.getNegativeExamples()) {
-			Map<OWLDataProperty, Set<OWLLiteral>> individualRelations = reasoner.getDataPropertyRelationships(ind);
-
-			for (OWLDataProperty dp : individualRelations.keySet()) {
-				if (relations.keySet().contains(dp)) {
-					relations.get(dp).addAll(individualRelations.get(dp));
-				} else {
-					relations.put(dp, individualRelations.get(dp));
-				}
-			}
-		}
-		
 		
 		// -------------------------------------------------
 		// calculate the splits for each data property
 		// -------------------------------------------------
 
-		Map<OWLDataProperty, List<Double>> splits = new HashMap<OWLDataProperty, List<Double>>();
+		Map<OWLDataProperty, List<T>> splits = new HashMap<OWLDataProperty, List<T>>();
 
-//		for (OWLDataProperty dp : relations.keySet()) {
-//
-//			if (!relations.get(dp).isEmpty()) {
-//				List<Double> values = new ArrayList<Double>();
-//				Set<OWLLiteral> propertyValues = relations.get(dp);
-//
-//				int priorType = propertyValues.first().getType();
-//				double priorValue = propertyValues.first().getValue();
-//
-//				Iterator<OWLLiteral> iterator = propertyValues.iterator();
-//				while (iterator.hasNext()) {
-//					ValueCount currentValueCount = iterator.next();
-//					int currentType = currentValueCount.getType();
-//					double currentValue = currentValueCount.getValue();
-//
-//					// check if a new value should be generated: when the type changes or the
-//					// current value belongs to both pos. and neg.
-//					if ((currentType == 3) || (currentType != priorType)) {
-//						//calculate the middle/avg. value
-//						//TODO: how to identify the splitting strategy here? For examples: time,... 
-//						values.add((priorValue + currentValue) / 2.0);
-//
-//						//Double newValue = new Double(new TimeSplitter().calculateSplit((int)priorValue, (int)currentValue));
-//						//if (!values.contains(newValue))
-//						//	values.add(newValue);
-//
-//						//values.add((priorValue + currentValue) / 2.0);
-//					}
-//
-//					// update the prior type and value after process the current element
-//					priorType = currentValueCount.getType();
-//					priorValue = currentValueCount.getValue();
-//
-//				}
-//
-//				// add processed property into the result set (splits)
-//				splits.put(dp, values);
-//			}
-//		}
+		for (Entry<OWLDataProperty, SortedSet<T>> entry : relations.entrySet()) {
+			OWLDataProperty dp = entry.getKey();
+			SortedSet<T> propertyValues = entry.getValue();
+			
+			if (!propertyValues.isEmpty()) {
+				List<T> splitValues = new ArrayList<T>();
+				
+				Iterator<T> iterator = propertyValues.iterator();
+
+				T first = iterator.next();
+				
+				int priorType = first.getType();
+				T priorValue = first.getValue();
+				
+				while (iterator.hasNext()) {
+					ValueCount currentValueCount = iterator.next();
+					int currentType = currentValueCount.getType();
+					T currentValue = currentValueCount.getValue();
+
+					// check if a new value should be generated: when the type changes or the
+					// current value belongs to both pos. and neg.
+					if ((currentType == 3) || (currentType != priorType)) {
+						//calculate the middle/avg. value
+						T splitValue = computeSplitValue(priorValue, currentValue);
+						
+						splitValues.add(splitValue);
+					}
+
+					// update the prior type and value after process the current element
+					priorType = currentValueCount.getType();
+					priorValue = currentValueCount.getValue();
+
+				}
+
+				// add processed property into the result set (splits)
+				splits.put(dp, splitValues);
+			}
+		}
 		
 		return result;
+	}
+	
+	/**
+	 * Compute a split value between 2 succeeding values.
+	 * TODO: How to identify the splitting strategy here? For numbers we can use the avg, 
+	 * but for time values?
+	 */
+	private T computeSplitValue(T priorValue, T subsequentValue) {
+		if(clazz == Double.class){
+			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
+		} else if(clazz == Integer.class) {
+			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
+		}
+		throw new UnsupportedOperationException("Split of type " + clazz + " not implemented yet.");
 	}
 
 }

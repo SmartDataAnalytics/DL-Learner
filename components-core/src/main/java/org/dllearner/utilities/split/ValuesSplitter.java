@@ -19,6 +19,6 @@ public interface ValuesSplitter {
      * 
      * @return A map of data properties and their splitting values
      */
-	Map<OWLDataProperty, List<Double>> computeSplits();
+	<T extends Number & Comparable<T>> Map<OWLDataProperty, List<T>> computeSplits();
 
 }
