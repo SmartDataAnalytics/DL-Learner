@@ -61,6 +61,7 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectCardinalityRestriction;
+import org.dllearner.core.owl.ObjectHasSelfRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectProperty;
@@ -344,7 +345,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
 
 			if (isDefaultNegation()) {
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+//				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
 			} else {
 				// Pellet needs approximately infinite time to answer
 				// negated queries
@@ -454,12 +455,18 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
 			int cnt = 1;
 			for (NamedClass cls : atomicConcepts) {
-				logger.debug(cnt++ + "/" + atomicConcepts.size());
-				TreeSet<Individual> individuals = classInstancesPos.get(cls);
-				Set<OWLClassExpression> superClass = materialization.materialize(cls.getName());
-				for (OWLClassExpression sup : superClass) {
-					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(sup));
+				System.out.println(cls);
+				logger.info(cnt++ + "/" + atomicConcepts.size());
+//				TreeSet<Individual> individuals = classInstancesPos.get(cls);
+				Set<OWLClassExpression> superClassExpressions = materialization.materialize(cls.getName());
+//				System.out.println(superClassExpressions);
+//				System.out.println(cls + ":" + superClass);
+				for (OWLClassExpression supExpr : superClassExpressions) {
+//					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
+//					System.out.println(supExpr);
+					materializeSuperClassExpression(cls, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
 				}
+				System.out.println(individualGenerator.cnt);
 			}
 			logger.debug("...finished materializing existential restrictions.");
 		}
@@ -477,7 +484,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 				map.put(individual, objects);
 			}
 			for (NamedClass cls : atomicConcepts) {
-				classInstancesNeg.get(cls).add(genericIndividual);
+				classInstancesPos.get(cls).add(genericIndividual);
 				if(OWLPunningDetector.hasPunning(ontology, cls)){
 					Individual clsAsInd = new Individual(cls.getName());
 					//for each x \in N_I with A(x) we add relatedTo(x,A)
@@ -502,6 +509,43 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
 		logger.debug("TBox dematerialised in " + dematDuration + " ms");
+	}
+	
+	/*
+	 * Add instance data for each individual in the given class A based on the given
+	 * superclass expression C.
+	 */
+	private void materializeSuperClassExpression(NamedClass cls, Description superClassExpression){
+		TreeSet<Individual> rootIndividuals = classInstancesPos.get(cls);
+		
+		if(superClassExpression instanceof Intersection){
+			List<Description> children = superClassExpression.getChildren();
+			for (Description child : children) {
+				fill(rootIndividuals, child);
+			}
+		} else if(superClassExpression instanceof ObjectSomeRestriction){
+			ObjectProperty role = (ObjectProperty) ((ObjectSomeRestriction) superClassExpression).getRole();
+			Map<Individual, SortedSet<Individual>> map = opPos.get(role);
+			// create new individual as object value
+			Individual newIndividual = individualGenerator.newIndividual();
+			SortedSet<Individual> newIndividuals = new TreeSet<Individual>();
+			newIndividuals.add(newIndividual);
+			for (Individual individual : rootIndividuals) {
+				SortedSet<Individual> values = map.get(individual);
+				if(values == null){
+					values = new TreeSet<Individual>();
+					map.put(individual, values);
+				}
+				values.add(newIndividual);
+			}
+			fill(newIndividuals, superClassExpression.getChild(0));
+		} else if(superClassExpression instanceof NamedClass){
+			classInstancesPos.get(superClassExpression).addAll(rootIndividuals);
+		} else if(superClassExpression instanceof Thing){
+			
+		} else {
+			throw new UnsupportedOperationException("Should not happen.");
+		}
 	}
 	
 	private void fill(SortedSet<Individual> individuals, Description d){
@@ -531,6 +575,18 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			classInstancesPos.get(d).addAll(individuals);
 		} else if(d instanceof Thing){
 			
+		} else if(d instanceof ObjectHasSelfRestriction){
+			ObjectProperty role = (ObjectProperty) ((ObjectHasSelfRestriction) d).getRole();
+			Map<Individual, SortedSet<Individual>> map = opPos.get(role);
+			
+			for (Individual individual : individuals) {
+				SortedSet<Individual> values = map.get(individual);
+				if(values == null){
+					values = new TreeSet<Individual>();
+					map.put(individual, values);
+				}
+				values.add(individual);
+			}
 		} else {
 			throw new UnsupportedOperationException("Should not happen.");
 		}

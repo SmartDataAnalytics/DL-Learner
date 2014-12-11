@@ -113,10 +113,10 @@ public class MouseDiabetes {
         logger.debug("initializing learning algorithm...");
         AbstractCELA la;
         OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
-        heuristic.setExpansionPenaltyFactor(0.01);
+        heuristic.setExpansionPenaltyFactor(0.1);
         la = new CELOE(lp, rc);
         ((CELOE) la).setHeuristic(heuristic);
-        ((CELOE) la).setMaxExecutionTimeInSeconds(180);
+        ((CELOE) la).setMaxExecutionTimeInSeconds(1800);
         ((CELOE) la).setNoisePercentage(80);
         ((CELOE) la).setMaxNrOfResults(50);
         ((CELOE) la).setWriteSearchTree(false);

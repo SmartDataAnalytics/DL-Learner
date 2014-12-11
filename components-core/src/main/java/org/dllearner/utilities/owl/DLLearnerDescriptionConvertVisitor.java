@@ -39,6 +39,7 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
+import org.dllearner.core.owl.ObjectHasSelfRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectOneOf;
@@ -181,8 +182,9 @@ public class DLLearnerDescriptionConvertVisitor implements OWLClassExpressionVis
 
 	@Override
 	public void visit(OWLObjectHasSelf description) {
-		// TODO Auto-generated method stub
-		
+		ObjectPropertyExpression role = new ObjectProperty(description.getProperty().asOWLObjectProperty().
+				getIRI().toString());
+		stack.push(new ObjectHasSelfRestriction(role));
 	}
 
 	@Override

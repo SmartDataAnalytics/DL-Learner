@@ -12,7 +12,7 @@ import org.dllearner.core.owl.Individual;
  */
 public class GenericIndividualGenerator {
 	
-	private int cnt = 0;
+	public int cnt = 0;
 	
 	public Individual newIndividual(){
 		return new Individual("http://dllearner.org#genInd_" + cnt++);

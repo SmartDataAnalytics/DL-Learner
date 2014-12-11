@@ -24,6 +24,7 @@ import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.ExistentialRestrictionMaterialization;
 import org.dllearner.reasoning.MaterializableFastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -72,6 +73,9 @@ public class ReactomeMinimal {
         OWLOntology ontology = man.loadOntologyFromOntologyDocument(new File(kbPathStr));
         logger.debug("read " + ontology.getAxiomCount() + " axioms");
         logger.debug("finished reading the ontology");
+        
+        ExistentialRestrictionMaterialization mat = new ExistentialRestrictionMaterialization(ontology);
+        System.out.println(mat.materialize("http://purl.obolibrary.org/obo/CHEBI_33560"));
 
         logger.debug("initializing knowledge source...");
         KnowledgeSource ks = new OWLAPIOntology(ontology);
@@ -84,9 +88,7 @@ public class ReactomeMinimal {
         baseReasoner.setUseFallbackReasoner(true);
         baseReasoner.init();
         Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
-        logger.debug("finished initializing reasoner");
-
-        logger.debug("initializing reasoner component...");
+       
         MaterializableFastInstanceChecker cwReasoner = new MaterializableFastInstanceChecker(ks);
         cwReasoner.setReasonerComponent(baseReasoner);
         cwReasoner.setHandlePunning(false);

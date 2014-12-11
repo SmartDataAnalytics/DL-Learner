@@ -68,5 +68,7 @@ public interface DescriptionVisitor {
 	public void visit(DatatypeMaxCardinalityRestriction description);	
 	
 	public void visit(DatatypeValueRestriction description);
+
+	public void visit(ObjectHasSelfRestriction objectHasSelfRestriction);
 	
 }

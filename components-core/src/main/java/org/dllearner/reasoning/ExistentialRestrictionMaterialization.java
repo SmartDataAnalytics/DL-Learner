@@ -121,10 +121,10 @@ public class ExistentialRestrictionMaterialization {
 		private void computeSuperClasses(OWLClass cls){
 			visitedClassExpressions.add(cls);
 			
-			String s = "";
-			for(int i = 0; i < indent; i++){
-				s += "   ";
-			}
+//			String s = "";
+//			for(int i = 0; i < indent; i++){
+//				s += "   ";
+//			}
 //			System.out.println(s + cls);
 			indent++;
 			Set<OWLClassExpression> superClasses = new HashSet<OWLClassExpression>();

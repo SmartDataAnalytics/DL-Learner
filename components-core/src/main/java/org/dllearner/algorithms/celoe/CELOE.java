@@ -562,15 +562,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// writing the search tree (if configured)
 			if (writeSearchTree) {
-				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
+				StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
 				if (refinements.size() > 1) {
-					treeString += "all expanded nodes:\n";
+					treeString.append("all expanded nodes:\n");
 					for (Description n : refinements) {
-						treeString += "   " + n + "\n";
+						treeString.append("   ").append(n).append("\n");
 					}
 				}
-				treeString += startNode.toTreeString(baseURI, prefixes);
-				treeString += "\n";
+				treeString.append(startNode.toTreeString(baseURI, prefixes));
+				treeString.append("\n");
 
 				File file = new File(searchTreeFile);
 				
