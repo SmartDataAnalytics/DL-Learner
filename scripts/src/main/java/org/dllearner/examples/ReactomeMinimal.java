@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -116,11 +117,11 @@ public class ReactomeMinimal {
         AbstractCELA la;
 
         OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
-        heuristic.setExpansionPenaltyFactor(0.1);
+        heuristic.setExpansionPenaltyFactor(0.001);
 
         CELOE celoe = new CELOE(lp, rc);
         celoe.setHeuristic(heuristic);
-        celoe.setMaxExecutionTimeInSeconds(1200);
+        celoe.setMaxExecutionTimeInSeconds(60*60*12);
         celoe.setNoisePercentage(80);
         celoe.setMaxNrOfResults(50);
         celoe.setSearchTreeFile("log/reactome-minimal.log");
