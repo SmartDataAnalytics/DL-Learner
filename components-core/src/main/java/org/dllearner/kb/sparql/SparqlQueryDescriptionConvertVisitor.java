@@ -48,6 +48,7 @@ import org.dllearner.core.owl.Negation;
 import org.dllearner.core.owl.Nothing;
 import org.dllearner.core.owl.ObjectAllRestriction;
 import org.dllearner.core.owl.ObjectExactCardinalityRestriction;
+import org.dllearner.core.owl.ObjectHasSelfRestriction;
 import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
 import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
 import org.dllearner.core.owl.ObjectOneOf;
@@ -692,5 +693,12 @@ public class SparqlQueryDescriptionConvertVisitor implements DescriptionVisitor 
         logger.trace("ObjectOneOf");
         
     }
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.DescriptionVisitor#visit(org.dllearner.core.owl.ObjectHasSelfRestriction)
+	 */
+	@Override
+	public void visit(ObjectHasSelfRestriction objectHasSelfRestriction) {
+	}
     
 }
