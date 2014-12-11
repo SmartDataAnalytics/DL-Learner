@@ -108,7 +108,7 @@ public class ReactomeMinimal {
         
         Description d = new Intersection(
         		new NamedClass("http://purl.obolibrary.org/obo/GO_0016773"),
-        		new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/BFO_0000066"), Thing.instance)
+        		new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/RO_0002233"), Thing.instance)
         		);
         System.out.println(d + ":" + lp.getAccuracyOrTooWeak(d, 1.0));
         
@@ -120,10 +120,11 @@ public class ReactomeMinimal {
 
         CELOE celoe = new CELOE(lp, rc);
         celoe.setHeuristic(heuristic);
-        celoe.setMaxExecutionTimeInSeconds(600);
-        celoe.setNoisePercentage(50);
-        celoe.setMaxNrOfResults(100);
-        celoe.setWriteSearchTree(true);
+        celoe.setMaxExecutionTimeInSeconds(1200);
+        celoe.setNoisePercentage(80);
+        celoe.setMaxNrOfResults(50);
+        celoe.setSearchTreeFile("log/reactome-minimal.log");
+//        celoe.setWriteSearchTree(true);
         celoe.setReplaceSearchTree(true);
 
 //        ELLearningAlgorithm elLa = new ELLearningAlgorithm(lp, rc);
@@ -137,11 +138,11 @@ public class ReactomeMinimal {
         logger.debug("finished initializing learning algorithm");
         logger.debug("initializing operator...");
         RhoDRDown op = new RhoDRDown();
-        op.setUseHasValueConstructor(true);
         op.setInstanceBasedDisjoints(true);
         op.setUseNegation(false);
 //        op.setStartClass(new NamedClass("http://dl-learner.org/smallis/Allelic_info"));
         op.setUseHasValueConstructor(false);
+        op.setUseAllConstructor(false);
         op.setReasoner(rc);
         op.setSubHierarchy(rc.getClassHierarchy());
         op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
