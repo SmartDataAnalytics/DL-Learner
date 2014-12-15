@@ -555,6 +555,9 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 			for (Description child : children) {
 				fill(individuals, child);
 			}
+		} else if(d instanceof Union){
+			List<Description> children = d.getChildren();
+			// TODO how to handle disjunction ?
 		} else if(d instanceof ObjectSomeRestriction){
 			ObjectProperty role = (ObjectProperty) ((ObjectSomeRestriction) d).getRole();
 			Map<Individual, SortedSet<Individual>> map = opPos.get(role);
