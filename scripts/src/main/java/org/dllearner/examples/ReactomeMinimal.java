@@ -117,7 +117,7 @@ public class ReactomeMinimal {
         AbstractCELA la;
 
         OEHeuristicRuntime heuristic = new OEHeuristicRuntime();
-        heuristic.setExpansionPenaltyFactor(0.001);
+        heuristic.setExpansionPenaltyFactor(0.1);
 
         CELOE celoe = new CELOE(lp, rc);
         celoe.setHeuristic(heuristic);

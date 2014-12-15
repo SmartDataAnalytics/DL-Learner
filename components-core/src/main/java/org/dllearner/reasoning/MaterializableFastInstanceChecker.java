@@ -451,24 +451,7 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		}
 		
 		if(materializeExistentialRestrictions){
-			logger.debug("Materializing existential restrictions ...");
-			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
-			int cnt = 1;
-			for (NamedClass cls : atomicConcepts) {
-				System.out.println(cls);
-				logger.info(cnt++ + "/" + atomicConcepts.size());
-//				TreeSet<Individual> individuals = classInstancesPos.get(cls);
-				Set<OWLClassExpression> superClassExpressions = materialization.materialize(cls.getName());
-//				System.out.println(superClassExpressions);
-//				System.out.println(cls + ":" + superClass);
-				for (OWLClassExpression supExpr : superClassExpressions) {
-//					fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
-//					System.out.println(supExpr);
-					materializeSuperClassExpression(cls, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
-				}
-				System.out.println(individualGenerator.cnt);
-			}
-			logger.debug("...finished materializing existential restrictions.");
+			materializeExistentialRestrictions();
 		}
 		
 		//materialize facts based on OWL punning, i.e.:
@@ -509,6 +492,24 @@ public class MaterializableFastInstanceChecker extends AbstractReasonerComponent
 		
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
 		logger.debug("TBox dematerialised in " + dematDuration + " ms");
+	}
+	
+	private void materializeExistentialRestrictions(){
+		logger.debug("Materializing existential restrictions ...");
+		ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
+		int cnt = 1;
+		for (NamedClass cls : atomicConcepts) {
+			System.out.println(cls);
+			logger.info(cnt++ + "/" + atomicConcepts.size());
+			TreeSet<Individual> individuals = classInstancesPos.get(cls);
+			Set<OWLClassExpression> superClassExpressions = materialization.materialize(cls.getName());
+			for (OWLClassExpression supExpr : superClassExpressions) {
+				fill(individuals, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
+//				materializeSuperClassExpression(cls, DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(supExpr));
+			}
+			System.out.println(individualGenerator.cnt);
+		}
+		logger.debug("...finished materializing existential restrictions.");
 	}
 	
 	/*
