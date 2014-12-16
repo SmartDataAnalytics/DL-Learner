@@ -85,15 +85,15 @@ import com.google.common.collect.Sets;
  * and ranges of properties. The operator is currently under
  * development. Its aim is to span a much "cleaner" and smaller search
  * tree compared to RhoDown by omitting many class descriptions,
- * which are obviously too weak, because they violate 
+ * which are obviously too weak, because they violate
  * domain/range restrictions. Furthermore, it makes use of disjoint
  * classes in the knowledge base.
- * 
+ *
  * Note: Some of the code has moved to {@link Utility} in a modified
  * form to make it accessible for implementations of other refinement
  * operators. These utility methods may be completed and carefully
- * integrated back later. 
- * 
+ * integrated back later.
+ *
  * @author Jens Lehmann
  *
  */
@@ -101,133 +101,133 @@ import com.google.common.collect.Sets;
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
-	
+
 	private static final NamedClass OWL_THING = new NamedClass(Thing.uri);
-	
+
 	private AbstractReasonerComponent reasoner;
-	
+
 	// hierarchies
 	private ClassHierarchy subHierarchy;
 	private ObjectPropertyHierarchy objectPropertyHierarchy;
 	private DatatypePropertyHierarchy dataPropertyHierarchy;
-	
+
 	// domains and ranges
 	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
 	private Map<DatatypeProperty,Description> dpDomains = new TreeMap<DatatypeProperty,Description>();
 	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
-	
+
 	// maximum number of fillers for eeach role
 	private Map<ObjectProperty,Integer> maxNrOfFillers = new TreeMap<ObjectProperty,Integer>();
 	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
 	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
 	// not want something like e.g. >= 204 hasAtom.NOT Carbon-87; which blows up the search space
 	private int cardinalityLimit = 5;
-	
+
 	// start concept (can be used to start from an arbitrary concept, needs
-	// to be Thing or NamedClass), note that when you use e.g. Compound as 
+	// to be Thing or NamedClass), note that when you use e.g. Compound as
 	// start class, then the algorithm should start the search with class
 	// Compound (and not with Thing), because otherwise concepts like
 	// NOT Carbon-87 will be returned which itself is not a subclass of Compound
 	private Description startClass = new Thing();
-	
+
 	// the length of concepts of top refinements, the first values is
 	// for refinements of \rho_\top(\top), the second one for \rho_A(\top)
 	private int topRefinementsLength = 0;
-	private Map<NamedClass, Integer> topARefinementsLength = new TreeMap<NamedClass, Integer>();
+	private Map<Description, Integer> topARefinementsLength = new HashMap<Description, Integer>();
 	// M is finite and this value is the maximum length of any value in M
 	private static int mMaxLength = 4;
-	
+
 	// the sets M_\top and M_A
-	private Map<Integer,SortedSet<Description>> m = new TreeMap<Integer,SortedSet<Description>>();
-	private Map<NamedClass,Map<Integer,SortedSet<Description>>> mA = new TreeMap<NamedClass,Map<Integer,SortedSet<Description>>>();
-	
+	private Map<Integer,SortedSet<Description>> m = new HashMap<Integer,SortedSet<Description>>();
+	private Map<Description,Map<Integer,SortedSet<Description>>> mA = new HashMap<Description,Map<Integer,SortedSet<Description>>>();
+
 	// @see MathOperations.getCombos
 	private Map<Integer, List<List<Integer>>> combos = new HashMap<Integer, List<List<Integer>>>();
 
 	// refinements of the top concept ordered by length
-	private Map<Integer, SortedSet<Description>> topRefinements = new TreeMap<Integer, SortedSet<Description>>();
-	private Map<NamedClass,Map<Integer, SortedSet<Description>>> topARefinements = new TreeMap<NamedClass,Map<Integer, SortedSet<Description>>>();
-	
+	private Map<Integer, SortedSet<Description>> topRefinements = new HashMap<Integer, SortedSet<Description>>();
+	private Map<Description,Map<Integer, SortedSet<Description>>> topARefinements = new HashMap<Description,Map<Integer, SortedSet<Description>>>();
+
 	// cumulated refinements of top (all from length one to the specified length)
 	private Map<Integer, TreeSet<Description>> topRefinementsCumulative = new HashMap<Integer, TreeSet<Description>>();
-	private Map<NamedClass,Map<Integer, TreeSet<Description>>> topARefinementsCumulative = new TreeMap<NamedClass,Map<Integer, TreeSet<Description>>>();
-	
+	private Map<Description,Map<Integer, TreeSet<Description>>> topARefinementsCumulative = new HashMap<Description,Map<Integer, TreeSet<Description>>>();
+
 	// app_A set of applicable properties for a given class (separate for
 	// object properties, boolean datatypes, and double datatypes)
-	private Map<NamedClass, Set<ObjectProperty>> appOP = new TreeMap<NamedClass, Set<ObjectProperty>>();
-	private Map<NamedClass, Set<DatatypeProperty>> appBD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
-	private Map<NamedClass, Set<DatatypeProperty>> appDD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
-	private Map<NamedClass, Set<DatatypeProperty>> appSD = new TreeMap<NamedClass, Set<DatatypeProperty>>();
-	private Map<NamedClass, Set<DatatypeProperty>> appID = new TreeMap<NamedClass, Set<DatatypeProperty>>();
-	
+	private Map<Description, Set<ObjectProperty>> appOP = new HashMap<Description, Set<ObjectProperty>>();
+	private Map<Description, Set<DatatypeProperty>> appBD = new HashMap<Description, Set<DatatypeProperty>>();
+	private Map<Description, Set<DatatypeProperty>> appDD = new HashMap<Description, Set<DatatypeProperty>>();
+	private Map<Description, Set<DatatypeProperty>> appSD = new HashMap<Description, Set<DatatypeProperty>>();
+	private Map<Description, Set<DatatypeProperty>> appID = new HashMap<Description, Set<DatatypeProperty>>();
+
 	// most general applicable properties
-	private Map<NamedClass,Set<ObjectProperty>> mgr = new TreeMap<NamedClass,Set<ObjectProperty>>();
-	private Map<NamedClass,Set<DatatypeProperty>> mgbd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
-	private Map<NamedClass,Set<DatatypeProperty>> mgdd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
-	private Map<NamedClass,Set<DatatypeProperty>> mgsd = new TreeMap<NamedClass,Set<DatatypeProperty>>();
-	private Map<NamedClass,Set<DatatypeProperty>> mgid = new TreeMap<NamedClass,Set<DatatypeProperty>>();
-	
+	private Map<Description,Set<ObjectProperty>> mgr = new HashMap<Description,Set<ObjectProperty>>();
+	private Map<Description,Set<DatatypeProperty>> mgbd = new HashMap<Description,Set<DatatypeProperty>>();
+	private Map<Description,Set<DatatypeProperty>> mgdd = new HashMap<Description,Set<DatatypeProperty>>();
+	private Map<Description,Set<DatatypeProperty>> mgsd = new HashMap<Description,Set<DatatypeProperty>>();
+	private Map<Description,Set<DatatypeProperty>> mgid = new HashMap<Description,Set<DatatypeProperty>>();
+
 	// concept comparator
 	private ConceptComparator conceptComparator = new ConceptComparator();
-	
+
 	// splits for double datatype properties in ascending order
-	private Map<DatatypeProperty,List<Double>> splits = new TreeMap<DatatypeProperty,List<Double>>();
-	private Map<DatatypeProperty,List<Integer>> splitsInt = new TreeMap<DatatypeProperty,List<Integer>>();
+	private Map<DatatypeProperty,List<Double>> splits = new HashMap<DatatypeProperty,List<Double>>();
+	private Map<DatatypeProperty,List<Integer>> splitsInt = new HashMap<DatatypeProperty,List<Integer>>();
 	private int maxNrOfSplits = 10;
-	
+
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	private Map<ObjectProperty, Map<Individual, Integer>> valueFrequency = new HashMap<ObjectProperty, Map<Individual, Integer>>();
 	// data structure with identified frequent values
-	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();	
+	private Map<ObjectProperty, Set<Individual>> frequentValues = new HashMap<ObjectProperty, Set<Individual>>();
 	// frequent data values
-	private Map<DatatypeProperty, Set<Constant>> frequentDataValues = new HashMap<DatatypeProperty, Set<Constant>>();	
-	private Map<DatatypeProperty, Map<Constant, Integer>> dataValueFrequency = new HashMap<DatatypeProperty, Map<Constant, Integer>>();		
+	private Map<DatatypeProperty, Set<Constant>> frequentDataValues = new HashMap<DatatypeProperty, Set<Constant>>();
+	private Map<DatatypeProperty, Map<Constant, Integer>> dataValueFrequency = new HashMap<DatatypeProperty, Map<Constant, Integer>>();
 	private boolean useDataHasValueConstructor = false;
-	
+
 	// statistics
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
-	
+
 	@ConfigOption(name = "applyAllFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean applyAllFilter = true;
-	
+
 	@ConfigOption(name = "applyExistsFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean applyExistsFilter = true;
-	
+
 	@ConfigOption(name = "useAllConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useAllConstructor = true;
-	
+
 	@ConfigOption(name = "useExistsConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useExistsConstructor = true;
-	
+
 	@ConfigOption(name = "useHasValueConstructor", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useHasValueConstructor = false;
-	
+
 	@ConfigOption(name = "useCardinalityRestrictions", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useCardinalityRestrictions = true;
-	
+
 	@ConfigOption(name = "useNegation", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useNegation = true;
-	
+
 	@ConfigOption(name = "useBooleanDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useBooleanDatatypes = true;
-	
+
 	@ConfigOption(name = "useDoubleDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useDoubleDatatypes = true;
-	
+
 	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useIntDatatypes = true;
-	
+
 	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useStringDatatypes = false;
-	
+
 	@ConfigOption(name = "disjointChecks", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean disjointChecks = true;
-	
+
 	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean instanceBasedDisjoints = true;
-	
+
 	@ConfigOption(name = "dropDisjuncts", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean dropDisjuncts = false;
 
@@ -237,15 +237,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //	private Map<NamedClass,Map<NamedClass,Boolean>> abDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABDisjoint = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
 //	private Map<NamedClass,Map<NamedClass,Boolean>> notABMeaningful = new TreeMap<NamedClass,Map<NamedClass,Boolean>>();
-	
+
 	private boolean isInitialised = false;
 
 	private boolean useObjectValueNegation = false;
-	
+
 	public RhoDRDown() {
-		
+
 	}
-	
+
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
 		setCardinalityLimit(op.cardinalityLimit);
@@ -271,32 +271,33 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setUseStringDatatypes(op.useStringDatatypes);
 		isInitialised = false;
 	}
-	
-	public void init() throws ComponentInitException {	
+
+	@Override
+    public void init() throws ComponentInitException {
 		if(isInitialised) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
 //		System.out.println("subHierarchy: " + subHierarchy);
 //		System.out.println("object properties: " + reasoner.getObjectProperties());
-		
+
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
 		for(ObjectProperty op : reasoner.getObjectProperties()) {
 			opDomains.put(op, reasoner.getDomain(op));
 			opRanges.put(op, reasoner.getRange(op));
-			
+
 			if(useHasValueConstructor) {
 				// init
 				Map<Individual, Integer> opMap = new TreeMap<Individual, Integer>();
 				valueFrequency.put(op, opMap);
-				
+
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<Individual>> fillerSets = reasoner.getPropertyMembers(op).values();
 				for(SortedSet<Individual> fillerSet : fillerSets) {
 					for(Individual i : fillerSet) {
 //						System.out.println("op " + op + " i " + i);
 						Integer value = opMap.get(i);
-						
+
 						if(value != null) {
 							opMap.put(i, value+1);
 						} else {
@@ -304,7 +305,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-				
+
 				// keep only frequent patterns
 				Set<Individual> frequentInds = new TreeSet<Individual>();
 				for(Individual i : opMap.keySet()) {
@@ -316,23 +317,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				frequentValues.put(op, frequentInds);
 
 			}
-			
+
 		}
-		
+
 		for(DatatypeProperty dp : reasoner.getDatatypeProperties()) {
 			dpDomains.put(dp, reasoner.getDomain(dp));
-			
+
 			if(useDataHasValueConstructor) {
 				Map<Constant, Integer> dpMap = new TreeMap<Constant, Integer>();
 				dataValueFrequency.put(dp, dpMap);
-				
+
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<Constant>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<Constant> fillerSet : fillerSets) {
 					for(Constant i : fillerSet) {
 //						System.out.println("op " + op + " i " + i);
 						Integer value = dpMap.get(i);
-						
+
 						if(value != null) {
 							dpMap.put(i, value+1);
 						} else {
@@ -340,7 +341,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-				
+
 				// keep only frequent patterns
 				Set<Constant> frequentInds = new TreeSet<Constant>();
 				for(Constant i : dpMap.keySet()) {
@@ -349,27 +350,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						frequentInds.add(i);
 					}
 				}
-				frequentDataValues.put(dp, frequentInds);				
+				frequentDataValues.put(dp, frequentInds);
 			}
 		}
-		
+
 		// we do not need the temporary set anymore and let the
 		// garbage collector take care of it
 		valueFrequency = null;
 		dataValueFrequency.clear();// = null;
-		
+
 //		System.out.println("freqDataValues: " + frequentDataValues);
-		
+
 		// compute splits for double datatype properties
 		for(DatatypeProperty dp : reasoner.getDoubleDatatypeProperties()) {
 			computeSplits(dp);
 		}
-		
+
 		// compute splits for integer datatype properties
 		for (DatatypeProperty dp : reasoner.getIntDatatypeProperties()) {
 			computeSplitsInt(dp);
 		}
-		
+
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
@@ -382,7 +383,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					if(maxFillers >= cardinalityLimit) {
 						maxFillers = cardinalityLimit;
 						break;
-					}	
+					}
 				}
 				maxNrOfFillers.put(op, maxFillers);
 			}
@@ -395,17 +396,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Description d = KBParser.parseConcept(conceptStr);
 			SortedSet<Description> ds = (SortedSet<Description>) refine(d,15,null,struc);
 			System.out.println(ds);
-			
+
 			Individual i = new Individual("http://dl-learner.org/carcinogenesis#d101");
 			rs.instanceCheck(ds.first(), i);
-			
+
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.exit(0);
 		*/
-		
+
 		/*
 		NamedClass struc = new NamedClass("http://dl-learner.org/carcinogenesis#Atom");
 		ObjectProperty op = new ObjectProperty("http://dl-learner.org/carcinogenesis#hasAtom");
@@ -423,9 +424,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.out.println(improper.size());
 		System.exit(0);
 		*/
-		 
+
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
@@ -442,7 +443,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		return refine(description, maxLength, null, startClass);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.refinement.RefinementOperator#refine(org.dllearner.core.owl.Description, int, java.util.List)
 	 */
@@ -455,22 +456,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@SuppressWarnings({"unchecked"})
 	public Set<Description> refine(Description description, int maxLength,
 			List<Description> knownRefinements, Description currDomain) {
-		
+
 //		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
-		
+
 		// actions needing to be performed if this is the first time the
 		// current domain is used
 		if(!(currDomain instanceof Thing) && !topARefinementsLength.containsKey(currDomain))
-			topARefinementsLength.put((NamedClass)currDomain, 0);
-		
-		// check whether using list or set makes more sense 
+			topARefinementsLength.put(currDomain, 0);
+
+		// check whether using list or set makes more sense
 		// here; and whether HashSet or TreeSet should be used
 		// => TreeSet because duplicates are possible
 		Set<Description> refinements = new TreeSet<Description>(conceptComparator);
-		
+
 		// used as temporary variable
 		Set<Description> tmp = new HashSet<Description>();
-		
+
 		if(description instanceof Thing) {
 			// extends top refinements if necessary
 			if(currDomain instanceof Thing) {
@@ -479,7 +480,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				refinements = (TreeSet<Description>) topRefinementsCumulative.get(maxLength).clone();
 			} else {
 				if(maxLength>topARefinementsLength.get(currDomain)) {
-					computeTopRefinements(maxLength, (NamedClass) currDomain);
+					computeTopRefinements(maxLength, currDomain);
 				}
 				refinements = (TreeSet<Description>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
@@ -490,14 +491,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			refinements.addAll(subHierarchy.getSubClasses(description));
 			refinements.remove(new Nothing());
 		} else if (description instanceof Negation && description.getChild(0) instanceof NamedClass) {
-		
+
 			tmp = subHierarchy.getSuperClasses(description.getChild(0));
-				
+
 			for(Description c : tmp) {
 				if(!(c instanceof Thing) && !c.equals(OWL_THING))
 					refinements.add(new Negation(c));
 			}
-		
+
 		} else if (description instanceof Intersection) {
 			// refine one of the elements
 			for(Description child : description.getChildren()) {
@@ -511,45 +512,45 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					newChildren.add(c);
 					newChildren.remove(child);
 					Intersection mc = new Intersection(newChildren);
-					
+
 					// clean concept and transform it to ordered negation normal form
 					// (non-recursive variant because only depth 1 was modified)
 					ConceptTransformation.cleanConceptNonRecursive(mc);
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
-					
+
 					// check whether the intersection is OK (sanity checks), then add it
 					if(checkIntersection(mc))
 						refinements.add(mc);
 				}
-				
+
 			}
-				
+
 		} else if (description instanceof Union) {
 			// refine one of the elements
 			for(Description child : description.getChildren()) {
-				
+
 //				System.out.println("union child: " + child + " " + maxLength + " " + description.getLength() + " " + child.getLength());
-				
+
 				// refine child
 				tmp = refine(child, maxLength - description.getLength()+child.getLength(),null,currDomain);
-				
+
 				// construct intersection (see above)
 				for(Description c : tmp) {
 					List<Description> newChildren = new LinkedList<Description>(description.getChildren());
-					newChildren.remove(child);						
+					newChildren.remove(child);
 					newChildren.add(c);
 					Union md = new Union(newChildren);
-						
+
 					// transform to ordered negation normal form
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(md, conceptComparator);
 					// note that we do not have to call clean here because a disjunction will
 					// never be nested in another disjunction in this operator
-					
-					refinements.add(md);	
+
+					refinements.add(md);
 				}
-				
+
 			}
-			
+
 			// if enabled, we can remove elements of the disjunction
 			if(dropDisjuncts) {
 				// A1 OR A2 => {A1,A2}
@@ -560,23 +561,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					// copy children list and remove a different element in each turn
 					for(int i=0; i<description.getChildren().size(); i++) {
 						List<Description> newChildren = new LinkedList<Description>(description.getChildren());
-						newChildren.remove(i);						
+						newChildren.remove(i);
 						Union md = new Union(newChildren);
 						refinements.add(md);
 					}
 				}
 			}
-			
+
 		} else if (description instanceof ObjectSomeRestriction) {
 			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
 			Description range = opRanges.get(role);
-			
+
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(description.getChild(0), maxLength-2, null, range);
 
 			for(Description c : tmp)
 				refinements.add(new ObjectSomeRestriction(((ObjectQuantorRestriction)description).getRole(),c));
-			
+
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
@@ -594,7 +595,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					refinements.add(min);
 				}
 			}
-			
+
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
 			if(useHasValueConstructor && description.getChild(0) instanceof Thing) {
 				// watch out for frequent patterns
@@ -606,27 +607,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						if(useObjectValueNegation ){
 							refinements.add(new Negation(ovr));
 						}
-						
-					}			
+
+					}
 				}
 			}
-			
+
 		} else if (description instanceof ObjectAllRestriction) {
 			ObjectPropertyExpression role = ((ObjectQuantorRestriction)description).getRole();
 			Description range = opRanges.get(role);
-			
+
 			// rule 1: ALL r.D => ALL r.E
 			tmp = refine(description.getChild(0), maxLength-2, null, range);
 
 			for(Description c : tmp) {
 				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)description).getRole(),c));
-			}		
-			
+			}
+
 			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
 			if(description.getChild(0) instanceof NamedClass && tmp.size()==0) {
 				refinements.add(new ObjectAllRestriction(((ObjectQuantorRestriction)description).getRole(),new Nothing()));
 			}
-			
+
 			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
 			// currently inverse roles are not supported
 			ObjectProperty ar = (ObjectProperty) role;
@@ -635,7 +636,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			for(ObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(new ObjectAllRestriction(moreSpecialRole, description.getChild(0)));
 			}
-			
+
 			// rule 4: ALL r.D => <= (maxFillers-1) r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
 			// => commented out because this is actually not a downward refinement
@@ -647,39 +648,39 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //			}
 		} else if (description instanceof ObjectCardinalityRestriction) {
 			ObjectPropertyExpression role = ((ObjectCardinalityRestriction)description).getRole();
-			Description range = opRanges.get(role);	
+			Description range = opRanges.get(role);
 			int number = ((ObjectCardinalityRestriction)description).getCardinality();
 			if(description instanceof ObjectMaxCardinalityRestriction) {
 				// rule 1: <= x r.C =>  <= x r.D
 				if(useNegation || number > 0){
 					tmp = refine(description.getChild(0), maxLength-3, null, range);
-	
+
 					for(Description d : tmp) {
 						refinements.add(new ObjectMaxCardinalityRestriction(number,role,d));
-					}	
+					}
 				}
-				
+
 				// rule 2: <= x r.C  =>  <= (x-1) r.C
 				ObjectMaxCardinalityRestriction max = (ObjectMaxCardinalityRestriction) description;
 //				int number = max.getNumber();
 				if((useNegation && number > 1) || (!useNegation && number > 2))
 					refinements.add(new ObjectMaxCardinalityRestriction(number-1,max.getRole(),max.getChild(0)));
-				
+
 			} else if(description instanceof ObjectMinCardinalityRestriction) {
 				tmp = refine(description.getChild(0), maxLength-3, null, range);
 
 				for(Description d : tmp) {
 					refinements.add(new ObjectMinCardinalityRestriction(number,role,d));
 				}
-				
+
 				// >= x r.C  =>  >= (x+1) r.C
 				ObjectMinCardinalityRestriction min = (ObjectMinCardinalityRestriction) description;
 //				int number = min.getNumber();
 				if(number < maxNrOfFillers.get(min.getRole()))
-					refinements.add(new ObjectMinCardinalityRestriction(number+1,min.getRole(),min.getChild(0)));				
+					refinements.add(new ObjectMinCardinalityRestriction(number+1,min.getRole(),min.getChild(0)));
 			}
 		} else if (description instanceof DatatypeSomeRestriction) {
-			
+
 			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
 			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
 			DataRange dr = dsr.getDataRange();
@@ -742,32 +743,32 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				refinements.add(new StringValueRestriction(subDP, svr.getStringValue()));
 			}
 		}
-		
+
 		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
-		if(!(description instanceof Thing) && !(description instanceof Nothing) 
+		if(!(description instanceof Thing) && !(description instanceof Nothing)
 				&& !(description instanceof ObjectAllRestriction && description.getChild(0) instanceof Nothing)) {
 			// -1 because of the AND symbol which is appended
-			int topRefLength = maxLength - description.getLength() - 1; 
-			
+			int topRefLength = maxLength - description.getLength() - 1;
+
 			// maybe we have to compute new top refinements here
 			if(currDomain instanceof Thing) {
 				if(topRefLength > topRefinementsLength)
 					computeTopRefinements(topRefLength);
 			} else if(topRefLength > topARefinementsLength.get(currDomain))
-				computeTopRefinements(topRefLength,(NamedClass)currDomain);
-			
+				computeTopRefinements(topRefLength,currDomain);
+
 			if(topRefLength>0) {
 				Set<Description> topRefs;
 				if(currDomain instanceof Thing)
 					topRefs = topRefinementsCumulative.get(topRefLength);
 				else
 					topRefs = topARefinementsCumulative.get(currDomain).get(topRefLength);
-				
+
 				for(Description c : topRefs) {
 					// true if refinement should be skipped due to filters,
 					// false otherwise
 					boolean skip = false;
-					
+
 					// if a refinement of of the form ALL r, we check whether ALL r
 					// does not occur already
 					if(applyAllFilter) {
@@ -782,10 +783,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							}
 						}
 					}
-					
+
 					// check for double datatype properties
 					/*
-					if(c instanceof DatatypeSomeRestriction && 
+					if(c instanceof DatatypeSomeRestriction &&
 							description instanceof DatatypeSomeRestriction) {
 						DataRange dr = ((DatatypeSomeRestriction)c).getDataRange();
 						DataRange dr2 = ((DatatypeSomeRestriction)description).getDataRange();
@@ -794,7 +795,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							||(dr instanceof DoubleMinValue && dr2 instanceof DoubleMinValue))
 							skip = true;
 					}*/
-					
+
 					// perform a disjointness check when named classes are added;
 					// this can avoid a lot of superfluous computation in the algorithm e.g.
 					// when A1 looks good, so many refinements of the form (A1 OR (A2 AND A3))
@@ -802,17 +803,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					if(disjointChecks && c instanceof NamedClass && description instanceof NamedClass && isDisjoint(description, c)) {
 						skip = true;
 //						System.out.println(c + " ignored when refining " + description);
-					}	
-					
+					}
+
 					if(!skip) {
 						Intersection mc = new Intersection();
 						mc.addChild(description);
 						mc.addChild(c);
-						
+
 						// clean and transform to ordered negation normal form
 						ConceptTransformation.cleanConceptNonRecursive(mc);
 						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc, conceptComparator);
-						
+
 						// last check before intersection is added
 						if(checkIntersection(mc))
 							refinements.add(mc);
@@ -820,7 +821,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
-		
+
 //		for(Description refinement : refinements) {
 //			if((refinement instanceof Intersection || refinement instanceof Union) && refinement.getChildren().size()<2) {
 //				System.out.println(description + " " + refinement + " " + currDomain + " " + maxLength);
@@ -829,9 +830,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		}
 //		System.out.println("++++++++\nREFINING: " + description + "   maxLength:" + maxLength);
 //		System.out.println(refinements);
-		return refinements;		
+		return refinements;
 	}
-	
+
 	// when a child of an intersection is refined and reintegrated into the
 	// intersection, we can perform some sanity checks;
 	// method returns true if everything is OK and false otherwise
@@ -850,7 +851,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				boolean maxIntOccurence = false;
 				// rule 6: min restrictions at most once
 				boolean minIntOccurence = false;
-		
+
 		for(Description child : intersection.getChildren()) {
 			if(child instanceof DatatypeSomeRestriction) {
 				DataRange dr = ((DatatypeSomeRestriction)child).getDataRange();
@@ -874,9 +875,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						return false;
 					else
 						minIntOccurence = true;
-				}		
+				}
 			} else if(child instanceof BooleanValueRestriction) {
-				DatatypeProperty dp = (DatatypeProperty) ((BooleanValueRestriction)child).getRestrictedPropertyExpression();
+				DatatypeProperty dp = ((BooleanValueRestriction)child).getRestrictedPropertyExpression();
 //				System.out.println("dp: " + dp);
 				// return false if the boolean property exists already
 				if(!occuredDP.add(dp))
@@ -890,34 +891,34 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		return true;
 	}
-	
+
 	/**
 	 * By default, the operator does not specialize e.g. (A or B) to A, because
 	 * it only guarantees weak completeness. Under certain circumstances, e.g.
 	 * refinement of a fixed given concept, it can be useful to allow such
-	 * refinements, which can be done by passing the parameter true to this method. 
+	 * refinements, which can be done by passing the parameter true to this method.
 	 * @param dropDisjuncts Whether to remove disjuncts in refinement process.
 	 */
 	public void setDropDisjuncts(boolean dropDisjuncts) {
 		this.dropDisjuncts = dropDisjuncts;
-	}	
-	
+	}
+
 	private void computeTopRefinements(int maxLength) {
 		computeTopRefinements(maxLength, null);
 	}
-	
-	private void computeTopRefinements(int maxLength, NamedClass domain) {
+
+	private void computeTopRefinements(int maxLength, Description domain) {
 		long topComputationTimeStartNs = System.nanoTime();
-//		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);		
-		
+//		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);
+
 		if(domain == null && m.size() == 0)
 			computeM();
-		
+
 		if(domain != null && !mA.containsKey(domain))
 			computeM(domain);
-		
+
 		int refinementsLength;
-		
+
 		if(domain == null) {
 			refinementsLength = topRefinementsLength;
 		} else {
@@ -939,9 +940,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					topARefinements.put(domain, new TreeMap<Integer,SortedSet<Description>>());
 				topARefinements.get(domain).put(i, new TreeSet<Description>(conceptComparator));
 			}
-				
+
 			for(List<Integer> combo : combos.get(i)) {
-				
+
 				// combination is a single number => try to use M
 				if(combo.size()==1) {
 					// note we cannot use "put" instead of "addAll" because there
@@ -952,20 +953,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						topARefinements.get(domain).get(i).addAll(mA.get(domain).get(i));
 				// combinations has several numbers => generate disjunct
 				} else {
-					
+
 					// check whether the combination makes sense, i.e. whether
 					// all lengths mentioned in it have corresponding elements
 					// e.g. when negation is deactivated there won't be elements of
 					// length 2 in M
 					boolean validCombo = true;
 					for(Integer j : combo) {
-						if((domain == null && m.get(j).size()==0) || 
+						if((domain == null && m.get(j).size()==0) ||
 								(domain != null && mA.get(domain).get(j).size()==0))
 							validCombo = false;
 					}
-					
+
 					if(validCombo) {
-						
+
 						SortedSet<Union> baseSet = new TreeSet<Union>(conceptComparator);
 						for(Integer j : combo) {
 							if(domain == null)
@@ -973,12 +974,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							else
 								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
 						}
-						
+
 						// convert all concepts in ordered negation normal form
 						for(Description concept : baseSet) {
 							ConceptTransformation.transformToOrderedForm(concept, conceptComparator);
 						}
-						
+
 						// apply the exists filter (throwing out all refinements with
 						// double \exists r for any r)
 						// TODO: similar filtering can be done for boolean datatype
@@ -987,20 +988,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							Iterator<Union> it = baseSet.iterator();
 							while(it.hasNext()) {
 								if(MathOperations.containsDoubleObjectSomeRestriction(it.next()))
-									it.remove();							
+									it.remove();
 							}
 						}
-							
+
 						// add computed refinements
 						if(domain == null)
 							topRefinements.get(i).addAll(baseSet);
 						else
 							topARefinements.get(domain).get(i).addAll(baseSet);
-						
+
 					}
 				}
 			}
-			
+
 			// create cumulative versions of refinements such that they can
 			// be accessed easily
 			TreeSet<Description> cumulativeRefinements = new TreeSet<Description>(conceptComparator);
@@ -1010,8 +1011,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				} else {
 					cumulativeRefinements.addAll(topARefinements.get(domain).get(j));
 				}
-			}			
-			
+			}
+
 			if(domain == null) {
 				topRefinementsCumulative.put(i, cumulativeRefinements);
 			} else {
@@ -1020,22 +1021,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				topARefinementsCumulative.get(domain).put(i, cumulativeRefinements);
 			}
 		}
-		
+
 		// register new top refinements length
 		if(domain == null)
 			topRefinementsLength = maxLength;
 		else
 			topARefinementsLength.put(domain,maxLength);
-		
+
 		topComputationTimeNs += System.nanoTime() - topComputationTimeStartNs;
-		
+
 //		if(domain == null) {
 //			System.out.println("computed top refinements up to length " + topRefinementsLength + ": " + topRefinementsCumulative.get(maxLength));
 //		} else {
 //			System.out.println("computed top refinements up to length " + topARefinementsLength + ": (domain: "+domain+"): " + topARefinementsCumulative.get(domain).get(maxLength));
-//		}		
+//		}
 	}
-	
+
 	// compute M_\top
 	private void computeM() {
 		long mComputationTimeStartNs = System.nanoTime();
@@ -1044,20 +1045,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		for(int i=1; i<=mMaxLength; i++) {
 			m.put(i, new TreeSet<Description>(conceptComparator));
 		}
-		
-		SortedSet<Description> m1 = subHierarchy.getSubClasses(new Thing()); 
-		m.put(1,m1);		
-		
+
+		SortedSet<Description> m1 = subHierarchy.getSubClasses(new Thing());
+		m.put(1,m1);
+
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
 			Set<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
 			for(Description c : m2tmp) {
 				if(!(c instanceof Thing) && !c.equals(OWL_THING)) {
-					m2.add(new Negation(c));	
+					m2.add(new Negation(c));
 				}
 			}
 		}
-		
+
 		// boolean datatypes, e.g. testPositive = true
 		if(useBooleanDatatypes) {
 			Set<DatatypeProperty> booleanDPs = reasoner.getBooleanDatatypeProperties();
@@ -1065,27 +1066,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				m2.add(new BooleanValueRestriction(dp,true));
 				m2.add(new BooleanValueRestriction(dp,false));
 			}
-		}		
+		}
 		m.put(2,m2);
-			
+
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			// only uses most general roles
 //			System.out.println("EXISTS: " + reasoner.getMostGeneralProperties());
 			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(new ObjectSomeRestriction(r, new Thing()));
-			}				
+			}
 		}
-		
+
 		if(useAllConstructor) {
 			// we allow \forall r.\top here because otherwise the operator
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
 			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
-			}				
-		}		
-		
+			}
+		}
+
 		if(useDoubleDatatypes) {
 			Set<DatatypeProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
 			for(DatatypeProperty dp : doubleDPs) {
@@ -1096,8 +1097,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					m3.add(new DatatypeSomeRestriction(dp,min));
 				}
 			}
-		}		
-		
+		}
+
 		if(useIntDatatypes) {
 			Set<DatatypeProperty> intDPs = reasoner.getIntDatatypeProperties();
 			for(DatatypeProperty dp : intDPs) {
@@ -1109,7 +1110,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
-		
+
 		if(useDataHasValueConstructor) {
 			Set<DatatypeProperty> stringDPs = reasoner.getStringDatatypeProperties();
 			for(DatatypeProperty dp : stringDPs) {
@@ -1118,11 +1119,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				for(Constant c : freqValues) {
 					m3.add(new StringValueRestriction(dp, c.getLiteral()));
 				}
-			}			
+			}
 		}
-		
+
 		m.put(3,m3);
-		
+
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
 		if(useCardinalityRestrictions) {
 			for(ObjectProperty r : reasoner.getMostGeneralProperties()) {
@@ -1132,47 +1133,47 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// but we still keep it, because ALL r.NOT C may be difficult to reach
 				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1))
 					m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
-			}			
+			}
 		}
 		m.put(4,m4);
-		
+
 //		System.out.println("m: " + m);
-		
+
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
-	
+
 	// computation of the set M_A
 	// a major difference compared to the ILP 2007 \rho operator is that
 	// M is finite and contains elements of length (currently) at most 3
-	private void computeM(NamedClass nc) {
+	private void computeM(Description nc) {
 		long mComputationTimeStartNs = System.nanoTime();
 
 //		System.out.println(nc);
-		
+
 		mA.put(nc, new TreeMap<Integer,SortedSet<Description>>());
 		// initialise all possible lengths (1 to 3)
 		for(int i=1; i<=mMaxLength; i++) {
 			mA.get(nc).put(i, new TreeSet<Description>(conceptComparator));
 		}
-		
+
 		// incomplete, prior implementation
-//		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc); 
+//		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc);
 //		mA.get(nc).put(1,m1);
-		
+
 		// most general classes, which are not disjoint with nc and provide real refinement
 		SortedSet<Description> m1 = getClassCandidates(nc);
 		mA.get(nc).put(1,m1);
-		
+
 		// most specific negated classes, which are not disjoint with nc
 		SortedSet<Description> m2 = new TreeSet<Description>();
 		if(useNegation) {
 			m2 = getNegClassCandidates(nc);
 			mA.get(nc).put(2,m2);
 		}
-		
+
 //		System.out.println("m1 " + "(" + nc + "): " + m1);
 //		System.out.println("m2 " + "(" + nc + "): " + m2);
-		
+
 		/*
 		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
 		if(useNegation) {
@@ -1184,7 +1185,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// and B; if not A AND B = B then also not A' AND B = B
 			// 2010/03: the latter is not correct => a recursive method is needed
 			SortedSet<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
-			
+
 			for(Description c : m2tmp) {
 //				if(c instanceof Thing)
 //					m2.add(c);
@@ -1195,13 +1196,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					if(!isNotADisjoint(a, nc) && isNotAMeaningful(a, nc))
 						m2.add(new Negation(a));
 				}
-			}	
+			}
 		}
 		*/
-		
+
 		// compute applicable properties
-		computeMg(nc);		
-		
+		computeMg(nc);
+
 		// boolean datatypes, e.g. testPositive = true
 		if(useBooleanDatatypes) {
 			Set<DatatypeProperty> booleanDPs = mgbd.get(nc);
@@ -1210,25 +1211,25 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				m2.add(new BooleanValueRestriction(dp,false));
 			}
 		}
-		
+
 		mA.get(nc).put(2,m2);
-			
+
 		SortedSet<Description> m3 = new TreeSet<Description>(conceptComparator);
 		if(useExistsConstructor) {
 			for(ObjectProperty r : mgr.get(nc)) {
 				m3.add(new ObjectSomeRestriction(r, new Thing()));
-			}				
+			}
 		}
-		
+
 		if(useAllConstructor) {
 			// we allow \forall r.\top here because otherwise the operator
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
 			for(ObjectProperty r : mgr.get(nc)) {
 				m3.add(new ObjectAllRestriction(r, new Thing()));
-			}				
-		}		
-		
+			}
+		}
+
 		if(useDoubleDatatypes) {
 			Set<DatatypeProperty> doubleDPs = mgdd.get(nc);
 //			System.out.println("cached disjoints " + cachedDisjoints);
@@ -1238,7 +1239,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //			System.out.println("mgr " + mgr);
 //			System.out.println("mgbd " + mgbd);
 //			System.out.println("mgdd " + mgdd);
-			
+
 			for(DatatypeProperty dp : doubleDPs) {
 				if(splits.get(dp).size() > 0) {
 					DoubleMaxValue max = new DoubleMaxValue(splits.get(dp).get(splits.get(dp).size()-1));
@@ -1248,10 +1249,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
-		
+
 		if(useIntDatatypes) {
 			Set<DatatypeProperty> intDPs = mgid.get(nc);
-			
+
 			for(DatatypeProperty dp : intDPs) {
 				if(splitsInt.get(dp).size() > 0) {
 					IntMaxValue max = new IntMaxValue(splitsInt.get(dp).get(splitsInt.get(dp).size()-1));
@@ -1261,7 +1262,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
-		
+
 		if(useDataHasValueConstructor) {
 			Set<DatatypeProperty> stringDPs = mgsd.get(nc);
 			for(DatatypeProperty dp : stringDPs) {
@@ -1270,11 +1271,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				for(Constant c : freqValues) {
 					m3.add(new StringValueRestriction(dp, c.getLiteral()));
 				}
-			}			
-		}		
-		
+			}
+		}
+
 		mA.get(nc).put(3,m3);
-		
+
 		SortedSet<Description> m4 = new TreeSet<Description>(conceptComparator);
 		if(useCardinalityRestrictions) {
 			for(ObjectProperty r : mgr.get(nc)) {
@@ -1282,38 +1283,38 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// zero fillers: <= -1 r.C does not make sense
 				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
 				// but we still keep it, because ALL r.NOT C may be difficult to reach
-				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1))		
+				if((useNegation && maxFillers > 0) || (!useNegation && maxFillers > 1))
 					m4.add(new ObjectMaxCardinalityRestriction(maxFillers-1, r, new Thing()));
 			}
 		}
 		mA.get(nc).put(4,m4);
-		
+
 //		System.out.println("m for " + nc + ": " + mA.get(nc));
-		
+
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
-	
+
 	// get candidates for a refinement of \top restricted to a class B
-	public SortedSet<Description> getClassCandidates(NamedClass index) {
+	public SortedSet<Description> getClassCandidates(Description index) {
 		return getClassCandidatesRecursive(index, Thing.instance);
 	}
-	
+
 	private SortedSet<Description> getClassCandidatesRecursive(Description index, Description upperClass) {
 		SortedSet<Description> candidates = new TreeSet<Description>();
 //		System.out.println("index " + index + " upper class " + upperClass);
-		
+
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
 		for(Description candidate :  subHierarchy.getSubClasses(upperClass)) {
 //				System.out.println("testing " + candidate + " ... ");
-							
+
 //				NamedClass candidate = (NamedClass) d;
 				// check disjointness with index (if not no further traversal downwards is necessary)
 				if(!isDisjoint(candidate,index)) {
 //					System.out.println( " passed disjointness test ... ");
 					// check whether the class is meaningful, i.e. adds something to the index
 					// to do this, we need to make sure that the class is not a superclass of the
-					// index (otherwise we get nothing new) - for instance based disjoints, we 
+					// index (otherwise we get nothing new) - for instance based disjoints, we
 					// make sure that there is at least one individual, which is not already in the
 					// upper class
 					boolean meaningful;
@@ -1327,7 +1328,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					} else {
 						meaningful = !isDisjoint(new Negation(candidate),index);
 					}
-					
+
 					if(meaningful) {
 						// candidate went successfully through all checks
 						candidates.add(candidate);
@@ -1337,24 +1338,24 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //						System.out.println(" enter recursion");
 						candidates.addAll(getClassCandidatesRecursive(index, candidate));
 					}
-				} 
+				}
 //				else {
 //					System.out.println(" ruled out, because it is disjoint");
 //				}
 		}
 //		System.out.println("cc method exit");
 		return candidates;
-	}	
-	
+	}
+
 	// get candidates for a refinement of \top restricted to a class B
-	public SortedSet<Description> getNegClassCandidates(NamedClass index) {
+	public SortedSet<Description> getNegClassCandidates(Description index) {
 		return getNegClassCandidatesRecursive(index, Nothing.instance);
 	}
-	
+
 	private SortedSet<Description> getNegClassCandidatesRecursive(Description index, Description lowerClass) {
 		SortedSet<Description> candidates = new TreeSet<Description>(conceptComparator);
 //		System.out.println("index " + index + " lower class " + lowerClass);
-		
+
 		for(Description candidate :  subHierarchy.getSuperClasses(lowerClass)) {
 			if(!(candidate instanceof Thing) && !candidate.equals(OWL_THING)) {
 //				System.out.println("candidate: " + candidate);
@@ -1370,30 +1371,30 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					} else {
 						meaningful = !isDisjoint(candidate,index);
 					}
-					
+
 					if(meaningful) {
 						candidates.add(new Negation(candidate));
 					} else {
 						candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
 					}
-				} 
+				}
 			}
 		}
 		return candidates;
-	}	
-	
-	private void computeMg(NamedClass domain) {
+	}
+
+	private void computeMg(Description domain) {
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
-			computeApp(domain);	
-		
+			computeApp(domain);
+
 		// initialise mgr, mgbd, mgdd, mgsd
 		mgr.put(domain, new TreeSet<ObjectProperty>());
 		mgbd.put(domain, new TreeSet<DatatypeProperty>());
 		mgdd.put(domain, new TreeSet<DatatypeProperty>());
 		mgsd.put(domain, new TreeSet<DatatypeProperty>());
 		mgid.put(domain, new TreeSet<DatatypeProperty>());
-		
+
 		SortedSet<ObjectProperty> mostGeneral = reasoner.getMostGeneralProperties();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
 		SortedSet<DatatypeProperty> mostGeneralDP = reasoner.getMostGeneralDatatypeProperties();
@@ -1403,13 +1404,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Set<DatatypeProperty> mostGeneralDDP = Helper.intersection(mostGeneralDP, reasoner.getDoubleDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralSDP = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
 		Set<DatatypeProperty> mostGeneralIDP = Helper.intersection(mostGeneralDP, reasoner.getIntDatatypeProperties());
-		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));	
+		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));
 		computeMgddRecursive(domain, mostGeneralDDP, mgdd.get(domain));
 		computeMgsdRecursive(domain, mostGeneralSDP, mgsd.get(domain));
 		computeMgidRecursive(domain, mostGeneralIDP, mgid.get(domain));
 	}
-	
-	private void computeMgrRecursive(NamedClass domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
+
+	private void computeMgrRecursive(Description domain, Set<ObjectProperty> currProperties, Set<ObjectProperty> mgrTmp) {
 		for(ObjectProperty prop : currProperties) {
 			if(appOP.get(domain).contains(prop))
 				mgrTmp.add(prop);
@@ -1417,45 +1418,45 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				computeMgrRecursive(domain, reasoner.getSubProperties(prop), mgrTmp);
 		}
 	}
-	
-	private void computeMgbdRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgbdTmp) {
+
+	private void computeMgbdRecursive(Description domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgbdTmp) {
 		for(DatatypeProperty prop : currProperties) {
 			if(appBD.get(domain).contains(prop))
 				mgbdTmp.add(prop);
 			else
 				computeMgbdRecursive(domain, reasoner.getSubProperties(prop), mgbdTmp);
 		}
-	}	
-	
-	private void computeMgddRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgddTmp) {
+	}
+
+	private void computeMgddRecursive(Description domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgddTmp) {
 		for(DatatypeProperty prop : currProperties) {
 			if(appDD.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
 				computeMgddRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
 		}
-	}		
-	
-	private void computeMgsdRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgsdTmp) {
+	}
+
+	private void computeMgsdRecursive(Description domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgsdTmp) {
 		for(DatatypeProperty prop : currProperties) {
 			if(appSD.get(domain).contains(prop))
 				mgsdTmp.add(prop);
 			else
 				computeMgsdRecursive(domain, reasoner.getSubProperties(prop), mgsdTmp);
 		}
-	}	
-	
-	private void computeMgidRecursive(NamedClass domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgidTmp) {
+	}
+
+	private void computeMgidRecursive(Description domain, Set<DatatypeProperty> currProperties, Set<DatatypeProperty> mgidTmp) {
 		for(DatatypeProperty prop : currProperties) {
 			if(appID.get(domain).contains(prop))
 				mgidTmp.add(prop);
 			else
 				computeMgidRecursive(domain, reasoner.getSubProperties(prop), mgidTmp);
 		}
-	}	
-	
+	}
+
 	// computes the set of applicable properties for a given class
-	private void computeApp(NamedClass domain) {
+	private void computeApp(Description domain) {
 		SortedSet<Individual> individuals1 = reasoner.getIndividuals(domain);
 		// object properties
 		Set<ObjectProperty> mostGeneral = reasoner.getObjectProperties();
@@ -1464,7 +1465,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
 			Description d = reasoner.getDomain(role);
-			
+
 			Set<Individual> individuals2 = new HashSet<Individual>();
 			for (Entry<Individual, SortedSet<Individual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
 				Individual ind = entry.getKey();
@@ -1472,16 +1473,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					individuals2.add(ind);
 				}
 			}
-			
+
 			boolean disjoint = Sets.intersection(individuals1, individuals2).isEmpty();
 //			if(!isDisjoint(domain,d))
 				if(!disjoint){
 					applicableRoles.add(role);
 				}
-				
+
 		}
 		appOP.put(domain, applicableRoles);
-		
+
 		// boolean datatype properties
 		Set<DatatypeProperty> mostGeneralBDPs = reasoner.getBooleanDatatypeProperties();
 		Set<DatatypeProperty> applicableBDPs = new TreeSet<DatatypeProperty>();
@@ -1491,8 +1492,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
-		appBD.put(domain, applicableBDPs);	
-		
+		appBD.put(domain, applicableBDPs);
+
 		// double datatype properties
 		Set<DatatypeProperty> mostGeneralDDPs = reasoner.getDoubleDatatypeProperties();
 		Set<DatatypeProperty> applicableDDPs = new TreeSet<DatatypeProperty>();
@@ -1503,8 +1504,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(!isDisjoint(domain,d))
 				applicableDDPs.add(role);
 		}
-		appDD.put(domain, applicableDDPs);	
-		
+		appDD.put(domain, applicableDDPs);
+
 		// string datatype properties
 		Set<DatatypeProperty> mostGeneralSDPs = reasoner.getStringDatatypeProperties();
 		Set<DatatypeProperty> applicableSDPs = new TreeSet<DatatypeProperty>();
@@ -1515,8 +1516,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(!isDisjoint(domain,d))
 				applicableSDPs.add(role);
 		}
-		appSD.put(domain, applicableSDPs);	
-		
+		appSD.put(domain, applicableSDPs);
+
 		// integer datatype properties
 				Set<DatatypeProperty> mostGeneralIDPs = reasoner.getIntDatatypeProperties();
 				Set<DatatypeProperty> applicableIDPs = new TreeSet<DatatypeProperty>();
@@ -1529,7 +1530,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 				appID.put(domain, applicableIDPs);
 	}
-	
+
 	// returns true of the intersection contains elements disjoint
 	// to the given description (if true adding the description to
 	// the intersection results in a description equivalent to bottom)
@@ -1545,38 +1546,38 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(d instanceof Nothing)
 				return true;
 			else if(child instanceof NamedClass) {
-				if(isDisjoint((NamedClass)child, d))
+				if(isDisjoint(child, d))
 					return true;
 			}
 		}
 		return false;
 	}
-	
+
 	private boolean isDisjoint(Description d1, Description d2) {
-		
+
 //		System.out.println("| " + d1 + " " + d2);
 //		System.out.println("| " + cachedDisjoints);
-		
+
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedDisjoints.get(d1);
 		Boolean disjoint = null;
 		if(tmp != null)
 			disjoint = tmp.get(d2);
-		
+
 //		System.out.println("| " + tmp + " " + tmp2);
-		
+
 		if(disjoint==null) {
 			if(instanceBasedDisjoints) {
 				disjoint = isDisjointInstanceBased(d1,d2);
 			} else {
 				Description d = new Intersection(d1, d2);
-				disjoint = reasoner.isSuperClassOf(new Nothing(), d);		
+				disjoint = reasoner.isSuperClassOf(new Nothing(), d);
 			}
 			// add the result to the cache (we add it twice such that
 			// the order of access does not matter)
-			
+
 //			System.out.println("| result: " + result);
-			
+
 			// create new entries if necessary
 			Map<Description,Boolean> map1 = new TreeMap<Description,Boolean>(conceptComparator);
 			Map<Description,Boolean> map2 = new TreeMap<Description,Boolean>(conceptComparator);
@@ -1584,15 +1585,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				cachedDisjoints.put(d1, map1);
 			if(!cachedDisjoints.containsKey(d2))
 				cachedDisjoints.put(d2, map2);
-			
+
 			// add result symmetrically in the description matrix
 			cachedDisjoints.get(d1).put(d2, disjoint);
 			cachedDisjoints.get(d2).put(d1, disjoint);
-		} 
+		}
 //			System.out.println("===");
 			return disjoint;
-	}	
-	
+	}
+
 	private boolean isDisjointInstanceBased(Description d1, Description d2) {
 		SortedSet<Individual> d1Instances = reasoner.getIndividuals(d1);
 		SortedSet<Individual> d2Instances = reasoner.getIndividuals(d2);
@@ -1605,7 +1606,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		return true;
 	}
-	
+
 	/*
 	// computes whether two classes are disjoint; this should be computed
 	// by the reasoner only ones and otherwise taken from a matrix
@@ -1614,7 +1615,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Description d2 = new Intersection(a, d);
 		return rs.subsumes(new Nothing(), d2);
 	}*/
-	
+
 	// we need to test whether NOT A AND B is equivalent to BOTTOM
 	@SuppressWarnings("unused")
 	private boolean isNotADisjoint(NamedClass a, NamedClass b) {
@@ -1622,7 +1623,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		Boolean tmp2 = null;
 //		if(tmp != null)
 //			tmp2 = tmp.get(b);
-//		
+//
 //		if(tmp2==null) {
 			Description notA = new Negation(a);
 			Description d = new Intersection(notA, b);
@@ -1632,10 +1633,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		} else
 //			return tmp2;
 	}
-	
+
 	// we need to test whether NOT A AND B = B
 	// (if not then NOT A is not meaningful in the sense that it does
-	// not semantically add anything to B) 	
+	// not semantically add anything to B)
 	@SuppressWarnings("unused")
 	private boolean isNotAMeaningful(NamedClass a, NamedClass b) {
 		Description notA = new Negation(a);
@@ -1643,7 +1644,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
 		return !reasoner.isSuperClassOf(d, b);
 	}
-	
+
 	private void computeSplits(DatatypeProperty dp) {
 		Set<Double> valuesSet = new TreeSet<Double>();
 //		Set<Individual> individuals = rs.getIndividuals();
@@ -1654,7 +1655,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// convert set to a list where values are sorted
 		List<Double> values = new LinkedList<Double>(valuesSet);
 		Collections.sort(values);
-		
+
 		int nrOfValues = values.size();
 		// create split set
 		List<Double> splitsDP = new LinkedList<Double>();
@@ -1664,17 +1665,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				index = splitNr;
 			else
 				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
-			
+
 			double value = 0.5*(values.get(index)+values.get(index+1));
 			splitsDP.add(value);
 		}
 		splits.put(dp, splitsDP);
-		
+
 //		System.out.println(values);
 //		System.out.println(splits);
 //		System.exit(0);
 	}
-	
+
 	private void computeSplitsInt(DatatypeProperty dp) {
 		Set<Integer> valuesSet = new TreeSet<Integer>();
 //		Set<Individual> individuals = rs.getIndividuals();
@@ -1685,7 +1686,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// convert set to a list where values are sorted
 		List<Integer> values = new LinkedList<Integer>(valuesSet);
 		Collections.sort(values);
-		
+
 		int nrOfValues = values.size();
 		// create split set
 		List<Integer> splitsDP = new LinkedList<Integer>();
@@ -1695,12 +1696,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				index = splitNr;
 			else
 				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
-			
+
 			int value = values.get(index);
 			splitsDP.add(value);
 		}
 		splitsInt.put(dp, splitsDP);
-		
+
 //		System.out.println(values);
 //		System.out.println(splits);
 //		System.exit(0);
@@ -1793,14 +1794,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public void setUseStringDatatypes(boolean useStringDatatypes) {
 		this.useStringDatatypes = useStringDatatypes;
 	}
-	
+
 	/**
 	 * @param useIntDatatypes the useIntDatatypes to set
 	 */
 	public void setUseIntDatatypes(boolean useIntDatatypes) {
 		this.useIntDatatypes = useIntDatatypes;
 	}
-	
+
 	/**
 	 * @return the useIntDatatypes
 	 */
@@ -1837,7 +1838,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return startClass;
 	}
 
-	public void setStartClass(Description startClass) {
+	@Override
+    public void setStartClass(Description startClass) {
 		this.startClass = startClass;
 	}
 
@@ -1853,7 +1855,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return objectPropertyHierarchy;
 	}
 
-	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
+	@Override
+    public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy) {
 		this.objectPropertyHierarchy = objectPropertyHierarchy;
 	}
 
@@ -1861,7 +1864,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return dataPropertyHierarchy;
 	}
 
-	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
+	@Override
+    public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy) {
 		this.dataPropertyHierarchy = dataPropertyHierarchy;
 	}
 
@@ -1874,7 +1878,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public void setClassHierarchy(ClassHierarchy classHierarchy) {
 		subHierarchy = classHierarchy;
 	}
-	
+
 	/**
 	 * @param useObjectValueNegation the useObjectValueNegation to set
 	 */
