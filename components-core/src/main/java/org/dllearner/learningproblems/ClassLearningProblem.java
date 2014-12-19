@@ -891,6 +891,18 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 
 	public void setHeuristic(HeuristicType heuristic) {
 		this.heuristic = heuristic;
+		
+		if(heuristic == HeuristicType.AMEASURE) {
+			accuracyMethod = "standard";
+		} else if(heuristic == HeuristicType.FMEASURE) {
+			accuracyMethod = "fmeasure";
+		} else if(heuristic == HeuristicType.GEN_FMEASURE) {
+			accuracyMethod = "generalised_fmeasure";
+		} else if(heuristic == HeuristicType.JACCARD) {
+			accuracyMethod = "jaccard";
+		} else if(heuristic == HeuristicType.PRED_ACC) {
+			accuracyMethod = "pred_acc";
+		} 
 	}
 
 	public double getApproxDelta() {
