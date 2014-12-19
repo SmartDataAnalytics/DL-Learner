@@ -165,7 +165,8 @@ public class DescriptionMinimizer {
 //							boolean subclassOf = isSubclassOf(d1, d2);
 //							System.out.println(subclassOf);
 //						}
-						if(i != j && isSubclassOf(children.get(j), children.get(i))) {
+						boolean isSubclassOf = isSubclassOf(children.get(j), children.get(i));
+						if(i != j && isSubclassOf) {
 							// remove element because it is super class of another element
 							children.remove(i);
 							// we apply the minimization procedure again after removal of the element
@@ -267,7 +268,7 @@ public class DescriptionMinimizer {
 		} 
 		if(d1.equals(d2)) return true;
 		if(d2 == Thing.instance || d2.equals(OWL_THING)) return true;
-		if(!(d1.isNamedClass() && d2.isNamedClass())) return false;
+//		if(!(d1.isNamedClass() && d2.isNamedClass())) return false;
 		// check whether we have cached this query
 		Map<Description,Boolean> tmp = cachedSubclassOf.get(d1);
 		Boolean tmp2 = null;
