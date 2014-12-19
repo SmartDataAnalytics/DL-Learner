@@ -28,26 +28,26 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLRuntimeException;
 
 /**
- * A class description is sometimes also called "complex class" or "concept". 
- * 
+ * A class description is sometimes also called "complex class" or "concept".
+ *
  * @author Jens Lehmann
  *
  */
-public abstract class Description implements Cloneable, PropertyRange, KBElement{
-	
+public abstract class Description implements Cloneable, PropertyRange, KBElement {
+
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3439073654652166607L;
 	protected Description parent = null;
     protected List<Description> children = new LinkedList<Description>();
-    
+
     public abstract int getArity();
-    
+
     /**
      * Calculate the number of nodes for this description tree (each
      * description can be seen as a tree).
-     * 
+     *
      * @return The number of nodes.
      */
     public int getNumberOfNodes() {
@@ -56,7 +56,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
             sum += child.getNumberOfNodes();
         return sum;
     }
-    
+
     /**
      * Selects a sub tree.
      * @param i A position in the tree. Positions are iteratively given to nodes
@@ -88,7 +88,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
                 return children.get(1).getSubtree(i - leftTreeNodes - 1);
         }
     }
-    
+
     /**
      * Calculates the description tree depth.
      * @return The depth of this description.
@@ -96,20 +96,20 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     public int getDepth() {
         // compute the max over all children
         int depth = 1;
-        
+
         for(Description child : children) {
             int depthChild = child.getDepth();
             if(depthChild+1>depth)
                 depth = 1 + depthChild;
         }
-        
+
         return depth;
-    }    
-    
+    }
+
     /**
      * Returns a clone of this description.
      */
-	@Override    
+	@Override
     public Description clone() {
         Description node = null;
         try {
@@ -120,25 +120,25 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
         }
 
         // Create a deep copy, i.e. we iterate over all children and clone them.
-        // The addChild operation is used to ensure that the parent links are 
+        // The addChild operation is used to ensure that the parent links are
         // correct, i.e. all parent links point to the new clones instead of the
         // old descriptions.
         node.children = new LinkedList<Description>();
         for(Description child : children) {
-        	Description clonedChild = (Description) child.clone();
+        	Description clonedChild = child.clone();
         	node.addChild(clonedChild);
         }
 
-        return node;        
-    }    
-    
+        return node;
+    }
+
     /**
      * Adds a description as child of this one. The parent link
      * of the description will point to this one. For instance,
      * if the description is an intersection, then this method adds
      * an element to the intersection, e.g. A AND B becomes A AND B
-     * AND C. 
-     * 
+     * AND C.
+     *
      * @param child The child description.
      */
     public void addChild(Description child) {
@@ -148,7 +148,7 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 
     /**
      * Adds a child description at the specified index.
-     * 
+     *
      * @see #addChild(Description)
      * @param index
      * @param child
@@ -167,27 +167,27 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     	child.setParent(null);
     	children.remove(child);
     }
-    
+
     public void removeChild(int index) {
     	children.get(index).setParent(null);
     	children.remove(index);
     }
-    
+
     public void replaceChild(int index, Description newChild) {
     	children.remove(index);
     	children.add(index, newChild);
     }
-    
+
     /**
      * Tests whether this description is at the root, i.e.
      * does not have a parent.
-     * 
+     *
      * @return True if this node is the root of a description, false otherwise.
      */
     public boolean isRoot() {
         return (parent == null);
-    }    
-    
+    }
+
     public Description getParent() {
         return parent;
     }
@@ -199,43 +199,43 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
     public List<Description> getChildren() {
         return children;
     }
-    
+
     public Description getChild(int i) {
         return children.get(i);
     }
-    
+
 	@Override
 	public String toString() {
 		return toString(null, null);
 	}
-	
-	
+
+
 	public String toKBSyntaxString() {
 		return toKBSyntaxString(null, null);
 	}
-	
+
 	public boolean isNamedClass(){
 		return this instanceof NamedClass;
 	}
-	
+
 	/**
      * Determines whether or not this expression represents an anonymous class
      * expression.
-     * 
+     *
      * @return {@code true} if this is an anonymous class expression, or
      *         {@code false} if this is a named class ( {@code OWLClass})
      */
     public boolean isAnonymous(){
     	return true;
     };
-	
+
 	public NamedClass asNamedClass(){
 		 throw new OWLRuntimeException(
 	                "Not an OWLClass.  This method should only be called if the isAnonymous method returns false!");
 	}
-	
+
 	/**
-	 * Returns all named entities. 
+	 * Returns all named entities.
 	 * @return
 	 */
 	public Set<Entity> getSignature(){
@@ -256,28 +256,29 @@ public abstract class Description implements Cloneable, PropertyRange, KBElement
 			if(this instanceof ObjectSomeRestriction){
 				entities.addAll(getChild(0).getSignature());
 			} else if(this instanceof DatatypeSomeRestriction){
-				
+
 			} else if(this instanceof ObjectValueRestriction){
 				entities.add((Individual)((ObjectValueRestriction)this).getValue());
 			}
 		} else {
-			for (Description child : children) { 
+			for (Description child : children) {
 				entities.addAll(child.getSignature());
 			}
 		}
-		
+
 		return entities;
 	}
-	
+
 	/**
 	 * Returns a manchester syntax string of this description. For a
-	 * reference, see 
+	 * reference, see
 	 * <a href="http://www.co-ode.org/resources/reference/manchester_syntax">here</a>
 	 * and <a href="http://owl-workshop.man.ac.uk/acceptedLong/submission_9.pdf">here</a> (PDF).
 	 * @return The manchester syntax string for this description.
 	 */
-	public abstract String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes);
-	
+	@Override
+    public abstract String toManchesterSyntaxString(String baseURI, Map<String,String> prefixes);
+
 	public abstract void accept(DescriptionVisitor visitor);
 
 }
