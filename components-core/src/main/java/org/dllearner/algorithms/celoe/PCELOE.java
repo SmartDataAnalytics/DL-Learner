@@ -26,9 +26,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,7 +38,6 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -73,6 +74,8 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jamonapi.Monitor;
@@ -89,7 +92,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="PCELOE", shortName="pceloe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class PCELOE extends AbstractCELA {
 
-	private static Logger logger = Logger.getLogger(PCELOE.class);
+	private static Logger logger = LoggerFactory.getLogger(PCELOE.class);
 //	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
@@ -104,7 +107,7 @@ public class PCELOE extends AbstractCELA {
 	private boolean useMinimizer = true;
 	
 	// all nodes in the search tree (used for selecting most promising node)
-	private SortedSet<OENode> nodes;
+	private NavigableSet<OENode> searchTree;
 //	private TreeSet<OENode> nodes;
 	private OEHeuristicRuntime heuristic; // = new OEHeuristicRuntime();
 	// root of search tree
@@ -201,7 +204,7 @@ public class PCELOE extends AbstractCELA {
 	private double maxDepth = 7;
 	
 	@ConfigOption(name = "nrOfThreads", defaultValue="2", description="number of threads running in parallel")
-	private int nrOfThreads = 2;
+	private int nrOfThreads = 1;
 
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
@@ -445,16 +448,13 @@ public class PCELOE extends AbstractCELA {
 	
 	@Override
 	public void start() {
-//		System.out.println(configurator.getMaxExecutionTimeInSeconds());
-		
 		stop = false;
 		isRunning = true;
 		reset();
 		nanoStartTime = System.nanoTime();
 		
-		
-
-		addNode(startClass, null);
+		// add the start class as first node in the search tree
+		addNodeToSearchTree(startClass, null);
 		
 		int nrOfWorkers = nrOfThreads;
 		if(nrOfWorkers == 0){
@@ -484,9 +484,9 @@ public class PCELOE extends AbstractCELA {
 		}
 		
 		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 
@@ -509,8 +509,9 @@ public class PCELOE extends AbstractCELA {
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 //		Iterator<OENode> it = nodes.descendingIterator();
-		synchronized(nodes){
-			Iterator<OENode> it = nodes.iterator();
+//		return searchTree.pollLast();
+		synchronized(searchTree){
+			Iterator<OENode> it = searchTree.iterator();
 			while(it.hasNext()) {
 				OENode node = it.next();
 				if(!currentlyProcessedNodes.contains(node) && (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
@@ -530,22 +531,19 @@ public class PCELOE extends AbstractCELA {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		nodes.remove(node);
+		searchTree.remove(node);
 //		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
-		nodes.add(node);
+		searchTree.add(node);
 		return refinements;
 	}
 	
 	// add node to search tree if it is not too weak
 	// returns true if node was added and false otherwise
-	private boolean addNode(Description description, OENode parentNode) {
-		
-//		System.out.println("d: " + description);
-		
+	private boolean addNodeToSearchTree(Description description, OENode parentNode) {
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
@@ -557,7 +555,6 @@ public class PCELOE extends AbstractCELA {
 			return false;
 		}
 		
-//		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
@@ -566,10 +563,7 @@ public class PCELOE extends AbstractCELA {
 			System.exit(0);
 		}
 		
-//		System.out.println("Test2 " + new Date());
 		expressionTests++;
-//		System.out.println("acc: " + accuracy);
-//		System.out.println(description + " " + accuracy);
 		if(accuracy == -1) {
 			return false;
 		}
@@ -582,9 +576,11 @@ public class PCELOE extends AbstractCELA {
 		} else {
 			parentNode.addChild(node);
 		}
-	
-		nodes.add(node);
-//		System.out.println("Test3 " + new Date());
+		
+		searchTree.add(node);
+//		if(accuracy < 1.0) {
+//			searchTree.add(node);
+//		}
 		
 		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
@@ -615,46 +611,47 @@ public class PCELOE extends AbstractCELA {
 		
 //		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
-			
-			Description niceDescription = rewriteNode(node);
-			ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
-//			Description niceDescription = node.getDescription();
-			
-			// another test: none of the other suggested descriptions should be 
-			// a subdescription of this one unless accuracy is different
-			// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
-			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
-			boolean shorterDescriptionExists = false;
-			if(forceMutualDifference) {
-				for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
-					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
-//						System.out.println("shorter: " + ed.getDescription());
-						shorterDescriptionExists = true;
-						break;
-					}
-				}				
-			}
-			
-//			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
-			
-			if(!shorterDescriptionExists) {
-				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
-//					System.out.println("Test2");
-					synchronized (bestEvaluatedDescriptions) {
-						bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
-					}
-//					System.out.println("acc: " + accuracy);
-//					System.out.println(bestEvaluatedDescriptions);
-				}
-			}
-						
-//			System.out.println(bestEvaluatedDescriptions.getSet().size());
+			addToSolutions(node);
 		}
 		
 //		System.out.println("Test5 " + new Date());
 //		System.out.println("best evaluated descriptions size: " + bestEvaluatedDescriptions.size() + " worst: " + bestEvaluatedDescriptions.getWorst());
 		return true;
 	}	
+	
+	private boolean addToSolutions(OENode node) {
+		Description niceDescription = rewriteDescription(node.getDescription());
+		ConceptTransformation.transformToOrderedForm(niceDescription, descriptionComparator);
+//		Description niceDescription = node.getDescription();
+		
+		// another test: none of the other suggested descriptions should be 
+		// a subdescription of this one unless accuracy is different
+		// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
+		// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
+		boolean shorterDescriptionExists = false;
+		if(forceMutualDifference) {
+			for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+				if(Math.abs(ed.getAccuracy()-node.getAccuracy()) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+//					System.out.println("shorter: " + ed.getDescription());
+					shorterDescriptionExists = true;
+					break;
+				}
+			}				
+		}
+		
+//		System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
+		
+		if(!shorterDescriptionExists) {
+			if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
+//				System.out.println("Test2");
+				synchronized (bestEvaluatedDescriptions) {
+					bestEvaluatedDescriptions.add(niceDescription, node.getAccuracy(), learningProblem);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	// checks whether the description is allowed
 	private boolean isDescriptionAllowed(Description description, OENode parentNode) {
@@ -742,9 +739,8 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	// check whether the node is a potential solution candidate
-	private Description rewriteNode(OENode node) {
-		Description description = node.getDescription();
-		// minimize description (expensive!) - also performes some human friendly rewrites
+	private Description rewriteDescription(Description description) {
+		// minimize description (expensive!) - also performs some human friendly rewrites
 		Description niceDescription = description;
 		if(useMinimizer) {
 			synchronized (minimizer) {
@@ -772,7 +768,7 @@ public class PCELOE extends AbstractCELA {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
 //		nodes = new TreeSet<OENode>(heuristic);
-		nodes = Collections.synchronizedSortedSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
+		searchTree = new ConcurrentSkipListSet<OENode>(Collections.reverseOrder(heuristic));
 		descriptions = Collections.synchronizedSortedSet(new TreeSet<Description>(new ConceptComparator()));
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
@@ -816,7 +812,7 @@ public class PCELOE extends AbstractCELA {
 			// the best accuracy that a node can achieve 
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 			
-			for(OENode n : nodes) {
+			for(OENode n : searchTree) {
 //			for(OENode n : nodes.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
@@ -1000,8 +996,6 @@ public class PCELOE extends AbstractCELA {
 		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
 	}	
 	
-	
-	
 	public int getNrOfThreads() {
 		return nrOfThreads;
 	}
@@ -1019,6 +1013,7 @@ public class PCELOE extends AbstractCELA {
 
 		@Override
 		public void run() {
+			logger.debug("Starting worker " + Thread.currentThread() + "...");
 			int loop = 0;
 			// highest accuracy so far
 //			double highestAccuracy = 0.0;
@@ -1034,10 +1029,9 @@ public class PCELOE extends AbstractCELA {
 				}
 
 				// chose best node according to heuristics
-				if(logger.isDebugEnabled()){
-					logger.debug("Get next node to expand...");
-				}
+				logger.debug("Get next node to expand...");
 				nextNode = getNextNodeToExpand();
+//				logger.debug("Expanding " + nextNode);
 				if(nextNode != null){
 					int horizExp = nextNode.getHorizontalExpansion();
 					
@@ -1047,6 +1041,7 @@ public class PCELOE extends AbstractCELA {
 						logger.debug("Refining node...");
 					}
 					TreeSet<Description> refinements = refineNode(nextNode);
+					logger.debug("Got {} refinements", refinements.size());
 					mon.stop();
 						
 //					System.out.println("next node: " + nextNode);
@@ -1058,7 +1053,7 @@ public class PCELOE extends AbstractCELA {
 //						System.exit(0);
 //					}
 					
-					while(refinements.size() != 0) {
+					while(!terminationCriteriaSatisfied() && !refinements.isEmpty()) {
 						// pick element from set
 						Description refinement = refinements.pollFirst();
 						int length = refinement.getLength();
@@ -1072,17 +1067,9 @@ public class PCELOE extends AbstractCELA {
 							if(logger.isDebugEnabled()){
 								logger.debug("Add node...");
 							}
-							addNode(refinement, nextNode);
+							addNodeToSearchTree(refinement, nextNode);
 							mon2.stop();
-							// adding nodes is potentially computationally expensive, so we have
-							// to check whether max time is exceeded	
-							if(terminationCriteriaSatisfied()) {
-								break;
-							}
-//							System.out.println("addNode finished" + " " + new Date());
 						}
-				
-//						System.out.println("  refinement queue length: " + refinements.size());
 					}
 					
 //					updateMinMaxHorizExp(nextNode);
@@ -1111,15 +1098,16 @@ public class PCELOE extends AbstractCELA {
 				}
 				
 			}
+			logger.debug("...stopped worker " + Thread.currentThread() + ".");
 			
 		}
 		
 	}
 	
 	public static void main(String[] args) throws Exception{
-		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
-		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
+//		org.apache.log4j.Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %r %c: %m%n" ), "log/parallel_run.txt", false));
 		
 		
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
