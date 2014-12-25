@@ -52,7 +52,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class MouseDiabetes2 {
 
     private static final Logger logger = Logger.getLogger(MouseDiabetes2.class);
-    private static final String dir = "/tmp/smallis/";
+    private static final String dir = "/tmp/smallis/../experiment2/";
 //    private static final String kbFilePath = dir + "monarch_module_exp2.owl";
 //    private static final String kbFilePath = dir + "kb_cbd_05.owl";
     private static final String kbFilePath = dir + "mp_kb_cbd_05.owl";
@@ -185,7 +185,7 @@ public class MouseDiabetes2 {
         for (Description ref : refinements) {
             System.out.println(ref + ":" + lp.getAccuracyOrTooWeak(ref, 1.0));
         }
-        System.exit(0);
+//        System.exit(0);
 //        SortedSet<Description> subClasses = rc.getSubClasses(Thing.instance);
 //        for (Description sub : subClasses) {
 //			System.out.println(sub + ":" + rc.getIndividuals(sub).size() + " instances");

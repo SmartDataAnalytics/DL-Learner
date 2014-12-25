@@ -558,7 +558,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //				System.out.println("  refinement queue length: " + refinements.size());
 			}
 			
-			updateMinMaxHorizExp(nextNode);
+//			updateMinMaxHorizExp(nextNode);
 			
 			// writing the search tree (if configured)
 			if (writeSearchTree) {
@@ -627,7 +627,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		// this should practically never be called, since for any reasonable learning
 		// task, we will always have at least one node with less than 100% accuracy
-		return nodes.last();
+		return null;//nodes.last();
 	}
 	
 	// expand node horizontically
@@ -642,7 +642,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println(refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
-		nodes.add(node);
+		boolean added = nodes.add(node);
+		logger.trace("Re-added " + node + ":" + added);
+		logger.trace("Best:" + nodes.last().toString() + ":" + heuristic.getNodeScore(nodes.last()));
 		return refinements;
 	}
 	
@@ -691,8 +693,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			parentNode.addChild(node);
 		}
 	
-		nodes.add(node);
-//		System.out.println("Test3 " + new Date());
+//		nodes.add(node);
+		if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()){
+			nodes.add(node);
+		}
 		
 		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy

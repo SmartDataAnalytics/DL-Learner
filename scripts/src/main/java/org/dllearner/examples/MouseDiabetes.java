@@ -119,7 +119,7 @@ public class MouseDiabetes {
         ((CELOE) la).setMaxExecutionTimeInSeconds(1800);
         ((CELOE) la).setNoisePercentage(80);
         ((CELOE) la).setMaxNrOfResults(50);
-        ((CELOE) la).setWriteSearchTree(true);
+        ((CELOE) la).setWriteSearchTree(false);
         ((CELOE) la).setReplaceSearchTree(true);
         ((CELOE) la).setSearchTreeFile("log/mouse-diabetis.log");
         Description startClass = new NamedClass("http://dl-learner.org/smallis/Allelic_info");

@@ -307,7 +307,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			if(learningProblem instanceof PosNegLPStandard) {
 				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
 			} else {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+				str += current + ":\t" + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "--" + ed.getDescriptionLength() + "\n";
 //				System.out.println(ed);
 			}
 			current++;

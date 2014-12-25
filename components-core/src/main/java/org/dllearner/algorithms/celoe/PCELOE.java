@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
@@ -66,6 +67,7 @@ import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.RhoDRDown2008;
 import org.dllearner.refinementoperators.SynchronizedRhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -118,7 +120,7 @@ public class PCELOE extends AbstractCELA {
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
 //	private TreeSet<Description> descriptions;
-	private SortedSet<Description> descriptions;
+	private Set<Description> descriptions;
 	
 	
 	// if true, then each solution is evaluated exactly instead of approximately
@@ -209,7 +211,7 @@ public class PCELOE extends AbstractCELA {
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
 	
-	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<OENode>());
+//	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<OENode>());
 	private volatile double highestAccuracy = 0.0;
 	
 //	public CELOEConfigurator getConfigurator() {
@@ -480,7 +482,7 @@ public class PCELOE extends AbstractCELA {
 				e.printStackTrace();
 			} catch (ExecutionException e) {
 				e.printStackTrace();
-			}
+			} 
 		}
 		
 		if (stop) {
@@ -497,8 +499,6 @@ public class PCELOE extends AbstractCELA {
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
 		
-//		System.out.println(startNode.toTreeString(baseURI));
-		
 		isRunning = false;
 		service.shutdown();
 //		System.out.println("isRunning: " + isRunning);
@@ -509,36 +509,26 @@ public class PCELOE extends AbstractCELA {
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 //		Iterator<OENode> it = nodes.descendingIterator();
-//		return searchTree.pollLast();
-		synchronized(searchTree){
-			Iterator<OENode> it = searchTree.iterator();
-			while(it.hasNext()) {
-				OENode node = it.next();
-				if(!currentlyProcessedNodes.contains(node) && (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
-					currentlyProcessedNodes.add(node);
-					return node;
-				}
-			}
-		}
+		return searchTree.pollLast();
 		
-		// this should practically never be called, since for any reasonable learning
-		// task, we will always have at least one node with less than 100% accuracy
-		return null;
+//		synchronized(searchTree){
+//			Iterator<OENode> it = searchTree.iterator();
+//			while(it.hasNext()) {
+//				OENode node = it.next();
+//				if((node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength())) {
+//					it.remove();
+//					return node;
+//				}
+//			}
+//		}
+//		
+//		// this should practically never be called, since for any reasonable learning
+//		// task, we will always have at least one node with less than 100% accuracy
+//		return null;
 	}
 	
-	// expand node horizontically
-	private TreeSet<Description> refineNode(OENode node) {
-		// we have to remove and add the node since its heuristic evaluation changes through the expansion
-		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
-		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		searchTree.remove(node);
-//		System.out.println("refining: " + node);
-		int horizExp = node.getHorizontalExpansion();
-		TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
-		node.incHorizontalExpansion();
-		node.setRefinementCount(refinements.size());
-		searchTree.add(node);
-		return refinements;
+	private void incrementExpressionTests() {
+		expressionTests++;
 	}
 	
 	// add node to search tree if it is not too weak
@@ -563,7 +553,7 @@ public class PCELOE extends AbstractCELA {
 			System.exit(0);
 		}
 		
-		expressionTests++;
+		incrementExpressionTests();
 		if(accuracy == -1) {
 			return false;
 		}
@@ -577,10 +567,10 @@ public class PCELOE extends AbstractCELA {
 			parentNode.addChild(node);
 		}
 		
-		searchTree.add(node);
-//		if(accuracy < 1.0) {
-//			searchTree.add(node);
-//		}
+//		searchTree.add(node);
+		if(accuracy < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+			searchTree.add(node);
+		}
 		
 		// in some cases (e.g. mutation) fully evaluating even a single description is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
@@ -768,8 +758,8 @@ public class PCELOE extends AbstractCELA {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
 //		nodes = new TreeSet<OENode>(heuristic);
-		searchTree = new ConcurrentSkipListSet<OENode>(Collections.reverseOrder(heuristic));
-		descriptions = Collections.synchronizedSortedSet(new TreeSet<Description>(new ConceptComparator()));
+		searchTree = new ConcurrentSkipListSet<OENode>(heuristic);
+		descriptions = new ConcurrentSkipListSet<Description>(new ConceptComparator());
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		highestAccuracy = 0.0;
@@ -1010,104 +1000,116 @@ public class PCELOE extends AbstractCELA {
 
 
 	class Worker implements Runnable{
+		RhoDRDown operator;
+		
+		// all nodes in the search tree (used for selecting most promising node)
+		private NavigableSet<OENode> localSearchTree = new TreeSet<OENode>();
+		
+		public Worker() {
+			operator = new RhoDRDown();
+			operator.setReasoner(reasoner);
+			operator.setClassHierarchy(reasoner.getClassHierarchy().clone());
+			try {
+				operator.init();
+			} catch (ComponentInitException e) {
+				e.printStackTrace();
+			}
+		}
 
 		@Override
 		public void run() {
-			logger.debug("Starting worker " + Thread.currentThread() + "...");
+			logger.debug("Starting worker " + Thread.currentThread().getName() + "...");
 			int loop = 0;
 			// highest accuracy so far
 //			double highestAccuracy = 0.0;
-			OENode nextNode;
-			while (!terminationCriteriaSatisfied()) {
+			try {
+				while (!terminationCriteriaSatisfied()) {
 //				System.out.println("loop " + loop);
-				
-				if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > getHighestAccuracy()) {
-					highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
-					expressionTestCountLastImprovement = expressionTests;
-					timeLastImprovement = System.nanoTime();
-					logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
-				}
+					
+					if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > getHighestAccuracy()) {
+						highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+						expressionTestCountLastImprovement = expressionTests;
+						timeLastImprovement = System.nanoTime();
+						logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+					}
 
-				// chose best node according to heuristics
-				logger.debug("Get next node to expand...");
-				nextNode = getNextNodeToExpand();
+					// chose best node according to heuristics
+					logger.debug("Get next node to expand...");
+					OENode nextNode = localSearchTree.pollLast();
+					if(nextNode == null) {
+						nextNode = getNextNodeToExpand();
+					}
 //				logger.debug("Expanding " + nextNode);
-				if(nextNode != null){
-					int horizExp = nextNode.getHorizontalExpansion();
-					
-					// apply operator
-					Monitor mon = MonitorFactory.start("refineNode");
-					if(logger.isDebugEnabled()){
-						logger.debug("Refining node...");
-					}
-					TreeSet<Description> refinements = refineNode(nextNode);
-					logger.debug("Got {} refinements", refinements.size());
-					mon.stop();
+					if(nextNode != null){
+						int horizExp = nextNode.getHorizontalExpansion();
 						
-//					System.out.println("next node: " + nextNode);
-//					for(Description refinement : refinements) {
-//						System.out.println("refinement: " + refinement);
-//					}
-//					if((loop+1) % 500 == 0) {
-//						System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
-//						System.exit(0);
-//					}
-					
-					while(!terminationCriteriaSatisfied() && !refinements.isEmpty()) {
-						// pick element from set
-						Description refinement = refinements.pollFirst();
-						int length = refinement.getLength();
-										
-						// we ignore all refinements with lower length and too high depth
-						// (this also avoids duplicate node children)
-						if(length > horizExp && refinement.getDepth() <= maxDepth) {
-							
+						// apply operator
+						logger.debug("Refining node...");
+						TreeSet<Description> refinements = refineNode(nextNode);
+						logger.debug("Got {} refinements", refinements.size());
+						
+						while(!terminationCriteriaSatisfied() && !refinements.isEmpty()) {
+							// pick element from set
+							Description refinement = refinements.pollFirst();
+							int length = refinement.getLength();
+											
+							// we ignore all refinements with lower length and too high depth
+							// (this also avoids duplicate node children)
+							if(length > horizExp && refinement.getDepth() <= maxDepth) {
+								
 //							System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
-							Monitor mon2 = MonitorFactory.start("addNode");
-							if(logger.isDebugEnabled()){
+								Monitor mon2 = MonitorFactory.start("addNode");
 								logger.debug("Add node...");
+								addNodeToSearchTree(refinement, nextNode);
+								mon2.stop();
 							}
-							addNodeToSearchTree(refinement, nextNode);
-							mon2.stop();
 						}
-					}
-					
+						
 //					updateMinMaxHorizExp(nextNode);
-					
-					// writing the search tree (if configured)
-					if (writeSearchTree) {
-						String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
-						if (refinements.size() > 1) {
-							treeString += "all expanded nodes:\n";
-							for (Description n : refinements) {
-								treeString += "   " + n + "\n";
-							}
-						}
-						treeString += startNode.toTreeString(baseURI);
-						treeString += "\n";
-
-						if (replaceSearchTree)
-							Files.createFile(new File(searchTreeFile), treeString);
-						else
-							Files.appendToFile(new File(searchTreeFile), treeString);
+						
+//					currentlyProcessedNodes.remove(nextNode);
 					}
 					
-//					System.out.println(loop);
-					loop++;
-					currentlyProcessedNodes.remove(nextNode);
 				}
-				
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			logger.debug("...stopped worker " + Thread.currentThread() + ".");
 			
 		}
 		
+		// expand node horizontically
+		private TreeSet<Description> refineNode(OENode node) {
+			// we have to remove and add the node since its heuristic evaluation changes through the expansion
+			// (you *must not* include any criteria in the heuristic which are modified outside of this method,
+			// otherwise you may see rarely occurring but critical false ordering in the nodes set)
+			searchTree.remove(node);
+//			System.out.println("refining: " + node);
+			int horizExp = node.getHorizontalExpansion();
+			TreeSet<Description> refinements = (TreeSet<Description>) operator.refine(node.getDescription(), horizExp+1);
+			node.incHorizontalExpansion();
+			node.setRefinementCount(refinements.size());
+			if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
+				searchTree.add(node);
+			}
+			return refinements;
+		}
+		
 	}
 	
 	public static void main(String[] args) throws Exception{
+//		PatternLayout layout = new PatternLayout( "[%t] %r: %m%n" );
+		PatternLayout layout = new PatternLayout( "%m%n" );
+		
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
+		org.apache.log4j.Logger.getRootLogger().removeAllAppenders();
+		org.apache.log4j.Logger.getRootLogger().addAppender(new ConsoleAppender(layout));
+		
+		org.apache.log4j.Logger.getLogger(PCELOE.class).removeAllAppenders();
+		org.apache.log4j.Logger.getLogger(CELOE.class).removeAllAppenders();
 //		org.apache.log4j.Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
-		org.apache.log4j.Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %r %c: %m%n" ), "log/parallel_run.txt", false));
+		org.apache.log4j.Logger.getLogger(PCELOE.class).addAppender(new FileAppender(layout, "log/PCELOE_run.txt", false));
+		org.apache.log4j.Logger.getLogger(CELOE.class).addAppender(new FileAppender(layout, "log/CELOE_run.txt", false));
 		
 		
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
@@ -1121,12 +1123,19 @@ public class PCELOE extends AbstractCELA {
 		lp.setCheckConsistency(false);
 		lp.init();
 		
+		int runtime = 10;
+		
 		PCELOE alg = new PCELOE(lp, rc);
-		alg.setMaxExecutionTimeInSeconds(10);
-//		alg.setMaxClassDescriptionTests(200);
+		alg.setMaxExecutionTimeInSeconds(runtime);
 		alg.init();
 		
 		alg.start();
+		
+		CELOE alg2 = new CELOE(lp, rc);
+		alg2.setMaxExecutionTimeInSeconds(runtime);
+		alg2.init();
+		
+		alg2.start();
 	}
 	
 }
