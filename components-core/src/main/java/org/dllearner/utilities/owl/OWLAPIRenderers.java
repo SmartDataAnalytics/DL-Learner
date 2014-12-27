@@ -52,6 +52,7 @@ public class OWLAPIRenderers {
 	
 	static {
 		manchesterRenderer.setUseWrapping(false);
+		manchesterRenderer.setUseTabbing(false);
 	}
 	
 	/**

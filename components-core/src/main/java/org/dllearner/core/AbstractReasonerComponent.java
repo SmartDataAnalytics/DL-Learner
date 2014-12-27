@@ -32,7 +32,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -53,6 +52,8 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -89,7 +90,7 @@ import com.google.common.collect.Sets;
  */
 public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent {
 
-	public static Logger logger = Logger.getLogger(AbstractReasonerComponent.class);
+	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
 	private static final NumberFormat numberFormat = NumberFormat.getInstance();
 
@@ -902,7 +903,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected Set<OWLDataProperty> getNumericDataPropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
-		throw new ReasoningMethodUnsupportedException();
+		return getIntDatatypePropertiesImpl();
 	}
 
 	@Override

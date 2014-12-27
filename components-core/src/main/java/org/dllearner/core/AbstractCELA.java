@@ -309,10 +309,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		String str = "";
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			// temporary code
+			OWLClassExpression description = ed.getDescription();
 			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
+				str += current + ": " + descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")\n";
 			} else {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+				String descriptionToString = descriptionToString(description);
+				str += current + ": " + descriptionToString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
 			}
 			current++;

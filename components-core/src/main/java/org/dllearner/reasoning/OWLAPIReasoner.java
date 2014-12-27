@@ -158,6 +158,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
     
+    // default reasoner is Pellet
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
 
@@ -242,44 +243,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
 
         //set up OWL reasoner
-        ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
-        FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
-        long timeOut = Integer.MAX_VALUE;
-        IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_NAME;
-        OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
-
-        OWLReasonerFactory reasonerFactory = null;
-        // create actual reasoner
-        if (getReasonerTypeString().equals("fact")) {
-        	reasonerFactory = new FaCTPlusPlusReasonerFactory();
-        } else if (getReasonerTypeString().equals("hermit")) {
-        	reasonerFactory = new ReasonerFactory();
-        } else if (getReasonerTypeString().equals("pellet")) {
-        	reasonerFactory = PelletReasonerFactory.getInstance();
-            // change log level to WARN for Pellet, because otherwise log
-            // output will be very large
-            Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
-            pelletLogger.setLevel(Level.WARN);
-        } else if (getReasonerTypeString().equals("elk")) {
-        	reasonerFactory = new ElkReasonerFactory();
-        } else if (getReasonerTypeString().equals("cel")) {
-            reasoner = new CelReasoner(ontology, conf);
-        } else if (getReasonerTypeString().equals("trowl")) {
-            // instantiate TrOWL reasoner
-        	reasonerFactory = new RELReasonerFactory();
-        } else if (getReasonerTypeString().equals("jfact")) {
-        	reasonerFactory = new JFactFactory();
-        } else {
-        	reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
-        	URL url = null;
-            try {
-				url = new URL(getOwlLinkURL());//Configure the server end-point
-				conf = new OWLlinkReasonerConfiguration(url);
-			} catch (MalformedURLException e) {
-				logger.error("Illegal URL <" + url + "> for OWL Link HTTP reasoner", e);
-			}
-        }
-        reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
+        initBaseReasoner();
 
         // compute class hierarchy and types of individuals
         // (done here to speed up later reasoner calls)
@@ -327,6 +291,54 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				it.remove();
 			}
 		}
+    }
+    
+    private void initBaseReasoner() {
+    	ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
+        FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
+        long timeOut = Integer.MAX_VALUE;
+        IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_NAME;
+        OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
+
+        OWLReasonerFactory reasonerFactory = null;
+        // create actual reasoner
+		switch (reasonerImplementation) {
+		case PELLET:
+			reasonerFactory = PelletReasonerFactory.getInstance();
+			// change log level to WARN for Pellet, because otherwise log
+			// output will be very large
+			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
+			pelletLogger.setLevel(Level.WARN);
+			break;
+		case JFACT:
+			reasonerFactory = new JFactFactory();
+			break;
+		case ELK:
+			reasonerFactory = new ElkReasonerFactory();
+			break;
+		case HERMIT:
+			reasonerFactory = new ReasonerFactory();
+			break;
+		case TROWL:
+			reasonerFactory = new RELReasonerFactory();
+			break;
+		case CEL:
+			reasoner = new CelReasoner(ontology, conf);
+			break;
+		case OWLLINK:
+			reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
+			URL url = null;
+			try {
+				url = new URL(getOwlLinkURL());//Configure the server end-point
+				conf = new OWLlinkReasonerConfiguration(url);
+			} catch (MalformedURLException e) {
+				logger.error("Illegal URL <" + url + "> for OWL Link HTTP reasoner", e);
+			}
+		default:
+			reasonerFactory = PelletReasonerFactory.getInstance();
+		}
+       
+        reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
     }
     
     private boolean isNumericDatatype(OWLDatatype datatype){
@@ -512,13 +524,17 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     @Override
     public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
     	NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
-        return asIntersection(nodeSet);
+        OWLClassExpression domain = asIntersection(nodeSet);
+        logger.trace("Domain(" + objectProperty + "," + domain + ")");
+		return domain;
     }
 
     @Override
     public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
         NodeSet<OWLClass> nodeSet = reasoner.getDataPropertyDomains(datatypeProperty, true);
-        return asIntersection(nodeSet);
+        OWLClassExpression domain = asIntersection(nodeSet);
+        logger.trace("Domain(" + datatypeProperty + "," + domain + ")");
+		return domain;
     }
 
     @Override
@@ -547,10 +563,18 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	} else {
     		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>(nodeSet.getNodes().size());
     		for (Node<OWLClass> node : nodeSet) {
-    			if(!node.isTopNode() && !node.isBottomNode()){
-    				operands.add(node.getRepresentativeElement());
+    			if(node.getSize() != 0) {
+    				if(!node.isTopNode() && !node.isBottomNode()){
+        				operands.add(node.getRepresentativeElement());
+        			}
+    			} else {
+    				logger.warn("Reasoner returned empty node. Seems to be a bug.");
     			}
+    			
             }
+    		if(operands.size() == 1) {
+    			return operands.iterator().next();
+    		}
     		return df.getOWLObjectIntersectionOf(operands);
     	}
     }
@@ -660,8 +684,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         for (Node<OWLClass> node : nodeSet) {
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
-            OWLClass concept = node.getRepresentativeElement();
-            concepts.add(concept);
+        	if(node.getSize() != 0) {
+        		OWLClass concept = node.getRepresentativeElement();
+                concepts.add(concept);
+        	} else {
+        		logger.warn("Reasoner returned empty node. Seems to be a bug.");
+        	}
         }
         return concepts;
     }
@@ -682,6 +710,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             if (node.isBottomNode() || node.isTopNode()) {
                 continue;
             }
+            if(node.getSize() == 0){
+            	logger.warn("Reasoner returned empty property node. Could be a bug.");
+            	continue;
+            }
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
             OWLObjectPropertyExpression property = node.getRepresentativeElement();
@@ -699,6 +731,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         for (Node<OWLDataProperty> node : nodeSet) {
             if (node.isBottomNode() || node.isTopNode()) {
                 continue;
+            }
+            if(node.getSize() == 0){
+            	logger.warn("Reasoner returned empty property node. Could be a bug.");
+            	continue;
             }
             OWLDataProperty property = node.getRepresentativeElement();
             roles.add(df.getOWLDataProperty(IRI.create(property.toStringID())));
@@ -859,6 +895,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void setReasonerTypeString(String reasonerTypeString) {
         this.reasonerTypeString = reasonerTypeString;
     }
+    
+    /**
+	 * @param reasonerImplementation the reasonerImplementation to set
+	 */
+	public void setReasonerImplementation(ReasonerImplementation reasonerImplementation) {
+		this.reasonerImplementation = reasonerImplementation;
+	}
 
     public String getOwlLinkURL() {
         return owlLinkURL;

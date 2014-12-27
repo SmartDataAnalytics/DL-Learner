@@ -1478,7 +1478,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		for(OWLObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
-			OWLClassExpression d = reasoner.getDomain(role);
+			OWLClassExpression d = opDomains.get(role);
 			
 			Set<OWLIndividual> individuals2 = new HashSet<OWLIndividual>();
 			for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
@@ -1502,7 +1502,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Set<OWLDataProperty> applicableBDPs = new TreeSet<OWLDataProperty>();
 		for(OWLDataProperty role : mostGeneralBDPs) {
 //			Description d = (OWLClass) rs.getDomain(role);
-			OWLClassExpression d = reasoner.getDomain(role);
+			OWLClassExpression d = dpDomains.get(role);
 			if(!isDisjoint(domain,d))
 				applicableBDPs.add(role);
 		}
@@ -1513,7 +1513,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Set<OWLDataProperty> applicableNumericDPs = new TreeSet<OWLDataProperty>();
 		for(OWLDataProperty role : mostGeneralNumericDPs) {
 			// get domain of property
-			OWLClassExpression d = reasoner.getDomain(role);
+			OWLClassExpression d = dpDomains.get(role);
 			// check if it's not disjoint with current class expression
 			if(!isDisjoint(domain,d))
 				applicableNumericDPs.add(role);
@@ -1524,7 +1524,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		Set<OWLDataProperty> applicableSDPs = new TreeSet<OWLDataProperty>();
 		for(OWLDataProperty role : mostGeneralSDPs) {
 //			Description d = (OWLClass) rs.getDomain(role);
-			OWLClassExpression d = reasoner.getDomain(role);
+			OWLClassExpression d = dpDomains.get(role);
 //			System.out.println("domain: " + d);
 			if(!isDisjoint(domain,d))
 				applicableSDPs.add(role);
