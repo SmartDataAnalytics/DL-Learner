@@ -1548,7 +1548,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(d.isOWLNothing())
 				return true;
 			else if(!child.isAnonymous()) {
-				if(isDisjoint((OWLClass)child, d))
+				if(isDisjoint(child, d))
 					return true;
 			}
 		}

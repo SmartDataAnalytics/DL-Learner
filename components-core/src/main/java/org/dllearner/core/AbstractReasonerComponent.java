@@ -294,6 +294,30 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}	
 	
 	@Override
+	public final boolean isDisjoint(OWLClass class1, OWLClass class2) {
+		reasoningStartTimeTmp = System.nanoTime();
+		boolean result = false;
+		try {
+			result = isDisjointImpl(class1, class2);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+		nrOfSubsumptionChecks++;
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		subsumptionReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query isDisjoint: " + class1 + " " + class2 + " " + result);
+		}
+		return result;
+	}
+
+	protected boolean isDisjointImpl(OWLClassExpression superConcept, OWLClassExpression subConcept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	@Override
 	public Set<OWLClassExpression> getAssertedDefinitions(OWLClass namedClass) {
 		try {
 			return getAssertedDefinitionsImpl(namedClass);

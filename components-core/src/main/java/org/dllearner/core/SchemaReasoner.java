@@ -92,6 +92,14 @@ public interface SchemaReasoner {
 	 * @return Whether <code>class1</code> is equivalent to <code>class2</code>.
 	 */
 	public boolean isEquivalentClass(OWLClassExpression class1, OWLClassExpression class2);	
+	
+	/**
+	 * Checks whether <code>class1</code> is disjoint with <code>class2</code>.
+	 * @param class1 The first class.
+	 * @param class2 The second class2.
+	 * @return Whether <code>class1</code> is disjoint with <code>class2</code>.
+	 */
+	public boolean isDisjoint(OWLClass class1, OWLClass class2);
 		
 	/**
 	 * Returns all asserted owl:equivalence class axioms for the given class.

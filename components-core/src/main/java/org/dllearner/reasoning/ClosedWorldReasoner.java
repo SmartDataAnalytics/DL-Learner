@@ -155,6 +155,19 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \in C  
     }
     
+    /**
+     * There are different ways on how disjointness between classes can be 
+     * assumed.
+     * @author Lorenz Buehmann
+     *
+     */
+    public enum DisjointnessSemantics {
+    	EXPLICIT,
+    	INSTANCE_BASED
+    }
+    
+    private DisjointnessSemantics disjointnessSemantics = DisjointnessSemantics.INSTANCE_BASED;
+    
     private boolean materializeExistentialRestrictions = false;
 	private boolean useCaching = true;
     private boolean handlePunning = false;
@@ -1174,37 +1187,31 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		return ReasonerType.FAST_INSTANCE_CHECKER;
 	}
 
-//	@Override
-//	public ClassHierarchy getClassHierarchy() {
-//		return rc.getClassHierarchy();
-//	}
-
-//	@Override
-//	public void prepareRoleHierarchyImpl(Set<OWLObjectProperty> allowedRoles) {
-//		rc.prepareRoleHierarchy(allowedRoles);
-//	}
-
-//	@Override
-//	public ObjectPropertyHierarchy getRoleHierarchy() {
-//		return rc.getRoleHierarchy();
-//	}
-
-//	@Override
-//	public void prepareDatatypePropertyHierarchyImpl(Set<OWLDataProperty> allowedRoles) {
-//		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
-//	}
-
-//	@Override
-//	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-//		return rc.getDatatypePropertyHierarchy();
-//	}
-
 	@Override
 	public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
 		return baseReasoner.isSuperClassOfImpl(superConcept, subConcept);
+	}
+	
+	/* (non-Javadoc)
+	* @see org.dllearner.core.Reasoner#isDisjoint(OWLClass class1, OWLClass class2)
+	*/
+	public boolean isDisjointImpl(OWLClass clsA, OWLClass clsB) {
+		if (disjointnessSemantics == DisjointnessSemantics.INSTANCE_BASED) {
+			TreeSet<OWLIndividual> instancesA = classInstancesPos.get(clsA);
+			TreeSet<OWLIndividual> instancesB = classInstancesPos.get(clsB);
+
+			// trivial case if one of the sets is empty
+			if (instancesA.isEmpty() || instancesB.isEmpty()) {
+				return false;
+			}
+
+			return Sets.intersection(instancesA, instancesB).isEmpty();
+		} else {
+			return baseReasoner.isDisjoint(clsA, clsB);
+		}
 	}
 
 	/*

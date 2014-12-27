@@ -60,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDocumentFormat;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
@@ -416,6 +417,22 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
         return reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
     }
+    
+    /* (non-Javadoc)
+     * @see org.dllearner.core.Reasoner#isDisjoint(OWLClass class1, OWLClass class2)
+     */
+	public boolean isDisjointImpl(OWLClass clsA, OWLClass clsB) {
+		// we have two ways, not sure which one is more efficient
+		// 1. get all disjoint classes and check for set containment (could be fast if taxonomy
+		// is cached somewhere in the reasoner internals)
+//		return reasoner.getDisjointClasses(clsA).containsEntity(clsB);
+		
+		// 2. check for entailment of DisjointClass(A, B) resp. 
+		// SubClassOf(OWLIntersectionOf(A, B), owl:Nothing)
+//		OWLAxiom axiom = df.getOWLDisjointClassesAxiom(clsA, clsB);
+		OWLAxiom axiom = df.getOWLSubClassOfAxiom(df.getOWLObjectIntersectionOf(clsA, clsB), df.getOWLNothing());
+		return reasoner.isEntailed(axiom);
+	}
 
     @Override
     protected boolean isEquivalentClassImpl(OWLClassExpression class1, OWLClassExpression class2) {
