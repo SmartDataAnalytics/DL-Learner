@@ -946,7 +946,7 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <rdfs:subClassOf rdf:resource="&req;AbstractComment"/>
         <rdfs:comment rdf:datatype="&xsd;string">Rule: Every Author only votes at most one requirement.</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://purl.org/dc/dcmitype/Image -->
@@ -954,36 +954,8 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
     <owl:Class rdf:about="&dcmitype;Image">
         <rdfs:label>image</rdfs:label>
     </owl:Class>
+
     
-
-
-    <!-- http://www.w3.org/2000/01/rdf-schema#Resource -->
-
-    <owl:Class rdf:about="&rdfs;Resource">
-        <rdfs:label>resource</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#string -->
-
-    <owl:Class rdf:about="&xsd;string">
-        <rdfs:label rdf:datatype="&xsd;string">string</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/2002/07/owl#Datatype -->
-
-    <owl:Class rdf:about="&owl;Datatype"/>
-    
-
-
-    <!-- http://www.w3.org/2002/07/owl#Thing -->
-
-    <owl:Class rdf:about="&owl;Thing"/>
-    
-
 
     <!-- http://www.w3.org/2004/02/skos/core#Concept -->
 
@@ -2244,27 +2216,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <defines rdf:resource="&req;DataBaseBackupCreatedSyncron"/>
         <votes rdf:resource="&req;SearchShouldBeDoneIn3Sec"/>
     </owl:Thing>
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#boolean -->
-
-    <owl:Thing rdf:about="&xsd;boolean">
-        <rdf:type rdf:resource="&owl;NamedIndividual"/>
-        <rdfs:label rdf:datatype="&xsd;string">boolean</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#dateTime -->
-
-    <owl:Thing rdf:about="&xsd;dateTime">
-        <rdf:type rdf:resource="&owl;NamedIndividual"/>
-        <rdfs:label rdf:datatype="&xsd;string">dateTime</rdfs:label>
-    </owl:Thing>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;Datatype"/>
-    </rdf:Description>
 </rdf:RDF>
 
 
