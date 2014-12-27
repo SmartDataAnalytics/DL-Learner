@@ -2216,27 +2216,6 @@ version 0.1 - simple initial version by Thomas and Jens before meeting in Essen<
         <defines rdf:resource="&req;DataBaseBackupCreatedSyncron"/>
         <votes rdf:resource="&req;SearchShouldBeDoneIn3Sec"/>
     </owl:Thing>
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#boolean -->
-
-    <owl:Thing rdf:about="&xsd;boolean">
-        <rdf:type rdf:resource="&owl;NamedIndividual"/>
-        <rdfs:label rdf:datatype="&xsd;string">boolean</rdfs:label>
-    </owl:Thing>
-    
-
-
-    <!-- http://www.w3.org/2001/XMLSchema#dateTime -->
-
-    <owl:Thing rdf:about="&xsd;dateTime">
-        <rdf:type rdf:resource="&owl;NamedIndividual"/>
-        <rdfs:label rdf:datatype="&xsd;string">dateTime</rdfs:label>
-    </owl:Thing>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;Datatype"/>
-    </rdf:Description>
 </rdf:RDF>
 
 
