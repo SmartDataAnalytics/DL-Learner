@@ -68,6 +68,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -540,9 +541,31 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
-    	NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
-        OWLClassExpression domain = asIntersection(nodeSet);
-        logger.trace("Domain(" + objectProperty + "," + domain + ")");
+    	// this is a little bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// domain definitions are contained
+    	
+    	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
+    	
+    	// get all asserted domains
+    	domains.addAll(EntitySearcher.getDomains(objectProperty, ontology));
+    	
+    	// do the same for all super properties
+    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
+    		domains.addAll(EntitySearcher.getDomains(supProp, ontology));
+		}
+    	
+    	// last but not least, call a reasoner
+        NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
+        domains.addAll(nodeSet.getFlattened());
+        
+        // several ranges have to be treated as intersection
+        OWLObjectIntersectionOf domain = df.getOWLObjectIntersectionOf(domains);
+        
+        // simplify expression
+        
+        logger.info("Domain(" + objectProperty + "," + domain + ")");
 		return domain;
     }
 
@@ -556,7 +579,31 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
+    	// this is a little bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// range definitions are contained
+    	
+    	Set<OWLClassExpression> ranges = new HashSet<OWLClassExpression>();
+    	
+    	// get all asserted ranges
+    	ranges.addAll(EntitySearcher.getRanges(objectProperty, ontology));
+    	
+    	// do the same for all super properties
+    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
+			ranges.addAll(EntitySearcher.getRanges(supProp, ontology));
+		}
+    	
+    	// last but not least, call a reasoner
         NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
+        ranges.addAll(nodeSet.getFlattened());
+        
+        // several ranges have to be treated as intersection
+        OWLObjectIntersectionOf range = df.getOWLObjectIntersectionOf(ranges);
+        
+        // simplify expression
+        
+        logger.trace("Range(" + objectProperty + "," + range + ")");
         return asIntersection(nodeSet);
     }
     
@@ -568,7 +615,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     		OWLDataRange range = axiom.getRange();
     		return range;
     	} else {
-    		return df.getOWLDatatype(org.semanticweb.owlapi.vocab.OWL2Datatype.RDFS_LITERAL.getIRI());
+    		return df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI());
     	}
     }
     

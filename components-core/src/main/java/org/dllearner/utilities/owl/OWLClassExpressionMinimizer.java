@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -31,7 +34,14 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -316,5 +326,4 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 	public OWLClassExpression visit(OWLDataMaxCardinality ce) {
 		return ce;
 	}
-
 }
