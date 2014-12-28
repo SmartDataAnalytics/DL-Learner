@@ -76,6 +76,8 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 					length += child.getLength();
 				}
 			}
+		} else {
+			length += ed.getDescriptionLength();
 		}
 		return length;
 	}
