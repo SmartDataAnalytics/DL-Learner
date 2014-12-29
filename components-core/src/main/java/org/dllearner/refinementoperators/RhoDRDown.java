@@ -942,7 +942,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 			for(List<Integer> combo : combos.get(i)) {
-
 				// combination is a single number => try to use M
 				if(combo.size()==1) {
 					// note we cannot use "put" instead of "addAll" because there
@@ -966,13 +965,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}
 
 					if(validCombo) {
-
 						SortedSet<Union> baseSet = new TreeSet<Union>(conceptComparator);
 						for(Integer j : combo) {
-							if(domain == null)
+							if(domain == null) {
 								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
-							else
+							} else {
 								baseSet = MathOperations.incCrossProduct(baseSet, mA.get(domain).get(j));
+							}
 						}
 
 						// convert all concepts in ordered negation normal form
@@ -991,7 +990,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 									it.remove();
 							}
 						}
-
 						// add computed refinements
 						if(domain == null)
 							topRefinements.get(i).addAll(baseSet);
