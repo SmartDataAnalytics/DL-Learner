@@ -36,7 +36,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.gp.GP;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.core.AbstractCELA;
@@ -165,7 +164,8 @@ public class ExampleTests {
 					boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
 //					boolean isSparql = false;
 					LearningAlgorithm algorithm = start.getLearningAlgorithm();
-					if((testGP || !(algorithm instanceof GP)) &&
+					if(
+//							(testGP || !(algorithm instanceof GP)) &&
 							(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
 						start.run();
 						started = true;

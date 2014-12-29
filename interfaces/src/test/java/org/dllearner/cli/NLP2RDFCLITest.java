@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ReasonerComponent;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.ObjectProperty;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.context.ApplicationContext;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 public class NLP2RDFCLITest {
 
@@ -22,11 +25,12 @@ public class NLP2RDFCLITest {
 		ApplicationContext context = cli.getContext();
 		AbstractReasonerComponent rc = context.getBean(AbstractReasonerComponent.class);
 		
-		Individual i = new Individual("http://test.de/TOPICS/copper/COPPER+MEETING+AGREES+GOALS+OF+STUDY+GROUP#offset_592_596_U.S.");
+		OWLIndividual i = new OWLNamedIndividualImpl(
+				IRI.create("http://test.de/TOPICS/copper/COPPER+MEETING+AGREES+GOALS+OF+STUDY+GROUP#offset_592_596_U.S."));
 		System.out.println("all information about " + i + ": ");
 		System.out.println(rc.getObjectPropertyRelationships(i));
 		
-		ObjectProperty op = new ObjectProperty("http://ns.aksw.org/scms/means");
+		OWLObjectProperty op = new OWLObjectPropertyImpl(IRI.create("http://ns.aksw.org/scms/means"));
 		System.out.println("all relationships with scms:means:");
 		System.out.println(rc.getPropertyMembers(op));
 		

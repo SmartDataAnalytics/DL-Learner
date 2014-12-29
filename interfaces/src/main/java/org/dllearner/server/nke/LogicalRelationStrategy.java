@@ -1,26 +1,38 @@
 package org.dllearner.server.nke;
 
-import com.clarkparsia.modularity.IncrementalClassifier;
-import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
-import org.apache.log4j.Logger;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
-import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
-import org.json.simple.JSONObject;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
-import org.semanticweb.owlapi.model.*;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.apache.log4j.Logger;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.parser.KBParser;
+import org.dllearner.parser.ParseException;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.json.simple.JSONObject;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.OWLXMLOntologyFormat;
+import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.search.EntitySearcher;
+
+import com.clarkparsia.modularity.IncrementalClassifier;
+import com.clarkparsia.modularity.PelletIncremantalReasonerFactory;
 
 public class LogicalRelationStrategy {
     private static final Logger logger = Logger.getLogger(LogicalRelationStrategy.class);
@@ -89,9 +101,8 @@ public class LogicalRelationStrategy {
         } else {
             OWLAxiom target = null;
             try {
-                Description d = KBParser.parseConcept(kbSyntax);
-                Axiom a = new EquivalentClassesAxiom(new NamedClass(classUri), d);
-                target = OWLAPIAxiomConvertVisitor.convertAxiom(a);
+                OWLClassExpression d = KBParser.parseConcept(kbSyntax);
+                target = factory.getOWLEquivalentClassesAxiom(factory.getOWLClass(IRI.create(classUri)), d);
                 manager.applyChange(new AddAxiom(ontology, target));
 
                 setPopularity(classUri, 1);
@@ -134,7 +145,7 @@ public class LogicalRelationStrategy {
     private void setPopularity(String classIRI, int pop) {
         OWLClass oc = factory.getOWLClass(IRI.create(classIRI));
         //delete the previous annotation
-        for (OWLAnnotation annotation : oc.getAnnotations(ontology, popularityAnnotationProperty)) {
+        for (OWLAnnotation annotation : EntitySearcher.getAnnotations(oc, ontology, popularityAnnotationProperty)) {
             OWLAnnotationAssertionAxiom oaaa = factory.getOWLAnnotationAssertionAxiom(oc.getIRI(), annotation);
             RemoveAxiom ra = new RemoveAxiom(ontology, oaaa);
             manager.applyChange(ra);
@@ -152,7 +163,7 @@ public class LogicalRelationStrategy {
     }
 
     private int getPopularity(OWLClass oc) {
-        for (OWLAnnotation oa : oc.getAnnotations(ontology, popularityAnnotationProperty)) {
+        for (OWLAnnotation oa : EntitySearcher.getAnnotations(oc, ontology, popularityAnnotationProperty)) {
             //there should only be one
             return ((OWLLiteral) oa.getValue()).parseInteger();
         }
@@ -162,7 +173,7 @@ public class LogicalRelationStrategy {
 
 
     private String get(OWLClass oc, OWLAnnotationProperty oap) {
-        for (OWLAnnotation oa : oc.getAnnotations(ontology, oap)) {
+        for (OWLAnnotation oa : EntitySearcher.getAnnotations(oc, ontology, oap)) {
             //there should only be one
             return ((OWLLiteral) oa.getValue()).getLiteral();
         }
@@ -191,33 +202,30 @@ public class LogicalRelationStrategy {
 
     }
 
+	private OWLAxiom addClass(OWLClassExpression d, String classUri) {
+		OWLAxiom axiom = null;
+		try {
+			axiom = factory.getOWLEquivalentClassesAxiom(factory.getOWLClass(IRI.create(classUri)), d);
 
-    private OWLAxiom addClass(Description d, String classUri) {
-        OWLAxiom target = null;
-        try {
-            Axiom a = new EquivalentClassesAxiom(new NamedClass(classUri), d);
-            target = OWLAPIAxiomConvertVisitor.convertAxiom(a);
+			manager.applyChange(new AddAxiom(ontology, axiom));
 
-            manager.applyChange(new AddAxiom(ontology, target));
+			logger.debug("Added axiom " + axiom);
+			//XXX this seems unnecessary
+			// incReasoner.prepareReasoner();
+			// incReasoner.isConsistent();
 
-            logger.debug("Added axiom " + classUri + " == " + d.toKBSyntaxString());
-            //XXX this seems unnecessary
-            // incReasoner.prepareReasoner();
-            // incReasoner.isConsistent();
+		} catch (Exception e) {
+			logger.error(d + " " + classUri, e);
+			throw new RuntimeException(e);
 
-        } catch (Exception e) {
-            logger.error(d.toKBSyntaxString() + " " + classUri, e);
-            throw new RuntimeException(e);
+		}
 
-        }
-
-        return target;
-
-    }
+		return axiom;
+	}
 
 
     public synchronized List<Concept> getRelatedConcepts(EvaluatedDescriptionPosNeg ed) {
-        logger.debug("Getting related concepts for: " + ed.getDescription().toKBSyntaxString());
+        logger.debug("Getting related concepts for: " + OWLAPIRenderers.toManchesterOWLSyntax(ed.getDescription()));
         List<Concept> l = new ArrayList<Concept>();
         OWLAxiom target = addClass(ed.getDescription(), tmpClassName);
         try {
