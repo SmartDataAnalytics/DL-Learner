@@ -341,5 +341,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
     @Autowired
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
+        
+        baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();	
     }
 }
