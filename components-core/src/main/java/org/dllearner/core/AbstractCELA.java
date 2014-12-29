@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -32,6 +33,9 @@ import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -59,6 +63,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected ConceptComparator descriptionComparator = new ConceptComparator();
 	protected String baseURI;
 	protected Map<String, String> prefixes;
+	
+	protected long nanoStartTime;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -313,6 +319,23 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			current++;
 		}
 		return str;
+	}
+	
+	protected long getCurrentRuntimeInMilliSeconds() {
+		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
+	}
+	
+	protected String getDurationAsString(long durationInMillis) {
+		PeriodFormatter formatter = new PeriodFormatterBuilder()
+	     .appendDays().appendSuffix("d")
+	     .appendHours().appendSuffix("h")
+	     .appendMinutes().appendSuffix("m")
+	     .appendSeconds().appendSuffix("s")
+	     .appendMillis().appendSuffix("ms")
+	     .printZeroNever()
+	     .toFormatter();
+		
+		return formatter.print(new Period(durationInMillis));
 	}
 
     /**

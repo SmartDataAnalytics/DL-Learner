@@ -142,8 +142,6 @@ public class CELOE extends AbstractCELA implements Cloneable {
 	private boolean isClassLearningProblem;
 	private boolean isEquivalenceProblem;
 
-	private long nanoStartTime;
-
 	// important parameters (non-config options but internal)
 	private double noise;
 
@@ -907,23 +905,6 @@ public class CELOE extends AbstractCELA implements Cloneable {
 				|| (maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds * 1000000000l)))
 				|| (terminateOnNoiseReached && (100 * getCurrentlyBestAccuracy() >= 100 - noisePercentage))
 				|| (stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
-	}
-
-	private long getCurrentRuntimeInMilliSeconds() {
-		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
-	}
-	
-	private String getDurationAsString(long durationInMillis) {
-		PeriodFormatter formatter = new PeriodFormatterBuilder()
-	     .appendDays().appendSuffix("d")
-	     .appendHours().appendSuffix("h")
-	     .appendMinutes().appendSuffix("m")
-	     .appendSeconds().appendSuffix("s")
-	     .appendMillis().appendSuffix("ms")
-	     .printZeroNever()
-	     .toFormatter();
-		
-		return formatter.print(new Period(durationInMillis));
 	}
 
 	private void reset() {

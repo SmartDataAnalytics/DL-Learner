@@ -140,8 +140,6 @@ public class PCELOE extends AbstractCELA {
 	private boolean isClassLearningProblem;
 	private boolean isEquivalenceProblem;
 	
-	private long nanoStartTime;
-	
 	// important parameters (non-config options but internal)
 	private double noise;
 
@@ -754,7 +752,8 @@ public class PCELOE extends AbstractCELA {
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
 		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
 		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
-		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
+		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage))
+		|| (stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
 	}
 	
 	private void reset() {
@@ -1016,7 +1015,7 @@ public class PCELOE extends AbstractCELA {
 		private NavigableSet<OENode> localSearchTree = new TreeSet<OENode>();
 		
 		public Worker() {
-			operator = new RhoDRDown();
+			operator = new RhoDRDown((RhoDRDown)PCELOE.this.operator);
 			operator.setReasoner(reasoner);
 			operator.setClassHierarchy(reasoner.getClassHierarchy().clone());
 			try {
@@ -1040,7 +1039,9 @@ public class PCELOE extends AbstractCELA {
 						highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 						expressionTestCountLastImprovement = expressionTests;
 						timeLastImprovement = System.nanoTime();
-						logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+						long durationInMillis = getCurrentRuntimeInMilliSeconds();
+						String durationStr = getDurationAsString(durationInMillis);
+						logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 					}
 
 					// chose best node according to heuristics
