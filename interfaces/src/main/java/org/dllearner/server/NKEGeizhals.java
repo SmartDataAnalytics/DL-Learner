@@ -1,31 +1,41 @@
 package org.dllearner.server;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
-import org.apache.log4j.Logger;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.server.nke.Geizhals2OWL;
-import org.dllearner.server.nke.Learner;
-import org.dllearner.server.nke.LogicalRelationStrategy;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.server.nke.Geizhals2OWL;
+import org.dllearner.server.nke.Learner;
+import org.dllearner.server.nke.LogicalRelationStrategy;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import com.hp.hpl.jena.ontology.OntClass;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 
 public class NKEGeizhals extends HttpServlet {
@@ -238,7 +248,7 @@ public class NKEGeizhals extends HttpServlet {
         String link = "";
         String label = "";
 
-        if (ed.getDescription().toKBSyntaxString().equals("TOP")) {
+        if (ed.getDescription().isOWLThing()) {
             label = "No suggestions for current selection (click to show all)";
             link = "?cat=nb15w";
         } else {
@@ -253,7 +263,7 @@ public class NKEGeizhals extends HttpServlet {
         j.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
         j.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
         j.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
-        j.put("kbsyntax", ed.getDescription().toKBSyntaxString());
+        j.put("kbsyntax", OWLAPIRenderers.toManchesterOWLSyntax(ed.getDescription()));
 
         log.info(link);
         log.info(ed.toString());
@@ -281,13 +291,13 @@ public class NKEGeizhals extends HttpServlet {
     }
 
 
-    public static String getID(Description d, SortedSet<OWLClass> namedClasses) {
+    public static String getID(OWLClassExpression d, SortedSet<OWLClass> namedClasses) {
 
         //prepare retrieval string
         StringBuilder sb = new StringBuilder();
         int x = 0;
-        for (NamedClass nc : namedClasses) {
-            sb.append(nc.getName().replace(Geizhals2OWL.prefix, ""));
+        for (OWLClass nc : namedClasses) {
+            sb.append(nc.toStringID().replace(Geizhals2OWL.prefix, ""));
             if (x < (namedClasses.size() - 1)) {
                 sb.append("~");
             }
@@ -296,27 +306,27 @@ public class NKEGeizhals extends HttpServlet {
         return sb.toString();
     }
 
-    public static String getLabel(Description d, SortedSet<OWLClass> namedClasses) {
+    public static String getLabel(OWLClassExpression d, SortedSet<OWLClass> namedClasses) {
 
-        String mos = d.toManchesterSyntaxString(null, null);
-        for (NamedClass nc : namedClasses) {
+        String mos = OWLAPIRenderers.toManchesterOWLSyntax(d);
+        for (OWLClass nc : namedClasses) {
             String label = null;
             OntClass c = null;
-            if ((c = Geizhals2OWL.labels.getOntClass(nc.getName())) != null && (label = c.getLabel(null)) != null) {
-                mos = mos.replace(nc.getName(), label);
+            if ((c = Geizhals2OWL.labels.getOntClass(nc.toStringID())) != null && (label = c.getLabel(null)) != null) {
+                mos = mos.replace(nc.toStringID(), label);
             } else {
-                mos = mos.replace(nc.getName(), nc.getName().replace(Geizhals2OWL.prefix, ""));
+                mos = mos.replace(nc.toStringID(), nc.toStringID().replace(Geizhals2OWL.prefix, ""));
             }
         }
         return mos;
 
     }
 
-    public static SortedSet<OWLClass> getNamedClasses(Description d, SortedSet<OWLClass> ret) {
-        if (d instanceof NamedClass) {
-            ret.add((NamedClass) d);
+    public static SortedSet<OWLClass> getNamedClasses(OWLClassExpression d, SortedSet<OWLClass> ret) {
+        if (!d.isAnonymous()) {
+            ret.add(d.asOWLClass());
         }
-        for (Description ch : d.getChildren()) {
+        for (OWLClassExpression ch : OWLClassExpressionUtils.getChildren(d)) {
             getNamedClasses(ch, ret);
         }
         return ret;

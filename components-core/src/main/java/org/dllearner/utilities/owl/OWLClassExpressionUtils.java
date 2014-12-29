@@ -5,6 +5,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.Set;
 
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -75,9 +76,21 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 		return depth;
 	}
 	
+	/**
+	 * Returns the arity of a given class expression. Note that the current implementation
+	 * is not thread-safe.
+	 * @param ce
+	 * @return the depth of the class expression
+	 */
+	public static int getArity(OWLClassExpression ce){
+		return getChildren(ce).size();
+	}
+	
 	public static Set<OWLClassExpression> getChildren(OWLClassExpression ce){
 		return ce.accept(CHILDREN_COLLECTOR);
 	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLClass)

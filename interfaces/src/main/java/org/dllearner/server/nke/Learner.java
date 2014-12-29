@@ -1,15 +1,25 @@
 package org.dllearner.server.nke;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.RDFWriter;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.aksw.commons.jena.Constants;
 import org.aksw.commons.jena.ModelUtils;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.el.ELLearningAlgorithm;
-import org.dllearner.core.*;
+import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.ComponentManager;
+import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -20,11 +30,11 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * This object encapsulates the Learning process,

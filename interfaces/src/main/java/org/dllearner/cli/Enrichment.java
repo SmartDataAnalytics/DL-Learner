@@ -831,23 +831,19 @@ public class Enrichment {
 		//add timestamp
 		ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.timestamp, algorithmRunInd, System.currentTimeMillis());
 		axioms.add(ax);
-		//add used input to algorithm run instance
-		try {
-			OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
-			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
-			axioms.add(ax);
-			if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {
-				// TODO: only writes one default graph
-				ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.defaultGraph, knowldegeBaseInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getDefaultGraphURIs().iterator().next())));
-				axioms.add(ax);
-			}
-			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasInput,
-					algorithmRunInd, knowldegeBaseInd);
-			axioms.add(ax);
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
 		
+		//add used input to algorithm run instance
+		OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
+		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
+		axioms.add(ax);
+		if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {
+			// TODO: only writes one default graph
+			ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.defaultGraph, knowldegeBaseInd, f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getDefaultGraphURIs().iterator().next())));
+			axioms.add(ax);
+		}
+		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.hasInput,
+				algorithmRunInd, knowldegeBaseInd);
+		axioms.add(ax);
 		
 		//add algorithm run instance to suggestion set instance via ObjectProperty creator 
 		ax = f.getOWLObjectPropertyAssertionAxiom(EnrichmentVocabulary.creator,
