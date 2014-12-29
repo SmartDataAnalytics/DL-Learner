@@ -77,44 +77,44 @@ public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends A
 
 		Map<OWLDataProperty, List<T>> splits = new HashMap<OWLDataProperty, List<T>>();
 
-		for (Entry<OWLDataProperty, SortedSet<T>> entry : relations.entrySet()) {
-			OWLDataProperty dp = entry.getKey();
-			SortedSet<T> propertyValues = entry.getValue();
-			
-			if (!propertyValues.isEmpty()) {
-				List<T> splitValues = new ArrayList<T>();
-				
-				Iterator<T> iterator = propertyValues.iterator();
-
-				T first = iterator.next();
-				
-				int priorType = first.getType();
-				T priorValue = first.getValue();
-				
-				while (iterator.hasNext()) {
-					ValueCount currentValueCount = iterator.next();
-					int currentType = currentValueCount.getType();
-					T currentValue = currentValueCount.getValue();
-
-					// check if a new value should be generated: when the type changes or the
-					// current value belongs to both pos. and neg.
-					if ((currentType == 3) || (currentType != priorType)) {
-						//calculate the middle/avg. value
-						T splitValue = computeSplitValue(priorValue, currentValue);
-						
-						splitValues.add(splitValue);
-					}
-
-					// update the prior type and value after process the current element
-					priorType = currentValueCount.getType();
-					priorValue = currentValueCount.getValue();
-
-				}
-
-				// add processed property into the result set (splits)
-				splits.put(dp, splitValues);
-			}
-		}
+//		for (Entry<OWLDataProperty, SortedSet<T>> entry : relations.entrySet()) {
+//			OWLDataProperty dp = entry.getKey();
+//			SortedSet<T> propertyValues = entry.getValue();
+//			
+//			if (!propertyValues.isEmpty()) {
+//				List<T> splitValues = new ArrayList<T>();
+//				
+//				Iterator<T> iterator = propertyValues.iterator();
+//
+//				T first = iterator.next();
+//				
+//				int priorType = first.getType();
+//				T priorValue = first.getValue();
+//				
+//				while (iterator.hasNext()) {
+//					ValueCount currentValueCount = iterator.next();
+//					int currentType = currentValueCount.getType();
+//					T currentValue = currentValueCount.getValue();
+//
+//					// check if a new value should be generated: when the type changes or the
+//					// current value belongs to both pos. and neg.
+//					if ((currentType == 3) || (currentType != priorType)) {
+//						//calculate the middle/avg. value
+//						T splitValue = computeSplitValue(priorValue, currentValue);
+//						
+//						splitValues.add(splitValue);
+//					}
+//
+//					// update the prior type and value after process the current element
+//					priorType = currentValueCount.getType();
+//					priorValue = currentValueCount.getValue();
+//
+//				}
+//
+//				// add processed property into the result set (splits)
+//				splits.put(dp, splitValues);
+//			}
+//		}
 		
 		return result;
 	}

@@ -685,6 +685,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 				if(datatype.isDouble()){
 					SortedSet<Double> values = dd.get(property).get(individual);
 					
+					if(values == null) {
+						return false;
+					}
+					
 					double min = -Double.MAX_VALUE;
 					double max = Double.MAX_VALUE;
 					for (OWLFacetRestriction facet : facetRestrictions) {
