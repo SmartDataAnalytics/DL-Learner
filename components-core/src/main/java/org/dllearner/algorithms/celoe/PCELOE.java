@@ -205,8 +205,11 @@ public class PCELOE extends AbstractCELA {
 	@ConfigOption(name = "maxDepth", defaultValue="7", description="maximum depth of description")
 	private double maxDepth = 7;
 	
+	@ConfigOption(name = "stopOnFirstDefinition", defaultValue = "false", description = "algorithm will terminate immediately when a correct definition is found")
+	private boolean stopOnFirstDefinition = false;
+	
 	@ConfigOption(name = "nrOfThreads", defaultValue="2", description="number of threads running in parallel")
-	private int nrOfThreads = 1;
+	private int nrOfThreads = 2;
 
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
@@ -996,6 +999,13 @@ public class PCELOE extends AbstractCELA {
 
 	private synchronized double getHighestAccuracy(){
 		return highestAccuracy;
+	}
+	
+	/**
+	 * @param stopOnFirstDefinition the stopOnFirstDefinition to set
+	 */
+	public void setStopOnFirstDefinition(boolean stopOnFirstDefinition) {
+		this.stopOnFirstDefinition = stopOnFirstDefinition;
 	}
 
 
