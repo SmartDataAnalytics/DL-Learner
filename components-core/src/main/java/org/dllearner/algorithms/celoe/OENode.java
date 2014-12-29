@@ -148,7 +148,11 @@ public class OENode implements SearchTreeNode {
 	
 	public String toTreeString(String baseURI, Map<String, String> prefixes) {
 		return toTreeString(0, baseURI, prefixes).toString();
-	}	
+	}
+	
+	public String toTreeString(String baseURI, Map<String, String> prefixes, int maxDepth) {
+		return toTreeString(0, baseURI, prefixes, maxDepth).toString();
+	}
 	
 	private StringBuilder toTreeString(int depth, String baseURI) {
 		StringBuilder treeString = new StringBuilder();
@@ -172,6 +176,22 @@ public class OENode implements SearchTreeNode {
 		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
 		for(OENode child : children) {
 			treeString.append(child.toTreeString(depth+1,baseURI,prefixes));
+		}
+		return treeString;
+	}
+	
+	private StringBuilder toTreeString(int depth, String baseURI, Map<String, String> prefixes, int maxDepth) {
+		StringBuilder treeString = new StringBuilder();
+		if(depth > maxDepth){
+			return treeString;
+		}
+		for(int i=0; i<depth-1; i++)
+			treeString.append("  ");
+		if(depth!=0)
+			treeString.append("|--> ");
+		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
+		for(OENode child : children) {
+			treeString.append(child.toTreeString(depth+1,baseURI,prefixes, maxDepth));
 		}
 		return treeString;
 	}
