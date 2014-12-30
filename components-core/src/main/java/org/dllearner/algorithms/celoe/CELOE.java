@@ -518,7 +518,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
+			System.out.println("refine node " + nextNode);
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
+			System.out.println("got " + refinements.size() + " refinements");
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -537,7 +539,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 								
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
-				if(length > horizExp && OWLClassExpressionUtils.getLength(refinement) <= maxDepth) {
+				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 					
 //					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
@@ -597,6 +599,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		isRunning = false;
 //		System.out.println("isRunning: " + isRunning);
+		System.err.println(MonitorFactory.start("refineNode"));
+		System.err.println(MonitorFactory.start("addNode"));
 	}
 
 	private OENode getNextNodeToExpand() {
