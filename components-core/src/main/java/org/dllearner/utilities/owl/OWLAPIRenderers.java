@@ -32,6 +32,7 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -49,10 +50,21 @@ import org.semanticweb.owlapi.owlxml.renderer.OWLXMLWriter;
 public class OWLAPIRenderers {
 	
 	private static final ManchesterOWLSyntaxOWLObjectRendererImpl manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
 	
 	static {
 		manchesterRenderer.setUseWrapping(false);
 		manchesterRenderer.setUseTabbing(false);
+	}
+	
+	/**
+	 * Converts an OWL API object to a DL syntax string.
+	 * 
+	 * @param owlObject input OWL API object
+	 * @return Manchester OWL syntax string.
+	 */
+	public static String toDLSyntax(OWLObject owlObject) {
+		return dlSyntaxRenderer.render(owlObject);
 	}
 	
 	/**

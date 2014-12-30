@@ -139,8 +139,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private boolean isClassLearningProblem;
 	private boolean isEquivalenceProblem;
 	
-	private long nanoStartTime;
-	
 	// important parameters (non-config options but internal)
 	private double noise;
 
@@ -511,7 +509,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
 				expressionTestCountLastImprovement = expressionTests;
 				timeLastImprovement = System.nanoTime();
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found: " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+				long durationInMillis = getCurrentRuntimeInMilliSeconds();
+				String durationStr = getDurationAsString(durationInMillis);
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
 			}
 
 			// chose best node according to heuristics

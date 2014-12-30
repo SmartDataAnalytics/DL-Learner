@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.algorithms.SearchTreeNode;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -124,7 +125,7 @@ public class OENode implements SearchTreeNode {
 	}
 	
 	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
-		String ret = description.toString() + " [";
+		String ret = OWLAPIRenderers.toDLSyntax(description) + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";

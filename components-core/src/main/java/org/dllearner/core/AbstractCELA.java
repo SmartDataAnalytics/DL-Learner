@@ -25,12 +25,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
@@ -63,6 +67,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected String baseURI;
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	protected long nanoStartTime;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -321,6 +327,23 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		}
 		return str;
 	}
+	
+	protected long getCurrentRuntimeInMilliSeconds() {
+		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
+	}
+	
+	protected String getDurationAsString(long durationInMillis) {
+		PeriodFormatter formatter = new PeriodFormatterBuilder()
+	     .appendDays().appendSuffix("d")
+	     .appendHours().appendSuffix("h")
+	     .appendMinutes().appendSuffix("m")
+	     .appendSeconds().appendSuffix("s")
+	     .appendMillis().appendSuffix("ms")
+	     .printZeroNever()
+	     .toFormatter();
+		
+		return formatter.print(new Period(durationInMillis));
+	}
 
     /**
      * The learning problem variable, which must be used by
@@ -348,5 +371,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
     @Autowired
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
+        
+        baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
     }
 }
