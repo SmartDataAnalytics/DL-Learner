@@ -66,6 +66,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DescriptionMinimizer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.joda.time.Period;
@@ -505,7 +507,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		
 		// highest accuracy so far
 		double highestAccuracy = 0.0;
-		OENode nextNode;
+		OENode nextNode = null;
 
 		addNode(startClass, null);
 		
@@ -520,6 +522,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 				long durationInMillis = getCurrentRuntimeInMilliSeconds();
 				String durationStr = getDurationAsString(durationInMillis);
 				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+				logger.info("refined from " + nextNode);
 			}
 
 			// chose best node according to heuristics
@@ -545,6 +548,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
+				System.out.println(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
 				int length = refinement.getLength();
 								
 				// we ignore all refinements with lower length and too high depth
