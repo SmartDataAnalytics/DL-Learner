@@ -522,13 +522,13 @@ public class CELOE extends AbstractCELA implements Cloneable {
 				long durationInMillis = getCurrentRuntimeInMilliSeconds();
 				String durationStr = getDurationAsString(durationInMillis);
 				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
-				logger.info("refined from " + nextNode);
+//				logger.info("refined from " + nextNode);
 			}
 
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
-			
+			System.out.println("NEXT NODE: " + nextNode);
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
 //			System.out.println("refine node " + nextNode);
