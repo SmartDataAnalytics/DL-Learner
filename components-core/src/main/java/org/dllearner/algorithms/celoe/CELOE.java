@@ -528,9 +528,9 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-			System.out.println("refine node " + nextNode);
+//			System.out.println("refine node " + nextNode);
 			TreeSet<Description> refinements = refineNode(nextNode);
-			System.out.println("got " + refinements.size() + " refinements");
+//			System.out.println("got " + refinements.size() + " refinements");
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -577,7 +577,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 						treeString.append("   ").append(n).append("\n");
 					}
 				}
-				treeString.append(startNode.toTreeString(baseURI, prefixes, 1));
+				treeString.append(startNode.toTreeString(baseURI, prefixes));
 				treeString.append("\n");
 
 				File file = new File(searchTreeFile);
@@ -618,6 +618,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 //		System.out.println("isRunning: " + isRunning);
 		System.err.println(MonitorFactory.start("refineNode"));
 		System.err.println(MonitorFactory.start("addNode"));
+		System.err.println(MonitorFactory.start("lp"));
 	}
 
 	private OENode getNextNodeToExpand() {
@@ -677,7 +678,9 @@ public class CELOE extends AbstractCELA implements Cloneable {
 
 		//		System.out.println("Test " + new Date());
 		// quality of description (return if too weak)
+		Monitor mon = MonitorFactory.start("lp");
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		mon.stop();
 
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if (accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {

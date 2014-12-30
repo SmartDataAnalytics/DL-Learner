@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
 import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
+import org.dllearner.algorithms.pattern.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.StringFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -34,14 +35,11 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.util.ShortFormProvider;
-import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 
 /**
  * A collection of various render methods provided by 
@@ -51,7 +49,20 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjec
  *
  */
 public class OWLAPIRenderers {
+	
+	private static final ManchesterOWLSyntaxOWLObjectRendererImpl manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
 
+	/**
+	 * Converts an OWL API object to a DL syntax string.
+	 * 
+	 * @param owlObject input OWL API object
+	 * @return Manchester OWL syntax string.
+	 */
+	public static String toDLSyntax(OWLObject owlObject) {
+		return dlSyntaxRenderer.render(owlObject);
+	}
+	
 	/**
 	 * Converts an OWL API axiom to a Manchester OWL syntax string.
 	 * 
@@ -59,11 +70,7 @@ public class OWLAPIRenderers {
 	 * @return Manchester OWL syntax string.
 	 */
 	public static String toManchesterOWLSyntax(OWLAxiom description) {
-		StringWriter sw = new StringWriter();
-		ShortFormProvider sfp = new SimpleShortFormProvider();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, sfp);
-		description.accept(renderer);
-		return sw.toString();
+		return manchesterRenderer.render(description);
 	}	
 	
 	/**
@@ -73,11 +80,7 @@ public class OWLAPIRenderers {
 	 * @return Manchester OWL syntax string.
 	 */
 	public static String toManchesterOWLSyntax(OWLClassExpression description) {
-		StringWriter sw = new StringWriter();
-		ShortFormProvider sfp = new SimpleShortFormProvider();
-		ManchesterOWLSyntaxObjectRenderer renderer = new ManchesterOWLSyntaxObjectRenderer(sw, sfp);
-		description.accept(renderer);
-		return sw.toString();
+		return manchesterRenderer.render(description);
 	}
 	
 	/**
