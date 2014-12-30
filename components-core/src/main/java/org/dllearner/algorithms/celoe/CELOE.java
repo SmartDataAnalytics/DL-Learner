@@ -528,9 +528,9 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-//			System.out.println("refine node " + nextNode);
+			System.out.println("refine node " + nextNode);
 			TreeSet<Description> refinements = refineNode(nextNode);
-//			System.out.println("got " + refinements.size() + " refinements");
+			System.out.println("got " + refinements.size() + " refinements");
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -616,6 +616,8 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		
 		isRunning = false;
 //		System.out.println("isRunning: " + isRunning);
+		System.err.println(MonitorFactory.start("refineNode"));
+		System.err.println(MonitorFactory.start("addNode"));
 	}
 
 	private OENode getNextNodeToExpand() {
