@@ -20,6 +20,7 @@
 package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
+import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.reasoning.OWLPunningDetector;
@@ -66,15 +67,19 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 	
 	private int getLength(EvaluatedDescription ed){
 		int length = 0;
-		OWLClassExpression d = ed.getDescription();
-		if(d instanceof OWLNaryBooleanClassExpression){
-			for (OWLClassExpression child : ((OWLNaryBooleanClassExpression) d).getOperands()) {
+		OWLClassExpression ce = ed.getDescription();
+		if(ce instanceof OWLNaryBooleanClassExpression){
+			Set<OWLClassExpression> operands = ((OWLNaryBooleanClassExpression) ce).getOperands();
+			for (OWLClassExpression child : operands) {
 				if(child instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty() == OWLPunningDetector.punningProperty){
 					length += OWLClassExpressionUtils.getLength(((OWLObjectSomeValuesFrom)child).getFiller());
 				} else {
 					length += OWLClassExpressionUtils.getLength(child);
 				}
 			}
+			length += operands.size() - 1;
+		} else {
+			length = OWLClassExpressionUtils.getLength(ce);
 		}
 		return length;
 	}

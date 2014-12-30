@@ -188,7 +188,12 @@ public class ClassHierarchy {
 				hierarchyUpNew.get(chosenParent).add(c);
 			}
 		}
-
+		
+		//owl:Thing
+		hierarchyDownNew.put(df.getOWLThing(), subsumptionHierarchyDown.get(df.getOWLThing()));
+		//owl:Nothing
+		hierarchyUpNew.put(df.getOWLNothing(), subsumptionHierarchyUp.get(df.getOWLNothing()));
+		
 		subsumptionHierarchyDown = hierarchyDownNew;
 		subsumptionHierarchyUp = hierarchyUpNew;
 	}

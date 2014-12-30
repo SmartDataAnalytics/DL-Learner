@@ -140,37 +140,37 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// the length of concepts of top refinements, the first values is
 	// for refinements of \rho_\top(\top), the second one for \rho_A(\top)
 	private int topRefinementsLength = 0;
-	private Map<OWLClass, Integer> topARefinementsLength = new TreeMap<OWLClass, Integer>();
+	private Map<OWLClassExpression, Integer> topARefinementsLength = new TreeMap<OWLClassExpression, Integer>();
 	// M is finite and this value is the maximum length of any value in M
 	private static int mMaxLength = 4;
 	
 	// the sets M_\top and M_A
 	private Map<Integer,SortedSet<OWLClassExpression>> m = new TreeMap<Integer,SortedSet<OWLClassExpression>>();
-	private Map<OWLClass,Map<Integer,SortedSet<OWLClassExpression>>> mA = new TreeMap<OWLClass,Map<Integer,SortedSet<OWLClassExpression>>>();
+	private Map<OWLClassExpression,Map<Integer,SortedSet<OWLClassExpression>>> mA = new TreeMap<OWLClassExpression,Map<Integer,SortedSet<OWLClassExpression>>>();
 	
 	// @see MathOperations.getCombos
 	private Map<Integer, List<List<Integer>>> combos = new HashMap<Integer, List<List<Integer>>>();
 
 	// refinements of the top concept ordered by length
 	private Map<Integer, SortedSet<OWLClassExpression>> topRefinements = new TreeMap<Integer, SortedSet<OWLClassExpression>>();
-	private Map<OWLClass,Map<Integer, SortedSet<OWLClassExpression>>> topARefinements = new TreeMap<OWLClass,Map<Integer, SortedSet<OWLClassExpression>>>();
+	private Map<OWLClassExpression,Map<Integer, SortedSet<OWLClassExpression>>> topARefinements = new TreeMap<OWLClassExpression,Map<Integer, SortedSet<OWLClassExpression>>>();
 	
 	// cumulated refinements of top (all from length one to the specified length)
 	private Map<Integer, TreeSet<OWLClassExpression>> topRefinementsCumulative = new HashMap<Integer, TreeSet<OWLClassExpression>>();
-	private Map<OWLClass,Map<Integer, TreeSet<OWLClassExpression>>> topARefinementsCumulative = new TreeMap<OWLClass,Map<Integer, TreeSet<OWLClassExpression>>>();
+	private Map<OWLClassExpression,Map<Integer, TreeSet<OWLClassExpression>>> topARefinementsCumulative = new TreeMap<OWLClassExpression,Map<Integer, TreeSet<OWLClassExpression>>>();
 	
 	// app_A set of applicable properties for a given class (separate for
 	// object properties, boolean datatypes, and double datatypes)
-	private Map<OWLClass, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClass, Set<OWLObjectProperty>>();
-	private Map<OWLClass, Set<OWLDataProperty>> appBD = new TreeMap<OWLClass, Set<OWLDataProperty>>();
-	private Map<OWLClass, Set<OWLDataProperty>> appNumeric = new TreeMap<OWLClass, Set<OWLDataProperty>>();
-	private Map<OWLClass, Set<OWLDataProperty>> appSD = new TreeMap<OWLClass, Set<OWLDataProperty>>();
+	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClassExpression, Set<OWLObjectProperty>>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appBD = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appNumeric = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appSD = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
 	
 	// most general applicable properties
-	private Map<OWLClass,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClass,Set<OWLObjectProperty>>();
-	private Map<OWLClass,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClass,Set<OWLDataProperty>>();
-	private Map<OWLClass,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClass,Set<OWLDataProperty>>();
-	private Map<OWLClass,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClass,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 	
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<Double>> splits = new TreeMap<OWLDataProperty,List<Double>>();
@@ -476,7 +476,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// actions needing to be performed if this is the first time the
 		// current domain is used
 		if(!currDomain.isOWLThing() && !topARefinementsLength.containsKey(currDomain)){
-			topARefinementsLength.put((OWLClass)currDomain, 0);
+			topARefinementsLength.put(currDomain, 0);
 		}
 		
 		// check whether using list or set makes more sense 
@@ -495,7 +495,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				refinements = (TreeSet<OWLClassExpression>) topRefinementsCumulative.get(maxLength).clone();
 			} else {
 				if(maxLength>topARefinementsLength.get(currDomain)) {
-					computeTopRefinements(maxLength, (OWLClass) currDomain);
+					computeTopRefinements(maxLength, currDomain);
 				}
 				refinements = (TreeSet<OWLClassExpression>) topARefinementsCumulative.get(currDomain).get(maxLength).clone();
 			}
@@ -966,7 +966,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		computeTopRefinements(maxLength, null);
 	}
 	
-	private void computeTopRefinements(int maxLength, OWLClass domain) {
+	private void computeTopRefinements(int maxLength, OWLClassExpression domain) {
 		long topComputationTimeStartNs = System.nanoTime();
 //		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);		
 		
@@ -1191,7 +1191,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// computation of the set M_A
 	// a major difference compared to the ILP 2007 \rho operator is that
 	// M is finite and contains elements of length (currently) at most 3
-	private void computeM(OWLClass nc) {
+	private void computeM(OWLClassExpression nc) {
 		long mComputationTimeStartNs = System.nanoTime();
 
 //		System.out.println(nc);
@@ -1321,7 +1321,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 	
 	// get candidates for a refinement of \top restricted to a class B
-	public SortedSet<OWLClassExpression> getClassCandidates(OWLClass index) {
+	public SortedSet<OWLClassExpression> getClassCandidates(OWLClassExpression index) {
 		return getClassCandidatesRecursive(index, df.getOWLThing());
 	}
 	
@@ -1374,7 +1374,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}	
 	
 	// get candidates for a refinement of \top restricted to a class B
-	public SortedSet<OWLClassExpression> getNegClassCandidates(OWLClass index) {
+	public SortedSet<OWLClassExpression> getNegClassCandidates(OWLClassExpression index) {
 		return getNegClassCandidatesRecursive(index, df.getOWLNothing());
 	}
 	
@@ -1409,7 +1409,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		return candidates;
 	}	
 	
-	private void computeMg(OWLClass domain) {
+	private void computeMg(OWLClassExpression domain) {
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
 			computeApp(domain);	
@@ -1433,7 +1433,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		computeMostGeneralStringDPRecursive(domain, mostGeneralStringDPs, mgsd.get(domain));
 	}
 	
-	private void computeMgrRecursive(OWLClass domain, Set<OWLObjectProperty> currProperties, Set<OWLObjectProperty> mgrTmp) {
+	private void computeMgrRecursive(OWLClassExpression domain, Set<OWLObjectProperty> currProperties, Set<OWLObjectProperty> mgrTmp) {
 		for(OWLObjectProperty prop : currProperties) {
 			if(appOP.get(domain).contains(prop))
 				mgrTmp.add(prop);
@@ -1442,7 +1442,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 	}
 	
-	private void computeMgbdRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgbdTmp) {
+	private void computeMgbdRecursive(OWLClassExpression domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgbdTmp) {
 		for(OWLDataProperty prop : currProperties) {
 			if(appBD.get(domain).contains(prop))
 				mgbdTmp.add(prop);
@@ -1452,7 +1452,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}	
 	
 	
-	private void computeMostGeneralNumericDPRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
+	private void computeMostGeneralNumericDPRecursive(OWLClassExpression domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
 		for(OWLDataProperty prop : currProperties) {
 			if(appNumeric.get(domain).contains(prop))
 				mgddTmp.add(prop);
@@ -1460,7 +1460,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				computeMostGeneralNumericDPRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
 		}
 	}
-	private void computeMostGeneralStringDPRecursive(OWLClass domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
+	private void computeMostGeneralStringDPRecursive(OWLClassExpression domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
 		for(OWLDataProperty prop : currProperties) {
 			if(appSD.get(domain).contains(prop))
 				mgddTmp.add(prop);
@@ -1470,7 +1470,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 	
 	// computes the set of applicable properties for a given class
-	private void computeApp(OWLClass domain) {
+	private void computeApp(OWLClassExpression domain) {
 		SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
 		// object properties
 		Set<OWLObjectProperty> mostGeneral = reasoner.getObjectProperties();

@@ -44,6 +44,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -163,6 +164,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     // default reasoner is Pellet
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
+    private OWLClassExpressionMinimizer minimizer;
 
     public OWLAPIReasoner() {
 
@@ -293,6 +295,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				it.remove();
 			}
 		}
+		
+		 minimizer = new OWLClassExpressionMinimizer(df, this);
     }
     
     private void initBaseReasoner() {
@@ -451,7 +455,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         NodeSet<OWLClass> classes = reasoner.getSubClasses(concept, true);
         TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
         subClasses.remove(df.getOWLNothing());
-        // remove built-in entites sometimes returned as subclasses of owl:Thing
+        // remove built-in entities sometimes returned as subclasses of owl:Thing
         if(concept.isOWLThing()){
         	Iterator<OWLClassExpression> it = subClasses.iterator();
         	while (it.hasNext()) {
@@ -541,7 +545,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
-    	// this is a little bit tricky because the reasoner interface only returns
+    	// this is a bit tricky because the reasoner interface only returns
     	// atomic classes, but it might be the case that in the ontology complex
     	// domain definitions are contained
     	
@@ -560,20 +564,66 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
         domains.addAll(nodeSet.getFlattened());
         
-        // several ranges have to be treated as intersection
-        OWLObjectIntersectionOf domain = df.getOWLObjectIntersectionOf(domains);
+        domains.remove(df.getOWLThing());
         
-        // simplify expression
+        OWLClassExpression domain;
         
-        logger.info("Domain(" + objectProperty + "," + domain + ")");
+        // several domains have to be treated as intersection
+        if(domains.size() > 1) {
+        	 domain = df.getOWLObjectIntersectionOf(domains);
+             
+             // simplify expression, e.g. keep the most specific class in expressions
+        	 // like A AND B
+        	 domain = minimizer.minimize(domain);
+        } else if(domains.size() == 1){
+        	domain = domains.iterator().next();
+        } else {
+        	domain = df.getOWLThing();
+        }
+        
+        logger.trace("Domain({},{})", objectProperty, domain);
 		return domain;
     }
 
     @Override
-    public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
-        NodeSet<OWLClass> nodeSet = reasoner.getDataPropertyDomains(datatypeProperty, true);
-        OWLClassExpression domain = asIntersection(nodeSet);
-        logger.trace("Domain(" + datatypeProperty + "," + domain + ")");
+    public OWLClassExpression getDomainImpl(OWLDataProperty dataProperty) {
+    	// this is a bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// domain definitions are contained
+    	
+    	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
+    	
+    	// get all asserted domains
+    	domains.addAll(EntitySearcher.getDomains(dataProperty, ontology));
+    	
+    	// do the same for all super properties
+    	NodeSet<OWLDataProperty> superProperties = reasoner.getSuperDataProperties(dataProperty, false);
+    	for (OWLDataProperty supProp : superProperties.getFlattened()) {
+    		domains.addAll(EntitySearcher.getDomains(supProp, ontology));
+		}
+    	
+    	// last but not least, call a reasoner
+        NodeSet<OWLClass> nodeSet = reasoner.getDataPropertyDomains(dataProperty, true);
+        domains.addAll(nodeSet.getFlattened());
+        
+        domains.remove(df.getOWLThing());
+        
+        OWLClassExpression domain;
+        
+        // several domains have to be treated as intersection
+        if(domains.size() > 1) {
+        	 domain = df.getOWLObjectIntersectionOf(domains);
+             
+             // simplify expression, e.g. keep the most specific class in expressions
+        	 // like A AND B
+        	 domain = minimizer.minimize(domain);
+        } else if(domains.size() == 1){
+        	domain = domains.iterator().next();
+        } else {
+        	domain = df.getOWLThing();
+        }
+        
+        logger.trace("Domain({},{})", dataProperty, domain);
 		return domain;
     }
 
@@ -598,13 +648,21 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
         ranges.addAll(nodeSet.getFlattened());
         
-        // several ranges have to be treated as intersection
-        OWLObjectIntersectionOf range = df.getOWLObjectIntersectionOf(ranges);
+        OWLClassExpression range;
         
-        // simplify expression
+        // several domains have to be treated as intersection
+        if(ranges.size() > 1) {
+        	range = df.getOWLObjectIntersectionOf(ranges);
+             
+        	// simplify expression, e.g. keep the most specific class in expressions
+       	 	// like A AND B
+        	range = minimizer.minimize(range);
+        } else {
+        	range = ranges.iterator().next();
+        }
         
-        logger.trace("Range(" + objectProperty + "," + range + ")");
-        return asIntersection(nodeSet);
+        logger.trace("Range({},{})", objectProperty, range);
+        return range;
     }
     
     @Override

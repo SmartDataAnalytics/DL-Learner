@@ -294,11 +294,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			usedConcepts = Helper.computeConcepts(reasoner);
 		}
+		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 //		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
 		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
 		classHierarchy.thinOutSubsumptionHierarchy();
+		
 
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
@@ -518,9 +520,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-			System.out.println("refine node " + nextNode);
+//			System.out.println("refine node " + nextNode);
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-			System.out.println("got " + refinements.size() + " refinements");
+//			System.out.println("got " + refinements.size() + " refinements");
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -598,9 +600,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println(startNode.toTreeString(baseURI));
 		
 		isRunning = false;
-//		System.out.println("isRunning: " + isRunning);
-		System.err.println(MonitorFactory.start("refineNode"));
-		System.err.println(MonitorFactory.start("addNode"));
+
+//		System.err.println(MonitorFactory.start("refineNode"));
+//		System.err.println(MonitorFactory.start("addNode"));
 	}
 
 	private OENode getNextNodeToExpand() {
