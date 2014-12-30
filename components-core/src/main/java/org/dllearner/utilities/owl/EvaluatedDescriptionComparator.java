@@ -77,7 +77,7 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 					length += OWLClassExpressionUtils.getLength(child);
 				}
 			}
-			length += operands.size() - 1;
+//			length += operands.size() - 1;
 		} else {
 			length = OWLClassExpressionUtils.getLength(ce);
 		}

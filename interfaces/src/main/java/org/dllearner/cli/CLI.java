@@ -46,11 +46,18 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Files;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * 
@@ -156,6 +163,21 @@ public class CLI {
 					algorithm.start();
 				}
 			}
+			
+//			//hasEnvironment some Bathing and hasWeather some precipitationMm some double[<= 47.0533]
+//					
+//					OWLDataFactory df = new OWLDataFactoryImpl();
+//					PrefixManager pm = new DefaultPrefixManager("http://www.semanticweb.org/celine/ontologies/destinations#");
+//			OWLClassExpression ce = df.getOWLObjectIntersectionOf(
+//				df.getOWLObjectSomeValuesFrom(
+//						df.getOWLObjectProperty("hasEnvironment", pm),
+//						df.getOWLClass("Bathing", pm)),
+//				df.getOWLObjectSomeValuesFrom(
+//					df.getOWLObjectProperty("hasWeather", pm), 
+//					df.getOWLDataSomeValuesFrom(
+//							df.getOWLDataProperty("avgTemperatureC", pm),
+//							df.getOWLDatatypeMaxInclusiveRestriction(26.2125))));
+//			System.out.println(lp.getAccuracyOrTooWeak(ce, 0));
     }
 
     public boolean isWriteSpringConfiguration() {

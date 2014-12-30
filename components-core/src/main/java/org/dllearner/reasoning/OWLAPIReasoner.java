@@ -542,6 +542,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public boolean isSatisfiableImpl() {
         return reasoner.isSatisfiable(df.getOWLThing());
     }
+    
+//    @Override
+//    public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+//    	return asIntersection(reasoner.getObjectPropertyDomains(objectProperty, true));
+//    }
 
     @Override
     public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
@@ -585,6 +590,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		return domain;
     }
 
+//    @Override
+//    public OWLClassExpression getDomainImpl(OWLDataProperty objectProperty) {
+//    	return asIntersection(reasoner.getDataPropertyDomains(objectProperty, true));
+//    }
+    
     @Override
     public OWLClassExpression getDomainImpl(OWLDataProperty dataProperty) {
     	// this is a bit tricky because the reasoner interface only returns
@@ -626,6 +636,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         logger.trace("Domain({},{})", dataProperty, domain);
 		return domain;
     }
+    
+//    @Override
+//    public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
+//    	return asIntersection(reasoner.getObjectPropertyRanges(objectProperty, true));
+//    }
 
     @Override
     public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {

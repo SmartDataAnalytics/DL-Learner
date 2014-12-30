@@ -601,8 +601,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		isRunning = false;
 
-//		System.err.println(MonitorFactory.start("refineNode"));
-//		System.err.println(MonitorFactory.start("addNode"));
+		System.err.println(MonitorFactory.start("refineNode"));
+		System.err.println(MonitorFactory.start("addNode"));
+		System.err.println(MonitorFactory.start("lp"));
 	}
 
 	private OENode getNextNodeToExpand() {
@@ -661,7 +662,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 //		System.out.println("Test " + new Date());
 		// quality of OWLClassExpression (return if too weak)
+		Monitor mon = MonitorFactory.start("lp");
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		mon.stop();
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
 			logger.warn("Invalid accuracy value " + accuracy + " for OWLClassExpression " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
