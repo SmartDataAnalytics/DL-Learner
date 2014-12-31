@@ -548,7 +548,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
-				System.out.println(refinement.toString(baseURI, prefixes));//OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
+//				System.out.println(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
 				int length = refinement.getLength();
 								
 				// we ignore all refinements with lower length and too high depth
