@@ -3,6 +3,9 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -54,15 +57,16 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 	 */
 	@Override
 	public OWLClassExpression visit(OWLObjectIntersectionOf ce) {
-		Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>();
+		List<OWLClassExpression> operands = new ArrayList<OWLClassExpression>();
 		for (OWLClassExpression operand : ce.getOperands()) {
 			OWLClassExpression newOperand = operand.accept(this);
 			if(newOperand instanceof OWLObjectIntersectionOf){
-				operands.addAll(((OWLObjectIntersectionOf) newOperand).getOperands());
+				operands.addAll(((OWLObjectIntersectionOf) newOperand).getOperandsAsList());
 			} else {
 				operands.add(newOperand);
 			}
 		}
+		Collections.sort(operands);
 		return df.getOWLObjectIntersectionOf(operands);
 	}
 
@@ -71,15 +75,16 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 	 */
 	@Override
 	public OWLClassExpression visit(OWLObjectUnionOf ce) {
-		Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>();
+		List<OWLClassExpression> operands = new ArrayList<OWLClassExpression>();
 		for (OWLClassExpression operand : ce.getOperands()) {
 			OWLClassExpression newOperand = operand.accept(this);
 			if(newOperand instanceof OWLObjectUnionOf){
-				operands.addAll(((OWLObjectUnionOf) newOperand).getOperands());
+				operands.addAll(((OWLObjectUnionOf) newOperand).getOperandsAsList());
 			} else {
 				operands.add(newOperand);
 			}
 		}
+		Collections.sort(operands);
 		return df.getOWLObjectUnionOf(operands);
 	}
 
