@@ -531,10 +531,10 @@ public class CELOE extends AbstractCELA implements Cloneable {
 //			System.out.println("NEXT NODE: " + nextNode);
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-//			System.out.println("refine node " + nextNode);
+			System.out.print("NEXT NODE: " + nextNode.getShortDescription(baseURI, prefixes));
 			TreeSet<Description> refinements = refineNode(nextNode);
-			System.out.println("NEXT NODE: " + nextNode.getShortDescription(baseURI, prefixes) 
-					+ "||" + nextNode.getDescription().getLength() 
+			System.out.println(
+					"||" + nextNode.getDescription().getLength() 
 					+ "||" + heuristic.getNodeScore(nextNode)
 					+ "##" + refinements.size()
 					);
@@ -552,7 +552,8 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
-//				System.out.println(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
+//				System.out.print(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
+				System.out.print(refinement.toString(baseURI, prefixes));
 				int length = refinement.getLength();
 								
 				// we ignore all refinements with lower length and too high depth
@@ -569,6 +570,8 @@ public class CELOE extends AbstractCELA implements Cloneable {
 						break;
 					}
 //					System.out.println("addNode finished" + " " + new Date());
+				} else {
+					System.out.println();
 				}
 		
 //				System.out.println("  refinement queue length: " + refinements.size());
@@ -662,7 +665,6 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 		boolean added = nodes.add(node);
-		logger.trace("Re-added " + node + ":" + added);
 		logger.trace("Best:" + nodes.last().toString() + ":" + heuristic.getNodeScore(nodes.last()));
 		return refinements;
 	}
@@ -676,11 +678,13 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if (!nonRedundant) {
+			System.out.println(": redundant");
 			return false;
 		}
 
 		// check whether the description is allowed
 		if (!isDescriptionAllowed(description, parentNode)) {
+			System.out.println(": not allowed");
 			return false;
 		}
 
@@ -703,6 +707,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		//		System.out.println("acc: " + accuracy);
 		//		System.out.println(description + " " + accuracy);
 		if (accuracy == -1) {
+			System.out.println(": too weak");
 			return false;
 		}
 
@@ -714,7 +719,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		} else {
 			parentNode.addChild(node);
 		}
-
+		System.out.println(node.getShortDescription(baseURI, prefixes)+"::" + heuristic.getNodeScore(node));
 		//		nodes.add(node);
 		if (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
 			nodes.add(node);
