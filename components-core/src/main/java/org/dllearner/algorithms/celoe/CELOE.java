@@ -528,12 +528,16 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
-			System.out.println("NEXT NODE: " + nextNode);
+//			System.out.println("NEXT NODE: " + nextNode);
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
 //			System.out.println("refine node " + nextNode);
 			TreeSet<Description> refinements = refineNode(nextNode);
-			System.out.println("got " + refinements.size() + " refinements");
+			System.out.println("NEXT NODE: " + nextNode.getShortDescription(baseURI, prefixes) 
+					+ "||" + nextNode.getDescription().getLength() 
+					+ "||" + heuristic.getNodeScore(nextNode)
+					+ "##" + refinements.size()
+					);
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
