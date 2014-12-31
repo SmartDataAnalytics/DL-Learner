@@ -517,13 +517,16 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
-			System.out.println("NEXT NODE: " + nextNode);
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
 //			System.out.println("refine node " + nextNode);
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-			System.out.println("got " + refinements.size() + " refinements");
+			System.out.println("NEXT NODE: " + nextNode 
+					+ "||" + OWLClassExpressionUtils.getLength(nextNode.getDescription()) 
+					+ "||" + heuristic.getNodeScore(nextNode)
+					+ "##" + refinements.size()
+					);
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -539,7 +542,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
 				int length = OWLClassExpressionUtils.getLength(refinement);
-//				System.out.println(OWLAPIRenderers.toDLSyntax(refinement));
+//				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
