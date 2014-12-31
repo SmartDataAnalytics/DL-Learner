@@ -542,7 +542,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
 				int length = OWLClassExpressionUtils.getLength(refinement);
-//				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
+				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
@@ -557,6 +557,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						break;
 					}
 //					System.out.println("addNode finished" + " " + new Date());
+				} else {
+					System.out.println();
 				}
 		
 //				System.out.println("  refinement queue length: " + refinements.size());
@@ -682,7 +684,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println("acc: " + accuracy);
 //		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
-//			System.out.println(": too weak");
+			System.out.println(": too weak");
 			return false;
 		}
 		
@@ -694,8 +696,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			parentNode.addChild(node);
 		}
-//		System.out.println(":" + heuristic.getNodeScore(node));
-	
+		System.out.println(node + "::" + heuristic.getNodeScore(node));
 		nodes.add(node);
 //		System.out.println("Test3 " + new Date());
 		
