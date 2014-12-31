@@ -23,7 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,8 +70,11 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -488,8 +493,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@Override
 	public void start() {
-//		System.out.println(configurator.getMaxExecutionTimeInSeconds());
-		
 		stop = false;
 		isRunning = true;
 		reset();
@@ -1183,6 +1186,18 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public static void main(String[] args) throws Exception{
+		
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		PrefixManager pm = new DefaultPrefixManager("");
+		List<OWLClassExpression> operands = new ArrayList<>();
+		operands.add(df.getOWLObjectSomeValuesFrom(
+				df.getOWLObjectProperty("p", pm), 
+				df.getOWLClass("C", pm)));
+		operands.add(df.getOWLObjectUnionOf(df.getOWLClass("A", pm), df.getOWLClass("B", pm)));
+		Collections.sort(operands);
+		OWLClassExpression ce = df.getOWLObjectIntersectionOf(operands);
+		System.out.println(OWLAPIRenderers.toDLSyntax(ce));
+		
 		String cls = "http://purl.org/procurement/public-contracts#Tender";
 		String file = "/home/me/work/datasets/e-procurement/dl-learner-sample-with-classes-pco.rdf";
 		Model model = ModelFactory.createDefaultModel();
@@ -1210,8 +1225,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 		rc.init();
-		
-		OWLDataFactory df = new OWLDataFactoryImpl();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(df.getOWLClass(IRI.create("http://purl.org/procurement/public-contracts#Tender")));
