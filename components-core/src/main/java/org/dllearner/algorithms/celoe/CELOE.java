@@ -553,7 +553,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
 //				System.out.print(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
-				System.out.print(refinement.toString(baseURI, prefixes));
+//				System.out.print(refinement.toString(baseURI, prefixes));
 				int length = refinement.getLength();
 								
 				// we ignore all refinements with lower length and too high depth
@@ -571,7 +571,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 					}
 //					System.out.println("addNode finished" + " " + new Date());
 				} else {
-					System.out.println();
+//					System.out.println();
 				}
 		
 //				System.out.println("  refinement queue length: " + refinements.size());
@@ -678,13 +678,13 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if (!nonRedundant) {
-			System.out.println(": redundant");
+//			System.out.println(": redundant");
 			return false;
 		}
 
 		// check whether the description is allowed
 		if (!isDescriptionAllowed(description, parentNode)) {
-			System.out.println(": not allowed");
+//			System.out.println(": not allowed");
 			return false;
 		}
 
@@ -707,7 +707,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		//		System.out.println("acc: " + accuracy);
 		//		System.out.println(description + " " + accuracy);
 		if (accuracy == -1) {
-			System.out.println(": too weak");
+//			System.out.println(": too weak");
 			return false;
 		}
 
@@ -719,7 +719,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 		} else {
 			parentNode.addChild(node);
 		}
-		System.out.println(node.getShortDescription(baseURI, prefixes)+"::" + heuristic.getNodeScore(node));
+//		System.out.println(node.getShortDescription(baseURI, prefixes)+"::" + heuristic.getNodeScore(node));
 		//		nodes.add(node);
 		if (node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < node.getDescription().getLength()) {
 			nodes.add(node);
