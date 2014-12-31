@@ -539,7 +539,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
 				int length = OWLClassExpressionUtils.getLength(refinement);
-				System.out.println(OWLAPIRenderers.toDLSyntax(refinement));
+//				System.out.println(OWLAPIRenderers.toDLSyntax(refinement));
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {

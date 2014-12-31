@@ -527,7 +527,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(((OWLObjectIntersectionOf) description).getOperands());
+					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
 					newChildren.add(c);
 					newChildren.remove(child);
 					Collections.sort(newChildren);
@@ -1070,7 +1070,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				} else {
 					cumulativeRefinements.addAll(topARefinements.get(domain).get(j));
 				}
-			}			
+			}	
 			
 			if(domain == null) {
 				topRefinementsCumulative.put(i, cumulativeRefinements);
