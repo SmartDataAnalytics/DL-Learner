@@ -39,7 +39,6 @@ package org.dllearner.utilities.owl;
  * limitations under the License.
  */
 
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FACET_RESTRICTION_SEPARATOR;
 import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.AND;
 import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.BOTTOM;
 import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.COMMA;
@@ -731,10 +730,15 @@ public class DLSyntaxObjectRenderer implements OWLObjectRenderer, OWLObjectVisit
 		public void visit(OWLDatatypeRestriction node) {
 			node.getDatatype().accept(this);
 	        write("[");
-	        for (OWLFacetRestriction facetRestriction : node.getFacetRestrictions()) {
-				facetRestriction.accept(this);
-				write(" " + FACET_RESTRICTION_SEPARATOR.toString() + " ");
-			}
+	        Iterator<OWLFacetRestriction> iterator = node.getFacetRestrictions().iterator();
+	        
+	        while(iterator.hasNext()) {
+	        	OWLFacetRestriction facetRestriction = iterator.next();
+	        	facetRestriction.accept(this);
+	        	if(iterator.hasNext()) {
+	        		write(" " + COMMA + " ");
+	        	}
+	        }
 	        write("]");
 		}
 

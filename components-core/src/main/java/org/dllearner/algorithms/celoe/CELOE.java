@@ -533,7 +533,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			Monitor mon = MonitorFactory.start("refineNode");
 //			System.out.println("refine node " + nextNode);
 			TreeSet<Description> refinements = refineNode(nextNode);
-//			System.out.println("got " + refinements.size() + " refinements");
+			System.out.println("got " + refinements.size() + " refinements");
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);
@@ -548,7 +548,7 @@ public class CELOE extends AbstractCELA implements Cloneable {
 			while(refinements.size() != 0) {
 				// pick element from set
 				Description refinement = refinements.pollFirst();
-				System.out.println(OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
+				System.out.println(refinement.toString(baseURI, prefixes));//OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(refinement)));
 				int length = refinement.getLength();
 								
 				// we ignore all refinements with lower length and too high depth
