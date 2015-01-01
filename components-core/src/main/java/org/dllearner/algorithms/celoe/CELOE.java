@@ -523,13 +523,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-			System.out.print("NEXT NODE: " + nextNode);
+//			System.out.print("NEXT NODE: " + nextNode);
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-			System.out.println(
-					"||" + OWLClassExpressionUtils.getLength(nextNode.getDescription()) 
-					+ "||" + heuristic.getNodeScore(nextNode)
-					+ "##" + refinements.size()
-					);
+//			System.out.println(
+//					"||" + OWLClassExpressionUtils.getLength(nextNode.getDescription()) 
+//					+ "||" + heuristic.getNodeScore(nextNode)
+//					+ "##" + refinements.size()
+//					);
 			mon.stop();
 				
 //			System.out.println("next node: " + nextNode);

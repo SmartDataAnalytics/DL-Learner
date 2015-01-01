@@ -927,7 +927,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected Set<OWLDataProperty> getNumericDataPropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
-		return getIntDatatypePropertiesImpl();
+		return Sets.union(getIntDatatypePropertiesImpl(), getDoubleDatatypePropertiesImpl());
 	}
 
 	@Override

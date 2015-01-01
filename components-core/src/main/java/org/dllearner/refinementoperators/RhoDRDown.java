@@ -1518,6 +1518,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(!isDisjoint(domain,d))
 				applicableNumericDPs.add(role);
 		}
+		appNumeric.put(domain, applicableNumericDPs);
 		
 		// string datatype properties
 		Set<OWLDataProperty> mostGeneralSDPs = reasoner.getStringDatatypeProperties();
