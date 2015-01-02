@@ -26,10 +26,12 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
@@ -163,21 +165,6 @@ public class CLI {
 					algorithm.start();
 				}
 			}
-			
-//			//hasEnvironment some Bathing and hasWeather some precipitationMm some double[<= 47.0533]
-//					
-//					OWLDataFactory df = new OWLDataFactoryImpl();
-//					PrefixManager pm = new DefaultPrefixManager("http://www.semanticweb.org/celine/ontologies/destinations#");
-//			OWLClassExpression ce = df.getOWLObjectIntersectionOf(
-//				df.getOWLObjectSomeValuesFrom(
-//						df.getOWLObjectProperty("hasEnvironment", pm),
-//						df.getOWLClass("Bathing", pm)),
-//				df.getOWLObjectSomeValuesFrom(
-//					df.getOWLObjectProperty("hasWeather", pm), 
-//					df.getOWLDataSomeValuesFrom(
-//							df.getOWLDataProperty("avgTemperatureC", pm),
-//							df.getOWLDatatypeMaxInclusiveRestriction(26.2125))));
-//			System.out.println(lp.getAccuracyOrTooWeak(ce, 0));
     }
 
     public boolean isWriteSpringConfiguration() {
