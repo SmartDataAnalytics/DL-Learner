@@ -75,6 +75,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
@@ -190,8 +191,11 @@ public class QALDExperiment {
 	private QTL2 la;
 	
 	private Random rnd = new Random(123);
+
+	private Dataset dataset;
 	
 	public QALDExperiment(Dataset dataset) {
+		this.dataset = dataset;
 		queryTreeFactory = new QueryTreeFactoryImpl();
 		queryTreeFactory.setMaxDepth(maxDepth);
 		
@@ -250,8 +254,8 @@ public class QALDExperiment {
 		
 		double[] noiseIntervals = {
 				0.0,
-//				0.2,
-//				0.4,
+				0.2,
+				0.4,
 //				0.6
 				};
 			
@@ -286,7 +290,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-					if(!sparqlQuery.contains("Munich"))continue;
+//					if(!sparqlQuery.contains("Munich"))continue;
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
 					int possibleNrOfExamples = Math.min(getResultCount(sparqlQuery), nrOfExamples);
@@ -653,6 +657,12 @@ public class QALDExperiment {
 		return resources;
 	}
 	
+	/**
+	 * Split the SPARQL query and join the result set of each split. This
+	 * allows for the execution of more complex queries.
+	 * @param sparqlQuery
+	 * @return
+	 */
 	private List<String> getResultSplitted(String sparqlQuery){
 		Query query = QueryFactory.create(sparqlQuery);
 		logger.trace("Getting result set for\n" + query);
@@ -677,7 +687,13 @@ public class QALDExperiment {
 		Collection<Triple> targetVarTriplePatterns = var2TriplePatterns.get(targetVar);
 		boolean useSplitting = false;
 		for (Triple tp : targetVarTriplePatterns) {
-			if(tp.getObject().isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(tp.getObject()))){
+			Node object = tp.getObject();
+			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
+				
+				//  Virtuoso bug workaround with literals of type float
+				if(object.isLiteral() && object.getLiteralDatatype() != null && object.getLiteralDatatype().equals(XSDDatatype.XSDfloat)){
+					continue;
+				}
 				fixedTriplePatterns.add(tp);
 			} else {
 				Set<Triple> cluster = new TreeSet<>(new Comparator<Triple>() {
@@ -864,7 +880,7 @@ public class QALDExperiment {
 	            			&& !hasIngoingLinks 
 	            			&& !containsFilter
 //	            			&& !containsUNION
-	            			&& onlydbo
+	            			&& (dataset != Dataset.DBPEDIA || onlydbo)
 	            			
 	            			&& (getResultCount(sparqlQuery) >= minNrOfPositiveExamples)
 	            			){
@@ -988,14 +1004,14 @@ public class QALDExperiment {
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
-			System.err.println(referenceSparqlQuery);
+			logger.error("Reference SPARQL query returns no result.\n" + referenceSparqlQuery);
 			return 0;
 		}
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
-			System.err.println(learnedSPARQLQuery);
+			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			System.exit(0);
 		}
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -323,6 +324,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
 			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
 				QueryTree<String> uncoveredTree = it.next();
+				
 				//compute the LGG
 				lggMon.start();
 				QueryTree<String> lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
@@ -343,8 +345,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 							bestPartialSolutionTree = solution;
 						}
 						//add to todo list, if not already contained in todo list or solution list
-						todo(solution);
-					} else if(mas >= bestCurrentScore){
+						if(mas > score){
+							todo(solution);
+						}
+					} else if(mas >= bestCurrentScore){ // add to todo list if max. achievable score is higher
 						todo(solution);
 					} else {
 						logger.info("Too weak:" + solution.getTreeScore());
@@ -352,13 +356,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
 					}
 					
-					currentPartialSolutions.add(currentElement);
+					currentPartialSolutions.add(solution);
 				}
 			}
 			currentPartialSolutions.add(currentElement);
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("...finished in " + (endTime-partialSolutionStartTime) + "ms.");
+		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
 		
 		logger.info("Best partial solution: " + bestPartialSolution.getDescription().toString().replace("\n", "") + "\n(" + bestPartialSolution.getScore() + ")");
@@ -501,9 +505,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
 		strategies = new LiteralNodeSubsumptionStrategy[]{
 				LiteralNodeSubsumptionStrategy.DATATYPE, 
-				LiteralNodeSubsumptionStrategy.INTERVAL, 
-				LiteralNodeSubsumptionStrategy.MIN,
-				LiteralNodeSubsumptionStrategy.MAX,
+//				LiteralNodeSubsumptionStrategy.INTERVAL, 
+//				LiteralNodeSubsumptionStrategy.MIN,
+//				LiteralNodeSubsumptionStrategy.MAX,
 				};
 		for (LiteralNodeSubsumptionStrategy strategy : strategies) {
 			//1. get a score for the coverage = recall oriented
@@ -511,9 +515,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			List<QueryTree<String>> coveredNegativeExampleTrees = new ArrayList<QueryTree<String>>();
 			
 			//compute positive examples which are not covered by LGG
+//			System.out.println(tree.getStringRepresentation(true));
 			for (QueryTree<String> posTree : currentPosExampleTrees) {
 				if(!posTree.isSubsumedBy(tree, strategy)){
+//					System.err.println(posTree.getStringRepresentation(false));
 					uncoveredPositiveExampleTrees.add(posTree);
+				} else {
+//					System.out.println("COVERED");
 				}
 			}
 			//compute negative examples which are covered by LGG
@@ -935,11 +943,17 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	public EvaluatedQueryTree<String> getBestSolution(){
-		return currentPartialSolutions.first();
+		return currentPartialSolutions.last();
 	}
 	
 	public SortedSet<EvaluatedQueryTree<String>> getSolutions(){
 		return currentPartialSolutions;
+	}
+	
+	public List<EvaluatedQueryTree<String>> getSolutionsAsList(){
+		ArrayList<EvaluatedQueryTree<String>> list = new ArrayList<>(currentPartialSolutions);
+		Collections.sort(list, Collections.reverseOrder());
+		return list;
 	}
 	
 	public void setAllowedNamespaces(Set<String> allowedNamespaces){

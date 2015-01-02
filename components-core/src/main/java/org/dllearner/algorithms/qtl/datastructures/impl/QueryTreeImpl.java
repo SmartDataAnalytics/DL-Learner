@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
@@ -561,11 +562,18 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			if(strategy == LiteralNodeSubsumptionStrategy.OFF){
         			return tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject);
         		} else {
+        			// rdf:PlainLiteral
+        			if(tree.getDatatype() == null && this.getDatatype() == null) {
+        				return true;
+        			}
+        			
         			return subsumes(tree.getLiterals(), this.getLiterals(), strategy);
         		}
     		}
     	} else if(!tree.isVarNode() && this.isVarNode()){
     		return false;
+    	} else if(tree.isVarNode() && this.isLiteralNode()) {
+    		return true;
     	} else if(tree.isResourceNode() && this.isLiteralNode || tree.isLiteralNode() && this.isResourceNode){//node type mismatch
     		return false;
     	}
@@ -580,6 +588,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			}
     		}
     		if(!isSubsumed){
+//    			System.err.println("not covered: " + QueryTreeUtils.printPathToRoot(child, tree));
 				return false;
 			}
     	}
@@ -594,6 +603,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			
+//			if(subsumerDatatype == null && subsumeeDatatype == null) {
+//				return true;
+//			}
 			
 			if(subsumerDatatype == null || subsumeeDatatype == null) {
 				return false;
