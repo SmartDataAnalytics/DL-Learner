@@ -281,6 +281,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						currentNegExamples.remove(tree2Individual.get(tree));
 					}
 				}
+				
 				//build the current combined solution
 				currentBestSolution = buildCombinedSolution();
 				
@@ -352,6 +353,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						todo(solution);
 					} else {
 						logger.info("Too weak:" + solution.getTreeScore());
+//						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
 					}
@@ -510,31 +512,27 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //				LiteralNodeSubsumptionStrategy.MAX,
 				};
 		for (LiteralNodeSubsumptionStrategy strategy : strategies) {
-			//1. get a score for the coverage = recall oriented
+			// 1. get a score for the coverage = recall oriented
 			List<QueryTree<String>> uncoveredPositiveExampleTrees = new ArrayList<QueryTree<String>>();
 			List<QueryTree<String>> coveredNegativeExampleTrees = new ArrayList<QueryTree<String>>();
 			
-			//compute positive examples which are not covered by LGG
-//			System.out.println(tree.getStringRepresentation(true));
+			// compute positive examples which are not covered by LGG
 			for (QueryTree<String> posTree : currentPosExampleTrees) {
 				if(!posTree.isSubsumedBy(tree, strategy)){
-//					System.err.println(posTree.getStringRepresentation(false));
 					uncoveredPositiveExampleTrees.add(posTree);
-				} else {
-//					System.out.println("COVERED");
 				}
 			}
-			//compute negative examples which are covered by LGG
+			// compute negative examples which are covered by LGG
 			for (QueryTree<String> negTree : currentNegExampleTrees) {
 				if(negTree.isSubsumedBy(tree, strategy)){
 					coveredNegativeExampleTrees.add(negTree);
 				}
 			}
-			//convert to individuals
+			// convert to individuals
 			Set<OWLIndividual> uncoveredPosExamples = asIndividuals(uncoveredPositiveExampleTrees);
 			Set<OWLIndividual> coveredNegExamples = asIndividuals(coveredNegativeExampleTrees);
 			
-			//compute score
+			// compute score
 			int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
 			double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
 			double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
@@ -543,7 +541,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			
 			double coverageScore = Heuristics.getFScore(recall, precision, beta);
 			
-			//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+			// 2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
 			int nrOfSpecificNodes = 0;
 			for (QueryTree<String> childNode : tree.getChildrenClosure()) {
 				if(!childNode.getUserObject().equals("?")){
@@ -555,7 +553,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				specifityScore = Math.log(nrOfSpecificNodes);
 			}
 			
-			//3.compute the total score
+			// 3.compute the total score
 			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 			
 			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 

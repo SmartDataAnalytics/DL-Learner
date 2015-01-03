@@ -182,6 +182,9 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			if(d1 != null && d2 != null && d1.equals(d2)){
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
+			} else {
+//				System.out.println(tree1);
+//				System.out.println(tree2);
 			}
 			lgg.setIsLiteralNode(true);
 		}

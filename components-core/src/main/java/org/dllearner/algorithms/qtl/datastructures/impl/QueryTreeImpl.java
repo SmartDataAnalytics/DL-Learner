@@ -566,7 +566,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         			if(tree.getDatatype() == null && this.getDatatype() == null) {
         				return true;
         			}
-        			
+        			if(tree.getLiterals().isEmpty()) {
+        				return true;
+        			}
         			return subsumes(tree.getLiterals(), this.getLiterals(), strategy);
         		}
     		}

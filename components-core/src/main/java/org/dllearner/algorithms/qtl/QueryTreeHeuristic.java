@@ -79,8 +79,8 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 		
 		Set<OWLIndividual> truePositives = treeScore.getCoveredPositives();
 		Set<OWLIndividual> trueNegatives = treeScore.getNotCoveredNegatives();
-		Set<OWLIndividual> falsePositives = treeScore.getNotCoveredPositives();
-		Set<OWLIndividual> falseNegatives = treeScore.getCoveredNegatives();
+		Set<OWLIndividual> falsePositives = treeScore.getCoveredNegatives();
+		Set<OWLIndividual> falseNegatives = treeScore.getNotCoveredPositives();
 		
 		double tp = truePositives.size();
 		double tn = trueNegatives.size();
@@ -92,6 +92,14 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 	
 	/**
 	 * Returns the maximum achievable score according to the used score function.
+	 * The idea is as follows:
+	 * For algorithms which make the found solution more general, we know that
+	 * 1. all already covered positive examples remain covered
+	 * 2. all already covered negative examples remain covered
+	 * 3. uncovered positive examples might be covered by more general solutions
+	 * 4. uncovered negative examples might be covered by more general solutions
+	 * That means, in the optimal case we get a solution which covers all 
+	 * uncovered positive examples, but not of the uncovered negative examples.
 	 * @param tp
 	 * @param tn
 	 * @param fp
@@ -104,8 +112,9 @@ public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, 
 		case FMEASURE:
 			mas = Double.POSITIVE_INFINITY;
 			break;
-		case PRED_ACC:
-			mas = (posExamplesWeight * tp + tn - fp) / (posExamplesWeight * (tp + fn) + tn + fp);
+		case PRED_ACC: // (tn + tp) / (tn + fp + fn + tp) -> (tn + (tp + fn)) / (tn + fp + fn + tp)
+//			mas = (posExamplesWeight * tp + tn - fp) / (posExamplesWeight * (tp + fn) + tn + fp);
+			mas = (posExamplesWeight * (tp + fn) + tn) / (posExamplesWeight * (tp + fn) + tn + fp);
 			break;
 		case ENTROPY:
 			mas = Double.POSITIVE_INFINITY;
