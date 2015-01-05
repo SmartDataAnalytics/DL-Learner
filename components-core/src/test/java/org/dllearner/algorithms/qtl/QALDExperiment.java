@@ -290,13 +290,13 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("Munich"))continue;
+					if(!sparqlQuery.contains("currency"))continue;
+					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
 					int possibleNrOfExamples = Math.min(getResultCount(sparqlQuery), nrOfExamples);
 					
 					try {
-						logger.info("#examples: " + nrOfExamples + " noise: " + noise);
 						// generate examples
 						Map<OWLIndividual, QueryTree<String>> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
 
