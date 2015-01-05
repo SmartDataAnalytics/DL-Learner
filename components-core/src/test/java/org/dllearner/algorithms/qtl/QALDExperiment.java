@@ -690,8 +690,9 @@ public class QALDExperiment {
 			Node object = tp.getObject();
 			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
 				
-				//  Virtuoso bug workaround with literals of type float
-				if(object.isLiteral() && object.getLiteralDatatype() != null && object.getLiteralDatatype().equals(XSDDatatype.XSDfloat)){
+				//  Virtuoso bug workaround with literals of type xsd:float and xsd:double
+				if(object.isLiteral() && object.getLiteralDatatype() != null 
+						&& (object.getLiteralDatatype().equals(XSDDatatype.XSDfloat) || object.getLiteralDatatype().equals(XSDDatatype.XSDdouble))){
 					continue;
 				}
 				fixedTriplePatterns.add(tp);
@@ -713,7 +714,7 @@ public class QALDExperiment {
 		}
 		
 		if(!useSplitting){
-			clusters.add(Sets.newHashSet(triplePatterns));
+			clusters.add(Sets.newHashSet(fixedTriplePatterns));
 		} else {
 			logger.trace("Query too complex. Splitting...");
 			// 2. build clusters for other
@@ -738,7 +739,7 @@ public class QALDExperiment {
 			q.setQueryPattern(el);
 			
 			q = rewriteForVirtuosoDateLiteralBug(q);
-			logger.trace(q);
+			logger.info(q);
 			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
@@ -1005,7 +1006,7 @@ public class QALDExperiment {
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
 			logger.error("Reference SPARQL query returns no result.\n" + referenceSparqlQuery);
-			return 0;
+			System.exit(0);
 		}
 
 		// get the learned resources
