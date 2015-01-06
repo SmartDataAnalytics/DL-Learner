@@ -56,10 +56,18 @@ import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyChange;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -67,6 +75,7 @@ import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
@@ -121,7 +130,7 @@ public class QALDExperiment {
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
 	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
-			"SELECT ?sup WHERE {?sub rdfs:subClassOf+ ?sup .}");
+			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> SELECT ?sup WHERE {?sub rdfs:subClassOf+ ?sup .}");
 	
 	enum Dataset {
 		DBPEDIA, BIOMEDICAL
@@ -290,7 +299,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-					if(!sparqlQuery.contains("currency"))continue;
+//					if(!sparqlQuery.contains("currency"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -667,6 +676,9 @@ public class QALDExperiment {
 		Query query = QueryFactory.create(sparqlQuery);
 		logger.trace("Getting result set for\n" + query);
 		
+		// remove triple patterns with unbound object vars
+		query = removeUnboundObjectVarTriples(query);
+		
 		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
 		QueryUtils queryUtils = new QueryUtils();
@@ -725,6 +737,46 @@ public class QALDExperiment {
 			}
 		}
 		
+		// again split clusters to have only a maximum number of triple patterns
+		int maxNrOfTriplePatternsPerQuery = 10;// number of outgoing triple patterns form the target var in each executed query
+		Set<Set<Triple>> newClusters = new HashSet<Set<Triple>>();
+		for (Set<Triple> cluster : clusters) {
+			int cnt = 0;
+			for (Triple triple : cluster) {
+				if(triple.getSubject().matches(targetVar)) {
+					cnt++;
+				}
+			}
+			
+			if(cnt > maxNrOfTriplePatternsPerQuery) {
+				Set<Triple> newCluster = new HashSet<Triple>();
+				for (Triple triple : cluster) {
+					if(triple.getSubject().matches(targetVar)) {
+						newCluster.add(triple);
+					}
+					if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
+						newClusters.add(newCluster);
+						newCluster = new HashSet<Triple>();
+					}
+				}
+				if(!newCluster.isEmpty()) {
+					newClusters.add(newCluster);
+				}
+			}
+		}
+		for (Set<Triple> cluster : newClusters) {
+			Set<Triple> additionalTriples = new HashSet<Triple>();
+			for (Triple triple : cluster) {
+				if(triple.getObject().isVariable()){
+					additionalTriples.addAll(var2TriplePatterns.get(Var.alloc(triple.getObject())));
+				}
+			}
+			cluster.addAll(additionalTriples);
+		}
+//		clusters = newClusters;
+		
+		
+		
 		Set<String> resources = null;
 		// 3. run query for each cluster
 		for (Set<Triple> cluster : clusters) {
@@ -739,7 +791,7 @@ public class QALDExperiment {
 			q.setQueryPattern(el);
 			
 			q = rewriteForVirtuosoDateLiteralBug(q);
-			logger.info(q);
+			logger.trace(q);
 			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
@@ -752,6 +804,37 @@ public class QALDExperiment {
 		}
 		
 		return new ArrayList<String>(resources);
+	}
+	
+	private Query removeUnboundObjectVarTriples(Query query) {
+		QueryUtils queryUtils = new QueryUtils();
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
+		for (Triple tp : triplePatterns) {
+			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
+		}
+		
+		Iterator<Triple> iterator = triplePatterns.iterator();
+		while (iterator.hasNext()) {
+			Triple triple = iterator.next();
+			Node object = triple.getObject();
+			if(object.isVariable() && !var2TriplePatterns.containsKey(Var.alloc(object))) {
+				iterator.remove();
+			}
+		}
+		
+		Query newQuery = new Query();
+		newQuery.addProjectVars(query.getProjectVars());
+		ElementTriplesBlock el = new ElementTriplesBlock();
+		for (Triple triple : triplePatterns) {
+			el.addTriple(triple);
+		}
+		newQuery.setQuerySelectType();
+		newQuery.setDistinct(true);
+		newQuery.setQueryPattern(el);
+		
+		return newQuery;
 	}
 	
 	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples){
@@ -1056,35 +1139,18 @@ public class QALDExperiment {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String query = "CONSTRUCT {\n" + 
-				"<http://dbpedia.org/resource/Freddie_Hubbard> ?p0 ?o0.\n" + 
-				"?o0 ?p1 ?o1.\n" + 
-				"}\n" + 
-				"WHERE {\n" + 
-				"<http://dbpedia.org/resource/Freddie_Hubbard> ?p0 ?o0.\n" + 
-				"OPTIONAL{\n" + 
-				"?o0 ?p1 ?o1.\n" + 
-				"}}";
-		
-		QueryEngineHTTP qe = new QueryEngineHTTP("http://akswnc3.informatik.uni-leipzig.de:8860/sparql", query);
-		qe.setDefaultGraphURIs(Lists.newArrayList("http://dbpedia.org"));
-		Model model = qe.execConstruct();
-		model.write(new FileOutputStream("/tmp/test.ttl"), "TURTLE", null);
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp("http://akswnc3.informatik.uni-leipzig.de:8860/sparql",
-				"http://dbpedia.org");
-		long timeToLive = TimeUnit.DAYS.toMillis(60);
-		CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend("/tmp/sparql-cache", false, timeToLive);
-		qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(2);
-		
-		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Freddie_Hubbard");
-		cbd.write(new FileOutputStream("/tmp/test2.ttl"), "TURTLE", null);
-//		System.exit(0);
-		
-		
-		
-		
+//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//		String ontologyURL = "file:/tmp/property_inference.owl";
+//		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+//		OWLDataFactory dataFactory = man.getOWLDataFactory();
+//		OWLOntology ontology = man.loadOntology(IRI.create(ontologyURL));
+//		OWLReasonerFactory reasonerFactory = PelletReasonerFactory.getInstance();
+//		OWLReasoner reasoner = reasonerFactory.createNonBufferingReasoner(ontology);
+//		for (OWLObjectProperty op : ontology.getObjectPropertiesInSignature()) {
+//			System.out.println(op + ":" + reasoner.getEquivalentObjectProperties(op).getEntities());
+//		}
+//		
+//		
 		
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getLogger(QALDExperiment.class).addAppender(
@@ -1093,8 +1159,10 @@ public class QALDExperiment {
 		Logger.getLogger(QTL2.class).setLevel(Level.INFO);
 		Logger.getLogger(QALDExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
-		new QALDExperiment(Dataset.DBPEDIA).run();
-//		new QALDExperiment(Dataset.BIOMEDICAL).run();
+		
+//		new QALDExperiment(Dataset.DBPEDIA).run();
+
+		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
 	
 	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
