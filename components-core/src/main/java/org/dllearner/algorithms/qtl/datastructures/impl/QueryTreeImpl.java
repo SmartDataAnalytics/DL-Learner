@@ -1126,7 +1126,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		sb.append(filter).append("\n");
     	}
     	sb.append("}");
-    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
+    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
     	
     	//get the used resources in the query
     	Set<String> usedResources = getUsedResources(query);
@@ -1216,6 +1216,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         			object = "?x" + cnt;
         		} else if(((String)object).startsWith("http://")){
         			object = "<" + object + ">";
+        		}
+        		if(child.isLiteralNode() && object.toString().contains("\n")) {
+        			object = "\"\"" + object + "\"\"";
         		}
         		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){

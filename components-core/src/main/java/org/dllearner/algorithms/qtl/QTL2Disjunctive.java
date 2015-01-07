@@ -305,6 +305,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 	}
 	
+	/**
+	 * Compute a (partial) solution that covers as much positive examples as possible.
+	 * @return
+	 */
 	private EvaluatedQueryTree<String> computeBestPartialSolution(){
 		logger.info("Computing best partial solution...");
 		bestCurrentScore = Double.NEGATIVE_INFINITY;
@@ -314,13 +318,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		EvaluatedQueryTree<String> bestPartialSolutionTree = null;
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
+		
 		while(!partialSolutionTerminationCriteriaSatisfied()){
 			logger.trace("TODO list size: " + todoList.size());
 			//pick best element from todo list
 			currentElement = todoList.poll();
 			
 			currentTree = currentElement.getTree();
-			logger.info("Next tree: "  + currentElement.getTreeScore() + "\n" + currentElement.getEvaluatedDescription().getDescription());
+			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
 			//generate the LGG between the chosen tree and each uncovered positive example
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
 			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
@@ -341,7 +346,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					if(score >= bestCurrentScore){
 						if(score > bestCurrentScore){
 							logger.info("\tGot better solution:" + solution.getTreeScore());
-							logger.info(solution.getEvaluatedDescription().getDescription());
+							logger.info("\t" + solutionAsString(solution.getEvaluatedDescription()));
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
 						}
@@ -352,7 +357,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					} else if(mas >= bestCurrentScore){ // add to todo list if max. achievable score is higher
 						todo(solution);
 					} else {
-						logger.info("Too weak:" + solution.getTreeScore());
+						logger.trace("Too weak:" + solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
@@ -367,7 +372,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
 		
-		logger.info("Best partial solution: " + bestPartialSolution.getDescription().toString().replace("\n", "") + "\n(" + bestPartialSolution.getScore() + ")");
+		logger.info("Best partial solution: " + solutionAsString(bestPartialSolution) + "\n(" + bestPartialSolution.getScore() + ")");
 		
 		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
 		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
@@ -377,6 +382,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		logger.trace("#Subsumption tests: " + subMon.getHits());
 		
 		return bestPartialSolutionTree;
+	}
+	
+	private String solutionAsString(EvaluatedDescription ed) {
+		return ed.getDescription().toString().replace("\n", "").replace("/\\s{2,}/g", " ");
 	}
 	
 	/**
@@ -423,18 +432,18 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			boolean sameTree = evTree.getEvaluatedDescription().getDescription().toString()
 			.equals(solution.getEvaluatedDescription().getDescription().toString());
 			if(sameTree){
-				logger.warn("Not added to TODO list: Already contained in.");
+				logger.trace("Not added to TODO list: Already contained in.");
 				return;
 			}
 		}
 		//check if not already contained in solutions
 		for (EvaluatedQueryTree<String> evTree : currentPartialSolutions) {
 			if(sameTrees(solution.getTree(), evTree.getTree())){
-				logger.warn("Not added to partial solutions list: Already contained in.");
+				logger.trace("Not added to partial solutions list: Already contained in.");
 				return;
 			}
 		}
-		logger.info("Added to TODO list.");
+		logger.trace("Added to TODO list.");
 		todoList.add(solution);
 	}
 	
