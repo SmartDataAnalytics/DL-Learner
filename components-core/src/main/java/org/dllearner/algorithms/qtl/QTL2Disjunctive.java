@@ -126,6 +126,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private boolean tryFullCoverage;
 	//algorithm will terminate immediately when a correct definition is found
 	private boolean stopOnFirstDefinition;
+	//the (approximated) value of noise within the examples
+	private double noise = 0.0;
 	
 	private long startTime;
 	private long partialSolutionStartTime;
@@ -322,11 +324,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
 		
-		Map<EvaluatedQueryTree<String>, TIntSet> index = new HashMap<EvaluatedQueryTree<String>, TIntSet>();
-		int i = 0;
-		for (EvaluatedQueryTree<String> queryTree : todoList) {
-			index.put(queryTree, new TIntHashSet(new int[]{i++}));
-		}
 		Set<TIntSet> processedPermutations = new HashSet<TIntSet>(); 
 		
 		while(!partialSolutionTerminationCriteriaSatisfied()){

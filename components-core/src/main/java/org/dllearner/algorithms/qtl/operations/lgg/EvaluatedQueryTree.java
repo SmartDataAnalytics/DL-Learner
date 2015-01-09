@@ -1,5 +1,8 @@
 package org.dllearner.algorithms.qtl.operations.lgg;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Collection;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -11,8 +14,12 @@ import com.google.common.collect.ComparisonChain;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
+	public static int cnt = 0;
+	
+	private TIntSet parentIDs = new TIntHashSet();
+	
 	// internal identifier
-	int id;
+	private final int id;
 	
 	// the underlying query tree
 	private QueryTree<N> tree;
@@ -36,10 +43,12 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		this.falseNegatives = falseNegatives;
 		this.falsePositives = falsePositives;
 		this.score = score;
+		this.id = cnt++;
 	}
 	
 	public EvaluatedQueryTree(int id, QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
 			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
+		this.id = id;
 		this.tree = tree;
 		this.falseNegatives = falseNegatives;
 		this.falsePositives = falsePositives;
@@ -57,6 +66,13 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	 */
 	public int getId() {
 		return id;
+	}
+	
+	/**
+	 * @return the parentIDs
+	 */
+	public TIntSet getParentIDs() {
+		return parentIDs;
 	}
 	
 	/**
