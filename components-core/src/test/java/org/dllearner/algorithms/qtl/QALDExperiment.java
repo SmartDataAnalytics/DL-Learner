@@ -104,10 +104,13 @@ import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
+import com.hp.hpl.jena.sparql.expr.E_NumAbs;
 import com.hp.hpl.jena.sparql.expr.E_Str;
+import com.hp.hpl.jena.sparql.expr.E_Subtract;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
@@ -130,7 +133,9 @@ public class QALDExperiment {
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
 	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
-			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> SELECT ?sup WHERE {?sub rdfs:subClassOf+ ?sup .}");
+			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+			+ "SELECT ?sup WHERE {"
+			+ "?sub ((rdfs:subClassOf|owl:equivalentClass)|^owl:equivalentClass)+ ?sup .}");
 	
 	enum Dataset {
 		DBPEDIA, BIOMEDICAL
@@ -301,7 +306,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("currency"))continue;
+					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -467,7 +472,10 @@ public class QALDExperiment {
 				examples.addAll(newExamples);
 			} else {
 				// 2. way
-				int nrOfPosExamples2Replace = (int) (noise * examples.size());
+				// replace at least 1 but not more than half of the examples
+				int upperBound = examples.size() / 2;
+				int nrOfPosExamples2Replace = (int) Math.ceil(noise * examples.size());
+				nrOfPosExamples2Replace = Math.min(nrOfPosExamples2Replace, upperBound);
 				logger.info("replacing " + nrOfPosExamples2Replace + "/" + examples.size() + " examples to introduce noise");
 				List<String> posExamples2Replace = new ArrayList<>(examples.subList(0, nrOfPosExamples2Replace));
 				examples.removeAll(posExamples2Replace);
@@ -655,7 +663,7 @@ public class QALDExperiment {
 	}
 	
 	private List<String> getResult(String sparqlQuery){
-//		logger.trace(sparqlQuery);
+		logger.trace(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null) {
 			resources = new ArrayList<String>();
@@ -669,6 +677,7 @@ public class QALDExperiment {
 			QuerySolution qs;
 			while(rs.hasNext()){
 				qs = rs.next();
+				
 				if(qs.get(projectVar).isURIResource()){
 					resources.add(qs.getResource(projectVar).getURI());
 				} else if(qs.get(projectVar).isLiteral()){
@@ -691,13 +700,26 @@ public class QALDExperiment {
 		Query query = QueryFactory.create(sparqlQuery);
 		logger.trace("Getting result set for\n" + query);
 		
-		// remove triple patterns with unbound object vars
-		query = removeUnboundObjectVarTriples(query);
-		
-		Var targetVar = query.getProjectVars().get(0); // should be ?x0
-		
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		// remove triple patterns with unbound object vars
+		if(triplePatterns.size() > 10) {
+			query = removeUnboundObjectVarTriples(query);
+			triplePatterns = queryUtils.extractTriplePattern(query);
+		} 
+		
+	//  Virtuoso bug workaround with literals of type xsd:float and xsd:double
+		for (Iterator<Triple> iterator = triplePatterns.iterator(); iterator.hasNext();) {
+			Node object = iterator.next().getObject();
+			if(object.isLiteral() && object.getLiteralDatatype() != null 
+					&& (object.getLiteralDatatype().equals(XSDDatatype.XSDfloat) || object.getLiteralDatatype().equals(XSDDatatype.XSDdouble))){
+				iterator.remove();
+			}
+		}
+					
+		
+		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
 		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
 		for (Triple tp : triplePatterns) {
@@ -716,12 +738,6 @@ public class QALDExperiment {
 		for (Triple tp : targetVarTriplePatterns) {
 			Node object = tp.getObject();
 			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
-				
-				//  Virtuoso bug workaround with literals of type xsd:float and xsd:double
-				if(object.isLiteral() && object.getLiteralDatatype() != null 
-						&& (object.getLiteralDatatype().equals(XSDDatatype.XSDfloat) || object.getLiteralDatatype().equals(XSDDatatype.XSDdouble))){
-					continue;
-				}
 				fixedTriplePatterns.add(tp);
 			} else {
 				Set<Triple> cluster = new TreeSet<>(new Comparator<Triple>() {
@@ -806,10 +822,18 @@ public class QALDExperiment {
 			q.setQueryPattern(el);
 			
 			q = rewriteForVirtuosoDateLiteralBug(q);
+//			q = rewriteForVirtuosoFloatingPointIssue(q);
 			logger.trace(q);
 			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
+			
+			if(resourcesTmp.isEmpty()) {
+				System.err.println("Empty query result");
+				System.err.println(q);
+//				System.exit(0);
+				return Collections.EMPTY_LIST;
+			}
 			
 			if(resources == null){
 				resources = resourcesTmp;
@@ -876,13 +900,19 @@ public class QALDExperiment {
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
 		String query = superClassesQueryTemplate.toString();
-		QueryExecution qe = qef.createQueryExecution(query);
-		ResultSet rs = qe.execSelect();
-		while(rs.hasNext()){
-			QuerySolution qs = rs.next();
-			superClasses.add(qs.getResource("sup").asNode());
+		
+		try {
+			QueryExecution qe = qef.createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			while(rs.hasNext()){
+				QuerySolution qs = rs.next();
+				superClasses.add(qs.getResource("sup").asNode());
+			}
+			qe.close();
+		} catch (Exception e) {
+			System.out.println(query);
+			throw e;
 		}
-		qe.close();
 		
 		return superClasses;
 	}
@@ -890,11 +920,13 @@ public class QALDExperiment {
 	private int getResultCount(String sparqlQuery){
 		sparqlQuery = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " + sparqlQuery;
 		int cnt = 0;
-		ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
+		QueryExecution qe = qef.createQueryExecution(sparqlQuery);
+		ResultSet rs = qe.execSelect();
 		while(rs.hasNext()){
 			rs.next();
 			cnt++;
 		}
+		qe.close();
 		return cnt;
 	}
 	
@@ -1006,6 +1038,74 @@ public class QALDExperiment {
 		return queries;
 	}
 	
+	private Query rewriteForVirtuosoFloatingPointIssue(Query query){
+		QueryUtils queryUtils = new QueryUtils();
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
+			@Override
+			public int compare(Triple o1, Triple o2) {
+				return ComparisonChain.start().
+				compare(o1.getSubject().toString(), o2.getSubject().toString()).
+				compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+				compare(o1.getObject().toString(), o2.getObject().toString()).
+				result();
+			}
+		});
+		List<ElementFilter> filters = new ArrayList<>();
+		int cnt = 0;
+		// <s p o>
+		for (Iterator<Triple> iter = triplePatterns.iterator(); iter.hasNext();) {
+			Triple tp = iter.next();
+			if(tp.getObject().isLiteral()){
+				RDFDatatype dt = tp.getObject().getLiteralDatatype();
+				if(dt != null && (dt.equals(XSDDatatype.XSDfloat) || dt.equals(XSDDatatype.XSDdouble))){
+					iter.remove();
+					// new triple pattern <s p ?var> 
+					Node objectVar = NodeFactory.createVariable("floatVal" + cnt++);
+					newTriplePatterns.add(Triple.create(
+							tp.getSubject(), 
+							tp.getPredicate(),
+							objectVar)
+							);
+					// add FILTER(STR(?var) = lexicalform(o))
+					System.out.println(tp.getObject());
+					double epsilon = 0.00001;
+					Expr filterExpr = new E_LessThanOrEqual(
+							new E_NumAbs(
+									new E_Subtract(
+											new ExprVar(objectVar), 
+											NodeValue.makeNode(tp.getObject())
+											)
+									),
+									NodeValue.makeDouble(epsilon)
+							);
+					ElementFilter filter = new ElementFilter(filterExpr);
+					filters.add(filter);
+				}
+			}
+		}
+		
+		newTriplePatterns.addAll(triplePatterns);
+		
+		Query q = new Query();
+		q.addProjectVars(query.getProjectVars());
+		ElementTriplesBlock tripleBlock = new ElementTriplesBlock();
+		for (Triple triple : newTriplePatterns) {
+			tripleBlock.addTriple(triple);
+		}
+		ElementGroup eg = new ElementGroup();
+		eg.addElement(tripleBlock);
+		for (ElementFilter filter : filters) {
+			eg.addElementFilter(filter);
+		}
+		q.setQuerySelectType();
+		q.setDistinct(true);
+		q.setQueryPattern(eg);
+		
+		return q;
+	}
+	
 	private Query rewriteForVirtuosoDateLiteralBug(Query query){
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
@@ -1104,14 +1204,16 @@ public class QALDExperiment {
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
 			logger.error("Reference SPARQL query returns no result.\n" + referenceSparqlQuery);
-			System.exit(0);
+//			System.exit(0);
+			return 0;
 		}
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
-			System.exit(0);
+//			System.exit(0);
+			return 0;
 		}
 
 		// get the overlapping resources
@@ -1127,9 +1229,15 @@ public class QALDExperiment {
 	private double recall(String referenceSparqlQuery, String learnedSPARQLQuery) {
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
+		if(referenceResources.isEmpty()){
+			return 0;
+		}
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
+		if(learnedResources.isEmpty()){
+			return 0;
+		}
 
 		int overlap = Sets.intersection(
 				Sets.newHashSet(referenceResources),
@@ -1175,9 +1283,9 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-//		new QALDExperiment(Dataset.DBPEDIA).run();
+		new QALDExperiment(Dataset.DBPEDIA).run();
 
-		new QALDExperiment(Dataset.BIOMEDICAL).run();
+//		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
 	
 	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{

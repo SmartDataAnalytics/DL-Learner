@@ -21,7 +21,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  *
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
-public class QueryTreeHeuristic extends AbstractComponent implements Heuristic, Comparator<EvaluatedQueryTree<String>>{
+public class SimpleQueryTreeHeuristic extends AbstractComponent implements Heuristic, Comparator<EvaluatedQueryTree<String>>{
 	
 	private HeuristicType heuristicType = HeuristicType.PRED_ACC;
 	

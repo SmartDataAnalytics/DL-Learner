@@ -11,15 +11,34 @@ import com.google.common.collect.ComparisonChain;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
+	// internal identifier
+	int id;
+	
+	// the underlying query tree
 	private QueryTree<N> tree;
+	
+	// the positive example trees that are not covered
 	private Collection<QueryTree<N>> falseNegatives;
+	
+	// the negative example trees that are covered
 	private Collection<QueryTree<N>> falsePositives;
+	
+	// the tree score
 	private QueryTreeScore score;
 //	private ScoreTwoValued score;
 	
+	// the corresponding description set lazily
 	private EvaluatedDescription description;
 
 	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
+			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
+		this.tree = tree;
+		this.falseNegatives = falseNegatives;
+		this.falsePositives = falsePositives;
+		this.score = score;
+	}
+	
+	public EvaluatedQueryTree(int id, QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
 			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
 		this.tree = tree;
 		this.falseNegatives = falseNegatives;
@@ -32,28 +51,45 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 //		this.score = score;
 //	}
 	
+	/**
+	 * @return an internal identifier which is assumed to be unique during 
+	 * the complete algorithm run
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * @return the underlying query tree
+	 */
 	public QueryTree<N> getTree() {
 		return tree;
 	}
 	
 	/**
-	 * @return the falseNegatives
+	 * @return the positive examples that are not covered by the query tree
 	 */
 	public Collection<QueryTree<N>> getFalseNegatives() {
 		return falseNegatives;
 	}
 	
 	/**
-	 * @return the falsePositives
+	 * @return the negative examples that are covered by the query tree
 	 */
 	public Collection<QueryTree<N>> getFalsePositives() {
 		return falsePositives;
 	}
 	
+	/**
+	 * @return the score of the query tree
+	 */
 	public double getScore() {
 		return score.getScore();
 	}
 	
+	/**
+	 * @return the score of the query tree
+	 */
 	public QueryTreeScore getTreeScore() {
 		return score;
 	}
@@ -69,7 +105,7 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	
 	/**
-	 * @return the description
+	 * @return the query tree as OWL class expression
 	 */
 	public EvaluatedDescription getEvaluatedDescription() {
 		return asEvaluatedDescription();

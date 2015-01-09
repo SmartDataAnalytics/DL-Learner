@@ -11,6 +11,8 @@ import java.util.Stack;
 
 import org.apache.commons.collections15.ListUtils;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
@@ -325,6 +327,37 @@ public class QueryUtils extends ElementVisitorBase {
 		return triplePattern;
 	}
 	
+	public Query removeUnboundObjectVarTriples(Query query) {
+		QueryUtils queryUtils = new QueryUtils();
+		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
+		
+		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
+		for (Triple tp : triplePatterns) {
+			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
+		}
+		
+		Iterator<Triple> iterator = triplePatterns.iterator();
+		while (iterator.hasNext()) {
+			Triple triple = iterator.next();
+			Node object = triple.getObject();
+			if(object.isVariable() && !var2TriplePatterns.containsKey(Var.alloc(object))) {
+				iterator.remove();
+			}
+		}
+		
+		Query newQuery = new Query();
+		newQuery.addProjectVars(query.getProjectVars());
+		ElementTriplesBlock el = new ElementTriplesBlock();
+		for (Triple triple : triplePatterns) {
+			el.addTriple(triple);
+		}
+		newQuery.setQuerySelectType();
+		newQuery.setDistinct(true);
+		newQuery.setQueryPattern(el);
+		
+		return newQuery;
+	}
+	
 	@Override
 	public void visit(ElementGroup el) {
 		parents.push(el);
@@ -423,7 +456,33 @@ public class QueryUtils extends ElementVisitorBase {
 				"SELECT  ?thumbnail\n" + 
 				"WHERE\n" + 
 				"  { dbp:total !dbo:thumbnail ?thumbnail }");
-		QueryUtils triplePatternExtractor = new QueryUtils();
-		triplePatternExtractor.extractIngoingTriplePatterns(q, q.getProjectVars().get(0));
+		QueryUtils queryUtils = new QueryUtils();
+		queryUtils.extractIngoingTriplePatterns(q, q.getProjectVars().get(0));
+		
+		q = QueryFactory.create("SELECT DISTINCT  ?x0\n" + 
+				"WHERE\n" + 
+				"  { ?x0  <http://dbpedia.org/ontology/activeYearsEndYear>  ?date5 ;\n" + 
+				"         <http://dbpedia.org/ontology/activeYearsStartYear>  ?date4 ;\n" + 
+				"         <http://dbpedia.org/ontology/birthDate>  ?date0 ;\n" + 
+				"         <http://dbpedia.org/ontology/birthPlace>  <http://dbpedia.org/resource/Austria> ;\n" + 
+				"         <http://dbpedia.org/ontology/birthPlace>  <http://dbpedia.org/resource/Austria-Hungary> ;\n" + 
+				"         <http://dbpedia.org/ontology/birthPlace>  <http://dbpedia.org/resource/Vienna> ;\n" + 
+				"         <http://dbpedia.org/ontology/birthYear>  ?date3 ;\n" + 
+				"         <http://dbpedia.org/ontology/deathDate>  ?date2 ;\n" + 
+				"         <http://dbpedia.org/ontology/deathPlace>  <http://dbpedia.org/resource/Berlin> ;\n" + 
+				"         <http://dbpedia.org/ontology/deathPlace>  <http://dbpedia.org/resource/Germany> ;\n" + 
+				"         <http://dbpedia.org/ontology/deathYear>  ?date1 ;\n" + 
+				"         <http://dbpedia.org/ontology/occupation>  <http://dbpedia.org/resource/Hilde_K%C3%B6rber__1> ;\n" + 
+				"         <http://dbpedia.org/ontology/viafId>  \"32259546\" ;\n" + 
+				"         <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  <http://dbpedia.org/ontology/Person> .\n" + 
+				"    FILTER ( ( str(?date0) = \"1906-07-03+02:00\" ) || ( str(?date0) = \"1906-07-03\" ) )\n" + 
+				"    FILTER ( ( str(?date1) = \"1969+02:00\" ) || ( str(?date1) = \"1969-01-01\" ) )\n" + 
+				"    FILTER ( ( str(?date2) = \"1969-05-31+02:00\" ) || ( str(?date2) = \"1969-05-31\" ) )\n" + 
+				"    FILTER ( ( str(?date3) = \"1906+02:00\" ) || ( str(?date3) = \"1906-01-01\" ) )\n" + 
+				"    FILTER ( ( str(?date4) = \"1930+02:00\" ) || ( str(?date4) = \"1930-01-01\" ) )\n" + 
+				"    FILTER ( ( str(?date5) = \"1964+02:00\" ) || ( str(?date5) = \"1964-01-01\" ) )\n" + 
+				"  }");
+		
+		System.out.println(queryUtils.removeUnboundObjectVarTriples(q));
 	}
 }

@@ -1,5 +1,8 @@
 package org.dllearner.algorithms.qtl;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -99,7 +102,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private EvaluatedDescription currentBestSolution;
 	
-	private QueryTreeHeuristic heuristic;
+	private SimpleQueryTreeHeuristic heuristic;
 	
 	
 	//Parameters
@@ -189,7 +192,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		generateQueryTrees();
 		
 		if(heuristic == null){
-			heuristic = new QueryTreeHeuristic();
+			heuristic = new SimpleQueryTreeHeuristic();
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
@@ -319,24 +322,33 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
 		
+		Map<EvaluatedQueryTree<String>, TIntSet> index = new HashMap<EvaluatedQueryTree<String>, TIntSet>();
+		int i = 0;
+		for (EvaluatedQueryTree<String> queryTree : todoList) {
+			index.put(queryTree, new TIntHashSet(new int[]{i++}));
+		}
+		Set<TIntSet> processedPermutations = new HashSet<TIntSet>(); 
+		
 		while(!partialSolutionTerminationCriteriaSatisfied()){
-			logger.trace("TODO list size: " + todoList.size());
-			//pick best element from todo list
+			logger.trace("ToDo list size: " + todoList.size());
+			// pick best element from todo list
 			currentElement = todoList.poll();
-			
 			currentTree = currentElement.getTree();
 			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
-			//generate the LGG between the chosen tree and each uncovered positive example
+			
+			// generate the LGG between the chosen tree and each uncovered positive example
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
 			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
 				QueryTree<String> uncoveredTree = it.next();
 				
-				//compute the LGG
+				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
+				
+				// compute the LGG
 				lggMon.start();
 				QueryTree<String> lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				lggMon.stop();
 				
-				//evaluate the LGG
+				// evaluate the LGG
 				Set<EvaluatedQueryTree<String>> solutions = evaluate(lgg, true);
 				for (EvaluatedQueryTree<String> solution : solutions) {
 					expressionTests++;
@@ -350,11 +362,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
 						}
-						//add to todo list, if not already contained in todo list or solution list
+						// add to ToDo list, if not already contained in ToDo list or solution list
 						if(mas > score){
 							todo(solution);
 						}
-					} else if(mas >= bestCurrentScore){ // add to todo list if max. achievable score is higher
+					} else if(mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
 						todo(solution);
 					} else {
 						logger.trace("Too weak:" + solution.getTreeScore());
@@ -385,20 +397,24 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private String solutionAsString(EvaluatedDescription ed) {
-		return ed.getDescription().toString().replace("\n", "").replace("/\\s{2,}/g", " ");
+		return ed.getDescription().toString().replace("\n", "").replaceAll("\\\\s{2,}", " ");
 	}
 	
 	/**
-	 * Initializes the todo list with all distinct trees contained in the given list {@code trees}.
-	 * Firstly, distinct trees are computed and afterwards, for each tree a score is computed.
-	 * @param trees
+	 * Initializes the ToDo list with all distinct trees contained in the given list of positive
+	 * example trees {@code posExamples} and negative example trees {@code negExamples}.
+	 * First, distinct trees are computed and afterwards, for each tree an initial score will be
+	 *  computed.
+	 * @param posExamples the positive example trees
+	 * @param negExamples the negative example trees
 	 */
 	private void initTodoList(List<QueryTree<String>> posExamples, List<QueryTree<String>> negExamples){
 		todoList = new PriorityQueue<EvaluatedQueryTree<String>>();
 		currentPartialSolutions = new TreeSet<EvaluatedQueryTree<String>>();
 //		EvaluatedQueryTree<String> dummy = new EvaluatedQueryTree<String>(new QueryTreeImpl<String>((N)"TOP"), trees, 0d);
 //		todoList.add(dummy);
-		//compute distinct trees
+		
+		// compute distinct trees, i.e. check if some of the trees already cover others
 		Collection<QueryTree<String>> distinctTrees = new ArrayList<QueryTree<String>>();
 		for (QueryTree<String> queryTree : posExamples) {
 			boolean distinct = true;
@@ -414,6 +430,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				distinctTrees.add(queryTree);
 			}
 		}
+		
+		// compute an initial score
 		for (QueryTree<String> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
 			EvaluatedQueryTree<String> evaluatedQueryTree = evaluateSimple(queryTree, false);
 			todoList.add(evaluatedQueryTree);
@@ -931,14 +949,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	/**
 	 * @return the heuristic
 	 */
-	public QueryTreeHeuristic getHeuristic() {
+	public SimpleQueryTreeHeuristic getHeuristic() {
 		return heuristic;
 	}
 	
 	/**
 	 * @param heuristic the heuristic to set
 	 */
-	public void setHeuristic(QueryTreeHeuristic heuristic) {
+	public void setHeuristic(SimpleQueryTreeHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
 	
