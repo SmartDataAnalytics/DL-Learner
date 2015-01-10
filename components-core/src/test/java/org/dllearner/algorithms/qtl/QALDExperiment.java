@@ -1210,8 +1210,10 @@ public class QALDExperiment {
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
+		System.err.println(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
+			System.err.println(learnedSPARQLQuery);
 //			System.exit(0);
 			return 0;
 		}

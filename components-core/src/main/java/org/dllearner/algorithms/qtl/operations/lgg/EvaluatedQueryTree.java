@@ -4,6 +4,8 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
@@ -36,6 +38,9 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	// the corresponding description set lazily
 	private EvaluatedDescription description;
+	
+	// the query trees of which the underlying query tree was generated from
+	private Set<QueryTree<N>> baseQueryTrees = new HashSet<>();
 
 	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
 			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
@@ -54,11 +59,23 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		this.falsePositives = falsePositives;
 		this.score = score;
 	}
+	
 //	
 //	public EvaluatedQueryTree(QueryTree<N> tree, ScoreTwoValued score) {
 //		this.tree = tree;
 //		this.score = score;
 //	}
+	
+	public void setBaseQueryTrees(Set<QueryTree<N>> baseQueryTrees) {
+		this.baseQueryTrees = baseQueryTrees;
+	}
+	
+	/**
+	 * @return the baseQueryTrees
+	 */
+	public Set<QueryTree<N>> getBaseQueryTrees() {
+		return baseQueryTrees;
+	}
 	
 	/**
 	 * @return an internal identifier which is assumed to be unique during 

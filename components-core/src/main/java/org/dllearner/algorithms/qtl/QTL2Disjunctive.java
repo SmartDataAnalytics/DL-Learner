@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.qtl;
 
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 
@@ -324,14 +326,22 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
 		
-		Set<TIntSet> processedPermutations = new HashSet<TIntSet>(); 
+		// generate id for each pos and neg example tree
+		TObjectIntMap<QueryTree<String>> index = new TObjectIntHashMap<QueryTree<String>>(this.currentPosExampleTrees.size() + this.currentNegExampleTrees.size());
+		Set<Set<QueryTree<String>>> processedCombinations = new HashSet<>(); 
 		
 		while(!partialSolutionTerminationCriteriaSatisfied()){
 			logger.trace("ToDo list size: " + todoList.size());
 			// pick best element from todo list
 			currentElement = todoList.poll();
 			currentTree = currentElement.getTree();
+			
 			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
+			String s = "";
+			for (QueryTree<String> tree : currentElement.getBaseQueryTrees()) {
+				s += this.tree2Individual.get(tree) + ",";
+			}
+			System.out.println(s);
 			
 			// generate the LGG between the chosen tree and each uncovered positive example
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
@@ -339,6 +349,17 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				QueryTree<String> uncoveredTree = it.next();
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
+				Set<QueryTree<String>> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
+				baseQueryTrees.add(uncoveredTree);
+				if(!processedCombinations.add(baseQueryTrees)) {
+					System.err.println("skipping ");
+					continue;
+				}
+//				System.err.print("add ");
+//				for (QueryTree<String> tree : baseQueryTrees) {
+//					System.err.print(this.tree2Individual.get(tree) + ",");
+//				}
+//				System.err.println();
 				
 				// compute the LGG
 				lggMon.start();
@@ -348,6 +369,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				// evaluate the LGG
 				Set<EvaluatedQueryTree<String>> solutions = evaluate(lgg, true);
 				for (EvaluatedQueryTree<String> solution : solutions) {
+					solution.setBaseQueryTrees(baseQueryTrees);
+					
 					expressionTests++;
 					double score = solution.getScore();
 					double mas = heuristic.getMaximumAchievableScore(solution);
@@ -360,16 +383,17 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 							bestPartialSolutionTree = solution;
 						}
 						// add to ToDo list, if not already contained in ToDo list or solution list
-						if(mas > score){
+						if(bestCurrentScore == 1.0 || mas > score){
 							todo(solution);
 						}
-					} else if(mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
+					} else if(bestCurrentScore == 1.0 || mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
 						todo(solution);
 					} else {
 						logger.trace("Too weak:" + solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
+						todo(solution);
 					}
 					
 					currentPartialSolutions.add(solution);
@@ -431,16 +455,17 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		// compute an initial score
 		for (QueryTree<String> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
 			EvaluatedQueryTree<String> evaluatedQueryTree = evaluateSimple(queryTree, false);
+			evaluatedQueryTree.setBaseQueryTrees(Collections.singleton(queryTree));
 			todoList.add(evaluatedQueryTree);
 		}
 	}
 	
 	/**
-	 * Add tree to todo list if not already contained in that list or the solutions.
+	 * Add tree to ToDo list if not already contained in that list or the solutions.
 	 * @param solution
 	 */
 	private void todo(EvaluatedQueryTree<String> solution){
-		//check if not already contained in todo list
+		// check if not already contained in ToDo list
 		for (EvaluatedQueryTree<String> evTree : todoList) {
 			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
 //			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
