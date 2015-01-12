@@ -1,6 +1,7 @@
 package org.dllearner.utilities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,15 +9,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.Element;
@@ -28,8 +37,16 @@ import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.sparql.util.VarUtils;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class QueryUtils extends ElementVisitorBase {
+	
+private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);	
+
+	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
+			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+			+ "SELECT ?sup WHERE {"
+			+ "?sub ((rdfs:subClassOf|owl:equivalentClass)|^owl:equivalentClass)+ ?sup .}");
 	
 	private Set<Triple> triplePattern;
 	private Set<Triple> optionalTriplePattern;
@@ -193,8 +210,25 @@ public class QueryUtils extends ElementVisitorBase {
 	}
 	
 	/**
+	 * Returns all triple patterns in given SPARQL query that contain the
+	 * given predicate. 
+	 * @param query the SPARQL query.
+	 * @param predicate the predicate
+	 * @return
+	 */
+	public Set<Triple> extractTriplePatternsWithPredicate(Query query, Node predicate){
+		// get all triple patterns
+		Set<Triple> triplePatterns = extractTriplePattern(query);
+		
+		// filter by predicate
+		triplePatterns = triplePatterns.stream().filter(t -> t.predicateMatches(predicate)).collect(Collectors.toSet());
+		
+		return triplePatterns;
+	}
+	
+	/**
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
-	 * the ingoing and outgoing triple patterns.
+	 * the incoming and outgoing triple patterns.
 	 * @param query The SPARQL query.
 	 * @param node
 	 * @return
@@ -356,6 +390,66 @@ public class QueryUtils extends ElementVisitorBase {
 		newQuery.setQueryPattern(el);
 		
 		return newQuery;
+	}
+	
+	/**
+	 * Removes triple patterns of form (s rdf:type A) if there exists a
+	 * triple pattern (s rdf:type B) such that the underlying
+	 * knowledge base entails (B rdfs:subClassOf A).
+	 * @param qef
+	 * @param query
+	 */
+	public void filterOutGeneralTypes(QueryExecutionFactory qef, Query query){
+		// extract all rdf:type triple patterns
+		Set<Triple> typeTriplePatterns = extractTriplePatternsWithPredicate(query, RDF.type.asNode());
+		
+		// group by subject
+		Multimap<Node, Triple> subject2TriplePatterns = HashMultimap.create();
+		for (Triple tp : typeTriplePatterns) {
+			subject2TriplePatterns.put(tp.getSubject(), tp);
+		}
+		
+		// keep the most specific types for each subject
+		for (Node subject : subject2TriplePatterns.keySet()) {
+			Collection<Triple> triplePatterns = subject2TriplePatterns.get(subject);
+			Collection<Triple> triplesPatterns2Remove = new HashSet<Triple>();
+			
+			for (Triple tp : triplePatterns) {
+				if(!triplesPatterns2Remove.contains(tp)) {
+					// get all super classes for the triple object
+					Set<Node> superClasses = getSuperClasses(qef, tp.getObject());
+					
+					// remove triple patterns that have one of the super classes as object
+					triplesPatterns2Remove.addAll(
+							triplePatterns.stream().filter(t -> superClasses.contains(t.getObject())).collect(Collectors.toSet()));
+				}
+			}
+			
+			// remove triple patterns
+			triplePatterns.removeAll(triplesPatterns2Remove);
+		}
+	}
+	
+	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
+		Set<Node> superClasses = new HashSet<Node>();
+		
+		superClassesQueryTemplate.setIri("sub", cls.getURI());
+		
+		String query = superClassesQueryTemplate.toString();
+		
+		try {
+			QueryExecution qe = qef.createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			while(rs.hasNext()){
+				QuerySolution qs = rs.next();
+				superClasses.add(qs.getResource("sup").asNode());
+			}
+			qe.close();
+		} catch (Exception e) {
+			logger.error("ERROR. Getting super classes of " + cls + " failed.", e);
+		}
+		
+		return superClasses;
 	}
 	
 	@Override

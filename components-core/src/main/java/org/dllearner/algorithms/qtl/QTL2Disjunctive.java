@@ -337,11 +337,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			currentTree = currentElement.getTree();
 			
 			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
-			String s = "";
-			for (QueryTree<String> tree : currentElement.getBaseQueryTrees()) {
-				s += this.tree2Individual.get(tree) + ",";
-			}
-			System.out.println(s);
 			
 			// generate the LGG between the chosen tree and each uncovered positive example
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
@@ -352,14 +347,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				Set<QueryTree<String>> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
 				baseQueryTrees.add(uncoveredTree);
 				if(!processedCombinations.add(baseQueryTrees)) {
-					System.err.println("skipping ");
 					continue;
 				}
-//				System.err.print("add ");
-//				for (QueryTree<String> tree : baseQueryTrees) {
-//					System.err.print(this.tree2Individual.get(tree) + ",");
-//				}
-//				System.err.println();
 				
 				// compute the LGG
 				lggMon.start();

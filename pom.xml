@@ -10,7 +10,7 @@
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
 		<!-- tell the compiler we can use 1.6 -->
-		<compiler.version>1.7</compiler.version>
+		<compiler.version>1.8</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- convenience to define GWT version in one place -->
 		<gwt.version>2.3.0</gwt.version>
@@ -63,7 +63,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>2.0.2</version>
 					<configuration>
-						<!--We use 1.6 -->
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>

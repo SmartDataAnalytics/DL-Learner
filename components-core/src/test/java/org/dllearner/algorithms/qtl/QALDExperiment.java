@@ -32,6 +32,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -306,7 +307,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-					if(!sparqlQuery.contains("Cruise"))continue;
+//					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -876,21 +877,25 @@ public class QALDExperiment {
 		return newQuery;
 	}
 	
-	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples){
-		for (Var var : var2Triples.keySet()) {
-			Collection<Triple> triples = var2Triples.get(var);
-			Set<Node> types2Remove = new HashSet<>();
-			for (Triple triple : triples) {
-				if(triple.getPredicate().matches(RDF.type.asNode()) && triple.getObject().isURI()){
-					types2Remove.addAll(getSuperClasses(triple.getObject()));
+	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples) {
+		// keep the most specific types for each subject
+		for (Var subject : var2Triples.keySet()) {
+			Collection<Triple> triplePatterns = var2Triples.get(subject);
+			Collection<Triple> triplesPatterns2Remove = new HashSet<Triple>();
+
+			for (Triple tp : triplePatterns) {
+				if (tp.getObject().isURI() && !triplesPatterns2Remove.contains(tp)) {
+					// get all super classes for the triple object
+					Set<Node> superClasses = getSuperClasses(tp.getObject());
+
+					// remove triple patterns that have one of the super classes as object
+					triplesPatterns2Remove.addAll(triplePatterns.stream()
+							.filter(t -> superClasses.contains(t.getObject())).collect(Collectors.toSet()));
 				}
 			}
-			for (Iterator<Triple> iterator = triples.iterator(); iterator.hasNext();) {
-				Triple triple = iterator.next();
-				if(triple.getPredicate().matches(RDF.type.asNode()) && types2Remove.contains(triple.getObject())){
-					iterator.remove();
-				}
-			}
+			
+			// remove triple patterns
+			triplePatterns.removeAll(triplesPatterns2Remove);
 		}
 	}
 	
@@ -1210,7 +1215,6 @@ public class QALDExperiment {
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
-		System.err.println(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			System.err.println(learnedSPARQLQuery);
