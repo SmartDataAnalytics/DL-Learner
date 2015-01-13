@@ -1,12 +1,11 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl;
+package org.dllearner.algorithms.qtl.heuristics;
 
 import java.util.Comparator;
 import java.util.Set;
 
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentAnn;
@@ -17,28 +16,16 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-
 /**
  * @author Lorenz Buehmann
  *
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
-public class ComplexQueryTreeHeuristic extends AbstractComponent implements Heuristic, Comparator<EvaluatedQueryTree<String>>{
+public class SimpleQueryTreeHeuristic extends AbstractComponent implements Heuristic, Comparator<EvaluatedQueryTree<String>>{
 	
 	private HeuristicType heuristicType = HeuristicType.PRED_ACC;
 	
-	private double posExamplesWeight = 1.0;
-
-	private QueryExecutionFactory qef;
-	
-	public ComplexQueryTreeHeuristic(QueryExecutionFactory qef) {
-		this.qef = qef;
-	}
+	private double posExamplesWeight = 1;
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
@@ -159,20 +146,6 @@ public class ComplexQueryTreeHeuristic extends AbstractComponent implements Heur
 		} else {
 			return tree1.asEvaluatedDescription().getDescription().compareTo(tree2.asEvaluatedDescription().getDescription());
 		}
-	}
-	
-	private int getResultCount(EvaluatedQueryTree<String> evaluatedQueryTree) {
-		int cnt = 0;
-		String query = evaluatedQueryTree.getTree().toSPARQLQueryString();
-		QueryExecution qe = qef.createQueryExecution(query);
-		ResultSet rs = qe.execSelect();
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			cnt++;
-		}
-		qe.close();
-		return cnt;
 	}
 	
 	/**
