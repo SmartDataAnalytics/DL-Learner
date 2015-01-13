@@ -19,6 +19,8 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
@@ -35,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.examples.DBpediaExample;
 import org.dllearner.algorithms.qtl.examples.LinkedGeoDataExample;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
@@ -340,6 +343,21 @@ public class LGGTest {
 			}
 			
 		}
+	}
+	
+	@Test
+	public void testLGGSymmetry() throws Exception {
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+
+        QueryTreeImpl<String> subtree2 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        tree2.addChild(subtree2, "p");
+        
+        LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+        
+        QueryTree<String> lgg1_2 = lggGenerator.getLGG(tree1, tree2);
+		QueryTree<String> lgg2_1 = lggGenerator.getLGG(tree2, tree1);
+		assertTrue(lgg1_2.sameType(lgg2_1));
 	}
 
 
