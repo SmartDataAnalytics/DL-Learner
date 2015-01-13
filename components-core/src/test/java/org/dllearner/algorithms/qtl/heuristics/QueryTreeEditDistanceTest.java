@@ -46,4 +46,45 @@ public class QueryTreeEditDistanceTest {
         double expectedDistance = 1;
         assertEquals(QueryTreeEditDistance.getDistance(tree1, tree2), expectedDistance);
     }
+    
+    @Test
+    public void test05() {
+    	QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+
+        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+        tree2.addChild(new QueryTreeImpl<String>("B1", NodeType.RESOURCE), "p");
+        
+        double distance1_2 = QueryTreeEditDistance.getDistanceApprox(tree1, tree2);
+        double distance2_1 = QueryTreeEditDistance.getDistanceApprox(tree2, tree1);
+        
+        assertEquals(distance1_2, distance2_1);
+    }
+    
+    @Test
+    public void test06() {
+    	QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+
+        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+        tree2.addChild(new QueryTreeImpl<String>("B1", NodeType.RESOURCE), "p");
+        
+        QueryTreeImpl<String> tree3 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+        tree3.addChild(new QueryTreeImpl<String>("C1", NodeType.RESOURCE), "p");
+        tree3.addChild(new QueryTreeImpl<String>("C2", NodeType.RESOURCE), "p");
+
+        System.out.println(tree1.getStringRepresentation());
+        System.out.println(tree2.getStringRepresentation());
+        System.out.println(tree3.getStringRepresentation());
+        
+        double distance1_2 = QueryTreeEditDistance.getDistanceApprox(tree1, tree2);
+        double distance1_3 = QueryTreeEditDistance.getDistanceApprox(tree1, tree3);
+        double distance2_3 = QueryTreeEditDistance.getDistanceApprox(tree2, tree3);
+        
+        System.out.println("d(t1,t2) = " + distance1_2);
+        System.out.println("d(t1,t3) = " + distance1_3);
+        System.out.println("d(t2,t3) = " + distance2_3);
+        
+        boolean moreSimilar = distance1_2 < distance1_3;
+        
+        assertEquals(distance1_2 < distance1_3, moreSimilar);
+    }
 }

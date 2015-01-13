@@ -205,7 +205,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             			label += "Values: " + object.getLiterals();
             		}
             	}
-            	label += object.isResourceNode() + "," + object.isLiteralNode();
+//            	label += object.isResourceNode() + "," + object.isLiteralNode();
                 return  label;
             }
         };

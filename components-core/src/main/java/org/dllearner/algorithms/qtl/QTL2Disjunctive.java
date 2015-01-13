@@ -164,6 +164,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		this.model = model;
 //	}
 	
+	/**
+	 * Copy constructor.
+	 * @param qtl
+	 */
 	public QTL2Disjunctive(QTL2Disjunctive qtl) {
 		super(qtl.getLearningProblem(), qtl.getReasoner());
 		this.model = ModelFactory.createDefaultModel();
