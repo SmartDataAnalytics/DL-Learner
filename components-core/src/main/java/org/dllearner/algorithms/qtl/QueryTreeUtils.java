@@ -67,6 +67,57 @@ public class QueryTreeUtils {
 		return sb.toString();
 	}
 	
+	/**
+	 * Returns all nodes in the given query tree, i.e. the closure of 
+	 * the children.
+	 * @param tree
+	 * @return 
+	 */
+	public static <N> List<QueryTree<N>> getNodes(QueryTree<N> tree) {
+		return tree.getChildrenClosure();
+	}
+	
+	/**
+	 * Returns the number of nodes in the given query tree, i.e. the number of 
+	 * the children closure.
+	 * @param tree
+	 * @return 
+	 */
+	public static <N> int getNrOfNodes(QueryTree<N> tree) {
+		return tree.getChildrenClosure().size();
+	}
+	
+	/**
+	 * Returns the set of edges that occur in the given query tree, i.e. the 
+	 * closure of the edges.
+	 * @param tree
+	 * @return the set of edges in the query tree
+	 */
+	public static <N> List<QueryTree<N>> getEdges(QueryTree<N> tree) {
+		return tree.getChildrenClosure();
+	}
+	
+	/**
+	 * Returns the number of edges that occur in the given query tree, which
+	 * is obviously n-1 where n is the number of nodes.
+	 * @param tree
+	 * @return the set of edges in the query tree
+	 */
+	public static <N> int getNrOfEdges(QueryTree<N> tree) {
+		return getNrOfNodes(tree) - 1;
+	}
+	
+	/**
+	 * Returns the complexity of the given query tree. 
+	 * NOTE: The current implementation just returns (1 + log(|T|)) where 
+	 * |T| denotes the number of nodes of query tree T.
+	 * @param tree
+	 * @return the set of edges in the query tree
+	 */
+	public static <N> double getComplexity(QueryTree<N> tree) {
+		return 1 + Math.log(getNrOfNodes(tree));
+	}
+	
 	
 
 }
