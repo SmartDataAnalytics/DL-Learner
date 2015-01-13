@@ -265,19 +265,19 @@ public class QALDExperiment {
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
-		int minNrOfExamples = 3;
-		int maxNrOfExamples = 10;
+		int minNrOfExamples = 5;
+		int maxNrOfExamples = 5;
 		int stepSize = 2;
 		
 		double[] noiseIntervals = {
 				0.0,
 				0.2,
-				0.4,
+//				0.4,
 //				0.6
 				};
 			
 		// loop of number of positive examples
-		for (int nrOfExamples = minNrOfExamples; nrOfExamples < maxNrOfExamples; nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples)) {
+		for (int nrOfExamples = minNrOfExamples; nrOfExamples <= maxNrOfExamples; nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples)) {
 			
 			// loop over noise value
 			for (int i = 0; i < noiseIntervals.length; i++) {
@@ -665,6 +665,7 @@ public class QALDExperiment {
 	
 	private List<String> getResult(String sparqlQuery){
 		logger.trace(sparqlQuery);
+		System.out.println(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null) {
 			resources = new ArrayList<String>();

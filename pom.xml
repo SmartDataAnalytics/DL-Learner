@@ -31,7 +31,6 @@
 		<module>interfaces</module>
 		<module>scripts</module>
 		<module>protege</module>
-		<module>evalplugin</module>
   </modules>
 
 
