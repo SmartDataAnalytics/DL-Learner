@@ -1683,6 +1683,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.exit(0);
 	}
 	
+	//TODO implement numerical splitting
 	/*
 	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
 		Set<T> valuesSet = new TreeSet<T>();
