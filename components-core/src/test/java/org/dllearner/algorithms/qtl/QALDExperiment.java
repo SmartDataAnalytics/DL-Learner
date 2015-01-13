@@ -665,7 +665,6 @@ public class QALDExperiment {
 	
 	private List<String> getResult(String sparqlQuery){
 		logger.trace(sparqlQuery);
-		System.out.println(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null) {
 			resources = new ArrayList<String>();
