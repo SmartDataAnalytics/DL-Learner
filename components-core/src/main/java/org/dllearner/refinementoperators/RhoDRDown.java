@@ -1683,6 +1683,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.exit(0);
 	}
 	
+	/*
 	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
 		Set<T> valuesSet = new TreeSet<T>();
 //		Set<OWLIndividual> individuals = rs.getIndividuals();
@@ -1723,6 +1724,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				add(BigDecimal.valueOf(number2.doubleValue()).divide(
 						BigDecimal.valueOf(0.5d)));
 	}
+	*/
 	
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;

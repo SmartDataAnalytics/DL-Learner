@@ -3,22 +3,15 @@
  */
 package org.dllearner.utilities.split;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
 import org.springframework.core.GenericTypeResolver;
 
 /**
@@ -124,13 +117,13 @@ public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends A
 	 * TODO: How to identify the splitting strategy here? For numbers we can use the avg, 
 	 * but for time values?
 	 */
-	private T computeSplitValue(T priorValue, T subsequentValue) {
-		if(clazz == Double.class){
-			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
-		} else if(clazz == Integer.class) {
-			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
-		}
-		throw new UnsupportedOperationException("Split of type " + clazz + " not implemented yet.");
-	}
+//	private T computeSplitValue(T priorValue, T subsequentValue) {
+//		if(clazz == Double.class){
+//			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
+//		} else if(clazz == Integer.class) {
+//			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
+//		}
+//		throw new UnsupportedOperationException("Split of type " + clazz + " not implemented yet.");
+//	}
 
 }
