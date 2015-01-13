@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl;
+package org.dllearner.algorithms.qtl.heuristics;
 
 import java.util.Comparator;
 import java.util.Set;
