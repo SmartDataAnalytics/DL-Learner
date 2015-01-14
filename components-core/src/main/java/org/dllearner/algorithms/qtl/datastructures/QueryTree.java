@@ -28,6 +28,7 @@ import java.util.Set;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -178,5 +179,10 @@ public interface QueryTree<N> {
 	 * @return
 	 */
 	boolean isSubsumedBy(QueryTree<N> tree, LiteralNodeSubsumptionStrategy s);
+
+	/**
+	 * @return
+	 */
+	NodeType getNodeType();
     
 }

@@ -162,7 +162,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		}
 		
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		int depth = 0;
 		fillTree(s.toString(), tree, resource2Statements, depth);
 				
@@ -192,7 +192,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements);	
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		int depth = 0;
 		fillTree(s.toString(), tree, resource2Statements, depth);
 				
@@ -294,7 +294,7 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements);	
 		
-		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		tree.setId(nodeId++);
 		int depth = 0;
 		fillTree(s.toString(), tree, resource2Statements, depth);
@@ -332,7 +332,6 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 						subTree = new QueryTreeImpl<String>(sb.toString(), NodeType.LITERAL);
 //						subTree = new QueryTreeImpl<String>(lit.toString());
 						subTree.setId(nodeId++);
-						subTree.setIsLiteralNode(true);
 						if(lit.getDatatype() == XSDDatatype.XSDinteger 
 								|| lit.getDatatype() == XSDDatatype.XSDdouble 
 								|| lit.getDatatype() == XSDDatatype.XSDdate
@@ -347,7 +346,6 @@ public class QueryTreeFactoryImpl implements QueryTreeFactory<String> {
 					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
 							subTree = new QueryTreeImpl<String>(st.getObject().toString(), NodeType.RESOURCE);
-							subTree.setIsResourceNode(true);
 							subTree.setId(nodeId++);
 							tree.addChild(subTree, st.getPredicate().toString());
 							if(depth < maxDepth){

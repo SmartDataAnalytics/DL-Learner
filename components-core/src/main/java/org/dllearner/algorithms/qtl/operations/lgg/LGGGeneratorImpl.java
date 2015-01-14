@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -145,7 +146,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //			return tree1;
 		}
 		//if NO we have to create a new tree as LGG and compute the LGG for the all child node pairs having the same edge to the parent nodes
-		lgg = new QueryTreeImpl<N>((N) "?");
+		lgg = new QueryTreeImpl<N>((N) "?", NodeType.VARIABLE);
 //		if(tree1.isResourceNode() && tree2.isResourceNode()){
 //			lgg.setIsResourceNode(true);
 //		}

@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 
 /**
  * @author Lorenz Buehmann
@@ -78,6 +81,23 @@ public class QueryTreeUtils {
 	}
 	
 	/**
+	 * Returns all nodes of the given node type in the query tree, i.e. 
+	 * the closure of the children.
+	 * @param tree
+	 * @return 
+	 */
+	public static <N> List<QueryTree<N>> getNodes(QueryTree<N> tree, NodeType nodeType) {
+		// get all nodes
+		List<QueryTree<N>> nodes = tree.getChildrenClosure();
+		
+		// filter by type
+		nodes = nodes.stream().filter(
+				n -> n.getNodeType() == nodeType)
+				.collect(Collectors.toList());
+		return nodes;
+	}
+	
+	/**
 	 * Returns the number of nodes in the given query tree, i.e. the number of 
 	 * the children closure.
 	 * @param tree
@@ -109,13 +129,46 @@ public class QueryTreeUtils {
 	
 	/**
 	 * Returns the complexity of the given query tree. 
-	 * NOTE: The current implementation just returns (1 + log(|T|)) where 
-	 * |T| denotes the number of nodes of query tree T.
+	 * <div>
+	 * Given a query tree T = (V,E) comprising a set V of vertices or nodes 
+	 * together with a set E of edges or links. Moreover we have that 
+	 * V = U ∪ L ∪ VAR , where U denotes the nodes that are URIs, L denotes
+	 * the nodes that are literals and VAR contains the nodes that are variables.
+	 * We define the complexity c(T) of query tree T as follows:
+	 * </div>
+	 * <code>c(T) = 1 + log(|U| * α + |L| * β + |VAR| * γ) </code>
+	 * <div>
+	 * with <code>α, β, γ</code> being weight of the particular node types.
+	 * </div>
 	 * @param tree
 	 * @return the set of edges in the query tree
 	 */
 	public static <N> double getComplexity(QueryTree<N> tree) {
-		return 1 + Math.log(getNrOfNodes(tree));
+		
+		double varNodeWeight = 0.8;
+		double resourceNodeWeight = 1.0;
+		double literalNodeWeight = 1.0;
+		
+		double complexity = 0;
+		
+		List<QueryTree<N>> nodes = getNodes(tree);
+		for (QueryTree<N> node : nodes) {
+			switch (node.getNodeType()) {
+			case VARIABLE:
+				complexity += varNodeWeight;
+				break;
+			case RESOURCE:
+				complexity += resourceNodeWeight;
+				break;
+			case LITERAL:
+				complexity += literalNodeWeight;
+				break;
+			default:
+				break;
+			}
+		}
+		
+		return 1 + Math.log(complexity);
 	}
 	
 	

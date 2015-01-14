@@ -175,8 +175,6 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 		while(it.hasNext()){
 			st = it.next();
 			String newSimilarToken = ((KeywordBasedStatementFilter2)keepFilter).getStatement2TokenMap().get(st);
-			System.out.println(st);
-			System.out.println(newSimilarToken);
 			if(!newSimilarToken.equals(oldSimilarToken) || newSimilarToken.equals("ALL")){
 				statements = resource2Statements.get(st.getSubject().toString());
 				if(statements == null){

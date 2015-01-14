@@ -42,7 +42,6 @@ import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
@@ -152,6 +151,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     private boolean isBlankNode = false;
     
     private Set<Literal> literals = new HashSet<Literal>();
+
+	private NodeType nodeType;
     
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -188,6 +189,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     public QueryTreeImpl(N userObject, NodeType nodeType, int id) {
         this.userObject = userObject;
+		this.nodeType = nodeType;
         this.id = id;
         children = new ArrayList<QueryTreeImpl<N>>();
         child2EdgeMap = new HashMap<QueryTree<N>, Object>();
@@ -222,7 +224,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     public QueryTreeImpl(QueryTree<N> tree){
-    	this(tree.getUserObject());
+    	this(tree.getUserObject(), tree.getNodeType());
     	
 //    	this.userObject = tree.getUserObject();
 //        children = new ArrayList<QueryTreeImpl<N>>();
@@ -285,6 +287,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public int getId() {
     	return id;
     }
+    
+	public NodeType getNodeType() {
+		return nodeType;
+	}
     
     @Override
     public boolean isEmpty(){
@@ -1026,7 +1032,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public Object clone() throws CloneNotSupportedException {
-    	QueryTreeImpl<N> copy = new QueryTreeImpl<N>(this.userObject);
+    	QueryTreeImpl<N> copy = new QueryTreeImpl<N>(this.userObject, this.nodeType);
     	copy.setIsResourceNode(isResourceNode);
     	copy.setIsLiteralNode(isLiteralNode);
     	for(QueryTreeImpl<N> child : children){
