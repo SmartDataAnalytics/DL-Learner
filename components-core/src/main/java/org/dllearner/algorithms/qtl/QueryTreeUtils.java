@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -169,6 +168,74 @@ public class QueryTreeUtils {
 		}
 		
 		return 1 + Math.log(complexity);
+	}
+	
+	/**
+	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
+	 * tree1.
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+    public static <N> boolean isSubsumedBy(QueryTree<N> tree1, QueryTree<N> tree2) {
+    	// 1.compare the root nodes
+    	// if both nodes denote the same resource or literal
+    	if(tree1.isVarNode() && !tree2.isVarNode() && tree1.getUserObject().equals(tree2.getUserObject())){
+    		return true;
+    	}
+    	
+    	// if node2 is more specific than node1
+    	if(tree1.isVarNode() && !tree2.isVarNode()) {
+    		return false;
+    	}
+    	
+    	// 2. compare the children
+    	Object edge;
+    	for(QueryTree<N> child2 : tree2.getChildren()){
+    		boolean isSubsumed = false;
+    		edge = tree2.getEdge(child2);
+    		for(QueryTree<N> child1 : tree1.getChildren(edge)){
+    			if(child1.isSubsumedBy(child2)){
+    				isSubsumed = true;
+    				break;
+    			}
+    		}
+    		if(!isSubsumed){
+				return false;
+			}
+    	}
+    	return true;
+    }
+    
+    /**
+	 * Determines if the trees are equivalent from a subsumptional point of view.
+	 * @param trees
+	 * @return
+	 */
+    public static <N> boolean sameTrees(QueryTree<N>... trees) {
+    	for(int i = 0; i < trees.length; i++) {
+    		QueryTree<N> tree1 = trees[i];
+    		for(int j = i; j < trees.length; j++) {
+    			QueryTree<N> tree2 = trees[j];
+    			if(!sameTrees(tree1, tree2)) {
+    				return false;
+    			}
+        	}
+    	}
+    	
+    	return true;
+    }
+    
+	/**
+	 * Determines if both trees are equivalent from a subsumptional point of
+	 * view.
+	 * 
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+	public static <N> boolean sameTrees(QueryTree<N> tree1, QueryTree<N> tree2) {
+		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
 	}
 	
 	

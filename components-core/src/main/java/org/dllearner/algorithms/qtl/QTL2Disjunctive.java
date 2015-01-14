@@ -1,9 +1,12 @@
 package org.dllearner.algorithms.qtl;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import gnu.trove.procedure.TObjectDoubleProcedure;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,6 +32,7 @@ import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
 import org.dllearner.algorithms.qtl.heuristics.SimpleQueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
@@ -56,6 +60,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -308,12 +313,63 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		isRunning = false;
 		
+		postProcess();
+		
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		logger.info(expressionTests +" descriptions tested");
 		logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
 		
 		logger.info(currentBestSolution.getScore());
+		
+	}
+	
+	/**
+	 * This method can be called for clean up of the solutions and re-ranking.
+	 */
+	private void postProcess() {
+		// pick solutions with same accuracy, i.e. in the pos only case 
+		// covering the same number of positive examples
+		SortedSet<EvaluatedQueryTree<String>> solutions = getSolutions();
+		// pick solutions with accuracy above
+		// mas(maximum achievable score) - noise
+		List<EvaluatedQueryTree<String>> solutionsForPostProcessing = new ArrayList<>();
+		for (EvaluatedQueryTree<String> solution : solutions) {
+			
+			double accuracy = solution.getTreeScore().getAccuracy();
+			
+			double mas = heuristic.getMaximumAchievableScore(solution);
+			
+			double epsilon = 0.01;
+			
+			if(accuracy >= (mas - noise - epsilon)) {
+				solutionsForPostProcessing.add(solution);
+				System.out.println("Add");
+			}
+		}
+		
+		// if there exists a cluster of trees that are very similar based on a given
+		// distance function, add a penalty for solutions that do not belong to the cluster
+		TObjectDoubleMap<TIntList> pairs = new TObjectDoubleHashMap<>();
+		for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
+			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+			for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
+				EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
+				
+				double distance = QueryTreeEditDistance.getDistanceApprox(tree1.getTree(), tree2.getTree());
+				
+				pairs.put(new TIntArrayList(new int[]{i,j}), distance);
+			}
+		}
+		
+		pairs.forEachEntry(new TObjectDoubleProcedure<TIntList>() {
+
+			@Override
+			public boolean execute(TIntList a, double b) {
+				System.err.println(a + ":" + b);
+				return true;
+			}
+		});
 		
 	}
 	
@@ -753,8 +809,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		bestCurrentScore = minimumTreeScore;
 	}
 	
-	
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.StoppableLearningAlgorithm#stop()
 	 */
@@ -938,6 +992,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
+	}
+	
+	/**
+	 * @param noise the noise to set
+	 */
+	public void setNoise(double noise) {
+		this.noise = noise;
 	}
 	
 	/**

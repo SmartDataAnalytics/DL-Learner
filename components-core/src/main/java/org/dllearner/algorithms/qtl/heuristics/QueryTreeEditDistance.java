@@ -40,13 +40,12 @@ public class QueryTreeEditDistance {
      */
 	public static <T> double getDistanceApprox(QueryTree<T> tree1, QueryTree<T> tree2) {
 		LGGGenerator<T> lggGenerator = new LGGGeneratorImpl<T>();
-		
 
 		// compute the LGG of tree1 and tree2
 		QueryTree<T> lgg = lggGenerator.getLGG(tree1, tree2);
 
 		// we define the distance as the maximum difference between the complexity
-		// of tree1 to lgg and tree2 to lgg
+		// of tree1 to LGG and tree2 to LGG
 		double complexityLGG = QueryTreeUtils.getComplexity(lgg);
 		double complexityTree1 = QueryTreeUtils.getComplexity(tree1);
 		double complexityTree2 = QueryTreeUtils.getComplexity(tree2);

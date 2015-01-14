@@ -50,8 +50,15 @@ public interface QueryTree<N> {
     
     void setUserObject(N userObject);
     
+    /**
+     * 
+     * @param id
+     */
     void setId(int id);
     
+    /**
+     * @return the ID of the tree node in the whole tree
+     */
     int getId();
     
     boolean isEmpty();

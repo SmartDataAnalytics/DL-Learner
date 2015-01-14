@@ -270,7 +270,7 @@ public class QALDExperiment {
 		int stepSize = 2;
 		
 		double[] noiseIntervals = {
-				0.0,
+//				0.0,
 				0.2,
 //				0.4,
 //				0.6
@@ -307,7 +307,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("Cruise"))continue;
+					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -328,6 +328,7 @@ public class QALDExperiment {
 						la.setIgnoredPropperties(ignoredProperties);
 						la.setTreeFactory(queryTreeFactory);
 						la.setPositiveExampleTrees(generatedExamples);
+						la.setNoise(noise);
 						la.init();
 						la.start();
 

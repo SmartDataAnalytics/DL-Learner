@@ -21,7 +21,7 @@ package org.dllearner.algorithms.qtl;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
-import org.junit.Assert;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 
@@ -37,8 +37,9 @@ public class TreeSubsumptionTest{
 	public void test1(){
 		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
 		
-		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?");
-		Assert.assertTrue(tree1.isSubsumedBy(tree2));
+		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
+		
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2));
 	}
 	
 	@Test
@@ -46,16 +47,17 @@ public class TreeSubsumptionTest{
 		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
 		tree1.addChild(new QueryTreeImpl<String>("B", NodeType.RESOURCE), "r");
 		
-		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		QueryTreeImpl<String> child = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
 		child.addChild(new QueryTreeImpl<String>("B", NodeType.RESOURCE), "r");
 		tree2.addChild(child, "r");
-		Assert.assertFalse(tree1.isSubsumedBy(tree2));
+		
+		assertFalse(QueryTreeUtils.isSubsumedBy(tree1, tree2));
 	}
 	
 	@Test
 	public void test3(){
-		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		tree1.addChild(new QueryTreeImpl<String>("B", NodeType.RESOURCE), "r");
 		tree1.addChild(new QueryTreeImpl<String>("A", NodeType.RESOURCE), "s");
 		
@@ -63,31 +65,32 @@ public class TreeSubsumptionTest{
 		tree2.addChild(new QueryTreeImpl<String>("A", NodeType.RESOURCE), "r");
 		tree2.addChild(new QueryTreeImpl<String>("B", NodeType.RESOURCE), "r");
 		tree2.addChild(new QueryTreeImpl<String>("C", NodeType.RESOURCE), "s");
-		Assert.assertFalse(tree2.isSubsumedBy(tree1));
+		
+		assertFalse(QueryTreeUtils.isSubsumedBy(tree2, tree1));
 	}
 	
 	@Test
 	public void test4(){
-		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("?");
-		QueryTreeImpl<String> child = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
+		QueryTreeImpl<String> child = new QueryTreeImpl<String>("?", NodeType.LITERAL);
 		tree1.addChild(child, "r");
 		child.addChild(new QueryTreeImpl<String>("?", NodeType.LITERAL), "s");
-		QueryTreeImpl<String> subChild = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> subChild = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		child.addChild(subChild, "t");
 		subChild.addChild(new QueryTreeImpl<String>("A", NodeType.RESOURCE), "u");
 		tree1.dump();
 		
-		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?");
+		QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		child = new QueryTreeImpl<String>("?");
 		tree2.addChild(child, "r");
 		child.addChild(new QueryTreeImpl<String>("?", NodeType.LITERAL), "s");
-		subChild = new QueryTreeImpl<String>("?");
+		subChild = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
 		child.addChild(subChild, "t");
-		subChild.addChild(new QueryTreeImpl<String>("?"), "u");
+		subChild.addChild(new QueryTreeImpl<String>("?", NodeType.VARIABLE), "u");
 		tree2.dump();
 		
-		System.out.println(tree1.isSubsumedBy(tree2));
-		System.out.println(tree2.isSubsumedBy(tree1));
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2));
+		assertFalse(QueryTreeUtils.isSubsumedBy(tree2, tree1));
 	}
 
 }
