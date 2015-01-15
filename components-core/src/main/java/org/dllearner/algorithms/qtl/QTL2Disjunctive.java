@@ -12,6 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +28,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -350,7 +354,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		// if there exists a cluster of trees that are very similar based on a given
 		// distance function, add a penalty for solutions that do not belong to the cluster
-		TObjectDoubleMap<TIntList> pairs = new TObjectDoubleHashMap<>();
+		int dimension = solutionsForPostProcessing.size();
+		RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
 		for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
 			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
 			for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
@@ -358,18 +363,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				
 				double distance = QueryTreeEditDistance.getDistanceApprox(tree1.getTree(), tree2.getTree());
 				
-				pairs.put(new TIntArrayList(new int[]{i,j}), distance);
+				distanceMatrix.setEntry(i,j, distance);
+				distanceMatrix.setEntry(j,i, distance);
 			}
 		}
 		
-		pairs.forEachEntry(new TObjectDoubleProcedure<TIntList>() {
-
-			@Override
-			public boolean execute(TIntList a, double b) {
-				System.err.println(a + ":" + b);
-				return true;
-			}
-		});
+		System.out.println(ArrayUtils.toString(distanceMatrix.getData()));
+		
 		logger.trace("Finished post processing.");
 	}
 	
