@@ -1,12 +1,7 @@
 package org.dllearner.algorithms.qtl;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectDoubleProcedure;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,7 +23,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.log4j.Logger;
@@ -36,8 +30,9 @@ import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.heuristics.ComplexQueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
-import org.dllearner.algorithms.qtl.heuristics.SimpleQueryTreeHeuristic;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
@@ -64,7 +59,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -114,8 +108,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private EvaluatedDescription currentBestSolution;
 	
-	private SimpleQueryTreeHeuristic heuristic;
-	
+	private QueryTreeHeuristic heuristic;
 	
 	//Parameters
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
@@ -210,7 +203,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		generateQueryTrees();
 		
 		if(heuristic == null){
-			heuristic = new SimpleQueryTreeHeuristic();
+			heuristic = new ComplexQueryTreeHeuristic(qef);
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
@@ -368,9 +361,39 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		
-		System.out.println(ArrayUtils.toString(distanceMatrix.getData()));
+		
+		double [] sums = new double[dimension];
+		for(int i = 0; i < dimension; i++) {
+			double[] column = distanceMatrix.getColumn(0);
+			double sum = 0;
+			for (double val : column) {
+				sum += val;
+			}
+			sums[i] = sum;
+		}
+		
+		double median = median(sums);
+		
+		// add penalty for entries above median
+		for (int i = 0; i < dimension; i++) {
+			if(sums[i] >= median) {
+				solutionsForPostProcessing.get(i).getTreeScore().setDistancePenalty(0.01);
+			}
+		}
 		
 		logger.trace("Finished post processing.");
+	}
+	
+	public static double median(double[] l) {
+		Arrays.sort(l);
+		int middle = l.length / 2;
+		if (l.length % 2 == 0) {
+			double left = l[middle - 1];
+			double right = l[middle];
+			return (left + right) / 2;
+		} else {
+			return l[middle];
+		}
 	}
 	
 	/**
@@ -1045,14 +1068,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	/**
 	 * @return the heuristic
 	 */
-	public SimpleQueryTreeHeuristic getHeuristic() {
+	public QueryTreeHeuristic getHeuristic() {
 		return heuristic;
 	}
 	
 	/**
 	 * @param heuristic the heuristic to set
 	 */
-	public void setHeuristic(SimpleQueryTreeHeuristic heuristic) {
+	public void setHeuristic(QueryTreeHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
 	

@@ -18,6 +18,8 @@ public class QueryTreeScore extends Score {
 	
 	private double accuracy;
 	
+	private double distancePenalty;
+	
 	private double specifityScore;
 	private int nrOfSpecificNodes;
 	
@@ -52,6 +54,20 @@ public class QueryTreeScore extends Score {
 	 */
 	public void setScore(double score) {
 		this.score = score;
+	}
+	
+	/**
+	 * @param distancePenalty the distancePenalty to set
+	 */
+	public void setDistancePenalty(double distancePenalty) {
+		this.distancePenalty = distancePenalty;
+	}
+	
+	/**
+	 * @return the distancePenalty
+	 */
+	public double getDistancePenalty() {
+		return distancePenalty;
 	}
 
 	/* (non-Javadoc)
