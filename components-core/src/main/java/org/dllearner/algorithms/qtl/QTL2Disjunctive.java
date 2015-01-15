@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.qtl;
 
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -364,19 +366,44 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		double [] sums = new double[dimension];
 		for(int i = 0; i < dimension; i++) {
-			double[] column = distanceMatrix.getColumn(0);
+			double[] column = distanceMatrix.getColumn(i);
 			double sum = 0;
 			for (double val : column) {
 				sum += val;
 			}
 			sums[i] = sum;
 		}
+		System.out.println(Arrays.toString(sums));
 		
 		double median = median(sums);
 		
-		// add penalty for entries above median
+		// Q1 = median of values below overall median 
+		TDoubleList belowMedian = new TDoubleArrayList();
+		for (double val : sums) {
+			if(val < median) {
+				belowMedian.add(val);
+			}
+		}
+		double q1 = median(belowMedian.toArray());
+		
+		// Q3 = median of values above overall median 
+		TDoubleList aboveMedian = new TDoubleArrayList();
+		for (double val : sums) {
+			if(val > median) {
+				aboveMedian.add(val);
+			}
+		}
+		double q3 = median(aboveMedian.toArray());
+		
+		// IQR = Q3 - Q1
+		double iqr = q3 - q1;
+		
+		// add penalty for outliers
+		// outliers will be any points below Q1 – 1.5 * IQR or above Q3 + 1.5 * IQR
+		double upperLimit = q3 + 1.5 * iqr;
 		for (int i = 0; i < dimension; i++) {
-			if(sums[i] >= median) {
+			double val = sums[i];
+			if(val >= upperLimit) {
 				solutionsForPostProcessing.get(i).getTreeScore().setDistancePenalty(0.01);
 			}
 		}

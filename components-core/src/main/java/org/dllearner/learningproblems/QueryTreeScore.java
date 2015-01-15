@@ -110,7 +110,8 @@ public class QueryTreeScore extends Score {
 				 + "(accuracy=" + accuracy 
 				 + "(+" + posAsPos.size() + "/" + (posAsPos.size() + posAsNeg.size())
 				 + "|-" + negAsPos.size() + "/" + (negAsPos.size() + negAsNeg.size()) + ")|"
-				 + "specifity=" + specifityScore + "(" + nrOfSpecificNodes + "))";   
+				 + "specifity=" + specifityScore + "(" + nrOfSpecificNodes + ")|"
+				 		+ "penalty=" + distancePenalty + ")";   
 	}
 
 }
