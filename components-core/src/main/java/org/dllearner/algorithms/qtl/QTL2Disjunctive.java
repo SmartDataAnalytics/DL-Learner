@@ -27,6 +27,8 @@ import java.util.TreeSet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.stat.clustering.Cluster;
+import org.apache.commons.math3.stat.clustering.DBSCANClusterer;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -39,6 +41,7 @@ import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.algorithms.qtl.util.QueryTreePoint;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -352,7 +355,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		int dimension = solutionsForPostProcessing.size();
 		RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
 		for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
-			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);tree1.getTree().dump();
 			for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
 				EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
 				
@@ -362,6 +365,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				distanceMatrix.setEntry(j,i, distance);
 			}
 		}
+		
+		System.out.println(Arrays.deepToString(distanceMatrix.getData()));
 		
 		
 		double [] sums = new double[dimension];
@@ -373,7 +378,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 			sums[i] = sum;
 		}
-		System.out.println(Arrays.toString(sums));
 		
 		double median = median(sums);
 		
@@ -408,7 +412,25 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		
+		computeClusters(solutionsForPostProcessing);
+		
 		logger.trace("Finished post processing.");
+	}
+	
+	public void computeClusters(Collection<EvaluatedQueryTree<String>> queryTrees) {
+		DBSCANClusterer<QueryTreePoint> clusterer = new DBSCANClusterer<QueryTreePoint>(0.3, 1);
+		
+		// convert to point objects
+		Collection<QueryTreePoint> points = new ArrayList<QueryTreePoint>();
+		for (EvaluatedQueryTree<String> queryTree : queryTrees) {
+			points.add(new QueryTreePoint(queryTree.getTree()));
+		}
+		
+		// cluster
+		List<Cluster<QueryTreePoint>> clusters = clusterer.cluster(points);
+		for (Cluster<QueryTreePoint> cluster : clusters) {
+			System.out.println("Cluster:" + cluster.getPoints().size());
+		}
 	}
 	
 	public static double median(double[] l) {
