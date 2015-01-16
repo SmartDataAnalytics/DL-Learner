@@ -355,7 +355,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		int dimension = solutionsForPostProcessing.size();
 		RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
 		for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
-			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);tree1.getTree().dump();
+			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+			
 			for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
 				EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
 				
