@@ -561,8 +561,28 @@
 			<name>AKSW Snapshot Repository</name>
 			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
 		</snapshotRepository>
+	<!-- start - location where site is deployed - username/password for site.deployments in server.xml -->
+		<site>
+			<id>site.deployments</id>
+			<name>Site deployments</name>
+			<url>scp://prod0.aksw.org/var/www/aksw.org/javadoc/</url>
+		</site>
+		<!-- end - location where site is deployed - username/password for site.deployments in server.xml -->
 	</distributionManagement>
 
+<reporting>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<configuration>
+				<links>
+					<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+				</links>
+			</configuration>
+		</plugin>
+	</plugins>
+</reporting>
 
 	<profiles>
 		<profile>
