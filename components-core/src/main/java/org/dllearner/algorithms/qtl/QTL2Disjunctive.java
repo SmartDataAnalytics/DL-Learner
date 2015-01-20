@@ -341,7 +341,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			
 			double accuracy = solution.getTreeScore().getAccuracy();
 			
-			double mas = heuristic.getMaximumAchievableScore(solution);
+			double mas = QueryTreeHeuristic.getMaximumAchievableScore(heuristic.getHeuristicType());
 			
 			double epsilon = 0.01;
 			
@@ -350,70 +350,71 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		
-		// if there exists a cluster of trees that are very similar based on a given
-		// distance function, add a penalty for solutions that do not belong to the cluster
-		int dimension = solutionsForPostProcessing.size();
-		RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
-		for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
-			EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+		// this only makes sense if we have at least 3 candidates
+		if(solutionsForPostProcessing.size() >= 3) {
+			// if there exists a cluster of trees that are very similar based on a given
+			// distance function, add a penalty for solutions that do not belong to the cluster
+			int dimension = solutionsForPostProcessing.size();
+			RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
+			for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
+				EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+				
+				for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
+					EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
+					
+					double distance = QueryTreeEditDistance.getDistanceApprox(tree1.getTree(), tree2.getTree());
+					
+					distanceMatrix.setEntry(i,j, distance);
+					distanceMatrix.setEntry(j,i, distance);
+				}
+			}
 			
-			for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
-				EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
-				
-				double distance = QueryTreeEditDistance.getDistanceApprox(tree1.getTree(), tree2.getTree());
-				
-				distanceMatrix.setEntry(i,j, distance);
-				distanceMatrix.setEntry(j,i, distance);
+			
+			double [] sums = new double[dimension];
+			for(int i = 0; i < dimension; i++) {
+				double[] column = distanceMatrix.getColumn(i);
+				double sum = 0;
+				for (double val : column) {
+					sum += val;
+				}
+				sums[i] = sum;
 			}
-		}
-		
-		System.out.println(Arrays.deepToString(distanceMatrix.getData()));
-		
-		
-		double [] sums = new double[dimension];
-		for(int i = 0; i < dimension; i++) {
-			double[] column = distanceMatrix.getColumn(i);
-			double sum = 0;
-			for (double val : column) {
-				sum += val;
+			
+			double median = median(sums);
+			
+			// Q1 = median of values below overall median 
+			TDoubleList belowMedian = new TDoubleArrayList();
+			for (double val : sums) {
+				if(val < median) {
+					belowMedian.add(val);
+				}
 			}
-			sums[i] = sum;
-		}
-		
-		double median = median(sums);
-		
-		// Q1 = median of values below overall median 
-		TDoubleList belowMedian = new TDoubleArrayList();
-		for (double val : sums) {
-			if(val < median) {
-				belowMedian.add(val);
+			double q1 = median(belowMedian.toArray());
+			
+			// Q3 = median of values above overall median 
+			TDoubleList aboveMedian = new TDoubleArrayList();
+			for (double val : sums) {
+				if(val > median) {
+					aboveMedian.add(val);
+				}
 			}
-		}
-		double q1 = median(belowMedian.toArray());
-		
-		// Q3 = median of values above overall median 
-		TDoubleList aboveMedian = new TDoubleArrayList();
-		for (double val : sums) {
-			if(val > median) {
-				aboveMedian.add(val);
+			double q3 = median(aboveMedian.toArray());
+			
+			// IQR = Q3 - Q1
+			double iqr = q3 - q1;
+			
+			// add penalty for outliers
+			// outliers will be any points below Q1 – 1.5 * IQR or above Q3 + 1.5 * IQR
+			double upperLimit = q3 + 1.5 * iqr;
+			for (int i = 0; i < dimension; i++) {
+				double val = sums[i];
+				if(val >= upperLimit) {
+					solutionsForPostProcessing.get(i).getTreeScore().setDistancePenalty(0.01);
+				}
 			}
+			
+			computeClusters(solutionsForPostProcessing);
 		}
-		double q3 = median(aboveMedian.toArray());
-		
-		// IQR = Q3 - Q1
-		double iqr = q3 - q1;
-		
-		// add penalty for outliers
-		// outliers will be any points below Q1 – 1.5 * IQR or above Q3 + 1.5 * IQR
-		double upperLimit = q3 + 1.5 * iqr;
-		for (int i = 0; i < dimension; i++) {
-			double val = sums[i];
-			if(val >= upperLimit) {
-				solutionsForPostProcessing.get(i).getTreeScore().setDistancePenalty(0.01);
-			}
-		}
-		
-		computeClusters(solutionsForPostProcessing);
 		
 		logger.trace("Finished post processing.");
 	}

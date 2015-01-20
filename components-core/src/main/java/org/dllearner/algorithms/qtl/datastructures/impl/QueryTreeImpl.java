@@ -1505,9 +1505,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     private Set<OWLClassExpression> buildOWLClassExpressions(OWLDataFactory df, QueryTree<N> tree, LiteralNodeConversionStrategy literalNodeConversionStrategy){
-    	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
     	
     	List<QueryTree<N>> children = tree.getChildren();
+    	
+    	// if tree has no children return owl:Thing
+    	if(children.isEmpty()) {
+    		return Collections.singleton(df.getOWLThing());
+    	}
+    	
+    	// process children
+    	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
     	for(QueryTree<N> child : children){
     		String childLabel = (String) child.getUserObject();
     		String predicateString = (String) tree.getEdge(child);

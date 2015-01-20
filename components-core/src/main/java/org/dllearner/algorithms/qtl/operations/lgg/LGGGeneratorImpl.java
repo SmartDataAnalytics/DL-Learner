@@ -50,8 +50,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	private Logger logger = Logger.getLogger(LGGGeneratorImpl.class);
 	private int nodeId;
 	
-	private int calls = 0;
-
+	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
+	
+	private int subCalls;
+	
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2) {
 		return getLGG(tree1, tree2, false);
@@ -61,13 +63,14 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2,
 			boolean learnFilters) {
 		nodeId = 0;
-		calls = 0;
-		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		subCalls = 0;
+		
 		mon.start();
 		QueryTree<N> lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
+		
 		addNumbering(lgg);
-		logger.debug("Calls needed: " + calls);
+		
 		return lgg;
 	}
 
@@ -125,7 +128,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	}
 	
 	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
-		calls++;
+		subCalls++;
 		if(logger.isDebugEnabled()){
 			logger.debug("Computing LGG for");
 			logger.debug(tree1.getStringRepresentation());

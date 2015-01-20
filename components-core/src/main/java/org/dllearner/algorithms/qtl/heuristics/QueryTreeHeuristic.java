@@ -143,6 +143,17 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 		}
 		return mas;
 	}
+	
+	public static double getMaximumAchievableScore(HeuristicType heuristicType) {
+		switch (heuristicType) {
+		case FMEASURE: return 1;
+		case PRED_ACC: return 1;
+		case ENTROPY: return 1;
+		case MATTHEWS_CORRELATION: return 1;
+		case YOUDEN_INDEX: return 1;
+		default: return 1;
+		}
+	}
 
 	@Override
 	public int compare(EvaluatedQueryTree<String> tree1, EvaluatedQueryTree<String> tree2) {

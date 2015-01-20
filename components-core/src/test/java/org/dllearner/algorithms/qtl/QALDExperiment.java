@@ -6,7 +6,6 @@ package org.dllearner.algorithms.qtl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -43,6 +42,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -55,20 +55,13 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -76,7 +69,6 @@ import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
@@ -103,7 +95,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
 import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
@@ -123,7 +114,6 @@ import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author Lorenz Buehmann
@@ -141,6 +131,12 @@ public class QALDExperiment {
 	enum Dataset {
 		DBPEDIA, BIOMEDICAL
 	}
+	
+	enum NoiseMethod {
+		RANDOM, SIMILAR, SIMILARITY_PARAMETERIZED
+	}
+	
+	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
 	
 	static Map<String, String> prefixes = new HashMap<String, String>();
 	static {
@@ -205,11 +201,13 @@ public class QALDExperiment {
 	private ConciseBoundedDescriptionGenerator cbdGen;
 	private QTL2 la;
 	
-	private Random rnd = new Random(123);
+	RandomDataGenerator rnd = new RandomDataGenerator();
 
 	private Dataset dataset;
 	
 	private Map<String, List<String>> cache = new HashMap<String, List<String>>();
+	
+	private int kbSize;
 	
 	public QALDExperiment(Dataset dataset) {
 		this.dataset = dataset;
@@ -240,6 +238,10 @@ public class QALDExperiment {
 		cbdGen.setRecursionDepth(maxDepth);
 		
 		la = new QTL2();
+		
+		rnd.reSeed(123);
+		
+		kbSize = getKBSize();
 	}
 	
 	private Model loadBiomedicalData(){
@@ -257,6 +259,18 @@ public class QALDExperiment {
 		}
 		logger.info("...done.");
 		return model;
+	}
+	
+	private int getKBSize() {
+		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a owl:Class .}";
+		
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
+		int size = rs.next().get("cnt").asLiteral().getInt();
+		
+		qe.close();
+		
+		return size;
 	}
 	
 	public void run(){
@@ -342,7 +356,7 @@ public class QALDExperiment {
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
-						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false);
+						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false).trim();
 
 						double precision = precision(sparqlQuery, learnedSPARQLQuery);
 						bestReturnedSolutionPrecisionStats.addValue(precision);
@@ -416,7 +430,7 @@ public class QALDExperiment {
 		EvaluatedQueryTree<String> bestTree = null;
 		double bestFMeasure = -1;
 		for (EvaluatedQueryTree<String> tree : trees) {
-			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString();
+			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString().trim();
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
@@ -443,48 +457,9 @@ public class QALDExperiment {
 		List<String> examples = resources.subList(0, Math.min(maxNrOfExamples, resources.size()));
 		logger.info("Pos. examples: " + examples);
 		
-		// if noise as not zero
+		// add noise if enabled
 		if(noise > 0) {
-			// generate negative examples
-			List<String> negativeExamples = new ArrayList<>(generateNegativeExamples(sparqlQuery));
-			Collections.shuffle(negativeExamples, randomGen);
-			
-			// add some noise by using instances close to the positive examples
-			// we have two ways of adding noise t_n
-			// 1: iterate over pos. examples and if random number is below t_n, replace the example
-			// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
-		
-			boolean probabilityBased = false;
-			
-			if (probabilityBased) {
-				// 1. way
-				List<String> newExamples = new ArrayList<String>();
-				for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
-					String posExample = iterator.next();
-					double rnd = randomGen.nextDouble();
-					if (rnd <= noise) {
-						// remove the positive example
-						iterator.remove();
-						// add one of the negative examples
-						String negExample = negativeExamples.remove(0);
-						newExamples.add(negExample);
-						logger.info("Replacing " + posExample + " by " + negExample);
-					}
-				}
-				examples.addAll(newExamples);
-			} else {
-				// 2. way
-				// replace at least 1 but not more than half of the examples
-				int upperBound = examples.size() / 2;
-				int nrOfPosExamples2Replace = (int) Math.ceil(noise * examples.size());
-				nrOfPosExamples2Replace = Math.min(nrOfPosExamples2Replace, upperBound);
-				logger.info("replacing " + nrOfPosExamples2Replace + "/" + examples.size() + " examples to introduce noise");
-				List<String> posExamples2Replace = new ArrayList<>(examples.subList(0, nrOfPosExamples2Replace));
-				examples.removeAll(posExamples2Replace);
-				List<String> negExamples4Replacement = negativeExamples.subList(0, nrOfPosExamples2Replace);
-				examples.addAll(negExamples4Replacement);
-				logger.info("replaced " + posExamples2Replace + " by " + negExamples4Replacement);
-			}
+			generateNoise(examples, sparqlQuery, noise, randomGen);
 		}
 		
 		// build query trees
@@ -514,11 +489,94 @@ public class QALDExperiment {
 		return null;
 	}
 	
-	private Set<String> generateNegativeExamples(String queryString){
-		Query query = QueryFactory.create(queryString);
+	private void generateNoise(List<String> examples, String sparqlQuery, double noise, Random randomGen) {
+		// generate noise example candidates
+		List<String> noiseCandidateExamples = null;
+		switch(noiseMethod) {
+		case RANDOM: noiseCandidateExamples = generateNoiseCandidatesRandom(examples, 10);
+			break;
+		case SIMILAR:noiseCandidateExamples = generateNoiseCandidatesSimilar(examples, sparqlQuery);
+			break;
+		case SIMILARITY_PARAMETERIZED://TODO implement configurable noise method
+			break;
+		default:noiseCandidateExamples = generateNoiseCandidatesRandom(examples, 10);
+			break;
+		}
+		Collections.shuffle(noiseCandidateExamples, randomGen);
+
+		// add some noise by using instances close to the positive examples
+		// we have two ways of adding noise t_n
+		// 1: iterate over pos. examples and if random number is below t_n, replace the example
+		// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
+		boolean probabilityBased = false;
+
+		if (probabilityBased) {
+			// 1. way
+			List<String> newExamples = new ArrayList<String>();
+			for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
+				String posExample = iterator.next();
+				double rnd = randomGen.nextDouble();
+				if (rnd <= noise) {
+					// remove the positive example
+					iterator.remove();
+					// add one of the negative examples
+					String negExample = noiseCandidateExamples.remove(0);
+					newExamples.add(negExample);
+					logger.info("Replacing " + posExample + " by " + negExample);
+				}
+			}
+			examples.addAll(newExamples);
+		} else {
+			// 2. way
+			// replace at least 1 but not more than half of the examples
+			int upperBound = examples.size() / 2;
+			int nrOfPosExamples2Replace = (int) Math.ceil(noise * examples.size());
+			nrOfPosExamples2Replace = Math.min(nrOfPosExamples2Replace, upperBound);
+			logger.info("replacing " + nrOfPosExamples2Replace + "/" + examples.size() + " examples to introduce noise");
+			List<String> posExamples2Replace = new ArrayList<>(examples.subList(0, nrOfPosExamples2Replace));
+			examples.removeAll(posExamples2Replace);
+			List<String> negExamples4Replacement = noiseCandidateExamples.subList(0, nrOfPosExamples2Replace);
+			examples.addAll(negExamples4Replacement);
+			logger.info("replaced " + posExamples2Replace + " by " + negExamples4Replacement);
+		}
+	}
+	
+	/**
+	 * Randomly pick {@code n} instances from KB that do not belong to given examples {@code examples}.
+	 * @param examples the examples that must not be contained in the returned list
+	 * @param n the number of random examples
+	 * @return
+	 */
+	private List<String> generateNoiseCandidatesRandom(List<String> examples, int n) {
+		List<String> noiseExamples = new ArrayList<>();
 		
-		// get the positive examples
-		List<String> posExamples = getResult(queryString);
+		// get max number of instances in KB
+		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a owl:Class .}";
+		QueryExecution qe = qef.createQueryExecution(query);
+		ResultSet rs = qe.execSelect();
+		int max = rs.next().get("cnt").asLiteral().getInt();
+		
+		// generate random instances
+		while(noiseExamples.size() < n) {
+			int offset = rnd.nextInt(0, max);
+			query = "SELECT ?s WHERE {?s a [] .} LIMIT 1 OFFSET " + offset;
+			
+			qe = qef.createQueryExecution(query);
+			rs = qe.execSelect();
+			
+			String resource = rs.next().getResource("s").getURI();
+			
+			if(!examples.contains(resource) && !resource.contains("__")) {
+				noiseExamples.add(resource);
+			}
+			qe.close();
+		}
+		
+		return noiseExamples;
+	}
+	
+	private List<String> generateNoiseCandidatesSimilar(List<String> examples, String queryString){
+		Query query = QueryFactory.create(queryString);
 		
 		QueryUtils queryUtils = new QueryUtils();
 		
@@ -603,7 +661,7 @@ public class QALDExperiment {
 //					System.out.println(q);
 					
 					List<String> result = getResult(q.toString());
-					result.removeAll(posExamples);
+					result.removeAll(examples);
 					
 					if(result.isEmpty()){
 						q = new Query();
@@ -622,19 +680,19 @@ public class QALDExperiment {
 //						System.out.println(q);
 						
 						result = getResult(q.toString());
-						result.removeAll(posExamples);
+						result.removeAll(examples);
 					}
 					negExamples.addAll(result);
 				}
 			}
 		}
 		
-		negExamples.removeAll(posExamples);
+		negExamples.removeAll(examples);
 		if(negExamples.isEmpty()){
 			logger.error("Found no negative example.");
 			System.exit(0);
 		}
-		return negExamples;
+		return new ArrayList<>(negExamples);
 	}
 	
 	private List<QueryTree<String>> getQueryTrees(List<String> resources){
@@ -1213,6 +1271,12 @@ public class QALDExperiment {
 //			System.exit(0);
 			return 0;
 		}
+	
+		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?x0\n" + 
+				"WHERE\n" + 
+				"  { ?x0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
+			return referenceResources.size() / (double) kbSize;
+		}
 
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
@@ -1234,12 +1298,18 @@ public class QALDExperiment {
 	}
 	
 	private double recall(String referenceSparqlQuery, String learnedSPARQLQuery) {
+		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?x0\n" + 
+				"WHERE\n" + 
+				"  { ?x0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
+			return 1.0;
+		}
+		
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
 			return 0;
 		}
-
+		
 		// get the learned resources
 		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
@@ -1260,28 +1330,12 @@ public class QALDExperiment {
 		
 		double recall = recall(referenceSparqlQuery, learnedSPARQLQuery);
 		
-		double fMeasure = 0;
-		if(precision + recall > 0){
-			fMeasure = 2 * precision * recall / (precision + recall);
-		}
+		double fMeasure = Heuristics.getFScore(recall, precision);
 		
 		return fMeasure;
 	}
 	
 	public static void main(String[] args) throws Exception {
-//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
-//		String ontologyURL = "file:/tmp/property_inference.owl";
-//		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-//		OWLDataFactory dataFactory = man.getOWLDataFactory();
-//		OWLOntology ontology = man.loadOntology(IRI.create(ontologyURL));
-//		OWLReasonerFactory reasonerFactory = PelletReasonerFactory.getInstance();
-//		OWLReasoner reasoner = reasonerFactory.createNonBufferingReasoner(ontology);
-//		for (OWLObjectProperty op : ontology.getObjectPropertiesInSignature()) {
-//			System.out.println(op + ":" + reasoner.getEquivalentObjectProperties(op).getEntities());
-//		}
-//		
-//		
-		
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
