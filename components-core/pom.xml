@@ -59,7 +59,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
 				<configuration>
 					<show>public</show>
 					<nohelp>true</nohelp>
@@ -72,7 +71,7 @@
 					<nonavbar>false</nonavbar>
 					<notree>false</notree>
 					<overview>src/etc/overview.html</overview>
-					<source>1.6</source>
+					<source>1.7</source>
 					<sourcepath>src/main/java</sourcepath>
 					<splitindex>true</splitindex>
 					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>

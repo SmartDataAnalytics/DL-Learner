@@ -9,7 +9,7 @@
 	<name>DL Learner Parent Pom</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<!-- tell the compiler we can use 1.6 -->
+		<!-- tell the compiler we can use 1.7 -->
 		<compiler.version>1.7</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- convenience to define GWT version in one place -->
@@ -29,17 +29,15 @@
 		<module>interfaces</module>
 		<module>scripts</module>
 		<module>protege</module>
-		<module>evalplugin</module>
   </modules>
 
 
 	<!--This is the SCM information, which needs to be here so we can use the
 		maven release plugin -->
 	<scm>
-		<connection>scm:svn:https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk</connection>
-		<developerConnection>scm:svn:https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk
-        </developerConnection>
-		<url>https://dl-learner.svn.sourceforge.net/svnroot/dl-learner/trunk</url>
+		<url>https://github.com/AKSW/DL-Learner/</url>
+		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
+		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
 	</scm>
 
 	<build>
@@ -53,15 +51,14 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.14.1</version>
+					<version>2.18.1</version>
 				</plugin>
 				<!--Maven Compiler Plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.0.2</version>
+					<version>3.2</version>
 					<configuration>
-						<!--We use 1.6 -->
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>
@@ -74,13 +71,40 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.3.1</version>
+					<version>2.5</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jarsigner-plugin</artifactId>
+					<version>1.3.2</version>
+					<executions>
+						<execution>
+							<id>sign</id>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<keystore>/path/to/the/keystore</keystore>
+						<alias>Alias name</alias>
+						<storepass>Store password</storepass>
+						<keypass>Key password</keypass>
+					</configuration>
 				</plugin>
 				<!--JAR the Sources -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>2.1.2</version>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.1</version>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
 				</plugin>
                 <plugin>
                     <groupId>com.mycila.maven-license-plugin</groupId>
@@ -95,7 +119,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.7</version>
                 </plugin>
                 <plugin>
                     <groupId>org.mortbay.jetty</groupId>
@@ -105,8 +129,18 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>2.9</version>
                 </plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.4</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
