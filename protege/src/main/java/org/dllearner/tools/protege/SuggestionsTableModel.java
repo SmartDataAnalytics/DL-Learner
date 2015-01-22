@@ -8,7 +8,6 @@ import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class SuggestionsTableModel extends AbstractTableModel {
@@ -54,11 +53,10 @@ public class SuggestionsTableModel extends AbstractTableModel {
 			}
 			if(suggestionList.get(rowIndex).followsFromKB()){
 				return followsIcon;
-			}break;
+			}
+			break;
 		case 2:
-			return OWLAPIDescriptionConvertVisitor
-					.getOWLClassExpression(suggestionList.get(rowIndex)
-							.getDescription());
+			return suggestionList.get(rowIndex).getDescription();
 		}
 		return null;
 
