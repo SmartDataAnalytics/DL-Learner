@@ -128,6 +128,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -1042,8 +1043,7 @@ public class Enrichment {
 	private void printTurtleSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = ModelFactory.createDefaultModel();
-			Conversion.OWLAPIOntology2JenaModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)), model);
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)));
 			model.write(System.out, "TURTLE");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {
@@ -1058,8 +1058,7 @@ public class Enrichment {
 	private void printNTriplesSyntax(List<OWLAxiom> axioms){
 		try {
 			System.out.println("ENRICHMENT[");
-			Model model = ModelFactory.createDefaultModel();
-			Conversion.OWLAPIOntology2JenaModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)), model);
+			Model model = OwlApiJenaUtils.getModel(OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms)));
 			model.write(System.out, "N-TRIPLES");
 			System.out.println("]");
 		} catch (OWLOntologyCreationException e) {

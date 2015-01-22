@@ -42,7 +42,7 @@ import java.util.Map;
 public class QuickStart {
  
 //	static HashMap<String, ArrayList<String>> hm = null;
-	static String pm = ".";// pathmodifier
+	static String pm = "..";// pathmodifier
 	static List<String> conffiles = new ArrayList<String>();
 
 	public static void main(String[] args) {

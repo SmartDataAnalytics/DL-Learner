@@ -594,13 +594,13 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>model</artifactId>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
-					<!-- Exclude Project-D from Project-B -->
+					Exclude Project-D from Project-B
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
 				 <exclusion>
@@ -612,7 +612,7 @@
 					<artifactId>pellet</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
