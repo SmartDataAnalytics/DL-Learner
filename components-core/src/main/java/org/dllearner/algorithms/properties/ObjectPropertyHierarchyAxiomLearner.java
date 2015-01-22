@@ -28,6 +28,7 @@ import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
 /**
+ * A learning algorithm for object property hierarchy axioms.
  * @author Lorenz Buehmann
  *
  */

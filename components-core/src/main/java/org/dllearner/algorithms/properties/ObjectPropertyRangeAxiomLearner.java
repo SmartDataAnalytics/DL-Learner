@@ -40,7 +40,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
-@ComponentAnn(name="objectproperty range learner", shortName="oplrange", version=0.1)
+@ComponentAnn(name="object property range learner", shortName="oplrange", version=0.1, description="A learning algorithm for object property range axioms.")
 public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyRangeAxiom> {
 	
 	private static final ParameterizedSparqlString DISTINCT_OBJECTS_COUNT_QUERY = new ParameterizedSparqlString(

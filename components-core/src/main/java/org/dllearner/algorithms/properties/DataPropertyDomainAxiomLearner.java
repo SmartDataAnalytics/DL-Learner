@@ -43,7 +43,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
-@ComponentAnn(name="dataproperty domain axiom learner", shortName="dpldomain", version=0.1)
+@ComponentAnn(name="data property domain axiom learner", shortName="dpldomain", version=0.1, description="A learning algorithm for data property domain axioms.")
 public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyDomainAxiom> {
 	
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(

@@ -142,6 +142,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
 	protected AxiomType<T> axiomType;
+	
 	protected E entityToDescribe;
 	
 	protected boolean useSampling = true;

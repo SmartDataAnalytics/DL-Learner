@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
-@ComponentAnn(name="equivalent objectproperty axiom learner", shortName="oplequiv", version=0.1)
+@ComponentAnn(name="equivalent object properties axiom learner", shortName="oplequiv", version=0.1, description="A learning algorithm for equivalent object properties axioms.")
 public class EquivalentObjectPropertyAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLEquivalentObjectPropertiesAxiom> {
 	
 	private final double BETA = 1.0;

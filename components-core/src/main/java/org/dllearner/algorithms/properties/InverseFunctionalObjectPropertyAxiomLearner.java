@@ -40,7 +40,7 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name = "inversefunctional objectproperty axiom learner", shortName = "oplinvfunc", version = 0.1)
+@ComponentAnn(name = "inverse functional object property axiom learner", shortName = "oplinvfunc", version = 0.1, description="A learning algorithm for inverse functional object property axioms.")
 public class InverseFunctionalObjectPropertyAxiomLearner extends
 		ObjectPropertyCharacteristicsAxiomLearner<OWLInverseFunctionalObjectPropertyAxiom> {
 

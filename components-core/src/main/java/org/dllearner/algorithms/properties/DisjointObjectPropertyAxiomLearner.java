@@ -29,7 +29,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 
-@ComponentAnn(name = "disjoint objectproperty axiom learner", shortName = "opldisjoint", version = 0.1)
+@ComponentAnn(name = "disjoint object properties axiom learner", shortName = "opldisjoint", version = 0.1, description="A learning algorithm for disjoint object properties axioms.")
 public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyAxiomLearner<OWLDisjointObjectPropertiesAxiom> {
 
 	public DisjointObjectPropertyAxiomLearner(SparqlEndpointKS ks) {

@@ -28,7 +28,7 @@ import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 
-@ComponentAnn(name="functional dataproperty axiom learner", shortName="dplfunc", version=0.1)
+@ComponentAnn(name="functional data property axiom learner", shortName="dplfunc", version=0.1, description="A learning algorithm for functional data property axioms.")
 public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner<OWLFunctionalDataPropertyAxiom> {
 	
 	private final ParameterizedSparqlString GET_SAMPLE_QUERY = new ParameterizedSparqlString(

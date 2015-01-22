@@ -39,7 +39,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
-@ComponentAnn(name="dataproperty range learner", shortName="dblrange", version=0.1)
+@ComponentAnn(name="data property range learner", shortName="dblrange", version=0.1, description="A learning algorithm for reflexive data property range axioms.")
 public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyRangeAxiom> {
 	
 	private static final ParameterizedSparqlString DATATYPE_FREQUENCY_QUERY = new ParameterizedSparqlString(

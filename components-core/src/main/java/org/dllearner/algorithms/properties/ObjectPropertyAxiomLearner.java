@@ -8,6 +8,7 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAxiom;
 
 /**
+ * A learning algorithm for object property axioms. 
  * @author Lorenz Buehmann
  *
  */

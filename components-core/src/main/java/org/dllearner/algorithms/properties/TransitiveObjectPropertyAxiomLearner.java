@@ -40,7 +40,7 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name = "transitive objectproperty axiom learner", shortName = "opltrans", version = 0.1)
+@ComponentAnn(name = "transitive object property axiom learner", shortName = "opltrans", version = 0.1, description="A learning algorithm for transitive object property axioms.")
 public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLTransitiveObjectPropertyAxiom> {
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(

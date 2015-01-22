@@ -24,6 +24,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
+ * A learning algorithm for object property characteristic axioms. 
  * @author Lorenz Buehmann
  *
  */

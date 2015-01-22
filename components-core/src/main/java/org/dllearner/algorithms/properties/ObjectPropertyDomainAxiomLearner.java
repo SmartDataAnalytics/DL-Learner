@@ -42,7 +42,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 
-@ComponentAnn(name="objectproperty domain axiom learner", shortName="opldomain", version=0.1)
+@ComponentAnn(name="object property domain axiom learner", shortName="opldomain", version=0.1, description="A learning algorithm for object property domain axioms.")
 public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
 	
 	private static final ParameterizedSparqlString SUBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(

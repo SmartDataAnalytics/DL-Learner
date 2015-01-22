@@ -40,7 +40,7 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-@ComponentAnn(name = "functional objectproperty axiom learner", shortName = "oplfunc", version = 0.1)
+@ComponentAnn(name = "functional object property axiom learner", shortName = "oplfunc", version = 0.1, description="A learning algorithm for functional object property axioms.")
 public class FunctionalObjectPropertyAxiomLearner extends
 		ObjectPropertyCharacteristicsAxiomLearner<OWLFunctionalObjectPropertyAxiom> {
 

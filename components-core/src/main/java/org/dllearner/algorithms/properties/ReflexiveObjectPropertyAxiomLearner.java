@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 
-@ComponentAnn(name = "reflexive objectproperty axiom learner", shortName = "oplrefl", version = 0.1)
+@ComponentAnn(name = "reflexive object property axiom learner", shortName = "oplrefl", version = 0.1, description="A learning algorithm for reflexive object property domain axioms.")
 public class ReflexiveObjectPropertyAxiomLearner extends ObjectPropertyCharacteristicsAxiomLearner<OWLReflexiveObjectPropertyAxiom> {
 
 	public ReflexiveObjectPropertyAxiomLearner(SparqlEndpointKS ks) {

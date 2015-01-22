@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
 
-@ComponentAnn(name="data subPropertyOf axiom learner", shortName="dplsubprop", version=0.1)
+@ComponentAnn(name="data subproperty axiom learner", shortName="dplsubprop", version=0.1, description="A learning algorithm data subproperty axioms.")
 public class SubDataPropertyOfAxiomLearner extends DataPropertyHierarchyAxiomLearner<OWLSubDataPropertyOfAxiom> {
 	
 	private final double BETA = 3.0;

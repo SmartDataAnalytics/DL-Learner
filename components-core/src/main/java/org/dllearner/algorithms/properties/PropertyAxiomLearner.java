@@ -13,6 +13,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
+ * A learning algorithm for property axioms. 
  * @author Lorenz Buehmann
  *
  */
