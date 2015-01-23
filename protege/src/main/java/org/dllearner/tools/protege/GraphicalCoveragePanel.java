@@ -31,10 +31,9 @@ import java.util.Vector;
 import javax.swing.JPanel;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * This class draws the graphical coverage of a learned concept.
@@ -410,13 +409,13 @@ public class GraphicalCoveragePanel extends JPanel {
 		additionalIndividuals.clear();
 		points.clear();
 		if (eval != null) {
-			Set<Individual> posInd = ((EvaluatedDescriptionClass) eval)
+			Set<OWLIndividual> posInd = ((EvaluatedDescriptionClass) eval)
 					.getCoveredInstances();
 			int i = 0;
 			double x = random.nextInt(MAX_RANDOM_NUMBER);
 			double y = random.nextInt(MAX_RANDOM_NUMBER);
 			boolean flag = true;
-			for (Individual ind : posInd) {
+			for (OWLIndividual ind : posInd) {
 				flag = true;
 				if (i < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
@@ -428,7 +427,7 @@ public class GraphicalCoveragePanel extends JPanel {
 										&& y >= this.getY1() && y <= this
 										.getY2())) {
 							posCovIndVector.add(new IndividualPoint("*",
-									(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
+									(int) x, (int) y, Manager.getInstance().getRendering(ind), ind, ""));
 							i++;
 							flag = false;
 
@@ -444,12 +443,12 @@ public class GraphicalCoveragePanel extends JPanel {
 				}
 			}
 
-			Set<Individual> posNotCovInd = ((EvaluatedDescriptionClass) eval)
+			Set<OWLIndividual> posNotCovInd = ((EvaluatedDescriptionClass) eval)
 					.getAdditionalInstances();
 			int j = 0;
 			x = random.nextInt(MAX_RANDOM_NUMBER);
 			y = random.nextInt(MAX_RANDOM_NUMBER);
-			for (Individual ind : posNotCovInd) {
+			for (OWLIndividual ind : posNotCovInd) {
 				flag = true;
 				if (j < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
@@ -471,10 +470,10 @@ public class GraphicalCoveragePanel extends JPanel {
 										+ this.getShiftNewConcept())) {
 							if (id.equals(EQUI_STRING)) {
 								posNotCovIndVector.add(new IndividualPoint("*",
-										(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
+										(int) x, (int) y, Manager.getInstance().getRendering(ind), ind, ""));
 							} else {
 								additionalIndividuals.add(new IndividualPoint("*",
-										(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
+										(int) x, (int) y, Manager.getInstance().getRendering(ind), ind, ""));
 							}
 							j++;
 							flag = false;
@@ -490,13 +489,13 @@ public class GraphicalCoveragePanel extends JPanel {
 				}
 			}
 
-			Set<Individual> notCovInd = Manager.getInstance().getIndividuals();
+			Set<OWLIndividual> notCovInd = Manager.getInstance().getIndividuals();
 			notCovInd.removeAll(posInd);
 			notCoveredInd = notCovInd.size();
 			int k = 0;
 			x = random.nextInt(MAX_RANDOM_NUMBER);
 			y = random.nextInt(MAX_RANDOM_NUMBER);
-			for (Individual ind : notCovInd) {
+			for (OWLIndividual ind : notCovInd) {
 				flag = true;
 				if (k < MAX_NUMBER_OF_INDIVIDUAL_POINTS) {
 					while (flag) {
@@ -509,7 +508,7 @@ public class GraphicalCoveragePanel extends JPanel {
 										&& y >= this.getY1() && y <= this
 										.getY2())) {
 							posNotCovIndVector.add(new IndividualPoint("*",
-									(int) x, (int) y, Manager.getInstance().getRendering(ind), factory.getOWLNamedIndividual(IRI.create(ind.getURI())), ind, ""));
+									(int) x, (int) y, Manager.getInstance().getRendering(ind), ind, ""));
 							k++;
 							flag = false;
 							x = random.nextInt(MAX_RANDOM_NUMBER);

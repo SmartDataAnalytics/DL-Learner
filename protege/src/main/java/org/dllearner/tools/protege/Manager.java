@@ -8,16 +8,12 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.reasoning.ProtegeReasoner;
+import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.protege.editor.core.Disposable;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.event.EventType;
@@ -28,6 +24,8 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -44,7 +42,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	private ClassLearningProblem lp;
 	private CELOE la;
-	private ProtegeReasoner reasoner;
+	private ClosedWorldReasoner reasoner;
 	private KnowledgeSource ks;
 	
 	private LearningType learningType;
@@ -126,8 +124,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		System.out.print("Initializing learning problem...");
 		long startTime = System.currentTimeMillis();
 		lp = new ClassLearningProblem(reasoner);
-		lp.setClassToDescribe(new NamedClass(editorKit.getOWLWorkspace()
-				.getOWLSelectionModel().getLastSelectedClass().getIRI().toURI()));
+		lp.setClassToDescribe(editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
 		lp.setEquivalence(learningType == LearningType.EQUIVALENT);
 		lp.setCheckConsistency(DLLearnerPreferences.getInstance().isCheckConsistencyWhileLearning());
 
@@ -143,16 +140,19 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	public void initReasoner() throws Exception{
 		System.out.print("Initializing DL-Learner internal reasoner...");
 		long startTime = System.currentTimeMillis();
-		reasoner = new ProtegeReasoner(Collections.singleton(ks), editorKit.getOWLModelManager().getReasoner());
-		reasoner.setProgressMonitor(progressMonitor);
+		reasoner = new ClosedWorldReasoner(Collections.singleton(ks));
+		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(editorKit.getOWLModelManager().getReasoner());
+		reasoner.setReasonerComponent(baseReasoner);
+//		reasoner.setProgressMonitor(progressMonitor);TODO integrate progress monitor
 		reasoner.init();
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 	
 	public void initReasonerAsynchronously(){
-		reasoner = new ProtegeReasoner(Collections.singleton(ks), editorKit.getOWLModelManager().getReasoner());
-		reasoner.setOWLReasoner(editorKit.getOWLModelManager().getReasoner());
-		reasoner.setProgressMonitor(progressMonitor);
+		reasoner = new ClosedWorldReasoner(Collections.singleton(ks));
+		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(editorKit.getOWLModelManager().getReasoner());
+		reasoner.setReasonerComponent(baseReasoner);
+//		reasoner.setProgressMonitor(progressMonitor);TODO integrate progress monitor
 		
 		Thread t = new Thread(new Runnable() {
 			@Override
@@ -167,13 +167,12 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		t.start();
 	}
 	
-	public void addAxiom(EvaluatedDescription description){
+	public void addAxiom(EvaluatedDescription evaluatedDescription){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		OWLClassExpression exp = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description.getDescription());
 		if(learningType == LearningType.EQUIVALENT){
-			addEquivalentClassesAxiom(selectedClass, exp);
+			addEquivalentClassesAxiom(selectedClass, evaluatedDescription.getDescription());
 		} else {
-			addSuperClassAxiom(selectedClass, exp);
+			addSuperClassAxiom(selectedClass, evaluatedDescription.getDescription());
 		}
 	}
 	
@@ -292,35 +291,23 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 		return reasoner.isConsistent();
 	}
 	
-	public SortedSet<Individual> getIndividuals(){
+	public SortedSet<OWLIndividual> getIndividuals(){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		return reasoner.getIndividuals(OWLAPIConverter.convertClass(selectedClass));
+		return reasoner.getIndividuals(selectedClass);
 	}
 	
 	public boolean canLearn(){
 		OWLClass selectedClass = editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass();
-		boolean canLearn = reasoner.getIndividuals(OWLAPIConverter.convertClass(selectedClass)).size() > 0;
+		boolean canLearn = reasoner.getIndividuals(selectedClass).size() > 0;
 		return canLearn;
 	}
 	
-	public String getRendering(Description desc){
-		String rendering = editorKit.getModelManager().getRendering(
-				OWLAPIDescriptionConvertVisitor.getOWLClassExpression(desc));
+	public String getRendering(OWLObject owlObject){
+		String rendering = editorKit.getModelManager().getRendering(owlObject);
 		return rendering;
 	}
 	
-	public String getRendering(OWLClass cl){
-		String rendering = editorKit.getModelManager().getRendering(cl);
-		return rendering;
-	}
-	
-	public String getRendering(Individual ind){
-		String rendering = editorKit.getModelManager().getRendering(
-				OWLAPIConverter.getOWLAPIIndividual(ind));
-		return rendering;
-	}
-	
-	public ProtegeReasoner getReasoner(){
+	public ClosedWorldReasoner getReasoner(){
 		return reasoner;
 	}
 	
