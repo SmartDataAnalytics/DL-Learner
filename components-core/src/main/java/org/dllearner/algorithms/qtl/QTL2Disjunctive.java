@@ -125,17 +125,23 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private double specifityWeight = 0.1;
 	
 	private double minCoveredPosExamplesFraction = 0.2;
+	
 	// maximum execution time to compute a part of the solution
 	private double maxTreeComputationTimeInSeconds = 10;
+	
 	// how important not to cover negatives
 	private double beta = 1;
+	
 	// minimum score a query tree must have to be part of the solution
 	private double minimumTreeScore = 0.3;
+	
 	//If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, 
 	//it may lead to overfitting
 	private boolean tryFullCoverage;
+	
 	//algorithm will terminate immediately when a correct definition is found
 	private boolean stopOnFirstDefinition;
+	
 	//the (approximated) value of noise within the examples
 	private double noise = 0.0;
 	

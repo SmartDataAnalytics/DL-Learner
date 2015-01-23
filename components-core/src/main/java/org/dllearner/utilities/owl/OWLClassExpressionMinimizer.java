@@ -91,7 +91,12 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
+		
 		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		
+		if(newOperands.size() == 1){
+			return newOperands.iterator().next().accept(this);
+		}
 		
 		for (int i = 0; i < operands.size(); i++) {
 			OWLClassExpression op1 = operands.get(i);
@@ -134,6 +139,10 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			operands.set(i, operands.get(i).accept(this));
 		}
 		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		
+		if(newOperands.size() == 1){
+			return newOperands.iterator().next().accept(this);
+		}
 		
 		for (int i = 0; i < operands.size(); i++) {
 			OWLClassExpression op1 = operands.get(i);
