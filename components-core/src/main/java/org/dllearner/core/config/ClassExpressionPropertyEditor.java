@@ -8,8 +8,11 @@ import java.beans.PropertyEditor;
 
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 public class ClassExpressionPropertyEditor implements PropertyEditor {
 
@@ -69,16 +72,22 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 
 	@Override
 	public void setAsText(String s) throws IllegalArgumentException {
+		description = new OWLClassImpl(IRI.create(s));
+		
+		// TODO seems like the parser needs the ontology to parse class expressions
+		// because there is no lookahead, thus, it has to be known in advance
+		// which type of entity a token belongs to
+		
+		/*
 		// we assume that the start class string is given in Manchester syntax
-//		System.out.println("parser string: " + arg0);
 		ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
 		parser.setStringToParse(s);
 		try {
 			description = parser.parseClassExpression();
-//			System.out.println("parsed: " + description);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
+		*/
 	}
 
 	@Override

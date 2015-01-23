@@ -46,6 +46,10 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
+import org.dllearner.refinementoperators.CustomStartRefinementOperator;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
+import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
@@ -93,7 +97,7 @@ public class OCEL extends AbstractCELA {
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 	
 	// dependencies
-	private RhoDRDown operator;	
+	private LengthLimitedRefinementOperator operator;	
 	private ExampleBasedHeuristic heuristic;
 	
 	// configuration options
@@ -162,7 +166,7 @@ public class OCEL extends AbstractCELA {
 
 
     public OCEL(){
-
+    	
     }
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
@@ -354,14 +358,20 @@ public class OCEL extends AbstractCELA {
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new RhoDRDown();
-			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
+			if(operator instanceof CustomStartRefinementOperator) {
+				((CustomStartRefinementOperator)operator).setStartClass(startClass);
+			}
+			if(operator instanceof ReasoningBasedRefinementOperator) {
+				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
+			}
+			operator.init();
 		}
 		// TODO: find a better solution as this is quite difficult to debug
-		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
-		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-				
+		if(operator instanceof CustomHierarchyRefinementOperator) {
+			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		}
 		
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -457,16 +467,16 @@ public class OCEL extends AbstractCELA {
 		return algorithm.isRunning();
 	}
 	
-	public RhoDRDown getRefinementOperator() {
+	public LengthLimitedRefinementOperator getRefinementOperator() {
 		return operator;
 	}
 
-	public RhoDRDown getOperator() {
+	public LengthLimitedRefinementOperator getOperator() {
 		return operator;
 	}
 
     @Autowired(required=false)
-	public void setOperator(RhoDRDown operator) {
+	public void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
 

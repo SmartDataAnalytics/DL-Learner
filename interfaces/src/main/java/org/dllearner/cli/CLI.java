@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -47,6 +48,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -55,6 +57,7 @@ import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -115,7 +118,7 @@ public class CLI {
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
-            rs = context.getBean(AbstractReasonerComponent.class);
+            rs = getMainReasonerComponent();
     		la = context.getBean(AbstractCELA.class);
     		lp = context.getBean(AbstractLearningProblem.class);
     	}
@@ -145,8 +148,10 @@ public class CLI {
         	} else {
         		Files.createFile(springFile, xml.toString());
         	}		
-		}    	
-		rs = context.getBean(AbstractReasonerComponent.class);
+		}  
+		
+		rs = getMainReasonerComponent();
+		
 		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
 		
 			if (performCrossValidation) {
@@ -165,6 +170,28 @@ public class CLI {
 					algorithm.start();
 				}
 			}
+    }
+    
+    private AbstractReasonerComponent getMainReasonerComponent() {
+    	AbstractReasonerComponent rc = null;
+    	// there can be 2 reasoner beans
+		Map<String, AbstractReasonerComponent> reasonerBeans = context.getBeansOfType(AbstractReasonerComponent.class);
+
+		if (reasonerBeans.size() > 1) {
+			for (Entry<String, AbstractReasonerComponent> entry : reasonerBeans.entrySet()) {
+				String key = entry.getKey();
+				AbstractReasonerComponent value = entry.getValue();
+
+				if (value instanceof FastInstanceChecker) {
+					rc = value;
+				}
+
+			}
+		} else {
+			rc = context.getBean(AbstractReasonerComponent.class);
+		}
+		
+		return rc;
     }
 
     public boolean isWriteSpringConfiguration() {

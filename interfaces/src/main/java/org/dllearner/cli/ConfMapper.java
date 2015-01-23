@@ -35,6 +35,7 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -81,11 +82,15 @@ public class ConfMapper {
 		// edit this part manually
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
+		knowledgeSourceMapping.put("kbfile", KBFile.class);
+		
 		reasonerMapping.put("owlAPIReasoner", OWLAPIReasoner.class);
 		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
+		
 		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
 		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
 		learningProblemMapping.put("posOnlyLP", PosOnlyLP.class);
+		
 //		learningAlgorithmMapping.put("refexamples", OCEL.class);
 		learningAlgorithmMapping.put("ocel", OCEL.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);

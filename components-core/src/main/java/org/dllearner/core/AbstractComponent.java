@@ -35,6 +35,15 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
  */
 public abstract class AbstractComponent implements Component {
 	
+	protected boolean initialized = false;
+	
+	/**
+	 * @return true if component has been initialized.
+	 */
+	public boolean isInitialized() {
+		return initialized;
+	}
+	
 //	protected Configurator configurator;
 	
 	/**

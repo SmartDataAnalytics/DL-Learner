@@ -77,7 +77,7 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.qtl.QTL",
             "org.dllearner.algorithms.qtl.QTL2",
             "org.dllearner.algorithms.qtl.QTL2Disjunctive",
-//            "org.dllearner.kb.KBFile",
+            "org.dllearner.kb.KBFile",
             "org.dllearner.kb.OWLFile",
             "org.dllearner.kb.SparqlEndpointKS",
             "org.dllearner.kb.LocalModelBasedSparqlEndpointKS",

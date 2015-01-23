@@ -35,6 +35,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.math3.util.MathUtils;
+import org.apache.lucene.queries.function.valuesource.MaxFloatFunction;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
@@ -182,7 +184,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLDataProperty,List<Float>> splitsFloat = new TreeMap<OWLDataProperty,List<Float>>();
 	private Map<OWLDataProperty,List<Double>> splitsDouble = new TreeMap<OWLDataProperty,List<Double>>();
 	
-	private Map<OWLDataProperty,List<Number>> splitsNumber = new TreeMap<OWLDataProperty,List<Number>>();
+	private Map<OWLDataProperty,List<? extends Number>> splitsNumber = new TreeMap<OWLDataProperty,List<? extends Number>>();
 	private int maxNrOfSplits = 10;
 	
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -257,9 +259,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
-	public RhoDRDown() {
-		
-	}
+	public RhoDRDown() {}
 	
 	public RhoDRDown(RhoDRDown op) {
 		setApplyAllFilter(op.applyAllFilter);
@@ -287,7 +287,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		isInitialised = false;
 	}
 	
-	public void init() throws ComponentInitException {	
+	public void init() throws ComponentInitException {
 		if(isInitialised) {
 			throw new ComponentInitException("Refinement operator cannot be initialised twice.");
 		}
@@ -377,7 +377,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 		// compute splits for numeric data properties
 		for (OWLDataProperty dp : reasoner.getNumericDataProperties()) {
-			computeSplits(dp);
+			computeSplits2(dp);
 		}
 		
 		// compute splits for double datatype properties
@@ -402,43 +402,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				maxNrOfFillers.put(op, maxFillers);
 			}
 		}
-		isInitialised = true;
-		/*
-		String conceptStr = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2 \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\" OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\". TOP)))";
-		try {
-			NamedClass struc = df.getOWLClass(IRI.create("http://dl-learner.org/carcinogenesis#Compound");
-			Description d = KBParser.parseConcept(conceptStr);
-			SortedSet<Description> ds = (SortedSet<Description>) refine(d,15,null,struc);
-			System.out.println(ds);
-			
-			Individual i = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/carcinogenesis#d101");
-			rs.instanceCheck(ds.first(), i);
-			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.exit(0);
-		*/
 		
-		/*
-		NamedClass struc = df.getOWLClass(IRI.create("http://dl-learner.org/carcinogenesis#Atom");
-		ObjectProperty op = df.getOWLObjectProperty(IRI.create("http://dl-learner.org/carcinogenesis#hasAtom");
-		ObjectSomeRestriction oar = new ObjectSomeRestriction(op,Thing.instance);
-
-		Set<Description> ds = refine(Thing.instance,3,null,struc);
-//		Set<Description> improper = new HashSet<Description>();
-		for(OWLClassExpression d : ds) {
-//			if(rs.subsumes(d, struc)) {
-//				improper.add(d);
-				System.out.println(d);
-//			}
+		if(startClass == null) {
+			startClass = df.getOWLThing();
 		}
-		System.out.println(ds.size());
-//		System.out.println(improper.size());
-		System.exit(0);
-		*/
-		 
+		
+		isInitialised = true;
 	}
 	
 	/* (non-Javadoc)
@@ -1684,7 +1653,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 	
 	//TODO implement numerical splitting
-	/*
+	
 	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
 		Set<T> valuesSet = new TreeSet<T>();
 //		Set<OWLIndividual> individuals = rs.getIndividuals();
@@ -1717,7 +1686,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			
 			splitsDP.add(avg);
 		}
-//		splitsNumber.put(dp, splitsDP);
+		System.out.println(dp + ":" + splitsDP);
+		splitsNumber.put(dp, splitsDP);
 	}
 	
 	private <T extends Number & Comparable<Number>> T avg(T number1, T number2){
@@ -1725,7 +1695,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				add(BigDecimal.valueOf(number2.doubleValue()).divide(
 						BigDecimal.valueOf(0.5d)));
 	}
-	*/
+	
 	
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;

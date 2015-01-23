@@ -722,17 +722,22 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
 		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
-		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
-			SortedSet<OWLLiteral> values = e.getValue();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			SortedSet<OWLLiteral> values = entry.getValue();
 			SortedSet<T> numericValues = new TreeSet<T>();
 			for (OWLLiteral lit : values) {
 				try {
-					numericValues.add((T) numberFormat.parse(lit.getLiteral()));
-				} catch (ParseException e1) {
-					e1.printStackTrace();
+					Number number = numberFormat.parse(lit.getLiteral());
+					if(number instanceof Long) {
+						number = Double.valueOf(number.toString());
+					}
+					numericValues.add((T) (number) );
+				} catch (ParseException e) {
+					e.printStackTrace();
 				}
 			}
-			ret.put(e.getKey(), numericValues);
+			ret.put(ind, numericValues);
 		}
 		return ret;
 	}
