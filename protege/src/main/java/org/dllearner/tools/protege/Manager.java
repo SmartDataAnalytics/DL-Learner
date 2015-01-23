@@ -288,7 +288,7 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	}
 	
 	public boolean isConsistent(){
-		return reasoner.isConsistent();
+		return reasoner.isSatisfiable();
 	}
 	
 	public SortedSet<OWLIndividual> getIndividuals(){

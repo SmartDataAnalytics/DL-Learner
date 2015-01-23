@@ -25,6 +25,7 @@ import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -42,7 +43,6 @@ import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.search.EntitySearcher;
 
 /**
  * This class takes care of all events happening in the GraphicalCoveragePanel.
@@ -131,37 +131,32 @@ public class GraphicalCoveragePanelHandler implements MouseMotionListener,
 							.getIndividual());
 					individualInformation += "<br><br><b>Types:</b><br>";
 					for (OWLClass dlLearnerClass : types) {
-						individualInformation += dlLearnerClass
-								.toManchesterSyntaxString(
-										v.get(i).getBaseUri(), null)
-								+ "<br>";
+						individualInformation += Manager.getInstance().getRendering(dlLearnerClass) + "<br>";
 					}
-					Map<OWLObjectProperty, Set<OWLIndividual>> objectProperties = reasoner
-							.getObjectPropertyRelationships(v.get(i)
-									.getIndividual());
-					Set<OWLObjectProperty> key = objectProperties.keySet();
-					individualInformation += "<br><b>Objectproperties:</b><br>";
-					for (OWLObjectProperty objectProperty : key) {
-						Set<OWLIndividual> indiSet = objectProperties
-								.get(objectProperty);
-						individualInformation = individualInformation
-								+ objectProperty.toManchesterSyntaxString(v
-										.get(i).getBaseUri(), null) + " ";
-						for (OWLIndividual indi : indiSet) {
-							individualInformation += indi
-									.toManchesterSyntaxString(v.get(i)
-											.getBaseUri(), null);
-							if (indiSet.size() > 1) {
+					Map<OWLObjectProperty, Set<OWLIndividual>> op2Individuals = reasoner.getObjectPropertyRelationships(v.get(i).getIndividual());
+					Set<OWLObjectProperty> key = op2Individuals.keySet();
+					individualInformation += "<br><b>Object Property Values:</b><br>";
+					
+					for (Entry<OWLObjectProperty, Set<OWLIndividual>> entry : op2Individuals.entrySet()) {
+						OWLObjectProperty op = entry.getKey();
+						individualInformation += Manager.getInstance().getRendering(op) + " ";
+						
+						Set<OWLIndividual> individuals = entry.getValue();
+						for (OWLIndividual ind : individuals) {
+							individualInformation += Manager.getInstance().getRendering(ind);
+							if (individuals.size() > 1) {
 								individualInformation += ", ";
 							}
 						}
 						individualInformation += "<br>";
+						
 					}
+				
 					if (v.get(i).getIndividual() != null) {
 						Set<OWLDataPropertyAssertionAxiom> dataProperties = ontology
 								.getDataPropertyAssertionAxioms(v.get(i)
 										.getIndividual());
-						individualInformation += "<br><b>Dataproperties</b><br>";
+						individualInformation += "<br><b>Data Property Values</b><br>";
 						for (OWLDataPropertyAssertionAxiom dataProperty : dataProperties) {
 							individualInformation += dataProperty.toString()
 									+ "<br>";
