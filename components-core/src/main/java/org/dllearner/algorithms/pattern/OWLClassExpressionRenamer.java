@@ -427,11 +427,4 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 		renamedOWLObject = desc;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
-	 */
-	@Override
-	public void visit(OWLAnnotationProperty property) {
-	}
-
 }

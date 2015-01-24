@@ -21,7 +21,7 @@
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>4.4.0</solr.version>
-        <owlapi.version>4.0.1-dllearner</owlapi.version>
+        <owlapi.version>3.5.2-dllearner-SNAPSHOT</owlapi.version>
         <jena.sparql.api.version>2.11.2-56</jena.sparql.api.version>
 	</properties>
 

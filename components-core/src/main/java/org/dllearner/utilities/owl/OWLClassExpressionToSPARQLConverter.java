@@ -771,11 +771,4 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		System.out.println(expr + "\n" + query);
 		
 	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
-	 */
-	@Override
-	public void visit(OWLAnnotationProperty property) {
-	}
 }

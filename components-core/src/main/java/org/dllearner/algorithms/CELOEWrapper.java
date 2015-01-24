@@ -21,7 +21,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
-import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 //import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -104,7 +104,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		
 		OWLOntology fragment = buildFragment(posExamples, negExamples);
 		try {
-			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLDocumentFormat(), new FileOutputStream("/tmp/ont.owl"));
+			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLOntologyFormat(), new FileOutputStream("/tmp/ont.owl"));
 		} catch (OWLOntologyStorageException | FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

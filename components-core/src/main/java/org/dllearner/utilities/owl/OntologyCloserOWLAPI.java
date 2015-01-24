@@ -28,7 +28,7 @@ import java.util.SortedSet;
 
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -176,7 +176,7 @@ public class OntologyCloserOWLAPI {
 
 	public void writeOWLFile(URI filename) {
 		try {
-			manager.saveOntology(this.onto, new RDFXMLDocumentFormat(),
+			manager.saveOntology(this.onto, new RDFXMLOntologyFormat(),
 					IRI.create(filename));
 		} catch (Exception e) {
 			e.printStackTrace();

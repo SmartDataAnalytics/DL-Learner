@@ -45,7 +45,6 @@ import org.semanticweb.owlapi.model.OWLQuantifiedObjectRestriction;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.search.EntitySearcher;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -153,10 +152,10 @@ public class StructureBasedRootClassFinder implements RootClassFinder, OWLClassE
 		
 			for(OWLClass cls : unsatClasses){
 				reset();
-				for(OWLClassExpression equi : EntitySearcher.getEquivalentClasses(cls, ontology)){
+				for(OWLClassExpression equi : cls.getEquivalentClasses(ontology)){
 					equi.accept(this);
 				}
-				for(OWLClassExpression sup : EntitySearcher.getSuperClasses(cls, ontology)){
+				for(OWLClassExpression sup : cls.getSuperClasses(ontology)){
 					sup.accept(this);
 				}
 				for(Integer depth : depth2UniversalRestrictionPropertyMap.keySet()){

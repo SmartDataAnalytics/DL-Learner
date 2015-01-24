@@ -9,8 +9,8 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Set;
 
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -68,7 +68,7 @@ public class OwlApiJenaUtils {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
+						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
 						os.close();
 					} catch (OWLOntologyStorageException e) {
 						e.printStackTrace();

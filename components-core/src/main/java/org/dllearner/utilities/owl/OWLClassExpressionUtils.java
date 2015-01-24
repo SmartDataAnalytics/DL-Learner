@@ -348,14 +348,4 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 		Set<OWLFacetRestriction> facetRestrictions = node.getFacetRestrictions();
 		length += facetRestrictions.size();
 	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLAnnotationProperty)
-	 */
-	@Override
-	public void visit(OWLAnnotationProperty property) {
-	}
-	
-	
-
 }

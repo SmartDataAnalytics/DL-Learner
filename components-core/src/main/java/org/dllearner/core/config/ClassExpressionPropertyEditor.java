@@ -7,10 +7,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
 import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.util.mansyntax.ManchesterOWLSyntaxParser;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
