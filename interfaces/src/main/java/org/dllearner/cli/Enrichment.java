@@ -66,7 +66,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.aksw.commons.jena_owlapi.Conversion;
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
@@ -986,18 +985,15 @@ public class Enrichment {
 	}
 	
 	Model getModel(List<OWLAxiom> axioms) {
-		Model model = ModelFactory.createDefaultModel();
 		try {
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().createOntology(new HashSet<OWLAxiom>(axioms));
-//			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsRDFXML();System.out.println(s);
-			String s = new org.aksw.commons.owlapi.StringConverter(ontology).toStringAsTurtle(); //System.out.println(s);
-			ByteArrayInputStream bs = new ByteArrayInputStream(s.getBytes());
-	        model.read(bs, "", "TURTLE");
+			Model model = OwlApiJenaUtils.getModel(ontology);
+			model.setNsPrefix("enr", "http://www.dl-learner.org/enrichment.owl#");
+			return model;
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
-		model.setNsPrefix("enr", "http://www.dl-learner.org/enrichment.owl#");
-		return model;
+		return null;
 	}	
 	
 	public OWLOntology getGeneratedOntology(){
