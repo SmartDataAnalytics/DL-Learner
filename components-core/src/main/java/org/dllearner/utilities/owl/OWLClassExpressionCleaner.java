@@ -6,9 +6,9 @@ package org.dllearner.utilities.owl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -67,7 +67,7 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 			}
 		}
 		Collections.sort(operands);
-		return df.getOWLObjectIntersectionOf(operands);
+		return new OWLObjectIntersectionOfImplExt(operands);
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +85,7 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 			}
 		}
 		Collections.sort(operands);
-		return df.getOWLObjectUnionOf(operands);
+		return new OWLObjectUnionOfImplExt(operands);
 	}
 
 	/* (non-Javadoc)

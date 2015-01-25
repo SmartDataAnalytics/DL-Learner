@@ -34,6 +34,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.coode.owlapi.owlxmlparser.OWLObjectIntersectionOfElementHandler;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -44,6 +45,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -1195,7 +1197,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				df.getOWLClass("C", pm)));
 		operands.add(df.getOWLObjectUnionOf(df.getOWLClass("A", pm), df.getOWLClass("B", pm)));
 		Collections.sort(operands);
-		OWLClassExpression ce = df.getOWLObjectIntersectionOf(operands);
+		OWLClassExpression ce = new OWLObjectIntersectionOfImplExt(operands);
 		System.out.println(OWLAPIRenderers.toDLSyntax(ce));
 		
 		String cls = "http://purl.org/procurement/public-contracts#Tender";

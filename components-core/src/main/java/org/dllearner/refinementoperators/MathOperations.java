@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -179,7 +180,7 @@ public class MathOperations {
 				operands = md.getOperandsAsList();
 				operands.add(c);
 				Collections.sort(operands);
-				OWLObjectUnionOf mdNew = df.getOWLObjectUnionOf(operands);
+				OWLObjectUnionOf mdNew = new OWLObjectUnionOfImplExt(operands);
 				retSet.add(mdNew);
 			}
 		}

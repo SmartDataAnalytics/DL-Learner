@@ -47,6 +47,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -500,7 +502,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					newChildren.add(c);
 					newChildren.remove(child);
 					Collections.sort(newChildren);
-					OWLClassExpression mc = df.getOWLObjectIntersectionOf(newChildren);
+					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
 					
 					// clean concept and transform it to ordered negation normal form
 					// (non-recursive variant because only depth 1 was modified)
@@ -529,7 +531,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					newChildren.remove(child);						
 					newChildren.add(c);
 					Collections.sort(newChildren);
-					OWLObjectUnionOf md = df.getOWLObjectUnionOf(newChildren);
+					OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
 						
 					// transform to ordered negation normal form
 					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(md);
@@ -552,7 +554,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					for(int i=0; i<operands.size(); i++) {
 						List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
 						newChildren.remove(i);						
-						OWLObjectUnionOf md = df.getOWLObjectUnionOf(newChildren);
+						OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
 						refinements.add(md);
 					}
 				}
@@ -822,7 +824,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					if(!skip) {
 						List<OWLClassExpression> operands = Lists.newArrayList(description, c);
 						Collections.sort(operands);
-						OWLObjectIntersectionOf mc = df.getOWLObjectIntersectionOf(operands);
+						OWLObjectIntersectionOf mc = new OWLObjectIntersectionOfImplExt(operands);
 						
 						// clean and transform to ordered negation normal form
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.cleanConceptNonRecursive(mc);
