@@ -2,7 +2,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.dllearner</groupId>
 	<artifactId>scripts</artifactId>
 	<packaging>jar</packaging>
 
@@ -85,7 +84,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>sparql</artifactId>
 			<version>0.2-SNAPSHOT</version>
@@ -111,7 +110,7 @@
 					<groupId>org.apache.jena</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>

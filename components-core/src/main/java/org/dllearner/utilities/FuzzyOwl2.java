@@ -90,7 +90,6 @@ import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
 import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
 import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
-import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
@@ -505,7 +504,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
+					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() > 1)
@@ -528,7 +527,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
+					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -549,7 +548,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
+					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -580,7 +579,7 @@ public class FuzzyOwl2
 				if (ent.isOWLClass())
 				{
 					OWLClass cls = ent.asOWLClass();
-					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
+					Collection<OWLAnnotation> annotations = cls.getAnnotations(o, label);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " class annotations for " + cls + ".");
@@ -744,7 +743,7 @@ public class FuzzyOwl2
 					else // if (ent.isOWLDataProperty() )
 						prop = ent.asOWLDataProperty();
 	
-					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(label, o);
+					Collection<OWLAnnotation> annotations = prop.getAnnotations(o, label);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " property annotations for " + prop + ".");

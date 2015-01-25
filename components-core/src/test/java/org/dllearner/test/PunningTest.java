@@ -16,7 +16,6 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLPunningDetector;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,6 +34,7 @@ import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;

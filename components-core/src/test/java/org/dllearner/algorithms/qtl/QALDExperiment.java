@@ -58,7 +58,6 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -68,6 +67,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ComparisonChain;

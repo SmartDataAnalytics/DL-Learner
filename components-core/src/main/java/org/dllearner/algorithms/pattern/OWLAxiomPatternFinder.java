@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.coode.owlapi.functionalparser.OWLFunctionalSyntaxOWLParser;
-import org.coode.owlapi.functionalrenderer.OWLFunctionalSyntaxRenderer;
 import org.dllearner.kb.dataset.OWLOntologyDataset;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.OntologyRepositoryEntry;
@@ -128,8 +127,8 @@ public class OWLAxiomPatternFinder {
 			OWLOntology ontology = man.createOntology();
 			man.addAxiom(ontology, axiom);
 			StringWriter sw = new StringWriter();
-			OWLFunctionalSyntaxRenderer r = new OWLFunctionalSyntaxRenderer(man);
-			r.axiom.accept(r);
+			org.coode.owlapi.functionalrenderer.OWLObjectRenderer r = new org.coode.owlapi.functionalrenderer.OWLObjectRenderer(man, ontology, sw);
+			axiom.accept(r);
 			return sw.toString();
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -411,7 +410,7 @@ public class OWLAxiomPatternFinder {
 		OWLOntology ontology = man.createOntology();
 		man.addAxiom(ontology, axiom);
 		StringWriter sw = new StringWriter();
-		FunctionalSyntaxObjectRenderer r = new FunctionalSyntaxObjectRenderer(ontology, sw);
+		org.coode.owlapi.functionalrenderer.OWLObjectRenderer r = new org.coode.owlapi.functionalrenderer.OWLObjectRenderer(man, ontology, sw);
 		axiom.accept(r);
 		System.out.println(sw.toString());
 		StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + sw.toString() + ")");

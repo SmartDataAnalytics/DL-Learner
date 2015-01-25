@@ -9,11 +9,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.junit.Test;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;

@@ -84,7 +84,7 @@ public class ExampleTests {
 		
 		// setting for SPARQL based tests (0 = no special treatment, 1 = test only SPARQL
 		// examples, 2 = skip SPARQL tests)
-		int sparql = 2;
+		final int sparql = 2;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
@@ -114,7 +114,7 @@ public class ExampleTests {
 			Collections.sort(examples);
 		}
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
 		// ignore list (examples which are temporarily not working due
 		// to server downtime, lack of features etc., but should still
@@ -145,16 +145,16 @@ public class ExampleTests {
 //		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
 //		ignore.add("examples/krk/"); // too many stack overflows
 
-		AtomicInteger failedCounter = new AtomicInteger(0);
-		AtomicInteger counter = new AtomicInteger(1);
-		int total = examples.size();
+		final AtomicInteger failedCounter = new AtomicInteger(0);
+		final AtomicInteger counter = new AtomicInteger(1);
+		final int total = examples.size();
 		
 		ExecutorService tp = Executors.newFixedThreadPool(nThreads);
 		
 		final StringBuilder failed = new StringBuilder();
 		final StringBuilder successful = new StringBuilder();
 		
-		for(String conf : examples) {
+		for(final String conf : examples) {
 			boolean ignored = false;
 			for(String ignoredConfExpression : ignore) {
 				if(conf.contains(ignoredConfExpression)) {

@@ -833,7 +833,13 @@ public class Enrichment {
 		axioms.add(ax);
 		
 		//add used input to algorithm run instance
-		OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
+		OWLNamedIndividual knowldegeBaseInd = null;
+		try {
+			knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
 		axioms.add(ax);
 		if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {

@@ -23,11 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
+import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
+import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.utilities.StringFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
-import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -37,8 +38,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
-import org.semanticweb.owlapi.owlxml.renderer.OWLXMLWriter;
+
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
  * A collection of various render methods provided by 
@@ -52,10 +54,10 @@ public class OWLAPIRenderers {
 	private static final ManchesterOWLSyntaxOWLObjectRendererImpl manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
 	
-	static {
-		manchesterRenderer.setUseWrapping(false);
-		manchesterRenderer.setUseTabbing(false);
-	}
+//	static {
+//		manchesterRenderer.setUseWrapping(false);
+//		manchesterRenderer.setUseTabbing(false);
+//	}
 	
 	/**
 	 * Converts an OWL API object to a DL syntax string.
@@ -124,7 +126,7 @@ public class OWLAPIRenderers {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
-			manager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
+			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), out);
 			str = new String(out.toByteArray(), "UTF-8");
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
@@ -143,7 +145,7 @@ public class OWLAPIRenderers {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
-			manager.saveOntology(ontology, new TurtleDocumentFormat(), out);
+			manager.saveOntology(ontology, new TurtleOntologyFormat(), out);
 			str = new String(out.toByteArray(), "UTF-8");
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();

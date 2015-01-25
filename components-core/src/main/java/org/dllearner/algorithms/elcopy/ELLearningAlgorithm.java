@@ -246,11 +246,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				node.setCoveredNegatives(negCovers);
 			}
 			node.setAccuracy(accuracy);
-			if(heuristic instanceof RelevanceWeightedStableHeuristic){
-				node.setScore(((RelevanceWeightedStableHeuristic)heuristic).getNodeScore(node));
-			} else {
-				node.setScore(accuracy);
-			}
+			node.setScore(accuracy);
 			
 //			System.out.println(OWLClassExpression + ":" + accuracy);
 			// link to parent (unless start node)

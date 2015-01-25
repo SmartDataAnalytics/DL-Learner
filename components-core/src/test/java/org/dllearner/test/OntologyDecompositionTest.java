@@ -14,7 +14,6 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
-import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -30,6 +29,7 @@ import uk.ac.manchester.cs.atomicdecomposition.Atom;
 import uk.ac.manchester.cs.atomicdecomposition.AtomicDecomposerOWLAPITOOLS;
 import uk.ac.manchester.cs.atomicdecomposition.AtomicDecomposition;
 import uk.ac.manchester.cs.jfact.JFactFactory;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owlapi.modularity.ModuleType;
 import uk.ac.manchester.cs.owlapi.modularity.SyntacticLocalityModuleExtractor;
 
@@ -48,8 +48,8 @@ public class OntologyDecompositionTest {
 	 */
 	public static void main(String[] args) throws Exception{
 		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		renderer.setUseWrapping(false);
-		renderer.setUseTabbing(false);
+//		renderer.setUseWrapping(false);
+//		renderer.setUseTabbing(false);
 		ToStringRenderer.getInstance().setRenderer(renderer);
 		
 		String ontologyURL = "../examples/swore/swore.rdf";
