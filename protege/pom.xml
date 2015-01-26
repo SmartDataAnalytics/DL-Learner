@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>protege</artifactId>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 
 	<name>DL-Learner Protege Plugin</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
@@ -86,12 +86,15 @@
 						<Bundle-Activator>org.protege.editor.owl.ProtegeOWL</Bundle-Activator>
 						<Bundle-ClassPath>.</Bundle-ClassPath>
 						<Bundle-SymbolicName>${project.artifactId};singleton:=true</Bundle-SymbolicName>
-						<Bundle-Vendor>The Protege Development Team</Bundle-Vendor>
+						<Bundle-Vendor>DL-Learner Project</Bundle-Vendor>
 						<Import-Package>
-							org.apache.log4j.*;version="[1.2,2)", 
 							org.protege.editor.owl.*;version="4.3", <!-- equivalent to [4.3,infinity) -->
 							*
 						</Import-Package>
+						
+						<!-- embed all compile and runtime scope dependencies -->
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Directory>lib</Embed-Directory>
 					</instructions>
 					<executions>
 						<execution>
