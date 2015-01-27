@@ -39,7 +39,6 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
@@ -51,13 +50,13 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
  */
 public class OWLAPIRenderers {
 	
-	private static final ManchesterOWLSyntaxOWLObjectRendererImpl manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private static final ManchesterOWLSyntaxOWLObjectRendererImplExt manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
 	
-//	static {
-//		manchesterRenderer.setUseWrapping(false);
-//		manchesterRenderer.setUseTabbing(false);
-//	}
+	static {
+		manchesterRenderer.setUseWrapping(false);
+		manchesterRenderer.setUseTabbing(false);
+	}
 	
 	/**
 	 * Converts an OWL API object to a DL syntax string.
