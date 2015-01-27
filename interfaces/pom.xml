@@ -112,9 +112,26 @@
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
-							<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
+							<!-- <defaultJvmSettings>
+								<initialMemorySize>512M</initialMemorySize>
+           						<maxMemorySize>1024M</maxMemorySize>
+           						<extraArguments>
+					                <extraArgument>-Dlog4j.configuration=../conf/log4j.properties</extraArgument>
+				           		</extraArguments>
+							</defaultJvmSettings> -->
+							<configurationSourceDirectory>src/main/conf</configurationSourceDirectory>
+							<!-- Set the target configuration directory -->
+							<configurationDirectory>conf</configurationDirectory>
+							<!-- Copy the contents from "/src/main/conf" to the target -->
+							<copyConfigurationDirectory>true</copyConfigurationDirectory>
+							<!-- Include the target configuration directory in the classpath -->
+							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+							<extraJvmArguments>
+							-Xms256m -Xmx1024m
+							</extraJvmArguments>
+							
 							<installArtifacts>false</installArtifacts>
-							<configurationDirectory>/</configurationDirectory>
+							<!-- <configurationDirectory>/</configurationDirectory> -->
 							<platforms>
 								<platform>windows</platform>
 								<platform>unix</platform>
