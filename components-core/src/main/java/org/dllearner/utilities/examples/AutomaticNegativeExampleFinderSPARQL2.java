@@ -242,7 +242,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				SortedSet<OWLIndividual> randomNegativeExamples = new TreeSet<OWLIndividual>();
 				String query = "SELECT DISTINCT ?s WHERE {?s a ?type.";
 				if(classToDescribe != null){
-					query += "FILTER NOT EXISTS{?s a <" + classToDescribe + "> }";
+					query += "FILTER NOT EXISTS{?s a <" + classToDescribe.toStringID() + "> }";
 				} else {
 					for (OWLClass nc : positiveExamplesTypes.elementSet()) {
 						
@@ -251,6 +251,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				}
 				
 				query += "} ORDER BY RAND() LIMIT " + maxNrOfReturnedInstances;
+				
 				QueryExecution qe = qef.createQueryExecution(query);
 				ResultSet rs = qe.execSelect();
 				QuerySolution qs;

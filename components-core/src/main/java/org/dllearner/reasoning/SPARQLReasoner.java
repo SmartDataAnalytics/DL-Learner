@@ -911,7 +911,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			types.add(df.getOWLClass(IRI.create(qs.getResource("class").getURI())));
+			Resource resource = qs.getResource("class");
+			if(resource.isURIResource()) {
+				types.add(df.getOWLClass(IRI.create(resource.getURI())));
+			}
 		}
 		return types;
 	}
