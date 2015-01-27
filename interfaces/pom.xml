@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0-beta-3</release.name>
+		<release.name>1.0-RC1</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
 		<packaging.type>jar</packaging.type>
@@ -97,7 +97,7 @@
 				<finalName>interfaces</finalName>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo.appassembler</groupId>
+						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
 						<version>1.9</version>
 						<executions>
