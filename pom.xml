@@ -4,7 +4,7 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>1.0-RC1</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
@@ -40,7 +40,8 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-	</scm>
+	  <tag>dllearner-parent-1.0-RC1</tag>
+  </scm>
 
 	<build>
 	<!-- - Plugin Management defines the plugins that the child components can 
@@ -597,14 +598,14 @@
 		<repository>
 			<id>maven.aksw.internal</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/internal</url>
-            <releases/>
+			<url>http://maven.aksw.org/repository/internal</url>
+            <releases />
 		</repository>
 		<repository>
 			<id>maven.aksw.snapshots</id>
 			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
-            <snapshots/>
+			<url>http://maven.aksw.org/repository/snapshots</url>
+            <snapshots />
 		</repository>
 		 <repository>
           <id>central</id>
