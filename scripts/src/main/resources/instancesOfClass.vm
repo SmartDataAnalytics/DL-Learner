@@ -1,4 +1,0 @@
-#parse("org/aksw/commons/sparqltemplates/prefix.vm")
-SELECT ?instances #parse("org/aksw/commons/sparqltemplates/from.vm") {
-   { ?instances  rdf:type <$class> }
-} #parse("org/aksw/commons/sparqltemplates/limit.vm")
