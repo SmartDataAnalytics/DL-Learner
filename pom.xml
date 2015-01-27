@@ -109,9 +109,21 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header>
+			        <properties>
+			            <owner>Jens Lehmann</owner>
+			            <email>lehmann@informatik.uni-leipzig.de</email>
+			        </properties>
+			        <excludes>
+			            <exclude>**/README</exclude>
+			            <exclude>src/test/resources/**</exclude>
+			            <exclude>src/main/resources/**</exclude>
+			        </excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -182,39 +194,40 @@
 			<version>${owlapi.version}</version>
 		</dependency>
 
-<!-- OWL API compatible reasoners -->
-	<dependency>
-		<groupId>com.clarkparsia.pellet</groupId>
-		<artifactId>pellet-distribution</artifactId>
-		<version>2.3.2-SNAPSHOT</version>
-		<type>pom</type>
-		<exclusions>
-			<exclusion>
+	<!-- OWL API compatible reasoners -->
+			<dependency>
 				<groupId>com.clarkparsia.pellet</groupId>
-				<artifactId>pellet-cli</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>com.clarkparsia.pellet</groupId>
-				<artifactId>pellet-examples</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>com.clarkparsia.pellet</groupId>
-				<artifactId>pellet-test</artifactId>
-			</exclusion>
-		</exclusions>
-	</dependency>
+				<artifactId>pellet-distribution</artifactId>
+				<version>2.3.2-SNAPSHOT</version>
+				<type>pom</type>
+				<exclusions>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-cli</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-examples</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.clarkparsia.pellet</groupId>
+						<artifactId>pellet-test</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+		
+			<dependency>
+				<groupId>eu.trowl</groupId>
+				<artifactId>trowl-core</artifactId>
+				<version>1.4.0</version>
+			</dependency>
 			
 			<dependency>
-			<groupId>eu.trowl</groupId>
-			<artifactId>trowl-core</artifactId>
-			<version>1.4.0</version>
-		</dependency>
-	<dependency>
-		<groupId>net.sourceforge.owlapi</groupId>
-		<artifactId>jfact</artifactId>
-		<version>4.0.0</version>
-	</dependency>
-
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>jfact</artifactId>
+				<version>4.0.0</version>
+			</dependency>
+		
 			<dependency>
 				<groupId>org.semanticweb.hermit</groupId>
 				<artifactId>hermit</artifactId>
@@ -358,18 +371,6 @@
 				<groupId>net.sourceforge.owlapi.owllink</groupId>
 				<artifactId>owllink</artifactId>
 				<version>1.1.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.protege.editor.core</groupId>
-				<artifactId>org.protege.editor.core.application</artifactId>
-				<version>4.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.protege.editor.owl</groupId>
-				<artifactId>org.protege.editor.owl</artifactId>
-				<version>4.2</version>
 			</dependency>
 
 			<!--Dependencies that are generated as part of this parent pom -->

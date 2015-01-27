@@ -51,29 +51,29 @@
 				</executions>
 			</plugin>
 <!-- 			<plugin> -->
-<!-- 				<groupId>com.mycila.maven-license-plugin</groupId> -->
-<!-- 				<artifactId>maven-license-plugin</artifactId> -->
+<!-- 				<groupId>com.mycila</groupId> -->
+<!-- 				<artifactId>license-maven-plugin</artifactId> -->
 <!-- 				<configuration> -->
 <!-- 					<header>src/etc/header.txt</header> -->
 <!-- 				</configuration> -->
 <!-- 			</plugin> -->
 			<plugin>
-				    <groupId>org.codehaus.mojo</groupId>
-				    <artifactId>license-maven-plugin</artifactId>
-				    <version>1.7</version>
-				    <configuration>
-				        <licenseName>my_license</licenseName>
-				        <licenseResolver>${project.baseUri}/src/license</licenseResolver>
-				    </configuration>
-				   <executions>
-          <execution>
-            <id>download-licenses</id>
-            <goals>
-              <goal>download-licenses</goal>
-            </goals>
-          </execution>
-        </executions>
-				</plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>license-maven-plugin</artifactId>
+	<version>1.7</version>
+	<configuration>
+		<licenseName>my_license</licenseName>
+		<licenseResolver>${project.baseUri}/src/license</licenseResolver>
+	</configuration>
+	<executions>
+		<execution>
+			<id>download-licenses</id>
+			<goals>
+				<goal>download-licenses</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

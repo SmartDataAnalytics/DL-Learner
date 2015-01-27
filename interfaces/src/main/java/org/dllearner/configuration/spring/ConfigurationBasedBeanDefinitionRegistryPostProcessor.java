@@ -106,8 +106,9 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
             throw new RuntimeException("Can't find class " + beanDefinition.getBeanClassName());
         }
         /** Add Base Directory */
-		if (beanClass.isAssignableFrom(OWLFile.class) || beanClass.isAssignableFrom(KBFile.class)
-				|| beanClass.isAssignableFrom(LocalModelBasedSparqlEndpointKS.class)) {
+		if (beanClass.isAssignableFrom(OWLFile.class) || 
+				beanClass.isAssignableFrom(KBFile.class) || 
+				beanClass == LocalModelBasedSparqlEndpointKS.class) {
 			beanDefinition.getPropertyValues().add("baseDir", configuration.getBaseDir());
 		}
     }

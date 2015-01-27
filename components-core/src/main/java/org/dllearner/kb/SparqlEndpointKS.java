@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nonnull;
+
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -55,8 +57,6 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private boolean isRemote = true;
 	private boolean initialized = false;
 
-	// TODO: turn those into config options
-	
 	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
 	private URL url;
 	
@@ -68,9 +68,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	
 	private QueryExecutionFactory qef;
 	
-	public SparqlEndpointKS() {
-		
-	}
+	public SparqlEndpointKS() {}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
 		this(endpoint, (String)null);
@@ -123,6 +121,12 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
 			}
 			supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
+			
+			if(qef == null) {
+				qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+						endpoint.getDefaultGraphURIs());
+			}
+			
 			initialized = true;
 		}
 	}
@@ -167,9 +171,9 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		this.supportsSPARQL_1_1 = supportsSPARQL_1_1;
 	}
 
-	@Override public String toString()
-	{
+	@Override
+	public String toString() {
 		return endpoint.toString();
-	}	
-	
+	}
+
 }

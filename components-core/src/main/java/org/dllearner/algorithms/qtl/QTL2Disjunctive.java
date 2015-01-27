@@ -52,8 +52,10 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
@@ -76,6 +78,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class);
 	private final DecimalFormat dFormat = new DecimalFormat("0.00"); 
+	
+	private SparqlEndpointKS ks;
 	
 	private LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
 	
@@ -204,6 +208,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		}
 		lp = (PosNegLP) learningProblem;
 		
+		// get query execution factory from KS
+		if(qef == null) {
+			qef = ks.getQueryExecutionFactory();
+		}
+		
 		if(treeFactory == null){
 			treeFactory = new QueryTreeFactoryImpl();
 			treeFactory.addAllowedNamespaces(allowedNamespaces);
@@ -211,13 +220,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		
-		//get the query trees
-		generateQueryTrees();
-		
+		// set the used heuristic
 		if(heuristic == null){
 			heuristic = new ComplexQueryTreeHeuristic(qef);
 			heuristic.setPosExamplesWeight(beta);
 		}
+		
+		// generate the query trees
+		generateQueryTrees();
 		
 		startPosExamplesSize = currentPosExampleTrees.size();
 		
@@ -247,20 +257,30 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		// positive examples
 		if(currentPosExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getPositiveExamples()) {
-				Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
-				tree2Individual.put(queryTree, ind);
-				currentPosExampleTrees.add(queryTree);
+				try {
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					tree2Individual.put(queryTree, ind);
+					currentPosExampleTrees.add(queryTree);
+				} catch (Exception e) {
+					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					throw new RuntimeException();
+				}
 			}
 		}
 		
 		// negative examples
 		if(currentNegExampleTrees.isEmpty()){
 			for (OWLIndividual ind : lp.getNegativeExamples()) {
-				Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
-				queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
-				tree2Individual.put(queryTree, ind);
-				currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
+				try {
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					tree2Individual.put(queryTree, ind);
+					currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
+				} catch (Exception e) {
+					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					throw new RuntimeException();
+				}
 			}
 		}
 		logger.info("...done.");
@@ -946,7 +966,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		this.lp = learningProblem;
 //	}
 	
-	@Autowired
+//	@Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner){
 		super.setReasoner(reasoner);
 		loadModel();
@@ -1192,6 +1212,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			QueryTree<String> tree = entry.getValue();
 			tree2Individual.put(tree, ind);
 		}
+	}
+	
+	/**
+	 * @param ks the ks to set
+	 */
+	@Autowired
+	public void setKs(SparqlEndpointKS ks) {
+		this.ks = ks;
 	}
 	
 	/* (non-Javadoc)
