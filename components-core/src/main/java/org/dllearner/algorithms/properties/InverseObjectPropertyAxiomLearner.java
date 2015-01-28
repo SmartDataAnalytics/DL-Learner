@@ -63,6 +63,16 @@ public class InverseObjectPropertyAxiomLearner extends
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#setEntityToDescribe(org.semanticweb.owlapi.model.OWLProperty)
+	 */
+	@Override
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
+		
+		QUERY.setIri("p", entityToDescribe.toStringID());
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
 	 */
 	@Override
@@ -87,7 +97,6 @@ public class InverseObjectPropertyAxiomLearner extends
 	 */
 	@Override
 	protected void run() {
-		
 		ResultSet rs = executeSelectQuery(QUERY.toString());
 		QuerySolution qs;
 		while (rs.hasNext()) {

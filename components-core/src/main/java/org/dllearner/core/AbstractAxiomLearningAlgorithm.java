@@ -327,7 +327,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		if(ksReasoner == null){
 			ksReasoner = new SPARQLReasoner(ksQef);
 		}
-		ksReasoner.supportsSPARQL1_1();
+//		ksReasoner.supportsSPARQL1_1();
 		reasoner = ksReasoner;
 	}
 	

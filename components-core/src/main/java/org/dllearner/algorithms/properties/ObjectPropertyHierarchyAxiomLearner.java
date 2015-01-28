@@ -69,7 +69,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 				"SELECT DISTINCT ?s ?o WHERE {?s ?p ?o. FILTER NOT EXISTS{?s ?p_other ?o}}");
 	}
 	
-	public void setPropertyToDescribe(OWLObjectProperty entityToDescribe) {
+	@Override
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
 		super.setEntityToDescribe(entityToDescribe);
 		
 		GIVEN_PROPERTY_OVERLAP_QUERY.setIri("p", entityToDescribe.toStringID());

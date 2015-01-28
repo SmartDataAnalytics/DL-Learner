@@ -109,7 +109,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Model getModelChunked(String resource, int depth){
 		String query = makeConstructQueryOptional(resource, chunkSize, 0, depth);
 		QueryExecution qe = qef.createQueryExecution(query);
-		System.out.println(query);
 		Model model = qe.execConstruct();
 		return model;
 	}

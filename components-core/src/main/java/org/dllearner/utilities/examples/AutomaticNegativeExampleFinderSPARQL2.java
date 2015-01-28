@@ -125,6 +125,12 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SPARQLReasoner reasoner) {
 		this.sr = reasoner;
+		this.qef = sr.getQueryExecutionFactory();
+	}
+	
+	public AutomaticNegativeExampleFinderSPARQL2(QueryExecutionFactory qef) {
+		this.qef = qef;
+		this.sr = new SPARQLReasoner(qef);
 	}
 	
 	public SortedSet<OWLIndividual> getNegativeExamples(OWLClass classToDescribe, Set<OWLIndividual> positiveExamples, int limit) {

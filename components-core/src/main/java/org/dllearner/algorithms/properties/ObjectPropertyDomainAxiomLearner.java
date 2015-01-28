@@ -58,6 +58,8 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	// so we have to focus more on accuracy, which we can regulate via the parameter beta
 	double beta = 3.0;
 	
+	private boolean applyComplexScore = false;
+	
 	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
@@ -131,7 +133,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		for (OWLClass candidate : candidates) {
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
-			//get total number of instances of B
+			// get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
 			
 			if(cntB == 0){// skip empty properties
@@ -139,29 +141,42 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 				continue;
 			}
 			
-			//get number of instances of (A AND B)
+			// get number of instances of (A AND B)
 			SUBJECTS_OF_TYPE_COUNT_QUERY.setIri("type", candidate.toStringID());
 			int cntAB = executeSelectQuery(SUBJECTS_OF_TYPE_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
 			logger.debug("Candidate:" + candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 			
-			//precision (A AND B)/B
-			double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
-			
-			//recall (A AND B)/A
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
-			
-			//F score
-			double score = Heuristics.getFScore(recall, precision, beta);
-			
-			int nrOfPosExamples = cntAB;
-			
-			int nrOfNegExamples = popularity - cntAB;
+			// compute score
+			AxiomScore score = computeScore(popularity, cntB, cntAB);
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
 							df.getOWLObjectPropertyDomainAxiom(entityToDescribe, candidate), 
-							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+							score));
 		}
+	}
+	
+	private AxiomScore computeScore(int cntA, int cntB, int cntAB) {
+		// precision (A AND B)/B
+		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+		
+		// in the simplest case, the precision is our score
+		double score = precision;
+		
+		// if enabled consider also recall and use F-score
+		if(applyComplexScore) {
+			// recall (A AND B)/A
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+			
+			// F score
+			score = Heuristics.getFScore(recall, precision, beta);
+		}
+		
+		int nrOfPosExamples = cntAB;
+		
+		int nrOfNegExamples = popularity - cntAB;
+		
+		return new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling);
 	}
 	
 	/**

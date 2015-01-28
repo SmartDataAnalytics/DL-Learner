@@ -200,6 +200,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		qef = new QueryExecutionFactoryModel(model);
 	}
 	
+	public QueryExecutionFactory getQueryExecutionFactory() {
+		return qef;
+	}
+	
 	public void precomputePopularities(PopularityType... popularityTypes){
 		for (PopularityType popularityType : popularityTypes) {
 			switch (popularityType) {
@@ -1908,7 +1912,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		catch(QueryExceptionHTTP e)
 		{
-			throw new QueryExceptionHTTP("Error sending query \""+query+"\" to endpoint "+ks,e);
+			throw new QueryExceptionHTTP("Error sending query \""+query+"\" to endpoint "+ qef.getId(),e);
 		}
 	}
 

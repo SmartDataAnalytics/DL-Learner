@@ -73,6 +73,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
+import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
@@ -123,6 +124,7 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.EnrichmentVocabulary;
@@ -586,7 +588,7 @@ public class Enrichment {
 		// use own implementation of negative example finder
 		System.out.print("finding negatives ... ");
 		startTime = System.currentTimeMillis();
-		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint(), reasoner, "http://dbpedia.org/ontology");
+		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint(), reasoner);
 		SortedSet<OWLIndividual> negExamples = finder.getNegativeExamples(nc, posExamples, maxNrOfNegativeExamples);
 		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples, negExamples);
 		runTime = System.currentTimeMillis() - startTime;
@@ -602,7 +604,8 @@ public class Enrichment {
 			startTime = System.currentTimeMillis();
 			Model model;
 			if(ks.isRemote()){
-				model = getFragmentMultithreaded(ks, Sets.union(posExamples, negExamples));
+//				model = getFragmentMultithreaded(ks, Sets.union(posExamples, negExamples));
+				model = getFragment(ks, Sets.union(posExamples, negExamples));
 			} else {
 				model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
 			}
@@ -618,9 +621,16 @@ public class Enrichment {
 				ontology.getOWLOntologyManager().addAxioms(ontology, reasoner.getClassHierarchy().toOWLAxioms());
 			}
 			ksFragment = new OWLAPIOntology(ontology);
+			try {
+				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("/tmp/test.ttl"));
+			} catch (OWLOntologyStorageException | FileNotFoundException e) {
+				e.printStackTrace();
+			}
 //			ksFragment.init();
-			rc = new FastInstanceChecker(ksFragment);
+			System.out.println("Init reasoner");
+			rc = new ClosedWorldReasoner(ksFragment);
 			rc.init();
+			System.out.println("Finished init reasoner");
 //			rc.setSubsumptionHierarchy(reasoner.getClassHierarchy());
 			ksCached = ksFragment;
 			rcCached = rc;
@@ -669,7 +679,7 @@ public class Enrichment {
 	}
 	
 	private Model getFragment(SparqlEndpointKS ks, Set<OWLIndividual> individuals){
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), cache, 2);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getEndpoint(), "enrichment-cache", 2);
 		Model model = ModelFactory.createDefaultModel();
 		for(OWLIndividual ind : individuals){
 			Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());

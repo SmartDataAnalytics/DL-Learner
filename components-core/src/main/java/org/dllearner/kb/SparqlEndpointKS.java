@@ -28,6 +28,7 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -124,6 +125,9 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
 						endpoint.getDefaultGraphURIs());
 			}
+			
+			// add some delay
+			qef = new QueryExecutionFactoryDelay(qef, 100);
 			
 			initialized = true;
 		}
