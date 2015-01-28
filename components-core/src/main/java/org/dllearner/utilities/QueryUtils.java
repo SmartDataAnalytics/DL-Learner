@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
@@ -221,7 +220,13 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		Set<Triple> triplePatterns = extractTriplePattern(query);
 		
 		// filter by predicate
-		triplePatterns = triplePatterns.stream().filter(t -> t.predicateMatches(predicate)).collect(Collectors.toSet());
+		Iterator<Triple> iterator = triplePatterns.iterator();
+		while (iterator.hasNext()) {
+			Triple tp = (Triple) iterator.next();
+			if(!tp.predicateMatches(predicate)) {
+				iterator.remove();
+			}
+		}
 		
 		return triplePatterns;
 	}
@@ -420,8 +425,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 					Set<Node> superClasses = getSuperClasses(qef, tp.getObject());
 					
 					// remove triple patterns that have one of the super classes as object
-					triplesPatterns2Remove.addAll(
-							triplePatterns.stream().filter(t -> superClasses.contains(t.getObject())).collect(Collectors.toSet()));
+					for (Triple tp2 : triplePatterns) {
+						if(tp2 != tp && superClasses.contains(tp2.getObject())) {
+							triplesPatterns2Remove.add(tp2);
+						}
+					}
 				}
 			}
 			

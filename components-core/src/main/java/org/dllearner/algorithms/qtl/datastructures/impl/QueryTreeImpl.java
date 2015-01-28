@@ -1510,7 +1510,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	
     	// if tree has no children return owl:Thing
     	if(children.isEmpty()) {
-    		return Collections.singleton(df.getOWLThing());
+    		return Collections.<OWLClassExpression>singleton(df.getOWLThing());
     	}
     	
     	// process children

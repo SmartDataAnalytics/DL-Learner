@@ -31,7 +31,6 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -948,8 +947,11 @@ public class QALDExperiment {
 					Set<Node> superClasses = getSuperClasses(tp.getObject());
 
 					// remove triple patterns that have one of the super classes as object
-					triplesPatterns2Remove.addAll(triplePatterns.stream()
-							.filter(t -> superClasses.contains(t.getObject())).collect(Collectors.toSet()));
+					for (Triple tp2 : triplePatterns) {
+						if(tp2 != tp && superClasses.contains(tp2.getObject())) {
+							triplesPatterns2Remove.add(tp2);
+						}
+					}
 				}
 			}
 			

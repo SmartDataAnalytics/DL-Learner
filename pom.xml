@@ -9,8 +9,7 @@
 	<name>DL Learner Parent Pom</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
 	<properties>
-		<!-- tell the compiler we can use 1.6 -->
-		<compiler.version>1.8</compiler.version>
+		<compiler.version>1.7</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- convenience to define GWT version in one place -->
 		<gwt.version>2.3.0</gwt.version>

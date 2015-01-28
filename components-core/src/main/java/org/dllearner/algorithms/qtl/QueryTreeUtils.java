@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
@@ -90,9 +89,14 @@ public class QueryTreeUtils {
 		List<QueryTree<N>> nodes = tree.getChildrenClosure();
 		
 		// filter by type
-		nodes = nodes.stream().filter(
-				n -> n.getNodeType() == nodeType)
-				.collect(Collectors.toList());
+		Iterator<QueryTree<N>> iterator = nodes.iterator();
+		while (iterator.hasNext()) {
+			QueryTree<N> node = (QueryTree<N>) iterator.next();
+			if(node.getNodeType() != nodeType) {
+				iterator.remove();
+			}
+			
+		}
 		return nodes;
 	}
 	
