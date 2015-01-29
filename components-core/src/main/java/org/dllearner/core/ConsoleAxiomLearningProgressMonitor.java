@@ -15,6 +15,8 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  */
 public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgressMonitor{
 	
+	final char[] animationChars = new char[] {'|', '/', '-', '\\'};
+	
 	private static final NumberFormat format = DecimalFormat.getPercentInstance();
 	
 	private int lastPercentage;
@@ -51,8 +53,8 @@ public class ConsoleAxiomLearningProgressMonitor implements AxiomLearningProgres
 		if (max > 0) {
             int percent = value * 100 / max;
             if (lastPercentage != percent) {
-                System.out.print("    ");
-                System.out.println(percent + "%");
+                System.out.print("    " + percent + "%" + "\r");
+//                System.out.println();
                 lastPercentage = percent;
             }
         }

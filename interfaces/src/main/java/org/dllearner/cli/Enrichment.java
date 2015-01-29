@@ -189,10 +189,10 @@ public class Enrichment {
 		// we only store the algorithm class and not the learning algorithm object,
 		// since otherwise we run into memory problems for full enrichment
 		private Class<? extends LearningAlgorithm> algorithm;
-		private List<EvaluatedAxiom> axioms;
+		private List<EvaluatedAxiom<OWLAxiom>> axioms;
 		private Map<ConfigOption,Object> parameters;
 
-		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom> axioms, Map<ConfigOption,Object> parameters) {
+		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom<OWLAxiom>> axioms, Map<ConfigOption,Object> parameters) {
 			this.algorithm = algorithm;
 			this.axioms = axioms;
 			this.parameters = parameters;
@@ -202,7 +202,7 @@ public class Enrichment {
 			return algorithm;
 		}
 
-		public List<EvaluatedAxiom> getAxioms() {
+		public List<EvaluatedAxiom<OWLAxiom>> getAxioms() {
 			return axioms;
 		}		
 		
@@ -499,8 +499,15 @@ public class Enrichment {
 			la.start();
 			
 			for (AxiomType<? extends OWLAxiom> axiomType : axiomTypes) {
+				
 				List<EvaluatedAxiom<OWLAxiom>> evaluatedAxioms = la.getCurrentlyBestEvaluatedAxioms(axiomType, threshold);
 				learnedEvaluatedAxioms.addAll(evaluatedAxioms);
+				
+				AlgorithmRun algorithmRun = new AlgorithmRun(
+						AxiomAlgorithms.getAlgorithmClass(axiomType), 
+						evaluatedAxioms, 
+						ConfigHelper.getConfigOptionValues(la.getAlgorithm(axiomType)));
+				algorithmRuns.add(algorithmRun);
 			}
 		}
 	}
@@ -572,7 +579,7 @@ public class Enrichment {
 		}
 	}
 	
-	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, OWLClass nc, boolean equivalence, boolean reuseKnowledgeSource) throws ComponentInitException {
+	private List<EvaluatedAxiom<OWLAxiom>> applyCELOE(SparqlEndpointKS ks, OWLClass nc, boolean equivalence, boolean reuseKnowledgeSource) throws ComponentInitException {
 		// get instances of class as positive examples
 		System.out.print("finding positives ... ");
 		long startTime = System.currentTimeMillis();
@@ -661,7 +668,7 @@ public class Enrichment {
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
-        List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
+        List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = new LinkedList<EvaluatedAxiom<OWLAxiom>>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
@@ -714,7 +721,7 @@ public class Enrichment {
 		return model;
 	}
 	
-	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks, OWLEntity entity) throws ComponentInitException {
+	private List<EvaluatedAxiom<OWLAxiom>> applyLearningAlgorithm(Class<? extends AxiomLearningAlgorithm> algorithmClass, SparqlEndpointKS ks, OWLEntity entity) throws ComponentInitException {
 		AxiomLearningAlgorithm learner = null;
 		try {
 			learner = algorithmClass.getConstructor(
@@ -748,11 +755,11 @@ public class Enrichment {
 		}
 		long runtime = System.currentTimeMillis() - startTime;
 		System.out.println("done in " + runtime + " ms");
-		List<EvaluatedAxiom> learnedAxioms = learner
+		List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = learner
 				.getCurrentlyBestEvaluatedAxioms(nrOfAxiomsToLearn, threshold);
 		System.out.println(prettyPrint(learnedAxioms));
 		learnedEvaluatedAxioms.addAll(learnedAxioms);
-		for(EvaluatedAxiom evAx : learnedAxioms){
+		for(EvaluatedAxiom<OWLAxiom> evAx : learnedAxioms){
 			learnedOWLAxioms.add(evAx.getAxiom());
 		}
 		
@@ -760,19 +767,19 @@ public class Enrichment {
 		return learnedAxioms;
 	}
 	
-	private String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
+	private String prettyPrint(List<EvaluatedAxiom<OWLAxiom>> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {
 			return "  no axiom suggested\n";
 		} else {
-			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+			for (EvaluatedAxiom<OWLAxiom> learnedAxiom : learnedAxioms) {
 				str += " " + prettyPrint(learnedAxiom) + "\n";
 			}		
 		}
 		return str;
 	}
 	
-	private String prettyPrint(EvaluatedAxiom axiom) {
+	private String prettyPrint(EvaluatedAxiom<OWLAxiom> axiom) {
 		double acc = axiom.getScore().getAccuracy() * 100;
 		String accs = df.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
@@ -784,11 +791,11 @@ public class Enrichment {
 	/*
 	 * Generates list of OWL axioms.
 	 */
-	List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
+	List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
 		return toRDF(evalAxioms, algorithm, parameters, ks, null);
 	}
 	
-	private List<OWLAxiom> toRDF(List<EvaluatedAxiom> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks, String defaultNamespace){
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks, String defaultNamespace){
 		if(defaultNamespace == null || defaultNamespace.isEmpty()){
 			defaultNamespace = DEFAULT_NS;
 		}

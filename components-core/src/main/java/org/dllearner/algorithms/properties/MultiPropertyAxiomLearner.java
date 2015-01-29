@@ -201,6 +201,10 @@ public class MultiPropertyAxiomLearner {
 		return bestAxioms;
 	}
 	
+	public AbstractAxiomLearningAlgorithm getAlgorithm(AxiomType<? extends OWLAxiom> axiomType) {
+		return algorithms.get(axiomType);
+	}
+	
 	private List<EvaluatedAxiom<OWLAxiom>> applyAlgorithm(AxiomType<? extends OWLAxiom> axiomType, SparqlEndpointKS ks) throws ComponentInitException{
 		Class<? extends AbstractAxiomLearningAlgorithm<? extends OWLAxiom, ? extends OWLObject, ? extends OWLEntity>> algorithmClass = AxiomAlgorithms.getAlgorithmClass(axiomType);
 		AbstractAxiomLearningAlgorithm learner = null;
@@ -234,7 +238,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){
-		logger.info("Generating sample...");
+		logger.info("Generating sample for " + entity.getEntityType().getPrintName() + " " + entity.toStringID() + "...");
 		Model sample = ModelFactory.createDefaultModel();
 		
 		ParameterizedSparqlString sampleQueryTemplate = cluster.getSampleQuery();
@@ -257,7 +261,7 @@ public class MultiPropertyAxiomLearner {
 			// if last call returned empty model, we can leave loop
 			isEmpty = tmp.isEmpty();
 		}
-		logger.info("...done. Sample size:" + sample.size() + " triples");
+		logger.info("Finished generating sample. Sample size: " + sample.size() + " triples");
 		return sample;
 	}
 	
@@ -299,15 +303,16 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://linkedspending.aksw.org/sparql"), "http://dbpedia.org");
+		SparqlEndpoint endpoint = new SparqlEndpoint(new URL("http://dbpedia.org/sparql"), "http://dbpedia.org");
 //		endpoint = SparqlEndpoint.getEndpointDBpedia();
 		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(new SparqlEndpointKS(endpoint));
-		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/routeEnd"));
+		OWLEntity entity = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/league"));
 		la.setEntityToDescribe(entity);
 		la.setAxiomTypes(Sets.<AxiomType<? extends OWLAxiom>>newHashSet(AxiomType.OBJECT_PROPERTY_DOMAIN, 
 				AxiomType.OBJECT_PROPERTY_RANGE, 
 				AxiomType.FUNCTIONAL_OBJECT_PROPERTY, AxiomType.ASYMMETRIC_OBJECT_PROPERTY, AxiomType.IRREFLEXIVE_OBJECT_PROPERTY,
 				AxiomType.INVERSE_OBJECT_PROPERTIES));
+		la.setMaxExecutionTime(1, TimeUnit.MINUTES);
 		la.start();
 		
 	}

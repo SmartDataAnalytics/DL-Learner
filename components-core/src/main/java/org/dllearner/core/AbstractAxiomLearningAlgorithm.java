@@ -38,6 +38,7 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
@@ -236,14 +237,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 
 	@Override
 	public void start() {
-		logger.info("Start learning...");
+		logger.info("Started learning of " + axiomType.getName() + " axioms for " + entityToDescribe.getEntityType().getPrintName() + " " + entityToDescribe.toStringID() + "...");
 		startTime = System.currentTimeMillis();
 		
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
 		
 		popularity = reasoner.getPopularity(entityToDescribe);
 		if(popularity == 0){
-			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + entityToDescribe.getEntityType().getName() + " " + entityToDescribe.toStringID());
+			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + entityToDescribe.getEntityType().getPrintName() + " " + entityToDescribe.toStringID());
 			return;
 		}
 		
@@ -268,12 +269,17 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			progressMonitor.learningStopped(axiomType);
 		}
 		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-		logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
-		if(!currentlyBestAxioms.isEmpty()){
-			logger.info("Best axiom was " + currentlyBestAxioms.first());
+		logger.info("...finished learning of " + axiomType.getName() 
+				+ " axioms for " + entityToDescribe.getEntityType().getPrintName() 
+				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
+		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
+			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
+		} else {
+			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
+			if(!currentlyBestAxioms.isEmpty()){
+				logger.info("Best axiom candidate is " + currentlyBestAxioms.first());
+			}
 		}
-		
 	}
 	
 	private void generateSample(){
