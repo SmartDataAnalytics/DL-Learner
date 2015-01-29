@@ -372,7 +372,7 @@
 			<dependency>
 				<groupId>net.sourceforge.owlapi.owllink</groupId>
 				<artifactId>owllink</artifactId>
-				<version>1.1.0</version>
+				<version>1.2.2</version>
 			</dependency>
 
 			<!--Dependencies that are generated as part of this parent pom -->
@@ -593,25 +593,39 @@
 	</dependencyManagement>
 
 	<repositories>
-		<repository>
-			<id>maven.aksw.internal</id>
-			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/internal</url>
-            <releases />
-		</repository>
-		<repository>
-			<id>maven.aksw.snapshots</id>
-			<name>University Leipzig, AKSW Maven2 Repository</name>
-			<url>http://maven.aksw.org/repository/snapshots</url>
-            <snapshots />
-		</repository>
-		 <repository>
-          <id>central</id>
-          <url>http://repo1.maven.org/maven2</url>
-          <releases><enabled>true</enabled></releases>
-          <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-	</repositories>
+	<repository>
+		<id>maven.aksw.internal</id>
+		<name>University Leipzig, AKSW Maven2 Repository</name>
+		<url>http://maven.aksw.org/repository/internal</url>
+		<releases />
+	</repository>
+	<repository>
+		<id>maven.aksw.snapshots</id>
+		<name>University Leipzig, AKSW Maven2 Repository</name>
+		<url>http://maven.aksw.org/repository/snapshots</url>
+		<snapshots />
+	</repository>
+	<repository>
+		<id>central</id>
+		<url>http://repo1.maven.org/maven2</url>
+		<releases>
+			<enabled>true</enabled>
+		</releases>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+	</repository>
+	<repository>
+		<id>on.cs.unibas.ch</id>
+		<url>http://on.cs.unibas.ch/maven/repository/</url>
+		<releases>
+			<enabled>false</enabled>
+		</releases>
+		<snapshots>
+			<enabled>false</enabled>
+		</snapshots>
+	</repository>
+</repositories>
 
 	<distributionManagement>
 		<repository>

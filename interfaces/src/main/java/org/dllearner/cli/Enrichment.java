@@ -1029,21 +1029,21 @@ public class Enrichment {
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			OWLDataFactory factory = man.getOWLDataFactory();
-			if(withConfidenceAsAnnotations){
-				OWLAnnotationProperty confAnnoProp = factory.getOWLAnnotationProperty(IRI.create(EnrichmentVocabulary.NS + "confidence"));
-				Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
-				for(EvaluatedAxiom evAx : learnedEvaluatedAxioms){
-					OWLAxiom ax = evAx.getAxiom();
-					ax = ax.getAnnotatedAxiom(Collections.singleton(
-							factory.getOWLAnnotation(confAnnoProp, factory.getOWLLiteral(evAx.getScore().getAccuracy()))));
-					axioms.add(ax);
+
+			OWLAnnotationProperty confAnnoProp = factory.getOWLAnnotationProperty(IRI.create(EnrichmentVocabulary.NS
+					+ "confidence"));
+			Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+			for (EvaluatedAxiom evAx : learnedEvaluatedAxioms) {
+				OWLAxiom ax = evAx.getAxiom();
+				if (withConfidenceAsAnnotations) {
+					ax = ax.getAnnotatedAxiom(Collections.singleton(factory.getOWLAnnotation(confAnnoProp,
+							factory.getOWLLiteral(evAx.getScore().getAccuracy()))));
 				}
-				ontology = man.createOntology(axioms);
-			} else {
-				ontology = man.createOntology(learnedOWLAxioms);
+				axioms.add(ax);
 			}
+			ontology = man.createOntology(axioms);
+
 		} catch (OWLOntologyCreationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ontology;

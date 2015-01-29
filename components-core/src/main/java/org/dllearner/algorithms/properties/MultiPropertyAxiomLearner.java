@@ -152,7 +152,7 @@ public class MultiPropertyAxiomLearner {
 						// process each axiom type
 						for (AxiomType<? extends OWLAxiom> axiomType : sampleAxiomTypes) {
 							try {
-								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);System.out.println(result);
+								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);
 								results.put(axiomType, result);
 							} catch (Exception e) {
 								logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);

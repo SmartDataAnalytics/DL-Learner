@@ -58,7 +58,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	// so we have to focus more on accuracy, which we can regulate via the parameter beta
 	double beta = 3.0;
 	
-	private boolean applyComplexScore = false;
+	private boolean useSimpleScore = false;
 	
 	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
@@ -164,7 +164,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		double score = precision;
 		
 		// if enabled consider also recall and use F-score
-		if(applyComplexScore) {
+		if(!useSimpleScore) {
 			// recall (A AND B)/A
 			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
 			
