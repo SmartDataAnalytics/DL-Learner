@@ -75,27 +75,8 @@ import org.apache.log4j.SimpleLayout;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
-import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.InverseObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner;
-import org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner;
-import org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
-import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
-import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
@@ -117,7 +98,6 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlQuery;
@@ -125,7 +105,6 @@ import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.EnrichmentVocabulary;
 import org.dllearner.utilities.Helper;
@@ -220,7 +199,6 @@ public class Enrichment {
 
 	// enrichment parameters
 	private SparqlEndpointKS ks;
-	private SparqlEndpoint se;
 	private OWLEntity resource;
 	private boolean verbose;
 
@@ -243,12 +221,9 @@ public class Enrichment {
 	
 	private boolean useInference;
 	private SPARQLReasoner reasoner;
-	private ExtractionDBCache cache;
 	private String cacheDir = "cache";
 	
 	// lists of algorithms to apply
-	private List<Class<? extends AxiomLearningAlgorithm>> objectPropertyAlgorithms;
-	private List<Class<? extends AxiomLearningAlgorithm>> dataPropertyAlgorithms;
 	private List<Class<? extends LearningAlgorithm>> classAlgorithms;
 	
 	// list of generated axioms while script is running
@@ -273,69 +248,11 @@ public class Enrichment {
 	
 	private OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 	
-	public Enrichment(SparqlEndpoint se, OWLEntity resource, double threshold, int nrOfAxiomsToLearn, 
-			boolean useInference, boolean verbose, int chunksize, 
-			int maxExecutionTimeInSeconds, boolean omitExistingAxioms) {
-		this.se = se;
-		this.resource = resource;
-		this.verbose = verbose;
-		this.threshold = threshold;
-		this.nrOfAxiomsToLearn = nrOfAxiomsToLearn;
-		this.useInference = useInference;
-		this.chunksize = chunksize;
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
-		this.omitExistingAxioms = omitExistingAxioms;
-		
-		try {
-			cacheDir = "cache" + File.separator + URLEncoder.encode(se.getURL().toString(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		cache = new ExtractionDBCache(cacheDir);
-		
-		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
-		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
-
-		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
-		
-		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
-//		classAlgorithms.add(DisjointClassesLearner.class);
-//		classAlgorithms.add(SimpleSubclassLearner.class);
-		classAlgorithms.add(CELOE.class);		
-		
-		algorithmRuns = new LinkedList<AlgorithmRun>();
-		
-		learnedOWLAxioms = new HashSet<OWLAxiom>();
-		learnedEvaluatedAxioms = new HashSet<EvaluatedAxiom>();
-		
-		// instantiate SPARQL endpoint wrapper component
-				ks = new SparqlEndpointKS(se);
-				try {
-					ks.init();
-					ks.setSupportsSPARQL_1_1(!iterativeMode);
-				} catch (ComponentInitException e) {
-					e.printStackTrace();
-				}
-				
+	public Enrichment(SparqlEndpoint se, OWLEntity resource, double threshold, int nrOfAxiomsToLearn,
+			boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds,
+			boolean omitExistingAxioms) {
+		this(new SparqlEndpointKS(se), resource, threshold, nrOfAxiomsToLearn, useInference, verbose, chunksize,
+				maxExecutionTimeInSeconds, omitExistingAxioms);
 	}
 	
 	public Enrichment(SparqlEndpointKS ks, OWLEntity resource, double threshold, int nrOfAxiomsToLearn, 
@@ -358,32 +275,7 @@ public class Enrichment {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			cache = new ExtractionDBCache(cacheDir);
 		}
-		
-		
-		objectPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		objectPropertyAlgorithms.add(DisjointObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(EquivalentObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(FunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseFunctionalObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyDomainAxiomLearner.class);
-		objectPropertyAlgorithms.add(ObjectPropertyRangeAxiomLearner.class);
-		objectPropertyAlgorithms.add(SubObjectPropertyOfAxiomLearner.class);
-		objectPropertyAlgorithms.add(SymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(AsymmetricObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(TransitiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(InverseObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(ReflexiveObjectPropertyAxiomLearner.class);
-		objectPropertyAlgorithms.add(IrreflexiveObjectPropertyAxiomLearner.class);
-
-		dataPropertyAlgorithms = new LinkedList<Class<? extends AxiomLearningAlgorithm>>();
-		dataPropertyAlgorithms.add(DisjointDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(EquivalentDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(FunctionalDataPropertyAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyDomainAxiomLearner.class);
-		dataPropertyAlgorithms.add(DataPropertyRangeAxiomLearner.class); 
-		dataPropertyAlgorithms.add(SubDataPropertyOfAxiomLearner.class);
 		
 		classAlgorithms = new LinkedList<Class<? extends LearningAlgorithm>>();
 //		classAlgorithms.add(DisjointClassesLearner.class);
@@ -430,24 +322,12 @@ public class Enrichment {
 		if(resource == null) {
 
 			// loop over all entities and call appropriate algorithms
-			int entities = 0;
 			Set<OWLProperty> processedProperties = new HashSet<OWLProperty>();
 			if(processClasses){
-				Set<OWLClass> classes = allowedNamespaces.isEmpty() ? reasoner.getOWLClasses() : reasoner.getOWLClasses(allowedNamespaces.iterator().next());//st.getAllClasses();
-				filterByNamespaces(classes);//classes = Sets.newHashSet(new NamedClass("http://dbpedia.org/ontology/Arachnid"));
-				for(OWLClass nc : classes) {
-					try {
-						runClassLearningAlgorithms(ks, nc);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}		
-					entities++;
-					if(maxEntitiesPerType != -1 && entities > maxEntitiesPerType) {
-						break;
-					}	
-				}
+				Set<OWLClass> classes = reasoner.getOWLClasses();
+				filterByNamespaces(classes);
+				processClasses(classes);
 			}
-			entities = 0;
 			
 			// process object properties
 			if(processObjectProperties){
@@ -458,7 +338,6 @@ public class Enrichment {
 			}
 			
 			// process data properties
-			entities = 0;
 			if(processDataProperties){
 				Set<OWLDataProperty> dataProperties = reasoner.getOWLDataProperties();
 				filterByNamespaces(dataProperties);
@@ -467,24 +346,28 @@ public class Enrichment {
 			}
 			
 		} else {
+			System.out.println(resource + " appears to be a" + (resource.isOWLObjectProperty() ? "n " : "")  
+					+ resource.getEntityType().getPrintName().toLowerCase() 
+					+ ". Running appropriate algorithms.\n");
 			if(resource instanceof OWLObjectProperty) {
-				System.out.println(resource + " appears to be an object property. Running appropriate algorithms.\n");
-				processProperties(Sets.newHashSet(resource.asOWLObjectProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.OBJECT_PROPERTY));
+				processProperties(Collections.singleton(resource.asOWLObjectProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.OBJECT_PROPERTY));
 			} else if(resource instanceof OWLDataProperty) {
-				System.out.println(resource + " appears to be a data property. Running appropriate algorithms.\n");
-				processProperties(Sets.newHashSet(resource.asOWLDataProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.DATA_PROPERTY));
+				processProperties(Collections.singleton(resource.asOWLDataProperty()), AxiomAlgorithms.getAxiomTypes(EntityType.DATA_PROPERTY));
 			} else if(resource instanceof OWLClass) {
-				System.out.println(resource + " appears to be a class. Running appropriate algorithms.\n");
-				try {
-					runClassLearningAlgorithms(ks, resource.asOWLClass());
-				} catch (Exception e) {e.printStackTrace();
-					System.out.println(e.getCause());
-				} catch (Error e) {
-					System.out.println(e.getCause());
-				}			
+				processClasses(Collections.singleton(resource.asOWLClass()));			
 			} else {
 				throw new Error("The type " + resource.getClass() + " of resource " + resource + " cannot be handled by this enrichment tool.");
 			}
+		}
+	}
+	
+	private void processClasses(Set<OWLClass> classes) {
+		for(OWLClass cls : classes) {
+			try {
+				runClassLearningAlgorithms(ks, cls);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}		
 		}
 	}
 	
