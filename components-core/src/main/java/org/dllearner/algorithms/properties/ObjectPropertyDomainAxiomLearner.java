@@ -136,7 +136,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 			// get total number of instances of B
 			int cntB = reasoner.getPopularity(candidate);
 			
-			if(cntB == 0){// skip empty properties
+			if(cntB == 0){// skip empty classes
 				logger.debug("Cannot compute domain statements for empty candidate class " + candidate);
 				continue;
 			}

@@ -603,7 +603,8 @@ public class SPARQLTasks {
 
 	// tries to detect the type of the resource
 	public OWLEntity guessResourceType(String resource) {
-		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
+		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, 
+				OWLRDFVocabulary.RDF_TYPE.getIRI().toString(), 10000);
 //		System.out.println(types);
 		if(types.contains(OWLRDFVocabulary.OWL_OBJECT_PROPERTY.getIRI().toString())) {
 			return df.getOWLObjectProperty(IRI.create(resource));

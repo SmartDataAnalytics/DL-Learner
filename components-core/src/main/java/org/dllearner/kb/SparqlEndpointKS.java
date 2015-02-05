@@ -70,7 +70,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public SparqlEndpointKS() {}
 	
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
-		this(endpoint, (String)null);
+		this(new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()));
 	}
 	
 	public SparqlEndpointKS(QueryExecutionFactory qef) {
@@ -93,7 +93,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				endpoint.getDefaultGraphURIs());
 		if(cacheDirectory != null){
 				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				cache = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
+				cache = CacheUtilsH2.createCacheFrontend(cacheDirectory, false, timeToLive);
 				this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
 	}

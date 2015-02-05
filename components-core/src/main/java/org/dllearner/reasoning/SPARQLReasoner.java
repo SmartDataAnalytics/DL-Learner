@@ -154,15 +154,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this.ks = ks;
 		
 		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ks.getEndpoint();
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if (cacheDirectory != null) {
-				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
-				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-			}
-//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-			
+			qef = ks.getQueryExecutionFactory();
 		} else {
 			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}

@@ -42,6 +42,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -1122,7 +1124,9 @@ public class Enrichment {
 						defaultGraphURIs.add(graph.toString());
 					}
 					SparqlEndpoint se = new SparqlEndpoint(endpoint, defaultGraphURIs, new LinkedList<String>());
-					ks = new SparqlEndpointKS(se);
+//					Path tempDirectory = Files.createTempDirectory("dllearner");
+					String cacheDir = System.getProperty("java.io.tmpdir") + File.separator + "dl-learner";
+					ks = new SparqlEndpointKS(se, cacheDir);
 				}
 			} catch (URISyntaxException e2) {
 				e2.printStackTrace();
