@@ -37,6 +37,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
+
 /**
  * @author Jens Lehmann
  *
@@ -113,6 +116,24 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
+		// check if some positive examples have been set
+		if(positiveExamples.isEmpty()) {
+			throw new ComponentInitException("No positive examples have been set.");
+		}
+		
+		// check if some negative examples have been set and give warning if not
+		if(negativeExamples.isEmpty()) {
+			logger.warn("No negative examples have been set, but you decided to use the positive-negative learning"
+					+ "problem. We recommend to use the positive-only learning problem for the case of no negative examples instead.");
+		}
+		
+		// check if there is some overlap between positive and negative examples and give warning
+		// in that case
+		SetView<OWLIndividual> overlap = Sets.intersection(positiveExamples, negativeExamples);
+		if(!overlap.isEmpty()) {
+			logger.warn("You declared some individuals as both positive and negative examples.");
+		}
+		
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 		
 		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples)) {
