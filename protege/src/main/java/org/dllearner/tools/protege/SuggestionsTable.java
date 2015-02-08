@@ -4,9 +4,6 @@ import java.awt.event.MouseEvent;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.jdesktop.swingx.JXTable;
 import org.protege.editor.owl.OWLEditorKit;
