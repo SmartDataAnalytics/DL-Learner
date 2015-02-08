@@ -41,6 +41,8 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name="object property domain axiom learner", shortName="opldomain", version=0.1, description="A learning algorithm for object property domain axioms.")
 public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyDomainAxiom> {
@@ -130,7 +132,9 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		
 		// check for each candidate how often the subject belongs to it
 		int i = 1;
+		Monitor mon = MonitorFactory.getTimeMonitor("dom-class-time");
 		for (OWLClass candidate : candidates) {
+			mon.start();
 			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
 			
 			// get total number of instances of B
@@ -153,6 +157,9 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 					new EvaluatedAxiom<OWLObjectPropertyDomainAxiom>(
 							df.getOWLObjectPropertyDomainAxiom(entityToDescribe, candidate), 
 							score));
+			
+			mon.stop();
+			logger.debug(candidate + " analyzed in " + mon.getLastValue());
 		}
 	}
 	

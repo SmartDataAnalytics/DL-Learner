@@ -348,7 +348,7 @@ public class Enrichment {
 			}
 			
 		} else {
-			System.out.println(resource + " appears to be a" + (resource.isOWLObjectProperty() ? "n " : "")  
+			System.out.println(resource + " appears to be a" + (resource.isOWLObjectProperty() ? "n " : " ")  
 					+ resource.getEntityType().getPrintName().toLowerCase() 
 					+ ". Running appropriate algorithms.\n");
 			if(resource instanceof OWLObjectProperty) {
@@ -375,7 +375,7 @@ public class Enrichment {
 	
 	private void processProperties(Set<? extends OWLProperty> properties, Set<AxiomType<? extends OWLAxiom>> axiomTypes){
 		MultiPropertyAxiomLearner la = new MultiPropertyAxiomLearner(ks);
-		la.setUseSampling(false);
+//		la.setUseSampling(true);
 		la.setProgressMonitor(progressMonitor);
 		la.setAxiomTypes(axiomTypes);
 		for(OWLProperty property : properties) {

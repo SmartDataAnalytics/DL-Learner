@@ -5,6 +5,7 @@ package org.dllearner.algorithms.properties;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class MultiPropertyAxiomLearner {
 	private SparqlEndpointKS ks;
 	private SPARQLReasoner reasoner;
 	
-	private boolean useSampling = true;
+	private boolean useSampling = false;
 	private long pageSize = 10000;
 
 	private boolean multiThreaded = true;
@@ -191,6 +192,13 @@ public class MultiPropertyAxiomLearner {
 	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType, double accuracyThreshold) {
 		List<EvaluatedAxiom<OWLAxiom>> result = results.get(axiomType);
 		
+		// throw exception if computation failed
+		if(result == null) {
+			return Collections.emptyList();
+//			throw new NoResult
+		}
+		
+		// get all axioms above threshold
 		List<EvaluatedAxiom<OWLAxiom>> bestAxioms = new ArrayList<EvaluatedAxiom<OWLAxiom>>();
 		for (EvaluatedAxiom<OWLAxiom> axiom : result) {
 			if(axiom.getScore().getAccuracy() >= accuracyThreshold){
