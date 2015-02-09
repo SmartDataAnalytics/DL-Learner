@@ -30,7 +30,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.FlatABox;
@@ -42,6 +41,8 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -53,7 +54,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class Helper {
 
-	private static Logger logger = Logger.getLogger(Helper.class);	
+	private static Logger logger = LoggerFactory.getLogger(Helper.class);	
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	// findet alle atomaren Konzepte in einem Konzept

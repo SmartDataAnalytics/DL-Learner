@@ -242,7 +242,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
 
         //set up OWL reasoner
-        initBaseReasoner();
+        if(reasoner == null) {
+        	initBaseReasoner();
+        }
 
         // compute class hierarchy and types of individuals
         // (done here to speed up later reasoner calls)

@@ -19,7 +19,6 @@
 
 package org.dllearner.refinementoperators;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,8 +34,6 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.math3.util.MathUtils;
-import org.apache.lucene.queries.function.valuesource.MaxFloatFunction;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;

@@ -26,11 +26,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -42,7 +43,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class ClassHierarchy {
 
-	public static Logger logger = Logger.getLogger(ClassHierarchy.class);
+	public static Logger logger = LoggerFactory.getLogger(ClassHierarchy.class);
 	
 	TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp;
 	TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown;

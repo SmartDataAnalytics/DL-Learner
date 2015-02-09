@@ -33,8 +33,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
-import org.coode.owlapi.owlxmlparser.OWLObjectIntersectionOfElementHandler;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -72,11 +70,12 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -102,7 +101,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOE extends AbstractCELA implements Cloneable{
 
-	private static Logger logger = Logger.getLogger(CELOE.class);
+	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
 //	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
