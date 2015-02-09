@@ -93,42 +93,48 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	}
 	
 	public void initLearningAlgorithm() throws Exception {
-		System.out.print("Initializing learning algorithm...");
-		long startTime = System.currentTimeMillis();
-		la = new CELOE(lp, reasoner);
-		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setUseNegation(useNegation);
-		op.setUseHasValueConstructor(useAllConstructor);
-		op.setUseCardinalityRestrictions(useCardinalityRestrictions);
-		if(useCardinalityRestrictions){
-			op.setCardinalityLimit(cardinalityLimit);
-		}
-		op.setUseExistsConstructor(useExistsConstructor);
-		op.setUseHasValueConstructor(useHasValueConstructor);
-		op.init();
-		
-		la.setOperator(op);
-		
-		la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
-		la.setNoisePercentage(noisePercentage);
-		la.setMaxNrOfResults(maxNrOfResults);
+		try {
+			System.out.print("Initializing learning algorithm...");
+			long startTime = System.currentTimeMillis();
+			la = new CELOE(lp, reasoner);
+			
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseNegation(useNegation);
+			op.setUseHasValueConstructor(useAllConstructor);
+			op.setUseCardinalityRestrictions(useCardinalityRestrictions);
+			if(useCardinalityRestrictions){
+				op.setCardinalityLimit(cardinalityLimit);
+			}
+			op.setUseExistsConstructor(useExistsConstructor);
+			op.setUseHasValueConstructor(useHasValueConstructor);
+			op.init();
+			
+			la.setOperator(op);
+			
+			la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+			la.setNoisePercentage(noisePercentage);
+			la.setMaxNrOfResults(maxNrOfResults);
 
-		la.init();
-		System.out.println("done in " + (System.currentTimeMillis()-startTime) + "ms.");
+			la.init();
+			System.out.println("done in " + (System.currentTimeMillis()-startTime) + "ms.");
+		} catch (Error e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 	
 	public void initLearningProblem() throws Exception {
 		System.out.print("Initializing learning problem...");
 		long startTime = System.currentTimeMillis();
+		
 		lp = new ClassLearningProblem(reasoner);
 		lp.setClassToDescribe(editorKit.getOWLWorkspace().getOWLSelectionModel().getLastSelectedClass());
 		lp.setEquivalence(learningType == LearningType.EQUIVALENT);
 		lp.setCheckConsistency(DLLearnerPreferences.getInstance().isCheckConsistencyWhileLearning());
-
 		lp.init();
+		
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 	
@@ -140,11 +146,17 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	public void initReasoner() throws Exception{
 		System.out.print("Initializing DL-Learner internal reasoner...");
 		long startTime = System.currentTimeMillis();
-		reasoner = new ClosedWorldReasoner(Collections.singleton(ks));
+		
+		// base reasoner
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(editorKit.getOWLModelManager().getReasoner());
+		baseReasoner.init();
+		
+		// closed world reasoner
+		reasoner = new ClosedWorldReasoner(Collections.singleton(ks));
 		reasoner.setReasonerComponent(baseReasoner);
 //		reasoner.setProgressMonitor(progressMonitor);TODO integrate progress monitor
 		reasoner.init();
+		
 		System.out.println("Done in " + (System.currentTimeMillis()-startTime) + "ms.");
 	}
 	
@@ -198,7 +210,11 @@ public class Manager implements OWLModelManagerListener, OWLSelectionModelListen
 	
 	public void startLearning(){
 		System.out.print("Started learning algorithm...");
-		la.start();
+		try {
+			la.start();
+		} catch (Error e) {
+			e.printStackTrace();
+		}
 		System.out.println("Done.");
 	}
 	
