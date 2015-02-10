@@ -131,12 +131,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         } else if (url == null) {
             try {
 //              url = new URL("file://" + baseDir + "/" + fileName);
-          	 url = new URL(baseDir + "/" + fileName);
+          	 url = new URL((baseDir == null ? "file://" : baseDir + "/") + fileName);
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     @Override

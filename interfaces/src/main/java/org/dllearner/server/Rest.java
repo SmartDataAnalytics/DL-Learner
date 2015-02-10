@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class Rest extends HttpServlet {
                 httpServletRequest.getRequestDispatcher("/WEB-INF/sparqr.html").forward(httpServletRequest, httpServletResponse);
                 return;
             } else {
-                conf = URLDecoder.decode(httpServletRequest.getParameter("conf"));
+                conf = URLDecoder.decode(httpServletRequest.getParameter("conf"), "UTF-8");
                 if (isSet("limit", httpServletRequest)) {
                     limit = Integer.parseInt(httpServletRequest.getParameter("limit"));
                 }
@@ -174,7 +175,7 @@ public class Rest extends HttpServlet {
     }
 
     public static void main(String[] args) throws Exception {
-        String filePath = "../examples/father.conf";
+        String filePath = Paths.get("").toAbsolutePath() + "/../examples/father_remote.conf";
         byte[] buffer = new byte[(int) new File(filePath).length()];
         BufferedInputStream f = null;
         try {
