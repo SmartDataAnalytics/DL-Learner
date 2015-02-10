@@ -27,7 +27,7 @@ import org.dllearner.learningproblems.ScorePosNeg;
  * Simple example learning algorithm exhaustively creating complex class
  * expressions of the AL description logic.
  */
-@ComponentAnn(name = "Naive ALC Learner", shortName = "naiveALCLearner", version = 0.1)
+@ComponentAnn(name = "Naive AL Learner", shortName = "naiveALLearner", version = 0.1)
 public class NaiveALLearner extends AbstractCELA{
 
     private Map<Integer, List<Description>> generatedDescriptions;
@@ -83,7 +83,7 @@ public class NaiveALLearner extends AbstractCELA{
     }
 
     @Override
-    public EvaluatedDescription     getCurrentlyBestEvaluatedDescription() {
+    public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
         return new EvaluatedDescriptionPosNeg(bestDescription,bestScore);
     }
 
@@ -98,7 +98,7 @@ public class NaiveALLearner extends AbstractCELA{
      *      - all atomic roles are added as limited existential quantification/
      *        value restriction
      *      - all combinations of intersections of atomic classes are added
-     * - `length` >= 3:
+     * - `length` > 3:
      *      - all concepts of length `length`-1 are extended by intersection
      *        with an atomic class
      *      - all concepts of length `length`-2 are extended by limited
