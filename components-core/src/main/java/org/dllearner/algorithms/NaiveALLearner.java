@@ -38,6 +38,9 @@ public class NaiveALLearner extends AbstractCELA{
     private Description bestDescription;
     private ScorePosNeg bestScore;
 
+    public NaiveALLearner() {
+    }
+
     public NaiveALLearner(AbstractLearningProblem lp, AbstractReasonerComponent reasoner) {
         super(lp, reasoner);
     }
