@@ -52,6 +52,12 @@
 			<artifactId>looks</artifactId>
 		</dependency>
 		
+			<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-api</artifactId>
+			<version>3.5.1</version>
+		</dependency>
+		
 		<dependency>
 				<groupId>com.jamonapi</groupId>
 				<artifactId>jamon</artifactId>
@@ -109,7 +115,7 @@
 						</Import-Package>
 						
 						<!-- embed all compile and runtime scope dependencies -->
-						<Embed-Dependency>components-core,swingx,guava,log4j,joda-time,jamon;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>components-core,swingx,guava,log4j,joda-time,jamon,json,owlapi-api;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
