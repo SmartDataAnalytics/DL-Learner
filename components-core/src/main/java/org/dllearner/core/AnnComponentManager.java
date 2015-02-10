@@ -32,12 +32,12 @@ import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.dllearner.refinementoperators.RefinementOperator;
 
 /**
- * Component manager for the new (as of 2011) annotation based configuration 
+ * Component manager for the new (as of 2011) annotation based configuration
  * system.
- * 
+ *
  * In the future, this may replace the previous implementation of component
  * manager.
- * 
+ *
  * @author Jens Lehmann
  *
  */
@@ -50,13 +50,14 @@ public class AnnComponentManager {
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.celoe.CELOE", 
+            "org.dllearner.algorithms.celoe.CELOE",
             "org.dllearner.algorithms.celoe.PCELOE",
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",   
+            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
             "org.dllearner.algorithms.BruteForceLearner",
             "org.dllearner.algorithms.RandomGuesser",
+            "org.dllearner.algorithms.NaiveALLearner",
             "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
@@ -102,9 +103,9 @@ public class AnnComponentManager {
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;
     private static BidiMap<Class<? extends Component>, String> componentNamesShort;
-	
-	private static AnnComponentManager cm = null;	
-	
+
+	private static AnnComponentManager cm = null;
+
 	private AnnComponentManager() {
 		// conversion of class strings to objects
 		components = new HashSet<Class<? extends Component>>();
@@ -121,7 +122,7 @@ public class AnnComponentManager {
 			}
 		}
 	}
-	
+
 	/**
 	 * Explicitly sets the list of components to use. This will (re-)initialise the
 	 * component manager the next time the singleton instance is retrieved.
@@ -130,7 +131,7 @@ public class AnnComponentManager {
 		AnnComponentManager.componentClassNames = componentClassNames;
 		cm = null;
 	}
-	
+
 	/**
 	 * Gets the singleton instance of <code>ComponentManager</code>.
 	 * @return The singleton <code>ComponentManager</code> instance.
@@ -140,8 +141,8 @@ public class AnnComponentManager {
 			cm = new AnnComponentManager();
 		}
 		return cm;
-	}	
-	
+	}
+
 	/**
 	 * Returns a list of all available components in this instance
 	 * of <code>ComponentManager</code>.
@@ -171,20 +172,20 @@ public class AnnComponentManager {
     }
 
 	/**
-	 * Convenience method, which returns a list of components along with 
+	 * Convenience method, which returns a list of components along with
 	 * their name.
-	 * 
+	 *
 	 * @return A map where the key is the class of the component and the
 	 * value is its name.
 	 */
 	public BidiMap<Class<? extends Component>, String> getComponentsNamed() {
 		return componentNames;
 	}
-	
+
 	/**
-	 * Convenience method, which returns a list of components along with 
+	 * Convenience method, which returns a list of components along with
 	 * their name.
-	 * 
+	 *
 	 * @return A map where the key is the class of the component and the
 	 * value is its name.
 	 */
@@ -203,7 +204,7 @@ public class AnnComponentManager {
 		}
 		return pluggableComponents;
 	}
-	
+
 	// should return true if there exists a constructor in "compound" which can take
 	// "component" as argument (in any argument positions)
 	@Deprecated
@@ -223,15 +224,15 @@ public class AnnComponentManager {
 		}
 		return false;
 	}
-	
+
 	@Deprecated
 	public boolean isCompatible(Class<? extends Component> compound, Class<? extends Component>... arguments) {
 		if(areValidComponentConstructorArguments(arguments)) {
 			throw new Error("Please order arguments by their class names.");
-		}		
+		}
 		return hasMatchingConstructor(compound, arguments);
 	}
-	
+
 	@Deprecated
 	private boolean hasMatchingConstructor(Class<? extends Component> compound, Class<? extends Component>... arguments) {
 		try {
@@ -247,22 +248,22 @@ public class AnnComponentManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Components in DL-Learner can be plugged together by invoking an appropriate
 	 * constructor. For efficiency reasons, they should be ordered by class
-	 * names. This method allows to test this convention. 
-	 * 
+	 * names. This method allows to test this convention.
+	 *
 	 * Please note that components may have additional further constructors, but
-	 * if a constructor has exclusively components as parameters, then it is 
+	 * if a constructor has exclusively components as parameters, then it is
 	 * required that they are ordered by class name.
-	 * 
+	 *
 	 * TODO: Possibly, we can replace our naive constructor detection code with
 	 * a better implementation, which can detect whether an appropriate
-	 * constructor exists even without fixing the order of arguments. (E.g. checking 
+	 * constructor exists even without fixing the order of arguments. (E.g. checking
 	 * assignability for each parameter and argument; putting it into a matrix
 	 * and then checking whether there is a row/column with only 1s.)
-	 * 
+	 *
 	 * @param arguments Argument classes.
 	 * @return True of the order of arguments is correct and false otherwise.
 	 */
@@ -279,7 +280,7 @@ public class AnnComponentManager {
 	/**
 	 * Convenience method to retrieve core types of a component. The main use case for this
 	 * is for automatic documentation generation.
-	 * 
+	 *
 	 * @param component A component.
 	 * @return The list of core interfaces the component implemnets.
 	 */
@@ -296,7 +297,7 @@ public class AnnComponentManager {
 		}
 		if(ClassExpressionLearningAlgorithm.class.isAssignableFrom(component)) {
 			types.add(ClassExpressionLearningAlgorithm.class);
-		}	
+		}
 		if(LearningProblem.class.isAssignableFrom(component)) {
 			types.add(LearningProblem.class);
 		}
@@ -308,7 +309,7 @@ public class AnnComponentManager {
 		}
 		return types;
 	}
-	
+
 	/**
 	 * Returns the name of a DL-Learner component.
 	 * @param component
@@ -320,8 +321,8 @@ public class AnnComponentManager {
 			throw new Error("Component " + component + " does not use component annotation.");
 		}
 		return ann.name();
-	}	
-	
+	}
+
 	/**
 	 * Returns the name of a DL-Learner component.
 	 * @param component
@@ -330,7 +331,7 @@ public class AnnComponentManager {
 	public static String getName(Component component){
 		return getName(component.getClass());
 	}
-	
+
 	/**
 	 * Returns the name of a DL-Learner component.
 	 * @param component
@@ -342,8 +343,8 @@ public class AnnComponentManager {
 			throw new Error("Component " + component + " does not use component annotation.");
 		}
 		return ann.shortName();
-	}	
-	
+	}
+
 	/**
 	 * Returns the short name of a DL-Learner component.
 	 * @param component
@@ -352,7 +353,7 @@ public class AnnComponentManager {
 	public static String getShortName(Component component){
 		return getShortName(component.getClass());
 	}
-	
+
 	/**
 	 * Returns the name of a DL-Learner component.
 	 * @param component
@@ -361,8 +362,8 @@ public class AnnComponentManager {
 	public static String getDescription(Class<? extends Component> component){
 		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
 		return ann.description();
-	}	
-	
+	}
+
 	/**
 	 * Returns the description of a DL-Learner component.
 	 * @param component
@@ -370,8 +371,8 @@ public class AnnComponentManager {
 	 */
 	public static String getDescription(Component component){
 		return getDescription(component.getClass());
-	}	
-	
+	}
+
 	/**
 	 * Returns the version of a DL-Learner component.
 	 * @param component
@@ -380,8 +381,8 @@ public class AnnComponentManager {
 	public static double getVersion(Class<? extends Component> component){
 		ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
 		return ann.version();
-	}	
-	
+	}
+
 	/**
 	 * Returns the version of a DL-Learner component.
 	 * @param component
@@ -393,5 +394,5 @@ public class AnnComponentManager {
 
 	public static boolean addComponentClassName(String e) {
 		return componentClassNames.add(e);
-	}	
+	}
 }
