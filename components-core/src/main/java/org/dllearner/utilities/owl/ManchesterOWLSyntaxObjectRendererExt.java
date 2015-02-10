@@ -88,10 +88,12 @@ import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.VALUE;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.model.*;
@@ -127,8 +129,20 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
             Collection<? extends OWLObject> objects) {
         List<? extends OWLObject> sortedObjects = new ArrayList<OWLObject>(
                 objects);
-        CollectionFactory.sortOptionally(sortedObjects);
+        sortOptionally(sortedObjects);
         return sortedObjects;
+    }
+    
+    private void sortOptionally(List<? extends OWLObject> toReturn) {
+        try {
+            Collections.sort(toReturn);
+        } catch (IllegalArgumentException e) {
+            // catch possible sorting misbehaviour
+            if (!e.getMessage().contains(
+                    "Comparison method violates its general contract!")) {
+                throw e;
+            }
+        }
     }
 
     protected void write(Set<? extends OWLObject> objects,
