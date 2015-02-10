@@ -175,7 +175,9 @@ public class Rest extends HttpServlet {
     }
 
     public static void main(String[] args) throws Exception {
-        String filePath = Paths.get("").toAbsolutePath() + "/../examples/father_remote.conf";
+//        String filePath = Paths.get("").toAbsolutePath() + "/../examples/father_remote.conf";
+    	String filePath = Paths.get("").toAbsolutePath() + "/../examples/sparql/AristotlePosNeg.conf";
+        
         byte[] buffer = new byte[(int) new File(filePath).length()];
         BufferedInputStream f = null;
         try {
