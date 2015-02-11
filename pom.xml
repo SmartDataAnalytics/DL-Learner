@@ -169,6 +169,11 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
+            <dependency>
+                <groupId>org.semanticweb.elk</groupId>
+                <artifactId>elk-owlapi</artifactId>
+                <version>0.4.1</version>
+            </dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
