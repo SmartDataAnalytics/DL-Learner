@@ -109,6 +109,7 @@
 						</executions>
 						<configuration>
 							<repositoryLayout>flat</repositoryLayout>
+							<useWildcardClassPath>true</useWildcardClassPath>
 							<assembleDirectory>${project.build.directory}/dl-learner-dist</assembleDirectory>
 							<repoPath>lib</repoPath>
 							<repositoryName>lib</repositoryName>
