@@ -37,7 +37,7 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-	  <tag>dllearner-parent-1.0-RC1</tag>
+	  <tag>dllearner-parent-1.0</tag>
   </scm>
 
 	<build>
