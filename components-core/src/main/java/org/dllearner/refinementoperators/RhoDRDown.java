@@ -619,7 +619,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}		
 			
 			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
-			if(!filler.isAnonymous() && tmp.size()==0) {
+			if(!filler.isOWLNothing() && !filler.isAnonymous() && tmp.size()==0) {
 				refinements.add(df.getOWLObjectAllValuesFrom(role, df.getOWLNothing()));
 			}
 			
