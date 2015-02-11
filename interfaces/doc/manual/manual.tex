@@ -6,6 +6,8 @@
 \usepackage{amsmath,amssymb}
 \usepackage{verbatim}
 \usepackage{color,graphicx}
+\usepackage{listings}
+\usepackage{mathabx}
 % \usepackage{hyperref}
 
 % define common URLs
@@ -14,12 +16,12 @@
 \urldef{\wwwc}{\url}{http://www.w3.org}
 \urldef{\owl}{\url}{http://www.w3.org/2004/OWL/}
 \urldef{\owlce}{\url}{http://www.w3.org/TR/owl2-syntax/#Class_Expressions}
-\urldef{\carc}{\url}{http://dl-learner.org/wiki/Carcinogenesis}
-\urldef{\dldownload}{\url}{http://sourceforge.net/project/showfiles.php?group_id=203619}
-\urldef{\mos}{\url}{http://www.co-ode.org/resources/reference/manchester_syntax/}
+\urldef{\carc}{\url}{http://dl-learner.org/community/Carcinogenesis}
+\urldef{\dldownload}{\url}{https://github.com/AKSW/DL-Learner/releases}
+\urldef{\mos}{\url}{http://www.w3.org/2007/OWL/wiki/ManchesterSyntax}
 \urldef{\wsjavadoc}{\url}{http://dl-learner.org/javadoc/org/dllearner/server/DLLearnerWS.html}
 \urldef{\wsphpexamples}{\url}{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/src/php-examples/}
-\urldef{\wikiprotplugin}{\url}{http://dl-learner.org/wiki/ProtegePlugin}
+\urldef{\wikiprotplugin}{\url}{http://dl-learner.org/community/protege-plugin/}
 \urldef{\owlapi}{\url}{http://owlapi.sourceforge.net}
 \urldef{\dig}{\url}{http://dl.kr.org/dig/}
 
@@ -80,33 +82,51 @@ Please note that the latest versions of DL-Learner are not limited to OWL class 
 DL-Learner is written in Java, i.e.~it can be used on almost all platforms. Currently, Java 6 or higher is required. To install the latest release, please visit the download page\footnote{\dldownload} and extract the file on your harddisk. In the \verb|bin| directory, you will notice several executables. Those files ending with \verb|bat| are Windows executables, whereas the corresponding files without file extension are the Non-Windows (e.g.~Linux, Mac) executables. To test whether DL-Learner works, please run the following on the command line depending on your operating system:
 
 \begin{verbatim}
-./dllearner ../examples/father.conf       (Non-Windows Operating System)
-dllearner.bat ..\examples\father.conf     (Windows Operating System)
+bin/cli examples/father.conf       (Non-Windows Operating System)
+bin/cli.bat examples\father.conf     (Windows Operating System)
 \end{verbatim}
 
 \emph{Conf files}, e.g. \verb|examples/father.conf| in this case, describe the learning problem and specify which algorithm you want to use to solve it. In the simplest case they just say where to find the background knowledge to use (in the OWL file \verb|examples/father.owl| in this case) and the positive and negative examples. When running the above command, you should get something similar to the following:
 
-\begin{verbatim}
+\lstset{prebreak=\raisebox{0ex}[0ex][0ex]
+        {\ensuremath{\dlsh}}}
+\lstset{breaklines=true, breakatwhitespace=true}
+\lstset{numbers=left, numberstyle=\scriptsize, basicstyle=\ttfamily\scriptsize}
+
+\begin{lstlisting}
 DL-Learner command line interface
-Initializing Component "OWL File"... OK (0ms)
-Initializing Component "fast instance checker"... OK (835ms)
+Initializing Component "OWL File"... OK (1ms)
+Initializing Component "fast instance checker"... OK (325ms)
 Initializing Component "PosNegLPStandard"... OK (0ms)
-Initializing Component "OWL Class Expression Learner"... OK (21ms)
+Initializing Component "CELOE"... OK (9ms)
+Running algorithm instance "alg" (CELOE)
+more accurate (50.00%) class expression found: Thing
+more accurate (83.33%) class expression found: http://example.com/father#male
+more accurate (100.00%) class expression found: (http://example.com/father#male and http://example.com/father#hasChild some Thing)
+Algorithm terminated successfully (time: 1s 0ms, 13380 descriptions tested, 7727 nodes in the search tree).
 
-starting top down refinement with: Thing (50% accuracy)
-more accurate (83,33%) class expression found: male
-solutions (at most 20 are shown):
-1: (male and hasChild some Thing) (accuracy 100%, length 5, depth 3)
-Algorithm terminated successfully (2236 descriptions tested).
-
-number of retrievals: 4
+number of retrievals: 6
 retrieval reasoning time: 0ms ( 0ms per retrieval)
-number of instance checks: 7455 (0 multiple)
-instance check reasoning time: 54ms ( 0ms per instance check)
-overall reasoning time: 54ms
-\end{verbatim}
+number of instance checks: 56442 (0 multiple)
+instance check reasoning time: 163ms ( 0ms per instance check)
+(complex) subsumption checks: 4 (0 multiple)
+subsumption reasoning time: 9ms ( 2ms per subsumption check)
+overall reasoning time: 172ms
 
-The first part of the output tells you which components are used (more on this in Section \ref{sec:components}). In the second part you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class expression found'') and the final solutions, it computed. The results are displayed in Manchester OWL Syntax\footnote{\mos}. There can be several solutions, in which case they are ordered with the most promising one in the first position. In this case the only solution is \verb|male and hasChild some Thing| defining the class father. The last part of the output contains some runtime statistics.
+solutions:
+1: (http://example.com/father#male and http://example.com/father#hasChild some Thing) (pred. acc.: 100.00%, F-measure: 100.00%)
+2: ((not http://example.com/father#female) and http://example.com/father#hasChild some Thing) (pred. acc.: 100.00%, F-measure: 100.00%)
+3: (http://example.com/father#male and (http://example.com/father#female or http://example.com/father#hasChild some Thing)) (pred. acc.: 100.00%, F-measure: 100.00%)
+4: (http://example.com/father#male and http://example.com/father#hasChild some (http://example.com/father#female or http://example.com/father#male)) (pred. acc.: 100.00%, F-measure: 100.00%)
+5: (http://example.com/father#male and (not http://example.com/father#female) and http://example.com/father#hasChild some Thing) (pred. acc.: 100.00%, F-measure: 100.00%)
+6: (http://example.com/father#hasChild some Thing and (http://example.com/father#male or (not http://example.com/father#female))) (pred. acc.: 100.00%, F-measure: 100.00%)
+7: ((not http://example.com/father#female) and (http://example.com/father#female or http://example.com/father#hasChild some Thing)) (pred. acc.: 100.00%, F-measure: 100.00%)
+8: ((not http://example.com/father#female) and http://example.com/father#hasChild some (http://example.com/father#female or http://example.com/father#male)) (pred. acc.: 100.00%, F-measure: 100.00%)
+9: (http://example.com/father#male and http://example.com/father#hasChild some (http://example.com/father#male or (not http://example.com/father#male))) (pred. acc.: 100.00%, F-measure: 100.00%)
+10: (http://example.com/father#male and http://example.com/father#hasChild some (http://example.com/father#female or (not http://example.com/father#female))) (pred. acc.: 100.00%, F-measure: 100.00%)
+\end{lstlisting}
+
+The first part of the output (line 1-5) tells you which components are used (more on this in Section \ref{sec:components}). In the second part (line 6-10) you see output coming from the used learning algorithm, i.e.~it can print information while running (``more accurate (83,33\%) class expression found''). When the algorithm finished some overall runtime statistics are presented (line 12-18) and the final results are displayed in Manchester OWL Syntax\footnote{\mos}. There are several solutions ordered with the most promising one in the first position (\verb|male and hasChild some Thing|).
 
 \section{DL-Learner Architecture}
 
@@ -131,7 +151,7 @@ There are four common types of components (knowledge source, reasoning service, 
 \section{DL-Learner Components}
 \label{sec:components}
 
-In this part, we describe concrete components currently implemented in DL-Learner. Each of the subsections contains a list of components according to the type specified in the subsection heading. Note that this does not constitute a full description, i.e.~we omit some components and many configuration options. The purpose of the manual is to obtain a general understanding of the implemented components. A full list, which is generated automatically from the source code, can be found in \verb|doc/configOptions.html| including the default values for all options and their usage in conf files. The file is also available online at \url{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/interfaces/doc/configOptions.html}.
+In this part, we describe concrete components currently implemented in DL-Learner. Each of the subsections contains a list of components according to the type specified in the subsection heading. Note that this does not constitute a full description, i.e.~we omit some components and many configuration options. The purpose of the manual is to obtain a general understanding of the implemented components. A full list, which is generated automatically from the source code, can be found in \verb|interfaces/doc/configOptions.html| including the default values for all options and their usage in conf files. The file is also available online at \url{http://htmlpreview.github.io/?https://github.com/AKSW/DL-Learner/blob/master/interfaces/doc/configOptions.html}.
 
 \subsection{Knowledge Sources}
 
@@ -144,7 +164,7 @@ ks.fileName = "father.owl"
 
 \begin{description}
  \item[OWL File] DL-Learner supports OWL files in different formats, e.g. RDF/XML or N-Triples. If there is a standard OWL format, you want to use, but is not supported by DL-Learner please let us know. We use the OWL API for parsing, so all formats supported by it can be used\footnote{ for a list see \owlapi}.
- \item[KB File] KB files are an internal non-standardised knowledge representation format, which corresponds to description logic syntax except that the special symbols have been replaced by ASCII strings, e.g.~\verb|AND| instead of $\sqcap$. You can find several KB files in the examples folder. A description of the syntax is available online\footnote{\url{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/interfaces/doc/kbFileSyntax.txt}}. If in doubt, please use the standard OWL syntax formats.
+ \item[KB File] KB files are an internal non-standardised knowledge representation format, which corresponds to description logic syntax except that the special symbols have been replaced by ASCII strings, e.g.~\verb|AND| instead of $\sqcap$. You can find several KB files in the examples folder. A description of the syntax is available online\footnote{\url{https://raw.githubusercontent.com/AKSW/DL-Learner/master/interfaces/doc/kbFileSyntax.txt}}. If in doubt, please use the standard OWL syntax formats.
 %The \verb|doc/kbFileSyntax.txt| contains an EBNF description of the language.
  \item[SPARQL Endpoint] DL-Learner allows to use SPARQL endpoints as background knowledge source, which enables the incorporation of very large knowledge bases, e.g. DBpedia\cite{2008_dbpedia}, in DL-Learner. This works by using a set of start instances, which usually correspond to the examples in a learning problem, and then retrieving knowledge about these instances via SPARQL queries. The obtained knowledge base fragment can be converted to OWL and consumed by a reasoner later since it is now sufficiently small to be processed in reasonable time. Please see \cite{2009_ijswis} for details about the knowledge fragment extraction algorithm. Some options of the SPARQL component are:
 \begin{itemize}
@@ -196,7 +216,7 @@ The implemented algorithms vary from very simple (and usually inappropriate) alg
   \item number of individuals: The individual count is the size of each generation in a GP algorithm. It is one of the most crucial parameters. Setting it to a higher value usually means investing more computational resource for increasing the likelihood that a solution will be found. Usage: \verb|gp.numberOfIndividuals = 100|.
   \item refinement probability: This is used to specify how likely the usage of the genetic refinement operator should be, e.g.~\verb|gp.refinementProbability = 0.6| means that it will be selected 60\% of the time.
  \end{itemize}
- The GP algorithm has 15 more options documented in \verb|doc/configOptions.html|.
+ The GP algorithm has 15 more options which are documented in \verb|interfaces/doc/| \verb|configOptions.html|. % FIXME
  \item[Refinement] This is a top down refinement operator approach, which is described in \cite{alc_learning_algorithm} and based on insights in \cite{property_analysis}. Some options include:
  \begin{itemize}
   \item target language: The standard target language of this algorithm is $\mathcal{ALCN(D)}$. However, you can change the language, i.e.~you can exclude the $\forall$ constructor by using \verb|refinement.useAllConstructor = false|. Similar options exist for $\exists$, $\neg$, cardinality restrictions, and boolean datatypes.
@@ -228,7 +248,7 @@ class learning & x & x & & & & x &
 
 %\todo{Description of Conf File Syntax; special cases: empty set of beans is denoted by ``-''; the name of a bean must not be ``true'' or ``false'' or start with a number; config options must not have the name ``type''; these conentions are introduced in order to be a able to provide a very compact syntax}
 
-One interface you have already used in Section \ref{sec:start} is the command line. There are two executables, which can be used for starting DL-Learner on the commandline: \verb|dl-learner| and \verb|quickstart|. The first one takes a conf file as argument, whereas the latter one lists all conf files in the examples folder and allows you to select one of those. There are a lot of conf files available in the \verb|/examples| directory, which you can use a base for your own experiments.
+One interface you have already used in Section \ref{sec:start} is the command line. The main executable, which can be used for starting DL-Learner on the commandline is \verb|cli| which takes a conf file as argument. There are a lot of conf files available in the \verb|/examples| directory, which you can use a base for your own experiments.
 
 %\begin{figure}
 % \centering
@@ -237,7 +257,7 @@ One interface you have already used in Section \ref{sec:start} is the command li
 % \label{fig:gui}
 %\end{figure}
 
-DL-Learner had a graphical user interface and a web service. In 2011, DL-Learner was generalised to be able to solve general learning problems and arbitrarily combine components, which was necessary for learning SPARQL queries and fuzzy OWL class expressions. The commandline interface has been adapted for this purpose, but the graphical user interface and web service are currently under construction and will be re-introduced at a later stage.
+%DL-Learner had a graphical user interface and a web service. In 2011, DL-Learner was generalised to be able to solve general learning problems and arbitrarily combine components, which was necessary for learning SPARQL queries and fuzzy OWL class expressions. The commandline interface has been adapted for this purpose, but the graphical user interface and web service are currently under construction and will be re-introduced at a later stage.
 
 % Web Service and GUI "under construction" at the moment
 
@@ -245,7 +265,7 @@ DL-Learner had a graphical user interface and a web service. In 2011, DL-Learner
 
 %A third interface through which DL-Learner can be accessed programmatically is a web service. You can execute \verb|ws| (or \verb|ws.bat|) to start the web service. It is based on the Java API for XML Web Services (JAX-WS), which is included in Java 6 or higher. Executing the command will start a web server on port 8181 of your local machine. The WSDL can be accessed via \url{http://localhost:8181/services?wsdl}. You can use a WSDL viewer to see the supported operations or view the JavaDoc of the corresponding Java file\footnote{viewable online at \wsjavadoc}. Some examples for calling the web service from PHP can be found in the DL-Learner subversion repository\footnote{in the directory src/php-examples/:\\ \wsphpexamples}.
 
-Another means to access DL-Learner, in particular for ontology engineering, is to use the OntoWiki and Protégé plugins. The OntoWiki plugin is not officially released yet, but can be used in the SVN version of OntoWiki. The Protégé 4 plugin can be installed either by downloading it from the DL-Learner download page or directly within Protégé 4 by clicking on ``File'', ``Preferences'', ``Plugins'', ``Check for Downloads'' now and selecting the DL-Learner plugin. For more information and a screencast see the Protégé plugin wiki page \footnote{\wikiprotplugin}.
+Another means to access DL-Learner, in particular for ontology engineering, is to use the OntoWiki and Protégé plugins. The OntoWiki plugin is not officially released yet, but can be used in the SVN version of OntoWiki. The Protégé 5 plugin can be installed either by downloading it from the DL-Learner download page or directly within Protégé 4 by clicking on ``File'', ``Preferences'', ``Plugins'', ``Check for Downloads'' now and selecting the DL-Learner plugin. For more information and a screencast see the Protégé plugin wiki page \footnote{\wikiprotplugin}.
 
 \section{Extending DL-Learner}
 \label{sec:developing}
@@ -302,7 +322,6 @@ In your code, you should have an empty default constructor and an \verb|init()| 
 \end{itemize}
 
 By only requiring those few steps, we want to make adding further components to DL-Learner as lightweight as possible.
-
 If you are familiar with the Spring framework\footnote{\url{http://www.springsource.org}}, then it is helpful to know that conf files are just an abbreviated syntax for Spring XML configurations. You can use all powerful features of Spring in your code, which we do not describe in full detail here. In fact, you can convert the conf files to Spring configuration files by adding those lines:
 
 \begin{verbatim}
@@ -312,7 +331,7 @@ cli.writeSpringConfiguration = true
 
 If you added this in \verb|test.conf|, then this generates a \verb|file.xml|, which is the Spring equivalent of conf file.
 
-If you are a DL-Learner developer and want to properly document your component\footnote{}, you should do some further steps:
+If you are a DL-Learner developer and want to properly document your component, you should do some further steps:
 \begin{itemize}
 	\item add your class to \verb|AnnComponentManager.componentClassNames|
 	\item add an annotation for your class
@@ -343,7 +362,7 @@ public class TestAlgorithm implements LearningAlgorithm { ...
 }
 \end{verbatim}
 
-The \verb|@ComponentAnn| annotation allow to mark classes as DL-Learner components. Similarly, the \verb|@ConfigOption| annotations marks variables as configuration options. That should be those variables, which you want the user to be able to configure and play with. A benefit of adding the extra metadata provided by the annotations is that the component will appear in documentation pages such as \url{http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/interfaces/doc/configOptions.html}. In general, they provide users of your component with useful information.
+The \verb|@ComponentAnn| annotation allow to mark classes as DL-Learner components. Similarly, the \verb|@ConfigOption| annotations marks variables as configuration options. That should be those variables, which you want the user to be able to configure and play with. A benefit of adding the extra metadata provided by the annotations is that the component will appear in documentation pages\footnote{such as \url{http://htmlpreview.github.io/?https://github.com/AKSW/DL-Learner/blob/master/interfaces/doc/configOptions.html}}. In general, they provide users of your component with useful information.
 
 \begin{comment}
 You can then add your class to 
@@ -382,11 +401,11 @@ This quick introduction only serves as an entry point to get you started. For mo
 
 \begin{itemize}
  \item Homepage: \url{http://dl-learner.org}
- \item Sourceforge.net project page: \url{http://sourceforge.net/projects/dl-learner/}
- \item Tracker (bugs, features): \url{http://sourceforge.net/tracker/?group_id=203619}
- \item Mailing Lists: \url{http://sourceforge.net/mail/?group_id=203619}
+ \item GitHub project page: \url{https://github.com/AKSW/DL-Learner}
+ \item Tracker (bugs, features): \url{https://github.com/AKSW/DL-Learner/issues}
+ \item Mailing Lists: \url{http://sourceforge.net/p/dl-learner/mailman/}
  \item Contact: lehmann@informatik.uni-leipzig.de (please use the mailing list if possible)
- \item Latest Release: \url{http://sourceforge.net/project/showfiles.php?group_id=203619}
+ \item Latest Release: \url{https://github.com/AKSW/DL-Learner/releases/tag/v1.0}
 \end{itemize}
 
 \nocite{*}
