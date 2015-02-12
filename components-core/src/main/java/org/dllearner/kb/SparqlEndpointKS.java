@@ -43,7 +43,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
  * SPARQL endpoint knowledge source (without fragment extraction),
  * in particular for those algorithms which work directly on an endpoint
  * without requiring an OWL reasoner.
- * 
+ *
  * @author Jens Lehmann
  *
  */
@@ -58,25 +58,26 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
 	private URL url;
-	
+
 	@ConfigOption(name = "defaultGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
-	
+
 	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
-	
+
 	private QueryExecutionFactory qef;
-	
+
 	public SparqlEndpointKS() {}
-	
+
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
 		this(new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()));
+		this.endpoint = endpoint;
 	}
-	
+
 	public SparqlEndpointKS(QueryExecutionFactory qef) {
 		this.qef = qef;
 	}
-	
+
 	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheFrontend cache) {
 		this.endpoint = endpoint;
 		this.cache = cache;
@@ -86,7 +87,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 			this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
 	}
-	
+
 	public SparqlEndpointKS(SparqlEndpoint endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
 		this.qef = 	new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
@@ -97,22 +98,22 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
 	}
-	
+
 	public CacheFrontend getCache() {
 		return cache;
 	}
-	
+
 	public QueryExecutionFactory getQueryExecutionFactory() {
 		return qef;
 	}
-	
+
 	/**
 	 * @param cache the cache to set
 	 */
 	public void setCache(CacheFrontend cache) {
 		this.cache = cache;
 	}
-	
+
 	@Override
 	public void init() throws ComponentInitException {
 		if(!initialized){
@@ -120,19 +121,19 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
 			}
 			supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
-			
+
 			if(qef == null) {
 				qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
 						endpoint.getDefaultGraphURIs());
 			}
-			
+
 			// add some delay
 			qef = new QueryExecutionFactoryDelay(qef, 100);
-			
+
 			initialized = true;
 		}
 	}
-	
+
 	public SparqlEndpoint getEndpoint() {
 		return endpoint;
 	}
@@ -144,7 +145,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public void setUrl(URL url) {
 		this.url = url;
 	}
-	
+
 	public boolean isRemote() {
 		return isRemote;
 	}
