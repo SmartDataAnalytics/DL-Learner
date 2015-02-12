@@ -196,11 +196,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.sourceforge.dig</groupId>
-			<artifactId>dig-xmlbeans</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.fuzzy</groupId>
 			<artifactId>fuzzydl</artifactId>
 			<version>1.0</version>

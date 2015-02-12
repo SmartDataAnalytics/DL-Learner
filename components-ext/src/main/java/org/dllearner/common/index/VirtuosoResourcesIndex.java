@@ -5,6 +5,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
+
 public class VirtuosoResourcesIndex extends SPARQLIndex{
 	
 	public VirtuosoResourcesIndex(SparqlEndpoint endpoint) {

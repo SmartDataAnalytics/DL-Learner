@@ -415,12 +415,6 @@
 				<version>${project.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.dllearner</groupId>
-				<artifactId>protege</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
 			<!-- <dependency>
 				<groupId>org.aksw.commons</groupId>
 				<artifactId>sparql</artifactId>
@@ -452,12 +446,6 @@
 				<groupId>com.jgoodies</groupId>
 				<artifactId>looks</artifactId>
 				<version>2.2.2</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.sourceforge.dig</groupId>
-				<artifactId>dig-xmlbeans</artifactId>
-				<version>1.1</version>
 			</dependency>
 
 			<dependency>
