@@ -6,3 +6,6 @@ target
 
 *.swp
 deptree.txt
+cache
+test*
+
