@@ -124,7 +124,7 @@
 							</defaultJvmSettings> -->
 							<configurationSourceDirectory>src/main/conf</configurationSourceDirectory>
 							<!-- Set the target configuration directory -->
-							<configurationDirectory>conf</configurationDirectory>
+							<configurationDirectory>etc</configurationDirectory>
 							<!-- Copy the contents from "/src/main/conf" to the target -->
 							<copyConfigurationDirectory>true</copyConfigurationDirectory>
 							<!-- Include the target configuration directory in the classpath -->
@@ -734,6 +734,10 @@
 			<artifactId>gurobi</artifactId>
 		</dependency>
     -->
+    <dependency>
+    	<groupId>org.springframework</groupId>
+    	<artifactId>spring-beans</artifactId>
+    </dependency>
 	</dependencies>
 
 <reporting>
