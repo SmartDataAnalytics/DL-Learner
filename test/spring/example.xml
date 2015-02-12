@@ -17,7 +17,7 @@
 		class="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"
 		id="learner" init-method="init">
 		<constructor-arg ref="ks" />
-		<property name="propertyToDescribe" value="http://dbpedia.org/ontology/leader" />
+		<property name="entityToDescribe" value="http://dbpedia.org/ontology/leader" />
 	</bean>
 
 </beans>

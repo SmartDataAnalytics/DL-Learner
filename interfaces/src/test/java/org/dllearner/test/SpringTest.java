@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.dllearner.core.AxiomLearningAlgorithm;
 import org.dllearner.core.EvaluatedAxiom;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -46,6 +49,13 @@ public class SpringTest {
 		for(EvaluatedAxiom axiom : axioms) {
 			System.out.println(axiom.toString());
 		}
+		
+		// TODO: fix text by including an XML version of the following in example.xml
+		// (apparently the file changed from a string setter to a more complex object)
+		OWLManager.getOWLDataFactory().getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/leader"));
+		// TODO: add this generally to CustomPropertyEditorRegistrar, so we can
+		// use strings to set OWL API properties in conf files
+		
 	}
 	
 }
