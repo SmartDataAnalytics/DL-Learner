@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0-RC1</release.name>
+		<release.name>1.0</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
 		<packaging.type>jar</packaging.type>
@@ -52,6 +52,7 @@
 									<finalName>dl-learner-standalone.jar</finalName>
 									<charset>utf-8</charset>
 									<extraDependencies>
+    <!--
 										<dependency>
 											<groupId>org.slf4j</groupId>
 											<artifactId>slf4j-api</artifactId>
@@ -72,6 +73,7 @@
 											<artifactId>log4j</artifactId>
 											<version>${log4j.version}</version>
 										</dependency>
+    -->
 									</extraDependencies>
 									<extraResources>
 										<extraRexource>
@@ -589,10 +591,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+    <!--
 		<dependency>
 			<groupId>com.jamonapi</groupId>
 			<artifactId>jamon</artifactId>
 		</dependency>
+    -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -606,10 +610,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>jsp-api</artifactId>
 		</dependency>
+    <!--
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
+    -->
 		<!-- <dependency>
 			<groupId>org.aksw.commons</groupId>
 			<artifactId>model</artifactId>
@@ -637,29 +643,35 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
+    <!--
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
+    -->
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
+    <!--
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>spring-xmlbeans-3.0</artifactId>
 			<version>1.0</version>
 		</dependency>
+    -->
 
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
 
+    <!--
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
+    -->
 
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -670,22 +682,25 @@
 		<!--BEGIN Logging Dependencies -->
 
 		<!--This is the api jar, it's needed at compile time -->
+    <!--
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
-
+    -->
 		<!--This is the bridge that ties calls to the slf4j api to the log4j framework. 
 			This is a runtime dependency for programs which wish to use log4j as their 
 			implementation. -->
+    <!--
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
+    -->
 		<!--Log4J dependency needed for the runtime as well as some specific compile 
 			time calls -->
+    <!--
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -696,8 +711,9 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+    -->
 		<!--END Logging Dependencies -->
-
+    <!--
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
@@ -708,6 +724,7 @@
 			<groupId>gurobi</groupId>
 			<artifactId>gurobi</artifactId>
 		</dependency>
+    -->
 	</dependencies>
 
 <reporting>

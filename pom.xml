@@ -37,7 +37,7 @@
 		<url>https://github.com/AKSW/DL-Learner/</url>
 		<connection>scm:git:git@github.com:AKSW/DL-Learner.git</connection>
 		<developerConnection>scm:git:git@github.com:AKSW/DL-Learner.git</developerConnection>
-	  <tag>dllearner-parent-1.0-RC1</tag>
+	  <tag>dllearner-parent-1.0</tag>
   </scm>
 
 	<build>
@@ -169,6 +169,11 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
+            <dependency>
+                <groupId>org.semanticweb.elk</groupId>
+                <artifactId>elk-owlapi</artifactId>
+                <version>0.4.1</version>
+            </dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
@@ -287,7 +292,7 @@
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20141113</version>
+				<version>20140107</version>
 			</dependency>
 
 			<!--Used in NKE interfaces for now -->

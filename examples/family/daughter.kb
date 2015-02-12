@@ -12,7 +12,7 @@ male(markus).
 male(stefan).
 male(heinz).
 male(bernd).
-male(franz).
+female(franziska).
 female(anna).
 female(gabi).
 female(michelle).
@@ -23,5 +23,5 @@ hasDaughter(markus,anna).
 hasDaughter(bernd,gabi).
 hasDaughter(gabi,anna).
 hasSon(anna,heinz).
-hasSon(franz,heinz).
-hasDaughter(franz,michelle).
+hasSon(franziska,heinz).
+hasDaughter(franziska,michelle).
