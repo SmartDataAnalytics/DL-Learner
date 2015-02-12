@@ -168,7 +168,9 @@
          <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
+                                <version>2.9.1</version>
+                                <configuration>
+                                        <failOnError>false</failOnError>
 					<show>public</show>
 					<nohelp>true</nohelp>
 					<destDir>doc/javadoc</destDir>
@@ -211,6 +213,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
                 <configuration>
                     <excludes>
                         <exclude>org/dllearner/algorithm/tbsl/*</exclude>
@@ -221,6 +224,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
                 <executions>
                     <execution>
                         <goals>
