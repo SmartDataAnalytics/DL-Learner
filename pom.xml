@@ -15,14 +15,12 @@
 		<gwt.version>2.3.0</gwt.version>
 
 		<!--Define the AKSW dependency version -->
-		<aksw.version>0.7.2</aksw.version>
-
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>4.4.0</solr.version>
         <owlapi.version>3.5.1</owlapi.version>
-        <jena.sparql.api.version>2.11.2-56</jena.sparql.api.version>
         <spring.version>3.1.1.RELEASE</spring.version>
+        <jena.sparql.api.version>2.12.1-3</jena.sparql.api.version>
 	</properties>
 
 	<modules>
@@ -421,27 +419,6 @@
 				<version>${project.version}</version>
 			</dependency>
 
-			<!-- <dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>sparql</artifactId>
-				<version>${aksw.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>model</artifactId>
-				<version>${aksw.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>collections</artifactId>
-				<version>${aksw.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.aksw.commons</groupId>
-				<artifactId>util</artifactId>
-				<version>${aksw.version}</version>
-			</dependency> -->
-
 			<dependency>
 				<groupId>net.sourceforge.secondstring</groupId>
 				<artifactId>secondstring</artifactId>
@@ -612,26 +589,6 @@
 		<name>University Leipzig, AKSW Maven2 Repository</name>
 		<url>http://maven.aksw.org/repository/snapshots</url>
 		<snapshots />
-	</repository>
-	<repository>
-		<id>central</id>
-		<url>http://repo1.maven.org/maven2</url>
-		<releases>
-			<enabled>true</enabled>
-		</releases>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
-	<repository>
-		<id>on.cs.unibas.ch</id>
-		<url>http://on.cs.unibas.ch/maven/repository/</url>
-		<releases>
-			<enabled>false</enabled>
-		</releases>
-		<snapshots>
-			<enabled>false</enabled>
-		</snapshots>
 	</repository>
 </repositories>
 

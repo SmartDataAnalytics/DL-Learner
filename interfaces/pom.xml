@@ -575,6 +575,13 @@
 			</dependency -->
 		<!-- Added the dependency of the core tests so that they will be accessible 
 			from the tests in this component -->
+
+                <dependency>
+                        <groupId>org.dllearner</groupId>
+                        <artifactId>components-core</artifactId>
+                </dependency>
+
+<!--
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
@@ -591,6 +598,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+-->
+
     <!--
 		<dependency>
 			<groupId>com.jamonapi</groupId>
@@ -653,13 +662,13 @@
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
-    <!--
+
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>spring-xmlbeans-3.0</artifactId>
 			<version>1.0</version>
 		</dependency>
-    -->
+
 
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>

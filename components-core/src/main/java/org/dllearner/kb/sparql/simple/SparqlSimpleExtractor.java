@@ -15,6 +15,7 @@ import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -134,7 +135,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             throw new ComponentInitException(
                     "An ontology schema OWLClassExpression file (ontologyFile) in RDF is required");
         }
-        
+
         Monitor monComp = MonitorFactory.start("Simple SPARQL Component")
                 .start();
         Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
@@ -142,7 +143,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         indexer.setOntologySchemaUrls(ontologySchemaUrls);
         indexer.init();
         monIndexer.stop();
-        
+
         TypeOntology typeOntology = new TypeOntology();
 
         Monitor monQueryingABox;
@@ -175,7 +176,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
                 typizeModel=MonitorFactory.start("Typize the model");
                 model=typeOntology.addTypetoJena(model, instances, null);
                 typizeModel.stop();
-                
+
                 alreadyQueried.addAll(instancesSet);
                 instancesSet = difference(alreadyQueried, model);
 
@@ -183,7 +184,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             }
 
             log.info("recursion depth: {} reached, {} new instances",recursionDepth,instancesSet.size());
-            
+
             //queryString = aGenerator.createLastQuery(instances, model, filters);
             //log.debug("SPARQL: {}", queryString);
 
@@ -316,18 +317,17 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 	public void export(File file, OntologyFormat format)
 			throws OntologyFormatUnsupportedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
-        JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
-        return converter.convert(this.model,manager);
+        return OwlApiJenaUtils.getOWLOntology(model);
     }
-    
+
     public static String getName(){
     	return "efficient SPARQL fragment extractor";
     }
-    
+
 
 }
