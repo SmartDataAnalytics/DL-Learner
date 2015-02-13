@@ -386,11 +386,18 @@ public class Enrichment {
 				List<EvaluatedAxiom<OWLAxiom>> evaluatedAxioms = la.getCurrentlyBestEvaluatedAxioms(axiomType, threshold);
 				learnedEvaluatedAxioms.addAll(evaluatedAxioms);
 
-				AlgorithmRun algorithmRun = new AlgorithmRun(
-						AxiomAlgorithms.getAlgorithmClass(axiomType),
-						evaluatedAxioms,
-						ConfigHelper.getConfigOptionValues(la.getAlgorithm(axiomType)));
-				algorithmRuns.add(algorithmRun);
+				AbstractAxiomLearningAlgorithm algorithm = la.getAlgorithm(axiomType);
+				
+				if(algorithm != null) {
+					AlgorithmRun algorithmRun = new AlgorithmRun(
+							AxiomAlgorithms.getAlgorithmClass(axiomType),
+							evaluatedAxioms,
+							ConfigHelper.getConfigOptionValues(la.getAlgorithm(axiomType)));
+					algorithmRuns.add(algorithmRun);
+				} else {
+					// TODO what to do when algorithm failed
+				}
+				
 			}
 		}
 	}

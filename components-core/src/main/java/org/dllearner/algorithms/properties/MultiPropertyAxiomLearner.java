@@ -156,7 +156,8 @@ public class MultiPropertyAxiomLearner {
 								List<EvaluatedAxiom<OWLAxiom>> result = applyAlgorithm(axiomType, ks);
 								results.put(axiomType, result);
 							} catch (Exception e) {
-								logger.error("Error occurred while generating " + axiomType.getName() + " for entity " + entity, e);
+								logger.error("An error occurred while generating " + axiomType.getName() + 
+										" axioms for " + entity.getEntityType().getPrintName().toLowerCase() + " " + entity.toStringID(), e);
 							}
 						}
 					}
