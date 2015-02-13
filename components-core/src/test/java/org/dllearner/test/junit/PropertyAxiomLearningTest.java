@@ -47,6 +47,8 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.reasoning.SPARQLReasoner.PopularityType;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -69,9 +71,10 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
-public class PropertyAxiomLearningTest extends TestCase{
+
+public class PropertyAxiomLearningTest {
 	
-	private SparqlEndpointKS ks;
+	private static SparqlEndpointKS ks;
 	private int maxExecutionTimeInSeconds = 3;
 	private int nrOfAxioms = 3;
 	
@@ -95,9 +98,8 @@ public class PropertyAxiomLearningTest extends TestCase{
 	private OWLDataProperty equivDataProperty = df.getOWLDataProperty(IRI.create( "http://dbpedia.org/ontology/height"));
 	
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeClass
+	public static void setUp() throws Exception {
 //		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
 		
 		Model model = ModelFactory.createDefaultModel();
@@ -157,6 +159,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	/*
 	 * object property axioms
 	 */
+	@Test
 	public void testObjectPropertyDomainAxiomLearning() throws Exception {
 		ObjectPropertyDomainAxiomLearner l = new ObjectPropertyDomainAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -180,6 +183,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		// assertEquals("", expectedScore, actualScore, 0d);
 	}
 	
+	@Test
 	public void testSubPropertyOfAxiomLearning() throws Exception {
 		SubObjectPropertyOfAxiomLearner l = new SubObjectPropertyOfAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -203,6 +207,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		// assertEquals("", expectedScore, actualScore, 0d);
 	}
 	
+	@Test
 	public void testEquivalentObjectPropertiesAxiomLearning() throws Exception {
 		EquivalentObjectPropertyAxiomLearner l = new EquivalentObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -229,8 +234,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		// we only consider properties with same range and domain
 	}
 	
-	
-	
+	@Test
 	public void testPropertyRangeAxiomLearning() throws Exception {
 		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -240,6 +244,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
+	@Test
 	public void testReflexivePropertyAxiomLearning() throws Exception {
 		ReflexiveObjectPropertyAxiomLearner l = new ReflexiveObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -249,6 +254,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
+	@Test
 	public void testFunctionalPropertyAxiomLearnining() throws Exception {
 		FunctionalObjectPropertyAxiomLearner l = new FunctionalObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -258,6 +264,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
+	@Test
 	public void testSymmetricPropertyAxiomLearning() throws Exception {
 		SymmetricObjectPropertyAxiomLearner l = new SymmetricObjectPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -270,7 +277,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 	/*
 	 * data property axioms
 	 */
-	
+	@Test
 	public void testEquivalentDataPropertiesAxiomLearning() throws Exception {
 		EquivalentDataPropertyAxiomLearner l = new EquivalentDataPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -280,6 +287,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
+	@Test
 	public void testDisjointDataPropertiesAxiomLearning() throws Exception {
 		DisjointDataPropertyAxiomLearner l = new DisjointDataPropertyAxiomLearner(ks);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
@@ -289,7 +297,7 @@ public class PropertyAxiomLearningTest extends TestCase{
 		System.out.println(l.getCurrentlyBestEvaluatedAxioms(nrOfAxioms));
 	}
 	
-	@Test
+	@Ignore
 	public void testRunDBpedia() throws Exception {
 		OWLObjectProperty op = df.getOWLObjectProperty(IRI.create("http://dbpedia.org/ontology/birthPlace"));
 		
