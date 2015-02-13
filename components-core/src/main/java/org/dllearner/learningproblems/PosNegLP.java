@@ -139,8 +139,8 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples)) {
             Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
             double percentage = (double) (missing.size()/allExamples.size());
-            percentage = Math.round(percentage * 1000) / 1000 ;
-			String str = "The examples ("+percentage+" % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
+            percentage = Math.round(percentage * 1000) / 1000;
+			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
 			str += missing.toString();
             if(missing.size()==allExamples.size())    {
                 throw new ComponentInitException(str);
