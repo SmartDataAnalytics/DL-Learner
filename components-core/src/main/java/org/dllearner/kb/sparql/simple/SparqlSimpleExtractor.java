@@ -166,11 +166,11 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
                 log.debug("SPARQL: {}", queryString);
 
                 monQueryingABox = MonitorFactory.start("ABox query time");
-                try{
-                executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
-                } catch (Throwable t){
-                	t.printStackTrace();
-                }
+				try {
+					executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
                 monQueryingABox.stop();
 
                 typizeModel=MonitorFactory.start("Typize the model");

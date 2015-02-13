@@ -104,7 +104,7 @@ public class Datastructures {
 	public static Set<String> individualSetToStringSet(Set<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
 		for(OWLIndividual ind : individuals) {
-			ret.add(ind.toString());
+			ret.add(ind.toStringID());
 		}
 		return ret;
 	}	
@@ -112,7 +112,7 @@ public class Datastructures {
 	public static Set<String> individualListToStringSet(List<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
 		for(OWLIndividual ind : individuals) {
-			ret.add(ind.toString());
+			ret.add(ind.toStringID());
 		}
 		return ret;
 	}		

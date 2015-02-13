@@ -50,9 +50,7 @@ public class SomeOnlyReasonerTest {
         SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples,
                 negExamples);
         
-        ComponentManager cm = ComponentManager.getInstance();
-        
-        SparqlSimpleExtractor ks = cm.knowledgeSource(SparqlSimpleExtractor.class);
+        SparqlSimpleExtractor ks = new SparqlSimpleExtractor();
         ks.setInstances(new ArrayList<String>(Datastructures.individualSetToStringSet(examples
                 .getCompleteSet())));
         // ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO:
@@ -71,20 +69,19 @@ public class SomeOnlyReasonerTest {
         
         ks.init();
         
-        AbstractReasonerComponent rc = cm.reasoner(FastInstanceChecker.class, ks);
+        AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 //        ((FastInstanceChecker)rc).setForAllSemantics(ForallSemantics.SomeOnly);
         rc.init();
        
         
-        PosNegLPStandard lp = cm.learningProblem(PosNegLPStandard.class, rc);
+        PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
         lp.setAccuracyMethod("fmeasure");
         lp.setUseApproximations(false);
         lp.init();
         
-        CELOE la = cm.learningAlgorithm(CELOE.class, lp, rc);
-        // CELOEConfigurator cc = la.getConfigurator();
+        CELOE la = new CELOE(lp, rc);
         la.setMaxExecutionTimeInSeconds(10);
         la.init();
         RhoDRDown op = (RhoDRDown) la.getOperator();
@@ -97,7 +94,6 @@ public class SomeOnlyReasonerTest {
         la.init();
         la.start();
         
-        cm.freeAllComponents();
         OWLClassExpression desc = la.getCurrentlyBestDescription();
 //        assertTrue( this.containsObjectAllRestriction(desc));
         
