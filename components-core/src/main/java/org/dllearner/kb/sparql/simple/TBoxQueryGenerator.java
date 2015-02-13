@@ -23,9 +23,9 @@ public class TBoxQueryGenerator {
         builder.append("{ ?example a ?class . ");
         builder.append("Filter ( ?example IN(");
         for (String individual : individuals) {
-            builder.append("<");
+            if (!individual.startsWith("<")) builder.append("<");
             builder.append(individual);
-            builder.append(">");
+            if (!individual.endsWith(">")) builder.append(">");
             builder.append(", ");
         }
         builder.deleteCharAt(builder.length() - 2);

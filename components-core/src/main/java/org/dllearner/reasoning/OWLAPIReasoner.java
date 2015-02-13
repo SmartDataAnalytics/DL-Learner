@@ -116,7 +116,7 @@ import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
-//	.getLogger(OWLAPIReasoner.class);	
+//	.getLogger(OWLAPIReasoner.class);
 
     //private String reasonerType = "pellet";
     private OWLReasoner reasoner;
@@ -129,7 +129,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
 
 //	private ClassHierarchy subsumptionHierarchy;
-//	private ObjectPropertyHierarchy roleHierarchy;	
+//	private ObjectPropertyHierarchy roleHierarchy;
 //	private OWLDataPropertyHierarchy datatypePropertyHierarchy;
 //	private Set<OWLClassExpression> allowedConceptsInSubsumptionHierarchy;
 
@@ -142,7 +142,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //    SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
 //    SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
     SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
-    
+
     private Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 
     // namespaces
@@ -155,7 +155,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private String reasonerTypeString = "pellet";
     @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
-    
+
     // default reasoner is Pellet
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
@@ -164,7 +164,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public OWLAPIReasoner() {
 
     }
-    
+
     public OWLAPIReasoner(KnowledgeSource... sources) {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
@@ -172,7 +172,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public OWLAPIReasoner(Set<KnowledgeSource> sources) {
         super(sources);
     }
-    
+
     public OWLAPIReasoner(OWLReasoner reasoner) {
         this.reasoner = reasoner;
         KnowledgeSource ks = new OWLAPIOntology(reasoner.getRootOntology());
@@ -269,7 +269,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				OWLDataRange range = it.next();
 				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
 					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
-					
+
 					if(isNumericDatatype(range.asOWLDatatype())) {
 						numericDataProperties.add(dataProperty);
 					}
@@ -282,8 +282,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
-        
-        
+
+
         // remove classes that are built-in entities
 		Iterator<OWLClass> it = atomicConcepts.iterator();
 		while (it.hasNext()) {
@@ -292,10 +292,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				it.remove();
 			}
 		}
-		
+
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
     }
-    
+
     private void initBaseReasoner() {
     	ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
         FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
@@ -340,21 +340,21 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		default:
 			reasonerFactory = PelletReasonerFactory.getInstance();
 		}
-       
+
         reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
     }
-    
+
     private boolean isNumericDatatype(OWLDatatype datatype){
     	if(!datatype.isBuiltIn()){
     		return false;
     	}
     	Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
-    			OWL2Datatype.XSD_BYTE, 
+    			OWL2Datatype.XSD_BYTE,
     			OWL2Datatype.XSD_SHORT,
-    			OWL2Datatype.XSD_INT, 
+    			OWL2Datatype.XSD_INT,
     			OWL2Datatype.XSD_INTEGER,
     			OWL2Datatype.XSD_LONG,
-    			OWL2Datatype.XSD_DOUBLE, 
+    			OWL2Datatype.XSD_DOUBLE,
     			OWL2Datatype.XSD_FLOAT
     			);
     	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
@@ -386,14 +386,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public SortedSet<OWLIndividual> getIndividuals() {
         return individuals;
     }
-    
+
     /**
 	 * @param prefixes the prefixes to set
 	 */
 	public void setPrefixes(Map<String, String> prefixes) {
 		this.prefixes = prefixes;
 	}
-	
+
 	/**
 	 * @param baseURI the baseURI to set
 	 */
@@ -419,7 +419,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
         return reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
     }
-    
+
     /* (non-Javadoc)
      * @see org.dllearner.core.Reasoner#isDisjoint(OWLClass class1, OWLClass class2)
      */
@@ -428,8 +428,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		// 1. get all disjoint classes and check for set containment (could be fast if taxonomy
 		// is cached somewhere in the reasoner internals)
 //		return reasoner.getDisjointClasses(clsA).containsEntity(clsB);
-		
-		// 2. check for entailment of DisjointClass(A, B) resp. 
+
+		// 2. check for entailment of DisjointClass(A, B) resp.
 		// SubClassOf(OWLIntersectionOf(A, B), owl:Nothing)
 //		OWLAxiom axiom = df.getOWLDisjointClassesAxiom(clsA, clsB);
 		OWLAxiom axiom = df.getOWLSubClassOfAxiom(df.getOWLObjectIntersectionOf(clsA, clsB), df.getOWLNothing());
@@ -464,7 +464,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
 		return subClasses;
     }
-    
+
     private <T extends OWLObject> SortedSet<T> getRepresentativeEntities(NodeSet<T> nodeSet){
     	SortedSet<T> representatives = new TreeSet<T>();
     	for (Node<T> node : nodeSet) {
@@ -474,7 +474,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		}
     	return representatives;
     }
-    
+
     protected SortedSet<OWLClassExpression> getEquivalentClassesImpl(OWLClassExpression concept) {
     	SortedSet<OWLClassExpression> equivalentclasses = new TreeSet<>();
     	for (OWLClass eqCls : reasoner.getEquivalentClasses(concept).getEntitiesMinusTop()) {
@@ -539,7 +539,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public boolean isSatisfiableImpl() {
         return reasoner.isSatisfiable(df.getOWLThing());
     }
-    
+
 //    @Override
 //    public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
 //    	return asIntersection(reasoner.getObjectPropertyDomains(objectProperty, true));
@@ -550,30 +550,30 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	// this is a bit tricky because the reasoner interface only returns
     	// atomic classes, but it might be the case that in the ontology complex
     	// domain definitions are contained
-    	
+
     	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
-    	
+
     	// get all asserted domains
     	domains.addAll(objectProperty.getDomains(ontology));
-    	
+
     	// do the same for all super properties
     	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
     	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
     		domains.addAll(supProp.getDomains(ontology));
 		}
-    	
+
     	// last but not least, call a reasoner
         NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
         domains.addAll(nodeSet.getFlattened());
-        
+
         domains.remove(df.getOWLThing());
-        
+
         OWLClassExpression domain;
-        
+
         // several domains have to be treated as intersection
         if(domains.size() > 1) {
         	 domain = df.getOWLObjectIntersectionOf(domains);
-             
+
              // simplify expression, e.g. keep the most specific class in expressions
         	 // like A AND B
         	 domain = minimizer.minimize(domain);
@@ -582,7 +582,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         } else {
         	domain = df.getOWLThing();
         }
-        
+
         logger.trace("Domain({},{})", objectProperty, domain);
 		return domain;
     }
@@ -591,36 +591,36 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //    public OWLClassExpression getDomainImpl(OWLDataProperty objectProperty) {
 //    	return asIntersection(reasoner.getDataPropertyDomains(objectProperty, true));
 //    }
-    
+
     @Override
     public OWLClassExpression getDomainImpl(OWLDataProperty dataProperty) {
     	// this is a bit tricky because the reasoner interface only returns
     	// atomic classes, but it might be the case that in the ontology complex
     	// domain definitions are contained
-    	
+
     	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
-    	
+
     	// get all asserted domains
     	domains.addAll(dataProperty.getDomains(ontology));
-    	
+
     	// do the same for all super properties
     	NodeSet<OWLDataProperty> superProperties = reasoner.getSuperDataProperties(dataProperty, false);
     	for (OWLDataProperty supProp : superProperties.getFlattened()) {
     		domains.addAll(supProp.getDomains(ontology));
 		}
-    	
+
     	// last but not least, call a reasoner
         NodeSet<OWLClass> nodeSet = reasoner.getDataPropertyDomains(dataProperty, true);
         domains.addAll(nodeSet.getFlattened());
-        
+
         domains.remove(df.getOWLThing());
-        
+
         OWLClassExpression domain;
-        
+
         // several domains have to be treated as intersection
         if(domains.size() > 1) {
         	 domain = df.getOWLObjectIntersectionOf(domains);
-             
+
              // simplify expression, e.g. keep the most specific class in expressions
         	 // like A AND B
         	 domain = minimizer.minimize(domain);
@@ -629,11 +629,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         } else {
         	domain = df.getOWLThing();
         }
-        
+
         logger.trace("Domain({},{})", dataProperty, domain);
 		return domain;
     }
-    
+
 //    @Override
 //    public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
 //    	return asIntersection(reasoner.getObjectPropertyRanges(objectProperty, true));
@@ -644,39 +644,41 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	// this is a little bit tricky because the reasoner interface only returns
     	// atomic classes, but it might be the case that in the ontology complex
     	// range definitions are contained
-    	
+
     	Set<OWLClassExpression> ranges = new HashSet<OWLClassExpression>();
-    	
+
     	// get all asserted ranges
     	ranges.addAll(objectProperty.getRanges(ontology));
-    	
+
     	// do the same for all super properties
     	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
     	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
 			ranges.addAll(supProp.getRanges(ontology));
 		}
-    	
+
     	// last but not least, call a reasoner
         NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
         ranges.addAll(nodeSet.getFlattened());
-        
+
         OWLClassExpression range;
-        
+
         // several domains have to be treated as intersection
         if(ranges.size() > 1) {
         	range = df.getOWLObjectIntersectionOf(ranges);
-             
+
         	// simplify expression, e.g. keep the most specific class in expressions
        	 	// like A AND B
         	range = minimizer.minimize(range);
-        } else {
+        } else if (!ranges.isEmpty()){
         	range = ranges.iterator().next();
+        } else {
+            range = df.getOWLThing();
         }
-        
+
         logger.trace("Range({},{})", objectProperty, range);
         return range;
     }
-    
+
     @Override
     public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
     	Set<OWLDataPropertyRangeAxiom> axioms = ontology.getDataPropertyRangeAxioms(datatypeProperty);
@@ -688,7 +690,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     		return df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI());
     	}
     }
-    
+
     private OWLClassExpression asIntersection(NodeSet<OWLClass> nodeSet){
     	if(nodeSet.isEmpty() || nodeSet.isTopSingleton()){
     		return df.getOWLThing();
@@ -704,7 +706,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     			} else {
     				logger.warn("Reasoner returned empty node. Seems to be a bug.");
     			}
-    			
+
             }
     		if(operands.size() == 1) {
     			return operands.iterator().next();
@@ -1029,7 +1031,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void setReasonerTypeString(String reasonerTypeString) {
         this.reasonerTypeString = reasonerTypeString;
     }
-    
+
     /**
 	 * @param reasonerImplementation the reasonerImplementation to set
 	 */

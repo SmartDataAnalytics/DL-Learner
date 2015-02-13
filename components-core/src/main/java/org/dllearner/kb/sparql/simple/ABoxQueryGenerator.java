@@ -33,9 +33,9 @@ public class ABoxQueryGenerator {
         StringBuilder builder = new StringBuilder();
         builder.append(" FILTER (" + var + " IN( ");
         for (String uri : uris) {
-            builder.append("<");
+            if (!uri.startsWith("<")) builder.append("<");
             builder.append(uri);
-            builder.append(">");
+            if (!uri.endsWith(">")) builder.append(">");
             builder.append(", ");
         }
         builder.deleteCharAt(builder.length() - 2);
