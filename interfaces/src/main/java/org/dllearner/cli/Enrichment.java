@@ -1182,7 +1182,8 @@ public class Enrichment {
 			if(options.valueOf("resource") != null) {
 				resource = new SPARQLTasks(((SparqlEndpointKS)ks).getEndpoint()).guessResourceType(resourceURI.toString(), true);
 				if(resource == null) {
-					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource"));
+					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource")
+							+ ". Enrichment only works for classes and properties.");
 				}
 			}
 
