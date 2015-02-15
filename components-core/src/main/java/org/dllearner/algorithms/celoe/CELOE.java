@@ -19,13 +19,8 @@
 
 package org.dllearner.algorithms.celoe;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +38,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -62,31 +56,22 @@ import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -643,10 +628,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
-//		System.out.println("refining: " + node);
+		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
-//		System.out.println(refinements);
+		System.out.println(refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 		nodes.add(node);
@@ -657,18 +642,18 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// returns true if node was added and false otherwise
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 //		System.out.print(OWLAPIRenderers.toDLSyntax(description));
-//		System.out.println("d: " + description);
+		System.out.println("d: " + description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-//			System.out.println(": redundant");
+			System.out.println(": redundant");
 			return false;
 		}
 		
 		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-//			System.out.println(": not allowed");
+			System.out.println(": not allowed");
 			return false;
 		}
 		
@@ -1187,39 +1172,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public static void main(String[] args) throws Exception{
-		
-		OWLDataFactory df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("");
-		List<OWLClassExpression> operands = new ArrayList<>();
-		operands.add(df.getOWLObjectSomeValuesFrom(
-				df.getOWLObjectProperty("p", pm), 
-				df.getOWLClass("C", pm)));
-		operands.add(df.getOWLObjectUnionOf(df.getOWLClass("A", pm), df.getOWLClass("B", pm)));
-		Collections.sort(operands);
-		OWLClassExpression ce = new OWLObjectIntersectionOfImplExt(operands);
-		System.out.println(OWLAPIRenderers.toDLSyntax(ce));
-		
-		String cls = "http://purl.org/procurement/public-contracts#Tender";
-		String file = "/home/me/work/datasets/e-procurement/dl-learner-sample-with-classes-pco.rdf";
-		Model model = ModelFactory.createDefaultModel();
-		model.read(new FileInputStream(file), null);
-		OWLEntityTypeAdder.addEntityTypes(model);
-		Query query = QueryFactory.create("SELECT (COUNT(distinct ?s) as ?cnt)  WHERE {" +
-				"?s a <" + cls + ">.}", Syntax.syntaxARQ);
-		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
-		query = QueryFactory.create("SELECT ?p (COUNT(distinct ?s) AS ?cnt) WHERE {" +
-				"?s ?p ?o. ?p a <http://www.w3.org/2002/07/owl#ObjectProperty>." +
-				"?s a <" + cls + ">. " +
-//				"OPTIONAL{?x ?p ?o1. " +
-//				"FILTER NOT EXISTS{?x a <" + cls + ">.}}" +
-				
-						"}GROUP BY ?p ORDER BY DESC(?cnt)", Syntax.syntaxARQ);
-		
-		System.out.println(ResultSetFormatter.asText(QueryExecutionFactory.create(query, model).execSelect()));
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		model.write(baos, "TURTLE");
-		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(baos.toByteArray()));
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		OWLOntology ontology = OWLManager.createOWLOntologyManager()
+				.loadOntologyFromOntologyDocument(
+						new File("../examples/family-benchmark/family-benchmark_rich_background.owl"));
 		
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
@@ -1228,17 +1184,14 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setClassToDescribe(df.getOWLClass(IRI.create("http://purl.org/procurement/public-contracts#Tender")));
+		lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://www.benchmark.org/family#Grandfather")));
 		lp.init();
-		
-//		ELLearningAlgorithm alg = new ELLearningAlgorithm(lp, rc);
-//		alg.setNoisePercentage(30);
-//		alg.setClassToDescribe(df.getOWLClass(IRI.create("http://purl.org/procurement/public-contracts#Tender"));
-//		alg.init();
-		
 		
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
+		alg.setWriteSearchTree(true);
+		alg.setSearchTreeFile("log/search-tree.log");
+		alg.setReplaceSearchTree(true);
 		alg.init();
 		
 		alg.start();

@@ -21,11 +21,13 @@ package org.dllearner.test.junit;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
+import org.aksw.commons.collections.diff.SetDiff;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
@@ -63,11 +65,13 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -332,5 +336,17 @@ public class PropertyAxiomLearningTest {
 		}
 		
 	}
+	
+	public static void main(String[] args) {
+		 String query = "SELECT  ?dt (count(distinct ?o) AS ?cnt)\n" + 
+		 		"			WHERE\n" + 
+		 		"			  { ?s <http://dbpedia.org/ontology/birthDate> ?o }\n" + 
+		 		"			GROUP BY (datatype(?o) AS ?dt)";
+		 QueryEngineHTTP qe = new QueryEngineHTTP("http://dbpedia.org/sparql", query);
+		 qe.setDefaultGraphURIs(Collections.singletonList("http://dbpedia.org"));
+		 ResultSet rs = qe.execSelect();
+		 System.out.println(rs.next());
+	}
 
+	
 }
