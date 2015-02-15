@@ -22,9 +22,9 @@ package org.dllearner.algorithms.isle.metrics;
 import java.util.Arrays;
 import java.util.List;
 
-import org.dllearner.algorithms.elcopy.ELDescriptionTreeComparator;
-import org.dllearner.algorithms.elcopy.ELHeuristic;
-import org.dllearner.algorithms.elcopy.SearchTreeNode;
+import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
+import org.dllearner.algorithms.el.ELHeuristic;
+import org.dllearner.algorithms.el.SearchTreeNode;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 

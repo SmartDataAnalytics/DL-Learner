@@ -17,45 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
-import java.util.Set;
+public class DisjunctiveHeuristic implements ELHeuristic {
 
-import org.semanticweb.owlapi.model.OWLProperty;
-
-/**
- * Convenience class representing an EL OWLClassExpression tree and a set of roles.
- * 
- * @author Jens Lehmann
- *
- */
-public class TreeAndRoleSet {
-
-	private ELDescriptionTree tree;
-	private Set<OWLProperty> roles;
+	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
 	
-	public TreeAndRoleSet(ELDescriptionTree tree, Set<OWLProperty> roles) {
-		this.tree = tree;
-		this.roles = roles;
+	public int compare(SearchTreeNode tree1, SearchTreeNode tree2) {
+		double diff = tree1.getScore()-tree2.getScore();
+		if(diff < 0.00001 && diff > -0.00001) {
+			return edt.compare(tree1.getDescriptionTree(), tree2.getDescriptionTree());
+		} else if(diff > 0){
+			return 1;
+//			return (int)Math.signum(diff);
+		} else {
+			return -1;
+		}
 	}
 
-	/**
-	 * @return the tree
-	 */
-	public ELDescriptionTree getTree() {
-		return tree;
-	}
-
-	/**
-	 * @return the roles
-	 */
-	public Set<OWLProperty> getRoles() {
-		return roles;
-	}
-	
-	@Override
-	public String toString() {
-		return "("+tree.toDescriptionString() + "," + roles.toString()+")";
-	}
-	
 }

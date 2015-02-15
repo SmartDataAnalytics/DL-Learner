@@ -27,8 +27,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.elcopy.ELLearningAlgorithm;
-import org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive;
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
+import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;

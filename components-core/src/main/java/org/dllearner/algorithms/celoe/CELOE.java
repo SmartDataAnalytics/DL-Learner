@@ -631,9 +631,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
-		System.out.println(refinements);
+		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
+		System.out.println("refined node: " + node);
 		nodes.add(node);
 		return refinements;
 	}
@@ -641,19 +642,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// add node to search tree if it is not too weak
 	// returns true if node was added and false otherwise
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
-//		System.out.print(OWLAPIRenderers.toDLSyntax(description));
-		System.out.println("d: " + description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-			System.out.println(": redundant");
+			System.out.println(description + " redundant");
 			return false;
 		}
 		
 		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-			System.out.println(": not allowed");
+			System.out.println(description + " not allowed");
 			return false;
 		}
 		
@@ -673,7 +672,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println("acc: " + accuracy);
 //		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
-//			System.out.println(": too weak");
+			System.out.println(description + " too weak");
 			return false;
 		}
 		

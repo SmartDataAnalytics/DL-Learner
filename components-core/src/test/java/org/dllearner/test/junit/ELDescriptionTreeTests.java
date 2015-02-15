@@ -24,11 +24,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.elcopy.ELDescriptionNode;
-import org.dllearner.algorithms.elcopy.ELDescriptionTree;
-import org.dllearner.algorithms.elcopy.ELDescriptionTreeComparator;
-import org.dllearner.algorithms.elcopy.Simulation;
-import org.dllearner.algorithms.elcopy.TreeTuple;
+import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
+import org.dllearner.algorithms.el.Simulation;
+import org.dllearner.algorithms.el.TreeTuple;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.parser.KBParser;

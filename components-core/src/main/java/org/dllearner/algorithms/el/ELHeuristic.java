@@ -17,22 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
-public class DisjunctiveHeuristic implements ELHeuristic {
+import java.util.Comparator;
 
-	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
-	
-	public int compare(SearchTreeNode tree1, SearchTreeNode tree2) {
-		double diff = tree1.getScore()-tree2.getScore();
-		if(diff < 0.00001 && diff > -0.00001) {
-			return edt.compare(tree1.getDescriptionTree(), tree2.getDescriptionTree());
-		} else if(diff > 0){
-			return 1;
-//			return (int)Math.signum(diff);
-		} else {
-			return -1;
-		}
-	}
+/**
+ * Marker interface for heuristics in the EL learning
+ * algorithms. A heuristic implements a method
+ * to decide which one of two given nodes seems to be more
+ * promising with respect to the learning problem we consider.
+ * 
+ * @author Jens Lehmann
+ *
+ */
+public interface ELHeuristic extends Comparator<SearchTreeNode> {
 
 }

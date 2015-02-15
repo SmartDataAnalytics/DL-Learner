@@ -608,7 +608,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 					return 0;
 				}
 			}
-			
+			System.out.println(description + ":" + coveredInstances + "/" + classInstances.size());
 			double recall = coveredInstances/(double)classInstances.size();
 			
 			// noise computation is incorrect

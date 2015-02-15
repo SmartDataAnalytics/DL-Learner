@@ -27,8 +27,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.elcopy.ELDescriptionNode;
-import org.dllearner.algorithms.elcopy.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.parser.KBParser;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
