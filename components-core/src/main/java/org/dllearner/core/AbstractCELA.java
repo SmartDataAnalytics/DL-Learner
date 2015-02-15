@@ -66,7 +66,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	protected String baseURI;
 	protected Map<String, String> prefixes;
-	protected OWLDataFactory df = new OWLDataFactoryImpl();
+	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	
 	protected long nanoStartTime;
 

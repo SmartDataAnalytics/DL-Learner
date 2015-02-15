@@ -296,11 +296,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			heuristic = new OEHeuristicRuntime();
 		}
 		
-		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
+		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		// start at owl:Thing by default
 		if(startClass == null) {
-			startClass = df.getOWLThing();
+			startClass = dataFactory.getOWLThing();
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
@@ -435,11 +435,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				} else {
 					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
 					if(superClasses.size() > 1) {
-						startClass = df.getOWLObjectIntersectionOf(superClasses);
+						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
 					} else if(superClasses.size() == 1){
 						startClass = (OWLClassExpression) superClasses.toArray()[0];
 					} else {
-						startClass = df.getOWLThing();
+						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
 								"sensible to learn a OWLClassExpression in this case.");
 					}					

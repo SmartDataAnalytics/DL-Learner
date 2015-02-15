@@ -39,8 +39,6 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -515,7 +513,7 @@ public class GP extends AbstractCELA {
             for(int i=0; i<numberOfIndividuals; i++) {
             	if(OWLClassExpressionUtils.getLength(individuals[i].getTree())>maxConceptLength) {
             		System.out.println("Warning: GP produced concept longer then " + maxConceptLength + ". Replacing it with TOP.");
-            		individuals[i] = GPUtilities.createProgram(learningProblem, new Thing());
+            		individuals[i] = GPUtilities.createProgram(learningProblem, dataFactory.getOWLThing());
             	}            		
             }
             

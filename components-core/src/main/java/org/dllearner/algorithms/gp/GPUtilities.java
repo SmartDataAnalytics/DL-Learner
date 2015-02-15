@@ -43,6 +43,11 @@ import org.dllearner.reasoning.FastRetrieval;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 
 /**
@@ -68,7 +73,9 @@ public class GPUtilities {
 	
     private static Random rand = new Random();
     
-    private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, Description hypothesis) {
+    private static OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    
+    private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, OWLClassExpression hypothesis) {
     	return calculateFitness(learningProblem, hypothesis, null);
     }
     
@@ -77,8 +84,8 @@ public class GPUtilities {
     // (macht aber nicht so viel Sinn, da man das bei richtigen Reasoning-Algorithmen
     // ohnehin mit einer Erweiterung der Wissensbasis um die Inklusion Target SUBSETOF ReturnType
     // erschlagen kann)
-	private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, Description hypothesis, Description adc) {
-		Description extendedHypothesis;
+	private static ScorePosNeg calculateFitness(AbstractLearningProblem learningProblem, OWLClassExpression hypothesis, OWLClassExpression adc) {
+		OWLClassExpression extendedHypothesis;
 		
 		// return type temporarily disabled 
 		// => it is probably more appropriate to have the 
@@ -137,11 +144,11 @@ public class GPUtilities {
 		return score;
 	}    
     
-	public static Program createProgram(AbstractLearningProblem learningProblem, Description mainTree) {
+	public static Program createProgram(AbstractLearningProblem learningProblem, OWLClassExpression mainTree) {
 		return new Program(calculateFitness(learningProblem, mainTree), mainTree);
 	}
 	
-	private static Program createProgram(AbstractLearningProblem learningProblem, Description mainTree, Description adc) {
+	private static Program createProgram(AbstractLearningProblem learningProblem, OWLClassExpression mainTree, OWLClassExpression adc) {
 		return new Program(calculateFitness(learningProblem, mainTree,adc), mainTree, adc);
 	}
 	
@@ -155,29 +162,29 @@ public class GPUtilities {
     		// TODO: hier kann man noch mehr Feinabstimmung machen, d.h.
     		// Mutation abh�ngig von Knotenanzahl
     		if(Math.random()<0.5) {
-    			Description mainTree = mutation(learningProblem, rs, p.getTree(),true);
-    			Description adc = p.getAdc();
+    			OWLClassExpression mainTree = mutation(learningProblem, rs, p.getTree(),true);
+    			OWLClassExpression adc = p.getAdc();
     			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);
     		}
     		else {
-    			Description mainTree = p.getTree();
-    			Description adc = mutation(learningProblem, rs, p.getAdc(),false);
+    			OWLClassExpression mainTree = p.getTree();
+    			OWLClassExpression adc = mutation(learningProblem, rs, p.getAdc(),false);
     			ScorePosNeg score = calculateFitness(learningProblem,mainTree,adc);
     			return new Program(score, mainTree, adc);    			
     		}
     	} else {
-    		Description tree = mutation(learningProblem, rs,p.getTree(),false);
+    		OWLClassExpression tree = mutation(learningProblem, rs,p.getTree(),false);
     		ScorePosNeg score = calculateFitness(learningProblem, tree);
             return new Program(score, tree);
     	}
     }
 
-    private static Description mutation(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Description tree, boolean useADC) {
+    private static OWLClassExpression mutation(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, OWLClassExpression tree, boolean useADC) {
     	// auch bei Mutation muss darauf geachtet werden, dass 
     	// Baum nicht modifiziert wird (sonst w�rde man automatisch auch
     	// andere "selected individuals" modifizieren)
-    	Description t = (Description) tree.clone();
+    	OWLClassExpression t = (OWLClassExpression) tree.clone();
     	// bis auf Klon Mutation genau wie vorher
         int size = t.getNumberOfNodes();
         // TODO: auch Mutationen von Einzelknoten erlauben
@@ -197,10 +204,10 @@ public class GPUtilities {
             */
         	// neue Implementierung
             int randNr = rand.nextInt(size) + 1;
-            Description st = t.getSubtree(randNr);
-            Description stParent = st.getParent();
+            OWLClassExpression st = t.getSubtree(randNr);
+            OWLClassExpression stParent = st.getParent();
             stParent.getChildren().remove(st);
-            Description treeNew = createGrowRandomTree(learningProblem, rs, 3, useADC);
+            OWLClassExpression treeNew = createGrowRandomTree(learningProblem, rs, 3, useADC);
             stParent.addChild(treeNew);
         } else
         	// return createLeafNode(useADC);
@@ -208,11 +215,11 @@ public class GPUtilities {
         return t;
     }
 
-    private static void swapSubtrees(Description t1, Description t2) {
+    private static void swapSubtrees(OWLClassExpressionTree t1, OWLClassExpressionTree t2) {
         if (t1.getParent() != null && t2.getParent() != null) {
             // handling children
-            Description t1Parent = t1.getParent();
-            Description t2Parent = t2.getParent();
+            OWLClassExpressionTree t1Parent = t1.getParent();
+            OWLClassExpressionTree t2Parent = t2.getParent();
             // t1 is first child
             if (t1Parent.getChild(0).equals(t1))
                 t1Parent.getChildren().add(0, t2);
@@ -245,7 +252,7 @@ public class GPUtilities {
     public static Program[] crossover(AbstractLearningProblem learningProblem, Program p1, Program p2) {
     	crossover++;
     	if(p1.getAdc() != null) {
-    		Description[] pt;
+    		OWLClassExpression[] pt;
     		Program result[] = new Program[2];
     		
     		// es wird entweder ADC oder Hauptbaum einem Crossover
@@ -261,7 +268,7 @@ public class GPUtilities {
     		}
             return result;      		
     	} else {
-            Description[] pt = crossover(p1.getTree(), p2.getTree());
+            OWLClassExpression[] pt = crossover(p1.getTree(), p2.getTree());
             Program result[] = new Program[2];
             result[0] = createProgram(learningProblem,pt[0]);
             result[1] = createProgram(learningProblem,pt[1]);
@@ -269,18 +276,18 @@ public class GPUtilities {
     	}
     }
 
-    private static Description[] crossover(Description tree1, Description tree2) {
-        Description tree1cloned = (Description) tree1.clone();
-        Description tree2cloned = (Description) tree2.clone();
+    private static OWLClassExpression[] crossover(OWLClassExpressionTree tree1, OWLClassExpressionTree tree2) {
+    	OWLClassExpressionTree tree1cloned = (OWLClassExpressionTree) tree1.clone();
+    	OWLClassExpressionTree tree2cloned = (OWLClassExpressionTree) tree2.clone();
 
-        Description[] results = new Description[2];
+        OWLClassExpression[] results = new OWLClassExpression[2];
         int rand1 = rand.nextInt(tree1.getNumberOfNodes());
         int rand2 = rand.nextInt(tree2.getNumberOfNodes());
-        Description t1 = tree1cloned.getSubtree(rand1);
-        Description t2 = tree2cloned.getSubtree(rand2);
+        OWLClassExpressionTree t1 = tree1cloned.getSubtree(rand1);
+        OWLClassExpressionTree t2 = tree2cloned.getSubtree(rand2);
 
         if (t1.isRoot() && !t2.isRoot()) {
-            Description t2Parent = t2.getParent();
+        	OWLClassExpressionTree t2Parent = t2.getParent();
             // t2 is first child
             if (t2Parent.getChild(0).equals(t2))
                 t2Parent.getChildren().add(0, t1);
@@ -293,7 +300,7 @@ public class GPUtilities {
             results[0] = t2;
             results[1] = tree2cloned;
         } else if (!t1.isRoot() && t2.isRoot()) {
-            Description t1Parent = t1.getParent();
+        	OWLClassExpressionTree t1Parent = t1.getParent();
             // t2 is first child
             if (t1Parent.getChild(0).equals(t1))
                 t1Parent.getChildren().add(0, t2);
@@ -341,7 +348,7 @@ public class GPUtilities {
     // Alternativen zu speichern und dann ein Element zuf�llig auszuw�hlen,
     // aber w�rde man das nicht machen, dann w�re das ein starker Bias
     // zu z.B. Disjunktion (weil die als erstes getestet wird)
-    private static Description hillClimbing(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, Description node, ScoreThreeValued score) {
+    private static OWLClassExpression hillClimbing(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, OWLClassExpression node, ScoreThreeValued score) {
     	SortedSetTuple<Individual> tuple = new SortedSetTuple<Individual>(score.getPosClassified(),score.getNegClassified());
     	SortedSetTuple<String> stringTuple = Helper.getStringTuple(tuple);
     	// FlatABox abox = FlatABox.getInstance();
@@ -469,7 +476,7 @@ public class GPUtilities {
     private static ScoreThreeValued getScore(int conceptLength, AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, SortedSet<Individual> posClassified, SortedSet<Individual> negClassified) {
     	// es muss hier die Helper-Methode verwendet werden, sonst werden
     	// Individuals gel�scht !!
-        Set<Individual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified);
+        Set<OWLIndividual> neutClassified = Helper.intersection(rs.getIndividuals(),posClassified);
     	// learningProblem.getReasoner().getIndividuals();
     	// neutClassified.retainAll(posClassified);
     	neutClassified.retainAll(negClassified);
@@ -503,10 +510,10 @@ public class GPUtilities {
     	return returnMap;
     }
     
-    private static Description pickTerminalSymbol(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, boolean useADC) {
+    private static OWLClassExpression pickTerminalSymbol(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int nr;
-        int nrOfConcepts = rs.getNamedClasses().size();
+        int nrOfConcepts = rs.getClasses().size();
         
         // ein Blattknoten kann folgendes sein:
         // Top, Bottom, Konzept => alles am Besten gleichwahrscheinlich         
@@ -516,7 +523,7 @@ public class GPUtilities {
         	nr = rand.nextInt(2+nrOfConcepts);
         	
         if(nr==0)
-        	return new Thing();
+        	return ;
         else if(nr==1)
             return new Nothing();
         // die Zahl kann nur vorkommen, wenn ADC aktiviert ist
@@ -643,7 +650,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createFullRandomTree(learningProblem, rs, depth, false));
     }
 
-    private static Description createFullRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
+    private static OWLClassExpression createFullRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
         // FlatABox abox = FlatABox.getInstance();
         int numberOfRoles = rs.getObjectProperties().size(); //  abox.roles.size();
         
@@ -652,7 +659,7 @@ public class GPUtilities {
             // System.out.println(nr);
             // Node node = createNonLeafNodeEqualProp();
         	// Concept node = pickFunctionSymbol();
-            Description child1 = createFullRandomTree(learningProblem, rs, depth-1, useADC);
+            OWLClassExpression child1 = createFullRandomTree(learningProblem, rs, depth-1, useADC);
             if(nr == 0 || nr == 1) {
             	Description child2 = createFullRandomTree(learningProblem, rs, depth-1, useADC);
             	if(nr == 0) {
@@ -704,7 +711,7 @@ public class GPUtilities {
     		return createProgram(learningProblem, createGrowRandomTree(learningProblem, rs, depth,false));    	
     }
 
-    public static Description createGrowRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
+    public static OWLClassExpression createGrowRandomTree(AbstractLearningProblem learningProblem, AbstractReasonerComponent rs, int depth, boolean useADC) {
     	/*
         private static Concept pickAlphabetSymbol(boolean useADC) {
             FlatABox abox = FlatABox.getInstance();
@@ -739,7 +746,7 @@ public class GPUtilities {
         */
     	
         // FlatABox abox = FlatABox.getInstance();
-        int numberOfConcepts = rs.getNamedClasses().size();
+        int numberOfConcepts = rs.getClasses().size();
         int numberOfRoles = rs.getObjectProperties().size();
         // TODO: ev. größere Wahrscheinlichkeit für Konjunktion/Disjunktion (?),
         // mit größerer Konzept-, und Rollenanzahl kommen die sonst kaum noch vor
@@ -827,14 +834,14 @@ public class GPUtilities {
         return checkTree(prog.getTree(), true);
     }
         
-    public static boolean checkTree(Description node, boolean isRootNode) {
+    public static boolean checkTree(OWLClassExpression node, boolean isRootNode) {
         if(isRootNode && node.getParent()!=null) {
         	System.out.println("inconsistent root");
             return false;
         }
         
         // Kinder �berpr�fen
-        for(Description child : node.getChildren()) {
+        for(OWLClassExpression child : node.getChildren()) {
             if(!child.getParent().equals(node)) {
                 System.out.println("inconsistent tree " + node + " (child " + child + ")");
                 return false;
