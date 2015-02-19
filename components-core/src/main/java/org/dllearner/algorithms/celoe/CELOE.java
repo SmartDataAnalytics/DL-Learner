@@ -822,9 +822,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
 	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
+		if(cls.isOWLThing()) {
+			return false;
+		}
         return description.containsConjunct(cls) ||
                 (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
-
     }
 	
 	// check whether the node is a potential solution candidate
