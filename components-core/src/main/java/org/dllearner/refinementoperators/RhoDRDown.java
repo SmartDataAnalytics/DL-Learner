@@ -421,7 +421,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
 		// check that maxLength is valid
 		if(maxLength < OWLClassExpressionUtils.getLength(description)) {
-			throw new Error("length has to be at least OWLClassExpression length (description: " + description + ", max length: " + maxLength + ")");
+			throw new Error("length has to be at least class expression length (class expression: " + description + ", max length: " + maxLength + ")");
 		}
 		return refine(description, maxLength, null, startClass);
 	}
