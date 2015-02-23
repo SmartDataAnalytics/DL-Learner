@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Adapter for {@link RefinementOperator} interface.
@@ -31,6 +34,8 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  *
  */
 public abstract class RefinementOperatorAdapter implements LengthLimitedRefinementOperator {
+	
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)

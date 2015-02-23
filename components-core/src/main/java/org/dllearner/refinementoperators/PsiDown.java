@@ -31,7 +31,6 @@ import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
@@ -39,8 +38,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.Lists;
 
@@ -60,8 +57,6 @@ public class PsiDown extends RefinementOperatorAdapter {
 
 	PosNegLP learningProblem;
 	AbstractReasonerComponent reasoningService;
-	
-	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private TreeSet<OWLClassExpression> topSet;
 	
