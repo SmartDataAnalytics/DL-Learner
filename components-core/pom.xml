@@ -82,6 +82,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
+					<header></header>
 					<show>public</show>
 					<nohelp>true</nohelp>
 					<destDir>doc/javadoc</destDir>
@@ -96,13 +97,14 @@
 					<source>${compiler.version}</source>
 					<sourcepath>src/main/java</sourcepath>
 					<splitindex>true</splitindex>
-					<stylesheetfile>src/etc/javadoc.css</stylesheetfile>
+					<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
 					<use>true</use>
 					<version>true</version>
 					<linksource>true</linksource>
-					<bottom>&lt;img style='float:right' src='http://sflogo.sourceforge.net/sflogo.php?group_id=203619&amp;type=1' width='88' height='31' border='0' alt='SourceForge.net Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2011 Jens Lehmann</bottom>
+					<bottom>&lt;img style='float:right' src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png' border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
 					<encoding>ISO-8859-1</encoding>
 					<windowtitle>DL-Learner Javadoc</windowtitle>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 			</plugin>
 
