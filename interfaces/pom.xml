@@ -212,6 +212,15 @@
 							</execution>
 						</executions>
 					</plugin>
+					 <plugin>
+			          <groupId>org.codehaus.mojo</groupId>
+			          <artifactId>latex-maven-plugin</artifactId>
+			          <version>1.1</version>
+			          <configuration>
+			          <docsRoot>${basedir}/doc/manual/</docsRoot>
+			          <latexBuildDir>/tmp/latex</latexBuildDir>
+			          </configuration>
+        			</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -261,37 +270,37 @@
 							</programs>
 						</configuration>
 					</plugin>
-					<plugin>
+					<!-- <plugin>
 						<groupId>de.akquinet.jbosscc.latex</groupId>
 						<artifactId>maven-latex-plugin</artifactId>
 						<version>1.2</version>
 						<configuration>
 							<settings>
-								<!-- all tex main documents in this folder (including subfolders) 
-									will be processed -->
+								all tex main documents in this folder (including subfolders) 
+									will be processed
 								<texDirectory>${basedir}/doc/manual</texDirectory>
-								<!-- the generated artifacts will be copied to this folder relative 
-									to ${project.reporting.outputDirectory} -->
+								the generated artifacts will be copied to this folder relative 
+									to ${project.reporting.outputDirectory}
 								<outputDirectory>.</outputDirectory>
-								<!-- the working directory, for temporary files and LaTeX processing -->
+								the working directory, for temporary files and LaTeX processing
 								<tempDirectory>${project.build.directory}/m2latex</tempDirectory>
-								<!-- clean up the working directory in the end? May be used for debugging -->
+								clean up the working directory in the end? May be used for debugging
 								<cleanUp>true</cleanUp>
-								<!-- path to the TeX scripts, if none, it must be on the system path -->
+								path to the TeX scripts, if none, it must be on the system path
 								<texPath />
-								<!-- the latex command -->
+								the latex command
 								<texCommand>pdflatex</texCommand>
-								<!-- the bibtex command -->
+								the bibtex command
 								<bibtexCommand>bibtex</bibtexCommand>
-								<!-- the arguments to use when calling latex -->
+								the arguments to use when calling latex
 								<texCommandArgs>
 									<texCommandArg>-interaction=nonstopmode</texCommandArg>
-									<texCommandArg>--src-specials</texCommandArg>
+									<texCommandArg>src-specials</texCommandArg>
 								</texCommandArgs>
 							</settings>
 						</configuration>
 						<executions>
-							<!-- execute latex goal automatically during the site phase -->
+							execute latex goal automatically during the site phase
 							<execution>
 								<phase>prepare-package</phase>
 								<goals>
@@ -299,7 +308,7 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
+					</plugin> -->
 					<plugin>
 						<artifactId>jdeb</artifactId>
 						<groupId>org.vafer</groupId>
@@ -374,6 +383,7 @@
 	</profiles>
 	<build>
 		<finalName>dl-learner</finalName>
+		
 		<plugins>
 		<!--	<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -433,6 +443,15 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>latex-maven-plugin</artifactId>
+          <version>1.1</version>
+          <configuration>
+          <docsRoot>${basedir}/doc/manual/</docsRoot>
+          <latexBuildDir>/tmp/latex</latexBuildDir>
+          </configuration>
+        </plugin>
             
 
 			<plugin>

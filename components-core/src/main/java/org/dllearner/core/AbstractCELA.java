@@ -100,9 +100,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-		
-		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();	
+//		
+//		baseURI = reasoner.getBaseURI();
+//		prefixes = reasoner.getPrefixes();	
 	}
 	
 	/**
