@@ -415,17 +415,20 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions();
+		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
+				.getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;
-		for(EvaluatedDescription description : descriptions.descendingSet()) {
-			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
-			else json += "\"solution" + count + "\" : " + description.asJSON();
+		for (EvaluatedDescription description : descriptions.descendingSet()) {
+			if (count > 1)
+				json += ",\"solution" + count + "\" : " + description.asJSON();
+			else
+				json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
-		json+="}";
+		json += "}";
 		return json;
-	}	
+	}
 	
 	/**
 	 * Returns a list of JSON encoded description including extra information
@@ -547,20 +550,27 @@ public class DLLearnerWS {
 	 * @return
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 */
-	private String currentlyBestEvaluatedDescriptions(int id,int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) throws ClientNotKnownException
-	{
+	private String currentlyBestEvaluatedDescriptions(int id, int nrOfDescriptions, double accuracyThreshold,
+			boolean filterNonMinimalDescriptions) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		List<? extends EvaluatedDescription> descriptions;
-		if (accuracyThreshold!=-1) descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
-		else descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
+		if (accuracyThreshold != -1) {
+			descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions,
+					accuracyThreshold, filterNonMinimalDescriptions);
+		} else {
+			descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
+		}
 		String json = "{";
+		System.out.println(json);
 		int count = 1;
-		for(EvaluatedDescription description : descriptions) {
-			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
-			else json += "\"solution" + count + "\" : " + description.asJSON();
+		for (EvaluatedDescription description : descriptions) {
+			if (count > 1)
+				json += ",\"solution" + count + "\" : " + description.asJSON();
+			else
+				json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
-		json+="}";
+		json += "}";
 		return json;
 	}
 	

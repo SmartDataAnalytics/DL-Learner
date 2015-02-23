@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
@@ -131,11 +132,23 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 		JSONObject object = new JSONObject();
 		try {
 			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
-			object.put("signature", new JSONArray(description.getSignature()));
+			JSONArray array = new JSONArray();
+			for (OWLEntity entity : description.getSignature()) {
+				array.put(entity.toStringID());
+			}
+			object.put("signature", array);
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
 			object.put("scoreValue", score.getAccuracy());	
-			object.put("additionalInstances", new JSONArray(getAdditionalInstances()));
-			object.put("coveredInstances", new JSONArray(getCoveredInstances()));
+			array = new JSONArray();
+			for (OWLIndividual ind : getAdditionalInstances()) {
+				array.put(ind.toStringID());
+			}
+			object.put("additionalInstances", array);
+			array = new JSONArray();
+			for (OWLIndividual ind : getCoveredInstances()) {
+				array.put(ind.toStringID());
+			}
+			object.put("coveredInstances", array);
 			object.put("isConsistent", isConsistent());
 			object.put("coverage", getCoverage());
 			object.put("addition", getAddition());

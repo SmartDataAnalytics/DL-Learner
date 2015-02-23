@@ -116,7 +116,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 		try {
 			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
 			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
-			object.put("scoreValue", score.getAccuracy());		
+			object.put("scoreValue", score.getAccuracy());	
 			return object.toString(3);
 		} catch (JSONException e) {
 			e.printStackTrace();
