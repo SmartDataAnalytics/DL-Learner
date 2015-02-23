@@ -19,9 +19,13 @@
  */
 package org.dllearner.server;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,16 +48,20 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.options.ConfigOption;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQueryException;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
@@ -67,6 +75,8 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
@@ -87,7 +97,7 @@ public class DLLearnerWS {
 	
 	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
-	private static ComponentManager cm = ComponentManager.getInstance();
+	private static AnnComponentManager cm = AnnComponentManager.getInstance();
 	private static ConfMapper confMapper = new ConfMapper();
 	
 	/**
@@ -219,12 +229,22 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
+		logger.info("Adding knowledge source " + component + " with URL parameter " + url + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractKnowledgeSource> ksClass = confMapper.getKnowledgeSourceClass(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
-		AbstractKnowledgeSource ks = cm.knowledgeSource(ksClass);
-		cm.applyConfigEntry(ks, "url", new URL(url));
+		AbstractKnowledgeSource ks = null;
+		try {
+			ks = ksClass.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		if(ks instanceof OWLFile) {
+			((OWLFile) ks).setUrl(new URL(url));
+		}
+		logger.info("...done.");
 		return state.addKnowledgeSource(ks);
 	}
 	
@@ -251,12 +271,20 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
+		logger.info("Setting reasoner " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractReasonerComponent> rcClass = confMapper.getReasonerComponentClass(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractReasonerComponent rc = cm.reasoner(rcClass, state.getKnowledgeSources());
+		AbstractReasonerComponent rc = null;
+		try {
+			rc = rcClass.getConstructor(Set.class).newInstance(state.getKnowledgeSources());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setReasonerComponent(rc);
 	}
 	
@@ -271,12 +299,20 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
+		logger.info("Setting learning problem " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractLearningProblem lp = cm.learningProblem(lpClass, state.getReasonerComponent());
+		AbstractLearningProblem lp = null;
+		try {
+			lp = lpClass.getConstructor(AbstractReasonerComponent.class).newInstance(state.getReasonerComponent());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setLearningProblem(lp);
 	}
 	
@@ -292,12 +328,21 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
+		logger.info("Setting learning algorithm " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractCELA> laClass = confMapper.getLearningAlgorithmClass(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractCELA la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasonerComponent());
+		AbstractCELA la = null;
+		try {
+			la = laClass.getConstructor(AbstractLearningProblem.class, AbstractReasonerComponent.class)
+					.newInstance(state.getLearningProblem(), state.getReasonerComponent());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setLearningAlgorithm(la);
 	}
 	
@@ -309,10 +354,14 @@ public class DLLearnerWS {
 	@WebMethod
 	public void initAll(int id) throws ClientNotKnownException, ComponentInitException {
 		ClientState state = getState(id);
+		logger.info("Initializing knowledge sources...");
 		for(AbstractKnowledgeSource ks : state.getKnowledgeSources())
 			ks.init();
+		logger.info("Initializing reasoner...");
 		state.getReasonerComponent().init();
+		logger.info("Initializing learning problem...");
 		state.getLearningProblem().init();
+		logger.info("Initializing learning algorithm...");
 		state.getLearningAlgorithm().init();
 	}
 	
@@ -550,7 +599,11 @@ public class DLLearnerWS {
 	public void setPositiveExamples(int id, String[] positiveExamples) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<String> posExamples = new TreeSet<String>(Arrays.asList(positiveExamples));
-		cm.applyConfigEntry(state.getLearningProblem(), "positiveExamples", posExamples);
+		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		for (String ex : posExamples) {
+			inds.add(new OWLNamedIndividualImpl(IRI.create(ex)));
+		}
+		((PosNegLP)state.getLearningProblem()).setPositiveExamples(inds);
 	}
 	
 
@@ -564,7 +617,11 @@ public class DLLearnerWS {
 	public void setNegativeExamples(int id, String[] negativeExamples) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<String> negExamples = new TreeSet<String>(Arrays.asList(negativeExamples));
-		cm.applyConfigEntry(state.getLearningProblem(), "negativeExamples", negExamples);
+		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		for (String ex : negExamples) {
+			inds.add(new OWLNamedIndividualImpl(IRI.create(ex)));
+		}
+		((PosNegLP)state.getLearningProblem()).setNegativeExamples(inds);
 	}
 	
 	/**
@@ -673,7 +730,24 @@ public class DLLearnerWS {
 	private void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
-		cm.applyConfigEntry(component, optionName, value);
+		System.out.println(component + "::" + optionName + "=" + value);
+		try {
+			Field field = component.getClass().getDeclaredField(optionName);
+			field.setAccessible(true);
+			if(optionName.equals("classToDescribe")) {
+				value = new OWLClassImpl(IRI.create((URL)value));
+			}
+			field.set(component, value);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+//		try {
+//			component.getClass().getMethod(optionName, value.getClass()).invoke(component, value);
+//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+//				| SecurityException e) {
+//			e.printStackTrace();
+//		}
+//		cm.applyConfigEntry(component, optionName, value);
 	}
 	
 	/**
@@ -1041,7 +1115,7 @@ public class DLLearnerWS {
 	private Object getConfigOptionValue(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
-		return cm.getConfigOptionValue(component, optionName);
+		return "";//cm.getConfigOptionValue(component, optionName);
 	}	
 	
 }

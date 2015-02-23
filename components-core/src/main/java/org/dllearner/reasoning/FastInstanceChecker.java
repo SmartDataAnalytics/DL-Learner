@@ -236,6 +236,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
     
+    public FastInstanceChecker(KnowledgeSource  source) {
+        super(new HashSet<KnowledgeSource>(Arrays.asList(source)));
+    }
+    
     /**
 	 * @return The name of this component.
 	 */

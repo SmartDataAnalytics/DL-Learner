@@ -22,6 +22,7 @@ package org.dllearner.core;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,6 +145,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 */
 	public AbstractReasonerComponent(Set<KnowledgeSource> sources) {
 		this.sources = sources;
+	}
+	
+	public AbstractReasonerComponent(KnowledgeSource source) {
+		this(Collections.singleton(source));
 	}
 
 	/**
