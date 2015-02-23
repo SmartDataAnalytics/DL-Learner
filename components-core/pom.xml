@@ -56,22 +56,28 @@
 <!-- 				</configuration> -->
 <!-- 			</plugin> -->
 			<plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>license-maven-plugin</artifactId>
-	<version>1.7</version>
-	<configuration>
-		<licenseName>my_license</licenseName>
-		<licenseResolver>${project.baseUri}/src/license</licenseResolver>
-	</configuration>
-	<executions>
-		<execution>
-			<id>download-licenses</id>
-			<goals>
-				<goal>download-licenses</goal>
-			</goals>
-		</execution>
-	</executions>
-</plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>1.8</version>
+				<configuration>
+					<licenseName>gpl_v3</licenseName>
+					<organizationName>AKSW</organizationName>
+					<inceptionYear>2007</inceptionYear>
+					 <roots>
+		                <root>src/main/java</root>
+		                <root>src/test/java</root>
+		              </roots>
+		              <addSvnKeyWords>true</addSvnKeyWords>
+				</configuration>
+				<executions>
+					<execution>
+						<id>download-licenses</id>
+						<goals>
+							<goal>download-licenses</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

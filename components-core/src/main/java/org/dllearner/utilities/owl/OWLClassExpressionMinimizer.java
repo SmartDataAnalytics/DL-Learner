@@ -154,6 +154,9 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 					newOperands.remove(op2);
 				} else if(isSubClassOf(op1, op2)){
 					newOperands.remove(op1);
+				} else if(isSubClassOf(op1, df.getOWLObjectComplementOf(op2)) || isSubClassOf(op2, df.getOWLObjectComplementOf(op1))) {
+					// check for C or not C
+					return df.getOWLThing();
 				}
 			}
 		}
@@ -161,6 +164,9 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
 		}
+		
+		
+		
 		
 		return df.getOWLObjectUnionOf(newOperands);
 	}

@@ -52,6 +52,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
@@ -241,14 +242,14 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@Override
 	public void start() {
 		logger.info("Started learning of " + axiomType.getName() + " axioms for " + 
-				getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID() + "...");
+				OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID() + "...");
 		startTime = System.currentTimeMillis();
 		
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
 		
 		popularity = reasoner.getPopularity(entityToDescribe);
 		if(popularity == 0){
-			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID());
+			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID());
 			return;
 		}
 		
@@ -274,7 +275,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		}
 		
 		logger.info("...finished learning of " + axiomType.getName() 
-				+ " axioms for " + getPrintName(entityToDescribe.getEntityType())
+				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
 				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
 		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
 			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
@@ -284,36 +285,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 				logger.info("Best axiom candidate is " + currentlyBestAxioms.first());
 			}
 		}
-	}
-	
-	public static String getPrintName(EntityType entityType) {
-		String str = entityType.getName();
-		
-        char[] c = str.toCharArray();
-        
-        String printName = "";
-        
-        int tokenStart = 0;
-        int currentType = Character.getType(c[tokenStart]);
-        for (int pos = tokenStart + 1; pos < c.length; pos++) {
-            int type = Character.getType(c[pos]);
-            if (type == currentType) {
-                continue;
-            }
-            if (type == Character.LOWERCASE_LETTER && currentType == Character.UPPERCASE_LETTER) {
-                int newTokenStart = pos - 1;
-                if (newTokenStart != tokenStart) {
-                    printName += new String(c, tokenStart, newTokenStart - tokenStart);
-                    tokenStart = newTokenStart;
-                }
-            } else {
-            	printName += new String(c, tokenStart, pos - tokenStart);
-                tokenStart = pos;
-            }
-            currentType = type;
-        }
-        printName += new String(c, tokenStart, c.length - tokenStart);
-        return printName.toLowerCase();
 	}
 	
 	private void generateSample(){

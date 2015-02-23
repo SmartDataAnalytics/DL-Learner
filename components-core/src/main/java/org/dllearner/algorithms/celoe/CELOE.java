@@ -42,7 +42,9 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
@@ -58,9 +60,11 @@ import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -69,6 +73,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -507,7 +513,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			// apply operator
 			Monitor mon = MonitorFactory.start("refineNode");
-//			System.out.print("NEXT NODE: " + nextNode);
+			System.out.print("NEXT NODE: " + nextNode);
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
 //			System.out.println(
 //					"||" + OWLClassExpressionUtils.getLength(nextNode.getDescription()) 
@@ -516,7 +522,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //					);
 			mon.stop();
 				
-//			System.out.println("next node: " + nextNode);
+			System.out.println("#refinements: " + refinements.size());
 //			for(OWLClassExpression refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
 //			}
@@ -718,6 +724,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription);
+			
+			if(niceDescription.equals(classToDescribe)) {
+				return false;
+			}
+//			System.err.println(node);System.out.println(niceDescription);
+			
+//			if(!isDescriptionAllowed(niceDescription, node)) {
+//				return false;
+//			}
 //			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
@@ -1136,7 +1151,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.maxDepth = maxDepth;
 	}
 	
-	
 	public boolean isStopOnFirstDefinition() {
 		return stopOnFirstDefinition;
 	}
@@ -1172,22 +1186,61 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public static void main(String[] args) throws Exception{
-		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(
-				new File("../examples/swore/swore.rdf"));
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//		File file = new File("../examples/swore/swore.rdf");
+//		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
+		File file = new File("../examples/father.owl");
+		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://example.com/father#male"));
+		
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 		
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
+		baseReasoner.setReasonerTypeString("hermit");
+        baseReasoner.init();
+		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
+		rc.setReasonerComponent(baseReasoner);
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setEquivalence(false);
-		lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement")));
+		lp.setClassToDescribe(classToDescribe);
 		lp.init();
+		
+		RhoDRDown op = new RhoDRDown();
+		op.setReasoner(rc);
+		op.setUseNegation(false);
+		op.setUseHasValueConstructor(false);
+		op.setUseCardinalityRestrictions(true);
+		op.setUseExistsConstructor(true);
+		op.setUseAllConstructor(true);
+		op.init();
+		
+		//(male ⊓ (∀ hasChild.⊤)) ⊔ (∃ hasChild.(∃ hasChild.male))
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		OWLClassExpression ce = df.getOWLObjectUnionOf(
+				df.getOWLObjectIntersectionOf(
+						df.getOWLClass(IRI.create("http://example.com/father#male")),
+						df.getOWLObjectAllValuesFrom(
+								df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
+								df.getOWLThing())),
+				df.getOWLObjectSomeValuesFrom(
+						df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")), 
+						df.getOWLObjectSomeValuesFrom(
+								df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
+								df.getOWLClass(IRI.create("http://example.com/father#male"))
+								)
+						)
+				);
+		System.out.println(ce);
+		System.out.println(OWLClassExpressionUtils.getLength(ce));
+		System.out.println(lp.getAccuracyOrTooWeak(ce, 0));
 		
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
+		alg.setOperator(op);
 		alg.init();
 		
 		alg.start();

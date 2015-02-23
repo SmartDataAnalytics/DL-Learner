@@ -25,6 +25,7 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
@@ -157,7 +158,7 @@ public class MultiPropertyAxiomLearner {
 								results.put(axiomType, result);
 							} catch (Exception e) {
 								logger.error("An error occurred while generating " + axiomType.getName() + 
-										" axioms for " + entity.getEntityType().getPrintName().toLowerCase() + " " + entity.toStringID(), e);
+										" axioms for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID(), e);
 							}
 						}
 					}
@@ -247,7 +248,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	private Model generateSample(OWLEntity entity, AxiomTypeCluster cluster){
-		logger.info("Generating sample for " + entity.getEntityType().getPrintName() + " " + entity.toStringID() + "...");
+		logger.info("Generating sample for " + OWLAPIUtils.getPrintName(entity.getEntityType()) + " " + entity.toStringID() + "...");
 		Model sample = ModelFactory.createDefaultModel();
 		
 		ParameterizedSparqlString sampleQueryTemplate = cluster.getSampleQuery();
