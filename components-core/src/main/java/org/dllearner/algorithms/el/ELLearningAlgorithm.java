@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -184,7 +184,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		// create start node
 		if(startClass == null){
-			startClass = df.getOWLThing();
+			startClass = dataFactory.getOWLThing();
 		}
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
@@ -291,7 +291,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
 				newOperands.add(getNiceDescription(operand));
 			}
-			rewrittenClassExpression = df.getOWLObjectIntersectionOf(newOperands);
+			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
 		} else if(d instanceof OWLObjectSomeValuesFrom) {
 			// \exists r.\bot \equiv \bot
 			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
@@ -302,7 +302,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else if(filler.isAnonymous()){
 				filler = getNiceDescription(filler);
 			}
-			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(property, filler);
+			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
 		}
 		return rewrittenClassExpression;
 	}

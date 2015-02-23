@@ -82,7 +82,6 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 	 */
 	@Override
 	protected void run() {
-
 		// get the frequency for each datatype
 		ResultSet rs = executeSelectQuery(DATATYPE_FREQUENCY_QUERY.toString());
 		while (rs.hasNext()) {
@@ -94,7 +93,7 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 			// frequency of datatype
 			int frequency = qs.getLiteral("cnt").getInt();
 
-			//precision (A AND B)/B
+			// precision (A AND B)/B
 			double precision = Heuristics.getConfidenceInterval95WaldAverage(popularity, frequency);
 
 			// score

@@ -17,30 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
 import java.util.Comparator;
 
 /**
+ * Compares two EL OWLClassExpression trees by calling {@link ELDescriptionNodeComparator} 
+ * on their root nodes.
+ * 
  * @author Jens Lehmann
  *
  */
-public class ELDescriptionEdgeComparator implements Comparator<ELDescriptionEdge> {
+public class ELDescriptionTreeComparator implements Comparator<ELDescriptionTree> {
 
 	private ELDescriptionNodeComparator nodeComp;
 	
-	public ELDescriptionEdgeComparator() {
+	public ELDescriptionTreeComparator() {
 		nodeComp = new ELDescriptionNodeComparator();
-	}	
+	}
 	
+	/* (non-Javadoc)
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 */
 	@Override
-	public int compare(ELDescriptionEdge edge1, ELDescriptionEdge edge2) {
-		// perform string comparison on node labels
-		int comp = edge1.getLabel().compareTo(edge2.getLabel());
-		if(comp==0) {
-			return nodeComp.compare(edge1.getNode(), edge2.getNode());
-		} else {
-			return comp;
+	public int compare(ELDescriptionTree tree1, ELDescriptionTree tree2) {
+		// we use the size as first criterion to avoid many comparisons
+		int sizeDiff = tree1.size - tree2.size;
+		if(sizeDiff == 0) {
+			ELDescriptionNode node1 = tree1.getRootNode();
+			ELDescriptionNode node2 = tree2.getRootNode();
+			return nodeComp.compare(node1, node2);			
+		} else { 
+			return sizeDiff;
 		}
 	}
 

@@ -17,39 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
-/**
- * A tuple of two EL OWLClassExpression trees.
- * 
- * @author Jens Lehmann
- *
- */
-public class TreeTuple {
+public class DisjunctiveHeuristic implements ELHeuristic {
 
-	private ELDescriptionNode tree1;
+	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
 	
-	private ELDescriptionNode tree2;
-	
-	public TreeTuple(ELDescriptionNode tree1, ELDescriptionNode tree2) {
-		this.tree1 = tree1;
-		this.tree2 = tree2;
+	public int compare(SearchTreeNode tree1, SearchTreeNode tree2) {
+		double diff = tree1.getScore()-tree2.getScore();
+		if(diff < 0.00001 && diff > -0.00001) {
+			return edt.compare(tree1.getDescriptionTree(), tree2.getDescriptionTree());
+		} else if(diff > 0){
+			return 1;
+//			return (int)Math.signum(diff);
+		} else {
+			return -1;
+		}
 	}
 
-	/**
-	 * Gets first tree.
-	 * @return - first tree
-	 */
-	public ELDescriptionNode getTree1() {
-		return tree1;
-	}
-
-	/**
-	 * Gets second tree.
-	 * @return - second tree
-	 */
-	public ELDescriptionNode getTree2() {
-		return tree2;
-	}
-	
 }

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms.elcopy;
+package org.dllearner.algorithms.el;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -171,7 +171,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		trees = new TreeSet<ELDescriptionTree>(new ELDescriptionTreeComparator());
 		
 		if(startClass == null) {
-			startClass = df.getOWLThing();
+			startClass = dataFactory.getOWLThing();
 		}
 		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
@@ -180,7 +180,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 		
-		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
+		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		noise = noisePercentage/100d;
 	}	
@@ -243,8 +243,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 					bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
 					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
 				} else {
-					if(!bestEvaluatedDescription.equals(df.getOWLThing())){
-						bestCombinedDescription = df.getOWLObjectUnionOf(bestEvaluatedDescription.getDescription(), bestDescription);
+					if(!bestEvaluatedDescription.equals(dataFactory.getOWLThing())){
+						bestCombinedDescription = dataFactory.getOWLObjectUnionOf(bestEvaluatedDescription.getDescription(), bestDescription);
 					}
 					bestEvaluatedDescription = learningProblem.evaluate(bestCombinedDescription);
 					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
@@ -430,7 +430,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		candidates.clear();
 		trees.clear();
 		currentSolution.clear();
-		bestEvaluatedDescription = learningProblem.evaluate(df.getOWLThing());
+		bestEvaluatedDescription = learningProblem.evaluate(dataFactory.getOWLThing());
 		// we need to clone in order not to modify the learning problem
 		currentPosExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
 		currentNegExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getNegativeExamples());

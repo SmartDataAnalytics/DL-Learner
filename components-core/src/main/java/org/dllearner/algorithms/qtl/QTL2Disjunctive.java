@@ -889,7 +889,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
 					negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
 				}
-				OWLClassExpression unionDescription = df.getOWLObjectUnionOf(disjuncts);
+				OWLClassExpression unionDescription = dataFactory.getOWLObjectUnionOf(disjuncts);
 				
 				Set<OWLIndividual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
 				Set<OWLIndividual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);

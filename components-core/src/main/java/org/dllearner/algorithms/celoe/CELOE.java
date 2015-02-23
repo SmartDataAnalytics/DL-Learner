@@ -43,7 +43,6 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
@@ -302,11 +301,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			heuristic = new OEHeuristicRuntime();
 		}
 		
-		minimizer = new OWLClassExpressionMinimizer(df, reasoner);
+		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
 		// start at owl:Thing by default
 		if(startClass == null) {
-			startClass = df.getOWLThing();
+			startClass = dataFactory.getOWLThing();
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
@@ -441,11 +440,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				} else {
 					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
 					if(superClasses.size() > 1) {
-						startClass = df.getOWLObjectIntersectionOf(superClasses);
+						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
 					} else if(superClasses.size() == 1){
 						startClass = (OWLClassExpression) superClasses.toArray()[0];
 					} else {
-						startClass = df.getOWLThing();
+						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
 								"sensible to learn a OWLClassExpression in this case.");
 					}					
@@ -634,12 +633,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
-//		System.out.println("refining: " + node);
+		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
-//		System.out.println(refinements);
+		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
+		System.out.println("refined node: " + node);
 		nodes.add(node);
 		return refinements;
 	}
@@ -647,19 +647,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// add node to search tree if it is not too weak
 	// returns true if node was added and false otherwise
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
-//		System.out.print(OWLAPIRenderers.toDLSyntax(description));
-//		System.out.println("d: " + description);
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-//			System.out.println(": redundant");
+			System.out.println(description + " redundant");
 			return false;
 		}
 		
 		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-//			System.out.println(": not allowed");
+			System.out.println(description + " not allowed");
 			return false;
 		}
 		
@@ -679,7 +677,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println("acc: " + accuracy);
 //		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
-//			System.out.println(": too weak");
+			System.out.println(description + " too weak");
 			return false;
 		}
 		
@@ -1243,6 +1241,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
 		alg.setOperator(op);
+		alg.setWriteSearchTree(true);
+		alg.setSearchTreeFile("log/search-tree.log");
+		alg.setReplaceSearchTree(true);
 		alg.init();
 		
 		alg.start();

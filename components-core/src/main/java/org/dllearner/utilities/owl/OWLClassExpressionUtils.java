@@ -5,14 +5,13 @@ package org.dllearner.utilities.owl;
 
 import java.util.Set;
 
-import org.semanticweb.owlapi.model.ClassExpressionType;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataComplementOf;
 import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
@@ -41,6 +40,9 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -48,6 +50,8 @@ import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
  */
 public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLDataRangeVisitor{
 	
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLObjectDuplicator duplicator = new OWLObjectDuplicator(dataFactory);
 	private static final OWLClassExpressionUtils visitor = new OWLClassExpressionUtils();
 	private static int length = 0;
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
@@ -88,6 +92,10 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	
 	public static Set<OWLClassExpression> getChildren(OWLClassExpression ce){
 		return ce.accept(CHILDREN_COLLECTOR);
+	}
+	
+	public static OWLClassExpression clone(OWLClassExpression ce) {
+		return duplicator.duplicateObject(ce);
 	}
 	
 	
