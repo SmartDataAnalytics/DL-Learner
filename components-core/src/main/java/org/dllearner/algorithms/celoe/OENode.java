@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.core.owl.Description;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
@@ -46,7 +46,7 @@ import org.dllearner.utilities.owl.OWLAPIRenderers;
  */
 public class OENode implements SearchTreeNode {
 
-	protected Description description;
+	protected OWLClassExpression description;
 	
 	protected double accuracy;
 	
@@ -56,17 +56,17 @@ public class OENode implements SearchTreeNode {
 	protected List<OENode> children = new LinkedList<OENode>();
 	
 	// the refinement count corresponds to the number of refinements of the
-	// description in this node - it is a better heuristic indicator than child count
+	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
 	private int refinementCount = 0;
 	
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
-	public OENode(OENode parentNode, Description description, double accuracy) {
+	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
 		this.parent = parentNode;
 		this.description = description;
 		this.accuracy = accuracy;
-		horizontalExpansion = description.getLength()-1;
+		horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 	}
 
 	public void addChild(OENode node) {
@@ -84,11 +84,11 @@ public class OENode implements SearchTreeNode {
 	/**
 	 * @return the description
 	 */
-	public Description getDescription() {
+	public OWLClassExpression getDescription() {
 		return description;
 	}
 
-	public Description getExpression() {
+	public OWLClassExpression getExpression() {
 		return getDescription();
 	}	
 	
@@ -125,8 +125,7 @@ public class OENode implements SearchTreeNode {
 	}
 	
 	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
-		String ret = OWLAPIRenderers.toDLSyntax(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description)) + " [";
-//		String ret = description.toString(baseURI,prefixes) + " [";
+		String ret = OWLAPIRenderers.toDLSyntax(description) + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";
@@ -150,11 +149,7 @@ public class OENode implements SearchTreeNode {
 	
 	public String toTreeString(String baseURI, Map<String, String> prefixes) {
 		return toTreeString(0, baseURI, prefixes).toString();
-	}
-	
-	public String toTreeString(String baseURI, Map<String, String> prefixes, int maxDepth) {
-		return toTreeString(0, baseURI, prefixes, maxDepth).toString();
-	}
+	}	
 	
 	private StringBuilder toTreeString(int depth, String baseURI) {
 		StringBuilder treeString = new StringBuilder();
@@ -178,22 +173,6 @@ public class OENode implements SearchTreeNode {
 		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
 		for(OENode child : children) {
 			treeString.append(child.toTreeString(depth+1,baseURI,prefixes));
-		}
-		return treeString;
-	}
-	
-	private StringBuilder toTreeString(int depth, String baseURI, Map<String, String> prefixes, int maxDepth) {
-		StringBuilder treeString = new StringBuilder();
-		if(depth > maxDepth){
-			return treeString;
-		}
-		for(int i=0; i<depth-1; i++)
-			treeString.append("  ");
-		if(depth!=0)
-			treeString.append("|--> ");
-		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
-		for(OENode child : children) {
-			treeString.append(child.toTreeString(depth+1,baseURI,prefixes, maxDepth));
 		}
 		return treeString;
 	}

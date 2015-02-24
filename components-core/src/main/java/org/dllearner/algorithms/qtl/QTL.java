@@ -19,7 +19,6 @@
  */
 package org.dllearner.algorithms.qtl;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,10 +34,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
@@ -52,7 +48,7 @@ import org.dllearner.algorithms.qtl.exception.EmptyLGGException;
 import org.dllearner.algorithms.qtl.exception.NegativeTreeCoverageExecption;
 import org.dllearner.algorithms.qtl.exception.TimeOutException;
 import org.dllearner.algorithms.qtl.filters.QueryTreeFilter;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedQueryTreeFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedQueryTreeFilter;
 import org.dllearner.algorithms.qtl.operations.NBR;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
@@ -67,8 +63,6 @@ import org.dllearner.core.SparqlQueryLearningAlgorithm;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.CachingConciseBoundedDescriptionGenerator;
@@ -78,7 +72,8 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
@@ -532,10 +527,10 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		negExampleTrees = new ArrayList<QueryTree<String>>();
 	}
 
-	private List<String> convert(Set<Individual> individuals){
+	private List<String> convert(Set<OWLIndividual> individuals){
 		List<String> list = new ArrayList<String>();
-		for(Individual ind : individuals){
-			list.add(ind.toString());
+		for(OWLIndividual ind : individuals){
+			list.add(ind.toStringID());
 		}
 		return list;
 	}
@@ -577,8 +572,8 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
 	 */
 	@Override
-	public Description getCurrentlyBestDescription() {
-		return (lgg == null) ? null : DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(lgg.asOWLClassExpression());
+	public OWLClassExpression getCurrentlyBestDescription() {
+		return (lgg == null) ? null : lgg.asOWLClassExpression();
 	}
 
 	/* (non-Javadoc)
@@ -607,7 +602,7 @@ public class QTL extends AbstractCELA implements SparqlQueryLearningAlgorithm {
 		lp.setPositiveExamples(Helper.getIndividualSet(positiveExamples));
 		QTL qtl = new QTL(lp, ks, "cache");
 		qtl.setAllowedNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/"));
-		qtl.addQueryTreeFilter(new QuestionBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
+		qtl.addQueryTreeFilter(new KeywordBasedQueryTreeFilter(Arrays.asList("soccer club", "Premier League")));
 		qtl.init();
 		qtl.start();
 		String query = qtl.getBestSPARQLQuery();

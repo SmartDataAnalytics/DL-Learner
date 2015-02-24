@@ -34,27 +34,28 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigMappings;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
+import org.dllearner.refinementoperators.CustomStartRefinementOperator;
+import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
+import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -96,7 +97,7 @@ public class OCEL extends AbstractCELA {
 	private String logLevel = CommonConfigOptions.logLevelDefault;	
 	
 	// dependencies
-	private RhoDRDown operator;	
+	private LengthLimitedRefinementOperator operator;	
 	private ExampleBasedHeuristic heuristic;
 	
 	// configuration options
@@ -105,13 +106,13 @@ public class OCEL extends AbstractCELA {
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 //	private String heuristicStr = "multi";
-	Set<NamedClass> allowedConcepts;
-	Set<ObjectProperty> allowedRoles;
-	Set<NamedClass> ignoredConcepts;
-	Set<ObjectProperty> ignoredRoles;
+	Set<OWLClass> allowedConcepts;
+	Set<OWLObjectProperty> allowedRoles;
+	Set<OWLClass> ignoredConcepts;
+	Set<OWLObjectProperty> ignoredRoles;
 	// these are computed as the result of the previous four settings
-	Set<NamedClass> usedConcepts;
-	Set<ObjectProperty> usedRoles;	
+	Set<OWLClass> usedConcepts;
+	Set<OWLObjectProperty> usedRoles;	
 //	private boolean applyAllFilter = true;
 //	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;
@@ -128,7 +129,7 @@ public class OCEL extends AbstractCELA {
 //	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
-	private NamedClass startClass = null;
+	private OWLClass startClass = null;
 	private boolean useDataHasValueConstructor = false;
 	//refactor this
 	private static boolean usePropernessChecksDefault = false;
@@ -165,7 +166,7 @@ public class OCEL extends AbstractCELA {
 
 
     public OCEL(){
-
+    	
     }
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
@@ -357,14 +358,20 @@ public class OCEL extends AbstractCELA {
 		if(operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new RhoDRDown();
-			((RhoDRDown)operator).setReasoner(reasoner);
-			((RhoDRDown)operator).init();
+			if(operator instanceof CustomStartRefinementOperator) {
+				((CustomStartRefinementOperator)operator).setStartClass(startClass);
+			}
+			if(operator instanceof ReasoningBasedRefinementOperator) {
+				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
+			}
+			operator.init();
 		}
 		// TODO: find a better solution as this is quite difficult to debug
-		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
-		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-				
+		if(operator instanceof CustomHierarchyRefinementOperator) {
+			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		}
 		
 		// create an algorithm object and pass all configuration
 		// options to it
@@ -422,12 +429,12 @@ public class OCEL extends AbstractCELA {
 	}
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return algorithm.getBestSolution();
 	}
 	
 	@Override
-	public synchronized List<Description> getCurrentlyBestDescriptions() {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return algorithm.getCurrentlyBestDescriptions();
 	}	
 	
@@ -460,16 +467,16 @@ public class OCEL extends AbstractCELA {
 		return algorithm.isRunning();
 	}
 	
-	public RhoDRDown getRefinementOperator() {
+	public LengthLimitedRefinementOperator getRefinementOperator() {
 		return operator;
 	}
 
-	public RhoDRDown getOperator() {
+	public LengthLimitedRefinementOperator getOperator() {
 		return operator;
 	}
 
     @Autowired(required=false)
-	public void setOperator(RhoDRDown operator) {
+	public void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
 	}
 
@@ -497,51 +504,51 @@ public class OCEL extends AbstractCELA {
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
-	public Set<NamedClass> getAllowedConcepts() {
+	public Set<OWLClass> getAllowedConcepts() {
 		return allowedConcepts;
 	}
 
-	public void setAllowedConcepts(Set<NamedClass> allowedConcepts) {
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
 		this.allowedConcepts = allowedConcepts;
 	}
 
-	public Set<ObjectProperty> getAllowedRoles() {
+	public Set<OWLObjectProperty> getAllowedRoles() {
 		return allowedRoles;
 	}
 
-	public void setAllowedRoles(Set<ObjectProperty> allowedRoles) {
+	public void setAllowedRoles(Set<OWLObjectProperty> allowedRoles) {
 		this.allowedRoles = allowedRoles;
 	}
 
-	public Set<NamedClass> getIgnoredConcepts() {
+	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}
 
-	public void setIgnoredConcepts(Set<NamedClass> ignoredConcepts) {
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
 
-	public Set<ObjectProperty> getIgnoredRoles() {
+	public Set<OWLObjectProperty> getIgnoredRoles() {
 		return ignoredRoles;
 	}
 
-	public void setIgnoredRoles(Set<ObjectProperty> ignoredRoles) {
+	public void setIgnoredRoles(Set<OWLObjectProperty> ignoredRoles) {
 		this.ignoredRoles = ignoredRoles;
 	}
 
-	public Set<NamedClass> getUsedConcepts() {
+	public Set<OWLClass> getUsedConcepts() {
 		return usedConcepts;
 	}
 
-	public void setUsedConcepts(Set<NamedClass> usedConcepts) {
+	public void setUsedConcepts(Set<OWLClass> usedConcepts) {
 		this.usedConcepts = usedConcepts;
 	}
 
-	public Set<ObjectProperty> getUsedRoles() {
+	public Set<OWLObjectProperty> getUsedRoles() {
 		return usedRoles;
 	}
 
-	public void setUsedRoles(Set<ObjectProperty> usedRoles) {
+	public void setUsedRoles(Set<OWLObjectProperty> usedRoles) {
 		this.usedRoles = usedRoles;
 	}
 
@@ -585,11 +592,11 @@ public class OCEL extends AbstractCELA {
 		this.noisePercentage = noisePercentage;
 	}
 
-	public NamedClass getStartClass() {
+	public OWLClass getStartClass() {
 		return startClass;
 	}
 
-	public void setStartClass(NamedClass startClass) {
+	public void setStartClass(OWLClass startClass) {
 		this.startClass = startClass;
 	}
 

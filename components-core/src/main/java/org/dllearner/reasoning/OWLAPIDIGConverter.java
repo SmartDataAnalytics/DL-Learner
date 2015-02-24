@@ -61,6 +61,7 @@ public class OWLAPIDIGConverter {
 		}catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -3,16 +3,16 @@
  */
 package org.dllearner.algorithms.miles;
 
-import static org.junit.Assert.*;
-
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -30,7 +30,7 @@ public class MILESTest {
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setClassToDescribe(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));
+		lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement")));
 		lp.init();
 		
 		CELOE celoe = new CELOE(lp, rc);

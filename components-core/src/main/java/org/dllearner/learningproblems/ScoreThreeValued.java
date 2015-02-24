@@ -22,8 +22,8 @@ package org.dllearner.learningproblems;
 import java.text.DecimalFormat;
 import java.util.Set;
 
-import org.dllearner.core.owl.Individual;
 import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * Computes the score (a negative value) by comparing the classification results
@@ -54,22 +54,22 @@ public class ScoreThreeValued extends ScorePosNeg {
 	private boolean showCorrectClassifications = false;
 	private static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 	
-	private Set<Individual> posClassified;
-	private Set<Individual> neutClassified;
-	private Set<Individual> negClassified;
-	private Set<Individual> posExamples;
-	private Set<Individual> neutExamples;
-	private Set<Individual> negExamples;
+	private Set<OWLIndividual> posClassified;
+	private Set<OWLIndividual> neutClassified;
+	private Set<OWLIndividual> negClassified;
+	private Set<OWLIndividual> posExamples;
+	private Set<OWLIndividual> neutExamples;
+	private Set<OWLIndividual> negExamples;
 	
-    private Set<Individual> posAsNeg;
-    private Set<Individual> negAsPos;
-    private Set<Individual> posAsNeut;
-    private Set<Individual> neutAsPos;
-    private Set<Individual> neutAsNeg;
-    private Set<Individual> negAsNeut;
-    private Set<Individual> posAsPos;
-    private Set<Individual> negAsNeg;
-    private Set<Individual> neutAsNeut;      
+    private Set<OWLIndividual> posAsNeg;
+    private Set<OWLIndividual> negAsPos;
+    private Set<OWLIndividual> posAsNeut;
+    private Set<OWLIndividual> neutAsPos;
+    private Set<OWLIndividual> neutAsNeg;
+    private Set<OWLIndividual> negAsNeut;
+    private Set<OWLIndividual> posAsPos;
+    private Set<OWLIndividual> negAsNeg;
+    private Set<OWLIndividual> neutAsNeut;      
     
     private double score;
     private double accuracy;
@@ -85,12 +85,12 @@ public class ScoreThreeValued extends ScorePosNeg {
     		double errorPenalty,
     		boolean penaliseNeutralExamples,
     		double percentPerLengthUnit,
-    		Set<Individual> posClassified,
-    		Set<Individual> neutClassified,
-    		Set<Individual> negClassified,
-    		Set<Individual> posExamples,
-    		Set<Individual> neutExamples,
-    		Set<Individual> negExamples) {
+    		Set<OWLIndividual> posClassified,
+    		Set<OWLIndividual> neutClassified,
+    		Set<OWLIndividual> negClassified,
+    		Set<OWLIndividual> posExamples,
+    		Set<OWLIndividual> neutExamples,
+    		Set<OWLIndividual> negExamples) {
     	this.conceptLength = conceptLength;
     	this.accuracyPenalty = accuracyPenalty;
     	this.errorPenalty = errorPenalty;
@@ -206,26 +206,26 @@ public class ScoreThreeValued extends ScorePosNeg {
         return str;
     }
 
-	public Set<Individual> getNegClassified() {
+	public Set<OWLIndividual> getNegClassified() {
 		return negClassified;
 	}
 
-	public Set<Individual> getPosClassified() {
+	public Set<OWLIndividual> getPosClassified() {
 		return posClassified;
 	}
 
 	@Override
-	public Set<Individual> getCoveredNegatives() {
+	public Set<OWLIndividual> getCoveredNegatives() {
 		return negAsPos;
 	}
 
 	@Override
-	public Set<Individual> getCoveredPositives() {
+	public Set<OWLIndividual> getCoveredPositives() {
 		return posAsPos;
 	}
 	
 	@Override
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<OWLIndividual> getNotCoveredPositives() {
 		return posAsNeg;
 	}
 
@@ -246,7 +246,7 @@ public class ScoreThreeValued extends ScorePosNeg {
 	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
 	 */
 	@Override
-	public Set<Individual> getNotCoveredNegatives() {
+	public Set<OWLIndividual> getNotCoveredNegatives() {
 		return negAsNeg;
 	}	
     

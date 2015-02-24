@@ -22,21 +22,19 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * This represents a class description, which has been
  * evaluated by the learning algorithm, i.e. it has been checked
  * which examples it covers. It can be used as return value for
  * learning algorithms to make it easier for applications to
- * assess how good an offered class description is and how it
+ * assess how good an offered class OWLClassExpression is and how it
  * classifies particular examples.
  * 
  * @author Jens Lehmann
@@ -48,24 +46,24 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	private ScorePosNeg score2;
 	
 	/**
-	 * Constructs an evaluated description using its score.
-	 * @param description The description, which was evaluated.
+	 * Constructs an evaluated OWLClassExpression using its score.
+	 * @param OWLClassExpression The description, which was evaluated.
 	 * @param score The score of the description.
 	 */
-	public EvaluatedDescriptionPosNeg(Description description, ScorePosNeg score) {
+	public EvaluatedDescriptionPosNeg(OWLClassExpression description, ScorePosNeg score) {
 		super(description, score);
 		score2 = score;
 	}
 	
 	/**
-	 * Constructs an evaluated description using example coverage.
-	 * @param description The description, which was evaluated.
+	 * Constructs an evaluated OWLClassExpression using example coverage.
+	 * @param OWLClassExpression The description, which was evaluated.
 	 * @param posAsPos Positive examples classified as positive by (i.e. instance of) the description.
 	 * @param posAsNeg Positive examples classified as negative by (i.e. not instance of) the description.
 	 * @param negAsPos Negative examples classified as positive by (i.e. instance of) the description.
 	 * @param negAsNeg Negative examples classified as negative by (i.e. not instance of) the description.
 	 */
-	public EvaluatedDescriptionPosNeg(Description description, Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg) {
+	public EvaluatedDescriptionPosNeg(OWLClassExpression description, Set<OWLIndividual> posAsPos, Set<OWLIndividual> posAsNeg, Set<OWLIndividual> negAsPos, Set<OWLIndividual> negAsNeg) {
 		// usually core methods should not depend on methods outside of the core package (except utilities)
 		// in this case, this is just a convenience constructor
 		super(description, new ScoreTwoValued(posAsPos, posAsNeg, negAsPos, negAsNeg));
@@ -95,7 +93,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getCoveredNegatives()
 	 * @return Negative examples covered by the description.
 	 */
-	public Set<Individual> getCoveredNegatives() {
+	public Set<OWLIndividual> getCoveredNegatives() {
 		return score2.getCoveredNegatives();
 	}
 
@@ -103,7 +101,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getCoveredPositives()
 	 * @return Positive examples covered by the description.
 	 */
-	public Set<Individual> getCoveredPositives() {
+	public Set<OWLIndividual> getCoveredPositives() {
 		return score2.getCoveredPositives();
 	}
 
@@ -111,7 +109,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getNotCoveredNegatives()
 	 * @return Negative examples not covered by the description.
 	 */
-	public Set<Individual> getNotCoveredNegatives() {
+	public Set<OWLIndividual> getNotCoveredNegatives() {
 		return score2.getNotCoveredNegatives();
 	}
 
@@ -119,7 +117,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getNotCoveredPositives()
 	 * @return Positive examples not covered by the description.
 	 */
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<OWLIndividual> getNotCoveredPositives() {
 		return score2.getNotCoveredPositives();
 	}
 	
@@ -132,10 +130,8 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
-			object.put("descriptionKBSyntax", description.toKBSyntaxString());
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
 			object.put("accuracy", score2.getAccuracy());
 			object.put("coveredPositives", getJSONArray(score2.getCoveredPositives()));
 			object.put("coveredNegatives", getJSONArray(score2.getCoveredNegatives()));
@@ -156,10 +152,10 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	// we need to use this method instead of the standard JSON array constructor,
 	// otherwise we'll get unexpected results (JSONArray does not take Individuals
 	// as arguments and does not use toString)
-	public static JSONArray getJSONArray(Set<Individual> individuals) {
+	public static JSONArray getJSONArray(Set<OWLIndividual> individuals) {
 		JSONArray j = new JSONArray();
-		for(Individual i : individuals) {
-			j.put(i.getName());
+		for(OWLIndividual i : individuals) {
+			j.put(i.toStringID());
 		}
 		return j;
 	}

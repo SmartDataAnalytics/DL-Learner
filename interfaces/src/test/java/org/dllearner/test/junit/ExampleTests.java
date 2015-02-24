@@ -20,6 +20,8 @@
 package org.dllearner.test.junit;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +33,15 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.gp.GP;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.core.AbstractCELA;
@@ -55,9 +60,11 @@ import org.junit.Test;
  */
 public class ExampleTests {
 
+	private int nThreads = 1;//Runtime.getRuntime().availableProcessors() - 1;
+
 	/**
 	 * This test runs all conf files in the examples directory. Each conf file
-	 * corresponds to one unit test, which is succesful if a concept was
+	 * corresponds to one unit test, which is successful if a concept was
 	 * learned. This unit test takes several hours.
 	 * 
 	 * @throws ComponentInitException
@@ -77,7 +84,7 @@ public class ExampleTests {
 		
 		// setting for SPARQL based tests (0 = no special treatment, 1 = test only SPARQL
 		// examples, 2 = skip SPARQL tests)
-		int sparql = 2;
+		final int sparql = 2;
 		
 		// we use a logger, which outputs few messages (warnings, errors)
 		SimpleLayout layout = new SimpleLayout();
@@ -107,7 +114,7 @@ public class ExampleTests {
 			Collections.sort(examples);
 		}
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 		
 		// ignore list (examples which are temporarily not working due
 		// to server downtime, lack of features etc., but should still
@@ -138,10 +145,16 @@ public class ExampleTests {
 //		ignore.add("examples/krk/KRK_ONE_ZERO_fastInstance.conf"); // stack overflow
 //		ignore.add("examples/krk/"); // too many stack overflows
 
-		int failedCounter = 0;
-		int counter = 1;
-		int total = examples.size();
-		for(String conf : examples) {
+		final AtomicInteger failedCounter = new AtomicInteger(0);
+		final AtomicInteger counter = new AtomicInteger(1);
+		final int total = examples.size();
+		
+		ExecutorService tp = Executors.newFixedThreadPool(nThreads);
+		
+		final StringBuilder failed = new StringBuilder();
+		final StringBuilder successful = new StringBuilder();
+		
+		for(final String conf : examples) {
 			boolean ignored = false;
 			for(String ignoredConfExpression : ignore) {
 				if(conf.contains(ignoredConfExpression)) {
@@ -153,57 +166,76 @@ public class ExampleTests {
 			if(ignored) {
 				System.out.println("Skipping " + conf + " (is on ignore list).");
 			} else {
-				System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
-				long startTime = System.nanoTime();
-				boolean success = false, started = false;
-				try {
-					// start example
-					CLI start = new CLI(new File(conf));
-					start.init();
+				
+				tp.submit(new Runnable() {
 					
-//					System.out.println("algorithm: " + start.getLearningAlgorithm());
-					boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
-//					boolean isSparql = false;
-					LearningAlgorithm algorithm = start.getLearningAlgorithm();
-					if((testGP || !(algorithm instanceof GP)) &&
-							(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
-						start.run();
-						started = true;
-//						start.start(false);
-						// test is successful if a concept was learned
-						if(algorithm instanceof AbstractCELA){
-							assert (((AbstractCELA) algorithm).getCurrentlyBestDescription() != null);
+					@Override
+					public void run() {
+						System.out.println("Testing " + conf + " (example " + counter + " of " + total + ", time: " + sdf.format(new Date()) + ").");
+						long startTime = System.nanoTime();
+						boolean success = false, started = false;
+						try {
+							// start example
+							CLI start = new CLI(new File(conf));
+							start.init();
+							
+//							System.out.println("algorithm: " + start.getLearningAlgorithm());
+							boolean isSparql = start.getKnowledgeSource() instanceof SparqlKnowledgeSource;
+//							boolean isSparql = false;
+							LearningAlgorithm algorithm = start.getLearningAlgorithm();
+							if(
+//									(testGP || !(algorithm instanceof GP)) &&
+									(sparql == 0 || (sparql == 1 &&  isSparql) || (sparql == 2 && !isSparql) ) ) {
+								start.run();
+								started = true;
+//								start.start(false);
+								// test is successful if a concept was learned
+								if(algorithm instanceof AbstractCELA){
+									assert (((AbstractCELA) algorithm).getCurrentlyBestDescription() != null);
+								}
+//								start.getReasonerComponent().releaseKB();
+								success = true;		
+								successful.append(conf + "\n");
+							} else {
+								System.out.println("Test skipped, because of GP or SPARQL settings.");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							// unit test not succesful (exceptions are caught explicitly to find 
+							assert ( false );
+							failedCounter.incrementAndGet();
+							failed.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+							failed.append(conf + "\n");
+							StringWriter writer = new StringWriter();
+							PrintWriter printWriter = new PrintWriter( writer );
+							e.printStackTrace(printWriter);
+							printWriter.flush();
+							failed.append(writer.toString());
 						}
-//						start.getReasonerComponent().releaseKB();
-						success = true;						
-					} else {
-						System.out.println("Test skipped, because of GP or SPARQL settings.");
+						long timeNeeded = System.nanoTime() - startTime;
+						ComponentManager.getInstance().freeAllComponents();
+						if(!success && started) {
+							System.out.println("TEST FAILED.");
+						}
+						if(started) {
+							System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
+						}
 					}
-				} catch (Exception e) {
-					// unit test not succesful (exceptions are caught explicitly to find 
-					assert ( false );
-					e.printStackTrace();
-					failedCounter++;
-				}
-				long timeNeeded = System.nanoTime() - startTime;
-				ComponentManager.getInstance().freeAllComponents();
-				if(!success && started) {
-					System.out.println("TEST FAILED.");
-				}
-				if(started) {
-					System.out.println("Test of " + conf + " completed in " + Helper.prettyPrintNanoSeconds(timeNeeded) + ".");
-				}
+				});
+				
 			}	
-			counter++;
+			counter.incrementAndGet();
 		}
 		
-//		for (String path : confFiles.keySet()) {
-//			for (String file : confFiles.get(path)) {
-//				String conf = path + file + ".conf";
-//				
-//			}
-//		}
-		System.out.println("Finished. " + failedCounter + " tests failed.");
+		tp.shutdown();
+		try {
+			tp.awaitTermination(1, TimeUnit.HOURS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		System.err.println("Finished. " + failedCounter + " tests failed:");
+		System.err.println(failed);
 
 	}
 

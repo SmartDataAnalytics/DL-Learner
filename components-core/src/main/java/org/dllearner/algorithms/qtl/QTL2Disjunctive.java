@@ -1,29 +1,47 @@
 package org.dllearner.algorithms.qtl;
 
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.map.TObjectIntMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.stat.clustering.Cluster;
+import org.apache.commons.math3.stat.clustering.DBSCANClusterer;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.heuristics.ComplexQueryTreeHeuristic;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.algorithms.qtl.util.QueryTreePoint;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -32,19 +50,18 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Union;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,24 +76,31 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
 public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
+	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class);
+	private final DecimalFormat dFormat = new DecimalFormat("0.00"); 
 	
-	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class.getName());
-	private final DecimalFormat df = new DecimalFormat("0.00"); 
+	private SparqlEndpointKS ks;
 	
-	private LGGGenerator<String> lggGenerator;
+	private LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+	
+	private QueryTreeFactory<String> treeFactory;
+	private ConciseBoundedDescriptionGenerator cbdGen;
 	
 	private Queue<EvaluatedQueryTree<String>> todoList;
 	private SortedSet<EvaluatedQueryTree<String>> currentPartialSolutions;
 	
 	private double bestCurrentScore = 0d;
-
-	private List<QueryTree<String>> currentPosExampleTrees;
-	private List<QueryTree<String>> currentNegExampleTrees;
-	private Set<Individual> currentPosExamples;
-	private Set<Individual> currentNegExamples;
 	
-	private Map<QueryTree<String>, Individual> tree2Individual;
-	private Map<Individual, QueryTree<String>> individual2Tree;
+	private Set<String> allowedNamespaces = new HashSet<String>();
+	private Set<String> ignoredProperties = new HashSet<String>();
+
+	private List<QueryTree<String>> currentPosExampleTrees = new ArrayList<QueryTree<String>>();
+	private List<QueryTree<String>> currentNegExampleTrees = new ArrayList<QueryTree<String>>();
+	private Set<OWLIndividual> currentPosExamples = new HashSet<OWLIndividual>();
+	private Set<OWLIndividual> currentNegExamples = new HashSet<OWLIndividual>();
+	
+	private Map<QueryTree<String>, OWLIndividual> tree2Individual = new HashMap<QueryTree<String>, OWLIndividual>();
+	private Map<OWLIndividual, QueryTree<String>> individual2Tree = new HashMap<OWLIndividual, QueryTree<String>>();
 	
 	private QueryTreeCache treeCache;
 
@@ -96,7 +120,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private QueryTreeHeuristic heuristic;
 	
-	
 	//Parameters
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
@@ -107,17 +130,25 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private double specifityWeight = 0.1;
 	
 	private double minCoveredPosExamplesFraction = 0.2;
+	
 	// maximum execution time to compute a part of the solution
 	private double maxTreeComputationTimeInSeconds = 10;
+	
 	// how important not to cover negatives
 	private double beta = 1;
+	
 	// minimum score a query tree must have to be part of the solution
 	private double minimumTreeScore = 0.3;
+	
 	//If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, 
 	//it may lead to overfitting
 	private boolean tryFullCoverage;
+	
 	//algorithm will terminate immediately when a correct definition is found
 	private boolean stopOnFirstDefinition;
+	
+	//the (approximated) value of noise within the examples
+	private double noise = 0.0;
 	
 	private long startTime;
 	private long partialSolutionStartTime;
@@ -131,6 +162,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			LiteralNodeConversionStrategy.MIN_MAX,
 			LiteralNodeConversionStrategy.DATATYPE
 	};
+	private QueryExecutionFactory qef;
 	
 	public QTL2Disjunctive() {}
 	
@@ -139,11 +171,21 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		loadModel();
 	}
 	
+	public QTL2Disjunctive(PosNegLP lp, QueryExecutionFactory qef) {
+		super.learningProblem = lp;
+		this.lp = lp;
+		this.qef = qef;
+	}
+	
 //	public QTL2Disjunctive(PosNegLP lp, Model model) {
 //		this.learningProblem = lp;
 //		this.model = model;
 //	}
 	
+	/**
+	 * Copy constructor.
+	 * @param qtl
+	 */
 	public QTL2Disjunctive(QTL2Disjunctive qtl) {
 		super(qtl.getLearningProblem(), qtl.getReasoner());
 		this.model = ModelFactory.createDefaultModel();
@@ -155,42 +197,39 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		this.stopOnFirstDefinition = qtl.stopOnFirstDefinition;
 	}
 	
-	public EvaluatedQueryTree<String> getBestSolution(){
-		return currentPartialSolutions.first();
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		logger.info("Initializing...");
 		if(!(learningProblem instanceof PosNegLP)){
 			throw new IllegalArgumentException("Only PosNeg learning problems are supported");
 		}
 		lp = (PosNegLP) learningProblem;
 		
-		lggGenerator = new LGGGeneratorImpl<String>();
+		// get query execution factory from KS
+		if(qef == null) {
+			qef = ks.getQueryExecutionFactory();
+		}
 		
+		if(treeFactory == null){
+			treeFactory = new QueryTreeFactoryImpl();
+			treeFactory.addAllowedNamespaces(allowedNamespaces);
+			treeFactory.addIgnoredPropperties(ignoredProperties);
+		}
+		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		
+		// set the used heuristic
 		if(heuristic == null){
-			heuristic = new QueryTreeHeuristic();
+			heuristic = new ComplexQueryTreeHeuristic(qef);
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
-		logger.info("Initializing...");
-		treeCache = new QueryTreeCache(model);
-		tree2Individual = new HashMap<QueryTree<String>, Individual>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
-		individual2Tree = new HashMap<Individual, QueryTree<String>>(lp.getPositiveExamples().size()+lp.getNegativeExamples().size());
+		// generate the query trees
+		generateQueryTrees();
 		
-		currentPosExampleTrees = new ArrayList<QueryTree<String>>(lp.getPositiveExamples().size());
-		currentNegExampleTrees = new ArrayList<QueryTree<String>>(lp.getNegativeExamples().size());
-		currentPosExamples = new TreeSet<Individual>(lp.getPositiveExamples());
-		currentNegExamples =  new TreeSet<Individual>(lp.getNegativeExamples());
-		
-		startPosExamplesSize = currentPosExamples.size();
-		
-		//get the query trees
-		generateTrees();
+		startPosExamplesSize = currentPosExampleTrees.size();
 		
 		//some logging
 		subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
@@ -208,22 +247,41 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		allExamplesTrees.addAll(currentNegExampleTrees);
 //		QueryTree<String> lgg = lggGenerator.getLGG(allExamplesTrees);
 //		lgg.dump();
+		logger.info("Initialization finished.");
 	}
 	
-	private void generateTrees(){
+	private void generateQueryTrees(){
 		logger.info("Generating trees...");
 		QueryTree<String> queryTree;
-		for (Individual ind : lp.getPositiveExamples()) {
-			queryTree = treeCache.getQueryTree(ind.getName());
-			tree2Individual.put(queryTree, ind);
-			individual2Tree.put(ind, queryTree);
-			currentPosExampleTrees.add(queryTree);
+		
+		// positive examples
+		if(currentPosExampleTrees.isEmpty()){
+			for (OWLIndividual ind : lp.getPositiveExamples()) {
+				try {
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					tree2Individual.put(queryTree, ind);
+					currentPosExampleTrees.add(queryTree);
+				} catch (Exception e) {
+					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					throw new RuntimeException();
+				}
+			}
 		}
-		for (Individual ind : lp.getNegativeExamples()) {
-			queryTree = treeCache.getQueryTree(ind.getName());
-			tree2Individual.put(queryTree, ind);
-			individual2Tree.put(ind, queryTree);
-			currentNegExampleTrees.add(queryTree);
+		
+		// negative examples
+		if(currentNegExampleTrees.isEmpty()){
+			for (OWLIndividual ind : lp.getNegativeExamples()) {
+				try {
+					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), 2);
+					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
+					tree2Individual.put(queryTree, ind);
+					currentNegExampleTrees.add(treeCache.getQueryTree(ind.toStringID()));
+				} catch (Exception e) {
+					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					throw new RuntimeException();
+				}
+			}
 		}
 		logger.info("...done.");
 	}
@@ -269,13 +327,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						currentNegExamples.remove(tree2Individual.get(tree));
 					}
 				}
+				
 				//build the current combined solution
 				currentBestSolution = buildCombinedSolution();
 				
-				logger.info("combined accuracy: " + df.format(currentBestSolution.getAccuracy()));
+				logger.info("combined accuracy: " + dFormat.format(currentBestSolution.getAccuracy()));
 			} else {
 				logger.info("no tree found, which satisfies the minimum criteria - the best was: "
-						+ currentBestSolution.getDescription().toManchesterSyntaxString(baseURI, prefixes)
+						+ currentBestSolution.getDescription()
 						+ " with score " + currentBestSolution.getScore());
 			}
 			
@@ -283,15 +342,142 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		isRunning = false;
 		
+		postProcess();
+		
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		logger.info(expressionTests +" descriptions tested");
-		logger.info("Combined solution:" + OWLAPIConverter.getOWLAPIDescription(currentBestSolution.getDescription()).toString().replace("\n", ""));
+		logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
 		
 		logger.info(currentBestSolution.getScore());
 		
 	}
 	
+	/**
+	 * This method can be called for clean up of the solutions and re-ranking.
+	 */
+	private void postProcess() {
+		logger.trace("Post processing ...");
+		// pick solutions with same accuracy, i.e. in the pos only case 
+		// covering the same number of positive examples
+		SortedSet<EvaluatedQueryTree<String>> solutions = getSolutions();
+		// pick solutions with accuracy above
+		// mas(maximum achievable score) - noise
+		List<EvaluatedQueryTree<String>> solutionsForPostProcessing = new ArrayList<>();
+		for (EvaluatedQueryTree<String> solution : solutions) {
+			
+			double accuracy = solution.getTreeScore().getAccuracy();
+			
+			double mas = QueryTreeHeuristic.getMaximumAchievableScore(heuristic.getHeuristicType());
+			
+			double epsilon = 0.01;
+			
+			if(accuracy != mas && accuracy >= (mas - noise - epsilon)) {
+				solutionsForPostProcessing.add(solution);
+			}
+		}
+		
+		// this only makes sense if we have at least 3 candidates
+		if(solutionsForPostProcessing.size() >= 3) {
+			// if there exists a cluster of trees that are very similar based on a given
+			// distance function, add a penalty for solutions that do not belong to the cluster
+			int dimension = solutionsForPostProcessing.size();
+			RealMatrix distanceMatrix = MatrixUtils.createRealMatrix(dimension, dimension);
+			for (int i = 0; i < solutionsForPostProcessing.size(); i++) {
+				EvaluatedQueryTree<String> tree1 = solutionsForPostProcessing.get(i);
+				
+				for (int j = i + 1; j < solutionsForPostProcessing.size(); j++) {
+					EvaluatedQueryTree<String> tree2 = solutionsForPostProcessing.get(j);
+					
+					double distance = QueryTreeEditDistance.getDistanceApprox(tree1.getTree(), tree2.getTree());
+					
+					distanceMatrix.setEntry(i,j, distance);
+					distanceMatrix.setEntry(j,i, distance);
+				}
+			}
+			
+			
+			double [] sums = new double[dimension];
+			for(int i = 0; i < dimension; i++) {
+				double[] column = distanceMatrix.getColumn(i);
+				double sum = 0;
+				for (double val : column) {
+					sum += val;
+				}
+				sums[i] = sum;
+			}
+			
+			double median = median(sums);
+			
+			// Q1 = median of values below overall median 
+			TDoubleList belowMedian = new TDoubleArrayList();
+			for (double val : sums) {
+				if(val < median) {
+					belowMedian.add(val);
+				}
+			}
+			double q1 = median(belowMedian.toArray());
+			
+			// Q3 = median of values above overall median 
+			TDoubleList aboveMedian = new TDoubleArrayList();
+			for (double val : sums) {
+				if(val > median) {
+					aboveMedian.add(val);
+				}
+			}
+			double q3 = median(aboveMedian.toArray());
+			
+			// IQR = Q3 - Q1
+			double iqr = q3 - q1;
+			
+			// add penalty for outliers
+			// outliers will be any points below Q1 – 1.5 * IQR or above Q3 + 1.5 * IQR
+			double upperLimit = q3 + 1.5 * iqr;
+			for (int i = 0; i < dimension; i++) {
+				double val = sums[i];
+				if(val >= upperLimit) {
+					solutionsForPostProcessing.get(i).getTreeScore().setDistancePenalty(0.01);
+				}
+			}
+			
+			computeClusters(solutionsForPostProcessing);
+		}
+		
+		logger.trace("Finished post processing.");
+	}
+	
+	public void computeClusters(Collection<EvaluatedQueryTree<String>> queryTrees) {
+		DBSCANClusterer<QueryTreePoint> clusterer = new DBSCANClusterer<QueryTreePoint>(0.3, 1);
+		
+		// convert to point objects
+		Collection<QueryTreePoint> points = new ArrayList<QueryTreePoint>();
+		for (EvaluatedQueryTree<String> queryTree : queryTrees) {
+			points.add(new QueryTreePoint(queryTree.getTree()));
+		}
+		
+		// cluster
+		List<Cluster<QueryTreePoint>> clusters = clusterer.cluster(points);
+		for (Cluster<QueryTreePoint> cluster : clusters) {
+			System.out.println("Cluster:" + cluster.getPoints().size());
+		}
+	}
+	
+	public static double median(double[] l) {
+		Arrays.sort(l);
+		int middle = l.length / 2;
+		if (l.length % 2 == 0) {
+			double left = l[middle - 1];
+			double right = l[middle];
+			return (left + right) / 2;
+		} else {
+			return l[middle];
+		}
+	}
+	
+	/**
+	 * Compute a (partial) solution that covers as much positive examples as possible.
+	 * @return
+	 */
 	private EvaluatedQueryTree<String> computeBestPartialSolution(){
 		logger.info("Computing best partial solution...");
 		bestCurrentScore = Double.NEGATIVE_INFINITY;
@@ -301,25 +487,51 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		EvaluatedQueryTree<String> bestPartialSolutionTree = null;
 		EvaluatedQueryTree<String> currentElement;
 		QueryTree<String> currentTree;
+		
+		// generate id for each pos and neg example tree
+		TObjectIntMap<QueryTree<String>> index = new TObjectIntHashMap<QueryTree<String>>(this.currentPosExampleTrees.size() + this.currentNegExampleTrees.size());
+		int id = 1;
+		for (QueryTree<String> posTree : currentPosExampleTrees) {
+			index.put(posTree, id++);
+		}
+		Set<Set<QueryTree<String>>> processedCombinations = new HashSet<>(); 
+		
 		while(!partialSolutionTerminationCriteriaSatisfied()){
-			logger.trace("TODO list size: " + todoList.size());
-			//pick best element from todo list
+			logger.trace("ToDo list size: " + todoList.size());
+			// pick best element from todo list
 			currentElement = todoList.poll();
-			
 			currentTree = currentElement.getTree();
-			logger.info("Next tree: "  + currentElement.getTreeScore() + "\n" + OWLAPIConverter.getOWLAPIDescription(currentElement.getEvaluatedDescription().getDescription()));
-			//generate the LGG between the chosen tree and each uncovered positive example
+			
+			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
+			
+			// generate the LGG between the chosen tree and each uncovered positive example
 			Iterator<QueryTree<String>> it = currentElement.getFalseNegatives().iterator();
 			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
 				QueryTree<String> uncoveredTree = it.next();
-				//compute the LGG
+				
+				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
+				Set<QueryTree<String>> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
+				baseQueryTrees.add(uncoveredTree);
+				String s = "";
+				for (QueryTree<String> queryTree : baseQueryTrees) {
+					s += index.get(queryTree) + ",";
+				}
+//				System.err.println(s);
+				if(!processedCombinations.add(baseQueryTrees)) {
+//					System.err.println("skipping");
+					continue;
+				}
+				
+				// compute the LGG
 				lggMon.start();
 				QueryTree<String> lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				lggMon.stop();
 				
-				//evaluate the LGG
-				Set<EvaluatedQueryTree<String>> solutions = evaluate2(lgg, true);
+				// evaluate the LGG
+				Set<EvaluatedQueryTree<String>> solutions = evaluate(lgg, true);
 				for (EvaluatedQueryTree<String> solution : solutions) {
+					solution.setBaseQueryTrees(baseQueryTrees);
+					
 					expressionTests++;
 					double score = solution.getScore();
 					double mas = heuristic.getMaximumAchievableScore(solution);
@@ -327,30 +539,34 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					if(score >= bestCurrentScore){
 						if(score > bestCurrentScore){
 							logger.info("\tGot better solution:" + solution.getTreeScore());
-							logger.info(OWLAPIConverter.getOWLAPIDescription(solution.getEvaluatedDescription().getDescription()));
+							logger.info("\t" + solutionAsString(solution.getEvaluatedDescription()));
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
 						}
-						//add to todo list, if not already contained in todo list or solution list
-						todo(solution);
-					} else if(mas >= bestCurrentScore){
+						// add to ToDo list, if not already contained in ToDo list or solution list
+						if(bestCurrentScore == 1.0 || mas > score){
+							todo(solution);
+						}
+					} else if(bestCurrentScore == 1.0 || mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
 						todo(solution);
 					} else {
-						logger.info("Too weak:" + solution.getTreeScore());
+						logger.trace("Too weak:" + solution.getTreeScore());
+//						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
+						todo(solution);
 					}
 					
-					currentPartialSolutions.add(currentElement);
+					addToSolutions(solution);
 				}
 			}
-			currentPartialSolutions.add(currentElement);
+//			addToSolutions(currentElement);
 		}
 		long endTime = System.currentTimeMillis();
-		logger.info("...finished in " + (endTime-partialSolutionStartTime) + "ms.");
+		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
 		
-		logger.info("Best partial solution: " + OWLAPIConverter.getOWLAPIDescription(bestPartialSolution.getDescription()).toString().replace("\n", "") + "\n(" + bestPartialSolution.getScore() + ")");
+		logger.info("Best partial solution: " + solutionAsString(bestPartialSolution) + "\n(" + bestPartialSolution.getScore() + ")");
 		
 		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
 		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
@@ -362,17 +578,96 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return bestPartialSolutionTree;
 	}
 	
+	private String solutionAsString(EvaluatedDescription ed) {
+		return ed.getDescription().toString().replace("\n", "").replaceAll("\\\\s{2,}", " ");
+	}
+	
+	private boolean addToSolutions(EvaluatedQueryTree<String> solution) {
+		for (EvaluatedQueryTree<String> partialSolution : currentPartialSolutions) {
+			if(QueryTreeUtils.sameTrees(partialSolution.getTree(), solution.getTree())) {
+				return false;
+			}
+		}
+		return currentPartialSolutions.add(solution);
+	}
+	
+	/**
+	 * Initializes the ToDo list with all distinct trees contained in the given list of positive
+	 * example trees {@code posExamples} and negative example trees {@code negExamples}.
+	 * First, distinct trees are computed and afterwards, for each tree an initial score will be
+	 *  computed.
+	 * @param posExamples the positive example trees
+	 * @param negExamples the negative example trees
+	 */
+	private void initTodoList(List<QueryTree<String>> posExamples, List<QueryTree<String>> negExamples){
+		todoList = new PriorityQueue<EvaluatedQueryTree<String>>();
+		currentPartialSolutions = new TreeSet<EvaluatedQueryTree<String>>();
+//		EvaluatedQueryTree<String> dummy = new EvaluatedQueryTree<String>(new QueryTreeImpl<String>((N)"TOP"), trees, 0d);
+//		todoList.add(dummy);
+		
+		// compute distinct trees, i.e. check if some of the trees already cover others
+		Collection<QueryTree<String>> distinctTrees = new ArrayList<QueryTree<String>>();
+		for (QueryTree<String> queryTree : posExamples) {
+			boolean distinct = true;
+			for (QueryTree<String> otherTree : distinctTrees) {
+				if(!queryTree.equals(otherTree)){
+					if(queryTree.isSameTreeAs(otherTree)){
+						distinct = false;
+						break;
+					}
+				}
+			}
+			if(distinct){
+				distinctTrees.add(queryTree);
+			}
+		}
+		
+		// compute an initial score
+		for (QueryTree<String> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
+			EvaluatedQueryTree<String> evaluatedQueryTree = evaluateSimple(queryTree, false);
+			evaluatedQueryTree.setBaseQueryTrees(Collections.singleton(queryTree));
+			todoList.add(evaluatedQueryTree);
+		}
+	}
+	
+	/**
+	 * Add tree to ToDo list if not already contained in that list or the solutions.
+	 * @param solution
+	 */
+	private void todo(EvaluatedQueryTree<String> solution){
+		// check if not already contained in ToDo list
+		for (EvaluatedQueryTree<String> evTree : todoList) {
+			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
+//			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
+			boolean sameTree = evTree.getEvaluatedDescription().getDescription().toString()
+			.equals(solution.getEvaluatedDescription().getDescription().toString());
+			if(sameTree){
+				logger.trace("Not added to TODO list: Already contained in.");
+				return;
+			}
+		}
+		//check if not already contained in solutions
+		for (EvaluatedQueryTree<String> evTree : currentPartialSolutions) {
+			if(sameTrees(solution.getTree(), evTree.getTree())){
+				logger.trace("Not added to partial solutions list: Already contained in.");
+				return;
+			}
+		}
+		logger.trace("Added to TODO list.");
+		todoList.add(solution);
+	}
+	
 	private EvaluatedQueryTree<String> evaluateSimple(QueryTree<String> tree, boolean useSpecifity){
 		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
 		List<QueryTree<String>> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
-		Set<Individual> uncoveredPosExamples = new TreeSet<Individual>();
+		Set<OWLIndividual> uncoveredPosExamples = new TreeSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : uncoveredPositiveExampleTrees) {
 			uncoveredPosExamples.add(tree2Individual.get(queryTree));
 		}
 		//compute negative examples which are covered by LGG
 		Collection<QueryTree<String>> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
-		Set<Individual> coveredNegExamples = new TreeSet<Individual>();
+		Set<OWLIndividual> coveredNegExamples = new TreeSet<OWLIndividual>();
 		for (QueryTree<String> queryTree : coveredNegativeExampleTrees) {
 			coveredNegExamples.add(tree2Individual.get(queryTree));
 		}
@@ -401,8 +696,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
-				new TreeSet<Individual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
-				coveredNegExamples, new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+				new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+				coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
 				specifityScore, nrOfSpecificNodes);
 		
 //		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
@@ -431,32 +726,32 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
 		strategies = new LiteralNodeSubsumptionStrategy[]{
 				LiteralNodeSubsumptionStrategy.DATATYPE, 
-				LiteralNodeSubsumptionStrategy.INTERVAL, 
-				LiteralNodeSubsumptionStrategy.MIN,
-				LiteralNodeSubsumptionStrategy.MAX,
+//				LiteralNodeSubsumptionStrategy.INTERVAL, 
+//				LiteralNodeSubsumptionStrategy.MIN,
+//				LiteralNodeSubsumptionStrategy.MAX,
 				};
 		for (LiteralNodeSubsumptionStrategy strategy : strategies) {
-			//1. get a score for the coverage = recall oriented
+			// 1. get a score for the coverage = recall oriented
 			List<QueryTree<String>> uncoveredPositiveExampleTrees = new ArrayList<QueryTree<String>>();
 			List<QueryTree<String>> coveredNegativeExampleTrees = new ArrayList<QueryTree<String>>();
 			
-			//compute positive examples which are not covered by LGG
+			// compute positive examples which are not covered by LGG
 			for (QueryTree<String> posTree : currentPosExampleTrees) {
 				if(!posTree.isSubsumedBy(tree, strategy)){
 					uncoveredPositiveExampleTrees.add(posTree);
 				}
 			}
-			//compute negative examples which are covered by LGG
+			// compute negative examples which are covered by LGG
 			for (QueryTree<String> negTree : currentNegExampleTrees) {
 				if(negTree.isSubsumedBy(tree, strategy)){
 					coveredNegativeExampleTrees.add(negTree);
 				}
 			}
-			//convert to individuals
-			Set<Individual> uncoveredPosExamples = asIndividuals(uncoveredPositiveExampleTrees);
-			Set<Individual> coveredNegExamples = asIndividuals(coveredNegativeExampleTrees);
+			// convert to individuals
+			Set<OWLIndividual> uncoveredPosExamples = asIndividuals(uncoveredPositiveExampleTrees);
+			Set<OWLIndividual> coveredNegExamples = asIndividuals(coveredNegativeExampleTrees);
 			
-			//compute score
+			// compute score
 			int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
 			double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
 			double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
@@ -465,7 +760,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			
 			double coverageScore = Heuristics.getFScore(recall, precision, beta);
 			
-			//2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
+			// 2. get a score for the specifity of the query, i.e. how many edges/nodes = precision oriented
 			int nrOfSpecificNodes = 0;
 			for (QueryTree<String> childNode : tree.getChildrenClosure()) {
 				if(!childNode.getUserObject().equals("?")){
@@ -477,12 +772,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				specifityScore = Math.log(nrOfSpecificNodes);
 			}
 			
-			//3.compute the total score
+			// 3.compute the total score
 			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 			
 			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
-					new TreeSet<Individual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
-					coveredNegExamples, new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+					new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+					coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
 					specifityScore, nrOfSpecificNodes);
 			
 			EvaluatedQueryTree<String> evaluatedTree = new EvaluatedQueryTree<String>(tree, uncoveredPositiveExampleTrees, coveredNegativeExampleTrees, queryTreeScore);
@@ -518,13 +813,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		OWLClassExpression ce = tree.asOWLClassExpression(LiteralNodeConversionStrategy.FACET_RESTRICTION);
 //		combinations = ce.accept(new ClassExpressionLiteralCombination());
 		for (OWLClassExpression c : combinations) {
-			Description d = DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(c);
 			//convert to individuals
-			SortedSet<Individual> coveredExamples = reasoner.getIndividuals(d);
-			Set<Individual> coveredPosExamples = new TreeSet<Individual>(Sets.intersection(currentPosExamples, coveredExamples));
-			Set<Individual> uncoveredPosExamples = new TreeSet<Individual>(Sets.difference(currentPosExamples, coveredExamples));
-			Set<Individual> coveredNegExamples = new TreeSet<Individual>(Sets.intersection(currentNegExamples, coveredExamples));
-			Set<Individual> uncoveredNegExamples = new TreeSet<Individual>(Sets.difference(currentNegExamples, coveredExamples));
+			SortedSet<OWLIndividual> coveredExamples = reasoner.getIndividuals(c);
+			Set<OWLIndividual> coveredPosExamples = new TreeSet<OWLIndividual>(Sets.intersection(currentPosExamples, coveredExamples));
+			Set<OWLIndividual> uncoveredPosExamples = new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, coveredExamples));
+			Set<OWLIndividual> coveredNegExamples = new TreeSet<OWLIndividual>(Sets.intersection(currentNegExamples, coveredExamples));
+			Set<OWLIndividual> uncoveredNegExamples = new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredExamples));
 			
 			//compute score
 			double recall = coveredPosExamples.size() / (double)currentPosExamples.size();
@@ -563,7 +857,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			queryTreeScore.setAccuracy(score);
 			
 			
-			EvaluatedDescription evaluatedDescription = new EvaluatedDescription(d, queryTreeScore);
+			EvaluatedDescription evaluatedDescription = new EvaluatedDescription(c, queryTreeScore);
 			
 			evaluatedTree.setDescription(evaluatedDescription);
 			
@@ -582,23 +876,23 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			if(partialSolutions.size() == 1){
 				combinedSolution = partialSolutions.get(0).getEvaluatedDescription();
 			} else {
-				List<Description> disjuncts = new ArrayList<Description>();
+				Set<OWLClassExpression> disjuncts = new TreeSet<OWLClassExpression>();
 				
-				Set<Individual> posCovered = new HashSet<Individual>();
-				Set<Individual> negCovered = new HashSet<Individual>();
+				Set<OWLIndividual> posCovered = new HashSet<OWLIndividual>();
+				Set<OWLIndividual> negCovered = new HashSet<OWLIndividual>();
 				
 				//build the union of all class expressions
-				Description partialDescription;
+				OWLClassExpression partialDescription;
 				for (EvaluatedQueryTree<String> partialSolution : partialSolutions) {
 					partialDescription = partialSolution.getEvaluatedDescription().getDescription();
 					disjuncts.add(partialDescription);
 					posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
 					negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
 				}
-				Description unionDescription = new Union(disjuncts);
+				OWLClassExpression unionDescription = dataFactory.getOWLObjectUnionOf(disjuncts);
 				
-				Set<Individual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
-				Set<Individual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
+				Set<OWLIndividual> posNotCovered = Sets.difference(lp.getPositiveExamples(), posCovered);
+				Set<OWLIndividual> negNotCovered = Sets.difference(lp.getNegativeExamples(), negCovered);
 				
 				//compute the coverage
 				double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
@@ -635,8 +929,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		bestCurrentScore = minimumTreeScore;
 	}
 	
-	
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.StoppableLearningAlgorithm#stop()
 	 */
@@ -649,7 +941,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @see org.dllearner.core.AbstractCELA#getCurrentlyBestDescription()
 	 */
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return currentBestSolution.getDescription();
 	}
 	
@@ -674,7 +966,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		this.lp = learningProblem;
 //	}
 	
-	@Autowired
+//	@Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner){
 		super.setReasoner(reasoner);
 		loadModel();
@@ -708,17 +1000,17 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return treeCache;
 	}
 
-	private Set<Individual> asIndividuals(Collection<QueryTree<String>> trees){
-		Set<Individual> individuals = new HashSet<Individual>(trees.size());
+	private Set<OWLIndividual> asIndividuals(Collection<QueryTree<String>> trees){
+		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>(trees.size());
 		for (QueryTree<String> queryTree : trees) {
 			individuals.add(tree2Individual.get(queryTree));
 		}
 		return individuals;
 	}
 	
-	private Set<QueryTree<String>> asQueryTrees(Collection<Individual> individuals){
+	private Set<QueryTree<String>> asQueryTrees(Collection<OWLIndividual> individuals){
 		Set<QueryTree<String>> trees = new HashSet<QueryTree<String>>(individuals.size());
-		for (Individual ind : individuals) {
+		for (OWLIndividual ind : individuals) {
 			trees.add(individual2Tree.get(ind));
 		}
 		return trees;
@@ -758,38 +1050,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return uncoveredTrees;
 	}
 
-	/**
-	 * Initializes the todo list with all distinct trees contained in the given list {@code trees}.
-	 * Firstly, distinct trees are computed and afterwards, for each tree a score is computed.
-	 * @param trees
-	 */
-	private void initTodoList(List<QueryTree<String>> posExamples, List<QueryTree<String>> negExamples){
-		todoList = new PriorityQueue<EvaluatedQueryTree<String>>();
-		currentPartialSolutions = new TreeSet<EvaluatedQueryTree<String>>();
-//		EvaluatedQueryTree<String> dummy = new EvaluatedQueryTree<String>(new QueryTreeImpl<String>((N)"TOP"), trees, 0d);
-//		todoList.add(dummy);
-		//compute distinct trees
-		Collection<QueryTree<String>> distinctTrees = new ArrayList<QueryTree<String>>();
-		for (QueryTree<String> queryTree : posExamples) {
-			boolean distinct = true;
-			for (QueryTree<String> otherTree : distinctTrees) {
-				if(!queryTree.equals(otherTree)){
-					if(queryTree.isSameTreeAs(otherTree)){
-						distinct = false;
-						break;
-					}
-				}
-			}
-			if(distinct){
-				distinctTrees.add(queryTree);
-			}
-		}
-		for (QueryTree<String> queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
-			EvaluatedQueryTree<String> evaluatedQueryTree = evaluateSimple(queryTree, false);
-			todoList.add(evaluatedQueryTree);
-		}
-	}
-
 	private boolean sameTrees(QueryTree<String> tree1, QueryTree<String> tree2){
 		return tree1.isSubsumedBy(tree2) && tree2.isSubsumedBy(tree1);
 	}
@@ -826,39 +1086,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean isTimeExpired(){
-		return maxExecutionTimeInSeconds <= 0 ? false : (System.currentTimeMillis() - startTime)/1000d >= maxExecutionTimeInSeconds;
+		return maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - startTime) / 1000d >= maxExecutionTimeInSeconds;
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){
 		return maxTreeComputationTimeInSeconds <= 0 ? false : (System.currentTimeMillis() - partialSolutionStartTime)/1000d >= maxTreeComputationTimeInSeconds;
 	}
 	
-	/**
-	 * Add tree to todo list if not already contained in that list or the solutions.
-	 * @param solution
-	 */
-	private void todo(EvaluatedQueryTree<String> solution){
-		//check if not already contained in todo list
-		for (EvaluatedQueryTree<String> evTree : todoList) {
-			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
-//			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
-			boolean sameTree = OWLAPIConverter.getOWLAPIDescription(evTree.getEvaluatedDescription().getDescription()).toString()
-			.equals(OWLAPIConverter.getOWLAPIDescription(solution.getEvaluatedDescription().getDescription()).toString());
-			if(sameTree){
-				logger.warn("Not added to TODO list: Already contained in.");
-				return;
-			}
-		}
-		//check if not already contained in solutions
-		for (EvaluatedQueryTree<String> evTree : currentPartialSolutions) {
-			if(sameTrees(solution.getTree(), evTree.getTree())){
-				logger.warn("Not added to partial solutions list: Already contained in.");
-				return;
-			}
-		}
-		logger.info("Added to TODO list.");
-		todoList.add(solution);
-	}
+	
 	
 	/**
 	 * Shows the current setup of the algorithm.
@@ -877,6 +1112,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
+	}
+	
+	/**
+	 * @param noise the noise to set
+	 */
+	public void setNoise(double noise) {
+		this.noise = noise;
 	}
 	
 	/**
@@ -913,6 +1155,71 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setHeuristic(QueryTreeHeuristic heuristic) {
 		this.heuristic = heuristic;
+	}
+	
+	/**
+	 * @param treeFactory the treeFactory to set
+	 */
+	public void setTreeFactory(QueryTreeFactory<String> treeFactory) {
+		this.treeFactory = treeFactory;
+	}
+	
+	public EvaluatedQueryTree<String> getBestSolution(){
+		return currentPartialSolutions.last();
+	}
+	
+	public SortedSet<EvaluatedQueryTree<String>> getSolutions(){
+		return currentPartialSolutions;
+	}
+	
+	public List<EvaluatedQueryTree<String>> getSolutionsAsList(){
+		ArrayList<EvaluatedQueryTree<String>> list = new ArrayList<>(currentPartialSolutions);
+		Collections.sort(list, Collections.reverseOrder());
+		return list;
+	}
+	
+	public void setAllowedNamespaces(Set<String> allowedNamespaces){
+		this.allowedNamespaces = allowedNamespaces;
+	}
+	
+	public void setIgnoredPropperties(Set<String> ignoredProperties){
+		this.ignoredProperties = ignoredProperties;
+	}
+	
+	/**
+	 * @param positiveExampleTrees the positive example trees to set
+	 */
+	public void setPositiveExampleTrees(Map<OWLIndividual,QueryTree<String>> positiveExampleTrees) {
+		this.currentPosExampleTrees = new ArrayList<>(positiveExampleTrees.values());
+		this.currentPosExamples = new HashSet<OWLIndividual>(positiveExampleTrees.keySet());
+		
+		for (Entry<OWLIndividual, QueryTree<String>> entry : positiveExampleTrees.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			QueryTree<String> tree = entry.getValue();
+			tree2Individual.put(tree, ind);
+		}
+	}
+	
+	/**
+	 * @param negativeExampleTrees the negative example trees to set
+	 */
+	public void setNegativeExampleTrees(Map<OWLIndividual,QueryTree<String>> negativeExampleTrees) {
+		this.currentNegExampleTrees = new ArrayList<>(negativeExampleTrees.values());
+		this.currentNegExamples = new HashSet<OWLIndividual>(negativeExampleTrees.keySet());
+		
+		for (Entry<OWLIndividual, QueryTree<String>> entry : negativeExampleTrees.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			QueryTree<String> tree = entry.getValue();
+			tree2Individual.put(tree, ind);
+		}
+	}
+	
+	/**
+	 * @param ks the ks to set
+	 */
+	@Autowired
+	public void setKs(SparqlEndpointKS ks) {
+		this.ks = ks;
 	}
 	
 	/* (non-Javadoc)

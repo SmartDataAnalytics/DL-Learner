@@ -43,17 +43,17 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	@Override
 	public void init() throws ComponentInitException {
-		Model baseModel = ModelFactory.createDefaultModel();
-		 // use the FileManager to find the input file
-		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
-		if (in == null) {
-		    throw new IllegalArgumentException(
-		                                 "File: " + fileName + " not found");
-		}
-		// read the RDF/XML file
-		baseModel.read(in, null);
-		
-		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
+//		Model baseModel = ModelFactory.createDefaultModel();
+//		 // use the FileManager to find the input file
+//		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
+//		if (in == null) {
+//		    throw new IllegalArgumentException(
+//		                                 "File: " + fileName + " not found");
+//		}
+//		// read the RDF/XML file
+//		baseModel.read(in, null);
+//		
+//		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
 	}
 	
 	public void setFileName(String fileName) {

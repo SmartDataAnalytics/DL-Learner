@@ -378,7 +378,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 		OWLClassExpression classExpression = axiom.getClassExpression();
 		classExpression = expressionRenamer.rename(classExpression);
 		Set<OWLPropertyExpression<?, ?>> propertyExpressions = axiom.getPropertyExpressions();
-		Set<OWLPropertyExpression<?, ?>> renamedPropertyExpressions = new HashSet<OWLPropertyExpression<?,?>>();
+		Set<OWLPropertyExpression<?, ?>> renamedPropertyExpressions = new HashSet<OWLPropertyExpression<?, ?>>();
 		for (OWLPropertyExpression<?, ?> owlPropertyExpression : propertyExpressions) {
 			renamedPropertyExpressions.add(expressionRenamer.rename(owlPropertyExpression));
 		}

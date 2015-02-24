@@ -6,13 +6,15 @@ import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.parser.ManchesterSyntaxParser;
-import org.dllearner.parser.ParseException;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 public class ClassExpressionPropertyEditor implements PropertyEditor {
 
-	private Description description;
+	private OWLClassExpression description;
 	
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener arg0) {
@@ -22,7 +24,7 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 
 	@Override
 	public String getAsText() {
-		return description.toManchesterSyntaxString(null, null);
+		return OWLAPIRenderers.toManchesterOWLSyntax(description);
 	}
 
 	@Override
@@ -67,20 +69,28 @@ public class ClassExpressionPropertyEditor implements PropertyEditor {
 	}
 
 	@Override
-	public void setAsText(String arg0) throws IllegalArgumentException {
+	public void setAsText(String s) throws IllegalArgumentException {
+		description = new OWLClassImpl(IRI.create(s));
+		
+		// TODO seems like the parser needs the ontology to parse class expressions
+		// because there is no lookahead, thus, it has to be known in advance
+		// which type of entity a token belongs to
+		
+		/*
 		// we assume that the start class string is given in Manchester syntax
-//		System.out.println("parser string: " + arg0);
+		ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
+		parser.setStringToParse(s);
 		try {
-			description = ManchesterSyntaxParser.parseClassExpression(arg0);
-//			System.out.println("parsed: " + description);
-		} catch (ParseException e) {
+			description = parser.parseClassExpression();
+		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
 		}
+		*/
 	}
 
 	@Override
 	public void setValue(Object arg0) {
-		description = (Description) arg0;
+		description = (OWLClassExpression) arg0;
 	}
 
 	@Override

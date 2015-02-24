@@ -10,10 +10,10 @@ import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.pagination.core.PaginationUtils;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
@@ -55,7 +55,7 @@ public class TimeBasedFragmentExtractor implements FragmentExtractor{
 	 * @see org.dllearner.algorithms.pattern.FragmentExtractor#extractFragment(org.dllearner.core.owl.NamedClass)
 	 */
 	@Override
-	public Model extractFragment(NamedClass cls, int maxFragmentDepth) {
+	public Model extractFragment(OWLClass cls, int maxFragmentDepth) {
 		startTime = System.currentTimeMillis();
 		Model fragment = ModelFactory.createDefaultModel();
 		
@@ -73,7 +73,7 @@ public class TimeBasedFragmentExtractor implements FragmentExtractor{
 		return fragment;
 	}
 	
-	private Query buildConstructQuery(NamedClass cls, int depth){
+	private Query buildConstructQuery(OWLClass cls, int depth){
 		StringBuilder sb = new StringBuilder();
 		int maxVarCnt = 0;
 		sb.append("CONSTRUCT {\n");
@@ -98,7 +98,7 @@ public class TimeBasedFragmentExtractor implements FragmentExtractor{
 		
 		sb.append("}\n");
 		ParameterizedSparqlString template = new ParameterizedSparqlString(sb.toString());
-		template.setIri("cls", cls.getName());
+		template.setIri("cls", cls.toStringID());
 		return template.asQuery();
 	}
 	

@@ -33,11 +33,8 @@ import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -45,7 +42,10 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -84,25 +84,25 @@ public class SPARQLCrossValidation {
 		DecimalFormat df = new DecimalFormat();	
 
 		// the training and test sets used later on
-		List<Set<Individual>> trainingSetsPos = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> trainingSetsNeg = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> testSetsPos = new LinkedList<Set<Individual>>();
-		List<Set<Individual>> testSetsNeg = new LinkedList<Set<Individual>>();
+		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> testSetsPos = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<Set<OWLIndividual>>();
 		
 			// get examples and shuffle them too
-		Set<Individual> posExamples;
-		Set<Individual> negExamples;
+		Set<OWLIndividual> posExamples;
+		Set<OWLIndividual> negExamples;
 			if(lp instanceof PosNegLP){
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
 				negExamples = ((PosNegLP)lp).getNegativeExamples();
 			} else if(lp instanceof PosOnlyLP){
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
-				negExamples = new HashSet<Individual>();
+				negExamples = new HashSet<OWLIndividual>();
 			} else {
 				throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
 			}
-			List<Individual> posExamplesList = new LinkedList<Individual>(posExamples);
-			List<Individual> negExamplesList = new LinkedList<Individual>(negExamples);
+			List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
+			List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
 			Collections.shuffle(posExamplesList, new Random(1));			
 			Collections.shuffle(negExamplesList, new Random(2));
 			
@@ -140,8 +140,8 @@ public class SPARQLCrossValidation {
 				
 				// calculating training and test sets
 				for(int i=0; i<folds; i++) {
-					Set<Individual> testPos = getTestingSet(posExamplesList, splitsPos, i);
-					Set<Individual> testNeg = getTestingSet(negExamplesList, splitsNeg, i);
+					Set<OWLIndividual> testPos = getTestingSet(posExamplesList, splitsPos, i);
+					Set<OWLIndividual> testNeg = getTestingSet(negExamplesList, splitsNeg, i);
 					testSetsPos.add(i, testPos);
 					testSetsNeg.add(i, testNeg);
 					trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
@@ -159,7 +159,7 @@ public class SPARQLCrossValidation {
 				((PosNegLP)lp).setPositiveExamples(trainingSetsPos.get(currFold));
 				((PosNegLP)lp).setNegativeExamples(trainingSetsNeg.get(currFold));
 			} else if(lp instanceof PosOnlyLP){
-				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<Individual>(trainingSetsPos.get(currFold)));
+				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<OWLIndividual>(trainingSetsPos.get(currFold)));
 			}
 			
 
@@ -176,13 +176,13 @@ public class SPARQLCrossValidation {
 			long algorithmDuration = System.nanoTime() - algorithmStartTime;
 			runtime.addNumber(algorithmDuration/(double)1000000000);
 			
-			Description concept = la.getCurrentlyBestDescription();
+			OWLClassExpression concept = la.getCurrentlyBestDescription();
 			System.out.println(concept);
-//			Set<Individual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
-			Set<Individual> tmp = hasType(testSetsPos.get(currFold), la);
-			Set<Individual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
-//			Set<Individual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
-			Set<Individual> tmp3 = hasType(testSetsNeg.get(currFold), la);
+//			Set<OWLIndividual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
+			Set<OWLIndividual> tmp = hasType(testSetsPos.get(currFold), la);
+			Set<OWLIndividual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
+//			Set<OWLIndividual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
+			Set<OWLIndividual> tmp3 = hasType(testSetsNeg.get(currFold), la);
 			
 			outputWriter("test set errors pos: " + tmp2);
 			outputWriter("test set errors neg: " + tmp3);
@@ -220,7 +220,7 @@ public class SPARQLCrossValidation {
 //			System.out.println(precision);System.out.println(recall);
 			fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
 			
-			length.addNumber(concept.getLength());
+			length.addNumber(OWLClassExpressionUtils.getLength(concept));
 			
 			outputWriter("fold " + currFold + ":");
 			outputWriter("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
@@ -228,7 +228,7 @@ public class SPARQLCrossValidation {
 					+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
 			outputWriter("  concept: " + concept);
 			outputWriter("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
-			outputWriter("  length: " + df.format(concept.getLength()));
+			outputWriter("  length: " + df.format(OWLClassExpressionUtils.getLength(concept)));
 			outputWriter("  runtime: " + df.format(algorithmDuration/(double)1000000000) + "s");
 					
 		}
@@ -244,16 +244,16 @@ public class SPARQLCrossValidation {
 			
 	}
 	
-	protected int getCorrectPosClassified(IndividualReasoner rs, Description concept, Set<Individual> testSetPos) {
+	protected int getCorrectPosClassified(IndividualReasoner rs, OWLClassExpression concept, Set<OWLIndividual> testSetPos) {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	protected Set<Individual> hasType(Set<Individual> individuals, QTL2 qtl) {
-		Set<Individual> coveredIndividuals = new HashSet<Individual>();
+	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2 qtl) {
+		Set<OWLIndividual> coveredIndividuals = new HashSet<OWLIndividual>();
 		QueryTree<String> solutionTree = qtl.getBestSolution().getTree();
 		QueryTree<String> tree;
-		for (Individual ind : individuals) {
-			tree = qtl.getTreeCache().getQueryTree(ind.getName());
+		for (OWLIndividual ind : individuals) {
+			tree = qtl.getTreeCache().getQueryTree(ind.toStringID());
 			if(tree.isSubsumedBy(solutionTree, literalNodeSubsumptionStrategy)){
 				coveredIndividuals.add(ind);
 			} else {
@@ -267,12 +267,12 @@ public class SPARQLCrossValidation {
 		return coveredIndividuals;
 	}
 	
-	protected int getCorrectPosClassified(Set<Individual> testSetPos, QTL2 qtl) {
+	protected int getCorrectPosClassified(Set<OWLIndividual> testSetPos, QTL2 qtl) {
 		QueryTree<String> tree = qtl.getBestSolution().getTree();
 		QueryTree<String> posTree;
 		int i = 0;
-		for (Individual posInd : testSetPos) {
-			posTree = qtl.getTreeCache().getQueryTree(posInd.getName());
+		for (OWLIndividual posInd : testSetPos) {
+			posTree = qtl.getTreeCache().getQueryTree(posInd.toStringID());
 			if(posTree.isSubsumedBy(tree, literalNodeSubsumptionStrategy)){
 				i++;
 			} 
@@ -284,16 +284,16 @@ public class SPARQLCrossValidation {
 		return i;
 	}
 	
-	protected int getCorrectNegClassified(SPARQLReasoner rs, Description concept, Set<Individual> testSetNeg) {
+	protected int getCorrectNegClassified(SPARQLReasoner rs, OWLClassExpression concept, Set<OWLIndividual> testSetNeg) {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
-	protected int getCorrectNegClassified(Set<Individual> testSetNeg, QTL2 qtl) {
+	protected int getCorrectNegClassified(Set<OWLIndividual> testSetNeg, QTL2 qtl) {
 		QueryTree<String> tree = qtl.getBestSolution().getTree();
 		QueryTree<String> negTree;
 		int i = testSetNeg.size();
-		for (Individual negInd : testSetNeg) {
-			negTree = qtl.getTreeCache().getQueryTree(negInd.getName());
+		for (OWLIndividual negInd : testSetNeg) {
+			negTree = qtl.getTreeCache().getQueryTree(negInd.toStringID());
 			if(negTree.isSubsumedBy(tree, literalNodeSubsumptionStrategy)){
 				i--;
 			}
@@ -301,7 +301,7 @@ public class SPARQLCrossValidation {
 		return i;
 	}
 	
-	public static Set<Individual> getTestingSet(List<Individual> examples, int[] splits, int fold) {
+	public static Set<OWLIndividual> getTestingSet(List<OWLIndividual> examples, int[] splits, int fold) {
 		int fromIndex;
 		// we either start from 0 or after the last fold ended
 		if(fold == 0)
@@ -313,13 +313,13 @@ public class SPARQLCrossValidation {
 		
 //		System.out.println("from " + fromIndex + " to " + toIndex);
 		
-		Set<Individual> testingSet = new HashSet<Individual>();
+		Set<OWLIndividual> testingSet = new HashSet<OWLIndividual>();
 		// +1 because 2nd element is exclusive in subList method
 		testingSet.addAll(examples.subList(fromIndex, toIndex));
 		return testingSet;
 	}
 	
-	public static Set<Individual> getTrainingSet(Set<Individual> examples, Set<Individual> testingSet) {
+	public static Set<OWLIndividual> getTrainingSet(Set<OWLIndividual> examples, Set<OWLIndividual> testingSet) {
 		return Helper.difference(examples, testingSet);
 	}
 	

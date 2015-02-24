@@ -10,9 +10,10 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,8 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 
-	protected Set<NamedClass> positiveExamples = new TreeSet<NamedClass>();
-	protected Set<NamedClass> negativeExamples = new TreeSet<NamedClass>();
+	protected Set<OWLClass> positiveExamples = new TreeSet<OWLClass>();
+	protected Set<OWLClass> negativeExamples = new TreeSet<OWLClass>();
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
@@ -50,14 +51,14 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosNeg<NamedClass> computeScore(Description description) {
-		SortedSet<NamedClass> posAsPos = new TreeSet<NamedClass>();
-		SortedSet<NamedClass> posAsNeg = new TreeSet<NamedClass>();
-		SortedSet<NamedClass> negAsPos = new TreeSet<NamedClass>();
-		SortedSet<NamedClass> negAsNeg = new TreeSet<NamedClass>();
+	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description) {
+		SortedSet<OWLClass> posAsPos = new TreeSet<OWLClass>();
+		SortedSet<OWLClass> posAsNeg = new TreeSet<OWLClass>();
+		SortedSet<OWLClass> negAsPos = new TreeSet<OWLClass>();
+		SortedSet<OWLClass> negAsNeg = new TreeSet<OWLClass>();
 
 		// for each positive example, we check whether it is a subclass of the given concept
-		for (NamedClass example : positiveExamples) {
+		for (OWLClass example : positiveExamples) {
 			if (getReasoner().isSuperClassOf(description, example)) {
 				posAsPos.add(example);
 			} else {
@@ -65,7 +66,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 			}
 		}
 		// for each negative example, we check whether it is not a subclass of the given concept
-		for (NamedClass example : negativeExamples) {
+		for (OWLClass example : negativeExamples) {
 			if (getReasoner().isSuperClassOf(description, example)) {
 				negAsPos.add(example);
 			} else {
@@ -76,7 +77,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 		// compute the accuracy
 		double accuracy = getAccuracy(description);
 
-		return new ScoreTwoValued<NamedClass>(description.getLength(), percentPerLengthUnit, posAsPos, posAsNeg,
+		return new ScoreTwoValued<OWLClass>(OWLClassExpressionUtils.getLength(description), percentPerLengthUnit, posAsPos, posAsNeg,
 				negAsPos, negAsNeg, accuracy);
 	}
 
@@ -84,8 +85,8 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescription evaluate(Description description) {
-		ScorePosNeg<NamedClass> score = computeScore(description);
+	public EvaluatedDescription evaluate(OWLClassExpression description) {
+		ScorePosNeg<OWLClass> score = computeScore(description);
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
@@ -93,7 +94,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(Description description) {
+	public double getAccuracy(OWLClassExpression description) {
 		return getAccuracyOrTooWeak(description, 1.0);
 	}
 
@@ -101,11 +102,11 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		return 0;
 	}
 
-	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 		switch (heuristic) {
 		case PRED_ACC:
 			return getPredAccuracyOrTooWeakExact(description, noise);
@@ -116,14 +117,14 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 		}
 	}
 
-	public double getPredAccuracyOrTooWeakExact(Description description, double noise) {
+	public double getPredAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 
 		int maxNotCovered = (int) Math.ceil(noise * positiveExamples.size());
 
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
 
-		for (NamedClass example : positiveExamples) {
+		for (OWLClass example : positiveExamples) {
 			if (!getReasoner().isSuperClassOf(description, example)) {
 				notCoveredPos++;
 
@@ -132,7 +133,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 				}
 			}
 		}
-		for (NamedClass example : negativeExamples) {
+		for (OWLClass example : negativeExamples) {
 			if (!getReasoner().isSuperClassOf(description, example)) {
 				notCoveredNeg++;
 			}
@@ -146,16 +147,16 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 		return (tp + tn) / (double) (tp + fp + tn + fn);
 	}
 
-	public double getFMeasureOrTooWeakExact(Description description, double noise) {
+	public double getFMeasureOrTooWeakExact(OWLClassExpression description, double noise) {
 		int additionalInstances = 0;
-		for (NamedClass example : negativeExamples) {
+		for (OWLClass example : negativeExamples) {
 			if (getReasoner().isSuperClassOf(description, example)) {
 				additionalInstances++;
 			}
 		}
 
 		int coveredInstances = 0;
-		for (NamedClass example : positiveExamples) {
+		for (OWLClass example : positiveExamples) {
 			if (getReasoner().isSuperClassOf(description, example)) {
 				coveredInstances++;
 			}
@@ -176,28 +177,28 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	/**
 	 * @param positiveExamples the positiveExamples to set
 	 */
-	public void setPositiveExamples(Set<NamedClass> positiveExamples) {
+	public void setPositiveExamples(Set<OWLClass> positiveExamples) {
 		this.positiveExamples = positiveExamples;
 	}
 
 	/**
 	 * @return the positiveExamples
 	 */
-	public Set<NamedClass> getPositiveExamples() {
+	public Set<OWLClass> getPositiveExamples() {
 		return positiveExamples;
 	}
 
 	/**
 	 * @param negativeExamples the negativeExamples to set
 	 */
-	public void setNegativeExamples(Set<NamedClass> negativeExamples) {
+	public void setNegativeExamples(Set<OWLClass> negativeExamples) {
 		this.negativeExamples = negativeExamples;
 	}
 
 	/**
 	 * @return the negativeExamples
 	 */
-	public Set<NamedClass> getNegativeExamples() {
+	public Set<OWLClass> getNegativeExamples() {
 		return negativeExamples;
 	}
 

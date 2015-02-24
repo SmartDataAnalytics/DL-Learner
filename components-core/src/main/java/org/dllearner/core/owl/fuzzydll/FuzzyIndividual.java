@@ -19,14 +19,16 @@
 
 package org.dllearner.core.owl.fuzzydll;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.IRI;
 
-public class FuzzyIndividual extends Individual{
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
+public class FuzzyIndividual extends OWLNamedIndividualImpl{
 
 	private double truthDegree;
 	
 	public FuzzyIndividual(String name, double fuzzyDegree) {
-		super(name);
+		super(IRI.create(name));
 		this.truthDegree = fuzzyDegree;
 	}
 

@@ -9,15 +9,18 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * Check different reasoner implementations.
@@ -41,7 +44,7 @@ public class ReasonerTests {
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		NamedClass classToDescribe = new NamedClass("http://ns.softwiki.de/req/CustomerRequirement");
+		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
 		
 		for (String reasonerImpl : reasonerImplementations) {
 			System.out.println("Testing " + reasonerImpl);

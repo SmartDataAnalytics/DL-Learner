@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Reasoning requests/queries related to individuals in the knowledge base.
@@ -46,45 +46,45 @@ public interface IndividualReasoner {
 	 * @param individual An individual in the knowledge base.
 	 * @return Types this individual is instance of.
 	 */
-	public Set<NamedClass> getTypes(Individual individual);
+	public Set<OWLClass> getTypes(OWLIndividual individual);
 	
 	/**
 	 * Checks whether <code>individual</code> is instance of <code>description</code>.
 	 * For instance, "Leipzig" may be an instance of "City".
 	 * 
-	 * @param description An OWL class description.
+	 * @param OWLClassExpression An OWL class description.
 	 * @param individual An individual.
-	 * @return True if the instance has the description as type and false otherwise.
+	 * @return True if the instance has the OWLClassExpression as type and false otherwise.
 	 */
-	public boolean hasType(Description description, Individual individual);
+	public boolean hasType(OWLClassExpression description, OWLIndividual individual);
 	
 	/**
 	 * Performs instance checks on a set of instances (reasoners might be more
 	 * efficient than handling each check separately).
-	 * @param description An OWL class description.
+	 * @param OWLClassExpression An OWL class description.
 	 * @param individuals An individual.
 	 * @return The subset of those instances, which have the given type.
 	 */
-	public SortedSet<Individual> hasType(Description description, Set<Individual> individuals);
+	public SortedSet<OWLIndividual> hasType(OWLClassExpression description, Set<OWLIndividual> individuals);
 	
 	/**
-	 * Gets all instances of a given class description in the knowledge base.
-	 * @param description An OWL class description.
+	 * Gets all instances of a given class OWLClassExpression in the knowledge base.
+	 * @param OWLClassExpression An OWL class description.
 	 * @return All instances of the class description.
 	 */
-	public SortedSet<Individual> getIndividuals(Description description);
+	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description);
 	
 	/**
-	 * Performs a query for all instances of the given class description and
+	 * Performs a query for all instances of the given class OWLClassExpression and
 	 * its negation. (Note that in OWL it is possible that the reasoner can
 	 * neither deduce that an individual is instance of a class nor its 
 	 * negation.) This method might be more efficient that performing a 
 	 * two retrievals.
 	 * 
-	 * @param description An OWL class description.
-	 * @return All instances of the class description and its negation.
+	 * @param OWLClassExpression An OWL class description.
+	 * @return All instances of the class OWLClassExpression and its negation.
 	 */
-	public SortedSetTuple<Individual> doubleRetrieval(Description description);	
+	public SortedSetTuple<OWLIndividual> doubleRetrieval(OWLClassExpression description);	
 	
 	/**
 	 * Returns the set of individuals, which are connect to the given individual
@@ -93,8 +93,8 @@ public interface IndividualReasoner {
 	 * @param objectProperty An object property, e.g. hasChild.
 	 * @return A set of individuals, e.g. {anna, maria}.
 	 */
-	public Set<Individual> getRelatedIndividuals(Individual individual,
-			ObjectProperty objectProperty);
+	public Set<OWLIndividual> getRelatedIndividuals(OWLIndividual individual,
+			OWLObjectProperty objectProperty);
 	
 	/**
 	 * Returns the set of individuals, which are connect to the given individual
@@ -103,7 +103,7 @@ public interface IndividualReasoner {
 	 * @param datatyoeProperty A data property, e.g. hasIncome.
 	 * @return A set of individuals, e.g. {48000^^xsd:int}.
 	 */	
-	public Set<Constant> getRelatedValues(Individual individual, DatatypeProperty datatypeProperty);
+	public Set<OWLLiteral> getRelatedValues(OWLIndividual individual, OWLDataProperty datatypeProperty);
 	
 	/**
 	 * A map of properties related to an individual, e.g. 
@@ -113,7 +113,7 @@ public interface IndividualReasoner {
 	 * @return A map of of properties connected to the individual as keys and the individuals
 	 * they point to as values.
 	 */
-	public Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationships(Individual individual); 
+	public Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationships(OWLIndividual individual); 
 	
 	/**
 	 * Computes and returns all connections between individuals through the specified
@@ -121,7 +121,7 @@ public interface IndividualReasoner {
 	 * @param objectProperty An object property.
 	 * @return The mapping of individuals to other individuals through this object property.
 	 */
-	public Map<Individual, SortedSet<Individual>> getPropertyMembers(ObjectProperty objectProperty);
+	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembers(OWLObjectProperty objectProperty);
 
 	/**
 	 * Computes and returns all connections between individuals and values through the
@@ -129,67 +129,87 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty  A data property.
 	 * @return The mapping between individuals and values through the given property.
 	 */
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembers(DatatypeProperty datatypeProperty);
+	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as double.
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @see Double#valueOf(String)
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and double values through the given property.
 	 */
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(DatatypeProperty datatypeProperty);
+	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as integer.
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @see Integer#valueOf(String)
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and integer values through the given property.
 	 */
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(DatatypeProperty datatypeProperty);
+	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembers(OWLDataProperty datatypeProperty);
 	
+	/**
+	 * Convenience method, which can be used if it is known that the property has 
+	 * values which can be parsed as given Number class.
+	 * @see #getDatatypeMembers(OWLDataProperty)
+	 * @param datatypeProperty A data property.
+	 * @param clazz a Java Number subtype.
+	 * @return The mapping between individuals and numeric values of given type through the given property.
+	 */
+	<T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty, Class<T> clazz);
+	/**
+	 * @param datatypeProperty
+	 * @return
+	 */
+	<T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty);
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as boolean value. Only "true" or "false" are 
 	 * accepted. If other values occur, a warning will be issued.
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and boolean values through the given property.
 	 */
-	public Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(DatatypeProperty datatypeProperty);
+	public Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembers(OWLDataProperty datatypeProperty);
 
 	/**
 	 * Convenience method, which can be used to get all individuals, which have value
 	 * "true" for the given property. Usually, data properties can have several values
 	 * for a given individual, but this method will throw a runtime exception if this
 	 * is the case (i.e. the set of values is {"true", "false"}). 
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @param datatypeProperty A data property.
 	 * @return The set of individuals for which the boolean property holds.
 	 */
-	public SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty);
+	public SortedSet<OWLIndividual> getTrueDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used to get all individuals, which have value
 	 * "false" for the given property. Usually, data properties can have several values
 	 * for a given individual, but this method will throw a runtime exception if this
 	 * is the case (i.e. the set of values is {"true", "false"}).
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @param datatypeProperty A data property.
 	 * @return The set of individuals for which the boolean property does not hold.
 	 */
-	public SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty);
+	public SortedSet<OWLIndividual> getFalseDatatypeMembers(OWLDataProperty datatypeProperty);
 
 	/**
 	 * Convenience method, which can be used which returns the property values as
 	 * strings (note that any literal can be represented as string, even numbers).
-	 * @see #getDatatypeMembers(DatatypeProperty)
+	 * @see #getDatatypeMembers(OWLDataProperty)
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and string values through the given property.
 	 */
-	public Map<Individual, SortedSet<String>> getStringDatatypeMembers(DatatypeProperty datatypeProperty);
-	
+	public Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembers(OWLDataProperty datatypeProperty);
+
+	/**
+	 * @param individual
+	 * @return
+	 */
+	Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLIndividual individual);
+
 }

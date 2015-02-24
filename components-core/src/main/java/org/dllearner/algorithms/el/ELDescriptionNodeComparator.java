@@ -22,11 +22,11 @@ package org.dllearner.algorithms.el;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * Compares two EL description trees. It is a lexicographic order
+ * Compares two EL OWLClassExpression trees. It is a lexicographic order
  * according to the following criteria:
  * - number of children
  * - size of label
@@ -57,25 +57,34 @@ public class ELDescriptionNodeComparator implements Comparator<ELDescriptionNode
 			} else if(labelSize1 < labelSize2) {
 				return -1;
 			} else {
-				// navigate through both labels
-				Iterator<NamedClass> it1 = node1.getLabel().descendingIterator();
-				Iterator<NamedClass> it2 = node2.getLabel().descendingIterator();
-				while(it1.hasNext()) {
-					NamedClass nc1 = it1.next();
-					NamedClass nc2 = it2.next();
-					int compare = nc1.getName().compareTo(nc2.getName());
-					if(compare != 0)
-						return compare;
+				int compare = 0;
+				if(node1.isClassNode() && node2.isClassNode()){
+					// navigate through both labels
+					Iterator<OWLClass> it1 = node1.getLabel().descendingIterator();
+					Iterator<OWLClass> it2 = node2.getLabel().descendingIterator();
+					while(it1.hasNext()) {
+						OWLClass nc1 = it1.next();
+						OWLClass nc2 = it2.next();
+						compare = nc1.toStringID().compareTo(nc2.toStringID());
+						
+					}
+				} else if(!node1.isClassNode() && !node2.isClassNode()){
+					compare = node1.getDataRange().toString().compareTo(node2.getDataRange().toString());
+				} else {
+					compare = -1;
 				}
+				
+				if(compare != 0)
+					return compare;
 				
 				// recursively compare all edges
 				for(int i=0; i<nrOfChildren1; i++) {
 					// compare by edge name
-					ObjectProperty op1 = node1.getEdges().get(i).getLabel();
-					ObjectProperty op2 = node2.getEdges().get(i).getLabel();
-					int compare = op1.getName().compareTo(op2.getName());
-					if(compare != 0)
-						return compare;
+					OWLProperty op1 = node1.getEdges().get(i).getLabel();
+					OWLProperty op2 = node2.getEdges().get(i).getLabel();
+					int compare1 = op1.toStringID().compareTo(op2.toStringID());
+					if(compare1 != 0)
+						return compare1;
 					
 					// compare child nodes
 					ELDescriptionNode child1 = node1.getEdges().get(i).getNode();

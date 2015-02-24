@@ -19,8 +19,8 @@
 
 package org.dllearner.algorithms.gp;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.ScorePosNeg;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * This class represents a program, i.e. an individual.
@@ -32,11 +32,11 @@ public class Program {
 
 	// public static int fitnessEvaluations = 0;
 
-	private Description hypothesis;
+	private OWLClassExpression hypothesis;
 
 	// private Concept extendedHypothesis;
 
-	private Description adc;
+	private OWLClassExpression adc;
 
 	private ScorePosNeg score;
 
@@ -50,11 +50,11 @@ public class Program {
 	 * Create a new program.
 	 * 
 	 */
-	public Program(ScorePosNeg score, Description hypothesis) {
+	public Program(ScorePosNeg score, OWLClassExpression hypothesis) {
 		this(score, hypothesis, null);
 	}
 
-	public Program(ScorePosNeg score, Description hypothesis, Description adc) {
+	public Program(ScorePosNeg score, OWLClassExpression hypothesis, OWLClassExpression adc) {
 		// this.learningProblem = learningProblem;
 		this.score = score;
 		this.hypothesis = hypothesis;
@@ -123,7 +123,7 @@ public class Program {
 	 * 
 	 * @return The program tree.
 	 */
-	public Description getTree() {
+	public OWLClassExpression getTree() {
 		return hypothesis;
 	}
 
@@ -131,7 +131,7 @@ public class Program {
 		return score;
 	}
 
-	public Description getAdc() {
+	public OWLClassExpression getAdc() {
 		return adc;
 	}
 }

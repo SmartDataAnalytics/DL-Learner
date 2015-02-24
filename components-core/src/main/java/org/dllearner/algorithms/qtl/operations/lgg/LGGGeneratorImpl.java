@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -49,8 +50,10 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	private Logger logger = Logger.getLogger(LGGGeneratorImpl.class);
 	private int nodeId;
 	
-	private int calls = 0;
-
+	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
+	
+	private int subCalls;
+	
 	@Override
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2) {
 		return getLGG(tree1, tree2, false);
@@ -60,13 +63,14 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	public QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2,
 			boolean learnFilters) {
 		nodeId = 0;
-		calls = 0;
-		Monitor mon = MonitorFactory.getTimeMonitor("LGG");
+		subCalls = 0;
+		
 		mon.start();
 		QueryTree<N> lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
+		
 		addNumbering(lgg);
-		logger.debug("Calls needed: " + calls);
+		
 		return lgg;
 	}
 
@@ -124,7 +128,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 	}
 	
 	private QueryTree<N> computeLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters){
-		calls++;
+		subCalls++;
 		if(logger.isDebugEnabled()){
 			logger.debug("Computing LGG for");
 			logger.debug(tree1.getStringRepresentation());
@@ -135,7 +139,8 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 		QueryTree<N> lgg;
 		//firstly, we check if both root nodes are resource nodes and have the same URI, i.e. the trees describe the same resource 
 		//if YES all child nodes should be also the same and we can just return one of the two tree as LGG
-		if((tree1.isResourceNode() && tree2.isResourceNode() || tree1.isLiteralNode() && tree2.isLiteralNode()) 
+		if((tree1.isResourceNode() && tree2.isResourceNode() 
+				|| tree1.isLiteralNode() && tree2.isLiteralNode()) 
 				&& tree1.getUserObject().equals(tree2.getUserObject())){
 			if(logger.isDebugEnabled()){
 				logger.debug("Early termination. Tree 1(" + tree1 + ") and tree 2(" + tree2 + ") describe the same resource.");
@@ -144,7 +149,7 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 //			return tree1;
 		}
 		//if NO we have to create a new tree as LGG and compute the LGG for the all child node pairs having the same edge to the parent nodes
-		lgg = new QueryTreeImpl<N>(tree1.getUserObject());
+		lgg = new QueryTreeImpl<N>((N) "?", NodeType.VARIABLE);
 //		if(tree1.isResourceNode() && tree2.isResourceNode()){
 //			lgg.setIsResourceNode(true);
 //		}
@@ -181,6 +186,9 @@ public class LGGGeneratorImpl<N> implements LGGGenerator<N>{
 			if(d1 != null && d2 != null && d1.equals(d2)){
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
+			} else {
+//				System.out.println(tree1);
+//				System.out.println(tree2);
 			}
 			lgg.setIsLiteralNode(true);
 		}

@@ -30,8 +30,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * This class takes Descritptions and a reasoner and orders the 
@@ -146,16 +147,16 @@ public class DescriptionSubsumptionTree {
 
 
 		/**
-		 * @return the first, i.e. the shortest class description of this node
+		 * @return the first, i.e. the shortest class OWLClassExpression of this node
 		 */
 		public EvaluatedDescription getEvalDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first();
 		}
 
 		/**
-		 * @return the first, i.e. the shortest class description of this node
+		 * @return the first, i.e. the shortest class OWLClassExpression of this node
 		 */
-		public Description getDesc() {
+		public OWLClassExpression getDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first().getDescription();
 		}
 
@@ -213,7 +214,7 @@ public class DescriptionSubsumptionTree {
 
 			int ret = (int) Math.round(accuracy - node.accuracy);
 			if (ret == 0) {
-				ret = node.getDesc().getLength() - getDesc().getLength();
+				ret = OWLClassExpressionUtils.getLength(node.getDesc()) - OWLClassExpressionUtils.getLength(getDesc());
 			}
 			if (ret == 0) {
 				ret = -1;

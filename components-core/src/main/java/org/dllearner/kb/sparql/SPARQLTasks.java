@@ -25,15 +25,23 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.RDFNodeTuple;
 import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLVocabulary;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
-import com.clarkparsia.owlapiv3.OWL;
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -55,15 +63,16 @@ public class SPARQLTasks {
 	private final Cache cache;
 
 	private final SparqlEndpoint sparqlEndpoint;
+	
+	OWLDataFactory df = new OWLDataFactoryImpl();
+	SPARQLReasoner reasoner;
 
 	/**
 	 * @param sparqlEndpoint
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final SparqlEndpoint sparqlEndpoint) {
-//		super();
-		this.cache = null;
-		this.sparqlEndpoint = sparqlEndpoint;
+		this(null, sparqlEndpoint);
 	}
 
 	/**
@@ -73,9 +82,10 @@ public class SPARQLTasks {
 	 *            the Endpoint the sparql queries will be send to
 	 */
 	public SPARQLTasks(final Cache cache, final SparqlEndpoint sparqlEndpoint) {
-//		super();
 		this.cache = cache;
 		this.sparqlEndpoint = sparqlEndpoint;
+		
+		reasoner = new SPARQLReasoner(sparqlEndpoint, null);
 	}
 
 	/**
@@ -240,54 +250,6 @@ public class SPARQLTasks {
 			String skosConcept, int sparqlResultLimit) {
 		return queryPatternAsSet("?subject", "?predicate", "<" + skosConcept
 				+ ">", "subject", sparqlResultLimit, false);
-	}
-
-	/**
-	 * get all instances for a complex concept / class description in KBSyntax.
-	 * 
-	 * @param conceptKBSyntax
-	 *            A description string in KBSyntax
-	 * @param sparqlResultLimit
-	 *            Limits the ResultSet size
-	 * @return SortedSet with the instance uris
-	 */
-	public SortedSet<String> retrieveInstancesForClassDescription(
-			String conceptKBSyntax, int sparqlResultLimit) {
-
-		String sparqlQueryString = "";
-		try {
-			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQuery(conceptKBSyntax, sparqlResultLimit, false, false);
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-		}
-		return queryAsSet(sparqlQueryString, "subject");
-	}
-
-	/**
-	 * same as <code>retrieveInstancesForClassDescription</code> including
-	 * RDFS Reasoning.
-	 * 
-	 * @param conceptKBSyntax
-	 *            A description string in KBSyntax
-	 * @param sparqlResultLimit
-	 *            Limits the ResultSet size
-	 * @return SortedSet with the instance uris
-	 */
-	public SortedSet<String> retrieveInstancesForClassDescriptionIncludingSubclasses(
-			String conceptKBSyntax, int sparqlResultLimit, int maxDepth) {
-
-		String sparqlQueryString = "";
-		try {
-			sparqlQueryString = SparqlQueryDescriptionConvertVisitor
-					.getSparqlQueryIncludingSubclasses(conceptKBSyntax,
-							sparqlResultLimit, this, maxDepth);
-			
-
-		} catch (Exception e) {
-			logger.warn(e.getMessage());
-		}
-		return queryAsSet(sparqlQueryString, "subject");
 	}
 
 	/**
@@ -606,6 +568,30 @@ public class SPARQLTasks {
 		return returnSet;
 
 	}
+	
+	/**
+	 * get all instances for a complex concept / class description in KBSyntax.
+	 * 
+	 * @param conceptKBSyntax
+	 *            A description string in KBSyntax
+	 * @param sparqlResultLimit
+	 *            Limits the ResultSet size
+	 * @return SortedSet with the instance uris
+	 */
+	public SortedSet<String> retrieveInstancesForClassDescription(
+			String conceptKBSyntax, int sparqlResultLimit) {
+		OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
+		String rootVariable = "subject";
+		String sparqlQueryString = "";
+		try {
+			Query query = conv.asQuery(rootVariable, new OWLClassImpl(IRI.create(conceptKBSyntax)));
+			query.setLimit(sparqlResultLimit);
+			sparqlQueryString = query.toString();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		return queryAsSet(sparqlQueryString, rootVariable);
+	}
 
 	public SparqlEndpoint getSparqlEndpoint() {
 		return sparqlEndpoint;
@@ -616,37 +602,38 @@ public class SPARQLTasks {
 	}
 
 	// tries to detect the type of the resource
-	public Entity guessResourceType(String resource) {
-		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
+	public OWLEntity guessResourceType(String resource) {
+		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, 
+				OWLRDFVocabulary.RDF_TYPE.getIRI().toString(), 10000);
 //		System.out.println(types);
-		if(types.contains("http://www.w3.org/2002/07/owl#ObjectProperty")) {
-			return new ObjectProperty(resource);
-		} else if(types.contains("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
-			return new DatatypeProperty(resource);
-		} else if(types.contains("http://www.w3.org/2002/07/owl#Class")) {
-			return new NamedClass(resource);
+		if(types.contains(OWLRDFVocabulary.OWL_OBJECT_PROPERTY.getIRI().toString())) {
+			return df.getOWLObjectProperty(IRI.create(resource));
+		} else if(types.contains(OWLRDFVocabulary.OWL_DATA_PROPERTY.getIRI().toString())) {
+			return df.getOWLDataProperty(IRI.create(resource));
+		} else if(types.contains(OWLRDFVocabulary.OWL_CLASS.getIRI().toString())) {
+			return df.getOWLClass(IRI.create(resource));
 		} else {
 			return null;
 		}
 	}
 	
 	// tries to detect the type of the resource
-	public Entity guessResourceType(String resource, boolean byTriples) {
+	public OWLEntity guessResourceType(String resource, boolean byTriples) {
 		SortedSet<String> types = retrieveObjectsForSubjectAndRole(resource, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 10000);
 //		System.out.println(types);
-		if(types.contains("http://www.w3.org/2002/07/owl#ObjectProperty")) {
-			return new ObjectProperty(resource);
-		} else if(types.contains("http://www.w3.org/2002/07/owl#DatatypeProperty")) {
-			return new DatatypeProperty(resource);
-		} else if(types.contains("http://www.w3.org/2002/07/owl#Class")) {
-			return new NamedClass(resource);
+		if(types.contains(OWLRDFVocabulary.OWL_OBJECT_PROPERTY.getIRI().toString())) {
+			return df.getOWLObjectProperty(IRI.create(resource));
+		} else if(types.contains(OWLRDFVocabulary.OWL_DATA_PROPERTY.getIRI().toString())) {
+			return df.getOWLDataProperty(IRI.create(resource));
+		} else if(types.contains(OWLRDFVocabulary.OWL_CLASS.getIRI().toString())) {
+			return df.getOWLClass(IRI.create(resource));
 		} else {
 			if(byTriples){
 				String queryString = String.format("ASK {?s a <%s>}", resource);
 				SparqlQuery sq = new SparqlQuery(queryString, sparqlEndpoint);
 				boolean isClass = sq.sendAsk();
 				if(isClass){
-					return new NamedClass(resource);
+					return df.getOWLClass(IRI.create(resource));
 				} else {
 					queryString = String.format("SELECT ?o WHERE {?s <%s> ?o.} LIMIT 10", resource);
 					sq = new SparqlQuery(queryString, sparqlEndpoint);
@@ -664,9 +651,9 @@ public class SPARQLTasks {
 						
 					}
 					if(isDataProperty && !isObjectProperty){
-						return new DatatypeProperty(resource);
+						return df.getOWLDataProperty(IRI.create(resource));
 					} else if(!isDataProperty && isObjectProperty){
-						return new ObjectProperty(resource);
+						return df.getOWLObjectProperty(IRI.create(resource));
 					}
 				}
 			}
@@ -675,32 +662,32 @@ public class SPARQLTasks {
 		}
 	}
 	
-	public Set<ObjectProperty> getAllObjectProperties() {
-		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
+	public Set<OWLObjectProperty> getAllObjectProperties() {
+		Set<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send(false);
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
-			properties.add(new ObjectProperty(qs.getResource("p").getURI()));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
 		}
 		return properties;
 	}
 	
-	public Set<DatatypeProperty> getAllDataProperties() {
-		Set<DatatypeProperty> properties = new TreeSet<DatatypeProperty>();
+	public Set<OWLDataProperty> getAllDataProperties() {
+		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:DatatypeProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send(false);
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
-			properties.add(new DatatypeProperty(qs.getResource("p").getURI()));
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI())));
 		}
 		return properties;
 	}
 	
-	public Set<NamedClass> getAllClasses() {
-		Set<NamedClass> classes = new TreeSet<NamedClass>();
+	public Set<OWLClass> getAllClasses() {
+		Set<OWLClass> classes = new TreeSet<OWLClass>();
 		String query = "SELECT ?c WHERE {?c a <http://www.w3.org/2002/07/owl#Class>} LIMIT 1000";
 		/*
 		 * String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +
@@ -711,13 +698,13 @@ public class SPARQLTasks {
 		while (q.hasNext()) {
 			QuerySolution qs = q.next();
 			if(qs.getResource("c").isURIResource()){
-				classes.add(new NamedClass(qs.getResource("c").getURI()));
+				classes.add(df.getOWLClass(IRI.create(qs.getResource("c").getURI())));
 			}
 			
 		}
 		//remove trivial classes
-		classes.remove(new NamedClass(OWL.Nothing.toStringID()));
-		classes.remove(new NamedClass(OWL.Thing.toStringID()));
+		classes.remove(df.getOWLThing());
+		classes.remove(df.getOWLNothing());
 		return classes;
 	}	
 	
@@ -732,6 +719,8 @@ public class SPARQLTasks {
 		}
 		return false;
 	}
+	
+	
 	
 }
 

@@ -44,10 +44,10 @@ public @interface ConfigOption {
     String name();
 
     /**
-     * The description of this config option
+     * The OWLClassExpression of this config option
      * @return
      */
-    String description() default "no description available";
+    String description() default "no OWLClassExpression available";
 
     /**
      * An implementation of the Property Editor to use.

@@ -21,6 +21,7 @@ public class AnnComponentManagerTest {
 
         Collection<Class<? extends Component>> components = AnnComponentManager.getInstance().getComponentsOfType(ReasonerComponent.class);
 //        System.out.println(components);
-        Assert.assertEquals(3,components.size());
+        // currently: [class org.dllearner.reasoning.OWLAPIReasoner, class org.dllearner.reasoning.FastInstanceChecker]
+        Assert.assertEquals(2,components.size());
     }
 }

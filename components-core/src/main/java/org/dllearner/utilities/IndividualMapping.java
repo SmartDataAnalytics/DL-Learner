@@ -3,10 +3,10 @@
  */
 package org.dllearner.utilities;
 
-import org.dllearner.core.owl.Individual;
-
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
+
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * @author Lorenz Buehmann
@@ -14,11 +14,11 @@ import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
  */
 public class IndividualMapping {
 	
-	private TObjectIntMap<Individual> mapping = new TObjectIntCustomHashMap<Individual>();
+	private TObjectIntMap<OWLIndividual> mapping = new TObjectIntCustomHashMap<OWLIndividual>();
 	
 	private volatile int value = 0;
 	
-	public int getMapping(Individual individual) {
+	public int getMapping(OWLIndividual individual) {
 		return mapping.putIfAbsent(individual, value++);
 	}
 

@@ -18,7 +18,7 @@
  */
 package org.dllearner.refinementoperators;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A refinement operator, which allows to set a start class.
@@ -28,6 +28,6 @@ import org.dllearner.core.owl.Description;
  */
 public interface CustomStartRefinementOperator extends RefinementOperator {
 
-	public void setStartClass(Description description);
+	public void setStartClass(OWLClassExpression description);
 	
 }

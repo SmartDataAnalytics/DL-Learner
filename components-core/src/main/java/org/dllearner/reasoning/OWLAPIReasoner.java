@@ -19,19 +19,17 @@
 
 package org.dllearner.reasoning;
 
-import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -44,33 +42,10 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.OWL2Datatype;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.TypedConstant;
-import org.dllearner.core.owl.UntypedConstant;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIConverter;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
-import org.dllearner.utilities.owl.RoleComparator;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
-import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
@@ -79,7 +54,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -88,9 +62,10 @@ import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLImportsDeclaration;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLNamedObject;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -99,9 +74,7 @@ import org.semanticweb.owlapi.model.OWLOntologyChangeException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
-import org.semanticweb.owlapi.model.UnknownOWLOntologyException;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
@@ -113,25 +86,29 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.NullReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.semanticweb.owlapi.util.SimpleIRIMapper;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
-import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
+import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently
- * supports three reasoners: FaCT++, HermiT, ELK, TrOWL and Pellet. FaCT++ is connected
- * using JNI and native libraries, while HermiT and Pellet are pure Java
+ * supports three reasoners: FaCT++, HermiT, Pellet, ELK, CEL and TrOWL. FaCT++ is connected
+ * using JNI and native libraries, while the others are pure Java
  * libraries.
  *
  * @author Jens Lehmann
@@ -140,7 +117,7 @@ import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 //	private static Logger logger = Logger
-//	.getLogger(OWLAPIReasoner.class);	
+//	.getLogger(OWLAPIReasoner.class);
 
     //private String reasonerType = "pellet";
     private OWLReasoner reasoner;
@@ -148,52 +125,62 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     private OWLOntology ontology;
     // the data factory is used to generate OWL API objects
-    private OWLDataFactory factory;
+    private OWLDataFactory df;
     // static factory
 //	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
 
-    private ConceptComparator conceptComparator = new ConceptComparator();
-    private RoleComparator roleComparator = new RoleComparator();
 //	private ClassHierarchy subsumptionHierarchy;
-//	private ObjectPropertyHierarchy roleHierarchy;	
-//	private DatatypePropertyHierarchy datatypePropertyHierarchy;
-//	private Set<Description> allowedConceptsInSubsumptionHierarchy;
+//	private ObjectPropertyHierarchy roleHierarchy;
+//	private OWLDataPropertyHierarchy datatypePropertyHierarchy;
+//	private Set<OWLClassExpression> allowedConceptsInSubsumptionHierarchy;
 
     // primitives
-    Set<NamedClass> atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
-    Set<ObjectProperty> atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
-    SortedSet<DatatypeProperty> datatypeProperties = new TreeSet<DatatypeProperty>();
-    SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-    SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-    SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-    SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();
-    SortedSet<Individual> individuals = new TreeSet<Individual>();
+    Set<OWLClass> atomicConcepts = new TreeSet<OWLClass>();
+    Set<OWLObjectProperty> atomicRoles = new TreeSet<OWLObjectProperty>();
+    SortedSet<OWLDataProperty> datatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
+//    SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
+    SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
+
+    private Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 
     // namespaces
     private Map<String, String> prefixes = new TreeMap<String, String>();
     private String baseURI;
 
     // references to OWL API ontologies
-    private List<OWLOntology> owlAPIOntologies = new LinkedList<OWLOntology>();
+    private Set<OWLOntology> owlAPIOntologies = new HashSet<OWLOntology>();
     @ConfigOption(name = "reasonerType", description = "The name of the OWL APIReasoner to use {\"fact\", \"hermit\", \"owllink\", \"pellet\", \"elk\", \"cel\"}", defaultValue = "pellet", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String reasonerTypeString = "pellet";
     @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
 
+    // default reasoner is Pellet
+    private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
+    private OWLClassExpressionMinimizer minimizer;
+    
     private OWLReasoner fallbackReasoner;
     private boolean useFallbackReasoner = false;
-    
+
     public OWLAPIReasoner() {
 
     }
-    
+
     public OWLAPIReasoner(KnowledgeSource... sources) {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
 
     public OWLAPIReasoner(Set<KnowledgeSource> sources) {
         super(sources);
+    }
+
+    public OWLAPIReasoner(OWLReasoner reasoner) {
+        this.reasoner = reasoner;
+        KnowledgeSource ks = new OWLAPIOntology(reasoner.getRootOntology());
+        sources = Collections.singleton(ks);
     }
 
     public static String getName() {
@@ -204,66 +191,30 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void init() throws ComponentInitException {
         // reset variables (otherwise subsequent initialisation with
         // different knowledge sources will merge both)
-        atomicConcepts = new TreeSet<NamedClass>(conceptComparator);
-        atomicRoles = new TreeSet<ObjectProperty>(roleComparator);
-        datatypeProperties = new TreeSet<DatatypeProperty>();
-        booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-        doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-        intDatatypeProperties = new TreeSet<DatatypeProperty>();
-        stringDatatypeProperties = new TreeSet<DatatypeProperty>();
-        individuals = new TreeSet<Individual>();
+        atomicConcepts = new TreeSet<OWLClass>();
+        atomicRoles = new TreeSet<OWLObjectProperty>();
+        datatypeProperties = new TreeSet<OWLDataProperty>();
+        individuals = new TreeSet<OWLIndividual>();
 
         // create OWL API ontology manager - make sure we use a new data factory so that we don't default to the static one which can cause problems in a multi threaded environment.
-        manager = OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl());
+        df = new OWLDataFactoryImpl();
+        manager = OWLManager.createOWLOntologyManager();
 
-        // it is a bit cumbersome to obtain all classes, because there
-        // are no reasoner queries to obtain them => hence we query them
-        // for each ontology and add them to a set; a comparator avoids
-        // duplicates by checking URIs
-        Comparator<OWLNamedObject> namedObjectComparator = new Comparator<OWLNamedObject>() {
-            public int compare(OWLNamedObject o1, OWLNamedObject o2) {
-                return o1.getIRI().compareTo(o2.getIRI());
-            }
-        };
-        Set<OWLClass> classes = new TreeSet<OWLClass>(namedObjectComparator);
-        Set<OWLObjectProperty> owlObjectProperties = new TreeSet<OWLObjectProperty>(namedObjectComparator);
-        Set<OWLDataProperty> owlDatatypeProperties = new TreeSet<OWLDataProperty>(namedObjectComparator);
-        Set<OWLNamedIndividual> owlIndividuals = new TreeSet<OWLNamedIndividual>(namedObjectComparator);
-
-        Set<OWLOntology> allImports = new HashSet<OWLOntology>();
         prefixes = new TreeMap<String, String>();
 
-        Set<OWLImportsDeclaration> directImports = new HashSet<OWLImportsDeclaration>();
-
         for (KnowledgeSource source : sources) {
-
             if (source instanceof OWLOntologyKnowledgeSource) {
                 ontology = ((OWLOntologyKnowledgeSource) source).createOWLOntology(manager);
                 owlAPIOntologies.add(ontology);
             }else{
                 //This reasoner requires an ontology to process
-                throw new ComponentInitException("OWL API Reasoner Requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
+                throw new ComponentInitException("OWL API Reasoner requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
             }
 
-            directImports.addAll(ontology.getImportsDeclarations());
-
-            try {
-                // imports includes the ontology itself
-                //FIXME this line throws the strange error
-                Set<OWLOntology> imports = manager.getImportsClosure(ontology);
-                allImports.addAll(imports);
-
-//					System.out.println(imports);
-                for (OWLOntology ont : imports) {
-                    classes.addAll(ont.getClassesInSignature());
-                    owlObjectProperties.addAll(ont.getObjectPropertiesInSignature());
-                    owlDatatypeProperties.addAll(ont.getDataPropertiesInSignature());
-                    owlIndividuals.addAll(ont.getIndividualsInSignature());
-                }
-
-            } catch (UnknownOWLOntologyException uooe) {
-                logger.error("UnknownOWLOntologyException occured, imports were not loaded! This is a bug, which has not been fixed yet.");
-            }
+            atomicConcepts.addAll(ontology.getClassesInSignature(true));
+            atomicRoles.addAll(ontology.getObjectPropertiesInSignature(true));
+            datatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
+            individuals.addAll(ontology.getIndividualsInSignature(true));
 
             // if several knowledge sources are included, then we can only
             // guarantee that the base URI is from one of those sources (there
@@ -275,7 +226,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 baseURI = ((PrefixOWLOntologyFormat) format).getDefaultPrefix();
                 prefixes.remove("");
             }
-
         }
 
         //Now merge all of the knowledge sources into one ontology instance.
@@ -283,80 +233,22 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             //The following line illustrates a problem with using different OWLOntologyManagers.  This can manifest itself if we have multiple sources who were created with different manager instances.
             //ontology = OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
             ontology = manager.createOntology(IRI.create("http://dl-learner/all"), new HashSet<OWLOntology>(owlAPIOntologies));
-            //we have to add all import declarations manually here, because this are no axioms
+            //we have to add all import declarations manually here, because these are not OWL axioms
             List<OWLOntologyChange> addImports = new ArrayList<OWLOntologyChange>();
-            for (OWLImportsDeclaration i : directImports) {
-                addImports.add(new AddImport(ontology, i));
+            for (OWLOntology ont : owlAPIOntologies) {
+            	for (OWLImportsDeclaration importDeclaration : ont.getImportsDeclarations()) {
+            		addImports.add(new AddImport(ontology, importDeclaration));
+				}
             }
             manager.applyChanges(addImports);
         } catch (OWLOntologyCreationException e1) {
             e1.printStackTrace();
         }
 
-        //configure reasoner
-        ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
-        FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
-        long timeOut = Integer.MAX_VALUE;
-        IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_NAME;
-        OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
-
-        // create actual reasoner
-        if (getReasonerTypeString().equals("fact")) {
-            try {
-                reasoner = new FaCTPlusPlusReasonerFactory().createNonBufferingReasoner(ontology, conf);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else if (getReasonerTypeString().equals("hermit")) {
-            // instantiate HermiT reasoner
-            reasoner = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
-        } else if (getReasonerTypeString().equals("pellet")) {
-            // instantiate Pellet reasoner
-            reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
-            // change log level to WARN for Pellet, because otherwise log
-            // output will be very large
-            Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
-            pelletLogger.setLevel(Level.WARN);
-        } else if (getReasonerTypeString().equals("elk")) {
-            // instantiate ELK reasoner
-            reasoner = new ElkReasonerFactory().createNonBufferingReasoner(ontology, conf);
-            Logger.getLogger(ElkReasoner.class).setLevel(Level.WARN);
-        } else if (getReasonerTypeString().equals("cel")) {
-            // instantiate CEL reasoner
-            reasoner = new CelReasoner(ontology, conf);
-        } else if (getReasonerTypeString().equals("trowl")) {
-            // instantiate TrOWL reasoner
-            reasoner = new RELReasonerFactory().createNonBufferingReasoner(ontology, conf);
-        } else {
-            try {
-                OWLlinkHTTPXMLReasonerFactory factory = new OWLlinkHTTPXMLReasonerFactory();
-                URL url = new URL(getOwlLinkURL());//Configure the server end-point
-                OWLlinkReasonerConfiguration config = new OWLlinkReasonerConfiguration(url);
-                reasoner = factory.createNonBufferingReasoner(ontology, config);
-                System.out.println(reasoner.getReasonerName());
-            } catch (Exception e) {
-//				e.printStackTrace();
-                throw new ComponentInitException(e);
-            }
+        //set up OWL reasoner
+        if(reasoner == null) {
+        	initBaseReasoner();
         }
-        
-        if(useFallbackReasoner){
-        	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
-        }
-
-        /*
-          Set<OWLOntology> importsClosure = manager.getImportsClosure(ontology);
-          System.out.println("imports closure : " + importsClosure);
-          try {
-              reasoner.loadOntologies(importsClosure);
-          } catch (OWLReasonerException e1) {
-              // TODO Auto-generated catch block
-              e1.printStackTrace();
-          }*/
-
-//		System.out.println(classes);
-//		System.out.println(properties);
-//		System.out.println(individuals);
 
         // compute class hierarchy and types of individuals
         // (done here to speed up later reasoner calls)
@@ -370,88 +262,146 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         	reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
             throw new ComponentInitException("Inconsistent ontologies.");
         }
-        
-        factory = manager.getOWLDataFactory();
 
-//		try {
-//			if(reasoner.isDefined(factory.getOWLIndividual(URI.create("http://example.com/father#female"))))
-//				System.out.println("DEFINED.");
-//			else
-//				System.out.println("NOT DEFINED.");
-//		} catch (OWLReasonerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+        df = manager.getOWLDataFactory();
 
-        // read in primitives
-        for (OWLClass owlClass : classes)
-            atomicConcepts.add(new NamedClass(owlClass.toStringID()));
-        for (OWLObjectProperty owlProperty : owlObjectProperties)
-            atomicRoles.add(new ObjectProperty(owlProperty.toStringID()));
-        for (OWLDataProperty owlProperty : owlDatatypeProperties) {
-            DatatypeProperty dtp = new DatatypeProperty(owlProperty.toStringID());
-            Set<OWLDataRange> ranges = owlProperty.getRanges(allImports);
+        Set<OWLDataProperty> numericDataProperties = new HashSet<OWLDataProperty>();
+        for (OWLDataProperty dataProperty : datatypeProperties) {
+            Collection<OWLDataRange> ranges = dataProperty.getRanges(owlAPIOntologies);
 			Iterator<OWLDataRange> it = ranges.iterator();
 			if (it.hasNext()) {
 				OWLDataRange range = it.next();
-				if (range.isDatatype()) {
-					IRI iri = ((OWLDatatype) range).getIRI();
-					if (iri.equals(OWL2Datatype.BOOLEAN.getIRI()))
-						booleanDatatypeProperties.add(dtp);
-					else if (iri.equals(OWL2Datatype.DOUBLE.getIRI()))
-						doubleDatatypeProperties.add(dtp);
-					else if (iri.equals(OWL2Datatype.INT.getIRI()) || iri.equals(OWL2Datatype.INTEGER.getIRI()))
-						intDatatypeProperties.add(dtp);
-					else if (iri.equals(OWL2Datatype.STRING.getIRI()))
-						stringDatatypeProperties.add(dtp);
+				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
+					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
+
+					if(isNumericDatatype(range.asOWLDatatype())) {
+						numericDataProperties.add(dataProperty);
+					}
 				}
 			} else {
-				stringDatatypeProperties.add(dtp);
+				datatype2Properties.put(OWL2Datatype.XSD_STRING, dataProperty);
 			}
-            datatypeProperties.add(dtp);
-        }
-        for (OWLNamedIndividual owlIndividual : owlIndividuals) {
-            individuals.add(new Individual(owlIndividual.toStringID()));
         }
 
         // remove top and bottom properties (for backwards compatibility)
-//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
-//		atomicRoles.remove(new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty"));
+//		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
+//		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
+
+
+        // remove classes that are built-in entities
+		Iterator<OWLClass> it = atomicConcepts.iterator();
+		while (it.hasNext()) {
+			OWLClass cls = (OWLClass) it.next();
+			if(cls.getIRI().isReservedVocabulary()){
+				it.remove();
+			}
+		}
+
+		 minimizer = new OWLClassExpressionMinimizer(df, this);
+    }
+
+    private void initBaseReasoner() {
+    	ReasonerProgressMonitor progressMonitor = new NullReasonerProgressMonitor();
+        FreshEntityPolicy freshEntityPolicy = FreshEntityPolicy.ALLOW;
+        long timeOut = Integer.MAX_VALUE;
+        IndividualNodeSetPolicy individualNodeSetPolicy = IndividualNodeSetPolicy.BY_NAME;
+        OWLReasonerConfiguration conf = new SimpleConfiguration(progressMonitor, freshEntityPolicy, timeOut, individualNodeSetPolicy);
+
+        OWLReasonerFactory reasonerFactory = null;
+        // create actual reasoner
+		switch (reasonerImplementation) {
+		case PELLET:
+			reasonerFactory = PelletReasonerFactory.getInstance();
+			// change log level to WARN for Pellet, because otherwise log
+			// output will be very large
+			Logger pelletLogger = Logger.getLogger("org.mindswap.pellet");
+			pelletLogger.setLevel(Level.WARN);
+			break;
+		case JFACT:
+			reasonerFactory = new JFactFactory();
+			break;
+		case ELK:
+			reasonerFactory = new ElkReasonerFactory();
+			break;
+		case HERMIT:
+			reasonerFactory = new ReasonerFactory();
+			break;
+		case TROWL:
+			reasonerFactory = new RELReasonerFactory();
+			break;
+		case CEL:
+			reasoner = new CelReasoner(ontology, conf);
+			break;
+		case OWLLINK:
+			reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
+			URL url = null;
+			try {
+				url = new URL(getOwlLinkURL());//Configure the server end-point
+				conf = new OWLlinkReasonerConfiguration(url);
+			} catch (MalformedURLException e) {
+				logger.error("Illegal URL <" + url + "> for OWL Link HTTP reasoner", e);
+			}
+		default:
+			reasonerFactory = PelletReasonerFactory.getInstance();
+		}
+
+        reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
+        
+        if(useFallbackReasoner){
+        	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
+        }
+    }
+
+    private boolean isNumericDatatype(OWLDatatype datatype){
+    	if(!datatype.isBuiltIn()){
+    		return false;
+    	}
+    	Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
+    			OWL2Datatype.XSD_BYTE,
+    			OWL2Datatype.XSD_SHORT,
+    			OWL2Datatype.XSD_INT,
+    			OWL2Datatype.XSD_INTEGER,
+    			OWL2Datatype.XSD_LONG,
+    			OWL2Datatype.XSD_DOUBLE,
+    			OWL2Datatype.XSD_FLOAT
+    			);
+    	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
+		return numericDatatypes.contains(builtInDatatype);
     }
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicConcepts()
       */
-    public Set<NamedClass> getNamedClasses() {
+    public Set<OWLClass> getClasses() {
         return Collections.unmodifiableSet(atomicConcepts);
     }
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicRoles()
       */
-    public Set<ObjectProperty> getObjectProperties() {
+    public Set<OWLObjectProperty> getObjectProperties() {
         return Collections.unmodifiableSet(atomicRoles);
     }
 
     @Override
-    public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
+    public Set<OWLDataProperty> getDatatypePropertiesImpl() {
         return datatypeProperties;
     }
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getIndividuals()
       */
-    public SortedSet<Individual> getIndividuals() {
+    public SortedSet<OWLIndividual> getIndividuals() {
         return individuals;
     }
-    
+
     /**
 	 * @param prefixes the prefixes to set
 	 */
 	public void setPrefixes(Map<String, String> prefixes) {
 		this.prefixes = prefixes;
 	}
-	
+
 	/**
 	 * @param baseURI the baseURI to set
 	 */
@@ -473,379 +423,321 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         }
     }
 
-//	@Override
-//	public ObjectPropertyHierarchy prepareRoleHierarchy() {
-//		// code copied from DIG reasoner
-//		
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-// 
-//		// refinement of atomic concepts
-//		for (ObjectProperty role : atomicRoles) {
-//			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
-//			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
-//		}
-//
-//		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
-//				roleHierarchyDown);
-//		return roleHierarchy;
-//	}
+    @Override
+    public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
+        return reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
+    }
 
     /* (non-Javadoc)
-      * @see org.dllearner.core.Reasoner#prepareRoleHierarchy(java.util.Set)
-      */
-//	public void prepareRoleHierarchy(Set<ObjectProperty> allowedRoles) {
-//		// code copied from DIG reasoner
-//		
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-//		TreeMap<ObjectProperty, TreeSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, TreeSet<ObjectProperty>>(
-//				roleComparator);
-// 
-//		// refinement of atomic concepts
-//		for (ObjectProperty role : atomicRoles) {
-//			roleHierarchyDown.put(role, getMoreSpecialRolesImpl(role));
-//			roleHierarchyUp.put(role, getMoreGeneralRolesImpl(role));
-//		}
-//
-//		roleHierarchy = new ObjectPropertyHierarchy(allowedRoles, roleHierarchyUp,
-//				roleHierarchyDown);
-//	}	
+     * @see org.dllearner.core.Reasoner#isDisjoint(OWLClass class1, OWLClass class2)
+     */
+	public boolean isDisjointImpl(OWLClass clsA, OWLClass clsB) {
+		// we have two ways, not sure which one is more efficient
+		// 1. get all disjoint classes and check for set containment (could be fast if taxonomy
+		// is cached somewhere in the reasoner internals)
+//		return reasoner.getDisjointClasses(clsA).containsEntity(clsB);
 
-//	@Override
-//	public ObjectPropertyHierarchy getRoleHierarchy() {
-//		return roleHierarchy;
-//	}	
-
-//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
-//		// code copied from DIG reasoner
-//		
-//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
-//				roleComparator);
-//		TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, TreeSet<DatatypeProperty>>(
-//				roleComparator);
-// 
-//		// refinement of atomic concepts
-//		for (DatatypeProperty role : datatypeProperties) {
-//			datatypePropertyHierarchyDown.put(role, getMoreSpecialDatatypePropertiesImpl(role));
-//			datatypePropertyHierarchyUp.put(role, getMoreGeneralDatatypePropertiesImpl(role));
-//		}
-//
-//		datatypePropertyHierarchy = new DatatypePropertyHierarchy(allowedRoles, datatypePropertyHierarchyUp,
-//				datatypePropertyHierarchyDown);
-//	}	
-
-//	@Override
-//	public DatatypePropertyHierarchy getDatatypePropertyHierarchy() {
-//		return datatypePropertyHierarchy;
-//	}		
+		// 2. check for entailment of DisjointClass(A, B) resp.
+		// SubClassOf(OWLIntersectionOf(A, B), owl:Nothing)
+//		OWLAxiom axiom = df.getOWLDisjointClassesAxiom(clsA, clsB);
+		OWLAxiom axiom = df.getOWLSubClassOfAxiom(df.getOWLObjectIntersectionOf(clsA, clsB), df.getOWLNothing());
+		return reasoner.isEntailed(axiom);
+	}
 
     @Override
-    public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
-    	OWLClassExpression sub = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(subConcept);
-		OWLClassExpression sup = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(superConcept);
-		try {
-			return reasoner.isEntailed(factory.getOWLSubClassOfAxiom(sub, sup));
-		} catch (Exception e){
-			if(sup.isAnonymous()){
-				return false;
-			}
-			NodeSet<OWLClass> superClasses = reasoner.getSuperClasses(sub, false);
-			return superClasses.containsEntity(sup.asOWLClass());
-		}
+    protected boolean isEquivalentClassImpl(OWLClassExpression class1, OWLClassExpression class2) {
+        return reasoner.isEntailed(df.getOWLEquivalentClassesAxiom(class1, class2));
     }
 
     @Override
-    protected boolean isEquivalentClassImpl(Description class1, Description class2) {
-        OWLClassExpression ce1 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class1);
-		OWLClassExpression ce2 = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(class2);
-		if(ce1.isAnonymous() && ce2.isAnonymous()){
-			return reasoner.isEntailed(factory.getOWLEquivalentClassesAxiom(ce1, ce2));
-		} else if(ce1.isAnonymous()){
-			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce1);
-			return equivalentClasses.contains(ce2.asOWLClass());
-		} else if(ce2.isAnonymous()){
-			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce2);
-			return equivalentClasses.contains(ce1.asOWLClass());
-		} else {
-			Node<OWLClass> equivalentClasses = reasoner.getEquivalentClasses(ce2);
-			return equivalentClasses.contains(ce1.asOWLClass());
-		}
-		
-		
-    }
-
-    @Override
-    protected TreeSet<Description> getSuperClassesImpl(Description concept) {
-        NodeSet<OWLClass> classes;
-		try {
-			classes = reasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-		} catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				classes = fallbackReasoner.getSuperClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-			} else {
-				throw e;
-			}
-		} 
+    protected TreeSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) {
+    	NodeSet<OWLClass> classes = reasoner.getSuperClasses(concept, true);
         return getFirstClasses(classes);
     }
 
     @Override
-    protected TreeSet<Description> getSubClassesImpl(Description concept) {
-        NodeSet<OWLClass> classes;
-        try {
-        	classes = reasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-        } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				classes = fallbackReasoner.getSubClasses(OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept), true);
-			} else {
-				throw e;
+    protected TreeSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) {
+        NodeSet<OWLClass> classes = reasoner.getSubClasses(concept, true);
+        TreeSet<OWLClassExpression> subClasses = getFirstClasses(classes);
+        subClasses.remove(df.getOWLNothing());
+        // remove built-in entities sometimes returned as subclasses of owl:Thing
+        if(concept.isOWLThing()){
+        	Iterator<OWLClassExpression> it = subClasses.iterator();
+        	while (it.hasNext()) {
+				OWLClassExpression ce = (OWLClassExpression) it.next();
+				if(!ce.isAnonymous() && ce.asOWLClass().getIRI().isReservedVocabulary()){
+					it.remove();
+				}
 			}
-		} 
-        return getFirstClasses(classes);
+        }
+		return subClasses;
     }
-    
-    protected SortedSet<Description> getEquivalentClassesImpl(Description concept) {
-    	SortedSet<Description> equivalentclasses = new TreeSet<>(conceptComparator);
-    	OWLClass cls = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept).asOWLClass();
-    	for (OWLClass eqCls : reasoner.getEquivalentClasses(cls).getEntitiesMinus(cls)) {
-    		equivalentclasses.add(new NamedClass(eqCls.toStringID()));
+
+    private <T extends OWLObject> SortedSet<T> getRepresentativeEntities(NodeSet<T> nodeSet){
+    	SortedSet<T> representatives = new TreeSet<T>();
+    	for (Node<T> node : nodeSet) {
+			if(!node.isBottomNode() && !node.isTopNode()){
+				representatives.add(node.getRepresentativeElement());
+			}
 		}
+    	return representatives;
+    }
+
+    protected SortedSet<OWLClassExpression> getEquivalentClassesImpl(OWLClassExpression concept) {
+    	SortedSet<OWLClassExpression> equivalentclasses = new TreeSet<>();
+    	for (OWLClass eqCls : reasoner.getEquivalentClasses(concept).getEntitiesMinusTop()) {
+    		equivalentclasses.add(eqCls);
+		}
+    	equivalentclasses.remove(concept);
         return equivalentclasses;
     }
 
     @Override
-    protected TreeSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) {
-        NodeSet<OWLObjectPropertyExpression> properties = null;
-        try {
-        	properties = reasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-	    } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				properties = fallbackReasoner.getSuperObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-			} else {
-				throw e;
-			}
-		} 
+    protected TreeSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty objectProperty) {
+        NodeSet<OWLObjectPropertyExpression> properties = reasoner.getSuperObjectProperties(objectProperty, true);
         return getFirstObjectProperties(properties);
     }
 
     @Override
-    protected TreeSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) {
-        NodeSet<OWLObjectPropertyExpression> properties = null;
-        try {
-        	properties = reasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-	    } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				properties = fallbackReasoner.getSubObjectProperties(OWLAPIConverter.getOWLAPIObjectProperty(role), true);
-			} else {
-				throw e;
-			}
-		} 
+    protected TreeSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty objectProperty) {
+        NodeSet<OWLObjectPropertyExpression> properties = reasoner.getSubObjectProperties(objectProperty, true);
         return getFirstObjectProperties(properties);
     }
 
     @Override
-    protected TreeSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) {
-        NodeSet<OWLDataProperty> properties = null;
-        try {
-        	properties = reasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-	    } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				properties = fallbackReasoner.getSuperDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-			} else {
-				throw e;
-			}
-		} 
+    protected TreeSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty dataProperty) {
+    	NodeSet<OWLDataProperty> properties = reasoner.getSuperDataProperties(dataProperty, true);
         return getFirstDatatypeProperties(properties);
     }
 
     @Override
-    protected TreeSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) {
-        NodeSet<OWLDataProperty> properties = null;
-        try {
-        	properties = reasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-	    } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				properties = fallbackReasoner.getSubDataProperties(OWLAPIConverter.getOWLAPIDataProperty(role), true);
-			} else {
-				throw e;
-			}
-		} 
+    protected TreeSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty dataProperty) {
+        NodeSet<OWLDataProperty> properties = reasoner.getSubDataProperties(dataProperty, true);
         return getFirstDatatypeProperties(properties);
     }
 
     @Override
-    public boolean hasTypeImpl(Description concept, Individual individual) {
-    	if(concept instanceof  Thing) {
+    public boolean hasTypeImpl(OWLClassExpression concept, OWLIndividual individual) {
+        if(concept.isOWLThing()){
         	return true;
+        } else if(concept.isOWLNothing()){
+        	return false;
+        } else {
+        	return reasoner.isEntailed(df.getOWLClassAssertionAxiom(concept, individual));
         }
-    	
-        OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
-        OWLNamedIndividual i = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-        
-//        if(concept instanceof NamedClass && ((NamedClass)concept).getName().contains("Error"))return false;
-        OWLClassAssertionAxiom axiom = factory.getOWLClassAssertionAxiom(d, i);
-        boolean entailed;
-		try {
-			entailed = reasoner.isEntailed(axiom);
-		} catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner for query {}", axiom);
-//				NodeSet<OWLNamedIndividual> instances = fallbackReasoner.getInstances(d, true);
-//				entailed = instances.containsEntity(i);
-				entailed = fallbackReasoner.isEntailed(axiom);
-			} else {
-				throw e;
-			}
-		}
-        
-        return entailed;
     }
 
     @Override
-    public SortedSet<Individual> getIndividualsImpl(Description concept) {
-//		OWLDescription d = getOWLAPIDescription(concept);
-        OWLClassExpression d = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(concept);
-        Set<OWLNamedIndividual> individuals = reasoner.getInstances(d, false).getFlattened();
-        SortedSet<Individual> inds = new TreeSet<Individual>();
-        for (OWLNamedIndividual ind : individuals)
-            //ugly code
-            if (ind != null) inds.add(new Individual(ind.toStringID()));
+    public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression ce) {
+        Set<OWLNamedIndividual> individuals = reasoner.getInstances(ce, false).getFlattened();
+        SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
+        for (OWLNamedIndividual ind : individuals){
+        	inds.add(ind);
+        }
         return inds;
     }
 
     @Override
-    public Set<NamedClass> getTypesImpl(Individual individual) {
-        Set<Node<OWLClass>> result = null;
-        try {
-        	result = reasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())), false).getNodes();
-	    } catch (Exception e) {
-			if(useFallbackReasoner){
-				logger.warn("Using fallback reasoner.");
-				result = fallbackReasoner.getTypes(factory.getOWLNamedIndividual(IRI.create(individual.getName())), false).getNodes();
-			} else {
-				throw e;
-			}
-		} 
-        return getFirstClassesNoTopBottom(result);
+    public Set<OWLClass> getTypesImpl(OWLIndividual individual) {
+        NodeSet<OWLClass> nodeSet = reasoner.getTypes(individual.asOWLNamedIndividual(), false);
+        return getFirstClassesNoTopBottom(nodeSet);
     }
 
     @Override
     public boolean isSatisfiableImpl() {
-        return reasoner.isSatisfiable(factory.getOWLThing());
+        return reasoner.isSatisfiable(df.getOWLThing());
+    }
+
+//    @Override
+//    public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+//    	return asIntersection(reasoner.getObjectPropertyDomains(objectProperty, true));
+//    }
+
+    @Override
+    public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
+    	// this is a bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// domain definitions are contained
+
+    	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
+
+    	// get all asserted domains
+    	domains.addAll(objectProperty.getDomains(ontology));
+
+    	// do the same for all super properties
+    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
+    		domains.addAll(supProp.getDomains(ontology));
+		}
+
+    	// last but not least, call a reasoner
+        NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
+        domains.addAll(nodeSet.getFlattened());
+
+        domains.remove(df.getOWLThing());
+
+        OWLClassExpression domain;
+
+        // several domains have to be treated as intersection
+        if(domains.size() > 1) {
+        	 domain = df.getOWLObjectIntersectionOf(domains);
+
+             // simplify expression, e.g. keep the most specific class in expressions
+        	 // like A AND B
+        	 domain = minimizer.minimize(domain);
+        } else if(domains.size() == 1){
+        	domain = domains.iterator().next();
+        } else {
+        	domain = df.getOWLThing();
+        }
+
+        logger.trace("Domain({},{})", objectProperty, domain);
+		return domain;
+    }
+
+//    @Override
+//    public OWLClassExpression getDomainImpl(OWLDataProperty objectProperty) {
+//    	return asIntersection(reasoner.getDataPropertyDomains(objectProperty, true));
+//    }
+
+    @Override
+    public OWLClassExpression getDomainImpl(OWLDataProperty dataProperty) {
+    	// this is a bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// domain definitions are contained
+
+    	Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
+
+    	// get all asserted domains
+    	domains.addAll(dataProperty.getDomains(ontology));
+
+    	// do the same for all super properties
+    	NodeSet<OWLDataProperty> superProperties = reasoner.getSuperDataProperties(dataProperty, false);
+    	for (OWLDataProperty supProp : superProperties.getFlattened()) {
+    		domains.addAll(supProp.getDomains(ontology));
+		}
+
+    	// last but not least, call a reasoner
+        NodeSet<OWLClass> nodeSet = reasoner.getDataPropertyDomains(dataProperty, true);
+        domains.addAll(nodeSet.getFlattened());
+
+        domains.remove(df.getOWLThing());
+
+        OWLClassExpression domain;
+
+        // several domains have to be treated as intersection
+        if(domains.size() > 1) {
+        	 domain = df.getOWLObjectIntersectionOf(domains);
+
+             // simplify expression, e.g. keep the most specific class in expressions
+        	 // like A AND B
+        	 domain = minimizer.minimize(domain);
+        } else if(domains.size() == 1){
+        	domain = domains.iterator().next();
+        } else {
+        	domain = df.getOWLThing();
+        }
+
+        logger.trace("Domain({},{})", dataProperty, domain);
+		return domain;
+    }
+
+//    @Override
+//    public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
+//    	return asIntersection(reasoner.getObjectPropertyRanges(objectProperty, true));
+//    }
+
+    @Override
+    public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
+    	// this is a little bit tricky because the reasoner interface only returns
+    	// atomic classes, but it might be the case that in the ontology complex
+    	// range definitions are contained
+
+    	Set<OWLClassExpression> ranges = new HashSet<OWLClassExpression>();
+
+    	// get all asserted ranges
+    	ranges.addAll(objectProperty.getRanges(ontology));
+
+    	// do the same for all super properties
+    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
+			ranges.addAll(supProp.getRanges(ontology));
+		}
+
+    	// last but not least, call a reasoner
+        NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
+        ranges.addAll(nodeSet.getFlattened());
+
+        OWLClassExpression range;
+
+        // several domains have to be treated as intersection
+        if(ranges.size() > 1) {
+        	range = df.getOWLObjectIntersectionOf(ranges);
+
+        	// simplify expression, e.g. keep the most specific class in expressions
+       	 	// like A AND B
+        	range = minimizer.minimize(range);
+        } else if (!ranges.isEmpty()){
+        	range = ranges.iterator().next();
+        } else {
+            range = df.getOWLThing();
+        }
+
+        logger.trace("Range({},{})", objectProperty, range);
+        return range;
     }
 
     @Override
-    public Description getDomainImpl(ObjectProperty objectProperty) {
-        OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
-
-        // Pellet returns a set of nodes of named classes, which are more
-        // general than the actual domain/range
-        NodeSet<OWLClass> set;
-		try {
-			set = reasoner.getObjectPropertyDomains(prop, true);
-		} catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
-				set = fallbackReasoner.getObjectPropertyDomains(prop, true);
-			} else {
-				throw e;
-			}
-		}
-		if(set.isEmpty() || set.getNodes().iterator().next().getSize() == 0){
-			return Thing.instance;
-		}
-		return getDescriptionFromReturnedDomain(set);
-    }
-
-    @Override
-    public Description getDomainImpl(DatatypeProperty datatypeProperty) {
-        OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-
-        NodeSet<OWLClass> set;
-        try {
-        	set = reasoner.getDataPropertyDomains(prop, true);
-	    } catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
-				set = fallbackReasoner.getDataPropertyDomains(prop, true);
-			} else {
-				throw e;
-			}
-		}
-        if(set.isEmpty() || set.getNodes().iterator().next().getSize() == 0){
-			return Thing.instance;
-		}
-        return getDescriptionFromReturnedDomain(set);
-
-    }
-
-	@Override
-	public Description getRangeImpl(ObjectProperty objectProperty) {
-		OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
-		
-		NodeSet<OWLClass> set;
-		try {
-			set = reasoner.getObjectPropertyRanges(prop, true);
-		} catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
-				set = fallbackReasoner.getObjectPropertyRanges(prop, true);
-			} else {
-				throw e;
-			}
-		}
-
-		if (set.isEmpty()) {
-			return Thing.instance;
-		}
-		Node<OWLClass> node = set.iterator().next();
-		if (node.getSize() == 0 || node.getRepresentativeElement().isOWLThing()) {
-			return Thing.instance;
-		}
-		return new NamedClass(node.getRepresentativeElement().toStringID());
-	}
-    
-    @Override
-    public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
-    	OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-    	Set<OWLDataPropertyRangeAxiom> axioms = ontology.getDataPropertyRangeAxioms(prop);
+    public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
+    	Set<OWLDataPropertyRangeAxiom> axioms = ontology.getDataPropertyRangeAxioms(datatypeProperty);
     	if(!axioms.isEmpty()){
     		OWLDataPropertyRangeAxiom axiom = axioms.iterator().next();
     		OWLDataRange range = axiom.getRange();
-    		if(range.isDatatype()){
-    			return new Datatype(range.asOWLDatatype().toStringID());
-    		} else {
-    			throw new UnsupportedOperationException("Can not handle data ranges.");
-    		}
+    		return range;
     	} else {
-    		return new Datatype(org.semanticweb.owlapi.vocab.OWL2Datatype.RDFS_LITERAL.getIRI().toString());
+    		return df.getOWLDatatype(OWL2Datatype.RDFS_LITERAL.getIRI());
     	}
     }
 
-    private Description getDescriptionFromReturnedDomain(NodeSet<OWLClass> set) {
-        if (set.isEmpty()) return new Thing();
+    private OWLClassExpression asIntersection(NodeSet<OWLClass> nodeSet){
+    	if(nodeSet.isEmpty() || nodeSet.isTopSingleton()){
+    		return df.getOWLThing();
+    	} else if(nodeSet.isSingleton()){
+    		return nodeSet.iterator().next().getRepresentativeElement();
+    	} else {
+    		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>(nodeSet.getNodes().size());
+    		for (Node<OWLClass> node : nodeSet) {
+    			if(node.getSize() != 0) {
+    				if(!node.isTopNode() && !node.isBottomNode()){
+        				operands.add(node.getRepresentativeElement());
+        			}
+    			} else {
+    				logger.warn("Reasoner returned empty node. Seems to be a bug.");
+    			}
+
+            }
+    		if(operands.size() == 1) {
+    			return operands.iterator().next();
+    		}
+    		return df.getOWLObjectIntersectionOf(operands);
+    	}
+    }
+
+    private OWLClassExpression getDescriptionFromReturnedDomain(NodeSet<OWLClass> nodeSet) {
+        if (nodeSet.isEmpty()){
+        	return df.getOWLThing();
+        }
 
         Set<OWLClassExpression> union = new HashSet<OWLClassExpression>();
         Set<OWLClassExpression> domains = new HashSet<OWLClassExpression>();
 
-        for (Node<OWLClass> descs : set) {
-            for (OWLClassExpression desc : descs) {
-                union.add(desc);
-            }
+        for (Node<OWLClass> node : nodeSet) {
+            union.add(node.getRepresentativeElement());
         }
         for (OWLClassExpression desc : union) {
             boolean isSuperClass = false;
-            for (Description d : getClassHierarchy().getSubClasses(OWLAPIConverter.convertClass(desc.asOWLClass()))) {
-                if (union.contains(OWLAPIConverter.getOWLAPIDescription(d))) {
+            for (OWLClassExpression d : getClassHierarchy().getSubClasses(desc)) {
+                if (union.contains(d)) {
                     isSuperClass = true;
                     break;
                 }
@@ -857,178 +749,73 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         OWLClass oc = (OWLClass) domains.iterator().next();
         if (oc.isOWLThing()) {
-            return new Thing();
+            return df.getOWLThing();
         } else {
-            return new NamedClass(oc.toStringID());
+            return df.getOWLClass(IRI.create(oc.toStringID()));
         }
     }
 
     @Override
-    public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
-        OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(atomicRole);
-        Map<Individual, SortedSet<Individual>> map = new TreeMap<Individual, SortedSet<Individual>>();
-        for (Individual i : individuals) {
-            OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
-
-            // get all related individuals via OWL API
-			Set<OWLNamedIndividual> inds;
-			try {
-				inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
-			} catch (Exception e) {
-				if (useFallbackReasoner) {
-					logger.warn("Using fallback reasoner.");
-					inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
-				} else {
-					throw e;
-				}
-			}
-
-            // convert data back to DL-Learner structures
-            SortedSet<Individual> is = new TreeSet<Individual>();
-            for (OWLNamedIndividual oi : inds){
-            	if(oi != null){
-            		is.add(new Individual(oi.toStringID()));
-            	}
-            }
-            map.put(i, is);
+    public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty objectProperty) {
+        Map<OWLIndividual, SortedSet<OWLIndividual>> map = new TreeMap<OWLIndividual, SortedSet<OWLIndividual>>();
+        for (OWLIndividual ind : individuals) {
+            Set<OWLIndividual> inds = getRelatedIndividuals(ind, objectProperty);
+            map.put(ind, new TreeSet<OWLIndividual>(inds));
         }
         return map;
     }
 
     @Override
-    protected Map<ObjectProperty, Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
-        OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-        Map<OWLObjectPropertyExpression, Set<OWLNamedIndividual>> mapAPI = new HashMap<OWLObjectPropertyExpression, Set<OWLNamedIndividual>>();
+    protected Map<OWLObjectProperty, Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
+        Map<OWLObjectProperty, Set<OWLIndividual>> map = new HashMap<OWLObjectProperty, Set<OWLIndividual>>();
 
-//		Map<OWLObjectPropertyExpression, Set<OWLIndividual>> mapAPI = ind.getObjectPropertyValues(ontology);
-        //no method found in the new reasoner interface, so we have to ask the reasoner for each property in the ontology
-		for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)) {
-			Set<OWLNamedIndividual> inds;
-			try {
-				inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
-			} catch (Exception e) {
-				if (useFallbackReasoner) {
-					logger.warn("Using fallback reasoner.");
-					inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
-				} else {
-					throw e;
-				}
-			}
-			mapAPI.put(prop, inds);
-		}
-
-        Map<ObjectProperty, Set<Individual>> map = new TreeMap<ObjectProperty, Set<Individual>>();
-        for (Entry<OWLObjectPropertyExpression, Set<OWLNamedIndividual>> entry : mapAPI.entrySet()) {
-            ObjectProperty prop = OWLAPIConverter.convertObjectProperty(entry.getKey().asOWLObjectProperty());
-            Set<Individual> inds = OWLAPIConverter.convertIndividuals(entry.getValue());
-            map.put(prop, inds);
+        for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)) {
+            map.put(prop, getRelatedIndividualsImpl(individual, prop));
         }
+
         return map;
     }
 
     @Override
-    public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) {
-        OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-        OWLObjectProperty prop = OWLAPIConverter.getOWLAPIObjectProperty(objectProperty);
-        Set<OWLNamedIndividual> inds = null;
-
-        try {
-        	inds = reasoner.getObjectPropertyValues(ind, prop).getFlattened();
-        } catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
-				inds = fallbackReasoner.getObjectPropertyValues(ind, prop).getFlattened();
-			} else {
-				throw e;
-			}
+    public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) {
+    	Set<OWLNamedIndividual> namedIndividuals = reasoner.getObjectPropertyValues(individual.asOWLNamedIndividual(), objectProperty).getFlattened();
+    	Set<OWLIndividual> values = new HashSet<OWLIndividual>(namedIndividuals.size());
+    	for (OWLNamedIndividual namedIndividual : namedIndividuals) {
+			values.add(namedIndividual);
 		}
-
-        // convert data back to DL-Learner structures
-        SortedSet<Individual> is = new TreeSet<Individual>();
-        for (OWLNamedIndividual oi : inds) {
-            is.add(new Individual(oi.toStringID()));
-        }
-        return is;
+    	return values;
     }
 
     @Override
-    public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) {
-        OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(individual.getName()));
-        OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-        Set<OWLLiteral> constants = null;
-
-		try {
-			constants = reasoner.getDataPropertyValues(ind, prop);
-		} catch (Exception e) {
-			if (useFallbackReasoner) {
-				logger.warn("Using fallback reasoner.");
-				constants = fallbackReasoner.getDataPropertyValues(ind, prop);
-			} else {
-				throw e;
-			}
-		}
-        return OWLAPIConverter.convertConstants(constants);
+    public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) {
+        return reasoner.getDataPropertyValues(individual.asOWLNamedIndividual(), datatypeProperty);
     }
 
-    public Map<Individual, SortedSet<Double>> getDoubleValues(DatatypeProperty datatypeProperty) {
-        OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-        Map<Individual, SortedSet<Double>> map = new TreeMap<Individual, SortedSet<Double>>();
-        for (Individual i : individuals) {
-            OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
-
-            // get all related individuals via OWL API
-            Set<OWLLiteral> inds = null;
-
-            inds = reasoner.getDataPropertyValues(ind, prop);
-
-            // convert data back to DL-Learner structures
-            SortedSet<Double> is = new TreeSet<Double>();
-            for (OWLLiteral oi : inds) {
-                Double d = Double.parseDouble(oi.getLiteral());
-                is.add(d);
-            }
-            map.put(i, is);
-        }
-        return map;
-    }
-
-    @Override
-    public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
-        OWLDataProperty prop = OWLAPIConverter.getOWLAPIDataProperty(datatypeProperty);
-        Map<Individual, SortedSet<Constant>> map = new TreeMap<Individual, SortedSet<Constant>>();
-        for (Individual i : individuals) {
-            OWLNamedIndividual ind = factory.getOWLNamedIndividual(IRI.create(i.getName()));
-
-            // get all related values via OWL API
-            Set<OWLLiteral> constants;
-            try {
-            	constants = reasoner.getDataPropertyValues(ind, prop);
-			} catch (Exception e) {
-				if (useFallbackReasoner) {
-					logger.warn("Using fallback reasoner.");
-					constants = fallbackReasoner.getDataPropertyValues(ind, prop);
-				} else {
-					throw e;
-				}
-			}
-
-            // convert data back to DL-Learner structures
-            SortedSet<Constant> is = new TreeSet<Constant>();
-            for (OWLLiteral literal : constants) {
-                // for typed constants we have to figure out the correct
-                // data type and value
-                if (!literal.isRDFPlainLiteral()) {
-                    Datatype dt = OWLAPIConverter.convertDatatype(literal.getDatatype());
-                    is.add(new TypedConstant(literal.getLiteral(), dt));
-                    // for untyped constants we have to figure out the value
-                    // and language tag (if any)
-                } else {
-                    if (literal.hasLang()) is.add(new UntypedConstant(literal.getLiteral(), literal.getLang()));
-                    else is.add(new UntypedConstant(literal.getLiteral()));
+    public Map<OWLIndividual, SortedSet<Double>> getDoubleValues(OWLDataProperty dataProperty) {
+        Map<OWLIndividual, SortedSet<Double>> map = new TreeMap<OWLIndividual, SortedSet<Double>>();
+        for (OWLIndividual ind : individuals) {
+        	Set<OWLLiteral> literals = reasoner.getDataPropertyValues(ind.asOWLNamedIndividual(), dataProperty);
+            if (!literals.isEmpty()) {
+            	SortedSet<Double> values = new TreeSet<Double>();
+                for (OWLLiteral lit : literals) {
+                	if(lit.isDouble()){
+                		values.add(lit.parseDouble());
+                	}
                 }
+            	map.put(ind, values);
             }
-            // only add individuals using the datatype property
-            if (is.size() > 0) map.put(i, is);
+        }
+        return map;
+    }
+
+    @Override
+    public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty dataProperty) {
+        Map<OWLIndividual, SortedSet<OWLLiteral>> map = new TreeMap<OWLIndividual, SortedSet<OWLLiteral>>();
+        for (OWLIndividual ind : individuals) {
+        	Set<OWLLiteral> literals = reasoner.getDataPropertyValues(ind.asOWLNamedIndividual(), dataProperty);
+            if (!literals.isEmpty()) {
+            	map.put(ind, new TreeSet<OWLLiteral>(literals));
+            }
         }
         return map;
     }
@@ -1036,163 +823,90 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     // OWL API returns a set of nodes of classes, where each node
     // consists of equivalent classes; this method picks one class
     // from each node to flatten the set of nodes
-    private TreeSet<Description> getFirstClasses(NodeSet<OWLClass> nodeSet) {
-        TreeSet<Description> concepts = new TreeSet<Description>(conceptComparator);
+    private TreeSet<OWLClassExpression> getFirstClasses(NodeSet<OWLClass> nodeSet) {
+        TreeSet<OWLClassExpression> concepts = new TreeSet<OWLClassExpression>();
         for (Node<OWLClass> node : nodeSet) {
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
-            OWLClass concept = node.getRepresentativeElement();
-            if (concept.isOWLThing()) {
-                concepts.add(new Thing());
-            } else if (concept.isOWLNothing()) {
-                concepts.add(new Nothing());
-            } else {
-                concepts.add(new NamedClass(concept.toStringID()));
-            }
+        	if(node.getSize() != 0) {
+        		OWLClass concept = node.getRepresentativeElement();
+                concepts.add(concept);
+        	} else {
+        		logger.warn("Reasoner returned empty node. Seems to be a bug.");
+        	}
         }
         return concepts;
     }
 
-    private Set<NamedClass> getFirstClassesNoTopBottom(Set<Node<OWLClass>> nodeSet) {
-        Set<NamedClass> concepts = new HashSet<NamedClass>();
+    private Set<OWLClass> getFirstClassesNoTopBottom(NodeSet<OWLClass> nodeSet) {
+        Set<OWLClass> concepts = new HashSet<OWLClass>();
         for (Node<OWLClass> node : nodeSet) {
-            // take one element from the set and ignore the rest
-            // (TODO: we need to make sure we always ignore the same concepts)
-            OWLClass concept = node.getRepresentativeElement();
-            if (!concept.isOWLThing() && !concept.isOWLNothing()) concepts.add(new NamedClass(concept.toStringID()));
+        	if(!node.isBottomNode() && !node.isTopNode()){
+        		concepts.add(node.getRepresentativeElement());
+        	}
         }
         return concepts;
     }
 
-    private TreeSet<ObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectPropertyExpression> nodeSet) {
-        TreeSet<ObjectProperty> roles = new TreeSet<ObjectProperty>(roleComparator);
+    private TreeSet<OWLObjectProperty> getFirstObjectProperties(NodeSet<OWLObjectPropertyExpression> nodeSet) {
+        TreeSet<OWLObjectProperty> roles = new TreeSet<OWLObjectProperty>();
         for (Node<OWLObjectPropertyExpression> node : nodeSet) {
             if (node.isBottomNode() || node.isTopNode()) {
                 continue;
+            }
+            if(node.getSize() == 0){
+            	logger.warn("Reasoner returned empty property node. Could be a bug.");
+            	continue;
             }
             // take one element from the set and ignore the rest
             // (TODO: we need to make sure we always ignore the same concepts)
             OWLObjectPropertyExpression property = node.getRepresentativeElement();
             if (!property.isAnonymous()) {
-                roles.add(new ObjectProperty(property.asOWLObjectProperty().toStringID()));
+                roles.add(df.getOWLObjectProperty(IRI.create(property.asOWLObjectProperty().toStringID())));
             }
         }
-        roles.remove(new ObjectProperty(factory.getOWLTopObjectProperty().toStringID()));
-        roles.remove(new ObjectProperty(factory.getOWLBottomObjectProperty().toStringID()));
+        roles.remove(df.getOWLObjectProperty(IRI.create(df.getOWLTopObjectProperty().toStringID())));
+        roles.remove(df.getOWLObjectProperty(IRI.create(df.getOWLBottomObjectProperty().toStringID())));
         return roles;
     }
 
-    private TreeSet<DatatypeProperty> getFirstDatatypeProperties(NodeSet<OWLDataProperty> nodeSet) {
-        TreeSet<DatatypeProperty> roles = new TreeSet<DatatypeProperty>(roleComparator);
+    private TreeSet<OWLDataProperty> getFirstDatatypeProperties(NodeSet<OWLDataProperty> nodeSet) {
+        TreeSet<OWLDataProperty> roles = new TreeSet<OWLDataProperty>();
         for (Node<OWLDataProperty> node : nodeSet) {
             if (node.isBottomNode() || node.isTopNode()) {
                 continue;
             }
+            if(node.getSize() == 0){
+            	logger.warn("Reasoner returned empty property node. Could be a bug.");
+            	continue;
+            }
             OWLDataProperty property = node.getRepresentativeElement();
-            roles.add(new DatatypeProperty(property.toStringID()));
+            roles.add(df.getOWLDataProperty(IRI.create(property.toStringID())));
         }
-        roles.remove(new DatatypeProperty(factory.getOWLTopDataProperty().toStringID()));
-        roles.remove(new DatatypeProperty(factory.getOWLBottomDataProperty().toStringID()));
+        roles.remove(df.getOWLDataProperty(IRI.create(df.getOWLTopDataProperty().toStringID())));
+        roles.remove(df.getOWLDataProperty(IRI.create(df.getOWLBottomDataProperty().toStringID())));
         return roles;
     }
 
-    @SuppressWarnings({"unused"})
-    private Set<Description> owlClassesToAtomicConcepts(Set<OWLClass> owlClasses) {
-        Set<Description> concepts = new HashSet<Description>();
-        for (OWLClass owlClass : owlClasses)
-            concepts.add(OWLAPIConverter.convertClass(owlClass));
-        return concepts;
-    }
-
-    public static void exportKBToOWL(File owlOutputFile, KB kb, IRI ontologyIRI) {
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        //URI ontologyURI = URI.create("http://example.com");
-        IRI physicalIRI = IRI.create(owlOutputFile.toURI());
-        SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyIRI, physicalIRI);
-        manager.addIRIMapper(mapper);
-        OWLOntology ontology;
-        try {
-            ontology = manager.createOntology(ontologyIRI);
-            // OWLAPIReasoner.fillOWLAPIOntology(manager, ontology, kb);
-            OWLAPIAxiomConvertVisitor.fillOWLOntology(manager, ontology, kb);
-            manager.saveOntology(ontology);
-        } catch (OWLOntologyCreationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (UnknownOWLOntologyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (OWLOntologyStorageException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * Some reasoner implementations do not support all operations yet.
-     * In that case a fallback reasoner based only on the asserted
-     * axioms can be enabled.
-	 * @param useFallbackReasoner whether to enable a fallback reasoner
-	 */
-	public void setUseFallbackReasoner(boolean useFallbackReasoner) {
-		this.useFallbackReasoner = useFallbackReasoner;
+    @Override
+	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_BOOLEAN);
 	}
 
-    /**
-     * Test
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        String iri = "http://www.co-ode.org/ontologies/pizza/2007/02/12/pizza.owl";
+	@Override
+	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_DOUBLE);
+	}
 
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-        try {
-            OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(iri));
-            KnowledgeSource ks = new OWLAPIOntology(ontology);
-            OWLAPIReasoner reasoner = new OWLAPIReasoner(ks);
-            reasoner.init();
-            ClassHierarchy classHierarchy = reasoner.getClassHierarchy();
-            System.out.println(classHierarchy.toString(false));
-//            new PelletReasonerFactory().createReasoner(ontology);
-            System.out.println("Reasoner loaded succesfully.");
-            CelReasoner r = new CelReasoner(ontology);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_INT);
+	}
 
-    /**
-     * @return the booleanDatatypeProperties
-     */
-    @Override
-    public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
-        return booleanDatatypeProperties;
-    }
-
-    /**
-     * @return the doubleDatatypeProperties
-     */
-    @Override
-    public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
-        return doubleDatatypeProperties;
-    }
-
-    /**
-     * @return the intDatatypeProperties
-     */
-    @Override
-    public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
-        return intDatatypeProperties;
-    }
-
-    /**
-     * @return the intDatatypeProperties
-     */
-    @Override
-    public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
-        return stringDatatypeProperties;
-    }
+	@Override
+	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
+		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_STRING);
+	}
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getBaseURI()
@@ -1216,7 +930,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         reasoner.dispose();
     }
 
-    public List<OWLOntology> getOWLAPIOntologies() {
+    public Set<OWLOntology> getOWLAPIOntologies() {
         return owlAPIOntologies;
     }
 
@@ -1230,11 +944,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //	}
 
     @Override
-    public Set<NamedClass> getInconsistentClassesImpl() {
-        Set<NamedClass> concepts = new HashSet<NamedClass>();
+    public Set<OWLClass> getInconsistentClassesImpl() {
+        Set<OWLClass> concepts = new HashSet<OWLClass>();
 
         for (OWLClass concept : reasoner.getUnsatisfiableClasses().getEntities()) {
-            concepts.add(new NamedClass(concept.toStringID()));
+            concepts.add(df.getOWLClass(IRI.create(concept.toStringID())));
         }
 
         return concepts;
@@ -1246,13 +960,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     }
 
     @Override
-    public Set<Constant> getLabelImpl(Entity entity) {
-        OWLEntity owlEntity = OWLAPIConverter.getOWLAPIEntity(entity);
-        Set<OWLAnnotation> labelAnnotations = owlEntity.getAnnotations(owlAPIOntologies.get(0), factory.getRDFSLabel());
-        Set<Constant> annotations = new HashSet<Constant>();
+    public Set<OWLLiteral> getLabelImpl(OWLEntity entity) {
+        Collection<OWLAnnotation> labelAnnotations = entity.getAnnotations(ontology, df.getRDFSLabel());
+        Set<OWLLiteral> annotations = new HashSet<OWLLiteral>();
         for (OWLAnnotation label : labelAnnotations) {
-            OWLLiteral c = (OWLLiteral) label.getValue();
-            annotations.add(OWLAPIConverter.convertConstant(c));
+            annotations.add((OWLLiteral) label.getValue());
         }
         return annotations;
     }
@@ -1261,12 +973,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
       * @see org.dllearner.core.BaseReasoner#remainsSatisfiable(org.dllearner.core.owl.Axiom)
       */
     @Override
-    public boolean remainsSatisfiableImpl(Axiom axiom) {
+    public boolean remainsSatisfiableImpl(OWLAxiom axiom) {
         boolean consistent = true;
-        OWLAxiom axiomOWLAPI = OWLAPIAxiomConvertVisitor.convertAxiom(axiom);
 
         try {
-            manager.applyChange(new AddAxiom(ontology, axiomOWLAPI));
+            manager.applyChange(new AddAxiom(ontology, axiom));
         } catch (OWLOntologyChangeException e1) {
             e1.printStackTrace();
         }
@@ -1274,7 +985,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         consistent = reasoner.isConsistent();
 
         try {
-            manager.applyChange(new RemoveAxiom(ontology, axiomOWLAPI));
+            manager.applyChange(new RemoveAxiom(ontology, axiom));
         } catch (OWLOntologyChangeException e) {
             e.printStackTrace();
         }
@@ -1289,14 +1000,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
      * @return the asserted class definitions
      */
     @Override
-    protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
-        OWLClass owlClass = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(nc).asOWLClass();
-        Set<OWLClassExpression> owlAPIDescriptions = owlClass.getEquivalentClasses(new HashSet<OWLOntology>(owlAPIOntologies.get(0).getImportsClosure()));
-        Set<Description> definitions = new HashSet<Description>();
-        for (OWLClassExpression owlAPIDescription : owlAPIDescriptions) {
-            definitions.add(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(owlAPIDescription));
-        }
-        return definitions;
+    protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass cls) {
+        Collection<OWLClassExpression> definitions = cls.getEquivalentClasses(ontology);
+        return new HashSet<>(definitions);
     }
 
     /**
@@ -1334,6 +1040,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         this.reasonerTypeString = reasonerTypeString;
     }
 
+    /**
+	 * @param reasonerImplementation the reasonerImplementation to set
+	 */
+	public void setReasonerImplementation(ReasonerImplementation reasonerImplementation) {
+		this.reasonerImplementation = reasonerImplementation;
+	}
+
     public String getOwlLinkURL() {
         return owlLinkURL;
     }
@@ -1341,4 +1054,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void setOwlLinkURL(String owlLinkURL) {
         this.owlLinkURL = owlLinkURL;
     }
+    
+    /**
+     * Some reasoner implementations do not support all operations yet.
+     * In that case a fallback reasoner based only on the asserted
+     * axioms can be enabled.
+	 * @param useFallbackReasoner whether to enable a fallback reasoner
+	 */
+	public void setUseFallbackReasoner(boolean useFallbackReasoner) {
+		this.useFallbackReasoner = useFallbackReasoner;
+	}
 }

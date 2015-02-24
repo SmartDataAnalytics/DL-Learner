@@ -24,33 +24,35 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.owl.RoleComparator;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
- * Represents a hierarchy of object properties (roles in Description Logics).
+ * Represents a hierarchy of object properties (roles in OWLClassExpression Logics).
  * 
  * @author Jens Lehmann
  *
  */
 public class ObjectPropertyHierarchy {
 
-	RoleComparator rc = new RoleComparator();
-	TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyUp;
-	TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyDown;	
-	TreeSet<ObjectProperty> mostGeneralRoles = new TreeSet<ObjectProperty>(rc);
-	TreeSet<ObjectProperty> mostSpecialRoles = new TreeSet<ObjectProperty>(rc);
+	TreeMap<OWLObjectProperty,SortedSet<OWLObjectProperty>> roleHierarchyUp;
+	TreeMap<OWLObjectProperty,SortedSet<OWLObjectProperty>> roleHierarchyDown;	
+	TreeSet<OWLObjectProperty> mostGeneralRoles = new TreeSet<OWLObjectProperty>();
+	TreeSet<OWLObjectProperty> mostSpecialRoles = new TreeSet<OWLObjectProperty>();
 	
-	ObjectProperty topRole = new ObjectProperty("http://www.w3.org/2002/07/owl#topObjectProperty");
-	ObjectProperty botRole = new ObjectProperty("http://www.w3.org/2002/07/owl#bottomObjectProperty");
+	OWLObjectProperty topRole = new OWLObjectPropertyImpl(OWLRDFVocabulary.OWL_TOP_OBJECT_PROPERTY.getIRI());
+	OWLObjectProperty botRole = new OWLObjectPropertyImpl(OWLRDFVocabulary.OWL_BOTTOM_OBJECT_PROPERTY.getIRI());
 	
-	public ObjectPropertyHierarchy(Set<ObjectProperty> atomicRoles, TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyUp , TreeMap<ObjectProperty,SortedSet<ObjectProperty>> roleHierarchyDown) {
+	public ObjectPropertyHierarchy(Set<OWLObjectProperty> atomicRoles, TreeMap<OWLObjectProperty,SortedSet<OWLObjectProperty>> roleHierarchyUp , TreeMap<OWLObjectProperty,SortedSet<OWLObjectProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
 		// find most general and most special roles
-		for(ObjectProperty role : atomicRoles) {
-			SortedSet<ObjectProperty> moreGen = getMoreGeneralRoles(role);
-			SortedSet<ObjectProperty> moreSpec = getMoreSpecialRoles(role);
+		for(OWLObjectProperty role : atomicRoles) {
+			SortedSet<OWLObjectProperty> moreGen = getMoreGeneralRoles(role);
+			SortedSet<OWLObjectProperty> moreSpec = getMoreSpecialRoles(role);
 			if(moreGen.size()==0 || (moreGen.size()==1 && moreGen.first().equals(topRole)))
 				mostGeneralRoles.add(role);
 			if(moreSpec.size()==0 || (moreSpec.size()==1 && moreSpec.first().equals(botRole)))
@@ -58,14 +60,14 @@ public class ObjectPropertyHierarchy {
 		}
 	}
 	
-	public SortedSet<ObjectProperty> getMoreGeneralRoles(ObjectProperty role) {
+	public SortedSet<OWLObjectProperty> getMoreGeneralRoles(OWLObjectProperty role) {
 		// we clone all concepts before returning them such that they cannot be
 		// modified externally
-		return new TreeSet<ObjectProperty>(roleHierarchyUp.get(role));	
+		return new TreeSet<OWLObjectProperty>(roleHierarchyUp.get(role));	
 	}
 	
-	public SortedSet<ObjectProperty> getMoreSpecialRoles(ObjectProperty role) {
-		return new TreeSet<ObjectProperty>(roleHierarchyDown.get(role));
+	public SortedSet<OWLObjectProperty> getMoreSpecialRoles(OWLObjectProperty role) {
+		return new TreeSet<OWLObjectProperty>(roleHierarchyDown.get(role));
 	}
 	
 	/**
@@ -75,12 +77,12 @@ public class ObjectPropertyHierarchy {
 	 * @param superProperty The (supposedly) more general property.
 	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
 	 */
-	public boolean isSubpropertyOf(ObjectProperty subProperty, ObjectProperty superProperty) {
+	public boolean isSubpropertyOf(OWLObjectProperty subProperty, OWLObjectProperty superProperty) {
 		if(subProperty.equals(superProperty)) {
 			return true;
 		} else {
 //			System.out.println("oph: " + subProperty + " " + superProperty);
-			for(ObjectProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
+			for(OWLObjectProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
 				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
 					return true;
 				}
@@ -94,20 +96,20 @@ public class ObjectPropertyHierarchy {
 	@Override
 	public String toString() {
 		String str = "";
-		for(ObjectProperty role : mostGeneralRoles) {
+		for(OWLObjectProperty role : mostGeneralRoles) {
 			str += toString(roleHierarchyDown, role, 0);
 		}
 		return str;
 	}
 	
-	private String toString(TreeMap<ObjectProperty,SortedSet<ObjectProperty>> hierarchy, ObjectProperty role, int depth) {
+	private String toString(TreeMap<OWLObjectProperty,SortedSet<OWLObjectProperty>> hierarchy, OWLObjectProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)
 			str += "  ";
 		str += role.toString() + "\n";
-		Set<ObjectProperty> tmp = hierarchy.get(role);
+		Set<OWLObjectProperty> tmp = hierarchy.get(role);
 		if(tmp!=null) {
-			for(ObjectProperty c : tmp)
+			for(OWLObjectProperty c : tmp)
 				str += toString(hierarchy, c, depth+1);
 		}
 		return str;
@@ -116,14 +118,14 @@ public class ObjectPropertyHierarchy {
 	/**
 	 * @return The most general roles.
 	 */
-	public TreeSet<ObjectProperty> getMostGeneralRoles() {
+	public TreeSet<OWLObjectProperty> getMostGeneralRoles() {
 		return mostGeneralRoles;
 	}
 
 	/**
 	 * @return The most special roles.
 	 */
-	public TreeSet<ObjectProperty> getMostSpecialRoles() {
+	public TreeSet<OWLObjectProperty> getMostSpecialRoles() {
 		return mostSpecialRoles;
 	}
 

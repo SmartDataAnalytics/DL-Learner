@@ -14,8 +14,8 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.KB;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.analyse.TypeOntology;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -133,9 +133,9 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         }
         if (ontologySchemaUrls == null) {
             throw new ComponentInitException(
-                    "An ontology schema description file (ontologyFile) in RDF is required");
+                    "An ontology schema OWLClassExpression file (ontologyFile) in RDF is required");
         }
-        
+
         Monitor monComp = MonitorFactory.start("Simple SPARQL Component")
                 .start();
         Monitor monIndexer = MonitorFactory.start("Schema Indexer").start();
@@ -143,7 +143,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         indexer.setOntologySchemaUrls(ontologySchemaUrls);
         indexer.init();
         monIndexer.stop();
-        
+
         TypeOntology typeOntology = new TypeOntology();
 
         Monitor monQueryingABox;
@@ -166,17 +166,17 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
                 log.debug("SPARQL: {}", queryString);
 
                 monQueryingABox = MonitorFactory.start("ABox query time");
-                try{
-                executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
-                } catch (Throwable t){
-                	t.printStackTrace();
-                }
+				try {
+					executor.executeQuery(queryString, endpointURL, model, defaultGraphURI);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
                 monQueryingABox.stop();
 
                 typizeModel=MonitorFactory.start("Typize the model");
                 model=typeOntology.addTypetoJena(model, instances, null);
                 typizeModel.stop();
-                
+
                 alreadyQueried.addAll(instancesSet);
                 instancesSet = difference(alreadyQueried, model);
 
@@ -184,7 +184,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             }
 
             log.info("recursion depth: {} reached, {} new instances",recursionDepth,instancesSet.size());
-            
+
             //queryString = aGenerator.createLastQuery(instances, model, filters);
             //log.debug("SPARQL: {}", queryString);
 
@@ -307,13 +307,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         this.tboxfilter = tboxfilter;
     }
 
-
-	@Override
-	public KB toKB() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public String toDIG(URI kbURI) {
 		// TODO Auto-generated method stub
@@ -324,18 +317,17 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 	public void export(File file, OntologyFormat format)
 			throws OntologyFormatUnsupportedException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
-        JenaToOwlapiConverter converter = new JenaToOwlapiConverter();
-        return converter.convert(this.model,manager);
+        return OwlApiJenaUtils.getOWLOntology(model);
     }
-    
+
     public static String getName(){
     	return "efficient SPARQL fragment extractor";
     }
-    
+
 
 }

@@ -22,7 +22,7 @@ package org.dllearner.utilities.datastructures;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * A tuple of training set and test set.
@@ -32,24 +32,24 @@ import org.dllearner.core.owl.Individual;
  */
 public class TrainTestList {
 
-	private List<Individual> trainList;
-	private List<Individual> testList;
+	private List<OWLIndividual> trainList;
+	private List<OWLIndividual> testList;
 	
 	public TrainTestList() {
-		trainList = new LinkedList<Individual>();
-		testList = new LinkedList<Individual>();
+		trainList = new LinkedList<OWLIndividual>();
+		testList = new LinkedList<OWLIndividual>();
 	}
 	
-	public TrainTestList(List<Individual> trainList, List<Individual> testList) {
+	public TrainTestList(List<OWLIndividual> trainList, List<OWLIndividual> testList) {
 		this.trainList = trainList;
 		this.testList = testList;
 	}
 
-	public List<Individual> getTrainList() {
+	public List<OWLIndividual> getTrainList() {
 		return trainList;
 	}
 
-	public List<Individual> getTestList() {
+	public List<OWLIndividual> getTestList() {
 		return testList;
 	}
 	

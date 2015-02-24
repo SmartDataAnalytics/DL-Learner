@@ -1,0 +1,318 @@
+<?xml version="1.0" ?>
+<dataset id="qald-4_biomedical_train">
+
+<question id="1">
+<string lang="en"><![CDATA[Which diseases is Cetuximab used for?]]></string>
+<query><![CDATA[
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?v
+WHERE {
+        ?x rdfs:label ?l.
+        FILTER(REGEX(?l,'Cetuximab','i')).
+        ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/possibleDiseaseTarget> ?v.
+        ?v a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseases>.
+}
+]]>
+</query>
+</question>
+
+<question id="2">
+<string lang="en"><![CDATA[What are the diseases caused by Valdecoxib?]]></string>
+<query><![CDATA[
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?x
+WHERE {
+        ?v1 rdfs:label ?l.
+        FILTER(REGEX(?l,'Valdecoxib','i')).
+        ?v2 <http://www.w3.org/2002/07/owl#sameAs> ?v1.
+        ?v2 <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?x.
+        ?x a ?c.
+        ?c <http://www.w3.org/2002/07/owl#sameAs> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseases>.
+}
+]]>
+</query>
+</question>
+
+<question id="3">
+<string lang="en"><![CDATA[What is the side effects of drugs used for Tuberculosis?]]></string>
+<query><![CDATA[
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?x
+WHERE {
+        <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/1154> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?v2.
+        ?v2 a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugs>.
+        ?v3 <http://www.w3.org/2002/07/owl#sameAs> ?v2.
+        ?v3 <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?x.
+}
+]]>
+</query>
+</question>
+
+<question id="4">
+<string lang="en"><![CDATA[What are the side effects of Valdecoxib?]]></string>
+<query><![CDATA[
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT DISTINCT ?x
+WHERE {
+        ?v1 rdfs:label ?l.
+        FILTER(REGEX(?l,'Valdecoxib','i')).
+        ?v2 <http://www.w3.org/2002/07/owl#sameAs> ?v1.
+        ?v2 <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?x.
+}
+]]>
+</query>
+</question>
+
+<question id="5">
+<string lang="en"><![CDATA[Which genes are associated with breast cancer?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/1669> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> ?x. 
+}
+]]>
+</query>
+</question>
+
+<question id="6">
+<string lang="en"><![CDATA[Which drugs have fever as a side effect?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE { 
+        ?x a <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/drugs>. 
+        ?x <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> <http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/C0015967>. 
+}
+]]>
+</query>
+</question>
+
+<question id="7">
+<string lang="en"><![CDATA[Give me diseases treated by tetracycline]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE { 
+        ?x a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseases>. 
+        ?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00759>. 
+}
+]]>
+</query>
+</question>
+
+<question id="8">
+<string lang="en"><![CDATA[Which drugs interact with allopurinol?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE { 
+        ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/interactionDrug1> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00437>. 
+}
+]]>
+</query>
+</question>
+
+<question id="9">
+<string lang="en"><![CDATA[What are side effects of drugs used for asthma?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v3 ?v1 
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/116> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?v2. 
+        ?v0 <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?v1. 
+        ?v2 <http://www.w3.org/2002/07/owl#sameAs> ?v0. 
+}
+]]>
+</query>
+</question>
+
+<question id="10">
+<string lang="en"><![CDATA[Which foods does allopurinol interact with?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?l0 
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00437> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/foodInteraction> ?l0. 
+}
+]]>
+</query>
+</question>
+
+<question id="11">
+<string lang="en"><![CDATA[What are enzymes of drugs used for anemia?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v1 
+WHERE { 
+        ?v0 <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/enzyme> ?v1. 
+        ?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?v0.
+        ?x rdfs:label ?l.
+        FILTER(REGEX(?l,'Anemia','i')). 
+}
+]]>
+</query>
+</question>
+
+<question id="12">
+<string lang="en"><![CDATA[What is the target drug of Vidarabine?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v0 
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00194> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> ?v0. 
+}
+]]>
+</query>
+</question>
+
+<question id="13">
+<string lang="en"><![CDATA[Which drugs target Multidrug resistance protein 1?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v1 
+WHERE { 
+        ?v1 a <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugs>. 
+        ?v1 <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/1588>. 
+}
+]]>
+</query>
+</question>
+
+<question id="14">
+<string lang="en"><![CDATA[Give me drug references of drugs targeting Prothrombin.]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v0
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/3579> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/drugReference> ?v0. 
+        ?v1 <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/3579>. 
+}
+]]>
+</query>
+</question>
+
+<question id="15">
+<string lang="en"><![CDATA[Which genes are associated with diseases treated with Cetuximab?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?v1 
+WHERE { 
+        ?v0 a <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/diseases>. 
+        ?v0 <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> ?v1. 
+        ?v0 <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00002>. 
+}
+]]>
+</query>
+</question>
+
+<question id="16">
+<string lang="en"><![CDATA[Which drugs have hypertension and vomiting as side-effects?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?s 
+WHERE { 
+        ?s <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> <http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/C0020538>. 
+        ?s <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> <http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/C0042963>.
+}
+]]>
+</query>
+</question>
+
+<question id="17">
+<string lang="en"><![CDATA[Which are possible drugs against rickets?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE {
+        <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseases/1004> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?x.
+}
+]]>
+</query>
+</question>
+
+<question id="18">
+<string lang="en"><![CDATA[What are the common side effects of Doxil and Bextra?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?y 
+WHERE { 
+        <http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/1690> <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y. 
+        <http://www4.wiwiss.fu-berlin.de/sider/resource/drugs/119607> <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?y.
+}
+]]>
+</query>
+</question>
+
+<question id="19">
+<string lang="en"><![CDATA[Which are the drugs whose side effects are associated with the gene TRPM6?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE {
+        ?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/TRPM6>. 
+        ?x owl:sameAs ?k. 
+        ?l <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?k . 
+}
+]]>
+</query>
+</question>
+
+<question id="20">
+<string lang="en"><![CDATA[Which are the side effects of Penicillin G?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?s 
+WHERE { 
+        ?x owl:sameAs <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB01053>. 
+        ?x <http://www4.wiwiss.fu-berlin.de/sider/resource/sider/sideEffect> ?s.
+}
+]]>
+</query>
+</question>
+
+<question id="21">
+<string lang="en"><![CDATA[Which diseases are associated with the gene FOXP2?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x
+WHERE {
+        ?x <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/FOXP2>.
+}
+]]>
+</query>
+</question>
+
+<question id="22">
+<string lang="en"><![CDATA[Which are possible drugs for diseases associated with the gene ALD?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE {
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/ALD>. 
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?x.
+}
+]]>
+</query>
+</question>
+
+<question id="23">
+<string lang="en"><![CDATA[Which are targets of Hydroxocobalamin?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?x 
+WHERE {
+        <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugs/DB00200> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> ?x.
+}
+]]>
+</query>
+</question>
+
+<question id="24">
+<string lang="en"><![CDATA[Which are targets for possible drugs for diseases associated with the gene ALD?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?z
+WHERE {
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> <http://www4.wiwiss.fu-berlin.de/diseasome/resource/genes/ALD>. 
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?x. 
+        ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> ?z.
+}
+]]>
+</query>
+</question>
+
+<question id="25">
+<string lang="en"><![CDATA[Which genes are associated with diseases whose possible drugs target Cubilin?]]></string>
+<query><![CDATA[
+SELECT DISTINCT ?z 
+WHERE {
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/associatedGene> ?z. 
+        ?s <http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/possibleDrug> ?x. 
+        ?x <http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/target> <http://www4.wiwiss.fu-berlin.de/drugbank/resource/targets/1224>.
+}
+]]>
+</query>
+</question>
+
+</dataset>

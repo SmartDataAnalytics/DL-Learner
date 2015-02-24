@@ -1,20 +1,16 @@
 package org.dllearner.kb.sparql;
 
-import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.query.QueryExecution;
@@ -49,6 +45,10 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			qef = new QueryExecutionFactoryCacheEx(qef, cache);
 		}
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
+	}
+	
+	public ConciseBoundedDescriptionGeneratorImpl(QueryExecutionFactory qef) {
+		this.qef = qef;
 	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir, int maxRecursionDepth) {
@@ -214,12 +214,26 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	}
 	
 	public static void main(String[] args) {
-		Logger.getRootLogger().setLevel(Level.DEBUG);
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
 //		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
 		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 1);
 		System.out.println(cbd.size());
+		
+		
+		String query = "CONSTRUCT {\n" + 
+				"<http://dbpedia.org/resource/Trey_Parker> ?p0 ?o0.\n" + 
+				"?o0 ?p1 ?o1.\n" + 
+				"}\n" + 
+				"WHERE {\n" + 
+				"<http://dbpedia.org/resource/Trey_Parker> ?p0 ?o0.\n" + 
+				"OPTIONAL{\n" + 
+				"?o0 ?p1 ?o1.\n" + 
+				"}}";
+		com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP qe = new com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP("http://dbpedia.org/sparql", query);
+		qe.setDefaultGraphURIs(Collections.singletonList("http://dbpedia.org"));
+		Model model = qe.execConstruct();
+		qe.close();
 	}
 
 	

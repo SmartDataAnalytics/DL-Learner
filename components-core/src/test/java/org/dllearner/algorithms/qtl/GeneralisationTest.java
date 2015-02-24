@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter2;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter2;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl2;
 import org.dllearner.algorithms.qtl.operations.Generalisation;
@@ -53,7 +53,7 @@ public class GeneralisationTest {
 		Generalisation<String> gen = new Generalisation<String>();
 		Model model = getModelForExample(resource, maxModelSizePerExample);
 		QueryTreeFactory<String> treeFactory = new QueryTreeFactoryImpl2();
-		QuestionBasedStatementFilter2 filter = new QuestionBasedStatementFilter2(new HashSet(
+		KeywordBasedStatementFilter2 filter = new KeywordBasedStatementFilter2(new HashSet(
 //				Arrays.asList(new String[]{"film", "starring", "Brad Pitt"})));
 				Arrays.asList(new String[]{"soccer club", "Premier League", "manager", "France"})));
 		filter.setThreshold(0.6);
@@ -62,7 +62,7 @@ public class GeneralisationTest {
 		System.out.println(tree.getStringRepresentation());
 		
 		QueryTreeFactory<String> treeFactory2 = new QueryTreeFactoryImpl();
-		QuestionBasedStatementFilter filter2 = new QuestionBasedStatementFilter(new HashSet(
+		KeywordBasedStatementFilter filter2 = new KeywordBasedStatementFilter(new HashSet(
 //				Arrays.asList(new String[]{"film", "starring", "Brad Pitt"})));
 				Arrays.asList(new String[]{"soccer club", "Premier League", "manager", "France"})));
 		filter2.setThreshold(0.6);

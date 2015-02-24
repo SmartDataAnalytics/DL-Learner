@@ -19,203 +19,228 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Set;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.SPARQLReasoner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 
-@ComponentAnn(name="objectproperty range learner", shortName="oplrange", version=0.1)
-public class ObjectPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
+@ComponentAnn(name="object property range learner", shortName="oplrange", version=0.1, description="A learning algorithm for object property range axioms.")
+public class ObjectPropertyRangeAxiomLearner extends ObjectPropertyAxiomLearner<OWLObjectPropertyRangeAxiom> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ObjectPropertyRangeAxiomLearner.class);
+	private static final ParameterizedSparqlString DISTINCT_OBJECTS_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?o)) as ?cnt) WHERE {?s ?p ?o .}");
 	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=ObjectPropertyEditor.class)
-	private ObjectProperty propertyToDescribe;
+	private static final ParameterizedSparqlString OBJECTS_OF_TYPE_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o a ?type .}");
+	private static final ParameterizedSparqlString OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY = new ParameterizedSparqlString(
+			"SELECT (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o rdf:type/rdfs:subClassOf* ?type .}");
+	
+	private static final ParameterizedSparqlString OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
+			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o a ?type . ?type a owl:Class .} GROUP BY ?type");
+	private static final ParameterizedSparqlString OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY = new ParameterizedSparqlString(
+			"PREFIX owl:<http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(DISTINCT(?o)) AS ?cnt) WHERE {?s ?p ?o . ?o rdf:type/rdfs:subClassOf* ?type . ?type a owl:Class .} GROUP BY ?type");
+	
+	// a property range axiom can formally be seen as a subclass axiom \top \sqsubseteq \forall r.C 
+	// so we have to focus more on accuracy, which we can regulate via the parameter beta
+	double beta = 3.0;
+
+	private boolean useSimpleScore = true;
 	
 	public ObjectPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. ?s a ?type .}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. FILTER NOT EXISTS {?s a ?type}}");
 		
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
-	
+		COUNT_QUERY = DISTINCT_OBJECTS_COUNT_QUERY;
+		
+		axiomType = AxiomType.OBJECT_PROPERTY_RANGE;
 	}
 	
-	public ObjectProperty getPropertyToDescribe() {
-		return propertyToDescribe;
-	}
-
-	public void setPropertyToDescribe(ObjectProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
-	}
-
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#setEntityToDescribe(org.semanticweb.owlapi.model.OWLProperty)
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
+	public void setEntityToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 		
-		if(returnOnlyNewAxioms){
-			//get existing ranges
-			Description existingRange = reasoner.getRange(propertyToDescribe);
-			if(existingRange != null){
-				existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
-				if(reasoner.isPrepared()){
-					if(reasoner.getClassHierarchy().contains(existingRange)){
-						for(Description sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)){
-							existingAxioms.add(new ObjectPropertyRangeAxiom(propertyToDescribe, existingRange));
-							logger.info("Existing range(inferred): " + sup);
-						}
-					}
-					
-				}
-			}
-		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+		DISTINCT_OBJECTS_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
+		OBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 	}
 	
-	private void runSingleQueryMode(){
-		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
-		ResultSet rs = executeSelectQuery(query);
-		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
-		
-		query = String.format("SELECT ?type (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o. ?o a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)", propertyToDescribe.getName());
-		rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			NamedClass range = new NamedClass(qs.getResource("type").getURI());
-			int cnt = qs.getLiteral("cnt").getInt();
-			if(!range.getURI().equals(Thing.uri)){
-				currentlyBestAxioms.add(new EvaluatedAxiom(new ObjectPropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
+	@Override
+	protected void getExistingAxioms() {
+		OWLClassExpression existingRange = reasoner.getRange(entityToDescribe);
+		if (existingRange != null) {
+			existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(entityToDescribe, existingRange));
+			logger.info("Existing range: " + existingRange);
+			if (reasoner.isPrepared()) {
+				if (reasoner.getClassHierarchy().contains(existingRange)) {
+					for (OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingRange)) {
+						existingAxioms.add(df.getOWLObjectPropertyRangeAxiom(entityToDescribe, existingRange));
+						logger.info("Existing range(inferred): " + sup);
+					}
+				}
 			}
 		}
 	}
 	
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?o a ?type.} WHERE {?s <%s> ?o. ?o a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			workingModel.add(newModel);
-			// get number of distinct subjects
-			query = "SELECT (COUNT(DISTINCT ?s) AS ?all) WHERE {?s a ?type.}";
-			ResultSet rs = executeSelectQuery(query, workingModel);
-			QuerySolution qs;
-			int all = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				all = qs.getLiteral("all").getInt();
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return new ParameterizedSparqlString(
+				"PREFIX owl:<http://www.w3.org/2002/07/owl#> "
+				+ "CONSTRUCT "
+				+ "{?s ?p ?o . ?o a ?cls . "
+				+ (strictOWLMode ? "?cls a owl:Class . " : "")
+				+ "} "
+				+ "WHERE "
+				+ "{?s ?p ?o . ?o a ?cls . "
+				+ (strictOWLMode ? "?cls a owl:Class . " : "")
+				+ "}");
+	}
+	
+	/**
+	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 */
+	@Override
+	protected void run(){
+		// get the candidates
+		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();
+		
+		// check for each candidate how often the subject belongs to it
+		int i = 1;
+		for (OWLClass candidate : candidates) {
+			logger.debug("Candidate:" + candidate);
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
+			
+			//get total number of instances of B
+			int cntB = reasoner.getPopularity(candidate);
+			logger.debug("Popularity:" + cntB);
+			
+			if(cntB == 0){// skip empty properties
+				logger.debug("Cannot compute range statements for empty candidate class " + candidate);
+				continue;
 			}
 			
-			// get class and number of instances
-			query = "SELECT ?type (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type.} GROUP BY ?type ORDER BY DESC(?cnt)";
-			rs = executeSelectQuery(query, workingModel);
+			//get number of instances of (A AND B)
+			OBJECTS_OF_TYPE_COUNT_QUERY.setIri("type", candidate.toStringID());
+			int cntAB = executeSelectQuery(OBJECTS_OF_TYPE_COUNT_QUERY.toString()).next().getLiteral("cnt").getInt();
+			logger.debug("Candidate:" + candidate + "\npopularity:" + cntB + "\noverlap:" + cntAB);
 			
-			if (all > 0) {
-				currentlyBestAxioms.clear();
-				while(rs.hasNext()){
-					qs = rs.next();
-					Resource type = qs.get("type").asResource();
-					//omit owl:Thing as trivial domain
-					if(type.equals(OWL.Thing)){
-						continue;
-					}
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new ObjectPropertyRangeAxiom(propertyToDescribe, new NamedClass(type.getURI())),
-							computeScore(all, qs.get("cnt").asLiteral().getInt())));
-				}
+			// compute score
+			AxiomScore score = computeScore(popularity, cntB, cntAB);
+						
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
+							df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate),
+							score));
+		}
+	}
+
+	private AxiomScore computeScore(int cntA, int cntB, int cntAB) {
+		// precision (A AND B)/B
+		double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+		
+		// in the simplest case, the precision is our score
+		double score = precision;
+		
+		// if enabled consider also recall and use F-score
+		if(!useSimpleScore ) {
+			// recall (A AND B)/A
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+			
+			// F score
+			score = Heuristics.getFScore(recall, precision, beta);
+		}
+		
+		int nrOfPosExamples = cntAB;
+		
+		int nrOfNegExamples = popularity - cntAB;
+		
+		return new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling);
+	}
+	
+	/**
+	 * We can handle the domain axiom Domain(r, C) as a subclass of axiom \exists r.\top \sqsubseteq C
+	 */
+	private void runBatched(){
+		
+		// we can compute the popularity of the properties once which can avoid sending several single 
+		// query later on
+		reasoner.precomputeClassPopularity();
+		
+		// get for each object type the frequency
+		ResultSet rs = executeSelectQuery(OBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.toString());
+		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
+		int size = rsrw.size();
+		rsrw.reset();
+		int i = 1;
+		while(rsrw.hasNext()){
+			QuerySolution qs = rsrw.next();
+			if(qs.getResource("type").isURIResource()){
+				progressMonitor.learningProgressChanged(axiomType, i++, size);
+				
+				OWLClass candidate = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
+				
+				//get total number of instances of B
+				int cntB = reasoner.getPopularity(candidate);
+				
+				//get number of instances of (A AND B)
+				int cntAB = qs.getLiteral("cnt").getInt();
+				
+				//precision (A AND B)/B
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(cntB, cntAB);
+				
+				//recall (A AND B)/A
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, cntAB);
+				
+				//F score
+				double score = Heuristics.getFScore(recall, precision, beta);
+				
+				currentlyBestAxioms.add(
+						new EvaluatedAxiom<OWLObjectPropertyRangeAxiom>(
+								df.getOWLObjectPropertyRangeAxiom(entityToDescribe, candidate), 
+								new AxiomScore(score, useSampling)));
 				
 			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
-			newModel = executeConstructQuery(query);
-			fillWithInference(newModel);
 		}
-	}
-	
-	private void fillWithInference(Model model){
-		Model additionalModel = ModelFactory.createDefaultModel();
-		if(reasoner.isPrepared()){
-			for(StmtIterator iter = model.listStatements(null, RDF.type, (RDFNode)null); iter.hasNext();){
-				Statement st = iter.next();
-				Description cls = new NamedClass(st.getObject().asResource().getURI());
-				if(reasoner.getClassHierarchy().contains(cls)){
-					for(Description sup : reasoner.getClassHierarchy().getSuperClasses(cls)){
-						additionalModel.add(st.getSubject(), st.getPredicate(), model.createResource(sup.toString()));
-					}
-				}
-			}
-		}
-		model.add(additionalModel);
 	}
 	
 	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+	public Set<OWLObjectPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLObjectPropertyRangeAxiom> evAxiom) {
+		OWLObjectPropertyRangeAxiom axiom = evAxiom.getAxiom();
+		posExamplesQueryTemplate.setIri("type", axiom.getRange().asOWLClass().toStringID());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		ObjectPropertyRangeAxiom axiom = (ObjectPropertyRangeAxiom) evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("type", axiom.getRange().toString());
+	public Set<OWLObjectPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLObjectPropertyRangeAxiom> evAxiom) {
+		OWLObjectPropertyRangeAxiom axiom = evAxiom.getAxiom();
+		negExamplesQueryTemplate.setIri("type", axiom.getRange().asOWLClass().toStringID());
 		return super.getNegativeExamples(evAxiom);
 	}
-	
-	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://[2001:638:902:2010:0:168:35:138]/sparql")));
-		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		reasoner.prepareSubsumptionHierarchy();
-		
-		ObjectPropertyRangeAxiomLearner l = new ObjectPropertyRangeAxiomLearner(ks);
-		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new ObjectProperty("http://dbpedia.org/ontology/currency"));
-		l.setMaxExecutionTimeInSeconds(10);
-//		l.setReturnOnlyNewAxioms(true);
-		l.init();
-		l.start();
-		
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
-	}
-
 }

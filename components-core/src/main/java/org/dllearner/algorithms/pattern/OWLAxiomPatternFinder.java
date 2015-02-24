@@ -39,6 +39,7 @@ import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyAlreadyExistsException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
@@ -415,7 +416,7 @@ public class OWLAxiomPatternFinder {
 		StringDocumentSource s = new StringDocumentSource("Ontology(<http://www.pattern.org>" + sw.toString() + ")");
 		OWLFunctionalSyntaxOWLParser p = new OWLFunctionalSyntaxOWLParser();
 		OWLOntology newOntology = man.createOntology();
-		p.parse(s, newOntology);
+		p.parse(s, newOntology, new OWLOntologyLoaderConfiguration());
 		System.out.println(newOntology.getLogicalAxioms());
 		
 	}

@@ -37,8 +37,8 @@ import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 import com.google.common.collect.Sets;
 
@@ -54,11 +54,11 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;
 
-	protected SortedSet<Individual> positiveExamples;
+	protected SortedSet<OWLIndividual> positiveExamples;
 	
-	private List<Individual> positiveExamplesShuffled;
-//	protected SortedSet<Individual> pseudoNegatives;
-	private List<Individual> individuals;
+	private List<OWLIndividual> positiveExamplesShuffled;
+//	protected SortedSet<OWLIndividual> pseudoNegatives;
+	private List<OWLIndividual> individuals;
 	
 	private boolean useApproximations = false;
 
@@ -76,7 +76,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		super(reasoningService);
 	}
 	
-	public PosOnlyLP(AbstractReasonerComponent reasoningService, SortedSet<Individual> positiveExamples) {
+	public PosOnlyLP(AbstractReasonerComponent reasoningService, SortedSet<OWLIndividual> positiveExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
 	}
@@ -128,15 +128,15 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		Random rand = new Random(1);		
 		
 		if(getReasoner()!=null) {
-			individuals = new LinkedList<Individual>(getReasoner().getIndividuals());
+			individuals = new LinkedList<OWLIndividual>(getReasoner().getIndividuals());
 			Collections.shuffle(individuals, rand);			
 		}
 		
-		positiveExamplesShuffled = new LinkedList<Individual>(positiveExamples);
+		positiveExamplesShuffled = new LinkedList<OWLIndividual>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
 	}
 	
-	public SortedSet<Individual> getPositiveExamples() {
+	public SortedSet<OWLIndividual> getPositiveExamples() {
 		return positiveExamples;
 	}	
 	
@@ -150,12 +150,12 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	/**
 	 * @return the pseudoNegatives
 	 */
-//	public SortedSet<Individual> getPseudoNegatives() {
+//	public SortedSet<OWLIndividual> getPseudoNegatives() {
 //		return pseudoNegatives;
 //	}	
 	
 
-//	public int coveredPseudoNegativeExamplesOrTooWeak(Description concept) {
+//	public int coveredPseudoNegativeExamplesOrTooWeak(OWLClassExpression concept) {
 //		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
 //	}posOnlyLPLearningTests
 
@@ -163,12 +163,12 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosOnly computeScore(Description description) {
-		Set<Individual> retrieval = getReasoner().getIndividuals(description);
+	public ScorePosOnly computeScore(OWLClassExpression description) {
+		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 		
-		Set<Individual> instancesCovered = new TreeSet<Individual>();
-		Set<Individual> instancesNotCovered = new TreeSet<Individual>();
-		for(Individual ind : positiveExamples) {
+		Set<OWLIndividual> instancesCovered = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> instancesNotCovered = new TreeSet<OWLIndividual>();
+		for(OWLIndividual ind : positiveExamples) {
 			if(retrieval.contains(ind)) {
 				instancesCovered.add(ind);
 			} else {
@@ -188,7 +188,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescriptionPosOnly evaluate(Description description) {
+	public EvaluatedDescriptionPosOnly evaluate(OWLClassExpression description) {
 		ScorePosOnly score = computeScore(description);
 		return new EvaluatedDescriptionPosOnly(description, score);		
 	}
@@ -197,11 +197,11 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(Description description) {
-		Set<Individual> retrieval = getReasoner().getIndividuals(description);
+	public double getAccuracy(OWLClassExpression description) {
+		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 		
 		int instancesCovered = 0;
-		for(Individual ind : positiveExamples) {
+		for(OWLIndividual ind : positiveExamples) {
 			if(retrieval.contains(ind)) {
 				instancesCovered++;
 			}
@@ -214,7 +214,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	}
 
 	
-	public double getAccuracyOrTooWeakApprox(Description description, double noise) {
+	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		
 		// instead of using the standard operation, we use optimisation
 		// and approximation here
@@ -231,7 +231,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		double upperBorderA = 1;
 		int upperEstimateA = positiveExamples.size();
 		
-		for(Individual ind : positiveExamplesShuffled) {
+		for(OWLIndividual ind : positiveExamplesShuffled) {
 			if(getReasoner().hasType(description, ind)) {
 				instancesCovered++;
 			} else {
@@ -282,7 +282,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		int testsPerformed = 0;
 		int instancesDescription = 0;
 		
-		for(Individual ind : individuals) {
+		for(OWLIndividual ind : individuals) {
 
 			if(getReasoner().hasType(description, ind)) {
 				instancesDescription++;
@@ -336,18 +336,18 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	@Override
-	public double getAccuracyOrTooWeak(Description description, double noise) {
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
 	}
 	
 	// exact computation for 5 heuristics; each one adapted to super class
 	// learning;
 	// each one takes the noise parameter into account
-	public double getAccuracyOrTooWeakExact(Description description, double noise) {
+	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
 
 		nanoStartTime = System.nanoTime();
 		
-		SortedSet<Individual> individualsC = reasoner.getIndividuals(description);
+		SortedSet<OWLIndividual> individualsC = reasoner.getIndividuals(description);
 
 		// computing R(C) restricted to relevant instances
 		int additionalInstances = Sets.difference(individualsC, positiveExamples).size();
@@ -388,7 +388,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		return 0.5 * (coverage + Math.sqrt(protusion));
 	}
 
-	public void setPositiveExamples(SortedSet<Individual> positiveExamples) {
+	public void setPositiveExamples(SortedSet<OWLIndividual> positiveExamples) {
 		this.positiveExamples = positiveExamples;
 	}	
 }

@@ -19,7 +19,10 @@
 
 package org.dllearner.core;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,34 +33,32 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.Property;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.dllearner.utilities.owl.RoleComparator;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -91,6 +92,8 @@ import com.jamonapi.MonitorFactory;
 public abstract class AbstractReasonerComponent extends AbstractComponent implements Reasoner, ReasonerComponent {
 
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
+	
+	private static final NumberFormat numberFormat = NumberFormat.getInstance();
 
 	// statistical data for particular reasoning operations
 	private long instanceCheckReasoningTimeNs = 0;
@@ -115,15 +118,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private long reasoningDurationTmp;
 
 	// list view
-	private List<NamedClass> atomicConceptsList;
-	private List<ObjectProperty> atomicRolesList;
+	private List<OWLClass> atomicConceptsList;
+	private List<OWLObjectProperty> atomicRolesList;
 
 	// hierarchies (they are computed the first time they are needed)
 	private ClassHierarchy subsumptionHierarchy = null;
 	private ObjectPropertyHierarchy roleHierarchy = null;
 	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 	
-	protected Monitor monitor = MonitorFactory.getTimeMonitor("reasoner");
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
 	 * The underlying knowledge sources.
@@ -142,6 +145,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 */
 	public AbstractReasonerComponent(Set<KnowledgeSource> sources) {
 		this.sources = sources;
+	}
+	
+	public AbstractReasonerComponent(KnowledgeSource source) {
+		this(Collections.singleton(source));
 	}
 
 	/**
@@ -198,8 +205,6 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		nrOfSubsumptionHierarchyQueries = 0;
 		otherReasoningTimeNs = 0;
 		overallReasoningTimeNs = 0;
-		
-		monitor.reset();
 	}
 
 	/**
@@ -230,8 +235,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final Set<NamedClass> getTypes(Individual individual) {
-		Set<NamedClass> types = null;
+	public final Set<OWLClass> getTypes(OWLIndividual individual) {
+		Set<OWLClass> types = null;
 		try {
 			types = getTypesImpl(individual);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -240,14 +245,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return types;
 	}
 
-	protected Set<NamedClass> getTypesImpl(Individual individual)
+	protected Set<OWLClass> getTypesImpl(OWLIndividual individual)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException(
 				"Reasoner does not support to determine type of individual.");
 	}
 
 	@Override
-	public final boolean isSuperClassOf(Description superClass, Description subClass) {
+	public final boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -265,13 +270,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected boolean isSuperClassOfImpl(Description superConcept, Description subConcept)
+	protected boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final boolean isEquivalentClass(Description class1, Description class2) {
+	public final boolean isEquivalentClass(OWLClassExpression class1, OWLClassExpression class2) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -289,12 +294,36 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected boolean isEquivalentClassImpl(Description class1, Description class2) throws ReasoningMethodUnsupportedException {
+	protected boolean isEquivalentClassImpl(OWLClassExpression class1, OWLClassExpression class2) throws ReasoningMethodUnsupportedException {
 		return isSuperClassOfImpl(class1,class2) && isSuperClassOfImpl(class2,class1);
 	}	
 	
 	@Override
-	public Set<Description> getAssertedDefinitions(NamedClass namedClass) {
+	public final boolean isDisjoint(OWLClass class1, OWLClass class2) {
+		reasoningStartTimeTmp = System.nanoTime();
+		boolean result = false;
+		try {
+			result = isDisjointImpl(class1, class2);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+		}
+		nrOfSubsumptionChecks++;
+		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
+		subsumptionReasoningTimeNs += reasoningDurationTmp;
+		overallReasoningTimeNs += reasoningDurationTmp;
+		if(logger.isTraceEnabled()) {
+			logger.trace("reasoner query isDisjoint: " + class1 + " " + class2 + " " + result);
+		}
+		return result;
+	}
+
+	protected boolean isDisjointImpl(OWLClassExpression superConcept, OWLClassExpression subConcept)
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	@Override
+	public Set<OWLClassExpression> getAssertedDefinitions(OWLClass namedClass) {
 		try {
 			return getAssertedDefinitionsImpl(namedClass);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -303,16 +332,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 	
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass namedClass)
+	protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass namedClass)
 		throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	
 	
 	@Override
-	public final Set<Description> isSuperClassOf(Set<Description> superConcepts,
-			Description subConcept) {
+	public final Set<OWLClassExpression> isSuperClassOf(Set<OWLClassExpression> superConcepts,
+			OWLClassExpression subConcept) {
 		reasoningStartTimeTmp = System.nanoTime();
-		Set<Description> result = null;
+		Set<OWLClassExpression> result = null;
 		try {
 			result = isSuperClassOfImpl(superConcepts, subConcept);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -326,10 +355,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected Set<Description> isSuperClassOfImpl(Set<Description> superConcepts,
-			Description subConcept) throws ReasoningMethodUnsupportedException {
-		Set<Description> returnSet = new HashSet<Description>();
-		for (Description superConcept : superConcepts) {
+	protected Set<OWLClassExpression> isSuperClassOfImpl(Set<OWLClassExpression> superConcepts,
+			OWLClassExpression subConcept) throws ReasoningMethodUnsupportedException {
+		Set<OWLClassExpression> returnSet = new HashSet<OWLClassExpression>();
+		for (OWLClassExpression superConcept : superConcepts) {
 			if (isSuperClassOf(superConcept, subConcept))
 				returnSet.add(superConcept);
 		}
@@ -337,9 +366,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final SortedSetTuple<Individual> doubleRetrieval(Description concept) {
+	public final SortedSetTuple<OWLIndividual> doubleRetrieval(OWLClassExpression concept) {
 		reasoningStartTimeTmp = System.nanoTime();
-		SortedSetTuple<Individual> result;
+		SortedSetTuple<OWLIndividual> result;
 		try {
 			result = doubleRetrievalImpl(concept);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -352,15 +381,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSetTuple<Individual> doubleRetrievalImpl(Description concept)
+	protected SortedSetTuple<OWLIndividual> doubleRetrievalImpl(OWLClassExpression concept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<Individual> getIndividuals(Description concept) {
+	public final SortedSet<OWLIndividual> getIndividuals(OWLClassExpression concept) {
 		reasoningStartTimeTmp = System.nanoTime();
-		SortedSet<Individual> result;
+		SortedSet<OWLIndividual> result;
 		try {
 			result = getIndividualsImpl(concept);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -377,13 +406,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSet<Individual> getIndividualsImpl(Description concept)
+	protected SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 	
 	@Override
-	public final SortedSet<FuzzyIndividual> getFuzzyIndividuals(Description concept) {
+	public final SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept) {
 		reasoningStartTimeTmp = System.nanoTime();
 		SortedSet<FuzzyIndividual> result;
 		try {
@@ -402,13 +431,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(Description concept)
+	protected SortedSet<FuzzyIndividual> getFuzzyIndividualsImpl(OWLClassExpression concept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final boolean hasType(Description concept, Individual s) {
+	public final boolean hasType(OWLClassExpression concept, OWLIndividual s) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		try {
@@ -423,16 +452,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected boolean hasTypeImpl(Description concept, Individual individual)
+	protected boolean hasTypeImpl(OWLClassExpression concept, OWLIndividual individual)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<Individual> hasType(Description concept, Set<Individual> s) {
+	public final SortedSet<OWLIndividual> hasType(OWLClassExpression concept, Set<OWLIndividual> s) {
 		// logger.debug("instanceCheck "+concept.toKBSyntaxString());
 		reasoningStartTimeTmp = System.nanoTime();
-		SortedSet<Individual> result = null;
+		SortedSet<OWLIndividual> result = null;
 		try {
 			result = hasTypeImpl(concept, s);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -447,10 +476,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSet<Individual> hasTypeImpl(Description concept, Set<Individual> individuals)
+	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals)
 			throws ReasoningMethodUnsupportedException {
-		SortedSet<Individual> returnSet = new TreeSet<Individual>();
-		for (Individual individual : individuals) {
+		SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+		for (OWLIndividual individual : individuals) {
 			if (hasType(concept, individual))
 				returnSet.add(individual);
 		}
@@ -458,7 +487,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final Set<NamedClass> getInconsistentClasses() {
+	public final Set<OWLClass> getInconsistentClasses() {
 		try {
 			return getInconsistentClassesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -467,7 +496,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Set<NamedClass> getInconsistentClassesImpl()
+	protected Set<OWLClass> getInconsistentClassesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
@@ -493,7 +522,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final boolean remainsSatisfiable(Axiom axiom) {
+	public final boolean remainsSatisfiable(OWLAxiom axiom) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result;
 		try {
@@ -508,12 +537,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected boolean remainsSatisfiableImpl(Axiom axiom) throws ReasoningMethodUnsupportedException {
+	protected boolean remainsSatisfiableImpl(OWLAxiom axiom) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	
 	
 	@Override
-	public final Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationships(Individual individual) {
+	public final Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationships(OWLIndividual individual) {
 		try {
 			return getObjectPropertyRelationshipsImpl(individual);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -522,14 +551,29 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}		
 	}
 	
-	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) throws ReasoningMethodUnsupportedException {
+	protected Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	@Override
+	public final Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLIndividual individual) {
+		try {
+			return getDataPropertyRelationshipsImpl(individual);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationshipsImpl(OWLIndividual individual)
+			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 			
 	
 	@Override
-	public final Set<Individual> getRelatedIndividuals(Individual individual,
-			ObjectProperty objectProperty) {
+	public final Set<OWLIndividual> getRelatedIndividuals(OWLIndividual individual,
+			OWLObjectProperty objectProperty) {
 		try {
 			return getRelatedIndividualsImpl(individual, objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -538,14 +582,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Set<Individual> getRelatedIndividualsImpl(Individual individual,
-			ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+	protected Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual,
+			OWLObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Set<Constant> getRelatedValues(Individual individual,
-			DatatypeProperty datatypeProperty) {
+	public final Set<OWLLiteral> getRelatedValues(OWLIndividual individual,
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getRelatedValuesImpl(individual, datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -554,13 +598,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Set<Constant> getRelatedValuesImpl(Individual individual,
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+	protected Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual,
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Set<Constant> getLabel(Entity entity) {
+	public final Set<OWLLiteral> getLabel(OWLEntity entity) {
 		try {
 			return getLabelImpl(entity);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -569,14 +613,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
+	protected Set<OWLLiteral> getLabelImpl(OWLEntity entity) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<Individual>> getPropertyMembers(ObjectProperty atomicRole) {
+	public final Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembers(OWLObjectProperty atomicRole) {
 		reasoningStartTimeTmp = System.nanoTime();
-		Map<Individual, SortedSet<Individual>> result;
+		Map<OWLIndividual, SortedSet<OWLIndividual>> result;
 		try {
 			result = getPropertyMembersImpl(atomicRole);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -589,14 +633,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(
-			ObjectProperty atomicRole) throws ReasoningMethodUnsupportedException {
+	protected Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(
+			OWLObjectProperty atomicRole) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<Constant>> getDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
+	public final Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -605,14 +649,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+	protected Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<Double>> getDoubleDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
+	public final Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getDoubleDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -621,25 +665,91 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Double>> ret = new TreeMap<Individual, SortedSet<Double>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+	protected Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<Double>> ret = new TreeMap<OWLIndividual, SortedSet<Double>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Double> valuesDouble = new TreeSet<Double>();
-			for (Constant c : values) {
-				double v = Double.valueOf(c.getLiteral());
-				valuesDouble.add(v);
+			for (OWLLiteral lit : values) {
+				if(lit.isDouble()){
+					valuesDouble.add(lit.parseDouble());
+				}
 			}
 			ret.put(e.getKey(), valuesDouble);
 		}
 		return ret;
 	}
+	
+	@Override
+	public final <T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
+			OWLDataProperty datatypeProperty, Class<T> clazz) {
+		try {
+			return getNumericDatatypeMembersImpl(datatypeProperty, clazz);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	protected <T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty, Class<T> clazz) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
+			SortedSet<T> numericValues = new TreeSet<T>();
+			for (OWLLiteral lit : values) {
+				try {
+					numericValues.add((T) numberFormat.parse(lit.getLiteral()));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+			}
+			ret.put(e.getKey(), numericValues);
+		}
+		return ret;
+	}
+	
+	@Override
+	public final <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
+		try {
+			return getNumericDatatypeMembersImpl(datatypeProperty);
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+	
+	protected <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
+			OWLIndividual ind = entry.getKey();
+			SortedSet<OWLLiteral> values = entry.getValue();
+			SortedSet<T> numericValues = new TreeSet<T>();
+			for (OWLLiteral lit : values) {
+				try {
+					Number number = numberFormat.parse(lit.getLiteral());
+					if(number instanceof Long) {
+						number = Double.valueOf(number.toString());
+					}
+					numericValues.add((T) (number) );
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+			ret.put(ind, numericValues);
+		}
+		return ret;
+	}
 
 	@Override
-	public final Map<Individual, SortedSet<Integer>> getIntDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
+	public final Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getIntDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -648,16 +758,17 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Integer>> ret = new TreeMap<Individual, SortedSet<Integer>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+	protected Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<Integer>> ret = new TreeMap<OWLIndividual, SortedSet<Integer>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
-			for (Constant c : values) {
-				int v = Integer.valueOf(c.getLiteral());
-				valuesInt.add(v);
+			for (OWLLiteral lit : values) {
+				if(lit.isInteger()){
+					valuesInt.add(lit.parseInteger());
+				}
 			}
 			ret.put(e.getKey(), valuesInt);
 		}
@@ -665,8 +776,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
+	public final Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getBooleanDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -675,14 +786,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Map<Individual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<Boolean>> ret = new TreeMap<Individual, SortedSet<Boolean>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+	protected Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<Boolean>> ret = new TreeMap<OWLIndividual, SortedSet<Boolean>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Boolean> valuesBoolean = new TreeSet<Boolean>();
-			for (Constant c : values) {
+			for (OWLLiteral c : values) {
 				String s = c.getLiteral();
 				if (s.equalsIgnoreCase("true")) {
 					valuesBoolean.add(true);
@@ -699,7 +810,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final SortedSet<Individual> getTrueDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getTrueDatatypeMembers(OWLDataProperty datatypeProperty) {
 		try {
 			return getTrueDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -708,12 +819,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty)
+	protected SortedSet<OWLIndividual> getTrueDatatypeMembersImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<Individual> ret = new TreeSet<Individual>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			if (values.size() > 1) {
 				logger.warn("Property " + datatypeProperty + " has more than one value " + e.getValue()
 						+ " for individual " + e.getKey() + ". We ignore the value.");			
@@ -727,7 +838,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final SortedSet<Individual> getFalseDatatypeMembers(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getFalseDatatypeMembers(OWLDataProperty datatypeProperty) {
 		try {
 			return getFalseDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -736,12 +847,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty)
+	protected SortedSet<OWLIndividual> getFalseDatatypeMembersImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<Individual> ret = new TreeSet<Individual>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			if (values.size() > 1) {
 				logger.warn("Property " + datatypeProperty + " has value " + e.getValue()
 						+ ". Cannot determine whether it is false.");
@@ -755,8 +866,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	@Override
-	public final Map<Individual, SortedSet<String>> getStringDatatypeMembers(
-			DatatypeProperty datatypeProperty) {
+	public final Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembers(
+			OWLDataProperty datatypeProperty) {
 		try {
 			return getStringDatatypeMembersImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -765,14 +876,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Map<Individual, SortedSet<String>> getStringDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
-		Map<Individual, SortedSet<Constant>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<Individual, SortedSet<String>> ret = new TreeMap<Individual, SortedSet<String>>();
-		for (Entry<Individual, SortedSet<Constant>> e : mapping.entrySet()) {
-			SortedSet<Constant> values = e.getValue();
+	protected Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembersImpl(
+			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
+		Map<OWLIndividual, SortedSet<String>> ret = new TreeMap<OWLIndividual, SortedSet<String>>();
+		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
+			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<String> valuesString = new TreeSet<String>();
-			for (Constant c : values) {
+			for (OWLLiteral c : values) {
 				valuesString.add(c.getLiteral());				
 			}
 			ret.put(e.getKey(), valuesString);
@@ -781,7 +892,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}	
 	
 	@Override
-	public final SortedSet<DatatypeProperty> getDatatypeProperties() {
+	public final Set<OWLDataProperty> getDatatypeProperties() {
 		try {
 			return getDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -790,13 +901,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<DatatypeProperty> getDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<DatatypeProperty> getBooleanDatatypeProperties() {
+	public final Set<OWLDataProperty> getBooleanDatatypeProperties() {
 		try {
 			return getBooleanDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -808,14 +919,29 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	// TODO Even if there is a small performance penalty, we could implement
 	// the method right here by iterating over all data properties and
 	// querying their ranges. At least, this should be done once we have a
-	// reasoner independant of OWL API with datatype support.
-	protected SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl()
+	// reasoner independent of OWL API with datatype support.
+	protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+	
+	@Override
+	public final Set<OWLDataProperty> getNumericDataProperties() {
+		try {
+			return getNumericDataPropertiesImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Set<OWLDataProperty> getNumericDataPropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		return Sets.union(getIntDatatypePropertiesImpl(), getDoubleDatatypePropertiesImpl());
+	}
 
 	@Override
-	public final SortedSet<DatatypeProperty> getIntDatatypeProperties() {
+	public final Set<OWLDataProperty> getIntDatatypeProperties() {
 		try {
 			return getIntDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -824,13 +950,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getIntDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<DatatypeProperty> getDoubleDatatypeProperties() {
+	public final Set<OWLDataProperty> getDoubleDatatypeProperties() {
 		try {
 			return getDoubleDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -839,13 +965,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<DatatypeProperty> getStringDatatypeProperties() {
+	public final Set<OWLDataProperty> getStringDatatypeProperties() {
 		try {
 			return getStringDatatypePropertiesImpl();
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -854,13 +980,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl()
+	protected Set<OWLDataProperty> getStringDatatypePropertiesImpl()
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	
 	
 	@Override
-	public final Description getDomain(ObjectProperty objectProperty) {
+	public final OWLClassExpression getDomain(OWLObjectProperty objectProperty) {
 		try {
 			return getDomainImpl(objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -869,13 +995,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Description getDomainImpl(ObjectProperty objectProperty)
+	protected OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Description getDomain(DatatypeProperty datatypeProperty) {
+	public final OWLClassExpression getDomain(OWLDataProperty datatypeProperty) {
 		try {
 			return getDomainImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -884,13 +1010,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Description getDomainImpl(DatatypeProperty datatypeProperty)
+	protected OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final Description getRange(ObjectProperty objectProperty) {
+	public final OWLClassExpression getRange(OWLObjectProperty objectProperty) {
 		try {
 			return getRangeImpl(objectProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -899,13 +1025,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected Description getRangeImpl(ObjectProperty objectProperty)
+	protected OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final DataRange getRange(DatatypeProperty datatypeProperty) {
+	public final OWLDataRange getRange(OWLDataProperty datatypeProperty) {
 		try {
 			return getRangeImpl(datatypeProperty);
 		} catch (ReasoningMethodUnsupportedException e) {
@@ -914,94 +1040,94 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 
-	protected DataRange getRangeImpl(DatatypeProperty datatypeProperty)
+	protected OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 
 	@Override
-	public final SortedSet<Description> getSuperClasses(Description concept) {
+	public final SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
 		return getClassHierarchy().getSuperClasses(concept);
 	}
 
-	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 	
 	@Override
-	public final SortedSet<Description> getSubClasses(Description concept) {
+	public final SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
 		return getClassHierarchy().getSubClasses(concept);
 	}
 
-	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
 	
-	public final SortedSet<Description> getEquivalentClasses(Description concept) {
+	public final SortedSet<OWLClassExpression> getEquivalentClasses(OWLClassExpression concept) {
 		return new TreeSet<>(Sets.intersection(getClassHierarchy().getSubClasses(concept), getClassHierarchy().getSuperClasses(concept)));
 	}
 	
 	@Override
-	public final SortedSet<ObjectProperty> getSuperProperties(ObjectProperty role) {
+	public final SortedSet<OWLObjectProperty> getSuperProperties(OWLObjectProperty role) {
 		return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
 	}
 
-	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	
 	
 	@Override
-	public final SortedSet<ObjectProperty> getSubProperties(ObjectProperty role) {
+	public final SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty role) {
 		return getObjectPropertyHierarchy().getMoreSpecialRoles(role);
 	}
 
-	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	
 	
 	@Override
-	public final TreeSet<ObjectProperty> getMostGeneralProperties() {
+	public final TreeSet<OWLObjectProperty> getMostGeneralProperties() {
 		return getObjectPropertyHierarchy().getMostGeneralRoles();
 	}
 
-//	protected SortedSet<ObjectProperty> getMostGeneralPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+//	protected SortedSet<OWLObjectProperty> getMostGeneralPropertiesImpl(OWLOWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 //		throw new ReasoningMethodUnsupportedException();
 //	}	
 	
 	@Override
-	public final TreeSet<ObjectProperty> getMostSpecialProperties() {
+	public final TreeSet<OWLObjectProperty> getMostSpecialProperties() {
 		return getObjectPropertyHierarchy().getMostSpecialRoles();
 	}
 
-//	protected SortedSet<ObjectProperty> getMostSpecialPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+//	protected SortedSet<OWLObjectProperty> getMostSpecialPropertiesImpl(OWLOWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 //		throw new ReasoningMethodUnsupportedException();
 //	}
 	
 	@Override
-	public final SortedSet<DatatypeProperty> getSuperProperties(DatatypeProperty role) {
+	public final SortedSet<OWLDataProperty> getSuperProperties(OWLDataProperty role) {
 		return getDatatypePropertyHierarchy().getMoreGeneralRoles(role);
 	}
 
-	protected SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}		
 	
 	@Override
-	public final SortedSet<DatatypeProperty> getSubProperties(DatatypeProperty role) {
+	public final SortedSet<OWLDataProperty> getSubProperties(OWLDataProperty role) {
 		return getDatatypePropertyHierarchy().getMoreSpecialRoles(role);
 	}
 
-	protected SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}		
 	
 	@Override
-	public final TreeSet<DatatypeProperty> getMostGeneralDatatypeProperties() {
+	public final TreeSet<OWLDataProperty> getMostGeneralDatatypeProperties() {
 		return getDatatypePropertyHierarchy().getMostGeneralRoles();
 	}
 
 	@Override
-	public final TreeSet<DatatypeProperty> getMostSpecialDatatypeProperties() {
+	public final TreeSet<OWLDataProperty> getMostSpecialDatatypeProperties() {
 		return getDatatypePropertyHierarchy().getMostSpecialRoles();
 	}
 
@@ -1014,25 +1140,24 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * create the hierarchy is not supported by the underlying reasoner.
 	 */
 	public ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
-		ConceptComparator conceptComparator = new ConceptComparator();
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+				);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+				);
 
 		// parents/children of top ...
-		SortedSet<Description> tmp = getSubClassesImpl(Thing.instance);
-		subsumptionHierarchyUp.put(Thing.instance, new TreeSet<Description>());
-		subsumptionHierarchyDown.put(Thing.instance, tmp);
+		SortedSet<OWLClassExpression> tmp = getSubClassesImpl(df.getOWLThing());
+		subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
+		subsumptionHierarchyDown.put(df.getOWLThing(), tmp);
 
 		// ... bottom ...
-		tmp = getSuperClassesImpl(Nothing.instance);
-		subsumptionHierarchyUp.put(Nothing.instance, tmp);
-		subsumptionHierarchyDown.put(Nothing.instance, new TreeSet<Description>());
+		tmp = getSuperClassesImpl(df.getOWLNothing());
+		subsumptionHierarchyUp.put(df.getOWLNothing(), tmp);
+		subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
 		
 		// ... and named classes
-		Set<NamedClass> atomicConcepts = getNamedClasses();
-		for (NamedClass atom : atomicConcepts) {
+		Set<OWLClass> atomicConcepts = getClasses();
+		for (OWLClass atom : atomicConcepts) {
 			tmp = getSubClassesImpl(atom);
 			// quality control: we explicitly check that no reasoner implementation returns null here
 			if(tmp == null) {
@@ -1076,14 +1201,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public ObjectPropertyHierarchy prepareRoleHierarchy()
 			throws ReasoningMethodUnsupportedException {
 		
-		RoleComparator roleComparator = new RoleComparator();
-		TreeMap<ObjectProperty, SortedSet<ObjectProperty>> roleHierarchyUp = new TreeMap<ObjectProperty, SortedSet<ObjectProperty>>(
-				roleComparator);
-		TreeMap<ObjectProperty, SortedSet<ObjectProperty>> roleHierarchyDown = new TreeMap<ObjectProperty, SortedSet<ObjectProperty>>(
-				roleComparator);
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+				);
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyDown = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+				);
  
-		Set<ObjectProperty> atomicRoles = getObjectProperties();
-		for (ObjectProperty role : atomicRoles) {
+		Set<OWLObjectProperty> atomicRoles = getObjectProperties();
+		for (OWLObjectProperty role : atomicRoles) {
 			roleHierarchyDown.put(role, getSubPropertiesImpl(role));
 			roleHierarchyUp.put(role, getSuperPropertiesImpl(role));
 		}
@@ -1119,14 +1243,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public DatatypePropertyHierarchy prepareDatatypePropertyHierarchy()
 			throws ReasoningMethodUnsupportedException {
 	
-		RoleComparator roleComparator = new RoleComparator();
-		TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>> datatypePropertyHierarchyUp = new TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>>(
-				roleComparator);
-		TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>> datatypePropertyHierarchyDown = new TreeMap<DatatypeProperty, SortedSet<DatatypeProperty>>(
-				roleComparator);
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyUp = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
+				);
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyDown = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
+				);
  
-		Set<DatatypeProperty> datatypeProperties = getDatatypeProperties();
-		for (DatatypeProperty role : datatypeProperties) {
+		Set<OWLDataProperty> datatypeProperties = getDatatypeProperties();
+		for (OWLDataProperty role : datatypeProperties) {
 			datatypePropertyHierarchyDown.put(role, getSubPropertiesImpl(role));
 			datatypePropertyHierarchyUp.put(role, getSuperPropertiesImpl(role));
 		}
@@ -1149,20 +1272,20 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return datatypePropertyHierarchy;
 	}
 
-	public List<NamedClass> getAtomicConceptsList() {
+	public List<OWLClass> getAtomicConceptsList() {
 		if (atomicConceptsList == null)
-			atomicConceptsList = new LinkedList<NamedClass>(getNamedClasses());
+			atomicConceptsList = new LinkedList<OWLClass>(getClasses());
 		return atomicConceptsList;
 	}
 
-	public List<NamedClass> getAtomicConceptsList(boolean removeOWLThing) {
+	public List<OWLClass> getAtomicConceptsList(boolean removeOWLThing) {
 		if (!removeOWLThing) {
 			return getAtomicConceptsList();
 		} else {
-			List<NamedClass> l = new LinkedList<NamedClass>();
-			for (NamedClass class1 : getAtomicConceptsList()) {
-				if (class1.compareTo(new NamedClass(OWLVocabulary.OWL_NOTHING)) == 0
-						|| class1.compareTo(new NamedClass(OWLVocabulary.OWL_THING)) == 0) {
+			List<OWLClass> l = new LinkedList<OWLClass>();
+			for (OWLClass class1 : getAtomicConceptsList()) {
+				if (class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_NOTHING))) == 0
+						|| class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_THING))) == 0) {
 					;// do nothing
 				} else {
 					l.add(class1);
@@ -1177,9 +1300,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		this.subsumptionHierarchy = subsumptionHierarchy;
 	}
 
-	public List<ObjectProperty> getAtomicRolesList() {
+	public List<OWLObjectProperty> getAtomicRolesList() {
 		if (atomicRolesList == null)
-			atomicRolesList = new LinkedList<ObjectProperty>(getObjectProperties());
+			atomicRolesList = new LinkedList<OWLObjectProperty>(getObjectProperties());
 		return atomicRolesList;
 	}
 
@@ -1235,11 +1358,11 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return nrOfMultiInstanceChecks;
 	}
 	
-	public boolean isSubPropertyOf(Property subProperty, Property superProperty){
-		if(subProperty instanceof ObjectProperty && superProperty instanceof ObjectProperty){
-			return roleHierarchy.isSubpropertyOf((ObjectProperty)subProperty, (ObjectProperty)superProperty);
-		} else if(subProperty instanceof DatatypeProperty && superProperty instanceof DatatypeProperty){
-			return datatypePropertyHierarchy.isSubpropertyOf((DatatypeProperty)subProperty, (DatatypeProperty)superProperty);
+	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
+		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
+			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
+		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
+			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
 		}
 		return false;
 	}
@@ -1284,7 +1407,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 **************************************************************/
 	
 	@Override
-	public double hasTypeFuzzyMembership(Description description, FuzzyIndividual individual) {
+	public double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual) {
 		reasoningStartTimeTmp = System.nanoTime();
 		double result = -1;
 		try {
@@ -1299,7 +1422,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;		
 	}
 
-	protected double hasTypeFuzzyMembershipImpl(Description concept, FuzzyIndividual individual)
+	protected double hasTypeFuzzyMembershipImpl(OWLClassExpression concept, FuzzyIndividual individual)
 	throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}

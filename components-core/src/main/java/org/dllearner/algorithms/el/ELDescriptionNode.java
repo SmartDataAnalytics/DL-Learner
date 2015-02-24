@@ -29,27 +29,26 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.utilities.Helper;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLProperty;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import com.hp.hpl.jena.graph.compose.Intersection;
 
 /**
- * Represents an EL description tree, which corresponds to a
- * description in the EL description logic. Note that an EL description tree
- * can be a subtree of another EL description tree. In general,
- * an EL description tree is a tree where the node label is a set
+ * Represents an EL OWLClassExpression tree, which corresponds to a
+ * OWLClassExpression in the EL OWLClassExpression logic. Note that an EL OWLClassExpression tree
+ * can be a subtree of another EL OWLClassExpression tree. In general,
+ * an EL OWLClassExpression tree is a tree where the node label is a set
  * of named classes and the edges are labelled with a property.
  * 
  * In the documentation below "this node" refers to the root node
- * of this EL description (sub-)tree. One tree cannot be reused,
- * i.e. used as subtree in several description trees, as some of
+ * of this EL OWLClassExpression (sub-)tree. One tree cannot be reused,
+ * i.e. used as subtree in several OWLClassExpression trees, as some of
  * the associated variables (level, simulation) depend on the overall
  * tree. 
  * 
@@ -62,7 +61,7 @@ public class ELDescriptionNode {
 	// the reference tree for storing values, must not be null
 	protected ELDescriptionTree tree;
 	
-	protected TreeSet<NamedClass> label = new TreeSet<NamedClass>();
+	protected TreeSet<OWLClass> label = new TreeSet<OWLClass>();
 	
 	protected List<ELDescriptionEdge> edges = new LinkedList<ELDescriptionEdge>();
 
@@ -80,6 +79,11 @@ public class ELDescriptionNode {
 	protected Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
 	protected Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
 	
+	protected boolean isClassNode;
+	protected OWLDataRange dataRange;
+	
+	public static final OWLDataFactory df = new OWLDataFactoryImpl();
+	
 	/**
 	 * Internal constructor used for cloning nodes.
 	 */
@@ -88,22 +92,22 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Constructs an EL description tree with empty root label.
+	 * Constructs an EL OWLClassExpression tree with empty root label.
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree) {
-		this(tree, new TreeSet<NamedClass>());
+		this(tree, new TreeSet<OWLClass>());
 	}	
 	
 	// convenience constructor
-	public ELDescriptionNode(ELDescriptionTree tree, NamedClass... label) {
-		this(tree, new TreeSet<NamedClass>(Arrays.asList(label)));
+	public ELDescriptionNode(ELDescriptionTree tree, OWLClass... label) {
+		this(tree, new TreeSet<OWLClass>(Arrays.asList(label)));
 	}	
 	
 	/**
-	 * Constructs an EL description tree given its root label.
+	 * Constructs an EL OWLClassExpression tree given its root label.
 	 * @param label Label of the root node.
 	 */
-	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<OWLClass> label) {
 		this.label = label;
 		this.edges = new LinkedList<ELDescriptionEdge>();	
 		this.tree = tree;
@@ -113,14 +117,34 @@ public class ELDescriptionNode {
 		tree.rootNode = this;
 		tree.addNodeToLevel(this, level);
 		tree.size += label.size();
+		
+		isClassNode = true;
+	}
+	
+	/**
+	 * Constructs an EL OWLClassExpression tree given its root label.
+	 * @param label Label of the root node.
+	 */
+	public ELDescriptionNode(ELDescriptionTree tree, OWLDataRange dataRange) {
+		this.dataRange = dataRange;
+		this.edges = new LinkedList<ELDescriptionEdge>();	
+		this.tree = tree;
+		level = 1;
+		parent = null;
+		// this is the root node of the overall tree
+		tree.rootNode = this;
+		tree.addNodeToLevel(this, level);
+		tree.size += label.size();
+		
+		isClassNode = false;
 	}
 	
 	// convenience constructor
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, NamedClass... label) {
-		this(parentNode, parentProperty, new TreeSet<NamedClass>(Arrays.asList(label)));
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, OWLClass... label) {
+		this(parentNode, parentProperty, new TreeSet<OWLClass>(Arrays.asList(label)));
 	}
 	
-	public ELDescriptionNode(ELDescriptionNode parentNode, ObjectProperty parentProperty, Set<NamedClass> label) {
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, Set<OWLClass> label) {
 //		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
@@ -191,22 +215,117 @@ public class ELDescriptionNode {
 //		mon.stop();
 		
 		// add all classes in label
-		for(NamedClass nc : label) {
+		for(OWLClass nc : label) {
 			extendLabel(nc);
 		}
 		
 		// 1 for the edge (labels are already taken care of by extendLabel)
 		tree.size += 1;
+		
+		isClassNode = true;
+	}
+	
+	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, OWLDataRange dataRange) {
+		this.dataRange = dataRange;
+		//		this.label = label;
+		// we first need to add the edge and update the simulation and then add
+		// all classes iteratively to the label (each time updating the simulation again)
+		this.edges = new LinkedList<ELDescriptionEdge>();
+		parent = parentNode;
+		// the reference tree is the same as for the parent tree
+		tree = parentNode.tree;
+		// level increases by 1
+		level = parentNode.level + 1;
+		// we add an edge from the parent to this node
+		ELDescriptionEdge edge = new ELDescriptionEdge(parentProperty, this);
+		parent.edges.add(edge);
+		// we need to update the set of nodes on a particular level
+		tree.addNodeToLevel(this, level);		
+		
+		// simulation update
+//		Monitor mon = MonitorFactory.start("simulation update");
+		// the nodes, which need to be updated
+		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		
+		// loop over all nodes on the same level, which are not in the in set
+		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
+		for(ELDescriptionNode w : nodes) {
+			// to save space, we do not add reflexive relations
+			if(w != this) {
+				// (w,v') is automatically added
+				tree.extendSimulation(w, this);
+				
+				// check conditions for (v',w)
+				boolean sc1 = false, sc2 = false;
+				
+				if(w.label.size() == 0) {
+					tree.extendSimulationSC1(this, w);
+					sc1 = true;
+				}
+				
+				if(w.edges.size() == 0) {
+					tree.extendSimulationSC2(this, w);
+					sc2 = true;
+				}
+				
+				if(sc1 && sc2) {
+					tree.extendSimulationSC12(this, w);
+				}	
+				
+				update.add(w.parent);
+			}
+		}
+		update.add(this.parent);
+		
+//		if(inSC1.contains(w) && tree.checkSC2(this, w)) {
+//			tree.extendSimulation(this, w);
+//			update.add(w.parent);
+//		}		
+		
+		// loop over all nodes in out set
+//		for(ELDescriptionNode w : out) {
+//			if(!tree.checkSC1(this, w)) {
+//				tree.shrinkSimulation(this, w);
+//				update.add(w.parent);
+//			}
+//		}
+		
+//		System.out.println(update);
+		
+		// apply updates recursively top-down
+		tree.updateSimulation(update);
+//		mon.stop();
+		
+		
+		// 1 for the edge (labels are already taken care of by extendLabel)
+		tree.size += 1;
+		
+		isClassNode = false;
 	}
 	
 	/**
-	 * Constructs an EL description tree given its root label and edges.
+	 * @return the isClassNode
+	 */
+	public boolean isClassNode() {
+		return isClassNode;
+	}
+	
+	/**
+	 * @return the dataRange
+	 */
+	public OWLDataRange getDataRange() {
+		return dataRange;
+	}
+	
+	
+	/**
+	 * Constructs an EL OWLClassExpression tree given its root label and edges.
 	 * @param label Label of the root node.
 	 * @param edges Edges connected to the root node.
 	 */
 //  TODO: probably delete as this constructor is not straightforward to
 //  implement within the new structure
-//	public ELDescriptionNode(SortedSet<NamedClass> label, List<ELDescriptionEdge> edges) {
+//	public ELDescriptionNode(SortedSet<OWLClass> label, List<ELDescriptionEdge> edges) {
 //		this.label = label;
 //		this.edges = edges;
 //	}
@@ -221,9 +340,9 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Traverses the EL description tree upwards until it finds 
+	 * Traverses the EL OWLClassExpression tree upwards until it finds 
 	 * the root and returns it.
-	 * @return The root node of this EL description tree.
+	 * @return The root node of this EL OWLClassExpression tree.
 	 */
 	public ELDescriptionNode getRoot() {
 		ELDescriptionNode root = this;
@@ -240,7 +359,7 @@ public class ELDescriptionNode {
 	 * of the tree in unit tests. Use {@link #getLevel()} to get the 
 	 * level of the tree. 
 	 * @return The level of this node (or more specifically the root
-	 * node of this subtree) within the overall EL description tree.
+	 * node of this subtree) within the overall EL OWLClassExpression tree.
 	 */
 	public int computeLevel() {
 		ELDescriptionNode root = this;
@@ -257,37 +376,51 @@ public class ELDescriptionNode {
 	 * node labels are transformed to an {@link Intersection}
 	 * of {@link NamedClass}. Each edge is transformed to an 
 	 * {@link ObjectSomeRestriction}, where the property is the edge
-	 * label and the child description the subtree the edge points 
+	 * label and the child OWLClassExpression the subtree the edge points 
 	 * to. Edges are also added to the intersection. If the intersection
 	 * is empty, {@link Thing} is returned.
-	 * @return The description corresponding to this EL description tree.
+	 * @return The OWLClassExpression corresponding to this EL OWLClassExpression tree.
 	 */
-	public Description transformToDescription() {
+	public OWLClassExpression transformToDescription() {
 		int nrOfElements = label.size() + edges.size();
 		// leaf labeled with \emptyset stands for owl:Thing
 		if(nrOfElements == 0) {
-			return new Thing();
+			return df.getOWLThing();
 		// we want to avoid intersections with only 1 element, so in this
-		// case we return either the NamedClass or ObjectSomeRestriction directly
+		// case we return either the OWLClass or ObjectSomeRestriction directly
 		} else if(nrOfElements == 1) {
 			if(label.size()==1) {
 				return label.first();
 			} else {
 				ELDescriptionEdge edge = edges.get(0);
-				Description child = edge.getNode().transformToDescription();
-				return new ObjectSomeRestriction(edge.getLabel(),child);
+				if(edge.isObjectProperty()){
+					OWLClassExpression child = edge.getNode().transformToDescription();
+					return df.getOWLObjectSomeValuesFrom(edge.getLabel().asOWLObjectProperty(), child);
+				} else {
+					OWLDataRange range = edge.getNode().getDataRange();
+					return df.getOWLDataSomeValuesFrom(edge.getLabel().asOWLDataProperty(), range);
+				}
+				
 			}
 		// return an intersection of labels and edges
 		} else {
-			Intersection is = new Intersection();
-			for(NamedClass nc : label) {
-				is.addChild(nc);
+			Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>();
+			for(OWLClass nc : label) {
+				operands.add(nc);
 			}
+			
 			for(ELDescriptionEdge edge : edges) {
-				Description child = edge.getNode().transformToDescription();
-				ObjectSomeRestriction osr = new ObjectSomeRestriction(edge.getLabel(),child);
-				is.addChild(osr);
+				if(edge.isObjectProperty()){
+					OWLClassExpression child = edge.getNode().transformToDescription();
+					OWLClassExpression osr = df.getOWLObjectSomeValuesFrom(edge.getLabel().asOWLObjectProperty(), child);
+					operands.add(osr);
+				} else {
+					OWLDataRange range = edge.getNode().getDataRange();
+					OWLClassExpression dsr = df.getOWLDataSomeValuesFrom(edge.getLabel().asOWLDataProperty(), range);
+					operands.add(dsr);
+				}
 			}
+			OWLClassExpression is = df.getOWLObjectIntersectionOf(operands);
 			return is;
 		}
 	}
@@ -329,7 +462,7 @@ public class ELDescriptionNode {
 	 * @param oldClass Class to remove from label.
 	 * @param newClass Class to add to label.
 	 */
-	public void replaceInLabel(NamedClass oldClass, NamedClass newClass) {
+	public void replaceInLabel(OWLClass oldClass, OWLClass newClass) {
 		label.remove(oldClass);
 		label.add(newClass);
 		labelSimulationUpdate();
@@ -339,7 +472,7 @@ public class ELDescriptionNode {
 	 * Adds an entry to the node label.
 	 * @param newClass Class to add to label.
 	 */
-	public void extendLabel(NamedClass newClass) {
+	public void extendLabel(OWLClass newClass) {
 		label.add(newClass);
 		labelSimulationUpdate();
 		tree.size += 1;
@@ -414,7 +547,7 @@ public class ELDescriptionNode {
 //		mon.stop();
 	}
 
-	public void refineEdge(int edgeNumber, ObjectProperty op) {
+	public void refineEdge(int edgeNumber, OWLProperty op) {
 		edges.get(edgeNumber).setLabel(op);
 		
 //		Monitor mon = MonitorFactory.start("simulation update");
@@ -459,7 +592,7 @@ public class ELDescriptionNode {
 	 * but use the provided methods instead!
 	 * @return The label of root node of this subtree.
 	 */
-	public NavigableSet<NamedClass> getLabel() {
+	public NavigableSet<OWLClass> getLabel() {
 		return label;
 	}
 
@@ -501,18 +634,22 @@ public class ELDescriptionNode {
 
 	public String toDescriptionString() {
 		String str = "";
-		if(label.isEmpty()) {
-			str = "TOP";
-		} else {
-			Iterator<NamedClass> it = label.iterator();
-			while(it.hasNext()) {
-				NamedClass nc = it.next();
-				if(it.hasNext()) {
-					str += nc.toString() + " AND ";
-				} else {
-					str += nc.toString();
+		if(isClassNode()){
+			if(label.isEmpty()) {
+				str = "TOP";
+			} else {
+				Iterator<OWLClass> it = label.iterator();
+				while(it.hasNext()) {
+					OWLClass nc = it.next();
+					if(it.hasNext()) {
+						str += nc.toString() + " AND ";
+					} else {
+						str += nc.toString();
+					}
 				}
 			}
+		} else {
+			str += dataRange;
 		}
 		for(ELDescriptionEdge edge : edges) {
 			str += " AND EXISTS " + edge.getLabel().toString() + ".(";

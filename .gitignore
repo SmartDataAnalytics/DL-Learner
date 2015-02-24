@@ -3,3 +3,9 @@
 .settings
 .classpath
 target
+
+*.swp
+deptree.txt
+cache
+test*
+log

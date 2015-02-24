@@ -21,7 +21,7 @@ package org.dllearner.learningproblems;
 
 import java.util.Set;
 
-import org.dllearner.core.owl.Entity;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Calculates accuracy and score (with respect to some length penalty) of
@@ -35,7 +35,7 @@ import org.dllearner.core.owl.Entity;
  * @author Jens Lehmann
  *
  */
-public class ScoreTwoValued<T extends Entity> extends ScorePosNeg<T> {
+public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
 
 	private static final long serialVersionUID = 6264873890324824550L;
 	

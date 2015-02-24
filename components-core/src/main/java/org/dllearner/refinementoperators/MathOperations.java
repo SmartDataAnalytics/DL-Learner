@@ -19,16 +19,22 @@
 
 package org.dllearner.refinementoperators;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Union;
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Math operations related to refinement operators.
@@ -37,6 +43,8 @@ import org.dllearner.utilities.owl.ConceptComparator;
  *
  */
 public class MathOperations {
+	
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
 	 * This function implements the getCombos method. Through the
@@ -112,7 +120,7 @@ public class MathOperations {
 	 */
 	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
-		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
 		decompose(number, number, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}
@@ -127,7 +135,7 @@ public class MathOperations {
 	 * @return A two dimensional list constructed in {@link #getCombos(int)}.
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
-		LinkedList<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
 		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}	
@@ -138,8 +146,8 @@ public class MathOperations {
 	}
 	
 	/**
-	 * Implements a cross product in the sense that each union description in the
-	 * base set is extended by each description in the new set. 
+	 * Implements a cross product in the sense that each union OWLClassExpression in the
+	 * base set is extended by each OWLClassExpression in the new set. 
 	 * 
 	 * Example:
 	 * baseSet = {A1 OR A2, A1 or A3}
@@ -155,22 +163,24 @@ public class MathOperations {
 	 * @param newSet The descriptions to add to each union class descriptions.
 	 * @return The "cross product" of baseSet and newSet.
 	 */
-	public static SortedSet<Union> incCrossProduct(Set<Union> baseSet, Set<Description> newSet) {
-		SortedSet<Union> retSet = new TreeSet<Union>(new ConceptComparator());
+	public static SortedSet<OWLObjectUnionOf> incCrossProduct(Set<OWLObjectUnionOf> baseSet, Set<OWLClassExpression> newSet) {
+		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<OWLObjectUnionOf>();
 	
 		if(baseSet.isEmpty()) {
-			for(Description c : newSet) {
-				Union md = new Union();
-				md.addChild(c);
+			for(OWLClassExpression c : newSet) {
+				OWLObjectUnionOf md = df.getOWLObjectUnionOf(c);
 				retSet.add(md);
 			}
 			return retSet;
 		}
 		
-		for(Union md : baseSet) {
-			for(Description c : newSet) {
-				Union mdNew = new Union(md.getChildren());
-				mdNew.addChild(c);
+		List<OWLClassExpression> operands;
+		for(OWLObjectUnionOf md : baseSet) {
+			for(OWLClassExpression c : newSet) {
+				operands = md.getOperandsAsList();
+				operands.add(c);
+				Collections.sort(operands);
+				OWLObjectUnionOf mdNew = new OWLObjectUnionOfImplExt(operands);
 				retSet.add(mdNew);
 			}
 		}
@@ -185,14 +195,14 @@ public class MathOperations {
 	 * Note that the method does not work recursively, e.g. it return false 
 	 * for EXISTS r.(EXISTS r.A1 AND A2 AND EXISTS r.A3).
 	 * 
-	 * @param d Description to test.
+	 * @param d OWLClassExpression to test.
 	 * @return See description.
 	 */
-	public static boolean containsDoubleObjectSomeRestriction(Description d) {
-		Set<String> roles = new TreeSet<String>();
-		for(Description c : d.getChildren()) {
-			if(c instanceof ObjectSomeRestriction) {
-				String role = ((ObjectSomeRestriction)c).getRole().getName();								
+	public static boolean containsDoubleObjectSomeRestriction(OWLClassExpression d) {
+		Set<OWLObjectPropertyExpression> roles = new HashSet<OWLObjectPropertyExpression>();
+		for(OWLClassExpression c : d.getNestedClassExpressions()) {
+			if(c instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom)c).getProperty();								
 				boolean roleExists = !roles.add(role);
 				if(roleExists)
 					return true;

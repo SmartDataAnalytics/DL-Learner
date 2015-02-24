@@ -19,11 +19,13 @@
 
 package org.dllearner.core.owl;
 
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
 /**
- * A class description in its context, i.e. including a parent link (if any).
- * For instance, there is only one description owl:Thing, but it can occur
+ * A class OWLClassExpression in its context, i.e. including a parent link (if any).
+ * For instance, there is only one OWLClassExpression owl:Thing, but it can occur
  * nested within different descriptions like "createdBy SOME owl:Thing". 
- * Depending on what you want to do, you either need a Description or a
+ * Depending on what you want to do, you either need a OWLClassExpression or a
  * ContextDescription. 
  * 
  * @author Jens Lehmann
@@ -31,11 +33,11 @@ package org.dllearner.core.owl;
  */
 public class ContextDescription {
 
-	private Description description;
+	private OWLClassExpression description;
 	
-	private Description parent;
+	private OWLClassExpression parent;
 	
-	public ContextDescription(Description description, Description parent) {
+	public ContextDescription(OWLClassExpression description, OWLClassExpression parent) {
 		this.description = description;
 		this.parent = parent;
 	}
@@ -43,14 +45,14 @@ public class ContextDescription {
 	/**
 	 * @return the description
 	 */
-	public Description getDescription() {
+	public OWLClassExpression getDescription() {
 		return description;
 	}
 
 	/**
 	 * @return the parent
 	 */
-	public Description getParent() {
+	public OWLClassExpression getParent() {
 		return parent;
 	}
 	

@@ -46,7 +46,6 @@ import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.core.options.StringTupleListConfigOption;
 import org.dllearner.core.options.URLConfigOption;
-import org.dllearner.core.owl.KB;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
@@ -531,17 +530,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		}
 		return ret;
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.KnowledgeSource#toKB()
-	 */
-	@Override
-	public KB toKB() {
-		// TODO Does this work?
-		return new KB();
 	}
 
 	public URL getOntologyFragmentURL() {

@@ -33,9 +33,9 @@ public class ABoxQueryGenerator {
         StringBuilder builder = new StringBuilder();
         builder.append(" FILTER (" + var + " IN( ");
         for (String uri : uris) {
-            builder.append("<");
+            if (!uri.startsWith("<")) builder.append("<");
             builder.append(uri);
-            builder.append(">");
+            if (!uri.endsWith(">")) builder.append(">");
             builder.append(", ");
         }
         builder.deleteCharAt(builder.length() - 2);
@@ -95,7 +95,7 @@ public class ABoxQueryGenerator {
     /*private List<String> getIndividualsFromModel
            (OntModel
                     model) {
-       ExtendedIterator<Individual> iterator = model.listIndividuals();
+       ExtendedIterator<OWLIndividual> iterator = model.listIndividuals();
        LinkedList<String> result = new LinkedList<String>();
        while (iterator.hasNext()) {
            result.add(iterator.next().getURI());

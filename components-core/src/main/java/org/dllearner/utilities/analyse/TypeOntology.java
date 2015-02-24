@@ -96,7 +96,7 @@ public class TypeOntology {
 					if (!objectProperties.contains(pUri)) {
 						model.createDatatypeProperty(pUri);
 						dataProperties.add(pUri);
-						
+
 						log.debug("{} is a dataproperty",pUri);
 
 						// if predicate is in the list of objectproperties it
@@ -106,7 +106,7 @@ public class TypeOntology {
 						log.info("{} is a rdf:property", pUri);
 					}
 					changes++;
-					
+
 					// object is not a literal or a class so it must be an
 					// instance
 					// if object is not in the list of individuals
@@ -152,6 +152,11 @@ public class TypeOntology {
 			List<String> classes) {
 		if (individuals != null) {
 			for (String individual : individuals) {
+			    if (individual.startsWith("<")) {
+			        int strlen = individual.length();
+			        // assuming that there is also a closing angle bracket
+			        individual = individual.substring(1, strlen-1);
+			    }
 				model.getResource(individual).addProperty(RDF.type, OWL.Thing);
 			}
 		}

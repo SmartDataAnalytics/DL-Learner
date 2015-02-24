@@ -31,28 +31,28 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.elcopy.ELDescriptionEdge;
-import org.dllearner.algorithms.elcopy.ELDescriptionEdgeComparator;
-import org.dllearner.algorithms.elcopy.ELDescriptionNode;
-import org.dllearner.algorithms.elcopy.ELDescriptionTree;
-import org.dllearner.algorithms.elcopy.ELDescriptionTreeComparator;
-import org.dllearner.algorithms.elcopy.TreeAndRoleSet;
-import org.dllearner.algorithms.elcopy.TreeAndRoleSetComparator;
+import org.apache.log4j.Logger;
+import org.dllearner.algorithms.el.ELDescriptionEdge;
+import org.dllearner.algorithms.el.ELDescriptionEdgeComparator;
+import org.dllearner.algorithms.el.ELDescriptionNode;
+import org.dllearner.algorithms.el.ELDescriptionTree;
+import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
+import org.dllearner.algorithms.el.TreeAndRoleSet;
+import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.DatatypeProperty;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.Property;
-import org.dllearner.core.owl.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 //import com.jamonapi.Monitor;
 //import com.jamonapi.MonitorFactory;
@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unused")
 public class ELDown3 extends RefinementOperatorAdapter {
 
-	private static Logger logger = LoggerFactory.getLogger(ELDown3.class);	
+	private static Logger logger = Logger.getLogger(ELDown3.class);	
 	
 	private AbstractReasonerComponent rs;
 	
@@ -89,18 +89,18 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	private DatatypePropertyHierarchy dpHierarchy;
 	
 	// domains and ranges
-	private Map<ObjectProperty,Description> opDomains = new TreeMap<ObjectProperty,Description>();
-	private Map<ObjectProperty,Description> opRanges = new TreeMap<ObjectProperty,Description>();
-	private Map<DatatypeProperty,Description> dpDomains = new TreeMap<DatatypeProperty,Description>();
-	private Map<DatatypeProperty,DataRange> dpRanges = new TreeMap<DatatypeProperty,DataRange>();
+	private Map<OWLObjectProperty,OWLClassExpression> opDomains = new TreeMap<OWLObjectProperty,OWLClassExpression>();
+	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<OWLObjectProperty,OWLClassExpression>();
+	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<OWLDataProperty,OWLClassExpression>();
+	private Map<OWLDataProperty,OWLDataRange> dpRanges = new TreeMap<OWLDataProperty,OWLDataRange>();
 	
 	// app_A set of applicable properties for a given class
-	private Map<Description, Set<ObjectProperty>> appOP = new TreeMap<Description, Set<ObjectProperty>>();
-	private Map<Description, Set<DatatypeProperty>> appDP = new TreeMap<Description, Set<DatatypeProperty>>();
+	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClassExpression, Set<OWLObjectProperty>>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appDP = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
 
 	// most general applicable properties
-	private Map<Description,Set<ObjectProperty>> mgrOP = new TreeMap<Description,Set<ObjectProperty>>();
-	private Map<Description,Set<DatatypeProperty>> mgrDP = new TreeMap<Description,Set<DatatypeProperty>>();
+	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgrOP = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgrDP = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 
 	// utility class
 	private Utility utility;
@@ -111,6 +111,8 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
 	
 	private int maxClassExpressionDepth = 2;
+	
+	private OWLDataFactory df = new OWLDataFactoryImpl();
 
 	public ELDown3(AbstractReasonerComponent rs) {
 		this(rs, true);
@@ -124,11 +126,11 @@ public class ELDown3 extends RefinementOperatorAdapter {
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
-		for(ObjectProperty op : rs.getObjectProperties()) {
+		for(OWLObjectProperty op : rs.getObjectProperties()) {
 			opDomains.put(op, rs.getDomain(op));
 			opRanges.put(op, rs.getRange(op));
 		}	
-		for(DatatypeProperty dp : rs.getDatatypeProperties()) {
+		for(OWLDataProperty dp : rs.getDatatypeProperties()) {
 			dpDomains.put(dp, rs.getDomain(dp));
 			dpRanges.put(dp, rs.getRange(dp));
 		}
@@ -140,11 +142,11 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	 * @see org.dllearner.refinementoperators.RefinementOperator#refine(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public Set<Description> refine(Description concept) {
+	public Set<OWLClassExpression> refine(OWLClassExpression concept) {
 		logger.trace("refining " + concept);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
 		List<ELDescriptionTree> refinementTrees = refine(tree);
-		Set<Description> refinements = new HashSet<Description>();
+		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToDescription());
 		}
@@ -192,24 +194,24 @@ public class ELDown3 extends RefinementOperatorAdapter {
 
 	// operation 1: label extension
 	private List<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		logger.trace("extending label of " + v);
 //		Monitor mon = MonitorFactory.start("extend label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
-		Description index;
+		OWLClassExpression index;
 		if(v.isRoot()) {
-			index = Thing.instance;
+			index = df.getOWLThing();
 		} else {
 			index = opRanges.get(v.getParentEdge().getLabel());
 		}
 		
 		// call ncc (see paper)
-		Set<NamedClass> candidates = utility.getClassCandidates(index, v.getLabel());
+		Set<OWLClass> candidates = utility.getClassCandidates(index, v.getLabel());
+		
 //		System.out.println("index: " + index + " label: " + v.getLabel());
 //		System.out.println("candidates: " + candidates);
 		
-		for(NamedClass nc : candidates) {
+		for(OWLClass nc : candidates) {
 			// clone operation
 			ELDescriptionTree clonedTree = tree.clone();
 			ELDescriptionNode clonedNode = clonedTree.getNode(position);
@@ -226,21 +228,20 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// operation 2: label refinement
 	private List<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		logger.trace("refining label of " + v);
 //		Monitor mon = MonitorFactory.start("refine label");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 		
 		// loop through all classes in label
-		for(NamedClass nc : v.getLabel()) {
+		for(OWLClass nc : v.getLabel()) {
 			// find all more special classes for the given label
-			for(Description moreSpecial : rs.getSubClasses(nc)) {
-				if(moreSpecial instanceof NamedClass) {
+			for(OWLClassExpression moreSpecial : rs.getSubClasses(nc)) {
+				if(moreSpecial instanceof OWLClass) {
 					// clone operation
 					ELDescriptionTree clonedTree = tree.clone();
 					ELDescriptionNode clonedNode = clonedTree.getNode(position);
 					
 					// create refinements by replacing class					
-					clonedNode.replaceInLabel(nc, (NamedClass) moreSpecial);
+					clonedNode.replaceInLabel(nc, (OWLClass) moreSpecial);
 					
 					if(clonedTree.isMinimal()) {
 						refinements.add(clonedTree);	
@@ -254,16 +255,15 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// operation 3: refine edge
 	private List<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		logger.trace("refining edge of " + v);
 //		Monitor mon = MonitorFactory.start("refine edge");
 		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
 
 		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
 			ELDescriptionEdge edge = v.getEdges().get(edgeNumber);
-			Property op = edge.getLabel();
+			OWLProperty op = edge.getLabel();
 			// find all more special properties
-			if(op instanceof ObjectProperty){
-				for(ObjectProperty op2 : rs.getSubProperties((ObjectProperty) op)) {
+			if(op.isOWLObjectProperty()){
+				for(OWLObjectProperty op2 : rs.getSubProperties(op.asOWLObjectProperty())) {
 					// we check whether the range of this property is not disjoint
 					// with the existing child node (we do not perform a full disjointness
 					// check, but only compare with the flattened concept to keep the number
@@ -281,7 +281,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 					}
 				}	
 			} else {
-				for(DatatypeProperty op2 : rs.getSubProperties((DatatypeProperty) op)) {
+				for(OWLDataProperty op2 : rs.getSubProperties(op.asOWLDataProperty())) {
 					// we check whether the range of this property is not disjoint
 					// with the existing child node
 					if(edge.getNode().getDataRange().equals(dpRanges.get(op2))) {
@@ -307,16 +307,15 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// new version of as
 	private Collection<ELDescriptionTree> attachSubtree2(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-		logger.trace("attaching subtree to " + v);
 //		Monitor mon = MonitorFactory.start("attach tree");
 		Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
 		
 		// create and initialise M
 		TreeSet<TreeAndRoleSet> m = new TreeSet<TreeAndRoleSet>(mComp);
-		ELDescriptionTree topTree = new ELDescriptionTree(rs, Thing.instance);
-		Description index = getIndex(v);
-		SortedSet<? extends Property> appOPs = utility.computeApplicableObjectProperties(index);
-		m.add(new TreeAndRoleSet(topTree, (Set<Property>) appOPs));
+		ELDescriptionTree topTree = new ELDescriptionTree(rs, df.getOWLThing());
+		OWLClassExpression index = getIndex(v);
+		SortedSet<? extends OWLProperty> appOPs = utility.computeApplicableObjectProperties(index);
+		m.add(new TreeAndRoleSet(topTree, (Set<OWLProperty>) appOPs));
 		
 //		logger.trace("M initialised: " + m);
 		
@@ -325,28 +324,28 @@ public class ELDown3 extends RefinementOperatorAdapter {
 			// pick first element of M
 			TreeAndRoleSet tars = m.pollFirst();
 			ELDescriptionTree tp = tars.getTree();
-			Set<Property> rSet = tars.getRoles();
+			Set<OWLProperty> rSet = tars.getRoles();
 //			logger.trace("selected first element of M: " + tars);
 			
 			
 			// init sets R' and R''
 			// more efficient
-			Set<ObjectProperty> rpSet = utility.computeMgr((Set<ObjectProperty>) appOPs);
+			Set<OWLObjectProperty> rpSet = utility.computeMgr((Set<OWLObjectProperty>) appOPs);
 			rpSet.retainAll(rSet);
-//			SortedSet<ObjectProperty> rpSet = new TreeSet<ObjectProperty>();
-//			for(ObjectProperty rEl : rSet) {
+//			SortedSet<OWLObjectProperty> rpSet = new TreeSet<OWLObjectProperty>();
+//			for(OWLObjectProperty rEl : rSet) {
 //				if(!containsSuperProperty(rEl, rSet)) {
 //					rpSet.add(rEl);
 //				}
 //			}
 			
 //			logger.trace("R': " + rpSet);
-			Set<Property> rppSet = new TreeSet<Property>();
+			Set<OWLProperty> rppSet = new TreeSet<OWLProperty>();
 			
 			while(!rpSet.isEmpty()) {
 				// pick an element r from R'
-				Iterator<ObjectProperty> it = rpSet.iterator();
-				ObjectProperty r = it.next();
+				Iterator<OWLObjectProperty> it = rpSet.iterator();
+				OWLObjectProperty r = it.next();
 				it.remove();
 //				logger.trace("picked role r: " + r);
 				ELDescriptionTree tpp = mergeTrees(tree, v, position, r, tp);
@@ -371,7 +370,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 						
 //						Monitor mon2 = MonitorFactory.start("as.tmp");
 						// add role to R' if it is in R (allowed)
-						for(ObjectProperty subRole : rs.getSubProperties(r)) {
+						for(OWLObjectProperty subRole : rs.getSubProperties(r)) {
 							if(rSet.contains(subRole)) {
 								rpSet.add(subRole);
 							}
@@ -405,15 +404,14 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	// new version of as
 		private Collection<ELDescriptionTree> attachSubtreeDatatypeProperties(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
-			logger.trace("attaching subtree to " + v);
 //			Monitor mon = MonitorFactory.start("attach tree");
 			Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
 			// create and initialise M
 			TreeSet<TreeAndRoleSet> m = new TreeSet<TreeAndRoleSet>(mComp);
-			ELDescriptionTree topTree = new ELDescriptionTree(rs, Thing.instance);
-			Description index = getIndex(v);
-			SortedSet<? extends Property> appOPs = utility.computeApplicableDatatypeProperties(index);
-			m.add(new TreeAndRoleSet(topTree, (Set<Property>) appOPs));
+			ELDescriptionTree topTree = new ELDescriptionTree(rs, df.getOWLThing());
+			OWLClassExpression index = getIndex(v);
+			SortedSet<? extends OWLProperty> appOPs = utility.computeApplicableDatatypeProperties(index);
+			m.add(new TreeAndRoleSet(topTree, (Set<OWLProperty>) appOPs));
 			
 //			logger.trace("M initialised: " + m);
 			
@@ -422,28 +420,28 @@ public class ELDown3 extends RefinementOperatorAdapter {
 				// pick first element of M
 				TreeAndRoleSet tars = m.pollFirst();
 				ELDescriptionTree tp = tars.getTree();
-				Set<Property> rSet = tars.getRoles();
+				Set<OWLProperty> rSet = tars.getRoles();
 //				logger.trace("selected first element of M: " + tars);
 				
 				
 				// init sets R' and R''
 				// more efficient
-				Set<DatatypeProperty> rpSet = utility.computeMgrDP((Set<DatatypeProperty>) appOPs);
+				Set<OWLDataProperty> rpSet = utility.computeMgrDP((Set<OWLDataProperty>) appOPs);
 				rpSet.retainAll(rSet);
-//				SortedSet<ObjectProperty> rpSet = new TreeSet<ObjectProperty>();
-//				for(ObjectProperty rEl : rSet) {
+//				SortedSet<OWLObjectProperty> rpSet = new TreeSet<OWLObjectProperty>();
+//				for(OWLObjectProperty rEl : rSet) {
 //					if(!containsSuperProperty(rEl, rSet)) {
 //						rpSet.add(rEl);
 //					}
 //				}
 				
 //				logger.trace("R': " + rpSet);
-				Set<Property> rppSet = new TreeSet<Property>();
+				Set<OWLProperty> rppSet = new TreeSet<OWLProperty>();
 				
 				while(!rpSet.isEmpty()) {
 					// pick an element r from R'
-					Iterator<DatatypeProperty> it = rpSet.iterator();
-					DatatypeProperty r = it.next();
+					Iterator<OWLDataProperty> it = rpSet.iterator();
+					OWLDataProperty r = it.next();
 					it.remove();
 //					logger.trace("picked role r: " + r);
 					ELDescriptionTree tpp = mergeTrees(tree, v, position, r, tp);
@@ -468,7 +466,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 							
 //							Monitor mon2 = MonitorFactory.start("as.tmp");
 							// add role to R' if it is in R (allowed)
-							for(DatatypeProperty subRole : rs.getSubProperties(r)) {
+							for(OWLDataProperty subRole : rs.getSubProperties(r)) {
 								if(rSet.contains(subRole)) {
 									rpSet.add(subRole);
 								}
@@ -502,7 +500,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 			
 	
 	// create a new tree which is obtained by attaching the new tree at the given node in the tree via role r
-	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, Property r, ELDescriptionTree newTree) {
+	private ELDescriptionTree mergeTrees(ELDescriptionTree tree, ELDescriptionNode node, int[] position, OWLProperty r, ELDescriptionTree newTree) {
 //		Monitor mon = MonitorFactory.start("as.merge trees");
 //		System.out.println("merge start");
 //		System.out.println(tree);
@@ -533,7 +531,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 			ELDescriptionNode vp;
 			if(v.isRoot()) {
 				// root is connected to main tree via role r
-				if(r instanceof ObjectProperty){
+				if(r instanceof OWLObjectProperty){
 					vp = new ELDescriptionNode(clonedNode, r, newTree.getRootNode().getLabel());
 				} else {
 					vp = new ELDescriptionNode(clonedNode, r, dpRanges.get(r));
@@ -541,14 +539,14 @@ public class ELDown3 extends RefinementOperatorAdapter {
 				
 			} else if(v.isClassNode()){
 				ELDescriptionNode parent = cloneMap.get(v.getParent());
-				Property role = v.getParentEdge().getLabel();
-				Set<NamedClass> label = v.getLabel();
+				OWLProperty role = v.getParentEdge().getLabel();
+				Set<OWLClass> label = v.getLabel();
 				// create new node
 				vp = new ELDescriptionNode(parent, role, label);				
 			} else {
 				ELDescriptionNode parent = cloneMap.get(v.getParent());
-				Property role = v.getParentEdge().getLabel();
-				DataRange label = v.getDataRange();
+				OWLProperty role = v.getParentEdge().getLabel();
+				OWLDataRange label = v.getDataRange();
 				// create new node
 				vp = new ELDescriptionNode(parent, role, label);
 			}
@@ -584,7 +582,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 		for(ELDescriptionEdge piVEdge : piVEdges) {
 			// collect (w,r',w')
 			ELDescriptionNode wp = piVEdge.getNode();
-			Property rp = piVEdge.getLabel();
+			OWLProperty rp = piVEdge.getLabel();
 			ELDescriptionNode w = wp.getParent();
 			
 //			System.out.println("w: " + w);
@@ -593,7 +591,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 			
 			// go through all (w,s,w'')
 			for(ELDescriptionEdge wEdge : w.getEdges()) {
-				Property rpp = wEdge.getLabel();
+				OWLProperty rpp = wEdge.getLabel();
 				ELDescriptionNode wpp = wEdge.getNode();
 				if(wp != wpp && rs.isSubPropertyOf(rp, rpp)) {
 //					System.out.println("wp: " + wp);
@@ -615,42 +613,42 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	// the result would be Professor \sqcap Human (assuming Human is the domain
 	// of hasChild)
 	// TODO: used in both EL operators => move to utility class
-	private Description getFlattenedConcept(ELDescriptionNode node) {
-		Intersection i = new Intersection();
+	private OWLClassExpression getFlattenedConcept(ELDescriptionNode node) {
+		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>();
 		
 		// add all named classes to intersection
-		for(NamedClass nc : node.getLabel()) {
-			i.addChild(nc);
+		for(OWLClass nc : node.getLabel()) {
+			operands.add(nc);
 		}
 		// add domain of all roles to intersection
 		for(ELDescriptionEdge edge : node.getEdges()) {
-			i.addChild(opDomains.get(edge.getLabel()));
+			operands.add(opDomains.get(edge.getLabel()));
 		}
 		
-		int size = i.getChildren().size();
+		int size = operands.size();
 		// size = 0 means we have the top concept
 		if(size == 0) {
-			return Thing.instance;
+			return df.getOWLThing();
 		}
 		// if the intersection has just one element, we return
 		// the element itself instead
 		else if(size == 1) {
-			return i.getChild(0);
+			return operands.iterator().next();
 		}
 		
-		return i;
+		return df.getOWLObjectIntersectionOf(operands);
 	}	
 	
-	private Description getIndex(ELDescriptionNode v) {
+	private OWLClassExpression getIndex(ELDescriptionNode v) {
 		if(v.isRoot()) {
-			return Thing.instance;
+			return df.getOWLThing();
 		} else {
 			return opRanges.get(v.getParentEdge().getLabel());
 		}		
 	}
 	
-	private boolean containsSuperProperty(ObjectProperty prop, Set<ObjectProperty> props) {
-		for(ObjectProperty p : props) {
+	private boolean containsSuperProperty(OWLObjectProperty prop, Set<OWLObjectProperty> props) {
+		for(OWLObjectProperty p : props) {
 			if(!p.equals(prop)) {
 				if(opHierarchy.isSubpropertyOf(prop, p)) {
 					return true;

@@ -20,11 +20,9 @@
 package org.dllearner.learningproblems;
 
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * The score class is used to store how well a class description did
@@ -33,7 +31,7 @@ import org.dllearner.core.owl.Individual;
  * @author Jens Lehmann
  *
  */
-public abstract class ScorePosNeg<T extends Entity> extends Score {
+public abstract class ScorePosNeg<T extends OWLEntity> extends Score {
 	
 	private static final long serialVersionUID = -4646131678864109469L;
 
@@ -56,6 +54,6 @@ public abstract class ScorePosNeg<T extends Entity> extends Score {
 	 * @param newLength Length of the concept.
 	 * @return Score.
 	 */
-	public abstract ScorePosNeg getModifiedLengthScore(int newLength);
+	public abstract ScorePosNeg<T> getModifiedLengthScore(int newLength);
 	
 }

@@ -12,15 +12,16 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LinearRegression;
@@ -40,8 +41,8 @@ import com.google.common.collect.Sets;
 public class DescriptionLinearClassifier {
 	
 	private AbstractReasonerComponent rc;
-	private Set<Individual> posExamples;
-	private Set<Individual> negExamples;
+	private Set<OWLIndividual> posExamples;
+	private Set<OWLIndividual> negExamples;
 	
 	private boolean writeArffFile = true;
 
@@ -53,13 +54,13 @@ public class DescriptionLinearClassifier {
 		this(rc.getIndividuals(lp.getClassToDescribe()), Sets.difference(rc.getIndividuals(),rc.getIndividuals(lp.getClassToDescribe())), rc);
 	}
 	
-	public DescriptionLinearClassifier(Set<Individual> posExamples, Set<Individual> negExamples, AbstractReasonerComponent rc) {
+	public DescriptionLinearClassifier(Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples, AbstractReasonerComponent rc) {
 		this.posExamples = posExamples;
 		this.negExamples = negExamples;
 		this.rc = rc;
 	}
 	
-	public void getLinearCombination(List<Description> descriptions){
+	public void getLinearCombination(List<OWLClassExpression> descriptions){
 		//get common data
 		Instances data = buildData(descriptions);
 		
@@ -88,7 +89,7 @@ public class DescriptionLinearClassifier {
 		}
 	}
 	
-	private Instances buildData(List<Description> descriptions){
+	private Instances buildData(List<OWLClassExpression> descriptions){
 		//#attributes = #descriptions + 1 for the target class
 		int numAttributes = descriptions.size() + 1;
 		ArrayList<Attribute> attInfo = new ArrayList<Attribute>(numAttributes);
@@ -105,13 +106,13 @@ public class DescriptionLinearClassifier {
 		//2. for each concept get all instances
 		
 		//apply 2. strategy
-		List<SortedSet<Individual>> individualsList = new ArrayList<SortedSet<Individual>>(descriptions.size());
-		for (Description description : descriptions) {
-			SortedSet<Individual> individuals = rc.getIndividuals(description);
+		List<SortedSet<OWLIndividual>> individualsList = new ArrayList<SortedSet<OWLIndividual>>(descriptions.size());
+		for (OWLClassExpression description : descriptions) {
+			SortedSet<OWLIndividual> individuals = rc.getIndividuals(description);
 			individualsList.add(individuals);
 		}
 		//handle pos examples
-		for (Individual posEx : posExamples) {
+		for (OWLIndividual posEx : posExamples) {
 			double[] attValues = new double[numAttributes];
 			
 			for (int i = 0; i < descriptions.size(); i++) {
@@ -127,7 +128,7 @@ public class DescriptionLinearClassifier {
 		}
 		
 		// handle neg examples
-		for (Individual negEx : negExamples) {
+		for (OWLIndividual negEx : negExamples) {
 			double[] attValues = new double[numAttributes];
 
 			for (int i = 0; i < descriptions.size(); i++) {
@@ -163,7 +164,7 @@ public class DescriptionLinearClassifier {
 		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
 		rc.init();
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setClassToDescribe(new NamedClass("http://ns.softwiki.de/req/CustomerRequirement"));
+		lp.setClassToDescribe(new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement")));
 		lp.init();
 		CELOE celoe = new CELOE(lp, rc);
 		celoe.setNoisePercentage(1.0);
@@ -171,7 +172,7 @@ public class DescriptionLinearClassifier {
 		celoe.init();
 		celoe.start();
 		
-		List<Description> descriptions = new ArrayList<Description>();
+		List<OWLClassExpression> descriptions = new ArrayList<OWLClassExpression>();
 		for (EvaluatedDescription ed : celoe.getCurrentlyBestEvaluatedDescriptions(100)) {
 			if(((EvaluatedDescriptionClass)ed).getAdditionalInstances().size() > 0){
 				System.out.println(ed);

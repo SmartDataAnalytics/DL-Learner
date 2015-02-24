@@ -11,15 +11,19 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.ClassAssertionAxiom;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.kb.KBFile;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.junit.Test;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import com.google.common.collect.Sets;
 
@@ -30,41 +34,44 @@ import com.google.common.collect.Sets;
 public class LearningProblemTest {
 	
 	@Test
-	public void posOnlyLPLearningTests() throws ComponentInitException {
+	public void posOnlyLPLearningTests() throws ComponentInitException, OWLOntologyCreationException {
 		// create artificial ontology
-		KB kb = new KB();
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		NamedClass[] nc = new NamedClass[5];
+		PrefixManager pm = new DefaultPrefixManager(ns);
+		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
-			nc[i] = new NamedClass(ns + "A" + i);
+			nc[i] = df.getOWLClass("A" + i, pm);
 		}
-		Individual[] ind = new Individual[100];
+		OWLIndividual[] ind = new OWLIndividual[100];
 		for(int i=0; i<100; i++) {
-			ind[i] = new Individual(ns + "i" + i);
+			ind[i] = df.getOWLNamedIndividual("i" + i, pm);
 		}
 		
 		// assert individuals to owl:Thing (such that they exist in the knowledge base)
 		for(int i=0; i<100; i++) {
-			kb.addAxiom(new ClassAssertionAxiom(Thing.instance,ind[i]));
+			man.addAxiom(kb, df.getOWLClassAssertionAxiom(df.getOWLThing(), ind[i]));
 		}
 		
 		// A0
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[0]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[1]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[0],ind[5]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[0]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[1]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[5]));
 		
 		// A1
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[0]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[1]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[2]));
-		kb.addAxiom(new ClassAssertionAxiom(nc[1],ind[5]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[0]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[1]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[2]));
+		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[5]));
 		
-		AbstractKnowledgeSource ks = new KBFile(kb);
+		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
 		
 		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
 		reasoner.init();		
 		
-		SortedSet<Individual> positiveExamples = new TreeSet<Individual>(Sets.newHashSet(ind[0], ind[1], ind[2], ind[3], ind[4]));
+		SortedSet<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>(Sets.newHashSet(ind[0], ind[1], ind[2], ind[3], ind[4]));
 		PosOnlyLP lp = new PosOnlyLP(reasoner);
 		lp.setPositiveExamples(positiveExamples);
 		

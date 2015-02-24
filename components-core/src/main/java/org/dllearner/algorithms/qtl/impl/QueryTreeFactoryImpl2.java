@@ -30,10 +30,11 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.filters.Filter;
 import org.dllearner.algorithms.qtl.filters.Filters;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter;
-import org.dllearner.algorithms.qtl.filters.QuestionBasedStatementFilter2;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter;
+import org.dllearner.algorithms.qtl.filters.KeywordBasedStatementFilter2;
 import org.dllearner.algorithms.qtl.filters.ZeroFilter;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -120,7 +121,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 		
 		fillMap(s, model, resource2Statements, null);	
 	
-		QuestionBasedStatementFilter filter = (QuestionBasedStatementFilter)keepFilter;
+		KeywordBasedStatementFilter filter = (KeywordBasedStatementFilter)keepFilter;
 		Set<Statement> statements;
 		int diff = valueCount(resource2Statements) - maxEdges;
 		main:while(diff > 0){
@@ -173,9 +174,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 		SortedSet<Statement> statements;
 		while(it.hasNext()){
 			st = it.next();
-			String newSimilarToken = ((QuestionBasedStatementFilter2)keepFilter).getStatement2TokenMap().get(st);
-			System.out.println(st);
-			System.out.println(newSimilarToken);
+			String newSimilarToken = ((KeywordBasedStatementFilter2)keepFilter).getStatement2TokenMap().get(st);
 			if(!newSimilarToken.equals(oldSimilarToken) || newSimilarToken.equals("ALL")){
 				statements = resource2Statements.get(st.getSubject().toString());
 				if(statements == null){
@@ -240,7 +239,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 					if(!lit.getLanguage().isEmpty()){
 						sb.append("@").append(lit.getLanguage());
 					}
-					subTree = new QueryTreeImpl<String>(sb.toString());
+					subTree = new QueryTreeImpl<String>(sb.toString(), NodeType.LITERAL);
 //					subTree = new QueryTreeImpl<String>(lit.toString());
 					subTree.setId(nodeId++);
 					subTree.setIsLiteralNode(true);
@@ -248,7 +247,7 @@ public class QueryTreeFactoryImpl2 implements QueryTreeFactory<String> {
 				} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
 					if(tree.getUserObjectPathToRoot().size() < 3 && 
 							!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-						subTree = new QueryTreeImpl<String>(st.getObject().toString());
+						subTree = new QueryTreeImpl<String>(st.getObject().toString(), NodeType.RESOURCE);
 						subTree.setIsResourceNode(true);
 						tree.addChild(subTree, st.getPredicate().toString());
 						fillTree(subTree, resource2Statements);

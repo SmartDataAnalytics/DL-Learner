@@ -27,25 +27,40 @@ public class AxiomScore extends Score{
 	private double accuracy;
 	private double confidence;
 	
-	private int totalNrOfExamples;
-	private int nrOfpositiveExamples;
-	private int nrOfnegativeExamples;
+	private int nrOfPositiveExamples = -1;
+	private int nrOfNegativeExamples = -1;
+	
+	private boolean sampleBased;
 	
 	public AxiomScore(double accuracy) {
+		this(accuracy, false);
+	}
+	
+	public AxiomScore(double accuracy, boolean sampleBased) {
 		this.accuracy = accuracy;
+		this.sampleBased = sampleBased;
 	}
 	
 	public AxiomScore(double accuracy, double confidence) {
-		this.accuracy = accuracy;
-		this.confidence = confidence;
+		this(accuracy, confidence, false);
 	}
 	
-	public AxiomScore(double accuracy, double confidence, int totalNrOfExamples, int nrOfpositiveExamples, int nrOfnegativeExamples) {
+	public AxiomScore(double accuracy, double confidence, boolean sampleBased) {
 		this.accuracy = accuracy;
 		this.confidence = confidence;
-		this.totalNrOfExamples = totalNrOfExamples;
-		this.nrOfpositiveExamples = nrOfpositiveExamples;
-		this.nrOfnegativeExamples = nrOfnegativeExamples;
+		this.sampleBased = sampleBased;
+	}
+	
+	public AxiomScore(double accuracy, double confidence, int nrOfPositiveExamples, int nrOfNegativeExamples) {
+		this(accuracy, confidence, nrOfPositiveExamples, nrOfNegativeExamples, false);
+	}
+	
+	public AxiomScore(double accuracy, double confidence, int nrOfPositiveExamples, int nrOfNegativeExamples, boolean sampleBased) {
+		this.accuracy = accuracy;
+		this.confidence = confidence;
+		this.nrOfPositiveExamples = nrOfPositiveExamples;
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
+		this.sampleBased = sampleBased;
 	}
 
 	@Override
@@ -57,16 +72,32 @@ public class AxiomScore extends Score{
 		return confidence;
 	}
 	
+	/**
+	 * Whether the score was computed only based on a sample of the knowledge base.
+	 * @return the sampleBased
+	 */
+	public boolean isSampleBased() {
+		return sampleBased;
+	}
+	
 	public int getTotalNrOfExamples() {
-		return totalNrOfExamples;
+		return nrOfPositiveExamples + nrOfNegativeExamples;
 	}
 	
+	/**
+	 * Returns the number of positive examples used to compute the score.
+	 * @return
+	 */
 	public int getNrOfPositiveExamples() {
-		return nrOfpositiveExamples;
+		return nrOfPositiveExamples;
 	}
 	
-	public int getNrOfnegativeExamples() {
-		return nrOfnegativeExamples;
+	/**
+	 * Returns the number of negative examples used to compute the score.
+	 * @return
+	 */
+	public int getNrOfNegativeExamples() {
+		return nrOfNegativeExamples;
 	}
 
 }

@@ -15,13 +15,24 @@ Documentation for DL-Learner:
  * Javadoc: http://dl-learner.org/javadoc
 
 DL-Learner is Open Source and licensed under the GNU General Public License 3.
+<<<<<<< HEAD
 (Copyright (c) 2007-2014, Jens Lehmann).
+=======
+(Copyright (c) 2007-2015, Jens Lehmann).
+>>>>>>> release-1.0
 
 DL-Learner uses several other libraries. An incomplete list is as follows:
   * OWL API (licensed under LGPL)
   * Pellet (licensed under AGPL 3 , (c) Clark & Parsia LLC)
   * FaCT++ (licensed under LGPL, (c) The Victoria University of Manchester) 
   * HermiT (licensed under LGPL)
+<<<<<<< HEAD
   * Jena (Jena license, (c) Copyright Hewlett-Packard)
   * Protege (licensed under MPL)
   
+=======
+  * Apache Jena (Apache License, Version 2.0)
+
+Use DL-Learner in other tools:
+  * Protégé (http://dl-learner.org/community/protege-plugin/)
+>>>>>>> release-1.0

@@ -26,13 +26,13 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.gp.Program;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.PsiDown;
 import org.dllearner.refinementoperators.PsiUp;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class Psi implements GeneticRefinementOperator {
 
@@ -44,13 +44,12 @@ public class Psi implements GeneticRefinementOperator {
 	Random random;
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
-	ConceptComparator conceptComparator = new ConceptComparator();
-	public SortedMap<Description,ScorePosNeg> evalCache = new TreeMap<Description,ScorePosNeg>(conceptComparator);
+	public SortedMap<OWLClassExpression,ScorePosNeg> evalCache = new TreeMap<OWLClassExpression,ScorePosNeg>();
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
-	public SortedMap<Description,Set<Description>> pdCache = new TreeMap<Description,Set<Description>>(conceptComparator);
-	public SortedMap<Description,Set<Description>> puCache = new TreeMap<Description,Set<Description>>(conceptComparator);
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> pdCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> puCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
 	
 	// Statistiken
 	int conceptCacheHits = 0;
@@ -79,7 +78,7 @@ public class Psi implements GeneticRefinementOperator {
 		random = new Random();
 	}
 	
-	public Description applyPsi(Description concept, int coveredPositives, int coveredNegatives) {
+	public OWLClassExpression applyPsi(OWLClassExpression concept, int coveredPositives, int coveredNegatives) {
 		// Wahrscheinlichkeit für upward refinement berechnen
 		double tmp = coveredNegatives/(double)nrOfNegativeExamples;
 		double tmp2 = coveredPositives/(double)nrOfPositiveExamples;
@@ -114,7 +113,7 @@ public class Psi implements GeneticRefinementOperator {
 		
 		// someTimeStart = System.nanoTime();
 		// downward oder upward refinement operator anwenden
-		Set<Description> refinements;
+		Set<OWLClassExpression> refinements;
 		if(downward) {
 			pdRequests++;
 			// Cache aufrufen
@@ -159,7 +158,7 @@ public class Psi implements GeneticRefinementOperator {
 			
 		
 		// ein refinement zufällig auswählen
-		Description[] array = refinements.toArray(new Description[0]);
+		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[0]);
 		// kein refinement gefunden
 		if(array.length==0) {
 			if(debug) {
@@ -171,13 +170,12 @@ public class Psi implements GeneticRefinementOperator {
 		}
 			
 		int position = random.nextInt(array.length);
-		Description returnConcept = array[position];
+		OWLClassExpression returnConcept = array[position];
 		ConceptTransformation.cleanConcept(returnConcept);
 		
 		// das Rückgabekonzept wird geklont, damit alle parent-Links repariert
 		// werden (damit andere GP-Operatoren korrekt funktionieren)
-		Description returnConceptClone = (Description)returnConcept.clone();
-		returnConceptClone.setParent(null);
+		OWLClassExpression returnConceptClone = OWLClassExpressionUtils.clone(returnConcept);
 		
 		if(debug) {
 			System.out.println(concept + " " + dir + "("+prob+"%) to " + returnConcept);
@@ -191,7 +189,7 @@ public class Psi implements GeneticRefinementOperator {
 		psiApplicationStartTime = System.nanoTime();
 		nrOfRequests++;
 		
-		Description concept = program.getTree();
+		OWLClassExpression concept = program.getTree();
 		// es muss sichergestellt sein, dass Konjunktionen nur als MultConjunctions
 		// vorhanden sind (analog bei Disjunktion) => effizienter wäre eine Auslagerung
 		// dieses Codes in die Konzepterzeugung, da die Transformation häufig nichts
@@ -202,12 +200,12 @@ public class Psi implements GeneticRefinementOperator {
 		// sich lohnt Operatoren zu definieren, die keine Negationsnormalform
 		// erfordern)
 		
-		Description conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
+		OWLClassExpression conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
 		// um mehr Cache Hits zu bekommen, wird noch vereinfach und geordnet
 		
 		
-		Description conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedForm(conceptModForCache, conceptComparator);
+		OWLClassExpression conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
+		ConceptTransformation.transformToOrderedForm(conceptModForCache);
 		
 		ScorePosNeg score = program.getScore();
 		// Eval-Cache füllen
@@ -218,15 +216,15 @@ public class Psi implements GeneticRefinementOperator {
 		int coveredPositives = score.getCoveredPositives().size();
 		int coveredNegatives = score.getCoveredNegatives().size();
 		// someTimeStart = System.nanoTime();
-		Description newConcept = applyPsi(conceptMod, coveredPositives, coveredNegatives);
+		OWLClassExpression newConcept = applyPsi(conceptMod, coveredPositives, coveredNegatives);
 		ConceptTransformation.cleanConcept(newConcept);
 		// someTime += System.nanoTime() - someTimeStart;
 		// newConcept.setParent(null);
 		
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
-		Description newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedForm(newConceptMod, conceptComparator);
+		OWLClassExpression newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
+		ConceptTransformation.transformToOrderedForm(newConceptMod);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		
@@ -247,7 +245,7 @@ public class Psi implements GeneticRefinementOperator {
 			// ToDo: es muss jetzt explizit ein neues Score-Objekt
 			// erzeugt werden, welches die geänderte Konzeptlänge
 			// berücksichtigt
-			newScore = newScore.getModifiedLengthScore(newConcept.getLength());
+			newScore = newScore.getModifiedLengthScore(OWLClassExpressionUtils.getLength(newConcept));
 		}
 		
 		/*
@@ -300,11 +298,11 @@ public class Psi implements GeneticRefinementOperator {
 		return puRequests;
 	}
 
-	public SortedMap<Description, Set<Description>> getPdCache() {
+	public SortedMap<OWLClassExpression, Set<OWLClassExpression>> getPdCache() {
 		return pdCache;
 	}
 
-	public SortedMap<Description, Set<Description>> getPuCache() {
+	public SortedMap<OWLClassExpression, Set<OWLClassExpression>> getPuCache() {
 		return puCache;
 	}
 	

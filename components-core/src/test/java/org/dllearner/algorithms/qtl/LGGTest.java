@@ -19,15 +19,25 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.examples.DBpediaExample;
 import org.dllearner.algorithms.qtl.examples.LinkedGeoDataExample;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
@@ -35,11 +45,13 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -285,6 +297,67 @@ public class LGGTest {
 //		for (EvaluatedQueryTree<String> lgg : lggs) {
 //			System.out.println(lgg);
 //		}
+	}
+	
+	@Test
+	public void testLGGWithSubsumption() throws Exception{
+		Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
+		Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
+				"http://dbpedia.org/ontology/wikiPageExtracted", "http://dbpedia.org/ontology/wikiPageModified");
+		
+		SparqlEndpoint endpoint = new SparqlEndpoint(
+				new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+				"http://dbpedia.org");
+		
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		qef = new QueryExecutionFactoryCacheEx(qef, CacheUtilsH2.createCacheFrontend("cache/qtl", false, TimeUnit.DAYS.toMillis(60)));
+		
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		
+		QueryTreeFactory<String> queryTreeFactory = new QueryTreeFactoryImpl();
+		queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
+		queryTreeFactory.addIgnoredPropperties(ignoredProperties);
+		
+			
+		Set<String> examples = Sets.newHashSet(
+				"http://dbpedia.org/resource/Erik_Truffaz"
+				,"http://dbpedia.org/resource/Nat_Gonella"
+//				,"http://dbpedia.org/resource/Danny_Davis_(country_musician)"
+				);
+		
+		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+		for (String ex : examples) {
+			Model cbd = cbdGen.getConciseBoundedDescription(ex, 2);
+			QueryTreeImpl<String> tree = queryTreeFactory.getQueryTree(ex, cbd);
+			trees.add(tree);
+		}
+		
+		LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+		QueryTree<String> lgg = lggGenerator.getLGG(trees);
+		System.out.println(lgg.getStringRepresentation());
+		
+		for (QueryTree<String> tree : trees) {
+			boolean subsumed = tree.isSubsumedBy(lgg, LiteralNodeSubsumptionStrategy.DATATYPE);
+			if(!subsumed) {
+				System.err.println(tree.getStringRepresentation());
+			}
+			
+		}
+	}
+	
+	@Test
+	public void testLGGSymmetry() throws Exception {
+		QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+
+        QueryTreeImpl<String> subtree2 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        tree2.addChild(subtree2, "p");
+        
+        LGGGenerator<String> lggGenerator = new LGGGeneratorImpl<String>();
+        
+        QueryTree<String> lgg1_2 = lggGenerator.getLGG(tree1, tree2);
+		QueryTree<String> lgg2_1 = lggGenerator.getLGG(tree2, tree1);
+		assertTrue(lgg1_2.sameType(lgg2_1));
 	}
 
 

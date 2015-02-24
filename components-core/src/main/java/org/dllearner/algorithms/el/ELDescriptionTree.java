@@ -25,25 +25,27 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.core.owl.UnsupportedLanguageException;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
- * Represents an EL description tree. Unlike {@link ELDescriptionNode}, this is
+ * Represents an EL OWLClassExpression tree. Unlike {@link ELDescriptionNode}, this is
  * a tree-wide structure, i.e. it does not implement the tree structure itself,
  * but is used to store information about the tree.
  * 
@@ -56,7 +58,7 @@ public class ELDescriptionTree implements Cloneable {
 	private static Logger logger = Logger.getLogger(ELDescriptionTree.class);
 	
 	// to simplify equivalence checks and minimisation, we
-	// attach a simulation relation to the description tree
+	// attach a simulation relation to the OWLClassExpression tree
 	// private Simulation simulation;
 
 	// max level = 0 means that there is no tree at all
@@ -87,37 +89,40 @@ public class ELDescriptionTree implements Cloneable {
 	}
 
 	/**
-	 * Constructs an EL description tree from an EL description.
+	 * Constructs an EL OWLClassExpression tree from an EL description.
 	 * 
 	 * @param description
 	 *            A description
 	 */
-	public ELDescriptionTree(AbstractReasonerComponent rs, Description description) {
+	public ELDescriptionTree(AbstractReasonerComponent rs, OWLClassExpression description) {
 		this(rs);
 		// construct root node and recursively build the tree
 		rootNode = new ELDescriptionNode(this);
 		constructTree(description, rootNode);
 	}
 
-	private void constructTree(Description description, ELDescriptionNode node) {
-		if (description instanceof NamedClass) {
-			node.extendLabel((NamedClass) description);
-		} else if (description instanceof ObjectSomeRestriction) {
-			ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) description).getRole();
-			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<NamedClass>());
-			constructTree(description.getChild(0), newNode);
-		} else if (description instanceof Thing) {
+	private void constructTree(OWLClassExpression description, ELDescriptionNode node) {
+		if (description.isOWLThing()) {
 			// nothing needs to be done as an empty set is owl:Thing
-		} else if (description instanceof Intersection) {
+		} else if (!description.isAnonymous()) {
+			node.extendLabel(description.asOWLClass());
+		} else if (description instanceof OWLObjectSomeValuesFrom) {
+			OWLObjectProperty op = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
+			ELDescriptionNode newNode = new ELDescriptionNode(node, op, new TreeSet<OWLClass>());
+			constructTree(((OWLObjectSomeValuesFrom) description).getFiller(), newNode);
+		} else if (description instanceof OWLDataSomeValuesFrom) {
+			OWLDataProperty op = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
+			ELDescriptionNode newNode = new ELDescriptionNode(node, op, ((OWLDataSomeValuesFrom) description).getFiller());
+		} else if (description instanceof OWLObjectIntersectionOf) {
 			// loop through all elements of the intersection
-			for (Description child : description.getChildren()) {
-				if (child instanceof NamedClass) {
-					node.extendLabel((NamedClass) child);
-				} else if (child instanceof ObjectSomeRestriction) {
-					ObjectProperty op = (ObjectProperty) ((ObjectSomeRestriction) child).getRole();
+			for (OWLClassExpression child : ((OWLObjectIntersectionOf) description).getOperands()) {
+				if (!child.isAnonymous()) {
+					node.extendLabel(child.asOWLClass());
+				} else if (child instanceof OWLObjectSomeValuesFrom) {
+					OWLObjectProperty op = ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty();
 					ELDescriptionNode newNode = new ELDescriptionNode(node, op,
-							new TreeSet<NamedClass>());
-					constructTree(child.getChild(0), newNode);
+							new TreeSet<OWLClass>());
+					constructTree(((OWLObjectSomeValuesFrom) child).getFiller(), newNode);
 				} else {
 					throw new UnsupportedLanguageException(description + " specifically " + child,
 							"EL");
@@ -140,7 +145,7 @@ public class ELDescriptionTree implements Cloneable {
 		return levelNodeMapping.get(level);
 	}
 
-	public Description transformToDescription() {
+	public OWLClassExpression transformToDescription() {
 		return rootNode.transformToDescription();
 	}
 
@@ -162,9 +167,9 @@ public class ELDescriptionTree implements Cloneable {
 					for(int k=0; k<edges.size(); k++) {
 						if(j != k) {
 							// we first check inclusion property on edges
-							ObjectProperty op1 = edges.get(j).getLabel();
-							ObjectProperty op2 = edges.get(k).getLabel();
-							if(rs.getObjectPropertyHierarchy().isSubpropertyOf(op1, op2)) {
+							OWLProperty op1 = edges.get(j).getLabel();
+							OWLProperty op2 = edges.get(k).getLabel();
+							if(rs.isSubPropertyOf(op1, op2)) {
 								ELDescriptionNode node1 = edges.get(j).getNode();
 								ELDescriptionNode node2 = edges.get(k).getNode();
 								// check simulation condition
@@ -201,7 +206,7 @@ public class ELDescriptionTree implements Cloneable {
 			levelNodeMapping.put(level, set);
 			maxLevel++;
 		} else {
-			throw new RuntimeException("Inconsistent EL description tree structure.");
+			throw new RuntimeException("Inconsistent EL OWLClassExpression tree structure.");
 		}
 	}
 
@@ -323,10 +328,10 @@ public class ELDescriptionTree implements Cloneable {
 		return isSublabel(node1.getLabel(), node2.getLabel());
 	}
 	
-	private boolean isSublabel(NavigableSet<NamedClass> subLabel, NavigableSet<NamedClass> superLabel) {
+	private boolean isSublabel(NavigableSet<OWLClass> subLabel, NavigableSet<OWLClass> superLabel) {
 		// implemented according to definition in article
 		// (TODO can probably be done more efficiently)
-		for(NamedClass nc : superLabel) {
+		for(OWLClass nc : superLabel) {
 			if(!containsSubclass(nc, subLabel)) {
 				return false;
 			}
@@ -334,8 +339,8 @@ public class ELDescriptionTree implements Cloneable {
 		return true;
 	}
 	
-	private boolean containsSubclass(NamedClass superClass, NavigableSet<NamedClass> label) {
-		for(NamedClass nc : label) {
+	private boolean containsSubclass(OWLClass superClass, NavigableSet<OWLClass> label) {
+		for(OWLClass nc : label) {
 			if(subsumptionHierarchy.isSubclassOf(nc, superClass)) {
 				return true;
 			}
@@ -365,16 +370,16 @@ public class ELDescriptionTree implements Cloneable {
 	
 	// check whether edges contains an element satisfying SC2
 	private boolean checkSC2Edge(ELDescriptionEdge superEdge, List<ELDescriptionEdge> edges) {
-		ObjectProperty superOP = superEdge.getLabel();
+		OWLProperty superOP = superEdge.getLabel();
 		ELDescriptionNode superNode = superEdge.getNode();
 		
 		for(ELDescriptionEdge edge : edges) {
 //			System.out.println("superEdge: " + superEdge);
 //			System.out.println("edge: " + edge);
 			
-			ObjectProperty op = edge.getLabel();		
+			OWLProperty op = edge.getLabel();		
 			// we first check the condition on the properties
-			if(roleHierarchy.isSubpropertyOf(op, superOP)) {
+			if(rs.isSubPropertyOf(op, superOP)) {
 				// check condition on simulations of referred nodes
 				ELDescriptionNode node = edge.getNode();
 //				if(superNode.in.contains(node) || node.in.contains(superNode)) {
@@ -494,7 +499,9 @@ public class ELDescriptionTree implements Cloneable {
 			
 			newNode.tree = treeClone;
 			newNode.level = oldNode.level;
-			newNode.label = (TreeSet<NamedClass>) oldNode.label.clone();
+			newNode.label = (TreeSet<OWLClass>) oldNode.label.clone();
+			newNode.dataRange = oldNode.dataRange;
+			newNode.isClassNode = oldNode.isClassNode;
 			if(oldNode.parent != null) {
 				newNode.parent = cloneMap.get(oldNode.parent);
 			} else {
@@ -558,7 +565,7 @@ public class ELDescriptionTree implements Cloneable {
 		// create a new reference tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		// create a root node attached to this reference tree
-		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<NamedClass>(
+		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<OWLClass>(
 				rootNode.getLabel()));
 		cloneRecursively(rootNode, rootNodeClone);
 		return treeClone;
@@ -569,7 +576,7 @@ public class ELDescriptionTree implements Cloneable {
 		// loop through all edges and clone the subtrees
 		for (ELDescriptionEdge edge : node.getEdges()) {
 			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
-					new TreeSet<NamedClass>(edge.getNode().getLabel()));
+					new TreeSet<OWLClass>(edge.getNode().getLabel()));
 			cloneRecursively(edge.getNode(), tmp);
 		}
 	}
@@ -580,9 +587,9 @@ public class ELDescriptionTree implements Cloneable {
 	}
 	
 	/**
-	 * Returns a string of the tree description (without the overhead of converting
+	 * Returns a string of the tree OWLClassExpression (without the overhead of converting
 	 * the tree into a description).
-	 * @return A string for the description the tree stands for.  
+	 * @return A string for the OWLClassExpression the tree stands for.  
 	 */
 	public String toDescriptionString() {
 		return rootNode.toDescriptionString();

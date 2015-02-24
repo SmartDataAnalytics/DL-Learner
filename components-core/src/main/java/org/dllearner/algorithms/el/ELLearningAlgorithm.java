@@ -19,10 +19,10 @@
 
 package org.dllearner.algorithms.el;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -34,16 +34,22 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.refinementoperators.ELDown2;
-import org.dllearner.utilities.Files;
+import org.dllearner.learningproblems.ScoreTwoValued;
+import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 /**
  * A learning algorithm for EL, which is based on an
@@ -60,7 +66,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 //	private ELLearningAlgorithmConfigurator configurator;
 	
-	private ELDown2 operator;
+	private ELDown3 operator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -77,22 +83,31 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
-
-	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
-	private boolean writeSearchTree = false;
-
-	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
-	private String searchTreeFile = "log/searchTree.txt";
-
-	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
-	private boolean replaceSearchTree = false;
 	
+	// the class with which we start the refinement process
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	private OWLClassExpression startClass;
+	
+	private int maxClassExpressionDepth = 2;
+	
+	private int maxNrOfResults = 10;
+	
+	private Set<OWLClass> ignoredConcepts = null;
+	
+	private OWLClass classToDescribe;
+		
 	private double noise;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+
+	private boolean isEquivalenceProblem = true;
+	private Monitor timeMonitor;
+	
+	double max = -1d;
+	OWLClassExpression maxDescription;
 	
 	public ELLearningAlgorithm() {
 		
@@ -101,6 +116,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 //		configurator = new ELLearningAlgorithmConfigurator(this);
+		timeMonitor = MonitorFactory.getTimeMonitor("time");
 	}
 	
 	public static String getName() {
@@ -130,21 +146,34 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		// currently we use the stable heuristic
-		heuristic = new StableHeuristic();
+		if(heuristic == null){
+			heuristic = new StableHeuristic();
+		}
+		
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
-		operator = new ELDown2(reasoner, instanceBasedDisjoints);
+		if(ignoredConcepts != null) {
+			Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+			// copy class hierarchy and modify it such that each class is only
+			// reachable via a single path
+			ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+			classHierarchy.thinOutSubsumptionHierarchy();
+		}
+		
+		operator = new ELDown3(reasoner, instanceBasedDisjoints);
+		operator.setMaxClassExpressionDepth(maxClassExpressionDepth);
 		
 		noise = noisePercentage/100d;
 		
-		if(writeSearchTree) {
-			File f = new File(searchTreeFile );
-			if(f.getParentFile() != null){
-				f.getParentFile().mkdirs();
-			}
-			Files.clearFile(f);
-		}
+		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 	}	
+	
+	/**
+	 * @param heuristic the heuristic to set
+	 */
+	public void setHeuristic(ELHeuristic heuristic) {
+		this.heuristic = heuristic;
+	}
 	
 	@Override
 	public void start() {
@@ -154,7 +183,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		treeStartTime = System.nanoTime();
 		
 		// create start node
-		ELDescriptionTree top = new ELDescriptionTree(reasoner, Thing.instance);
+		if(startClass == null){
+			startClass = dataFactory.getOWLThing();
+		}
+		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
 		
 		// main loop
@@ -169,30 +201,18 @@ public class ELLearningAlgorithm extends AbstractCELA {
 //				System.out.println("refinement: " + refinement);
 				addDescriptionTree(refinement, best);
 			}
+//			System.out.println("Hits:" + timeMonitor.getHits());
+//			System.out.println("Total:" + timeMonitor.getTotal());
+//			System.out.println("Avg:" + timeMonitor.getAvg());
+//			System.out.println("Max:" + timeMonitor.getMax());
+//			System.out.println(maxDescription);
+			timeMonitor.reset();
 			loop++;
 			// logging
 			if(logger.isTraceEnabled()) {
 				logger.trace("Choosen node " + best);
 				logger.trace(startNode.getTreeString());
 				logger.trace("Loop " + loop + " completed.");
-			}
-			
-			// writing the search tree (if configured)
-			if (writeSearchTree) {
-				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
-				if (refinements.size() > 1) {
-				    treeString += "all expanded nodes:\n";
-				    for (ELDescriptionTree elDescTree : refinements) {
-                        treeString += "   " + elDescTree.toDescriptionString() + "\n";
-                    }
-				}
-				treeString += startNode.getTreeString();
-				treeString += "\n";
-
-				if (replaceSearchTree)
-					Files.createFile(new File(searchTreeFile), treeString);
-				else
-					Files.appendToFile(new File(searchTreeFile), treeString);
 			}
 		}
 		
@@ -202,73 +222,89 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a description in tree form
+	// evaluates a OWLClassExpression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
 		
 		// convert tree to standard description
-		Description description = descriptionTree.transformToDescription();
-		description = getNiceDescription(description);
-		
-		double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
-		int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
-//		if(negCovers == -1) {
-		if(accuracy == -1) {
-			node.setTooWeak();
-		} else {
-			node.setCoveredNegatives(negCovers);
-		}
-//		System.out.println(descriptionTree.transformToDescription() + "|" + negCovers);
-		// link to parent (unless start node)
-		if(parentNode == null) {
-			startNode = node;
-		} else {
-			parentNode.addChild(node);
-		}
-		
-//		System.out.println("TEST");
-		
-		if(!node.isTooWeak()) {
-			// add as candidate
-			candidates.add(node);
-		
-//			System.out.println("TEST2");
+		OWLClassExpression description = descriptionTree.transformToDescription();
+		if(isDescriptionAllowed(description)){
+			description = getNiceDescription(description);
+			timeMonitor.start();
+			double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
+			timeMonitor.stop();
+//			if(timeMonitor.getLastValue() > max){
+//				max = timeMonitor.getLastValue();
+//				maxDescription = description;
+//			}
+			int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
+//			if(negCovers == -1) {
+			if(accuracy == -1) {
+				node.setTooWeak();
+			} else {
+				node.setCoveredNegatives(negCovers);
+			}
+			node.setAccuracy(accuracy);
+			node.setScore(accuracy);
 			
-			// check whether we want to add it to the best evaluated descriptions;
-			// to do this we pick the worst considered evaluated description
-			// (remember that the set has limited size, so it's likely not the worst overall);
-			// the description has a chance to make it in the set if it has
-			// at least as high accuracy - if not we can save the reasoner calls
-			// for fully computing the evaluated description
-			if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
-				ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
-				EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
-				bestEvaluatedDescriptions.add(ed);
+//			System.out.println(OWLClassExpression + ":" + accuracy);
+			// link to parent (unless start node)
+			if(parentNode == null) {
+				startNode = node;
+			} else {
+				parentNode.addChild(node);
+			}
+			
+			
+			if(!node.isTooWeak()) {
+				// add as candidate
+				candidates.add(node);
+				
+				// check whether we want to add it to the best evaluated descriptions;
+				// to do this we pick the worst considered evaluated description
+				// (remember that the set has limited size, so it's likely not the worst overall);
+				// the OWLClassExpression has a chance to make it in the set if it has
+				// at least as high accuracy - if not we can save the reasoner calls
+				// for fully computing the evaluated description
+				if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
+					ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
+					((ScoreTwoValued)score).setAccuracy(node.getScore());
+					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
+					bestEvaluatedDescriptions.add(ed);
+				}
+				
 			}
 			
 		}
-		
 	}
 	
-	private Description getNiceDescription(Description d){
-		Description description = d.clone();
-		List<Description> children = description.getChildren();
-		for(int i=0; i<children.size(); i++) {
-			description.replaceChild(i, getNiceDescription(children.get(i)));
-		}
-		if(children.size()==0) {
-			return description;
-		} else if(description instanceof ObjectSomeRestriction) {
-			// \exists r.\bot \equiv \bot
-			if(description.getChild(0) instanceof Thing) {
-				Description range = reasoner.getRange((ObjectProperty) ((ObjectSomeRestriction) description).getRole());
-				description.replaceChild(0, range);
-			} else {
-				description.replaceChild(0, getNiceDescription(description.getChild(0)));
+	/**
+	 * Replace role fillers with the range of the property, if exists.
+	 * @param d
+	 * @return
+	 */
+	private OWLClassExpression getNiceDescription(OWLClassExpression d){
+		OWLClassExpression rewrittenClassExpression = d;
+		if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
+				newOperands.add(getNiceDescription(operand));
 			}
+			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
+		} else if(d instanceof OWLObjectSomeValuesFrom) {
+			// \exists r.\bot \equiv \bot
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			if(filler.isOWLThing()) {
+				OWLClassExpression range = reasoner.getRange(property);
+				filler = range;
+			} else if(filler.isAnonymous()){
+				filler = getNiceDescription(filler);
+			}
+			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
 		}
-		return description;
+		return rewrittenClassExpression;
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {
@@ -298,6 +334,50 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		bestEvaluatedDescriptions.getSet().clear();
 	}
 	
+	private boolean isDescriptionAllowed(OWLClassExpression description) {
+		if(isEquivalenceProblem) {
+			// the class to learn must not appear on the outermost property level
+			if(occursOnFirstLevel(description, classToDescribe)) {
+				return false;
+			}
+			
+			//non of the equivalent classes must occur on the first level
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+			if(classToDescribe != null){
+				toTest.add(classToDescribe);
+			}
+			while(!toTest.isEmpty()) {
+				OWLClassExpression d = toTest.pollFirst();
+				if(occursOnFirstLevel(description, d)) {
+					return false;
+				}
+				toTest.addAll(reasoner.getEquivalentClasses(d));
+			}
+		} else {
+			// none of the superclasses of the class to learn must appear on the
+			// outermost property level
+			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+			if(classToDescribe != null){
+				toTest.add(classToDescribe);
+			}
+			while(!toTest.isEmpty()) {
+				OWLClassExpression d = toTest.pollFirst();
+				if(occursOnFirstLevel(description, d)) {
+					return false;
+				}
+				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
+			}
+		}	
+		return true;
+	}
+	
+	// determine whether a named class occurs on the outermost level, i.e. property depth 0
+		// (it can still be at higher depth, e.g. if intersections are nested in unions)
+		private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
+            return description.containsConjunct(cls);
+
+        }
+	
 	@Override
 	public void stop() {
 		stop = true;
@@ -309,12 +389,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}	
 	
 	@Override
-	public Description getCurrentlyBestDescription() {
+	public OWLClassExpression getCurrentlyBestDescription() {
 		return getCurrentlyBestEvaluatedDescription().getDescription();
 	}
 
 	@Override
-	public List<Description> getCurrentlyBestDescriptions() {
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	
@@ -371,29 +451,61 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
 	}
-
-	public boolean isWriteSearchTree() {
-		return writeSearchTree;
-	}
-
-	public void setWriteSearchTree(boolean writeSearchTree) {
-		this.writeSearchTree = writeSearchTree;
-	}
-
-	public String getSearchTreeFile() {
-		return searchTreeFile;
-	}
-
-	public void setSearchTreeFile(String searchTreeFile) {
-		this.searchTreeFile = searchTreeFile;
+	
+	/**
+	 * @param startClass the startClass to set
+	 */
+	public void setStartClass(OWLClassExpression startClass) {
+		this.startClass = startClass;
 	}
 	
-	public boolean isReplaceSearchTree() {
-		return replaceSearchTree;
+	/**
+	 * @return the startClass
+	 */
+	public OWLClassExpression getStartClass() {
+		return startClass;
+	}
+	
+	/**
+	 * @param ignoredConcepts the ignoredConcepts to set
+	 */
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+	
+	/**
+	 * @return the ignoredConcepts
+	 */
+	public Set<OWLClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+	
+	/**
+	 * @param classToDescribe the classToDescribe to set
+	 */
+	public void setClassToDescribe(OWLClass classToDescribe) {
+		this.classToDescribe = classToDescribe;
+	}
+	
+	/**
+	 * @param treeSearchTimeSeconds the treeSearchTimeSeconds to set
+	 */
+	public void setTreeSearchTimeSeconds(double treeSearchTimeSeconds) {
+		this.treeSearchTimeSeconds = treeSearchTimeSeconds;
+	}
+	
+	/**
+	 * @param maxNrOfResults the maxNrOfResults to set
+	 */
+	public void setMaxNrOfResults(int maxNrOfResults) {
+		this.maxNrOfResults = maxNrOfResults;
+	}
+	
+	/**
+	 * @param maxClassExpressionDepth the maxClassExpressionDepth to set
+	 */
+	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
+		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
 
-	public void setReplaceSearchTree(boolean replaceSearchTree) {
-		this.replaceSearchTree = replaceSearchTree;
-	}	
-	
 }

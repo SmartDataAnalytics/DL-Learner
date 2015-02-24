@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.owl.RoleComparator;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 
 /**
  * Represents a hierarchy of datatype properties.
@@ -37,18 +37,17 @@ import org.dllearner.utilities.owl.RoleComparator;
  */
 public class DatatypePropertyHierarchy {
 
-	RoleComparator rc = new RoleComparator();
-	TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyUp;
-	TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyDown;	
-	TreeSet<DatatypeProperty> mostGeneralRoles = new TreeSet<DatatypeProperty>(rc);
-	TreeSet<DatatypeProperty> mostSpecialRoles = new TreeSet<DatatypeProperty>(rc);
+	TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyUp;
+	TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyDown;	
+	TreeSet<OWLDataProperty> mostGeneralRoles = new TreeSet<OWLDataProperty>();
+	TreeSet<OWLDataProperty> mostSpecialRoles = new TreeSet<OWLDataProperty>();
 	
-	public DatatypePropertyHierarchy(Set<DatatypeProperty> atomicRoles, TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyUp , TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> roleHierarchyDown) {
+	public DatatypePropertyHierarchy(Set<OWLDataProperty> atomicRoles, TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyUp , TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyDown) {
 		this.roleHierarchyUp = roleHierarchyUp;
 		this.roleHierarchyDown = roleHierarchyDown;
 		
 		// find most general and most special roles
-		for(DatatypeProperty role : atomicRoles) {
+		for(OWLDataProperty role : atomicRoles) {
 			if(getMoreGeneralRoles(role).size()==0)
 				mostGeneralRoles.add(role);
 			if(getMoreSpecialRoles(role).size()==0)
@@ -56,20 +55,20 @@ public class DatatypePropertyHierarchy {
 		}
 	}
 	
-	public SortedSet<DatatypeProperty> getMoreGeneralRoles(DatatypeProperty role) {
+	public SortedSet<OWLDataProperty> getMoreGeneralRoles(OWLDataProperty role) {
 		// we clone all concepts before returning them such that they cannot be
 		// modified externally
-		return new TreeSet<DatatypeProperty>(roleHierarchyUp.get(role));	
+		return new TreeSet<OWLDataProperty>(roleHierarchyUp.get(role));	
 	}
 	
-	public SortedSet<DatatypeProperty> getMoreSpecialRoles(DatatypeProperty role) {
-		return new TreeSet<DatatypeProperty>(roleHierarchyDown.get(role));
+	public SortedSet<OWLDataProperty> getMoreSpecialRoles(OWLDataProperty role) {
+		return new TreeSet<OWLDataProperty>(roleHierarchyDown.get(role));
 	}	
 	
 	@Override
 	public String toString() {
 		String str = "";
-		for(DatatypeProperty role : mostGeneralRoles) {
+		for(OWLDataProperty role : mostGeneralRoles) {
 			str += toString(roleHierarchyDown, role, 0);
 		}
 		return str;
@@ -82,12 +81,12 @@ public class DatatypePropertyHierarchy {
 	 * @param superProperty The (supposedly) more general property.
 	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
 	 */
-	public boolean isSubpropertyOf(DatatypeProperty subProperty, DatatypeProperty superProperty) {
+	public boolean isSubpropertyOf(OWLDataProperty subProperty, OWLDataProperty superProperty) {
 		if(subProperty.equals(superProperty)) {
 			return true;
 		} else {
 //			System.out.println("oph: " + subProperty + " " + superProperty);
-			for(DatatypeProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
+			for(OWLDataProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
 				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
 					return true;
 				}
@@ -98,14 +97,14 @@ public class DatatypePropertyHierarchy {
 		}
 	}	
 	
-	private String toString(TreeMap<DatatypeProperty,SortedSet<DatatypeProperty>> hierarchy, DatatypeProperty role, int depth) {
+	private String toString(TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> hierarchy, OWLDataProperty role, int depth) {
 		String str = "";
 		for(int i=0; i<depth; i++)
 			str += "  ";
 		str += role.toString() + "\n";
-		Set<DatatypeProperty> tmp = hierarchy.get(role);
+		Set<OWLDataProperty> tmp = hierarchy.get(role);
 		if(tmp!=null) {
-			for(DatatypeProperty c : tmp)
+			for(OWLDataProperty c : tmp)
 				str += toString(hierarchy, c, depth+1);
 		}
 		return str;
@@ -114,14 +113,14 @@ public class DatatypePropertyHierarchy {
 	/**
 	 * @return The most general roles.
 	 */
-	public TreeSet<DatatypeProperty> getMostGeneralRoles() {
+	public TreeSet<OWLDataProperty> getMostGeneralRoles() {
 		return mostGeneralRoles;
 	}
 
 	/**
 	 * @return The most special roles.
 	 */
-	public TreeSet<DatatypeProperty> getMostSpecialRoles() {
+	public TreeSet<OWLDataProperty> getMostSpecialRoles() {
 		return mostSpecialRoles;
 	}
 	

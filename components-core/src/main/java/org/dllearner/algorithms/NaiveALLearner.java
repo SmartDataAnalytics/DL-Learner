@@ -12,16 +12,11 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
+import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.ScorePosNeg;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Simple example learning algorithm exhaustively creating complex class
@@ -30,12 +25,12 @@ import org.dllearner.learningproblems.ScorePosNeg;
 @ComponentAnn(name = "Naive AL Learner", shortName = "naiveALLearner", version = 0.1)
 public class NaiveALLearner extends AbstractCELA{
 
-    private Map<Integer, List<Description>> generatedDescriptions;
+    private Map<Integer, List<OWLClassExpression>> generatedDescriptions;
+    
     private boolean running = false;
     private int maxLength = 4;
-    private static final Description top = new Thing();
-    private static final Description bottom = new Nothing();
-    private Description bestDescription;
+    
+    private OWLClassExpression bestDescription;
     private ScorePosNeg bestScore;
 
     public NaiveALLearner() {
@@ -65,8 +60,10 @@ public class NaiveALLearner extends AbstractCELA{
 
     @Override
     public void init() throws ComponentInitException {
-        generatedDescriptions = new HashMap<Integer, List<Description>>();
-        bestDescription = top;
+        generatedDescriptions = new HashMap<Integer, List<OWLClassExpression>>();
+        
+        // start with owl:Thing
+        bestDescription = OWL_THING;
         bestScore = null;
     }
 
@@ -81,7 +78,7 @@ public class NaiveALLearner extends AbstractCELA{
     }
 
     @Override
-    public Description getCurrentlyBestDescription() {
+    public OWLClassExpression getCurrentlyBestDescription() {
         return bestDescription;
     }
 
@@ -110,41 +107,41 @@ public class NaiveALLearner extends AbstractCELA{
      * @param length
      */
     private void generateDescriptions(int length) {
-        generatedDescriptions.put(length, new ArrayList<Description>());
-        List<Description> thisLenDescriptions = generatedDescriptions.get(length);
+        generatedDescriptions.put(length, new ArrayList<OWLClassExpression>());
+        List<OWLClassExpression> thisLenDescriptions = generatedDescriptions.get(length);
 
         if (length == 1) {
             // add atomic classes
-            thisLenDescriptions.add(top);
-            thisLenDescriptions.add(bottom);
+            thisLenDescriptions.add(OWL_THING);
+            thisLenDescriptions.add(OWL_NOTHING);
 
-            for (Description atomicClass : reasoner.getAtomicConceptsList()) {
+            for (OWLClassExpression atomicClass : reasoner.getAtomicConceptsList()) {
                 thisLenDescriptions.add(atomicClass);
             }
         }
 
         if (length == 2) {
             // add negation of atomic classes
-            for (Description atomicClass : reasoner.getAtomicConceptsList()) {
-                thisLenDescriptions.add(new Negation(atomicClass));
+            for (OWLClassExpression atomicClass : reasoner.getAtomicConceptsList()) {
+                thisLenDescriptions.add(dataFactory.getOWLObjectComplementOf(atomicClass));
             }
         }
 
         if (length == 3) {
             // add limited existential quantification/value restriction
-            for (ObjectProperty prop : reasoner.getObjectProperties()) {
-                thisLenDescriptions.add(new ObjectSomeRestriction(prop, top));
-                thisLenDescriptions.add(new ObjectAllRestriction(prop, top));
+            for (OWLObjectProperty prop : reasoner.getObjectProperties()) {
+                thisLenDescriptions.add(dataFactory.getOWLObjectSomeValuesFrom(prop, OWL_THING));
+                thisLenDescriptions.add(dataFactory.getOWLObjectAllValuesFrom(prop, OWL_THING));
 
-                for (Description atomicClass : reasoner.getAtomicConceptsList()) {
-                    thisLenDescriptions.add(new ObjectAllRestriction(prop, atomicClass));
+                for (OWLClassExpression atomicClass : reasoner.getAtomicConceptsList()) {
+                    thisLenDescriptions.add(dataFactory.getOWLObjectAllValuesFrom(prop, atomicClass));
                 }
             }
 
             // add intersections of atomic concepts
-            for (Description leftAtomicConcept : reasoner.getAtomicConceptsList()) {
-                for(Description rightAtomicConcept : reasoner.getAtomicConceptsList()) {
-                    thisLenDescriptions.add(new Intersection(
+            for (OWLClassExpression leftAtomicConcept : reasoner.getAtomicConceptsList()) {
+                for(OWLClassExpression rightAtomicConcept : reasoner.getAtomicConceptsList()) {
+                    thisLenDescriptions.add(new OWLObjectIntersectionOfImplExt(
                             Arrays.asList(leftAtomicConcept, rightAtomicConcept)));
                 }
             }
@@ -153,16 +150,16 @@ public class NaiveALLearner extends AbstractCELA{
         if (length > 3) {
             // add ALL <objectProperty>.<generatedConcept> for all concepts of length
             // `length`-2
-            for (ObjectProperty objProp : reasoner.getObjectProperties()) {
-                for (Description description : generatedDescriptions.get(length-2)) {
-                    thisLenDescriptions.add(new ObjectAllRestriction(objProp, description));
+            for (OWLObjectProperty objProp : reasoner.getObjectProperties()) {
+                for (OWLClassExpression description : generatedDescriptions.get(length-2)) {
+                    thisLenDescriptions.add(dataFactory.getOWLObjectAllValuesFrom(objProp, description));
                 }
             }
             // add <generatedConcept> INTERSECT <atomicClass> for all concepts
             // of length `length`-1
-            for (Description atomicConcept : reasoner.getAtomicConceptsList()) {
-                for (Description concept : generatedDescriptions.get(length-1)) {
-                    thisLenDescriptions.add(new Intersection(
+            for (OWLClassExpression atomicConcept : reasoner.getAtomicConceptsList()) {
+                for (OWLClassExpression concept : generatedDescriptions.get(length-1)) {
+                    thisLenDescriptions.add(new OWLObjectIntersectionOfImplExt(
                             Arrays.asList(concept, atomicConcept)));
                 }
             }
@@ -182,7 +179,7 @@ public class NaiveALLearner extends AbstractCELA{
         double tmpScoreVal;
         ScorePosNeg tmpScore;
         for (int i=1; i<=maxLength; i++) {
-            for (Description description : generatedDescriptions.get(i)) {
+            for (OWLClassExpression description : generatedDescriptions.get(i)) {
                 tmpScore = (ScorePosNeg) learningProblem.computeScore(description);
                 tmpScoreVal = tmpScore.getScoreValue();
                 if (tmpScoreVal > bestScoreVal) {

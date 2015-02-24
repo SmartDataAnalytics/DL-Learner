@@ -27,45 +27,41 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 
-import org.dllearner.core.owl.BooleanValueRestriction;
-import org.dllearner.core.owl.ClassAssertionAxiom;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyDomainAxiom;
-import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.FunctionalObjectPropertyAxiom;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.InverseObjectPropertyAxiom;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.OWL2Datatype;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.ObjectPropertyDomainAxiom;
-import org.dllearner.core.owl.ObjectPropertyRangeAxiom;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.PropertyAxiom;
-import org.dllearner.core.owl.StringValueRestriction;
-import org.dllearner.core.owl.SubClassAxiom;
-import org.dllearner.core.owl.SubObjectPropertyAxiom;
-import org.dllearner.core.owl.SymmetricObjectPropertyAxiom;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.TransitiveObjectPropertyAxiom;
-import org.dllearner.core.owl.Union;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
+import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
+import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassAssertionAxiomImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 @SuppressWarnings("all")
 public class KBParser implements KBParserConstants {
 
         public static String internalNamespace = "http://localhost/foo#";
+        private static final OWLDataFactory df = new OWLDataFactoryImpl();
 
         // method to give all internal stuff an URI (not necessary for DLs, but for OWL ontologies
         // and it should be possible to represent the internal KB as OWL ontology)
@@ -76,7 +72,7 @@ public class KBParser implements KBParserConstants {
                         return internalNamespace + name;
         }
 
-        public static Description parseConcept(String string) throws ParseException {
+        public static OWLClassExpression parseConcept(String string) throws ParseException {
                 // when just parsing the string as concept, we have no guarantee
                 // that the parser uses all symbols, e.g. a AND b returns just a
                 // because the brackets were forgotten;
@@ -84,38 +80,39 @@ public class KBParser implements KBParserConstants {
                 // right hand side
                 String eq = "tmp = " + string + ".";
                 KBParser parser = new KBParser(new StringReader(eq));
-                EquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
-                return eqAxiom.getConcept2();
+                OWLEquivalentClassesAxiom eqAxiom = parser.TBoxEquiv();
+                return eqAxiom.getClassExpressionsMinus(df.getOWLClass(IRI.create(internalNamespace + "tmp"))).iterator().next();
         }
 
         //TODO beware of this function it is evil (author: Sebastian Hellmann)
-    public static Description parseConcept(String string, String namespace) throws ParseException {
+    public static OWLClassExpression parseConcept(String string, String namespace) throws ParseException {
              internalNamespace = namespace;
               return parseConcept(string);
     }
 
-        public static KB parseKBFile(String content) throws ParseException {
+        public static OWLOntology parseKBFile(String content) throws ParseException, OWLOntologyCreationException {
                 KBParser parser = new KBParser(new StringReader(content));
                 return parser.KB();
         }
 
-        public static KB parseKBFile(URL url) throws IOException, ParseException {
+        public static OWLOntology parseKBFile(URL url) throws IOException, ParseException, OWLOntologyCreationException {
                 KBParser parser = new KBParser(url.openStream());
                 return parser.KB();
         }
 
-        public static KB parseKBFile(File file) throws FileNotFoundException, ParseException {
+        public static OWLOntology parseKBFile(File file) throws FileNotFoundException, ParseException, OWLOntologyCreationException {
                 KBParser parser = new KBParser(new FileInputStream(file));
                 return parser.KB();
         }
 
-  final public KB KB() throws ParseException {
-        ClassAssertionAxiom conceptAssertion;
-        ObjectPropertyAssertion roleAssertion;
-        PropertyAxiom rBoxAxiom;
-        EquivalentClassesAxiom equality;
-        SubClassAxiom inclusion;
-        KB kb = new KB();
+  final public OWLOntology KB() throws ParseException, OWLOntologyCreationException {
+        OWLClassAssertionAxiom conceptAssertion;
+        OWLObjectPropertyAssertionAxiom roleAssertion;
+        OWLAxiom rBoxAxiom;
+        OWLEquivalentClassesAxiom equality;
+        OWLSubClassOfAxiom inclusion;
+        OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLOntology kb = man.createOntology();
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -152,62 +149,62 @@ public class KBParser implements KBParserConstants {
       }
       if (jj_2_1(2147483647)) {
         conceptAssertion = ABoxConcept();
-                  kb.addABoxAxiom(conceptAssertion);
+                  man.addAxiom(kb, conceptAssertion);
       } else if (jj_2_2(2147483647)) {
         roleAssertion = ABoxRole();
-                  kb.addABoxAxiom(roleAssertion);
+        			man.addAxiom(kb, roleAssertion);
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case 28:
           rBoxAxiom = Transitive();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 29:
           rBoxAxiom = Functional();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 30:
           rBoxAxiom = Symmetric();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 31:
           rBoxAxiom = Inverse();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 32:
           rBoxAxiom = Subrole();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 34:
         case 35:
         case 36:
           rBoxAxiom = ObjectPropertyDomainAxiom();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 37:
         case 38:
           rBoxAxiom = DatatypePropertyDomainAxiom();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 39:
         case 40:
         case 41:
           rBoxAxiom = ObjectPropertyRangeAxiom();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         case 42:
         case 43:
           rBoxAxiom = DatatypePropertyRangeAxiom();
-                  kb.addRBoxAxiom(rBoxAxiom);
+          man.addAxiom(kb, rBoxAxiom);
           break;
         default:
           jj_la1[1] = jj_gen;
           if (jj_2_3(2147483647)) {
             equality = TBoxEquiv();
-                  kb.addTBoxAxiom(equality);
+            man.addAxiom(kb, equality);
           } else if (jj_2_4(2147483647)) {
             inclusion = TBoxSub();
-                  kb.addTBoxAxiom(inclusion);
+            man.addAxiom(kb, inclusion);
           } else {
             jj_consume_token(-1);
             throw new ParseException();
@@ -220,21 +217,21 @@ public class KBParser implements KBParserConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public ClassAssertionAxiom ABoxConcept() throws ParseException {
-                                     Description c; Individual i;
+  final public OWLClassAssertionAxiom ABoxConcept() throws ParseException {
+	  OWLClassExpression c; OWLIndividual i;
     c = Concept();
     jj_consume_token(22);
     i = Individual();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-          {if (true) return new ClassAssertionAxiom(c,i);}
+          {if (true) return df.getOWLClassAssertionAxiom(c, i);}
     throw new Error("Missing return statement in function");
   }
 
-  final public ObjectPropertyAssertion ABoxRole() throws ParseException {
+  final public OWLObjectPropertyAssertionAxiom ABoxRole() throws ParseException {
         boolean isNegated=false;
-        ObjectProperty ar;
-        Individual i1,i2;
+        OWLObjectProperty ar;
+        OWLIndividual i1,i2;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NOT:
       Not();
@@ -254,45 +251,45 @@ public class KBParser implements KBParserConstants {
                 if(isNegated)
                         {if (true) throw new Error("negated role assertions not supported yet");}
                 else
-                        {if (true) return new ObjectPropertyAssertion(ar,i1,i2);}
+                        {if (true) return df.getOWLObjectPropertyAssertionAxiom(ar,i1,i2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public TransitiveObjectPropertyAxiom Transitive() throws ParseException {
-                                              ObjectProperty ar;
+  final public OWLTransitiveObjectPropertyAxiom Transitive() throws ParseException {
+                                              OWLObjectProperty ar;
     jj_consume_token(28);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new TransitiveObjectPropertyAxiom(ar);}
+     {if (true) return df.getOWLTransitiveObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public FunctionalObjectPropertyAxiom Functional() throws ParseException {
-                                              ObjectProperty ar;
+  final public OWLFunctionalObjectPropertyAxiom Functional() throws ParseException {
+                                              OWLObjectProperty ar;
     jj_consume_token(29);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new FunctionalObjectPropertyAxiom(ar);}
+     {if (true) return df.getOWLFunctionalObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public SymmetricObjectPropertyAxiom Symmetric() throws ParseException {
-                                            ObjectProperty ar;
+  final public OWLSymmetricObjectPropertyAxiom Symmetric() throws ParseException {
+                                            OWLObjectProperty ar;
     jj_consume_token(30);
     jj_consume_token(22);
     ar = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new SymmetricObjectPropertyAxiom(ar);}
+     {if (true) return df.getOWLSymmetricObjectPropertyAxiom(ar);}
     throw new Error("Missing return statement in function");
   }
 
-  final public InverseObjectPropertyAxiom Inverse() throws ParseException {
-                                        ObjectProperty ar1,ar2;
+  final public OWLInverseObjectPropertiesAxiom Inverse() throws ParseException {
+                                        OWLObjectProperty ar1,ar2;
     jj_consume_token(31);
     jj_consume_token(22);
     ar1 = ObjectProperty();
@@ -300,12 +297,12 @@ public class KBParser implements KBParserConstants {
     ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new InverseObjectPropertyAxiom(ar1,ar2);}
+     {if (true) return df.getOWLInverseObjectPropertiesAxiom(ar1,ar2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public SubObjectPropertyAxiom Subrole() throws ParseException {
-                                    ObjectProperty ar1,ar2;
+  final public OWLSubObjectPropertyOfAxiom Subrole() throws ParseException {
+                                    OWLObjectProperty ar1,ar2;
     jj_consume_token(32);
     jj_consume_token(22);
     ar1 = ObjectProperty();
@@ -313,22 +310,22 @@ public class KBParser implements KBParserConstants {
     ar2 = ObjectProperty();
     jj_consume_token(23);
     jj_consume_token(COMMAND_END);
-     {if (true) return new SubObjectPropertyAxiom(ar1,ar2);}
+     {if (true) return df.getOWLSubObjectPropertyOfAxiom(ar1,ar2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public EquivalentClassesAxiom TBoxEquiv() throws ParseException {
-                                      Description c1,c2;
+  final public OWLEquivalentClassesAxiom TBoxEquiv() throws ParseException {
+                                      OWLClassExpression c1,c2;
     c1 = Concept();
     jj_consume_token(25);
     c2 = Concept();
     jj_consume_token(COMMAND_END);
-     {if (true) return new EquivalentClassesAxiom(c1,c2);}
+     {if (true) return df.getOWLEquivalentClassesAxiom(c1,c2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public SubClassAxiom TBoxSub() throws ParseException {
-                           Description c1,c2;
+  final public OWLSubClassOfAxiom TBoxSub() throws ParseException {
+                           OWLClassExpression c1,c2;
     c1 = Concept();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 26:
@@ -347,12 +344,12 @@ public class KBParser implements KBParserConstants {
     }
     c2 = Concept();
     jj_consume_token(COMMAND_END);
-     {if (true) return new SubClassAxiom(c1,c2);}
+     {if (true) return df.getOWLSubClassOfAxiom(c1,c2);}
     throw new Error("Missing return statement in function");
   }
 
-  final public ObjectPropertyDomainAxiom ObjectPropertyDomainAxiom() throws ParseException {
-                                                         ObjectProperty op; Description domain;
+  final public OWLObjectPropertyDomainAxiom ObjectPropertyDomainAxiom() throws ParseException {
+                                                         OWLObjectProperty op; OWLClassExpression domain;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 34:
       jj_consume_token(34);
@@ -374,12 +371,12 @@ public class KBParser implements KBParserConstants {
     jj_consume_token(25);
     domain = Concept();
     jj_consume_token(COMMAND_END);
-          {if (true) return new ObjectPropertyDomainAxiom(op, domain);}
+          {if (true) return df.getOWLObjectPropertyDomainAxiom(op, domain);}
     throw new Error("Missing return statement in function");
   }
 
-  final public DatatypePropertyDomainAxiom DatatypePropertyDomainAxiom() throws ParseException {
-                                                             DatatypeProperty op; Description domain;
+  final public OWLDataPropertyDomainAxiom DatatypePropertyDomainAxiom() throws ParseException {
+                                                             OWLDataProperty op; OWLClassExpression domain;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 37:
       jj_consume_token(37);
@@ -398,12 +395,12 @@ public class KBParser implements KBParserConstants {
     jj_consume_token(25);
     domain = Concept();
     jj_consume_token(COMMAND_END);
-          {if (true) return new DatatypePropertyDomainAxiom(op, domain);}
+          {if (true) return df.getOWLDataPropertyDomainAxiom(op, domain);}
     throw new Error("Missing return statement in function");
   }
 
-  final public ObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() throws ParseException {
-                                                       ObjectProperty op; Description range;
+  final public OWLObjectPropertyRangeAxiom ObjectPropertyRangeAxiom() throws ParseException {
+                                                       OWLObjectProperty op; OWLClassExpression range;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 39:
       jj_consume_token(39);
@@ -425,12 +422,12 @@ public class KBParser implements KBParserConstants {
     jj_consume_token(25);
     range = Concept();
     jj_consume_token(COMMAND_END);
-          {if (true) return new ObjectPropertyRangeAxiom(op, range);}
+          {if (true) return df.getOWLObjectPropertyRangeAxiom(op, range);}
     throw new Error("Missing return statement in function");
   }
 
-  final public DatatypePropertyRangeAxiom DatatypePropertyRangeAxiom() throws ParseException {
-                                                           DatatypeProperty op; DataRange range;
+  final public OWLDataPropertyRangeAxiom DatatypePropertyRangeAxiom() throws ParseException {
+                                                           OWLDataProperty op; OWLDataRange range;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 42:
       jj_consume_token(42);
@@ -450,15 +447,15 @@ public class KBParser implements KBParserConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 44:
       jj_consume_token(44);
-                     range = OWL2Datatype.DOUBLE.getDatatype();
+                     range = df.getDoubleOWLDatatype();
       break;
     case 45:
       jj_consume_token(45);
-                      range = OWL2Datatype.BOOLEAN.getDatatype();
+                      range = df.getBooleanOWLDatatype();
       break;
     case 46:
       jj_consume_token(46);
-                      range = OWL2Datatype.INT.getDatatype();
+                      range = df.getIntegerOWLDatatype();
       break;
     default:
       jj_la1[8] = jj_gen;
@@ -466,27 +463,27 @@ public class KBParser implements KBParserConstants {
       throw new ParseException();
     }
     jj_consume_token(COMMAND_END);
-          {if (true) return new DatatypePropertyRangeAxiom(op, range);}
+          {if (true) return df.getOWLDataPropertyRangeAxiom(op, range);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Description Concept() throws ParseException {
-        Description c,c1,c2;
-        NamedClass ac;
-        ObjectProperty ar;
-        DatatypeProperty dp;
-        ObjectProperty op;
+  final public OWLClassExpression Concept() throws ParseException {
+        OWLClassExpression c,c1,c2;
+        OWLClass ac;
+        OWLObjectProperty ar;
+        OWLDataProperty dp;
+        OWLObjectProperty op;
         String s;
-        Individual ind;
+        OWLIndividual ind;
         int i;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case TOP:
       Top();
-           {if (true) return new Thing();}
+           {if (true) return df.getOWLThing();}
       break;
     case BOTTOM:
       Bottom();
-              {if (true) return new Nothing();}
+              {if (true) return df.getOWLNothing();}
       break;
     default:
       jj_la1[9] = jj_gen;
@@ -499,14 +496,14 @@ public class KBParser implements KBParserConstants {
         And();
         c2 = Concept();
         jj_consume_token(23);
-         {if (true) return new Intersection(c1,c2);}
+         {if (true) return df.getOWLObjectIntersectionOf(c1,c2);}
       } else if (jj_2_7(2147483647)) {
         jj_consume_token(22);
         c1 = Concept();
         Or();
         c2 = Concept();
         jj_consume_token(23);
-         {if (true) return new Union(c1,c2);}
+         {if (true) return df.getOWLObjectUnionOf(c1,c2);}
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case EXISTS:
@@ -514,19 +511,19 @@ public class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new ObjectSomeRestriction(ar,c);}
+         {if (true) return df.getOWLObjectSomeValuesFrom(ar,c);}
           break;
         case ALL:
           All();
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new ObjectAllRestriction(ar,c);}
+         {if (true) return df.getOWLObjectAllValuesFrom(ar,c);}
           break;
         case NOT:
           Not();
           c = Concept();
-         {if (true) return new Negation(c);}
+         {if (true) return df.getOWLObjectComplementOf(c);}
           break;
         case GE:
           GE();
@@ -534,7 +531,7 @@ public class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new ObjectMinCardinalityRestriction(i,ar,c);}
+         {if (true) return df.getOWLObjectMinCardinality(i,ar,c);}
           break;
         case LE:
           LE();
@@ -542,7 +539,7 @@ public class KBParser implements KBParserConstants {
           ar = ObjectProperty();
           jj_consume_token(COMMAND_END);
           c = Concept();
-         {if (true) return new ObjectMaxCardinalityRestriction(i,ar,c);}
+         {if (true) return df.getOWLObjectMaxCardinality(i,ar,c);}
           break;
         default:
           jj_la1[10] = jj_gen;
@@ -552,21 +549,21 @@ public class KBParser implements KBParserConstants {
             jj_consume_token(47);
             jj_consume_token(48);
             jj_consume_token(23);
-                                                             {if (true) return new BooleanValueRestriction(dp, true);}
+                                                             {if (true) return df.getOWLDataHasValue(dp, df.getOWLLiteral(true));}
           } else if (jj_2_9(4)) {
             jj_consume_token(22);
             dp = DatatypeProperty();
             jj_consume_token(47);
             jj_consume_token(49);
             jj_consume_token(23);
-                                                              {if (true) return new BooleanValueRestriction(dp, false);}
+                                                              {if (true) return df.getOWLDataHasValue(dp, df.getOWLLiteral(false));}
           } else if (jj_2_10(4)) {
             jj_consume_token(22);
             op = ObjectProperty();
             jj_consume_token(50);
             ind = Individual();
             jj_consume_token(23);
-                                                                           {if (true) return new ObjectValueRestriction(op, ind);}
+                                                                           {if (true) return df.getOWLObjectHasValue(op, ind);}
           } else {
             switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
             case 22:
@@ -575,7 +572,7 @@ public class KBParser implements KBParserConstants {
               jj_consume_token(51);
               s = String();
               jj_consume_token(23);
-                                                             {if (true) return new StringValueRestriction(dp, s);}
+                                                             {if (true) return df.getOWLDataHasValue(dp, df.getOWLLiteral(s));}
               break;
             default:
               jj_la1[11] = jj_gen;
@@ -625,7 +622,7 @@ public class KBParser implements KBParserConstants {
     jj_consume_token(LE);
   }
 
-  final public NamedClass AtomicConcept() throws ParseException {
+  final public OWLClass AtomicConcept() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -639,11 +636,11 @@ public class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new NamedClass(getInternalURI(name));}
+                {if (true) return df.getOWLClass(IRI.create(getInternalURI(name)));}
     throw new Error("Missing return statement in function");
   }
 
-  final public DatatypeProperty DatatypeProperty() throws ParseException {
+  final public OWLDataProperty DatatypeProperty() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -657,11 +654,11 @@ public class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new DatatypeProperty(getInternalURI(name));}
+                {if (true) return df.getOWLDataProperty(IRI.create(getInternalURI(name)));}
     throw new Error("Missing return statement in function");
   }
 
-  final public ObjectProperty ObjectProperty() throws ParseException {
+  final public OWLObjectProperty ObjectProperty() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -675,11 +672,11 @@ public class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new ObjectProperty(getInternalURI(name));}
+                {if (true) return df.getOWLObjectProperty(IRI.create(getInternalURI(name)));}
     throw new Error("Missing return statement in function");
   }
 
-  final public Individual Individual() throws ParseException {
+  final public OWLIndividual Individual() throws ParseException {
         String name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -693,7 +690,7 @@ public class KBParser implements KBParserConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
-                {if (true) return new Individual(getInternalURI(name));}
+                {if (true) return df.getOWLNamedIndividual(IRI.create(getInternalURI(name)));}
     throw new Error("Missing return statement in function");
   }
 

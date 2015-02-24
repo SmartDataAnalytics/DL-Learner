@@ -19,9 +19,9 @@
 
 package org.dllearner.utilities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,22 +30,21 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.owl.AssertionalAxiom;
-import org.dllearner.core.owl.ClassAssertionAxiom;
-import org.dllearner.core.owl.Description;
 import org.dllearner.core.owl.FlatABox;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KB;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.ObjectCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyAssertion;
-import org.dllearner.core.owl.ObjectQuantorRestriction;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * TODO: JavaDoc
@@ -55,40 +54,17 @@ import org.dllearner.utilities.datastructures.SortedSetTuple;
  */
 public class Helper {
 
-	private static Logger logger = Logger.getLogger(Helper.class);	
+	private static Logger logger = LoggerFactory.getLogger(Helper.class);	
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	// findet alle atomaren Konzepte in einem Konzept
-	public static List<NamedClass> getAtomicConcepts(Description concept) {
-		List<NamedClass> ret = new LinkedList<NamedClass>();
-		if (concept instanceof NamedClass) {
-			ret.add((NamedClass) concept);
-			return ret;
-		} else {
-			for (Description child : concept.getChildren()) {
-				ret.addAll(getAtomicConcepts(child));
-			}
-			return ret;
-		}
+	public static List<OWLClass> getAtomicConcepts(OWLClassExpression concept) {
+		return new ArrayList<OWLClass>(concept.getClassesInSignature());
 	}
 
 	// findet alle atomaren Rollen in einem Konzept
-	public static List<ObjectProperty> getAtomicRoles(Description concept) {
-		List<ObjectProperty> ret = new LinkedList<ObjectProperty>();
-
-		if (concept instanceof ObjectQuantorRestriction) {
-			ret.add(new ObjectProperty(((ObjectQuantorRestriction) concept).getRole().getName()));
-		} else if (concept instanceof ObjectCardinalityRestriction) {
-			ret.add(new ObjectProperty(((ObjectCardinalityRestriction) concept).getRole().getName()));
-		}
-
-		// auch NumberRestrictions und Quantifications können weitere Rollen
-		// enthalten,
-		// deshalb hier kein else-Zweig
-		for (Description child : concept.getChildren()) {
-			ret.addAll(getAtomicRoles(child));
-		}
-		return ret;
-
+	public static List<OWLObjectProperty> getAtomicRoles(OWLClassExpression concept) {
+		return new ArrayList<OWLObjectProperty>(concept.getObjectPropertiesInSignature());
 	}
 
 	// sucht, ob der übergebene String mit einem Prefix beginnt der
@@ -307,38 +283,38 @@ public class Helper {
 	}	
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<Individual> getIndividualSet(Set<String> individuals) {
-		SortedSet<Individual> ret = new TreeSet<Individual>();
+	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
+		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
 		for (String s : individuals) {
-			ret.add(new Individual(s));
+			ret.add(df.getOWLNamedIndividual(IRI.create(s)));
 		}
 		return ret;
 	}
 
-	public static SortedSetTuple<Individual> getIndividualTuple(SortedSetTuple<String> tuple) {
-		return new SortedSetTuple<Individual>(getIndividualSet(tuple.getPosSet()),
+	public static SortedSetTuple<OWLIndividual> getIndividualTuple(SortedSetTuple<String> tuple) {
+		return new SortedSetTuple<OWLIndividual>(getIndividualSet(tuple.getPosSet()),
 				getIndividualSet(tuple.getNegSet()));
 	}
 
-	public static SortedSetTuple<String> getStringTuple(SortedSetTuple<Individual> tuple) {
+	public static SortedSetTuple<String> getStringTuple(SortedSetTuple<OWLIndividual> tuple) {
 		return new SortedSetTuple<String>(getStringSet(tuple.getPosSet()), getStringSet(tuple
 				.getNegSet()));
 	}
 
 	// Umwandlung von Menge von Individuals auf Menge von Strings
-	public static SortedSet<String> getStringSet(Set<Individual> individuals) {
+	public static SortedSet<String> getStringSet(Set<OWLIndividual> individuals) {
 		SortedSet<String> ret = new TreeSet<String>();
-		for (Individual i : individuals) {
-			ret.add(i.getName());
+		for (OWLIndividual i : individuals) {
+			ret.add(i.toStringID());
 		}
 		return ret;
 	}
 
 	public static Map<String, SortedSet<String>> getStringMap(
-			Map<Individual, SortedSet<Individual>> roleMembers) {
+			Map<OWLIndividual, SortedSet<OWLIndividual>> roleMembers) {
 		Map<String, SortedSet<String>> ret = new TreeMap<String, SortedSet<String>>();
-		for (Individual i : roleMembers.keySet()) {
-			ret.put(i.getName(), getStringSet(roleMembers.get(i)));
+		for (OWLIndividual i : roleMembers.keySet()) {
+			ret.put(i.toStringID(), getStringSet(roleMembers.get(i)));
 		}
 		return ret;
 	}
@@ -371,7 +347,7 @@ public class Helper {
 //			allowedConceptsTmp.addAll(rs.getAtomicConcepts());
 //			Iterator<AtomicConcept> it = allowedConceptsTmp.iterator();
 //			while (it.hasNext()) {
-//				String conceptName = it.next().getName();
+//				String conceptName = it.next().toStringID();
 //				// System.out.println(conceptName);
 //				// seltsame anon-Konzepte, die von Jena erzeugt werden
 //				// löschen
@@ -478,10 +454,10 @@ public class Helper {
 	 * @deprecated Deprecated method, because it is not needed anymore. 
 	 */
 	@Deprecated
-	public static void removeUninterestingConcepts(Set<NamedClass> concepts) {
-		Iterator<NamedClass> it = concepts.iterator();
+	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
+		Iterator<OWLClass> it = concepts.iterator();
 		while (it.hasNext()) {
-			String conceptName = it.next().getName();
+			String conceptName = it.next().toStringID();
 			
 			// ignore some concepts (possibly produced by Jena)
 			if (conceptName.startsWith("anon")) {
@@ -507,19 +483,19 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
-	public static Set<NamedClass> computeConcepts(AbstractReasonerComponent rs) {
+	public static Set<OWLClass> computeConcepts(AbstractReasonerComponent rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
-		Set<NamedClass> concepts = rs.getNamedClasses();
+		Set<OWLClass> concepts = rs.getClasses();
 //		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
 	}
 	
 	// concepts case 2: ignore list
-	public static Set<NamedClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<NamedClass> ignoredConcepts) {
-		Set<NamedClass> concepts = new TreeSet<NamedClass>(rs.getNamedClasses());
+	public static Set<OWLClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<OWLClass> ignoredConcepts) {
+		Set<OWLClass> concepts = new TreeSet<OWLClass>(rs.getClasses());
 //		Helper.removeUninterestingConcepts(concepts);
-		for (NamedClass ac : ignoredConcepts) {
+		for (OWLClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);
 			if (!success)
 				logger.warn("Warning: Ignored concept " + ac + " does not exist in knowledge base.");
@@ -550,9 +526,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static ObjectProperty checkRoles(AbstractReasonerComponent rs, Set<ObjectProperty> roles) {
-		Set<ObjectProperty> existingRoles = rs.getObjectProperties();
-		for (ObjectProperty ar : roles) {
+	public static OWLObjectProperty checkRoles(AbstractReasonerComponent rs, Set<OWLObjectProperty> roles) {
+		Set<OWLObjectProperty> existingRoles = rs.getObjectProperties();
+		for (OWLObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
 		}
@@ -566,9 +542,9 @@ public class Helper {
 	 * background knowledge.
 	 */
 	// 
-	public static NamedClass checkConcepts(AbstractReasonerComponent rs, Set<NamedClass> concepts) {
-		Set<NamedClass> existingConcepts = rs.getNamedClasses();
-		for (NamedClass ar : concepts) {
+	public static OWLClass checkConcepts(AbstractReasonerComponent rs, Set<OWLClass> concepts) {
+		Set<OWLClass> existingConcepts = rs.getClasses();
+		for (OWLClass ar : concepts) {
 			if(!existingConcepts.contains(ar)) 
 				return ar;
 		}
@@ -581,21 +557,21 @@ public class Helper {
 		long dematStartTime = System.currentTimeMillis();
 
 		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		if(!rs.getNamedClasses().isEmpty()) {
-			for (NamedClass atomicConcept : rs.getNamedClasses()) {
-				aBox.atomicConceptsPos.put(atomicConcept.getName(), getStringSet(rs
+		if(!rs.getClasses().isEmpty()) {
+			for (OWLClass atomicConcept : rs.getClasses()) {
+				aBox.atomicConceptsPos.put(atomicConcept.toStringID(), getStringSet(rs
 						.getIndividuals(atomicConcept)));
-				Negation negatedAtomicConcept = new Negation(atomicConcept);
-				aBox.atomicConceptsNeg.put(atomicConcept.getName(), getStringSet(rs
+				OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
+				aBox.atomicConceptsNeg.put(atomicConcept.toStringID(), getStringSet(rs
 						.getIndividuals(negatedAtomicConcept)));
-				aBox.concepts.add(atomicConcept.getName());
+				aBox.concepts.add(atomicConcept.toStringID());
 			}			
 		}
 
 		if(!rs.getObjectProperties().isEmpty()) {
-			for (ObjectProperty atomicRole : rs.getObjectProperties()) {
-				aBox.rolesPos.put(atomicRole.getName(), getStringMap(rs.getPropertyMembers(atomicRole)));
-				aBox.roles.add(atomicRole.getName());
+			for (OWLObjectProperty atomicRole : rs.getObjectProperties()) {
+				aBox.rolesPos.put(atomicRole.toStringID(), getStringMap(rs.getPropertyMembers(atomicRole)));
+				aBox.roles.add(atomicRole.toStringID());
 			}			
 		}
 
@@ -607,43 +583,6 @@ public class Helper {
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
 		System.out.println("OK (" + dematDuration + " ms)");
 		return aBox;
-	}
-
-	// die Methode soll alle Konzeptzusicherungen und Rollenzusicherungen von
-	// Individuen entfernen, die mit diesem Individuum verbunden sind
-	@SuppressWarnings("unused")
-	private static void removeIndividualSubtree(KB kb, Individual individual) {
-		System.out.println();
-		// erster Schritt: alle verbundenen Individuen finden
-		Set<Individual> connectedIndividuals = kb.findRelatedIndividuals(individual);
-		System.out.println("connected individuals: " + connectedIndividuals);
-		// Individual selbst auch entfernen
-		connectedIndividuals.add(individual);
-
-		// zweiter Schritt: entfernen von Rollen- und Konzeptzusicherungen
-		Set<AssertionalAxiom> abox = kb.getAbox();
-		Iterator<AssertionalAxiom> it = abox.iterator();
-		while (it.hasNext()) {
-			AssertionalAxiom a = it.next();
-			if (a instanceof ObjectPropertyAssertion) {
-				ObjectPropertyAssertion ra = (ObjectPropertyAssertion) a;
-				if (connectedIndividuals.contains(ra.getIndividual1())
-						|| connectedIndividuals.contains(ra.getIndividual2())) {
-					System.out.println("remove " + ra);
-					it.remove();
-				}
-			} else if (a instanceof ClassAssertionAxiom) {
-				if (connectedIndividuals.contains(((ClassAssertionAxiom) a).getIndividual())) {
-					System.out.println("remove " + a);
-					it.remove();
-				}
-			} else
-				throw new RuntimeException();
-		}
-
-		Set<Individual> inds = kb.findAllIndividuals();
-		System.out.println("remaining individuals: " + inds);
-		System.out.println();
 	}
 	
 	public static String arrayContent(int[] ar) {

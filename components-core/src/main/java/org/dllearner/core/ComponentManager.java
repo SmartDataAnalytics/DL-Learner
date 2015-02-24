@@ -27,19 +27,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.options.ConfigEntry;
@@ -78,35 +67,30 @@ public final class ComponentManager {
     private static String componentsFile = "org/dllearner/components.ini";
     private static List<String> componentClasses = new ArrayList<String>  ( Arrays.asList(new String[]{
             "org.dllearner.kb.OWLFile",
-            "org.dllearner.kb.KBFile",
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
             "org.dllearner.kb.OWLAPIOntology",
 //            "org.dllearner.kb.SparqlEndpointKS",
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
-            "org.dllearner.reasoning.DIGReasoner",
-            "org.dllearner.reasoning.FastRetrievalReasoner",
+//            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
             "org.dllearner.reasoning.FastInstanceChecker",
-            "org.dllearner.reasoning.ProtegeReasoner",
-            "org.dllearner.reasoning.PelletReasoner",
 //learning problems
             "org.dllearner.learningproblems.PosNegLPStandard",
-            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
-            "org.dllearner.learningproblems.PosNegLPStrict",
+//            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
+//            "org.dllearner.learningproblems.PosNegLPStrict",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
 //learning algorithms
-            "org.dllearner.algorithms.RandomGuesser",
-            "org.dllearner.algorithms.BruteForceLearner",
-            "org.dllearner.algorithms.refinement.ROLearner",
+//            "org.dllearner.algorithms.RandomGuesser",
+//            "org.dllearner.algorithms.BruteForceLearner",
+//            "org.dllearner.algorithms.ocel.ROLearner2",
             "org.dllearner.algorithms.ocel.OCEL",
-            "org.dllearner.algorithms.gp.GP",
-            "org.dllearner.algorithms.el.ELLearningAlgorithm",
-            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+//            "org.dllearner.algorithms.gp.GP",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithm",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
+//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
 
 	private static ComponentManager cm = null;	
@@ -403,9 +387,7 @@ public final class ComponentManager {
 	public <T extends AbstractReasonerComponent> T reasoner(Class<T> reasoner,
 			AbstractKnowledgeSource ... sources) {
 		Set<AbstractKnowledgeSource> s = new HashSet<AbstractKnowledgeSource>();
-		for(AbstractKnowledgeSource source : sources) {
-			s.add(source);
-		}
+        Collections.addAll(s, sources);
 		return reasoner(reasoner, s);
 	}	
 	
@@ -473,8 +455,8 @@ public final class ComponentManager {
 		if (constructorArgument == null) {
 			throw new LearningProblemUnsupportedException(lp.getClass(), laClass, algorithmProblemsMapping.get(laClass));
 //			System.err.println("Warning: No suitable constructor registered for algorithm "
-//					+ laClass.getName() + " and problem " + lp.getClass().getName()
-//					+ ". Registered constructors for " + laClass.getName() + ": "
+//					+ laClass.toStringID() + " and problem " + lp.getClass().toStringID()
+//					+ ". Registered constructors for " + laClass.toStringID() + ": "
 //					+ algorithmProblemsMapping.get(laClass) + ".");
 //			return null;
 		}

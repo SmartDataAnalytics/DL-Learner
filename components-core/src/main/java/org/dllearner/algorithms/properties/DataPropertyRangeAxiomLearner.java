@@ -19,171 +19,114 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
 import java.util.Set;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypePropertyRangeAxiom;
-import org.dllearner.core.owl.KBElement;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.SPARQLReasoner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.dllearner.learningproblems.AxiomScore;
+import org.dllearner.learningproblems.Heuristics;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDataRange;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
 
-@ComponentAnn(name="dataproperty range learner", shortName="dblrange", version=0.1)
-public class DataPropertyRangeAxiomLearner extends AbstractAxiomLearningAlgorithm {
+@ComponentAnn(name="data property range learner", shortName="dblrange", version=0.1, description="A learning algorithm for reflexive data property range axioms.")
+public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLDataPropertyRangeAxiom> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(DataPropertyRangeAxiomLearner.class);
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
-	private DatatypeProperty propertyToDescribe;
+	private static final ParameterizedSparqlString DATATYPE_FREQUENCY_QUERY = new ParameterizedSparqlString(
+			"SELECT  ?dt (count(distinct ?o) AS ?cnt)\n" + 
+			"WHERE\n" + 
+			"  { ?s ?p ?o }\n" + 
+			"GROUP BY (datatype(?o) AS ?dt)");
 	
 	public DataPropertyRangeAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. FILTER (DATATYPE(?s) = ?dt)}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?o ?p ?s. FILTER (DATATYPE(?s) != ?dt)}");
-	
+		
+		COUNT_QUERY = DISTINCT_OBJECTS_COUNT_QUERY;
+		
+		axiomType = AxiomType.DATA_PROPERTY_RANGE;
 	}
 	
-	public DatatypeProperty getPropertyToDescribe() {
-		return propertyToDescribe;
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
+	@Override
+	protected void getExistingAxioms() {
+		OWLDataRange existingRange = reasoner.getRange(entityToDescribe);
+		if(existingRange != null){
+			existingAxioms.add(df.getOWLDataPropertyRangeAxiom(entityToDescribe, existingRange));
+		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#setEntityToDescribe(org.semanticweb.owlapi.model.OWLEntity)
+	 */
+	@Override
+	public void setEntityToDescribe(OWLDataProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
+		
+		DATATYPE_FREQUENCY_QUERY.setIri("p", entityToDescribe.toStringID());
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.PropertyAxiomLearner#run()
+	 */
+	@Override
+	protected void run() {
+		// get the frequency for each datatype
+		ResultSet rs = executeSelectQuery(DATATYPE_FREQUENCY_QUERY.toString());
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
 
-	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+			// datatype
+			String datatypeURI = qs.getResource("dt").getURI();
+
+			// frequency of datatype
+			int frequency = qs.getLiteral("cnt").getInt();
+
+			// precision (A AND B)/B
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(popularity, frequency);
+
+			// score
+			/* TODO: currently the score is rather simple, but it's not clear whether it makes sense to take
+			 also the total number of literals with given datatype into account
+			 */
+			double score = precision;
+			
+			int nrOfPosExamples = frequency;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
+			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyRangeAxiom>(
+					df.getOWLDataPropertyRangeAxiom(entityToDescribe, df.getOWLDatatype(IRI.create(datatypeURI))),
+					new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+
+		}
+
 	}
 	
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		if(returnOnlyNewAxioms){
-			//get existing ranges
-			DataRange existingRange = reasoner.getRange(propertyToDescribe);
-			if(existingRange != null){
-				existingAxioms.add(new DatatypePropertyRangeAxiom(propertyToDescribe, existingRange));
-			}
-		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
-	
-	private void runSingleQueryMode(){
-		
-		String query = String.format("SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}", propertyToDescribe.getName());
-		ResultSet rs = executeSelectQuery(query);
-		int nrOfSubjects = rs.next().getLiteral("cnt").getInt();
-		
-		query = String.format("SELECT (DATATYPE(?o) AS ?type) (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.} GROUP BY DATATYPE(?o)", propertyToDescribe.getName());
-		rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			if(qs.get("type") != null){
-				DataRange range = new Datatype(qs.get("type").asLiteral().getLexicalForm());
-				int cnt = qs.getLiteral("cnt").getInt();
-				currentlyBestAxioms.add(new EvaluatedAxiom(new DatatypePropertyRangeAxiom(propertyToDescribe, range), computeScore(nrOfSubjects, cnt)));
-			} 
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s <%s> ?o} WHERE {?s <%s> ?o.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			workingModel.add(newModel);
-			// get number of distinct subjects
-			query = "SELECT (COUNT(?o) AS ?all) WHERE {?s ?p ?o.}";
-			ResultSet rs = executeSelectQuery(query, workingModel);
-			QuerySolution qs;
-			int all = 1;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				all = qs.getLiteral("all").getInt();
-			}
-			
-			// get class and number of instances
-//			query = "SELECT (DATATYPE(?o) AS ?dt) (COUNT(?o) AS ?cnt) WHERE{?s ?p ?o} GROUP BY DATATYPE(?o) ORDER BY DESC(?cnt)";
-			query = "SELECT ?dt (COUNT(?o) AS ?cnt) " +
-					"WHERE {" +
-					"{" +
-					"SELECT (DATATYPE(?o) AS ?dt) ?o WHERE{?s ?p ?o}" +
-					"}" +
-					"}" +
-					"GROUP BY ?dt";
-			rs = executeSelectQuery(query, workingModel);
-			
-			if (all > 0) {
-				currentlyBestAxioms.clear();
-				while(rs.hasNext()){
-					qs = rs.next();
-					Resource type = qs.get("dt").asResource();
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new DatatypePropertyRangeAxiom(propertyToDescribe, new Datatype(type.getURI())),
-							computeScore(all, qs.get("cnt").asLiteral().getInt())));
-				}
-				
-			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), propertyToDescribe.getName(), limit, offset);
-			newModel = executeConstructQuery(query);
-		}
-	}
-	
-	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		DatatypePropertyRangeAxiom axiom = (DatatypePropertyRangeAxiom) evAxiom.getAxiom();
+	public Set<OWLDataPropertyAssertionAxiom> getPositiveExamples(EvaluatedAxiom<OWLDataPropertyRangeAxiom> evAxiom) {
+		OWLDataPropertyRangeAxiom axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("dt", axiom.getRange().toString());
 		return super.getPositiveExamples(evAxiom);
 	}
 	
 	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		DatatypePropertyRangeAxiom axiom = (DatatypePropertyRangeAxiom) evAxiom.getAxiom();
+	public Set<OWLDataPropertyAssertionAxiom> getNegativeExamples(EvaluatedAxiom<OWLDataPropertyRangeAxiom> evAxiom) {
+		OWLDataPropertyRangeAxiom axiom = evAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("dt", axiom.getRange().toString());
 		return super.getNegativeExamples(evAxiom);
 	}
+
 	
-	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
-		
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		reasoner.prepareSubsumptionHierarchy();
-		
-		DataPropertyRangeAxiomLearner l = new DataPropertyRangeAxiomLearner(ks);
-		l.setReasoner(reasoner);
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/topSpeed"));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.setReturnOnlyNewAxioms(true);
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(1));
-	}
 }

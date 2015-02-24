@@ -30,7 +30,7 @@ public abstract class OntologyToByteConverterTest {
 
     private OWLOntology createOntology() throws OWLOntologyCreationException, IOException {
         // Set up the ontology here and hide its manager - the test needs to use a different ontology manager on reconstitution
-        OWLOntologyManager manager = OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl());
+        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
         Resource owlFile = new ClassPathResource("/org/dllearner/utilities/owl/byte-conversion-data.owl");
         return manager.loadOntologyFromOntologyDocument(owlFile.getInputStream());
     }
@@ -47,7 +47,7 @@ public abstract class OntologyToByteConverterTest {
         assertTrue(bytes.length > 0);
 
         // Use a new manager so that the IRIs don't get messed up
-        OWLOntologyManager newManager = OWLManager.createOWLOntologyManager(new OWLDataFactoryImpl());
+        OWLOntologyManager newManager = OWLManager.createOWLOntologyManager();
         OWLOntology result = converter.convert(bytes, newManager);
         assertNotNull(result);
 

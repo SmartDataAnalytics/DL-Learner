@@ -20,10 +20,16 @@
 package org.dllearner.reasoning;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -35,49 +41,43 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.BooleanValueRestriction;
-import org.dllearner.core.owl.Constant;
-import org.dllearner.core.owl.DataRange;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.DatatypeSomeRestriction;
-import org.dllearner.core.owl.DatatypeValueRestriction;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.DoubleMaxValue;
-import org.dllearner.core.owl.DoubleMinMaxRange;
-import org.dllearner.core.owl.DoubleMinValue;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.IntMaxValue;
-import org.dllearner.core.owl.IntMinValue;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.Negation;
-import org.dllearner.core.owl.Nothing;
-import org.dllearner.core.owl.OWL2Datatype;
-import org.dllearner.core.owl.ObjectAllRestriction;
-import org.dllearner.core.owl.ObjectCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMaxCardinalityRestriction;
-import org.dllearner.core.owl.ObjectMinCardinalityRestriction;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectPropertyExpression;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.ObjectValueRestriction;
-import org.dllearner.core.owl.Thing;
-import org.dllearner.core.owl.TypedConstant;
-import org.dllearner.core.owl.Union;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.parser.KBParser;
-import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptTransformation;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -104,14 +104,14 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
 //	private boolean defaultNegation = true;
 
-	private Set<NamedClass> atomicConcepts;
-	private Set<ObjectProperty> atomicRoles;
-	private SortedSet<DatatypeProperty> datatypeProperties;
-	private SortedSet<DatatypeProperty> booleanDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> doubleDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> intDatatypeProperties = new TreeSet<DatatypeProperty>();
-	private SortedSet<DatatypeProperty> stringDatatypeProperties = new TreeSet<DatatypeProperty>();	
-	private TreeSet<Individual> individuals;
+	private Set<OWLClass> atomicConcepts;
+	private Set<OWLObjectProperty> atomicRoles;
+	private Set<OWLDataProperty> datatypeProperties;
+	private Set<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private Set<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private Set<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
+	private Set<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();	
+	private TreeSet<OWLIndividual> individuals;
 
 	// private ReasonerComponent rs;
 
@@ -120,25 +120,29 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	// we use sorted sets (map indices) here, because they have only log(n)
 	// complexity for checking whether an element is contained in them
 	// instances of classes
-	private Map<NamedClass, TreeSet<Individual>> classInstancesPos = new TreeMap<NamedClass, TreeSet<Individual>>();
-	private Map<NamedClass, TreeSet<Individual>> classInstancesNeg = new TreeMap<NamedClass, TreeSet<Individual>>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
 	// object property mappings
-	private Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos = new TreeMap<ObjectProperty, Map<Individual, SortedSet<Individual>>>();
+	private Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>>();
 	// data property mappings
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Constant>>> dpPos = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Constant>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>> dpPos = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>>();
 		
 	
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
-	private Map<DatatypeProperty, TreeSet<Individual>> bdPos = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
-	private Map<DatatypeProperty, TreeSet<Individual>> bdNeg = new TreeMap<DatatypeProperty, TreeSet<Individual>>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Double>>> dd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Double>>>();
-	private Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<Integer>>>();
-	private Map<DatatypeProperty, Map<Individual, SortedSet<String>>> sd = new TreeMap<DatatypeProperty, Map<Individual, SortedSet<String>>>();
-
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>>();
+	
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Number>>> numericValueMappings = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Number>>>();
+	
+	
+	
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
 
@@ -154,18 +158,23 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
     	SomeOnly  // p only C for instance a returns false if there is no fact p(a,x) with x \ in C  
     }
     
+    private boolean materializeExistentialRestrictions = false;
+
+	private boolean useCaching = true;
+    private boolean handlePunning = false;
+    
 	/**
 	 * Creates an instance of the fast instance checker.
 	 */
 	public FastInstanceChecker() {
 	}
 
-    public FastInstanceChecker(TreeSet<Individual> individuals,
-			Map<NamedClass, TreeSet<Individual>> classInstancesPos,
-			Map<ObjectProperty, Map<Individual, SortedSet<Individual>>> opPos,
-			Map<DatatypeProperty, Map<Individual, SortedSet<Integer>>> id,
-			Map<DatatypeProperty, TreeSet<Individual>> bdPos,
-			Map<DatatypeProperty, TreeSet<Individual>> bdNeg,
+    public FastInstanceChecker(TreeSet<OWLIndividual> individuals,
+			Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
+			Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos,
+			Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id,
+			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos,
+			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg,
 			KnowledgeSource... sources) {
 		super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
 		this.individuals = individuals;
@@ -184,7 +193,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}
         }
 		
-		atomicConcepts = rc.getNamedClasses();
+		atomicConcepts = rc.getClasses();
 		datatypeProperties = rc.getDatatypeProperties();
 		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
 		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
@@ -192,27 +201,28 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		stringDatatypeProperties = rc.getStringDatatypeProperties();
 		atomicRoles = rc.getObjectProperties();
 		
-		for (NamedClass atomicConcept : rc.getNamedClasses()) {
-			TreeSet<Individual> pos = classInstancesPos.get(atomicConcept);
+		for (OWLClass atomicConcept : atomicConcepts) {
+			TreeSet<OWLIndividual> pos = classInstancesPos.get(atomicConcept);
 			if(pos != null){
-				classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+				classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
 			} else {
-				classInstancesPos.put(atomicConcept, new TreeSet<Individual>());
+				classInstancesPos.put(atomicConcept, new TreeSet<OWLIndividual>());
 				classInstancesNeg.put(atomicConcept, individuals);
 			}
 		}
-		for(ObjectProperty p : atomicRoles){
+		
+		for(OWLObjectProperty p : atomicRoles){
 			if(opPos.get(p) == null){
-				opPos.put(p, new HashMap<Individual, SortedSet<Individual>>());
+				opPos.put(p, new HashMap<OWLIndividual, SortedSet<OWLIndividual>>());
 			}
 		}
 		
-		for (DatatypeProperty dp : booleanDatatypeProperties) {
+		for (OWLDataProperty dp : booleanDatatypeProperties) {
 			if(bdPos.get(dp) == null){
-				bdPos.put(dp, new TreeSet<Individual>());
+				bdPos.put(dp, new TreeSet<OWLIndividual>());
 			}
 			if(bdNeg.get(dp) == null){
-				bdNeg.put(dp, new TreeSet<Individual>());
+				bdNeg.put(dp, new TreeSet<OWLIndividual>());
 			}
 			
 		}
@@ -224,6 +234,10 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 
     public FastInstanceChecker(KnowledgeSource... sources) {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
+    }
+    
+    public FastInstanceChecker(KnowledgeSource  source) {
+        super(new HashSet<KnowledgeSource>(Arrays.asList(source)));
     }
     
     /**
@@ -245,189 +259,294 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
             rc = new OWLAPIReasoner(sources);
             rc.init();
         }
-//		try {
-			atomicConcepts = rc.getNamedClasses();
-			datatypeProperties = rc.getDatatypeProperties();
-			booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
-			doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
-			intDatatypeProperties = rc.getIntDatatypeProperties();
-			stringDatatypeProperties = rc.getStringDatatypeProperties();
-			atomicRoles = rc.getObjectProperties();
-			individuals = (TreeSet<Individual>) rc.getIndividuals();
+		atomicConcepts = rc.getClasses();
+		datatypeProperties = rc.getDatatypeProperties();
+		booleanDatatypeProperties = rc.getBooleanDatatypeProperties();
+		doubleDatatypeProperties = rc.getDoubleDatatypeProperties();
+		intDatatypeProperties = rc.getIntDatatypeProperties();
+		stringDatatypeProperties = rc.getStringDatatypeProperties();
+		atomicRoles = rc.getObjectProperties();
+		individuals = (TreeSet<OWLIndividual>) rc.getIndividuals();
+		
+//		loadOrDematerialize();
+		materialize();
+	}
+	
+	private void loadOrDematerialize(){
+		if(useCaching){
+			File cacheDir = new File("cache");
+			cacheDir.mkdirs();
+			HashFunction hf = Hashing.md5();
+			Hasher hasher = hf.newHasher();
+			hasher.putBoolean(materializeExistentialRestrictions);
+			hasher.putBoolean(handlePunning);
+			for (OWLOntology ont : rc.getOWLAPIOntologies()) {
+				hasher.putInt(ont.getLogicalAxioms().hashCode());
+				hasher.putInt(ont.getAxioms().hashCode());
+			}
+			String filename = hasher.hash().toString() + ".obj";
+			
+			File cacheFile = new File(cacheDir, filename);
+			if(cacheFile.exists()){
+				logger.debug("Loading materialization from disk...");
+				try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cacheFile))){
+					Materialization mat = (Materialization) ois.readObject();
+					classInstancesPos = mat.classInstancesPos;
+					classInstancesNeg = mat.classInstancesNeg;
+					opPos = mat.opPos;
+					dpPos = mat.dpPos;
+					bdPos = mat.bdPos;
+					bdNeg = mat.bdNeg;
+					dd = mat.dd;
+					id = mat.id;
+					sd = mat.sd;
+				} catch (ClassNotFoundException | IOException e) {
+					e.printStackTrace();
+				} 
+				logger.debug("done.");
+			} else {
+				materialize();
+				Materialization mat = new Materialization();
+				mat.classInstancesPos = classInstancesPos;
+				mat.classInstancesNeg = classInstancesNeg;
+				mat.opPos = opPos;
+				mat.dpPos = dpPos;
+				mat.bdPos = bdPos;
+				mat.bdNeg = bdNeg;
+				mat.dd = dd;
+				mat.id = id;
+				mat.sd = sd;
+				try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cacheFile))){
+					oos.writeObject(mat);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
+		} else {
+			materialize();
+		}
+	}
+	
+	private void materialize(){
+		long dematStartTime = System.currentTimeMillis();
 
-			// rs = new ReasonerComponent(rc);
-
-			// TODO: some code taken from Helper.createFlatABox, but pasted here
-			// because additional things need to
-			// be done (maybe this can be merge again with the
-			// FastRetrievalReasoner later)
-			long dematStartTime = System.currentTimeMillis();
-
-			logger.debug("dematerialising concepts");
-			for (NamedClass atomicConcept : rc.getNamedClasses()) {
-				SortedSet<Individual> pos = rc.getIndividuals(atomicConcept);
-				classInstancesPos.put(atomicConcept, (TreeSet<Individual>) pos);
+		logger.debug("materialising concepts");
+		for (OWLClass atomicConcept : atomicConcepts) {
+			if(!atomicConcept.getIRI().isReservedVocabulary()){
+				SortedSet<OWLIndividual> pos = rc.getIndividuals(atomicConcept);
+				classInstancesPos.put(atomicConcept, (TreeSet<OWLIndividual>) pos);
 
 				if (isDefaultNegation()) {
-					classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) Helper.difference(individuals, pos));
+					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
 				} else {
 					// Pellet needs approximately infinite time to answer
 					// negated queries
 					// on the carcinogenesis data set (and probably others), so
 					// we have to
 					// be careful here
-					Negation negatedAtomicConcept = new Negation(atomicConcept);
-					classInstancesNeg.put(atomicConcept, (TreeSet<Individual>) rc.getIndividuals(negatedAtomicConcept));
+					OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
+					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) rc.getIndividuals(negatedAtomicConcept));
 				}
-
+			} else {
+				System.err.println(atomicConcept);
 			}
+		}
 
-			logger.debug("dematerialising object properties");
+		logger.debug("materialising object properties");
 
-			for (ObjectProperty atomicRole : atomicRoles) {
-//				System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
-				opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
+		for (OWLObjectProperty atomicRole : atomicRoles) {
+//			System.out.println(atomicRole + " " + rc.getPropertyMembers(atomicRole));
+			opPos.put(atomicRole, rc.getPropertyMembers(atomicRole));
+		}
+		
+		logger.debug("materialising datatype properties");
+		
+		for (OWLDataProperty atomicRole : datatypeProperties) {
+			dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
+		}
+
+		for (OWLDataProperty dp : booleanDatatypeProperties) {
+			bdPos.put(dp, (TreeSet<OWLIndividual>) rc.getTrueDatatypeMembers(dp));
+			bdNeg.put(dp, (TreeSet<OWLIndividual>) rc.getFalseDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : intDatatypeProperties) {
+			id.put(dp, rc.getIntDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : doubleDatatypeProperties) {
+			dd.put(dp, rc.getDoubleDatatypeMembers(dp));
+		}
+
+		for (OWLDataProperty dp : stringDatatypeProperties) {
+			sd.put(dp, rc.getStringDatatypeMembers(dp));
+		}		
+		
+		if(materializeExistentialRestrictions){
+			ExistentialRestrictionMaterialization materialization = new ExistentialRestrictionMaterialization(rc.getReasoner().getRootOntology());
+			for (OWLClass cls : atomicConcepts) {
+				TreeSet<OWLIndividual> individuals = classInstancesPos.get(cls);
+				Set<OWLClassExpression> superClass = materialization.materialize(cls.toStringID());
+				for (OWLClassExpression sup : superClass) {
+					fill(individuals, sup);
+				}
 			}
+		}
+		
+		//materialize facts based on OWL punning, i.e.:
+				//for each A in N_C
+				if(handlePunning && OWLPunningDetector.hasPunning(rc.getReasoner().getRootOntology())){
+					OWLOntology ontology = rc.getReasoner().getRootOntology();
+					
+					OWLIndividual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd"));
+					Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<OWLIndividual, SortedSet<OWLIndividual>>();
+					for (OWLIndividual individual : individuals) {
+						SortedSet<OWLIndividual> objects = new TreeSet<OWLIndividual>();
+						objects.add(genericIndividual);
+						map.put(individual, objects);
+					}
+					for (OWLClass cls : atomicConcepts) {
+						classInstancesNeg.get(cls).add(genericIndividual);
+						if(OWLPunningDetector.hasPunning(ontology, cls)){
+							OWLIndividual clsAsInd = df.getOWLNamedIndividual(IRI.create(cls.toStringID()));
+							//for each x \in N_I with A(x) we add relatedTo(x,A)
+							SortedSet<OWLIndividual> individuals = classInstancesPos.get(cls);
+							for (OWLIndividual individual : individuals) {
+								SortedSet<OWLIndividual> objects = map.get(individual);
+								if(objects == null){
+									objects = new TreeSet<OWLIndividual>();
+									map.put(individual, objects);
+								}
+								objects.add(clsAsInd);
+								
+							}
+						}
+					}
+					opPos.put(OWLPunningDetector.punningProperty, map);
+					atomicRoles = new TreeSet<OWLObjectProperty>(atomicRoles);
+					atomicRoles.add(OWLPunningDetector.punningProperty);
+					atomicRoles = Collections.unmodifiableSet(atomicRoles);
+//					individuals.add(genericIndividual);
+				}
+		
+		long dematDuration = System.currentTimeMillis() - dematStartTime;
+		logger.debug("TBox materialised in " + dematDuration + " ms");
+	}
+	
+	private void fill(SortedSet<OWLIndividual> individuals, OWLClassExpression d){
+		if(!d.isAnonymous()){
+			classInstancesPos.get(d).addAll(individuals);
+		} else if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) d).getOperands();
+			for (OWLClassExpression operand : operands) {
+				fill(individuals, operand);
+			}
+		} else if(d instanceof OWLObjectSomeValuesFrom){
+			OWLObjectProperty role = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			Map<OWLIndividual, SortedSet<OWLIndividual>> map = opPos.get(role);
+			//create new individual as object value for each individual
+			SortedSet<OWLIndividual> newIndividuals = new TreeSet<OWLIndividual>();
+			int i = 0;
+			for (OWLIndividual individual : individuals) {
+				OWLIndividual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++));
+				newIndividuals.add(newIndividual);
+				SortedSet<OWLIndividual> values = map.get(individual);
+				if(values == null){
+					values = new TreeSet<OWLIndividual>();
+					map.put(individual, values);
+				}
+				values.add(newIndividual);
+			}
+			fill(newIndividuals, filler);
 			
-			logger.debug("dematerialising datatype properties");
-			
-			for (DatatypeProperty atomicRole : datatypeProperties) {
-				dpPos.put(atomicRole, rc.getDatatypeMembers(atomicRole));
-			}
-
-			for (DatatypeProperty dp : booleanDatatypeProperties) {
-				bdPos.put(dp, (TreeSet<Individual>) rc.getTrueDatatypeMembers(dp));
-				bdNeg.put(dp, (TreeSet<Individual>) rc.getFalseDatatypeMembers(dp));
-			}
-
-			for (DatatypeProperty dp : intDatatypeProperties) {
-				id.put(dp, rc.getIntDatatypeMembers(dp));
-			}
-
-			for (DatatypeProperty dp : doubleDatatypeProperties) {
-				dd.put(dp, rc.getDoubleDatatypeMembers(dp));
-			}
-
-			for (DatatypeProperty dp : stringDatatypeProperties) {
-				sd.put(dp, rc.getStringDatatypeMembers(dp));
-			}			
-			
-			long dematDuration = System.currentTimeMillis() - dematStartTime;
-			logger.debug("TBox dematerialised in " + dematDuration + " ms");
-
-//		} catch (ReasoningMethodUnsupportedException e) {
-//			throw new ComponentInitException(
-//					"Underlying reasoner does not support all necessary reasoning methods.", e);
-//		}
+		} else {
+			throw new UnsupportedOperationException("Should not happen.");
+		}
 	}
 
 	@Override
-	public boolean hasTypeImpl(Description description, Individual individual)
+	public boolean hasTypeImpl(OWLClassExpression description, OWLIndividual individual)
 			throws ReasoningMethodUnsupportedException {
 
-//		 System.out.println("FIC: " + description + " " + individual);
-
-		if (description instanceof NamedClass) {
-			if(((NamedClass) description).getURI().equals(Thing.instance.getURI())){
-				return true;
-			} else
-			if(!atomicConcepts.contains(description)) {
-				throw new ReasoningMethodUnsupportedException("Class " + description + " is not contained in knowledge base.");
-			}
-			return classInstancesPos.get((NamedClass) description).contains(individual);
-		} else if (description instanceof Negation) {
-			Description child = description.getChild(0);
-			if (child instanceof NamedClass) {
-				return classInstancesNeg.get((NamedClass) child).contains(individual);
-			} else {
-				// default negation
-				if(isDefaultNegation()) {
-					return !hasTypeImpl(child, individual);
-				} else {
-					logger.debug("Converting description to negation normal form in fast instance check (should be avoided if possible).");
-					Description nnf = ConceptTransformation.transformToNegationNormalForm(child);
-					return hasTypeImpl(nnf, individual);					
-				}
-//				throw new ReasoningMethodUnsupportedException("Instance check for description "
-//						+ description
-//						+ " unsupported. Description needs to be in negation normal form.");
-			}
-		} else if (description instanceof Thing) {
+		if (description.isOWLThing()) {
 			return true;
-		} else if (description instanceof Nothing) {
+		} else if (description.isOWLNothing()) {
 			return false;
-		} else if (description instanceof Union) {
-			// if the individual is instance of any of the subdescription of
-			// the union, we return true
-			List<Description> children = description.getChildren();
-			for (Description child : children) {
-				if (hasTypeImpl(child, individual)) {
+		} else if (!description.isAnonymous()) {
+			return classInstancesPos.get(description).contains(individual);
+		} else if (description instanceof OWLObjectComplementOf) {
+			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
+			if(!operand.isAnonymous()) {
+				return classInstancesNeg.get(operand).contains(individual);
+			} else {
+				if(isDefaultNegation()) {
+					return !hasTypeImpl(operand, individual);
+				} else {
+					logger.debug("Converting OWLClassExpression to negation normal form in fast instance check (should be avoided if possible).");
+					return hasTypeImpl(description.getNNF(), individual);					
+				}
+			}
+		} else if (description instanceof OWLObjectUnionOf) {
+			for (OWLClassExpression operand : ((OWLObjectUnionOf) description).getOperands()) {
+				if(hasTypeImpl(operand, individual)){
 					return true;
 				}
 			}
 			return false;
-		} else if (description instanceof Intersection) {
-			// if the individual is instance of all of the subdescription of
-			// the union, we return true
-			List<Description> children = description.getChildren();
-			for (Description child : children) {
-				if (!hasTypeImpl(child, individual)) {
+		} else if (description instanceof OWLObjectIntersectionOf) {
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) description).getOperands()) {
+				if(!hasTypeImpl(operand, individual)){
 					return false;
 				}
 			}
 			return true;
-		} else if (description instanceof ObjectSomeRestriction) {
-			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+		}
+		else if (description instanceof OWLObjectSomeValuesFrom) {
+			OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
+			OWLClassExpression fillerConcept = ((OWLObjectSomeValuesFrom) description).getFiller();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-
-			if (mapping == null) {
-				logger.warn("Instance check of a description with an undefinied property (" + op
-						+ ").");
+			
+			if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
+				return true;
+			}
+			
+			SortedSet<OWLIndividual> roleFillers = opPos.get(property.asOWLObjectProperty()).get(individual);	
+			
+			if(roleFillers == null){
 				return false;
 			}
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			if (roleFillers == null) {
-				return false;
-			}
-			for (Individual roleFiller : roleFillers) {
-				if (hasTypeImpl(child, roleFiller)) {
+			
+			for (OWLIndividual roleFiller : roleFillers) {
+				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					return true;
 				}
 			}
+			
 			return false;
-		} else if (description instanceof ObjectAllRestriction) {
-			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+		} else if (description instanceof OWLObjectAllValuesFrom) {
+			OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
+			OWLClassExpression fillerConcept = ((OWLObjectAllValuesFrom) description).getFiller();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-
-			if (mapping == null) {
-				logger.warn("Instance check of a description with an undefinied property (" + op
-						+ ").");
-				return true;
-			}
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+			
+			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
 			
 			if (roleFillers == null) {
-				if(forallSemantics == ForallSemantics.Standard) {
-					return true;	
-				} else {
-					return false;
-				}
+                return forallSemantics == ForallSemantics.Standard;
 			}
 			boolean hasCorrectFiller = false;
-			for (Individual roleFiller : roleFillers) {
-				if (hasTypeImpl(child, roleFiller)) {
+			for (OWLIndividual roleFiller : roleFillers) {
+				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					hasCorrectFiller = true;
 				} else {
 					return false;
@@ -439,204 +558,227 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			} else {
 				return true;
 			}
-		} else if (description instanceof ObjectMinCardinalityRestriction) {
-			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-
-			if (mapping == null) {
-				logger.warn("Instance check of a description with an undefinied property (" + op
-						+ ").");
-				return true;
-			}
-
-			int number = ((ObjectCardinalityRestriction) description).getNumber();
-			int nrOfFillers = 0;
-
-//			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
-			SortedSet<Individual> roleFillers = mapping.get(individual);
-//			System.out.println(roleFillers);
+		} else if (description instanceof OWLObjectMinCardinality) {
+			OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
+			OWLClassExpression fillerConcept = ((OWLObjectMinCardinality) description).getFiller();
+			int cardinality = ((OWLObjectMinCardinality) description).getCardinality();
 			
 			// special case: there are always at least zero fillers
-			if (number == 0) {
+			if (cardinality == 0) {
 				return true;
 			}
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+
+			int nrOfFillers = 0;
+
+			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
+			
 			// return false if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < number) {
+			if (roleFillers == null || (roleFillers.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
 				return false;
 			}
 
 			int index = 0;
-			for (Individual roleFiller : roleFillers) {
+			for (OWLIndividual roleFiller : roleFillers) {
 				index++;
-				if (hasTypeImpl(child, roleFiller)) {
+				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					nrOfFillers++;
-					if (nrOfFillers == number) {
+					if (nrOfFillers == cardinality
+							|| (handlePunning && property == OWLPunningDetector.punningProperty)) {
 						return true;
 					}
 					// early abort: e.g. >= 10 hasStructure.Methyl;
 					// if there are 11 fillers and 2 are not Methyl, the result
 					// is false
 				} else {
-					if (roleFillers.size() - index < number) {
+					if (roleFillers.size() - index < cardinality) {
 						return false;
 					}
 				}
 			}
 			return false;
-		} else if (description instanceof ObjectMaxCardinalityRestriction) {
-			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+		} else if (description instanceof OWLObjectMaxCardinality) {
+			OWLObjectPropertyExpression property = ((OWLObjectMaxCardinality) description).getProperty();
+			OWLClassExpression fillerConcept = ((OWLObjectMaxCardinality) description).getFiller();
+			int cardinality = ((OWLObjectMaxCardinality) description).getCardinality();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
 
-			if (mapping == null) {
-				logger.warn("Instance check of a description with an undefinied property (" + op
-						+ ").");
-				return true;
-			}
-
-			int number = ((ObjectCardinalityRestriction) description).getNumber();
 			int nrOfFillers = 0;
 
-			SortedSet<Individual> roleFillers = opPos.get(op).get(individual);
+			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
+			
 			// return true if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < number) {
+			if (roleFillers == null || roleFillers.size() < cardinality) {
 				return true;
 			}
 
 			int index = 0;
-			for (Individual roleFiller : roleFillers) {
+			for (OWLIndividual roleFiller : roleFillers) {
 				index++;
-				if (hasTypeImpl(child, roleFiller)) {
+				if (hasTypeImpl(fillerConcept, roleFiller)) {
 					nrOfFillers++;
-					if (nrOfFillers > number) {
+					if (nrOfFillers > cardinality) {
 						return false;
 					}
 					// early abort: e.g. <= 5 hasStructure.Methyl;
 					// if there are 6 fillers and 2 are not Methyl, the result
 					// is true
 				} else {
-					if (roleFillers.size() - index <= number) {
+					if (roleFillers.size() - index <= cardinality) {
 						return true;
 					}
 				}
 			}
 			return true;
-		} else if (description instanceof ObjectValueRestriction) {
-			Individual i = ((ObjectValueRestriction)description).getIndividual();
-			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+		} else if (description instanceof OWLObjectHasValue) {
+			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
+			OWLIndividual value = ((OWLObjectHasValue)description).getValue();
 			
-			Set<Individual> inds = opPos.get(op).get(individual);
-			return inds == null ? false : inds.contains(i);
-		} else if (description instanceof BooleanValueRestriction) {
-			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpression();
-			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
-
-			if (value) {
-				// check whether the individual is in the set of individuals
-				// mapped
-				// to true by this datatype property
-				return bdPos.get(dp).contains(individual);
-			} else {
-				return bdNeg.get(dp).contains(individual);
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
 			}
-		} else if (description instanceof DatatypeSomeRestriction) {
-			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
-			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
-			DataRange dr = dsr.getDataRange();
-			if(dr.isDatatype() 
-//					&& ((Datatype)dr).isTopDatatype()
-					){
-				 if(dpPos.get(dp).containsKey(individual)){
-					 return true;
-				 } else {
-					 return false;
-				 }
-			} else {
-				if(dr instanceof IntMaxValue || dr instanceof IntMinValue){
-					SortedSet<Integer> values = id.get(dp).get(individual);
-
-					// if there is no filler for this individual and property we
-					// need to return false
-					if (values == null) {
-						return false;
-					}
-					if (dr instanceof IntMaxValue) {
-						return (values.first() <= ((IntMaxValue) dr).getValue());
-					} else if (dr instanceof IntMinValue) {
-						return (values.last() >= ((IntMinValue) dr).getValue());
-					}
-				} else {
-					SortedSet<Double> values = dd.get(dp).get(individual);
-
-					// if there is no filler for this individual and property we
-					// need to return false
-					if (values == null) {
-						return false;
-					}
-					if (dr instanceof DoubleMaxValue) {
-						return (values.first() <= ((DoubleMaxValue) dr).getValue());
-					} else if (dr instanceof DoubleMinValue) {
-						return (values.last() >= ((DoubleMinValue) dr).getValue());
-					} else if (dr instanceof DoubleMinMaxRange){
-						return (values.first() <= ((DoubleMinMaxRange) dr).getMaxValue()) && (values.last() >= ((DoubleMinMaxRange) dr).getMinValue());
-					}
-				}
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+			
+			SortedSet<OWLIndividual> values = mapping.get(individual);
+			
+			return values != null && values.contains(value);
+		} 
+//		else if (OWLClassExpression instanceof BooleanValueRestriction) {
+//			DatatypeProperty dp = ((BooleanValueRestriction) description)
+//					.getRestrictedPropertyExpression();
+//			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+//
+//			if (value) {
+//				// check whether the OWLIndividual is in the set of individuals
+//				// mapped
+//				// to true by this datatype property
+//				return bdPos.get(dp).contains(individual);
+//			} else {
+//				return bdNeg.get(dp).contains(individual);
+//			}
+//		} 
+		else if (description instanceof OWLDataSomeValuesFrom) {
+			OWLDataPropertyExpression property = ((OWLDataSomeValuesFrom) description).getProperty();
+			OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			
+			if(filler.isDatatype()){
+				 return dpPos.get(property).containsKey(individual);
+			} else if(filler instanceof OWLDatatypeRestriction){
+				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
+				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 				
-			}
-			
-		} else if (description instanceof DatatypeValueRestriction) {
-			Constant value = ((DatatypeValueRestriction)description).getValue();
-			DatatypeProperty dp = ((DatatypeValueRestriction)description).getRestrictedPropertyExpression();
-			if(value instanceof TypedConstant){
-				Datatype datatype = ((TypedConstant) value).getDatatype();
-				if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.BOOLEAN.getDatatype())){
-					boolean b = Boolean.valueOf(value.getLiteral());
-					return b && bdPos.get(dp).contains(individual) || !b && bdNeg.get(dp).contains(individual);
-				} else if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.STRING.getDatatype())){
-					String s = value.getLiteral();
-					Set<String> stringValues = sd.get(dp).get(individual);
-					return stringValues == null ? false : stringValues.contains(s);
-				} else if(datatype.equals(org.dllearner.core.owl.OWL2Datatype.DOUBLE.getDatatype())){
-					double d = Double.valueOf(value.getLiteral());
-					SortedSet<Double> doubleValues = dd.get(dp).get(individual);
-					return doubleValues == null ? false : doubleValues.contains(d);
+				if(datatype.isDouble()){
+					SortedSet<Double> values = dd.get(property).get(individual);
+					
+					if(values == null) {
+						return false;
+					}
+					
+					double min = -Double.MAX_VALUE;
+					double max = Double.MAX_VALUE;
+					for (OWLFacetRestriction facet : facetRestrictions) {
+						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+							min = facet.getFacetValue().parseDouble();
+						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+							max = facet.getFacetValue().parseDouble();
+						} 
+					}
+					
+					//we can return false if largest number is below minimum or lowest number is above maximum
+					if(values.last() < min || values.first() > max) {
+						return false;
+					}
+					
+					//search a value which is in the interval
+					for (Double value : values) {
+						if(value >= min && value <= max){
+							return true;
+						}
+					}
+				} else if(datatype.isInteger()){
+					SortedSet<Integer> values = id.get(property).get(individual);
+					
+					int min = Integer.MIN_VALUE;
+					int max = Integer.MAX_VALUE;
+					for (OWLFacetRestriction facet : facetRestrictions) {
+						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+							min = facet.getFacetValue().parseInteger();
+						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+							max = facet.getFacetValue().parseInteger();
+						} 
+					}
+					
+					//we can return false if largest number is below minimum or lowest number is above maximum
+					if(values.last() < min || values.first() > max) {
+						return false;
+					}
+					
+					//search a value which is in the interval
+					for (Integer value : values) {
+						if(value >= min && value <= max){
+							return true;
+						}
+					}
 				}
 			}
-			return false;
+		} else if (description instanceof OWLDataHasValue) {
+			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
+			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			
+			Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
+			
+			SortedSet<OWLLiteral> values = mapping.get(individual);
+			
+			return values != null && values.contains(value);
 		}
 
-		throw new ReasoningMethodUnsupportedException("Instance check for description "
+		throw new ReasoningMethodUnsupportedException("Instance check for OWLClassExpression "
 				+ description + " unsupported.");
 	}
 
 	@Override
-	public SortedSet<Individual> getIndividualsImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	public SortedSet<OWLIndividual> getIndividualsImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return getIndividualsImplFast(concept);
 	}
 	
-	public SortedSet<Individual> getIndividualsImplStandard(Description concept)
+	public SortedSet<OWLIndividual> getIndividualsImplStandard(OWLClassExpression concept)
 		throws ReasoningMethodUnsupportedException {
-		if (concept instanceof NamedClass) {
-	 		return classInstancesPos.get((NamedClass) concept);
-	 	} else if (concept instanceof Negation && concept.getChild(0) instanceof NamedClass) {
-	 		return classInstancesNeg.get((NamedClass) concept.getChild(0));
+		if (!concept.isAnonymous()) {
+	 		return classInstancesPos.get((OWLClass) concept);
+	 	} else if (concept instanceof OWLObjectComplementOf){
+	 		OWLClassExpression operand = ((OWLObjectComplementOf) concept).getOperand();
+	 		if(!operand.isAnonymous()) {
+	 			return classInstancesNeg.get(operand);
+	 		}
 	 	}
 	 
 	 	// return rs.retrieval(concept);
-	 	SortedSet<Individual> inds = new TreeSet<Individual>();
-	 	for (Individual i : individuals) {
+	 	SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
+	 	for (OWLIndividual i : individuals) {
 	 		if (hasType(concept, i)) {
 	 			inds.add(i);
 	 		}
@@ -645,74 +787,70 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public SortedSet<Individual> getIndividualsImplFast(Description description)
+	public SortedSet<OWLIndividual> getIndividualsImplFast(OWLClassExpression description)
 			throws ReasoningMethodUnsupportedException {
 		// policy: returned sets are clones, i.e. can be modified
-		// (of course we only have to clone the leafs of a class description tree)
-		if (description instanceof NamedClass) {
-			if(classInstancesPos.containsKey((NamedClass) description)){
-				return (TreeSet<Individual>) classInstancesPos.get((NamedClass) description).clone();
+		// (of course we only have to clone the leafs of a class OWLClassExpression tree)
+		if (description.isOWLThing()) {
+			return (TreeSet<OWLIndividual>) individuals.clone();
+		} else if (description.isOWLNothing()) {
+			return new TreeSet<OWLIndividual>();
+		} else if (!description.isAnonymous()) {
+			if(classInstancesPos.containsKey(description.asOWLClass())){
+				return (TreeSet<OWLIndividual>) classInstancesPos.get(description).clone();
 			} else {
-				return new TreeSet<Individual>();
+				return new TreeSet<OWLIndividual>();
 			}
-		} else if (description instanceof Negation) {
-			if(description.getChild(0) instanceof NamedClass) {
-				return (TreeSet<Individual>) classInstancesNeg.get((NamedClass) description.getChild(0)).clone();
+		} else if (description instanceof OWLObjectComplementOf) {
+			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
+			if(!operand.isAnonymous()) {
+				return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
 			}
 			// implement retrieval as default negation
-			return Helper.difference((TreeSet<Individual>) individuals.clone(), getIndividualsImpl(description.getChild(0)));
-		} else if (description instanceof Thing) {
-			return (TreeSet<Individual>) individuals.clone();
-		} else if (description instanceof Nothing) {
-			return new TreeSet<Individual>();
-		} else if (description instanceof Union) {
-			// copy instances of first element and then subtract all others
-			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
-			int childNr = 0;
-			for(Description child : description.getChildren()) {
-				if(childNr != 0) {
-					ret.addAll(getIndividualsImpl(child));
-				}
-				childNr++;
+			return Helper.difference((TreeSet<OWLIndividual>) individuals.clone(), getIndividualsImpl(operand));
+		} else if (description instanceof OWLObjectUnionOf) {
+			SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+			for (OWLClassExpression operand : ((OWLObjectUnionOf) description).getOperands()) {
+				ret.addAll(getIndividualsImpl(operand));
 			}
 			return ret;
-		} else if (description instanceof Intersection) {
+		} else if (description instanceof OWLObjectIntersectionOf) {
+			Iterator<OWLClassExpression> iterator = ((OWLObjectIntersectionOf) description).getOperands().iterator();
 			// copy instances of first element and then subtract all others
-			SortedSet<Individual> ret = getIndividualsImpl(description.getChild(0));
-			int childNr = 0;
-			for(Description child : description.getChildren()) {
-				if(childNr != 0) {
-					ret.retainAll(getIndividualsImpl(child));
-				}
-				childNr++;
+			SortedSet<OWLIndividual> ret = getIndividualsImpl(iterator.next());
+			while(iterator.hasNext()){
+				ret.retainAll(getIndividualsImpl(iterator.next()));
 			}
 			return ret;
-		} else if (description instanceof ObjectSomeRestriction) {
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+		} else if (description instanceof OWLObjectSomeValuesFrom) {
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 			
-			ObjectPropertyExpression ope = ((ObjectSomeRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for description "
+			OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
+			
+			//get instances of filler concept
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());			
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-				SortedSet<Individual> inds = entry.getValue();
-				for(Individual ind : inds) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+				SortedSet<OWLIndividual> inds = entry.getValue();
+				for(OWLIndividual ind : inds) {
 					if(targetSet.contains(ind)) {
 						returnSet.add(entry.getKey());
 						// once we found an individual, we do not need to check the others
-						continue; 
+						break;
 					}
 				}
 			}
 			return returnSet;
-		} else if (description instanceof ObjectAllRestriction) {
+		} else if (description instanceof OWLObjectAllValuesFrom) {
 			// \forall restrictions are difficult to handle; assume we want to check
 			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
 			// this is satisfied trivially (all of their non-existing children are male)
@@ -724,55 +862,62 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
 			// semantics)
 			
-			SortedSet<Individual> targetSet = getIndividualsImpl(description.getChild(0));
-						
-			ObjectPropertyExpression ope = ((ObjectAllRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+			OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
+			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-//			SortedSet<Individual> returnSet = new TreeSet<Individual>(mapping.keySet());
-			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+			
+			//get instances of filler concept
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+//			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
+			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-				SortedSet<Individual> inds = entry.getValue();
-				for(Individual ind : inds) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+				SortedSet<OWLIndividual> inds = entry.getValue();
+				for(OWLIndividual ind : inds) {
 					if(!targetSet.contains(ind)) {
 						returnSet.remove(entry.getKey());
-						continue; 
+						break;
 					}
 				}
 			}
 			return returnSet;
-		} else if (description instanceof ObjectMinCardinalityRestriction) {
-			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+		} else if (description instanceof OWLObjectMinCardinality) {
+			OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
+			OWLClassExpression filler = ((OWLObjectMinCardinality) description).getFiller();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(child);
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			
+			//get instances of filler concept
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+			
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 
-			int number = ((ObjectCardinalityRestriction) description).getNumber();			
+			int number = ((OWLObjectMinCardinality) description).getCardinality();
 
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<Individual> inds = entry.getValue();
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(inds.size() < number) {
 					continue;
 				}
 				
-				for(Individual ind : inds) {
+				for(OWLIndividual ind : inds) {
 					// stop inner loop when nr of fillers is reached
 					if(nrOfFillers >= number) {
 						returnSet.add(entry.getKey());
@@ -790,26 +935,29 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}			
 			
 			return returnSet;
-		} else if (description instanceof ObjectMaxCardinalityRestriction) {
-			ObjectPropertyExpression ope = ((ObjectCardinalityRestriction) description).getRole();
-			if (!(ope instanceof ObjectProperty)) {
-				throw new ReasoningMethodUnsupportedException("Instance check for description "
+		} else if (description instanceof OWLObjectMaxCardinality) {
+			OWLObjectPropertyExpression property = ((OWLObjectMaxCardinality) description).getProperty();
+			OWLClassExpression filler = ((OWLObjectMaxCardinality) description).getFiller();
+			int number = ((OWLObjectMaxCardinality) description).getCardinality();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
-			ObjectProperty op = (ObjectProperty) ope;
-			Description child = description.getChild(0);
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);
-			SortedSet<Individual> targetSet = getIndividualsImpl(child);
+			
+			//get instances of filler concept
+			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+			
 			// initially all individuals are in the return set and we then remove those
 			// with too many fillers			
-			SortedSet<Individual> returnSet = (SortedSet<Individual>) individuals.clone();
+			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 
-			int number = ((ObjectCardinalityRestriction) description).getNumber();			
-
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<Individual> inds = entry.getValue();
+				SortedSet<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(number < inds.size()) {
@@ -817,7 +965,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 					continue;
 				}
 				
-				for(Individual ind : inds) {
+				for(OWLIndividual ind : inds) {
 					// stop inner loop when nr of fillers is reached
 					if(nrOfFillers >= number) {
 						break;
@@ -835,56 +983,75 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			}			
 			
 			return returnSet;
-		} else if (description instanceof ObjectValueRestriction) {
-			Individual i = ((ObjectValueRestriction)description).getIndividual();
-			ObjectProperty op = (ObjectProperty) ((ObjectValueRestriction)description).getRestrictedPropertyExpression();
+		} else if (description instanceof OWLObjectHasValue) {
+			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
+			OWLIndividual value = ((OWLObjectHasValue)description).getValue();
 			
-			Map<Individual, SortedSet<Individual>> mapping = opPos.get(op);			
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
 			
-			for(Entry<Individual, SortedSet<Individual>> entry : mapping.entrySet()) {
-				if(entry.getValue().contains(i)) {
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+			
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+			
+			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+				if(entry.getValue().contains(value)) {
 					returnSet.add(entry.getKey());
 				}
 			}
 			return returnSet;
-		} else if (description instanceof BooleanValueRestriction) {
-			DatatypeProperty dp = ((BooleanValueRestriction) description)
-					.getRestrictedPropertyExpression();
-			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
-
-			if (value) {
-				return (TreeSet<Individual>) bdPos.get(dp).clone();
-			} else {
-				return (TreeSet<Individual>) bdNeg.get(dp).clone();
-			}
-		} else if (description instanceof DatatypeSomeRestriction) {
-			DatatypeSomeRestriction dsr = (DatatypeSomeRestriction) description;
-			DatatypeProperty dp = (DatatypeProperty) dsr.getRestrictedPropertyExpression();
-			DataRange dr = dsr.getDataRange();
+		} 
+//		else if (description instanceof BooleanValueRestriction) {
+//			DatatypeProperty dp = ((BooleanValueRestriction) description)
+//					.getRestrictedPropertyExpression();
+//			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
+//
+//			if (value) {
+//				return (TreeSet<OWLIndividual>) bdPos.get(dp).clone();
+//			} else {
+//				return (TreeSet<OWLIndividual>) bdNeg.get(dp).clone();
+//			}
+//		} 
+		else if (description instanceof OWLDataSomeValuesFrom) {
+			OWLDataPropertyExpression property = ((OWLDataSomeValuesFrom) description).getProperty();
+			OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
 			
-			if(dr.isDatatype()){
-				return new TreeSet<Individual>(dd.get(dp).keySet());			
-			} else {
-				Map<Individual, SortedSet<Double>> mapping = dd.get(dp);			
-				SortedSet<Individual> returnSet = new TreeSet<Individual>();	
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			
+			if(filler.isDatatype()){
+				//we assume that the values are of the given datatype
+				return new TreeSet<OWLIndividual>(dpPos.get(property).keySet());
+//				OWLDatatype dt = filler.asOWLDatatype();
+//				if(dt.isDouble()){
+//					return new TreeSet<OWLIndividual>(dd.get(property).keySet());
+//				} else if(dt.isInteger()){
+//					return new TreeSet<OWLIndividual>(id.get(property).keySet());
+//				} else if(dt.isBoolean()){
+//					return bdPos.get(property);
+//				}
+			} else if(filler instanceof OWLDatatypeRestriction){
+				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
+				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 				
-				if (dr instanceof DoubleMaxValue) {
-					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-						if(entry.getValue().first() <= ((DoubleMaxValue)dr).getValue()) {
-							returnSet.add(entry.getKey());
-						}
-					}				
-				} else if (dr instanceof DoubleMinValue) {
-					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-						if(entry.getValue().last() >= ((DoubleMinValue)dr).getValue()) {
-							returnSet.add(entry.getKey());
-						}
+				if(datatype.isDouble()){
+					double min = -Double.MAX_VALUE;
+					double max = Double.MAX_VALUE;
+					for (OWLFacetRestriction facet : facetRestrictions) {
+						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+							min = facet.getFacetValue().parseDouble();
+						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+							max = facet.getFacetValue().parseDouble();
+						} 
 					}
-				} else if(dr instanceof DoubleMinMaxRange){
-					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-						double min = ((DoubleMinMaxRange)dr).getMinValue();
-						double max = ((DoubleMinMaxRange)dr).getMaxValue();
+					Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(property);			
+					SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();	
+					
+					for(Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
 						//we can skip of largest number is below minimum or lowest number is above maximum
 						if(entry.getValue().last() < min ||
 								entry.getValue().first() > max) {
@@ -899,37 +1066,34 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 							}
 						}
 					}
-				}
-				return returnSet;
-			}
-		} else if (description instanceof DatatypeValueRestriction){
-			SortedSet<Individual> returnSet = new TreeSet<Individual>();	
-			Constant literal = ((DatatypeValueRestriction) description).getValue();
-			if(literal instanceof TypedConstant){
-				if(((TypedConstant) literal).getDatatype().equals(OWL2Datatype.DOUBLE.getDatatype())){
-					Map<Individual, SortedSet<Double>> mapping = dd.get(((DatatypeValueRestriction) description).getRestrictedPropertyExpression());
-					Double value = Double.parseDouble(literal.getLiteral());
-					for(Entry<Individual, SortedSet<Double>> entry : mapping.entrySet()) {
-						if(entry.getValue().contains(value)) {
-							returnSet.add(entry.getKey());
-						}
-					}
+					return returnSet;
 				}
 			}
+		} else if (description instanceof OWLDataHasValue){
+			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
+			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			
+			if (property.isAnonymous()) {
+				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+						+ description + " unsupported. Inverse object properties not supported.");
+			}
+			
+			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();	
+			
+			Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
+			
+			for(Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
+				if(entry.getValue().contains(value)) {
+					returnSet.add(entry.getKey());
+				}
+			}
+			
 			return returnSet;
 		}
 			
-		throw new ReasoningMethodUnsupportedException("Retrieval for description "
+		throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
 					+ description + " unsupported.");		
 			
-		// return rs.retrieval(concept);
-//		SortedSet<Individual> inds = new TreeSet<Individual>();
-//		for (Individual i : individuals) {
-//			if (hasType(concept, i)) {
-//				inds.add(i);
-//			}
-//		}
-//		return inds;
 	}
 
 	/*
@@ -938,7 +1102,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getAtomicConcepts()
 	 */
 	@Override
-	public Set<NamedClass> getNamedClasses() {
+	public Set<OWLClass> getClasses() {
 		return atomicConcepts;
 	}
 
@@ -948,62 +1112,62 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	@Override
-	public Set<ObjectProperty> getObjectProperties() {
+	public Set<OWLObjectProperty> getObjectProperties() {
 		return atomicRoles;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDatatypePropertiesImpl() {
+	public Set<OWLDataProperty> getDatatypePropertiesImpl() {
 		return datatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getBooleanDatatypePropertiesImpl() {
+	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
 		return booleanDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getDoubleDatatypePropertiesImpl() {
+	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		return doubleDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getIntDatatypePropertiesImpl() {
+	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		return intDatatypeProperties;
 	}
 
 	@Override
-	public SortedSet<DatatypeProperty> getStringDatatypePropertiesImpl() {
+	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
 		return stringDatatypeProperties;
 	}	
 	
 	@Override
-	protected SortedSet<Description> getSuperClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperClassesImpl(concept);
 	}
 	
 	@Override
-	protected SortedSet<Description> getSubClassesImpl(Description concept) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
 		return rc.getSubClassesImpl(concept);
 	}
 
 	@Override
-	protected SortedSet<ObjectProperty> getSuperPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
-	protected SortedSet<ObjectProperty> getSubPropertiesImpl(ObjectProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}
 	
 	@Override
-	protected SortedSet<DatatypeProperty> getSuperPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSuperPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSuperPropertiesImpl(role);
 	}	
 
 	@Override
-	protected SortedSet<DatatypeProperty> getSubPropertiesImpl(DatatypeProperty role) throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLDataProperty> getSubPropertiesImpl(OWLDataProperty role) throws ReasoningMethodUnsupportedException {
 		return rc.getSubPropertiesImpl(role);
 	}	
 	
@@ -1013,7 +1177,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getIndividuals()
 	 */
 	@Override
-	public SortedSet<Individual> getIndividuals() {
+	public SortedSet<OWLIndividual> getIndividuals() {
 		return individuals;
 	}
 
@@ -1033,7 +1197,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 //	}
 
 //	@Override
-//	public void prepareRoleHierarchyImpl(Set<ObjectProperty> allowedRoles) {
+//	public void prepareRoleHierarchyImpl(Set<OWLObjectProperty> allowedRoles) {
 //		rc.prepareRoleHierarchy(allowedRoles);
 //	}
 
@@ -1043,7 +1207,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 //	}
 
 //	@Override
-//	public void prepareDatatypePropertyHierarchyImpl(Set<DatatypeProperty> allowedRoles) {
+//	public void prepareDatatypePropertyHierarchyImpl(Set<OWLDataProperty> allowedRoles) {
 //		rc.prepareDatatypePropertyHierarchyImpl(allowedRoles);
 //	}
 
@@ -1053,39 +1217,11 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 //	}
 
 	@Override
-	public boolean isSuperClassOfImpl(Description superConcept, Description subConcept) {
+	public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
 		// Negation neg = new Negation(subConcept);
 		// Intersection c = new Intersection(neg,superConcept);
 		// return fastRetrieval.calculateSets(c).getPosSet().isEmpty();
 		return rc.isSuperClassOfImpl(superConcept, subConcept);
-	}
-
-	/**
-	 * Test method for fast instance checker.
-	 * 
-	 * @param args
-	 *            No arguments supported.
-	 * @throws ComponentInitException Component cannot be initialised.
-	 * @throws ParseException File cannot be parsed.
-	 * @throws ReasoningMethodUnsupportedException Reasoning method not supported.
-	 */
-	public static void main(String[] args) throws ComponentInitException, ParseException,
-			ReasoningMethodUnsupportedException {
-		ComponentManager cm = ComponentManager.getInstance();
-		OWLFile owl = cm.knowledgeSource(OWLFile.class);
-		String owlFile = new File("examples/family/father.owl").toURI().toString();
-		cm.applyConfigEntry(owl, "url", owlFile);
-		owl.init();
-		AbstractReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, owl);
-//		cm.reasoningService(reasoner);
-		reasoner.init();
-
-		KBParser.internalNamespace = "http://example.com/father#";
-		String query = "(male AND EXISTS hasChild.TOP)";
-		Description d = KBParser.parseConcept(query);
-		System.out.println(d);
-		Individual i = new Individual("http://example.com/father#markus");
-		System.out.println(reasoner.hasType(d, i));
 	}
 
 	/*
@@ -1120,71 +1256,68 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	}
 
 	@Override
-	public Description getDomainImpl(ObjectProperty objectProperty) {
+	public OWLClassExpression getDomainImpl(OWLObjectProperty objectProperty) {
 		return rc.getDomain(objectProperty);
 	}
 
 	@Override
-	public Description getDomainImpl(DatatypeProperty datatypeProperty) {
+	public OWLClassExpression getDomainImpl(OWLDataProperty datatypeProperty) {
 		return rc.getDomain(datatypeProperty);
 	}
 
 	@Override
-	public Description getRangeImpl(ObjectProperty objectProperty) {
+	public OWLClassExpression getRangeImpl(OWLObjectProperty objectProperty) {
 		return rc.getRange(objectProperty);
 	}
 	
 	@Override
-	public DataRange getRangeImpl(DatatypeProperty datatypeProperty) {
+	public OWLDataRange getRangeImpl(OWLDataProperty datatypeProperty) {
 		return rc.getRange(datatypeProperty);
 	}
 
 	@Override
-	public Map<Individual, SortedSet<Individual>> getPropertyMembersImpl(ObjectProperty atomicRole) {
+	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembersImpl(OWLObjectProperty atomicRole) {
 		return opPos.get(atomicRole);
 	}
 
 	@Override
-	public final SortedSet<Individual> getTrueDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getTrueDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return bdPos.get(datatypeProperty);
 	}
 	
 	@Override
-	public final SortedSet<Individual> getFalseDatatypeMembersImpl(DatatypeProperty datatypeProperty) {
+	public final SortedSet<OWLIndividual> getFalseDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return bdNeg.get(datatypeProperty);
 	}
 	
 	@Override
-	public Map<Individual, SortedSet<Integer>> getIntDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) {
+	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return id.get(datatypeProperty);
 	}		
 	
 	@Override
-	public Map<Individual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) {
+	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return dd.get(datatypeProperty);
 	}	
 	
 	@Override
-	public Map<Individual, SortedSet<Constant>> getDatatypeMembersImpl(
-			DatatypeProperty datatypeProperty) {
+	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		return dpPos.get(datatypeProperty);
-//		return rc.getDatatypeMembersImpl(datatypeProperty);
+//		return rc.getDatatypeMembersImpl(OWLDataProperty);
 	}		
 	
 	@Override
-	public Set<Individual> getRelatedIndividualsImpl(Individual individual, ObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
+	public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedIndividuals(individual, objectProperty);
 	}
 	
 	@Override
-	protected Map<ObjectProperty,Set<Individual>> getObjectPropertyRelationshipsImpl(Individual individual) {
+	protected Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
 		return rc.getObjectPropertyRelationships(individual);
 	}	
 	
 	@Override
-	public Set<Constant> getRelatedValuesImpl(Individual individual, DatatypeProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
+	public Set<OWLLiteral> getRelatedValuesImpl(OWLIndividual individual, OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		return rc.getRelatedValues(individual, datatypeProperty);
 	}	
 	
@@ -1194,7 +1327,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	}	
 	
 	@Override
-	public Set<Constant> getLabelImpl(Entity entity) throws ReasoningMethodUnsupportedException {
+	public Set<OWLLiteral> getLabelImpl(OWLEntity entity) throws ReasoningMethodUnsupportedException {
 		return rc.getLabel(entity);
 	}	
 	
@@ -1217,7 +1350,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.ReasonerComponent#getTypesImpl(org.dllearner.core.owl.Individual)
 	 */
 	@Override
-	protected Set<NamedClass> getTypesImpl(Individual individual) {
+	protected Set<OWLClass> getTypesImpl(OWLIndividual individual) {
 		return rc.getTypesImpl(individual);
 	}
 
@@ -1225,12 +1358,12 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.BaseReasoner#remainsSatisfiable(org.dllearner.core.owl.Axiom)
 	 */
 	@Override
-	public boolean remainsSatisfiableImpl(Axiom axiom) {
+	public boolean remainsSatisfiableImpl(OWLAxiom axiom) {
 		return rc.remainsSatisfiableImpl(axiom);
 	}
 
 	@Override
-	protected Set<Description> getAssertedDefinitionsImpl(NamedClass nc) {
+	protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass nc) {
 		return rc.getAssertedDefinitionsImpl(nc);
 	}
 
@@ -1258,6 +1391,19 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	public void setForAllSemantics(ForallSemantics forallSemantics) {
 		this.forallSemantics = forallSemantics;
 	}
-
+	
+	/**
+	 * @param useCaching the useCaching to set
+	 */
+	public void setUseMaterializationCaching(boolean useCaching) {
+		this.useCaching = useCaching;
+	}
+	
+	/**
+	 * @param handlePunning the handlePunning to set
+	 */
+	public void setHandlePunning(boolean handlePunning) {
+		this.handlePunning = handlePunning;
+	}
 
 }

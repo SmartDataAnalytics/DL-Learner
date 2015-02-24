@@ -1,26 +1,46 @@
 package org.dllearner.algorithms.qtl.operations.lgg;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.dllearner.utilities.owl.DLLearnerDescriptionConvertVisitor;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
+	public static int cnt = 0;
+	
+	private TIntSet parentIDs = new TIntHashSet();
+	
+	// internal identifier
+	private final int id;
+	
+	// the underlying query tree
 	private QueryTree<N> tree;
+	
+	// the positive example trees that are not covered
 	private Collection<QueryTree<N>> falseNegatives;
+	
+	// the negative example trees that are covered
 	private Collection<QueryTree<N>> falsePositives;
+	
+	// the tree score
 	private QueryTreeScore score;
 //	private ScoreTwoValued score;
 	
+	// the corresponding description set lazily
 	private EvaluatedDescription description;
+	
+	// the query trees of which the underlying query tree was generated from
+	private Set<QueryTree<N>> baseQueryTrees = new HashSet<>();
 
 	public EvaluatedQueryTree(QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
 			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
@@ -28,35 +48,81 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		this.falseNegatives = falseNegatives;
 		this.falsePositives = falsePositives;
 		this.score = score;
+		this.id = cnt++;
 	}
+	
+	public EvaluatedQueryTree(int id, QueryTree<N> tree, Collection<QueryTree<N>> falseNegatives, 
+			Collection<QueryTree<N>> falsePositives, QueryTreeScore score) {
+		this.id = id;
+		this.tree = tree;
+		this.falseNegatives = falseNegatives;
+		this.falsePositives = falsePositives;
+		this.score = score;
+	}
+	
 //	
 //	public EvaluatedQueryTree(QueryTree<N> tree, ScoreTwoValued score) {
 //		this.tree = tree;
 //		this.score = score;
 //	}
 	
+	public void setBaseQueryTrees(Set<QueryTree<N>> baseQueryTrees) {
+		this.baseQueryTrees = baseQueryTrees;
+	}
+	
+	/**
+	 * @return the baseQueryTrees
+	 */
+	public Set<QueryTree<N>> getBaseQueryTrees() {
+		return baseQueryTrees;
+	}
+	
+	/**
+	 * @return an internal identifier which is assumed to be unique during 
+	 * the complete algorithm run
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * @return the parentIDs
+	 */
+	public TIntSet getParentIDs() {
+		return parentIDs;
+	}
+	
+	/**
+	 * @return the underlying query tree
+	 */
 	public QueryTree<N> getTree() {
 		return tree;
 	}
 	
 	/**
-	 * @return the falseNegatives
+	 * @return the positive examples that are not covered by the query tree
 	 */
 	public Collection<QueryTree<N>> getFalseNegatives() {
 		return falseNegatives;
 	}
 	
 	/**
-	 * @return the falsePositives
+	 * @return the negative examples that are covered by the query tree
 	 */
 	public Collection<QueryTree<N>> getFalsePositives() {
 		return falsePositives;
 	}
 	
+	/**
+	 * @return the score of the query tree
+	 */
 	public double getScore() {
 		return score.getScore();
 	}
 	
+	/**
+	 * @return the score of the query tree
+	 */
 	public QueryTreeScore getTreeScore() {
 		return score;
 	}
@@ -66,26 +132,19 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())
+		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription())
 		         .result();
-//		double diff = getScore() - other.getScore();
-//		if(diff == 0){
-//			return -1;
-//		} else if(diff > 0){
-//			return -1;
-//		} else {
-//			return 1;
-//		}
 	}
 	
 	
 	/**
-	 * @return the description
+	 * @return the query tree as OWL class expression
 	 */
 	public EvaluatedDescription getEvaluatedDescription() {
 		return asEvaluatedDescription();
 	}
 	/**
-	 * @param description the description to set
+	 * @param OWLClassExpression the OWLClassExpression to set
 	 */
 	public void setDescription(EvaluatedDescription description) {
 		this.description = description;
@@ -93,15 +152,13 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
 	public EvaluatedDescription asEvaluatedDescription(){
 		if(description == null){
-			description = new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-					getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX)), score);
+			description = new EvaluatedDescription(getTree().asOWLClassExpression(LiteralNodeConversionStrategy.MIN_MAX), score);
 		}
 		return description;
 	}
 	
 	public EvaluatedDescription asEvaluatedDescription(LiteralNodeConversionStrategy strategy){
-		return new EvaluatedDescription(DLLearnerDescriptionConvertVisitor.getDLLearnerDescription(
-				getTree().asOWLClassExpression(strategy)), score);
+		return new EvaluatedDescription(getTree().asOWLClassExpression(strategy), score);
 	}
 	
 	/* (non-Javadoc)

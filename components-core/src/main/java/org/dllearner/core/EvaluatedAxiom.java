@@ -30,11 +30,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.dllearner.core.owl.Axiom;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.utilities.EnrichmentVocabulary;
-import org.dllearner.utilities.PrefixCCMap;
-import org.dllearner.utilities.owl.AxiomComparator;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -47,32 +44,33 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
-public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
+import com.google.common.collect.ComparisonChain;
+
+public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedAxiom<T>>{
 	
 	private static DecimalFormat df = new DecimalFormat("##0.0");
-	private AxiomComparator axiomComparator = new AxiomComparator();
 	
-	private Axiom axiom;
-	private Score score;
+	private T axiom;
+	private AxiomScore score;
 	
 	private boolean asserted = false;
 	
-	public EvaluatedAxiom(Axiom axiom, Score score) {
+	public EvaluatedAxiom(T axiom, AxiomScore score) {
 		this.axiom = axiom;
 		this.score = score;
 	}
 	
-	public EvaluatedAxiom(Axiom axiom, Score score, boolean asserted) {
+	public EvaluatedAxiom(T axiom, AxiomScore score, boolean asserted) {
 		this.axiom = axiom;
 		this.score = score;
 		this.asserted = asserted;
 	}
 
-	public Axiom getAxiom() {
+	public T getAxiom() {
 		return axiom;
 	}
 
-	public Score getScore() {
+	public AxiomScore getScore() {
 		return score;
 	}
 	
@@ -100,8 +98,7 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		ManchesterOWLSyntaxObjectRenderer r = new ManchesterOWLSyntaxObjectRenderer(pw, new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
-		OWLAxiom ax = OWLAPIConverter.getOWLAPIAxiom(axiom);
-		ax.accept(r);
+		axiom.accept(r);
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.AddSuggestion, ind);
 		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
@@ -119,43 +116,53 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		return ind2Axioms;
 	}
 	
-	public static String prettyPrint(List<EvaluatedAxiom> learnedAxioms) {
+	@Override
+	public int compareTo(EvaluatedAxiom<T> other) {
+		return ComparisonChain.start().
+				compare(other.getScore().getAccuracy(), score.getAccuracy()).
+				compare(axiom, other.getAxiom()).
+				result();
+	}
+	
+	public static <T extends OWLAxiom> String prettyPrint(List<EvaluatedAxiom<T>> learnedAxioms) {
 		String str = "suggested axioms and their score in percent:\n";
 		if(learnedAxioms.isEmpty()) {
 			return "  no axiom suggested\n";
 		} else {
-			for (EvaluatedAxiom learnedAxiom : learnedAxioms) {
+			for (EvaluatedAxiom<T> learnedAxiom : learnedAxioms) {
 				str += " " + prettyPrint(learnedAxiom) + "\n";
 			}		
 		}
 		return str;
 	}
 	
-	public static String prettyPrint(EvaluatedAxiom axiom) {
+	public static <T extends OWLAxiom> String prettyPrint(EvaluatedAxiom<T> axiom) {
 		double acc = axiom.getScore().getAccuracy() * 100;
 		String accs = df.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
 		if(accs.length()==4) { accs = " " + accs; }
-		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
+		String str =  accs + "%\t" + axiom.getAxiom();
+//		String str =  accs + "%\t" + axiom.getAxiom().toManchesterSyntaxString(null, PrefixCCMap.getInstance());
+		//TODO fix rendering
 		return str;
 	}
 	
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms) {
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms) {
 		return getBestEvaluatedAxioms(evaluatedAxioms, nrOfAxioms, 0.0);
 	}
 	
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, double accuracyThreshold) {
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, double accuracyThreshold) {
 		return getBestEvaluatedAxioms(evaluatedAxioms, Integer.MAX_VALUE, accuracyThreshold);
 	}
 
-	public static List<EvaluatedAxiom> getBestEvaluatedAxioms(Set<EvaluatedAxiom> evaluatedAxioms, int nrOfAxioms,
+	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom> returnList = new ArrayList<EvaluatedAxiom>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
 		
 		//get the currently best evaluated axioms
-		Set<EvaluatedAxiom> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom>(evaluatedAxioms);
+		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom<T>>(evaluatedAxioms);
 		
-		for(EvaluatedAxiom evAx : orderedEvaluatedAxioms){
+		for(EvaluatedAxiom<T> evAx : orderedEvaluatedAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
 				returnList.add(evAx);
 			}
@@ -163,15 +170,5 @@ public class EvaluatedAxiom implements Comparable<EvaluatedAxiom>{
 		
 		return returnList;
 	}
-	
-	@Override
-	public int compareTo(EvaluatedAxiom other) {
-		int ret = Double.compare(score.getAccuracy(), other.getScore().getAccuracy());
-		if(ret == 0){
-			ret = axiomComparator.compare(axiom, other.getAxiom());
-		}
-		return ret;
-	}
-	
 
 }

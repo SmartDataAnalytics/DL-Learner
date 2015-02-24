@@ -888,9 +888,7 @@ public class NBR<N> {
 						nodeId1 = changes1.get(i).getNodeId();
 						nodeId2 = changes2.get(i).getNodeId();
 						
-						if(nodeId1 == nodeId2){
-							continue;
-						} else {
+						if(nodeId1 != nodeId2){
 							return nodeId1-nodeId2;
 						}
 					}
@@ -1086,7 +1084,7 @@ public class NBR<N> {
     				}
     			}
     			for(String f : filters.keySet()){
-    				if(filterParts.get(i) != f){
+    				if(!filterParts.get(i).equals(f)){
     					query.append(f + "=" + filters.get(f));
     					if(cnt < filters.keySet().size()){
     						query.append(" && ");

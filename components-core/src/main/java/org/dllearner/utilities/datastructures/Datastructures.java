@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 /**
  * Conversion between different data structures.
@@ -65,54 +65,54 @@ public class Datastructures {
 		
 	}
 	
-	public static String[] sortedSet2StringListIndividuals(Set<Individual> individuals){
+	public static String[] sortedSet2StringListIndividuals(Set<OWLIndividual> individuals){
 		
 		String[] ret=new String[individuals.size()];
-		Iterator<Individual> i=individuals.iterator();
+		Iterator<OWLIndividual> i=individuals.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((Individual)i.next()).getName();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListRoles(Set<ObjectProperty> s){
+	public static String[] sortedSet2StringListRoles(Set<OWLObjectProperty> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<ObjectProperty> i=s.iterator();
+		Iterator<OWLObjectProperty> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((ObjectProperty)i.next()).getName();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
 	}
 	
-	public static String[] sortedSet2StringListConcepts(Set<NamedClass> s){
+	public static String[] sortedSet2StringListConcepts(Set<OWLClass> s){
 		
 		String[] ret=new String[s.size()];
-		Iterator<NamedClass> i=s.iterator();
+		Iterator<OWLClass> i=s.iterator();
 		int a=0;
 		while (i.hasNext()){
-			ret[a++]=((NamedClass)i.next()).getName();
+			ret[a++]=i.next().toStringID();
 		}
 		Arrays.sort(ret);
 		return ret;
 	}	
 	
-	public static Set<String> individualSetToStringSet(Set<Individual> individuals) {
+	public static Set<String> individualSetToStringSet(Set<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
-		for(Individual ind : individuals) {
-			ret.add(ind.toString());
+		for(OWLIndividual ind : individuals) {
+			ret.add(ind.toStringID());
 		}
 		return ret;
 	}	
 	
-	public static Set<String> individualListToStringSet(List<Individual> individuals) {
+	public static Set<String> individualListToStringSet(List<OWLIndividual> individuals) {
 		Set<String> ret = new TreeSet<String>();
-		for(Individual ind : individuals) {
-			ret.add(ind.toString());
+		for(OWLIndividual ind : individuals) {
+			ret.add(ind.toStringID());
 		}
 		return ret;
 	}		

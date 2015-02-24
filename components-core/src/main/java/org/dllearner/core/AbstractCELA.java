@@ -27,16 +27,23 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
-import org.dllearner.core.owl.Description;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Abstract superclass of all class expression learning algorithm implementations.
@@ -60,9 +67,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	protected ConceptComparator descriptionComparator = new ConceptComparator();
 	protected String baseURI;
 	protected Map<String, String> prefixes;
+	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+	
+	protected static final OWLClass OWL_THING = new OWLClassImpl(
+            OWLRDFVocabulary.OWL_THING.getIRI());
+	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(
+            OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
 
@@ -78,6 +90,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	protected AbstractReasonerComponent reasoner;
 
+	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
 
     /**
      * Default Constructor
@@ -95,9 +108,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-		
-		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();	
+//		
+//		baseURI = reasoner.getBaseURI();
+//		prefixes = reasoner.getPrefixes();	
 	}
 	
 	/**
@@ -146,16 +159,16 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
-	 * @return The best class description found by the learning algorithm so far.
+	 * @return The best class OWLClassExpression found by the learning algorithm so far.
 	 */
-	public abstract Description getCurrentlyBestDescription();
+	public abstract OWLClassExpression getCurrentlyBestDescription();
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public List<Description> getCurrentlyBestDescriptions() {
-		List<Description> ds = new LinkedList<Description>();
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
+		List<OWLClassExpression> ds = new LinkedList<OWLClassExpression>();
 		ds.add(getCurrentlyBestDescription());
 		return ds;
 	}
@@ -165,7 +178,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestDescriptions(nrOfDescriptions, false);
 	}
 	
@@ -176,10 +189,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * to an equivalent concept) from the returned set.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public synchronized List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
-		List<Description> currentlyBest = getCurrentlyBestDescriptions();
-		List<Description> returnList = new LinkedList<Description>();
-		for(Description ed : currentlyBest) {
+	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
+		List<OWLClassExpression> currentlyBest = getCurrentlyBestDescriptions();
+		List<OWLClassExpression> returnList = new LinkedList<OWLClassExpression>();
+		for(OWLClassExpression ed : currentlyBest) {
 			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
 			}
@@ -194,7 +207,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * Returns the best descriptions obtained so far.
-	 * @return Best class description found so far.
+	 * @return Best class OWLClassExpression found so far.
 	 */
 	public abstract EvaluatedDescription getCurrentlyBestEvaluatedDescription();
 	
@@ -232,7 +245,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		TreeSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
 		for(EvaluatedDescription ed : currentlyBest.descendingSet()) {
-			// once we hit a description with a below threshold accuracy, we simply return
+			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
 //			if(ed.getAccuracy() < accuracyThreshold) {
@@ -246,12 +259,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			}
 			
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription())) {
-				// before we add the description we replace EXISTS r.TOP with
+				// before we add the OWLClassExpression we replace EXISTS r.TOP with
 				// EXISTS r.range(r) if range(r) is atomic
 				// (we need to clone, otherwise we change descriptions which could
-				// be in the search of the learning algorith, which leads to
+				// be in the search of the learning algorithm, which leads to
 				// unpredictable behaviour)
-				Description d = ed.getDescription().clone();
+				OWLClassExpression d = duplicator.duplicateObject(ed.getDescription());
 				
 				//commented out because reasoner is called. leads in swing applications sometimes to exceptions
 //				ConceptTransformation.replaceRange(d, reasoner);
@@ -300,8 +313,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
 	
 	// central function for printing description
-	protected String descriptionToString(Description description) {
-		return description.toManchesterSyntaxString(baseURI, prefixes);
+	protected String descriptionToString(OWLClassExpression description) {
+		return OWLAPIRenderers.toManchesterOWLSyntax(description);
 	}
 		
 	
@@ -310,10 +323,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		String str = "";
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			// temporary code
+			OWLClassExpression description = ed.getDescription();
 			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(ed.getDescription()) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(ed.getDescription(),1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(ed.getDescription(),1)) + ")\n";
+				str += current + ": " + descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")\n";
 			} else {
-				str += current + ":\t" + descriptionToString(ed.getDescription()) + " " + dfPercent.format(ed.getAccuracy()) + "--" + ed.getDescriptionLength() + "\n";
+				String descriptionToString = descriptionToString(description);
+				str += current + ": " + descriptionToString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
 			}
 			current++;
@@ -366,6 +381,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
         this.reasoner = reasoner;
         
         baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();	
+		prefixes = reasoner.getPrefixes();
     }
 }

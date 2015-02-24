@@ -23,17 +23,16 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.utilities.owl.OWLAPIDescriptionConvertVisitor;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
- * An evaluated description for learning classes in ontologies.
+ * An evaluated OWLClassExpression for learning classes in ontologies.
  * 
  * @author Jens Lehmann
  *
@@ -47,11 +46,11 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	private ClassScore classScore;
 	
 	/**
-	 * Constructs an evaluated description for learning classes in ontologies.
-	 * @param description Description.
+	 * Constructs an evaluated OWLClassExpression for learning classes in ontologies.
+	 * @param OWLClassExpression Description.
 	 * @param score Score of description.
 	 */
-	public EvaluatedDescriptionClass(Description description, ClassScore score) {
+	public EvaluatedDescriptionClass(OWLClassExpression description, ClassScore score) {
 		super(description, score);
 		classScore = score;
 	}
@@ -69,7 +68,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	 * of the class to learn.
 	 * @see org.dllearner.learningproblems.ClassScore#getAdditionalInstances()
 	 */
-	public Set<Individual> getAdditionalInstances() {
+	public Set<OWLIndividual> getAdditionalInstances() {
 		return classScore.getAdditionalInstances();
 	}
 
@@ -86,7 +85,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	 * @return The instances covered by the class description.
 	 * @see org.dllearner.learningproblems.ClassScore#getCoveredInstances()
 	 */
-	public Set<Individual> getCoveredInstances() {
+	public Set<OWLIndividual> getCoveredInstances() {
 		return classScore.getCoveredInstances();
 	}
 
@@ -95,7 +94,7 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	 * @return The instances of the class not covered by the class description.
 	 * @see org.dllearner.learningproblems.ClassScore#getCoveredInstances()
 	 */
-	public Set<Individual> getNotCoveredInstances() {
+	public Set<OWLIndividual> getNotCoveredInstances() {
 		return classScore.getNotCoveredInstances();
 	}	
 	
@@ -132,14 +131,24 @@ public class EvaluatedDescriptionClass extends EvaluatedDescription implements S
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", description.toManchesterSyntaxString(null, null));
-			OWLClassExpression c = OWLAPIDescriptionConvertVisitor.getOWLClassExpression(description);
-			object.put("signature", new JSONArray(c.getSignature()));
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(c));
-			object.put("descriptionKBSyntax", description.toKBSyntaxString());
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
+			JSONArray array = new JSONArray();
+			for (OWLEntity entity : description.getSignature()) {
+				array.put(entity.toStringID());
+			}
+			object.put("signature", array);
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
 			object.put("scoreValue", score.getAccuracy());	
-			object.put("additionalInstances", new JSONArray(getAdditionalInstances()));
-			object.put("coveredInstances", new JSONArray(getCoveredInstances()));
+			array = new JSONArray();
+			for (OWLIndividual ind : getAdditionalInstances()) {
+				array.put(ind.toStringID());
+			}
+			object.put("additionalInstances", array);
+			array = new JSONArray();
+			for (OWLIndividual ind : getCoveredInstances()) {
+				array.put(ind.toStringID());
+			}
+			object.put("coveredInstances", array);
 			object.put("isConsistent", isConsistent());
 			object.put("coverage", getCoverage());
 			object.put("addition", getAddition());

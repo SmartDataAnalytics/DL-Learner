@@ -27,11 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.ParCEL.ParCELPosNegLP;
+import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
@@ -47,14 +48,21 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * 
@@ -110,7 +118,7 @@ public class CLI {
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
-            rs = context.getBean(AbstractReasonerComponent.class);
+            rs = getMainReasonerComponent();
     		la = context.getBean(AbstractCELA.class);
     		lp = context.getBean(AbstractLearningProblem.class);
     	}
@@ -140,25 +148,19 @@ public class CLI {
         	} else {
         		Files.createFile(springFile, xml.toString());
         	}		
-		}    	
-		rs = context.getBean(AbstractReasonerComponent.class);
+		}  
+		
+		rs = getMainReasonerComponent();
+		
 		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
 		
 			if (performCrossValidation) {
-				//this test is added for PDLL algorithm since it does not use the PosNegLP			
-				try {
-					ParCELPosNegLP lp = context.getBean(ParCELPosNegLP.class);
-					new ParCELCrossValidation(la, lp, rs, nrOfFolds, false, noOfRuns);
+				PosNegLP lp = context.getBean(PosNegLP.class);
+				if(la instanceof QTL2){
+					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
+				} else {
+					new CrossValidation(la,lp,rs,nrOfFolds,false);	
 				}
-				catch (BeansException be) {
-					PosNegLP lp = context.getBean(PosNegLP.class);
-					if(la instanceof QTL2){
-						new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
-					} else {
-						new CrossValidation(la,lp,rs,nrOfFolds,false);	
-					}
-				}
-				
 			} else {
 				lp = context.getBean(AbstractLearningProblem.class);
 //				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
@@ -168,6 +170,28 @@ public class CLI {
 					algorithm.start();
 				}
 			}
+    }
+    
+    private AbstractReasonerComponent getMainReasonerComponent() {
+    	AbstractReasonerComponent rc = null;
+    	// there can be 2 reasoner beans
+		Map<String, AbstractReasonerComponent> reasonerBeans = context.getBeansOfType(AbstractReasonerComponent.class);
+
+		if (reasonerBeans.size() > 1) {
+			for (Entry<String, AbstractReasonerComponent> entry : reasonerBeans.entrySet()) {
+				String key = entry.getKey();
+				AbstractReasonerComponent value = entry.getValue();
+
+				if (value instanceof FastInstanceChecker) {
+					rc = value;
+				}
+
+			}
+		} else {
+			rc = context.getBean(AbstractReasonerComponent.class);
+		}
+		
+		return rc;
     }
 
     public boolean isWriteSpringConfiguration() {

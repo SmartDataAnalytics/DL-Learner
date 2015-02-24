@@ -26,10 +26,14 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
-import org.dllearner.utilities.owl.ConceptComparator;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Represents a subsumption hierarchy (ignoring equivalent concepts).
@@ -39,12 +43,12 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  */
 public class ClassHierarchy {
 
-	public static Logger logger = Logger.getLogger(ClassHierarchy.class);
+	public static Logger logger = LoggerFactory.getLogger(ClassHierarchy.class);
 	
-	ConceptComparator conceptComparator = new ConceptComparator();
-	TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp;
-	TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown;
+	TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp;
+	TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown;
 	
+	OWLDataFactory df = new OWLDataFactoryImpl();
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This
 	 * is used to build the subsumption hierarchy. 
@@ -52,98 +56,98 @@ public class ClassHierarchy {
 	 * @param subsumptionHierarchyDown Contains sub classes for each class.
 	 */
 	public ClassHierarchy(
-			TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUp,
-			TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDown) {
+			TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp,
+			TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown) {
 		
 		this.subsumptionHierarchyUp = subsumptionHierarchyUp;
 		this.subsumptionHierarchyDown = subsumptionHierarchyDown;
 		
 	}
 
-	public SortedSet<Description> getSuperClasses(Description concept) {
-		SortedSet<Description> result =  subsumptionHierarchyUp.get(concept);
+	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
+		SortedSet<OWLClassExpression> result =  subsumptionHierarchyUp.get(concept);
 		if(result == null) {
 			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (upward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<Description>();
+			return new TreeSet<OWLClassExpression>();
 		}
 		
 		// we copy all concepts before returning them such that they cannot be
 		// modified externally
-		return new TreeSet<Description>(result);
+		return new TreeSet<OWLClassExpression>(result);
 	}
 
-	public SortedSet<Description> getSubClasses(Description concept) {
-		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
+	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
+		SortedSet<OWLClassExpression> result =  subsumptionHierarchyDown.get(concept);
 		if(result == null) {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<Description>();
+			return new TreeSet<OWLClassExpression>();
 		}
 		
-		return new TreeSet<Description>(result);		
+		return new TreeSet<OWLClassExpression>(result);		
 		
 		// commented out, because these hacks just worked around a problem
 //		if (subsumptionHierarchyDown == null) {
-//			return new TreeSet<Description>();
+//			return new TreeSet<OWLClassExpression>();
 //		} else if (subsumptionHierarchyDown.get(concept) == null) {
-//			return new TreeSet<Description>();
+//			return new TreeSet<OWLClassExpression>();
 //		} else {
-//			return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();
+//			return (TreeSet<OWLClassExpression>) subsumptionHierarchyDown.get(concept).clone();
 //		}
 	}
 	
-	public SortedSet<Description> getSubClasses(Description concept, boolean direct) {
-		SortedSet<Description> result =  subsumptionHierarchyDown.get(concept);
+	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept, boolean direct) {
+		SortedSet<OWLClassExpression> result =  subsumptionHierarchyDown.get(concept);
 		if(result == null) {
 			logger.error("Query for sub class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<Description>();
+			return new TreeSet<OWLClassExpression>();
 		}
 		result.remove(concept);
-		for(Description sub : new HashSet<Description>(result)){
+		for(OWLClassExpression sub : new HashSet<OWLClassExpression>(result)){
 			result.addAll(getSubClasses(sub, false));
 		}
 		
-		return new TreeSet<Description>(result);		
+		return new TreeSet<OWLClassExpression>(result);		
 		
 		// commented out, because these hacks just worked around a problem
 //		if (subsumptionHierarchyDown == null) {
-//			return new TreeSet<Description>();
+//			return new TreeSet<OWLClassExpression>();
 //		} else if (subsumptionHierarchyDown.get(concept) == null) {
-//			return new TreeSet<Description>();
+//			return new TreeSet<OWLClassExpression>();
 //		} else {
-//			return (TreeSet<Description>) subsumptionHierarchyDown.get(concept).clone();
+//			return (TreeSet<OWLClassExpression>) subsumptionHierarchyDown.get(concept).clone();
 //		}
 	}
 	
-	public SortedSet<Description> getSuperClasses(Description concept, boolean direct) {
-		SortedSet<Description> result =  subsumptionHierarchyUp.get(concept);
+	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept, boolean direct) {
+		SortedSet<OWLClassExpression> result =  subsumptionHierarchyUp.get(concept);
 		if(result == null) {
 			logger.error("Query for super class of " + concept + " in subsumption hierarchy, but the class is not contained in the (downward) hierarchy, e.g. because the class does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<Description>();
+			return new TreeSet<OWLClassExpression>();
 		}
 		result.remove(concept);
-		for(Description sub : new HashSet<Description>(result)){
+		for(OWLClassExpression sub : new HashSet<OWLClassExpression>(result)){
 			result.addAll(getSuperClasses(sub, false));
 		}
 		
-		return new TreeSet<Description>(result);		
+		return new TreeSet<OWLClassExpression>(result);		
 	}
 
 	/**
-	 * Computes the siblings of the specified descriptions. Siblings are all those
+	 * Computes the siblings of the specified OWLClassExpressions. Siblings are all those
 	 * classes, which are subclasses of a parent of a class and not equal to the
 	 * class itself. Note that retrieving siblings is computationally more 
 	 * expensive than descending/ascending the hierarchy as siblings are computed
 	 * when required and not cached.
-	 * @param description A named class.
+	 * @param OWLClassExpression A named class.
 	 * @return A set of named classes, which are siblings of the given class.
 	 */
-	public SortedSet<Description> getSiblingClasses(Description description) {
-		Set<Description> superClasses = subsumptionHierarchyUp.get(description);
-		TreeSet<Description> siblingClasses = new TreeSet<Description>(conceptComparator);
-		for(Description superClass : superClasses) {
+	public SortedSet<OWLClassExpression> getSiblingClasses(OWLClassExpression OWLClassExpression) {
+		Set<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(OWLClassExpression);
+		TreeSet<OWLClassExpression> siblingClasses = new TreeSet<OWLClassExpression>();
+		for(OWLClassExpression superClass : superClasses) {
 			siblingClasses.addAll(subsumptionHierarchyDown.get(superClass));
 		}
-		siblingClasses.remove(description);
+		siblingClasses.remove(OWLClassExpression);
 		return siblingClasses;
 	}
 	
@@ -153,39 +157,44 @@ public class ClassHierarchy {
 	 * refinement respectively.
 	 */
 	public void thinOutSubsumptionHierarchy() {
-		TreeMap<Description, SortedSet<Description>> hierarchyDownNew = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
-		TreeMap<Description, SortedSet<Description>> hierarchyUpNew = new TreeMap<Description, SortedSet<Description>>(
-				conceptComparator);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> hierarchyDownNew = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+				);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> hierarchyUpNew = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+				);
 
-		Set<Description> conceptsInSubsumptionHierarchy = new TreeSet<Description>(conceptComparator);
+		Set<OWLClassExpression> conceptsInSubsumptionHierarchy = new TreeSet<OWLClassExpression>();
 		conceptsInSubsumptionHierarchy.addAll(subsumptionHierarchyUp.keySet());
 		conceptsInSubsumptionHierarchy.addAll(subsumptionHierarchyDown.keySet());
 		
 		// add empty sets for each concept
-		for (Description c : conceptsInSubsumptionHierarchy) {
-			hierarchyDownNew.put(c, new TreeSet<Description>(conceptComparator));
-			hierarchyUpNew.put(c, new TreeSet<Description>(conceptComparator));
+		for (OWLClassExpression c : conceptsInSubsumptionHierarchy) {
+			hierarchyDownNew.put(c, new TreeSet<OWLClassExpression>());
+			hierarchyUpNew.put(c, new TreeSet<OWLClassExpression>());
 		}
 
-		for (Description c : conceptsInSubsumptionHierarchy) {
+		for (OWLClassExpression c : conceptsInSubsumptionHierarchy) {
 			// look whether there are more general concepts
 			// (if yes, pick the first one)
-			SortedSet<Description> moreGeneral = subsumptionHierarchyUp.get(c);
+			SortedSet<OWLClassExpression> moreGeneral = subsumptionHierarchyUp.get(c);
 			if (moreGeneral != null && moreGeneral.size() != 0) {
-				Description chosenParent = moreGeneral.first();
+				OWLClassExpression chosenParent = moreGeneral.first();
 				hierarchyDownNew.get(chosenParent).add(c);
 			}
 		}
 
-		for (Description c : conceptsInSubsumptionHierarchy) {
-			SortedSet<Description> moreSpecial = subsumptionHierarchyDown.get(c);
+		for (OWLClassExpression c : conceptsInSubsumptionHierarchy) {
+			SortedSet<OWLClassExpression> moreSpecial = subsumptionHierarchyDown.get(c);
 			if (moreSpecial != null && moreSpecial.size() != 0) {
-				Description chosenParent = moreSpecial.first();
+				OWLClassExpression chosenParent = moreSpecial.first();
 				hierarchyUpNew.get(chosenParent).add(c);
 			}
 		}
-
+		
+		//owl:Thing
+		hierarchyDownNew.put(df.getOWLThing(), subsumptionHierarchyDown.get(df.getOWLThing()));
+		//owl:Nothing
+		hierarchyUpNew.put(df.getOWLNothing(), subsumptionHierarchyUp.get(df.getOWLNothing()));
+		
 		subsumptionHierarchyDown = hierarchyDownNew;
 		subsumptionHierarchyUp = hierarchyUpNew;
 	}
@@ -201,17 +210,17 @@ public class ClassHierarchy {
 	 * @return True if <code>subClass</code> is a subclass of
 	 *         <code>superclass</code>.
 	 */
-	public boolean isSubclassOf(NamedClass subClass, NamedClass superClass) {
+	public boolean isSubclassOf(OWLClass subClass, OWLClass superClass) {
 		if (subClass.equals(superClass)) {
 			return true;
 		} else {
-			SortedSet<Description> superClasses = subsumptionHierarchyUp.get(subClass);
+			SortedSet<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(subClass);
 			if(superClasses != null){
-				for (Description moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
+				for (OWLClassExpression moreGeneralClass : subsumptionHierarchyUp.get(subClass)) {
 					
 					// search the upper classes of the subclass
-					if (moreGeneralClass instanceof NamedClass) {
-						if (isSubclassOf((NamedClass) moreGeneralClass, superClass)) {
+					if (moreGeneralClass instanceof OWLClass) {
+						if (isSubclassOf((OWLClass) moreGeneralClass, superClass)) {
 							return true;
 						}
 						// we reached top, so we can return false (if top is a
@@ -239,16 +248,16 @@ public class ClassHierarchy {
 	 * @return True if <code>subClass</code> is a subclass of
 	 *         <code>superclass</code>.
 	 */
-	public boolean isSubclassOf(Description subClass, Description superClass) {
+	public boolean isSubclassOf(OWLClassExpression subClass, OWLClassExpression superClass) {
 		if (subClass.equals(superClass)) {
 			return true;
 		} else {
-			SortedSet<Description> superClasses = subsumptionHierarchyUp.get(subClass);
+			SortedSet<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(subClass);
 			if(superClasses != null){
-				for (Description moreGeneralClass : superClasses) {
+				for (OWLClassExpression moreGeneralClass : superClasses) {
 					
 					// search the upper classes of the subclass
-					if (moreGeneralClass instanceof NamedClass) {
+					if (moreGeneralClass instanceof OWLClass) {
 						if (isSubclassOf(moreGeneralClass, superClass)) {
 							return true;
 						}
@@ -274,24 +283,24 @@ public class ClassHierarchy {
 	public String toString(boolean showUpwardHierarchy) {
 		if (showUpwardHierarchy) {
 			String str = "downward subsumption:\n";
-			str += toString(subsumptionHierarchyDown, new Thing(), 0);
+			str += toString(subsumptionHierarchyDown, df.getOWLThing(), 0);
 			str += "upward subsumption:\n";
-			str += toString(subsumptionHierarchyUp, new Nothing(), 0);
+			str += toString(subsumptionHierarchyUp, df.getOWLNothing(), 0);
 			return str;
 		} else {
-			return toString(subsumptionHierarchyDown, new Thing(), 0);
+			return toString(subsumptionHierarchyDown, df.getOWLThing(), 0);
 		}
 	}
 
-	private String toString(TreeMap<Description, SortedSet<Description>> hierarchy,
-			Description concept, int depth) {
+	private String toString(TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> hierarchy,
+			OWLClassExpression concept, int depth) {
 		String str = "";
 		for (int i = 0; i < depth; i++)
 			str += "  ";
 		str += concept.toString() + "\n";
-		Set<Description> tmp = hierarchy.get(concept);
+		Set<OWLClassExpression> tmp = hierarchy.get(concept);
 		if (tmp != null) {
-			for (Description c : tmp)
+			for (OWLClassExpression c : tmp)
 				str += toString(hierarchy, c, depth + 1);
 		}
 		return str;
@@ -315,39 +324,39 @@ public class ClassHierarchy {
 	 * @return A copy of this hierarchy, which is restricted to a certain set
 	 * of classes.
 	 */
-	public ClassHierarchy cloneAndRestrict(Set<NamedClass> allowedClasses) {
+	public ClassHierarchy cloneAndRestrict(Set<OWLClass> allowedClasses) {
 		// currently TOP and BOTTOM are always allowed
 		// (TODO would be easier if Thing/Nothing were declared as named classes)
-		Set<Description> allowed = new TreeSet<Description>(conceptComparator);
+		Set<OWLClassExpression> allowed = new TreeSet<OWLClassExpression>();
 		allowed.addAll(allowedClasses);
-		allowed.add(Thing.instance);
-		allowed.add(Nothing.instance);
+		allowed.add(df.getOWLThing());
+		allowed.add(df.getOWLNothing());
 		
 		// create new maps
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyUpNew
-		= new TreeMap<Description, SortedSet<Description>>(conceptComparator);
-		TreeMap<Description, SortedSet<Description>> subsumptionHierarchyDownNew 
-		= new TreeMap<Description, SortedSet<Description>>(conceptComparator);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUpNew
+		= new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>();
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDownNew 
+		= new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>();
 		
-		for(Entry<Description, SortedSet<Description>> entry : subsumptionHierarchyUp.entrySet()) {
-			Description key = entry.getKey();
+		for(Entry<OWLClassExpression, SortedSet<OWLClassExpression>> entry : subsumptionHierarchyUp.entrySet()) {
+			OWLClassExpression key = entry.getKey();
 			// we only store mappings for allowed classes
 			if(allowed.contains(key)) {
 				// copy the set of all super classes (we consume them until
 				// they are empty)
-				TreeSet<Description> superClasses = new TreeSet<Description>(entry.getValue());
+				TreeSet<OWLClassExpression> superClasses = new TreeSet<OWLClassExpression>(entry.getValue());
 				// storage for new super classes
-				TreeSet<Description> newSuperClasses = new TreeSet<Description>(conceptComparator);
+				TreeSet<OWLClassExpression> newSuperClasses = new TreeSet<OWLClassExpression>();
 				
 				while(!superClasses.isEmpty()) {
 					// pick and remove the first element
-					Description d = superClasses.pollFirst();
+					OWLClassExpression d = superClasses.pollFirst();
 					// case 1: it is allowed, so we add it
 					if(allowed.contains(d)) {
 						newSuperClasses.add(d);
 					// case 2: it is not allowed, so we try its super classes
 					} else {
-						Set<Description> tmp = subsumptionHierarchyUp.get(d);
+						Set<OWLClassExpression> tmp = subsumptionHierarchyUp.get(d);
 						if(tmp != null){
 							superClasses.addAll(tmp);
 						}
@@ -359,14 +368,14 @@ public class ClassHierarchy {
 		}
 		
 		// downward case is analogous
-		for(Entry<Description, SortedSet<Description>> entry : subsumptionHierarchyDown.entrySet()) {
-			Description key = entry.getKey();
+		for(Entry<OWLClassExpression, SortedSet<OWLClassExpression>> entry : subsumptionHierarchyDown.entrySet()) {
+			OWLClassExpression key = entry.getKey();
 			if(allowed.contains(key)) {
-				TreeSet<Description> subClasses = new TreeSet<Description>(entry.getValue());
-				TreeSet<Description> newSubClasses = new TreeSet<Description>(conceptComparator);
+				TreeSet<OWLClassExpression> subClasses = new TreeSet<OWLClassExpression>(entry.getValue());
+				TreeSet<OWLClassExpression> newSubClasses = new TreeSet<OWLClassExpression>();
 				
 				while(!subClasses.isEmpty()) {
-					Description d = subClasses.pollFirst();
+					OWLClassExpression d = subClasses.pollFirst();
 					if(allowed.contains(d)) {
 						newSubClasses.add(d);
 					} else {
@@ -381,59 +390,51 @@ public class ClassHierarchy {
 		return new ClassHierarchy(subsumptionHierarchyUpNew, subsumptionHierarchyDownNew);
 	}
 	
-	public Set<Axiom> toAxioms(){
-		return toAxioms(Thing.instance);
+	public Set<OWLAxiom> toOWLAxioms(){
+		return toOWLAxioms(df.getOWLThing());
 	}
 	
-	public Set<OWLAxiom> toOWLAPIAxioms(){
-		Set<OWLAxiom> owlAxioms = new HashSet<OWLAxiom>();
-		Set<Axiom> axioms = toAxioms();
-		for(Axiom axiom : axioms){
-			owlAxioms.add(OWLAPIConverter.getOWLAPIAxiom(axiom));
-		}
-		return owlAxioms;
-	}
-	
-	public Set<Axiom> toAxioms(Description concept){
-		Set<Axiom> axioms = new HashSet<Axiom>();
-		Set<Description> subConcepts = subsumptionHierarchyDown.get(concept);
+	public Set<OWLAxiom> toOWLAxioms(OWLClassExpression concept){
+		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		Set<OWLClassExpression> subConcepts = subsumptionHierarchyDown.get(concept);
 		if (subConcepts != null) {
-			for (Description sub : subConcepts){
-				axioms.add(new SubClassAxiom(sub, concept));
-				axioms.addAll(toAxioms(sub));
+			for (OWLClassExpression sub : subConcepts){
+				axioms.add(df.getOWLSubClassOfAxiom(sub, concept));
+				axioms.addAll(toOWLAxioms(sub));
 			}
 		}
 		return axioms;
 	}
 	
 	/**
-	 * Checks whether the description is contained in the hierarchy.
-	 * @param description
+	 * Checks whether the OWLClassExpression is contained in the hierarchy.
+	 * @param OWLClassExpression
 	 * @return
 	 */
-	public boolean contains(Description description){
-		return subsumptionHierarchyUp.containsKey(description);
+	public boolean contains(OWLClassExpression OWLClassExpression){
+		return subsumptionHierarchyUp.containsKey(OWLClassExpression);
 	}
 	
-	public int getDepth2Root(Description description){
-		SortedSet<Description> superClasses = subsumptionHierarchyUp.get(description);
+	public int getDepth2Root(OWLClassExpression OWLClassExpression){
+		SortedSet<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(OWLClassExpression);
 		int depth = 0;
 		if(superClasses != null){
 			depth = 1;
-			for(Description superClass : superClasses){
+			for(OWLClassExpression superClass : superClasses){
 				depth += getDepth2Root(superClass);
 			}
 		}
 		return depth;
 	}
 	
-	public SortedSet<Description> getMostGeneralClasses(){
-		SortedSet<Description> generalClasses = new TreeSet<Description>(conceptComparator);
+	public SortedSet<OWLClassExpression> getMostGeneralClasses(){
+		SortedSet<OWLClassExpression> generalClasses = new TreeSet<OWLClassExpression>();
 		boolean add = false;
-		SortedSet<Description> superClasses;
-		for(Description sub : getSubClasses(Thing.instance)){
+		SortedSet<OWLClassExpression> superClasses;
+		for(OWLClassExpression sub : getSubClasses(df.getOWLThing())){
 			superClasses = getSuperClasses(sub);
-			superClasses = new TreeSet<Description>(conceptComparator);superClasses.remove(Thing.instance);
+			superClasses = new TreeSet<OWLClassExpression>();
+			superClasses.remove(df.getOWLThing());
 			if(superClasses.isEmpty()){
 				add = true;
 			}

@@ -43,7 +43,7 @@ public abstract class ConfigOption<T> {
 	protected String name;
 
 	/**
-	 * A short description explaining the effect of this option.
+	 * A short OWLClassExpression explaining the effect of this option.
 	 */
 	protected String description;
 
@@ -70,7 +70,7 @@ public abstract class ConfigOption<T> {
 	/**
 	 * Calls this(name, description, null, false, true).
 	 * @param name Name of config option.
-	 * @param description Explanation of option.
+	 * @param OWLClassExpression Explanation of option.
 	 */
 	public ConfigOption(String name, String description) {
 		this(name, description, null, false, true);
@@ -79,7 +79,7 @@ public abstract class ConfigOption<T> {
 	/**
 	 * Calls this(name, description, defaultValue, false, true).
 	 * @param name Name of config option.
-	 * @param description Explanation of option.
+	 * @param OWLClassExpression Explanation of option.
 	 * @param defaultValue Standard value of option.
 	 */
 	public ConfigOption(String name, String description, T defaultValue) {
@@ -89,7 +89,7 @@ public abstract class ConfigOption<T> {
 	/**
 	 * Constructs a component configuration option.
 	 * @param name Name of config option.
-	 * @param description Explanation of option.
+	 * @param OWLClassExpression Explanation of option.
 	 * @param defaultValue Standard value of option.
 	 * @param mandatory Specifies whether assigning a value to the option is required.
 	 * @param requiresInit Says whether init() has to be called again when the option is changed.
@@ -112,7 +112,7 @@ public abstract class ConfigOption<T> {
 
 	/**
 	 * 
-	 * @return The textual description of this option.
+	 * @return The textual OWLClassExpression of this option.
 	 */
 	public String getDescription() {
 		return description;

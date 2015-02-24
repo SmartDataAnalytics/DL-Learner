@@ -19,10 +19,13 @@
  */
 package org.dllearner.server;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,32 +43,41 @@ import javax.jws.soap.SOAPBinding;
 import org.apache.log4j.Logger;
 import org.dllearner.Info;
 import org.dllearner.cli.ConfMapper;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
+import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
-import org.dllearner.kb.sparql.NaturalLanguageDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.kb.sparql.SparqlQueryException;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
  * DL-Learner web service interface. The web service makes use of the component
@@ -85,7 +97,7 @@ public class DLLearnerWS {
 	
 	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
-	private static ComponentManager cm = ComponentManager.getInstance();
+	private static AnnComponentManager cm = AnnComponentManager.getInstance();
 	private static ConfMapper confMapper = new ConfMapper();
 	
 	/**
@@ -217,12 +229,22 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
+		logger.info("Adding knowledge source " + component + " with URL parameter " + url + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractKnowledgeSource> ksClass = confMapper.getKnowledgeSourceClass(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
-		AbstractKnowledgeSource ks = cm.knowledgeSource(ksClass);
-		cm.applyConfigEntry(ks, "url", new URL(url));
+		AbstractKnowledgeSource ks = null;
+		try {
+			ks = ksClass.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		if(ks instanceof OWLFile) {
+			((OWLFile) ks).setUrl(new URL(url));
+		}
+		logger.info("...done.");
 		return state.addKnowledgeSource(ks);
 	}
 	
@@ -249,12 +271,20 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
+		logger.info("Setting reasoner " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractReasonerComponent> rcClass = confMapper.getReasonerComponentClass(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractReasonerComponent rc = cm.reasoner(rcClass, state.getKnowledgeSources());
+		AbstractReasonerComponent rc = null;
+		try {
+			rc = rcClass.getConstructor(Set.class).newInstance(state.getKnowledgeSources());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setReasonerComponent(rc);
 	}
 	
@@ -269,12 +299,20 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
+		logger.info("Setting learning problem " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractLearningProblem lp = cm.learningProblem(lpClass, state.getReasonerComponent());
+		AbstractLearningProblem lp = null;
+		try {
+			lp = lpClass.getConstructor(AbstractReasonerComponent.class).newInstance(state.getReasonerComponent());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setLearningProblem(lp);
 	}
 	
@@ -290,12 +328,21 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
+		logger.info("Setting learning algorithm " + component + "...");
 		ClientState state = getState(id);
 		Class<? extends AbstractCELA> laClass = confMapper.getLearningAlgorithmClass(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractCELA la = cm.learningAlgorithm(laClass, state.getLearningProblem(), state.getReasonerComponent());
+		AbstractCELA la = null;
+		try {
+			la = laClass.getConstructor(AbstractLearningProblem.class, AbstractReasonerComponent.class)
+					.newInstance(state.getLearningProblem(), state.getReasonerComponent());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		logger.info("...done.");
 		return state.setLearningAlgorithm(la);
 	}
 	
@@ -307,10 +354,14 @@ public class DLLearnerWS {
 	@WebMethod
 	public void initAll(int id) throws ClientNotKnownException, ComponentInitException {
 		ClientState state = getState(id);
+		logger.info("Initializing knowledge sources...");
 		for(AbstractKnowledgeSource ks : state.getKnowledgeSources())
 			ks.init();
+		logger.info("Initializing reasoner...");
 		state.getReasonerComponent().init();
+		logger.info("Initializing learning problem...");
 		state.getLearningProblem().init();
+		logger.info("Initializing learning algorithm...");
 		state.getLearningAlgorithm().init();
 	}
 	
@@ -342,11 +393,11 @@ public class DLLearnerWS {
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		Description solution = state.getLearningAlgorithm().getCurrentlyBestDescription();
+		OWLClassExpression solution = state.getLearningAlgorithm().getCurrentlyBestDescription();
 		if(format.equals("manchester"))
-			return solution.toManchesterSyntaxString(state.getReasonerComponent().getBaseURI(), new HashMap<String,String>());
+			return OWLAPIRenderers.toManchesterOWLSyntax(solution);
 		else if(format.equals("kb"))
-			return solution.toKBSyntaxString();
+			return OWLAPIRenderers.toManchesterOWLSyntax(solution);
 		else
 			return solution.toString();
 	}
@@ -364,17 +415,20 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions();
+		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
+				.getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;
-		for(EvaluatedDescription description : descriptions.descendingSet()) {
-			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
-			else json += "\"solution" + count + "\" : " + description.asJSON();
+		for (EvaluatedDescription description : descriptions.descendingSet()) {
+			if (count > 1)
+				json += ",\"solution" + count + "\" : " + description.asJSON();
+			else
+				json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
-		json+="}";
+		json += "}";
 		return json;
-	}	
+	}
 	
 	/**
 	 * Returns a list of JSON encoded description including extra information
@@ -447,14 +501,14 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getCurrentlyBestConcepts(int id, int nrOfConcepts, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
+		List<OWLClassExpression> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
 		List<String> conc=new LinkedList<String>();
-		Iterator<Description> iter=bestConcepts.iterator();
+		Iterator<OWLClassExpression> iter=bestConcepts.iterator();
 		while (iter.hasNext())
 			if (format.equals("manchester"))
-				conc.add(iter.next().toManchesterSyntaxString(state.getReasonerComponent().getBaseURI(), new HashMap<String,String>()));
+				conc.add(OWLAPIRenderers.toManchesterOWLSyntax(iter.next()));
 			else if(format.equals("kb"))
-				conc.add(iter.next().toKBSyntaxString());
+				conc.add(OWLAPIRenderers.toManchesterOWLSyntax(iter.next()));
 			else
 			    conc.add(iter.next().toString());
 		return conc.toArray(new String[conc.size()]);
@@ -496,20 +550,27 @@ public class DLLearnerWS {
 	 * @return
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 */
-	private String currentlyBestEvaluatedDescriptions(int id,int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) throws ClientNotKnownException
-	{
+	private String currentlyBestEvaluatedDescriptions(int id, int nrOfDescriptions, double accuracyThreshold,
+			boolean filterNonMinimalDescriptions) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		List<? extends EvaluatedDescription> descriptions;
-		if (accuracyThreshold!=-1) descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, accuracyThreshold, filterNonMinimalDescriptions);
-		else descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
+		if (accuracyThreshold != -1) {
+			descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions,
+					accuracyThreshold, filterNonMinimalDescriptions);
+		} else {
+			descriptions = state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions);
+		}
 		String json = "{";
+		System.out.println(json);
 		int count = 1;
-		for(EvaluatedDescription description : descriptions) {
-			if (count>1) json += ",\"solution" + count + "\" : " + description.asJSON();
-			else json += "\"solution" + count + "\" : " + description.asJSON();
+		for (EvaluatedDescription description : descriptions) {
+			if (count > 1)
+				json += ",\"solution" + count + "\" : " + description.asJSON();
+			else
+				json += "\"solution" + count + "\" : " + description.asJSON();
 			count++;
 		}
-		json+="}";
+		json += "}";
 		return json;
 	}
 	
@@ -548,7 +609,11 @@ public class DLLearnerWS {
 	public void setPositiveExamples(int id, String[] positiveExamples) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<String> posExamples = new TreeSet<String>(Arrays.asList(positiveExamples));
-		cm.applyConfigEntry(state.getLearningProblem(), "positiveExamples", posExamples);
+		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		for (String ex : posExamples) {
+			inds.add(new OWLNamedIndividualImpl(IRI.create(ex)));
+		}
+		((PosNegLP)state.getLearningProblem()).setPositiveExamples(inds);
 	}
 	
 
@@ -562,7 +627,11 @@ public class DLLearnerWS {
 	public void setNegativeExamples(int id, String[] negativeExamples) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<String> negExamples = new TreeSet<String>(Arrays.asList(negativeExamples));
-		cm.applyConfigEntry(state.getLearningProblem(), "negativeExamples", negExamples);
+		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		for (String ex : negExamples) {
+			inds.add(new OWLNamedIndividualImpl(IRI.create(ex)));
+		}
+		((PosNegLP)state.getLearningProblem()).setNegativeExamples(inds);
 	}
 	
 	/**
@@ -671,7 +740,24 @@ public class DLLearnerWS {
 	private void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
-		cm.applyConfigEntry(component, optionName, value);
+		System.out.println(component + "::" + optionName + "=" + value);
+		try {
+			Field field = component.getClass().getDeclaredField(optionName);
+			field.setAccessible(true);
+			if(optionName.equals("classToDescribe")) {
+				value = new OWLClassImpl(IRI.create((URL)value));
+			}
+			field.set(component, value);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+//		try {
+//			component.getClass().getMethod(optionName, value.getClass()).invoke(component, value);
+//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+//				| SecurityException e) {
+//			e.printStackTrace();
+//		}
+//		cm.applyConfigEntry(component, optionName, value);
 	}
 	
 	/**
@@ -771,7 +857,7 @@ public class DLLearnerWS {
 	
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
-		Set<NamedClass> atomicConcepts = getState(id).getReasonerComponent().getNamedClasses();
+		Set<OWLClass> atomicConcepts = getState(id).getReasonerComponent().getClasses();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
 	
@@ -784,37 +870,37 @@ public class DLLearnerWS {
 	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException, ParseException {
 		ClientState state = getState(id);
 		// call parser to parse concept
-		Description concept = null;
-		concept = KBParser.parseConcept(conceptString);
-		Set<Individual> individuals = state.getReasonerComponent().getIndividuals(concept);
+		OWLClassExpression concept = KBParser.parseConcept(conceptString);
+		Set<OWLIndividual> individuals = state.getReasonerComponent().getIndividuals(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
 	@WebMethod
 	public int getConceptLength(String conceptString) throws ParseException {
 		// call parser to parse concept
-		return KBParser.parseConcept(conceptString).getLength();
+		return OWLClassExpressionUtils.getLength(KBParser.parseConcept(conceptString));
 	}
 	
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<ObjectProperty> roles = state.getReasonerComponent().getObjectProperties();
+		Set<OWLObjectProperty> roles = state.getReasonerComponent().getObjectProperties();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
 	
 	@WebMethod
 	public String[] getInstances(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Set<Individual> individuals = state.getReasonerComponent().getIndividuals();
+		Set<OWLIndividual> individuals = state.getReasonerComponent().getIndividuals();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		Map<Individual,SortedSet<Individual>> m = state.getReasonerComponent().getPropertyMembers(new ObjectProperty(role));
-		Set<Individual> individuals = m.keySet();
+		Map<OWLIndividual,SortedSet<OWLIndividual>> m = state.getReasonerComponent().getPropertyMembers(
+				new OWLObjectPropertyImpl(IRI.create(role)));
+		Set<OWLIndividual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
 	
@@ -938,26 +1024,26 @@ public class DLLearnerWS {
 	@WebMethod
 	public int[] getConceptDepth(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
-		Iterator<Description> iter=bestConcepts.iterator();
-		int[] length=new int[bestConcepts.size()];
-		int i=0;
-		while (iter.hasNext()){
-			length[i]=iter.next().getDepth();
+		List<OWLClassExpression> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
+		Iterator<OWLClassExpression> iter = bestConcepts.iterator();
+		int[] depth = new int[bestConcepts.size()];
+		int i = 0;
+		while (iter.hasNext()) {
+			depth[i] = OWLClassExpressionUtils.getDepth(iter.next());
 			i++;
 		}
-		return length;
+		return depth;
 	}
 	
 	@WebMethod
 	public int[] getConceptArity(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
-		List<Description> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
-		Iterator<Description> iter=bestConcepts.iterator();
-		int[] arity=new int[bestConcepts.size()];
-		int i=0;
-		while (iter.hasNext()){
-			arity[i]=iter.next().getArity();
+		List<OWLClassExpression> bestConcepts = state.getLearningAlgorithm().getCurrentlyBestDescriptions(nrOfConcepts);
+		Iterator<OWLClassExpression> iter = bestConcepts.iterator();
+		int[] arity = new int[bestConcepts.size()];
+		int i = 0;
+		while (iter.hasNext()) {
+			arity[i] = OWLClassExpressionUtils.getArity(iter.next());
 			i++;
 		}
 		return arity;
@@ -966,7 +1052,9 @@ public class DLLearnerWS {
 	@WebMethod
 	public String SparqlRetrieval(String conceptString,int limit) throws ParseException {
 		// call parser to parse concept
-		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString,limit, false, false);
+//		return SparqlQueryDescriptionConvertVisitor.getSparqlQuery(conceptString,limit, false, false);
+		// TODO Refactoring replace
+		return null;
 	}
 	
 	@WebMethod
@@ -974,7 +1062,9 @@ public class DLLearnerWS {
 		// call parser to parse concept
 		ClientState state = getState(id);
 		AbstractReasonerComponent service = state.getReasonerComponent();
-		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, service);
+//		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, service);
+		// TODO Refactoring replace
+		return null;
 	}
 	
 	@WebMethod
@@ -1035,7 +1125,7 @@ public class DLLearnerWS {
 	private Object getConfigOptionValue(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
-		return cm.getConfigOptionValue(component, optionName);
+		return "";//cm.getConfigOptionValue(component, optionName);
 	}	
 	
 }

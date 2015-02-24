@@ -171,7 +171,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	private Model getModel(String query) throws UnsupportedEncodingException, SQLException{
 		if(logger.isDebugEnabled()){
 			logger.debug("Sending SPARQL query ...");
-			logger.debug("Query:\n" + query.toString());
+			logger.debug("Query:\n" + query);
 		}
 
 		Model model;

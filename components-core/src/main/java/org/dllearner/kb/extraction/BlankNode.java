@@ -53,7 +53,7 @@ public class BlankNode extends Node {
 	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
 	
 	//private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
-	//private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	//private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
 
 	
 	public BlankNode(RDFBlankNode bNode, String inboundEdge){
@@ -107,7 +107,7 @@ public class BlankNode extends Node {
 	public SortedSet<String> toNTriple() {
 		SortedSet<String> returnSet = new TreeSet<String>();
 		//String subject = getNTripleForm();
-		/*for (ObjectPropertyNode one : objectProperties) {
+		/*for (OWLObjectPropertyNode one : objectProperties) {
 			returnSet.add(subject + one.getNTripleForm() + one.getBPart().getNTripleForm()+" . ");
 			returnSet.addAll(one.getBPart().toNTriple());
 		}*/
@@ -319,7 +319,7 @@ public class BlankNode extends Node {
 				return true;
 			}else if((n  instanceof ObjectPropertyNode )
 					&& 
-				((ObjectPropertyNode)n).getAPart().toString().equals(type)) {
+				((OWLObjectPropertyNode)n).getAPart().toString().equals(type)) {
 				return true;
 			}
 		}

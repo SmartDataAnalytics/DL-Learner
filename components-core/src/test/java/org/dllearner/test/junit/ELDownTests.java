@@ -38,23 +38,28 @@ import org.dllearner.algorithms.el.ELDescriptionTree;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.refinementoperators.ELDown2;
+import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.owl.ConceptComparator;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.statistics.Stat;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -68,7 +73,9 @@ import com.jamonapi.MonitorFactory;
 public class ELDownTests {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(ELDownTests.class);		
+	private static Logger logger = Logger.getLogger(ELDownTests.class);	
+	
+	OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	/**
 	 * Implementation of test case created by Christoph Haase for 
@@ -96,12 +103,12 @@ public class ELDownTests {
 //		System.exit(0);
 		
 		// input description
-		Description input = KBParser.parseConcept("(human AND EXISTS has.animal)");
-		System.out.println("refining: " + input.toString(KBParser.internalNamespace, null));		
+		OWLClassExpression input = KBParser.parseConcept("(human AND EXISTS has.animal)");
+		System.out.println("refining: " + input);		
 		
 		// For this test, we need to turn instance based disjoints
 		// off! (We do not have any instances here.)
-		RefinementOperator operator = new ELDown2(rs, false);
+		RefinementOperator operator = new ELDown3(rs, false);
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();
@@ -115,15 +122,14 @@ public class ELDownTests {
 		desiredString.add("((human AND EXISTS has.EXISTS has.TOP) AND EXISTS has.animal)");
 		desiredString.add("(human AND EXISTS has.(animal AND EXISTS has.TOP))");
 		
-		ConceptComparator cc = new ConceptComparator();
-		SortedSet<Description> desired = new TreeSet<Description>(cc);
+		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
 		for(String str : desiredString) {
-			Description tmp = KBParser.parseConcept(str);
+			OWLClassExpression tmp = KBParser.parseConcept(str);
 			// eliminate conjunctions nested in other conjunctions
-			ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			tmp = ConceptTransformation.cleanConcept(tmp);
+			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
-			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
+			System.out.println("desired: " + tmp);
 		}
 		
 		Logger logger = Logger.getRootLogger();
@@ -135,7 +141,7 @@ public class ELDownTests {
 		
 		// perform refinement and compare solutions
 		long startTime = System.nanoTime();
-		Set<Description> refinements = operator.refine(input);
+		Set<OWLClassExpression> refinements = operator.refine(input);
 		long runTime = System.nanoTime() - startTime;
 		logger.debug("Refinement step took " + Helper.prettyPrintNanoSeconds(runTime, true, true) + ".");
 		boolean runStats = false;
@@ -155,14 +161,15 @@ public class ELDownTests {
 			System.out.println("average over " + runs + " runs:");
 			System.out.println(stat.prettyPrint("ms"));
 		}
-	
 		// number of refinements has to be correct and each produced
 		// refinement must be in the set of desired refinements
-		assertTrue(refinements.size() == desired.size());
+		assertTrue("number of refinements " + refinements.size() + " differs from expected number of refinements " + desired.size(),
+				refinements.size() == desired.size());
+		
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
-		for(Description refinement : refinements) {
+		for(OWLClassExpression refinement : refinements) {
 			boolean ok = desired.contains(refinement);			
-			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+			System.out.println(ok + ": " + refinement);
 			assertTrue(desired.contains(refinement));
 		}
 		
@@ -185,7 +192,7 @@ public class ELDownTests {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
 		
 		// input description
-		Description input = KBParser.parseConcept("(human AND EXISTS hasPet.bird)");
+		OWLClassExpression input = KBParser.parseConcept("(human AND EXISTS hasPet.bird)");
 		ConceptTransformation.cleanConcept(input);
 		
 		Set<String> desiredString = new TreeSet<String>();
@@ -203,14 +210,13 @@ public class ELDownTests {
 		desiredString.add("(human AND (EXISTS has.(bird AND EXISTS has.TOP) AND EXISTS hasPet.bird))");
 		desiredString.add("(human AND EXISTS hasPet.(bird AND EXISTS has.TOP))"); 
 		
-		ConceptComparator cc = new ConceptComparator();
-		SortedSet<Description> desired = new TreeSet<Description>(cc);
+		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
 		for(String str : desiredString) {
-			Description tmp = KBParser.parseConcept(str);
+			OWLClassExpression tmp = KBParser.parseConcept(str);
 			ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
-			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
+			System.out.println("desired: " + tmp);
 		}		
 		
 		Logger logger = Logger.getRootLogger();
@@ -220,16 +226,16 @@ public class ELDownTests {
 		logger.removeAllAppenders();
 		logger.addAppender(app);		
 		
-		RefinementOperator operator = new ELDown2(rs);
+		RefinementOperator operator = new ELDown3(rs);
 		
-		Set<Description> refinements = operator.refine(input);
+		Set<OWLClassExpression> refinements = operator.refine(input);
 		
 //		assertTrue(refinements.size() == desired.size());
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
-		for(Description refinement : refinements) {
-			ConceptTransformation.transformToOrderedForm(refinement, cc);
+		for(OWLClassExpression refinement : refinements) {
+			ConceptTransformation.transformToOrderedForm(refinement);
 			boolean ok = desired.contains(refinement);
-			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+			System.out.println(ok + ": " + refinement);
 //			assertTrue(desired.contains(refinement));
 		}		
 	}
@@ -241,8 +247,8 @@ public class ELDownTests {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
 		
 		// input description
-		Description input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
-		ConceptTransformation.cleanConcept(input);
+		OWLClassExpression input = KBParser.parseConcept("(human AND (EXISTS hasChild.human AND EXISTS has.animal))");
+		input = ConceptTransformation.cleanConcept(input);
 		
 		Set<String> desiredString = new TreeSet<String>();
 		desiredString.add("(human AND (animal AND (EXISTS hasChild.human AND EXISTS has.animal)))");
@@ -254,14 +260,13 @@ public class ELDownTests {
 		desiredString.add("(human AND (EXISTS hasChild.human AND EXISTS has.(animal AND EXISTS has.TOP)))");
 		desiredString.add("(human AND (EXISTS hasChild.human AND (EXISTS has.animal AND EXISTS has.EXISTS has.TOP)))");
 		
-		ConceptComparator cc = new ConceptComparator();
-		SortedSet<Description> desired = new TreeSet<Description>(cc);
+		SortedSet<OWLClassExpression> desired = new TreeSet<OWLClassExpression>();
 		for(String str : desiredString) {
-			Description tmp = KBParser.parseConcept(str);
-			ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp, cc);
+			OWLClassExpression tmp = KBParser.parseConcept(str);
+			tmp = ConceptTransformation.cleanConcept(tmp);
+			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
-			System.out.println("desired: " + tmp.toString(KBParser.internalNamespace, null));
+			System.out.println("desired: " + tmp);
 		}		
 		
 		Logger logger = Logger.getRootLogger();
@@ -271,16 +276,16 @@ public class ELDownTests {
 		logger.removeAllAppenders();
 		logger.addAppender(app);		
 		
-		RefinementOperator operator = new ELDown2(rs);
+		RefinementOperator operator = new ELDown3(rs);
 		
-		Set<Description> refinements = operator.refine(input);
+		Set<OWLClassExpression> refinements = operator.refine(input);
 		
 //		assertTrue(refinements.size() == desired.size());
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
-		for(Description refinement : refinements) {
-			ConceptTransformation.transformToOrderedForm(refinement, cc);
+		for(OWLClassExpression refinement : refinements) {
+			ConceptTransformation.transformToOrderedForm(refinement);
 			boolean ok = desired.contains(refinement);
-			System.out.println(ok + ": " + refinement.toString(KBParser.internalNamespace, null));
+			System.out.println(ok + ": " + refinement);
 //			assertTrue(desired.contains(refinement));
 		}		
 	}	
@@ -304,10 +309,10 @@ public class ELDownTests {
 		System.out.println("Galen loaded.");
 		
 //		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#15.0\" AND (\"http://www.co-ode.org/ontologies/galen#30.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#5.0\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".\"http://www.co-ode.org/ontologies/galen#6.0\")))");
-		Description input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#10.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#DomainAttribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#6.0\" AND \"http://www.co-ode.org/ontologies/galen#TopCategory\")) AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#TopCategory\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".TOP)))))");
-		ConceptTransformation.cleanConcept(input);
+		OWLClassExpression input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#10.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#DomainAttribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#6.0\" AND \"http://www.co-ode.org/ontologies/galen#TopCategory\")) AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#TopCategory\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".TOP)))))");
+		input = ConceptTransformation.cleanConcept(input);
 		
-		ELDown2 operator = new ELDown2(reasoner);
+		ELDown3 operator = new ELDown3(reasoner);
 		operator.refine(input);
 		
 	}
@@ -315,9 +320,9 @@ public class ELDownTests {
 	@Test
 	public void test5() {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
-		RefinementOperator operator = new ELDown2(rs);
-		Set<Description> refinements = operator.refine(Thing.instance);
-		for(Description refinement : refinements) {
+		RefinementOperator operator = new ELDown3(rs);
+		Set<OWLClassExpression> refinements = operator.refine(new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI()));
+		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
 		}
 		
@@ -339,12 +344,12 @@ public class ELDownTests {
 		System.out.println("Galen loaded.");
 		
 		ELDescriptionTree tree = new ELDescriptionTree(reasoner);
-		NamedClass a1 = new NamedClass("http://www.co-ode.org/ontologies/galen#1.0");
-		NamedClass a2 = new NamedClass("http://www.co-ode.org/ontologies/galen#10.0");
-		NamedClass a3 = new NamedClass("http://www.co-ode.org/ontologies/galen#6.0");
-		NamedClass a4 = new NamedClass("http://www.co-ode.org/ontologies/galen#TopCategory");
-		ObjectProperty r1 = new ObjectProperty("http://www.co-ode.org/ontologies/galen#Attribute");
-		ObjectProperty r2 = new ObjectProperty("http://www.co-ode.org/ontologies/galen#DomainAttribute");
+		OWLClass a1 = new OWLClassImpl(IRI.create("http://www.co-ode.org/ontologies/galen#1.0"));
+		OWLClass a2 = new OWLClassImpl(IRI.create("http://www.co-ode.org/ontologies/galen#10.0"));
+		OWLClass a3 = new OWLClassImpl(IRI.create("http://www.co-ode.org/ontologies/galen#6.0"));
+		OWLClass a4 = new OWLClassImpl(IRI.create("http://www.co-ode.org/ontologies/galen#TopCategory"));
+		OWLObjectProperty r1 = new OWLObjectPropertyImpl(IRI.create("http://www.co-ode.org/ontologies/galen#Attribute"));
+		OWLObjectProperty r2 = new OWLObjectPropertyImpl(IRI.create("http://www.co-ode.org/ontologies/galen#DomainAttribute"));
 		ELDescriptionNode v1 = new ELDescriptionNode(tree, a1, a2);
 		ELDescriptionNode v2 = new ELDescriptionNode(v1, r2, a1, a3, a4);
 		ELDescriptionNode v3 = new ELDescriptionNode(v1, r1, a1, a4);
@@ -352,7 +357,7 @@ public class ELDownTests {
 		
 		ELDescriptionNode w = new ELDescriptionNode(v2, r1);
 
-		ELDown2 operator = new ELDown2(reasoner);
+		ELDown3 operator = new ELDown3(reasoner);
 		System.out.println(operator.asCheck(w));		
 		
 	}

@@ -30,6 +30,7 @@ import org.dllearner.algorithms.DisjointClassesLearner;
 import org.dllearner.algorithms.SimpleSubclassLearner;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner;
+import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner;
 import org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
@@ -57,19 +58,12 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigHelper;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.Entity;
-import org.dllearner.core.owl.EquivalentClassesAxiom;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.SubClassAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.FastInstanceChecker;
@@ -77,21 +71,27 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SPARULTranslator;
 import org.dllearner.utilities.datastructures.Datastructures;
-import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
-import org.dllearner.utilities.owl.OWLAPIConverter;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class EnrichmentServlet extends HttpServlet {
@@ -171,6 +171,8 @@ public class EnrichmentServlet extends HttpServlet {
 	
 	private String cacheDir;
 	
+	private OWLDataFactory dataFactory;
+	
 	public EnrichmentServlet() {
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology ont = null;
@@ -180,6 +182,7 @@ public class EnrichmentServlet extends HttpServlet {
 			e1.printStackTrace();
 		}
 		sparul = new SPARULTranslator(man, ont, false);
+		dataFactory = man.getOWLDataFactory();
 	}
 	
 	@Override
@@ -230,7 +233,7 @@ public class EnrichmentServlet extends HttpServlet {
 		
 		SPARQLTasks st = new SPARQLTasks(endpoint);
 		String entityType = req.getParameter("entity_type");
-		final Entity entity;
+		final OWLEntity entity;
 		if(entityType != null){
 			if(oneOf(entityType, entityTypes)){
 				entity = getEntity(resourceURI, entityType, endpoint);
@@ -240,12 +243,11 @@ public class EnrichmentServlet extends HttpServlet {
 			
 		} else {
 			entity = st.guessResourceType(resourceURI, true);
-			entityType = getEntityType(entity);
 		}
 		
 		Collection<AxiomType> executableAxiomTypes = new HashSet<AxiomType>();
 		Collection<AxiomType> omittedAxiomTypes = new HashSet<AxiomType>();
-		Collection<AxiomType> possibleAxiomTypes = getAxiomTypes(entityType);
+		Collection<AxiomType<? extends OWLAxiom>> possibleAxiomTypes = AxiomAlgorithms.getAxiomTypes(entity.getEntityType());
 		for(AxiomType type : requestedAxiomTypes){
 			if(possibleAxiomTypes.contains(type)){
 				executableAxiomTypes.add(type);
@@ -293,7 +295,7 @@ public class EnrichmentServlet extends HttpServlet {
 					List<EvaluatedAxiom> axioms = getEvaluatedAxioms(ks, reasoner, entity, axiomType, maxExecutionTimeInSeconds, threshold, maxNrOfReturnedAxioms, useInference);
 					for(EvaluatedAxiom ax : axioms){
 						JSONObject axiomObject = new JSONObject();
-						OWLAxiom axiom = OWLAPIConverter.getOWLAPIAxiom(ax.getAxiom());
+						OWLAxiom axiom = ax.getAxiom();
 						axiomObject.put("axiom", axiom);
 						axiomObject.put("axiom_rendered", renderer.render(axiom));
 						axiomObject.put("axiom_sparul", getSPARUL(axiom));
@@ -366,7 +368,7 @@ public class EnrichmentServlet extends HttpServlet {
 	}
 
 	private List<EvaluatedAxiom> getEvaluatedAxioms(SparqlEndpointKS endpoint, SPARQLReasoner reasoner,
-			Entity entity, AxiomType axiomType, int maxExecutionTimeInSeconds,
+			OWLEntity entity, AxiomType axiomType, int maxExecutionTimeInSeconds,
 			double threshold, int maxNrOfReturnedAxioms, boolean useInference) {
 		List<EvaluatedAxiom> learnedAxioms = new ArrayList<EvaluatedAxiom>();
 		try {
@@ -378,11 +380,11 @@ public class EnrichmentServlet extends HttpServlet {
 	}
 
 	private List<EvaluatedAxiom> applyLearningAlgorithm(Class<? extends LearningAlgorithm> algorithmClass,
-			SparqlEndpointKS ks, SPARQLReasoner reasoner, Entity entity, int maxExecutionTimeInSeconds, double threshold, int maxNrOfReturnedAxioms)
+			SparqlEndpointKS ks, SPARQLReasoner reasoner, OWLEntity entity, int maxExecutionTimeInSeconds, double threshold, int maxNrOfReturnedAxioms)
 			throws ComponentInitException {
 		List<EvaluatedAxiom> learnedAxioms = null;
 		if(algorithmClass == CELOE.class){
-			learnedAxioms = applyCELOE(ks, (NamedClass) entity, true, false, threshold);
+			learnedAxioms = applyCELOE(ks, entity.asOWLClass(), true, false, threshold);
 		} else {
 			AxiomLearningAlgorithm learner = null;
 			try {
@@ -421,11 +423,11 @@ public class EnrichmentServlet extends HttpServlet {
 		return learnedAxioms;
 	}
 	
-	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, NamedClass nc, boolean equivalence, boolean reuseKnowledgeSource, double threshold) throws ComponentInitException {
+	private List<EvaluatedAxiom> applyCELOE(SparqlEndpointKS ks, OWLClass nc, boolean equivalence, boolean reuseKnowledgeSource, double threshold) throws ComponentInitException {
 
 		// get instances of class as positive examples
 		SPARQLReasoner sr = new SPARQLReasoner(ks);
-		SortedSet<Individual> posExamples = sr.getIndividuals(nc, 20);
+		SortedSet<OWLIndividual> posExamples = sr.getIndividuals(nc, 20);
 		if(posExamples.isEmpty()){
 			System.out.println("Skipping CELOE because class " + nc.toString() + " is empty.");
 			return Collections.emptyList();
@@ -436,8 +438,8 @@ public class EnrichmentServlet extends HttpServlet {
 		long startTime = System.currentTimeMillis();
 		System.out.print("finding negatives ... ");
 		AutomaticNegativeExampleFinderSPARQL2 finder = new AutomaticNegativeExampleFinderSPARQL2(ks.getEndpoint());
-		SortedSet<Individual> negExamples = finder.getNegativeExamples(nc, posExamples, 20);
-		SortedSetTuple<Individual> examples = new SortedSetTuple<Individual>(posExamples, negExamples);
+		SortedSet<OWLIndividual> negExamples = finder.getNegativeExamples(nc, posExamples, 20);
+		SortedSetTuple<OWLIndividual> examples = new SortedSetTuple<OWLIndividual>(posExamples, negExamples);
 		long runTime = System.currentTimeMillis() - startTime;
 		System.out.println("done (" + negExamples.size()+ " examples fround in " + runTime + " ms)");
 		
@@ -484,75 +486,30 @@ public class EnrichmentServlet extends HttpServlet {
         List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
         for(EvaluatedDescription learnedDescription : learnedDescriptions) {
-        	Axiom axiom;
+        	OWLAxiom axiom;
         	if(equivalence) {
-        		axiom = new EquivalentClassesAxiom(nc, learnedDescription.getDescription());
+        		axiom = dataFactory.getOWLEquivalentClassesAxiom(nc, learnedDescription.getDescription());
         	} else {
-        		axiom = new SubClassAxiom(nc, learnedDescription.getDescription());
+        		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom(axiom, score)); 
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy()))); 
         }
 		return learnedAxioms;
 	}
 
-	private Entity getEntity(String resourceURI, String entityType, SparqlEndpoint endpoint) {
-		Entity entity = null;
+	private OWLEntity getEntity(String resourceURI, String entityType, SparqlEndpoint endpoint) {
+		OWLEntity entity = null;
 		if (entityType.equals("class")) {
-			entity = new NamedClass(resourceURI);
+			entity = new OWLClassImpl(IRI.create(resourceURI));
 		} else if (entityType.equals("objectproperty")) {
-			entity = new ObjectProperty(resourceURI);
+			entity = new OWLObjectPropertyImpl(IRI.create(resourceURI));
 		} else if (entityType.equals("dataproperty")) {
-			entity = new DatatypeProperty(resourceURI);
+			entity = new OWLDataPropertyImpl(IRI.create(resourceURI));
 		} else {
 			SPARQLTasks st = new SPARQLTasks(endpoint);
 			entity = st.guessResourceType(resourceURI, true);
 		}
 		return entity;
 	}
-	
-	private String getEntityType(Entity entity) {
-		String entityType = null;
-		if(entity instanceof NamedClass){
-			entityType = "class";
-		} else if(entity instanceof ObjectProperty){
-			entityType = "objectproperty";
-		} else if(entity instanceof ObjectProperty){
-			entityType = "dataproperty";
-		}
-		return entityType;
-	}
-	
-	public static Collection<AxiomType> getAxiomTypes(String entityType){
-		List<AxiomType> types = new ArrayList<AxiomType>();
-		
-		List<Class<? extends LearningAlgorithm>> algorithms = null;
-		if(entityType.equals("class")){
-			algorithms = classAlgorithms;
-		} else if(entityType.equals("objectproperty")){
-			algorithms = objectPropertyAlgorithms;
-		} else if(entityType.equals("dataproperty")){
-			algorithms = dataPropertyAlgorithms;
-		} 
-		
-		if(algorithms != null){
-			for(Class<? extends LearningAlgorithm> alg : algorithms){
-				types.add(axiomType2Class.getKey(alg));
-			}
-		}
-		
-		return types;
-	}
-	
-	public static void main(String[] args) {
-		String s = "";
-		SortedSet<String> types = new TreeSet<String>();
-		for(AxiomType t : getAxiomTypes("objectproperty")){
-			s += "\"" + t.getName() + "\"";
-			s+= ", ";
-		}
-		System.out.println(s);
-	}
-	
-
 }

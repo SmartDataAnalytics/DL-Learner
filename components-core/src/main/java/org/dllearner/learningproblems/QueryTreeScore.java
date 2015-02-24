@@ -6,7 +6,7 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * @author Lorenz Buehmann
@@ -18,16 +18,18 @@ public class QueryTreeScore extends Score {
 	
 	private double accuracy;
 	
+	private double distancePenalty;
+	
 	private double specifityScore;
 	private int nrOfSpecificNodes;
 	
-	private Set<Individual> posAsPos;	
-    private Set<Individual> posAsNeg;
-    private Set<Individual> negAsPos;
-    private Set<Individual> negAsNeg;    
+	private Set<OWLIndividual> posAsPos;	
+    private Set<OWLIndividual> posAsNeg;
+    private Set<OWLIndividual> negAsPos;
+    private Set<OWLIndividual> negAsNeg;    
 
 	public QueryTreeScore(double score, double accuracy, 
-			Set<Individual> posAsPos, Set<Individual> posAsNeg, Set<Individual> negAsPos, Set<Individual> negAsNeg,
+			Set<OWLIndividual> posAsPos, Set<OWLIndividual> posAsNeg, Set<OWLIndividual> negAsPos, Set<OWLIndividual> negAsNeg,
 			double specifityScore, int nrOfSpecificNodes) {
 		super();
 		this.score = score;
@@ -53,6 +55,20 @@ public class QueryTreeScore extends Score {
 	public void setScore(double score) {
 		this.score = score;
 	}
+	
+	/**
+	 * @param distancePenalty the distancePenalty to set
+	 */
+	public void setDistancePenalty(double distancePenalty) {
+		this.distancePenalty = distancePenalty;
+	}
+	
+	/**
+	 * @return the distancePenalty
+	 */
+	public double getDistancePenalty() {
+		return distancePenalty;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Score#getAccuracy()
@@ -69,19 +85,19 @@ public class QueryTreeScore extends Score {
 		this.accuracy = accuracy;
 	}
 	
-	public Set<Individual> getCoveredNegatives() {
+	public Set<OWLIndividual> getCoveredNegatives() {
 		return negAsPos;
 	}
 
-	public Set<Individual> getCoveredPositives() {
+	public Set<OWLIndividual> getCoveredPositives() {
 		return posAsPos;
 	}
 	
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<OWLIndividual> getNotCoveredPositives() {
 		return posAsNeg;
 	}
 	
-	public Set<Individual> getNotCoveredNegatives() {
+	public Set<OWLIndividual> getNotCoveredNegatives() {
 		return negAsNeg;
 	}		
 	
@@ -94,7 +110,8 @@ public class QueryTreeScore extends Score {
 				 + "(accuracy=" + accuracy 
 				 + "(+" + posAsPos.size() + "/" + (posAsPos.size() + posAsNeg.size())
 				 + "|-" + negAsPos.size() + "/" + (negAsPos.size() + negAsNeg.size()) + ")|"
-				 + "specifity=" + specifityScore + "(" + nrOfSpecificNodes + "))";   
+				 + "specifity=" + specifityScore + "(" + nrOfSpecificNodes + ")|"
+				 		+ "penalty=" + distancePenalty + ")";   
 	}
 
 }

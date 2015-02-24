@@ -1,5 +1,22 @@
 package org.dllearner.server;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
@@ -7,9 +24,8 @@ import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.kb.sparql.SparqlQueryDescriptionConvertVisitor;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.utilities.owl.OWLAPIConverter;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -17,16 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Rest extends HttpServlet {
@@ -62,7 +68,7 @@ public class Rest extends HttpServlet {
                 httpServletRequest.getRequestDispatcher("/WEB-INF/sparqr.html").forward(httpServletRequest, httpServletResponse);
                 return;
             } else {
-                conf = URLDecoder.decode(httpServletRequest.getParameter("conf"));
+                conf = URLDecoder.decode(httpServletRequest.getParameter("conf"), "UTF-8");
                 if (isSet("limit", httpServletRequest)) {
                     limit = Integer.parseInt(httpServletRequest.getParameter("limit"));
                 }
@@ -90,14 +96,11 @@ public class Rest extends HttpServlet {
 
                 EvaluatedDescriptionPosNeg ed = learn(conf);
 
-                SparqlQueryDescriptionConvertVisitor sqd = new SparqlQueryDescriptionConvertVisitor();
-                sqd.setLimit(limit);
                 OWLClassExpressionToSPARQLConverter sparqlConv = new OWLClassExpressionToSPARQLConverter();
                                learningResult.put("success", "1");
-                learningResult.put("manchester", ed.getDescription().toManchesterSyntaxString(null, null));
-                learningResult.put("kbsyntax", ed.getDescription().toKBSyntaxString());
+                learningResult.put("manchester", OWLAPIRenderers.toManchesterOWLSyntax(ed.getDescription()));
 //                learningResult.put("sparql", sqd.getSparqlQuery(ed.getDescription()));
-                learningResult.put("sparql", " "+ sparqlConv.asQuery("?subject", OWLAPIConverter.getOWLAPIDescription(ed.getDescription()))+" ");
+                learningResult.put("sparql", " "+ sparqlConv.asQuery("?subject", ed.getDescription())+" ");
                 learningResult.put("accuracy", ed.getAccuracy());
                 learningResult.put("truePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredPositives()));
                 learningResult.put("falsePositives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredPositives()));
@@ -172,7 +175,9 @@ public class Rest extends HttpServlet {
     }
 
     public static void main(String[] args) throws Exception {
-        String filePath = "../examples/father.conf";
+//        String filePath = Paths.get("").toAbsolutePath() + "/../examples/father_remote.conf";
+    	String filePath = Paths.get("").toAbsolutePath() + "/../examples/sparql/AristotlePosNeg.conf";
+        
         byte[] buffer = new byte[(int) new File(filePath).length()];
         BufferedInputStream f = null;
         try {

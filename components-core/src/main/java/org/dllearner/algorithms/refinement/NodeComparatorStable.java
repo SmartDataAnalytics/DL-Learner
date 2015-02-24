@@ -21,7 +21,7 @@ package org.dllearner.algorithms.refinement;
 
 import java.util.Comparator;
 
-import org.dllearner.utilities.owl.ConceptComparator;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
  * Der Comparator ist stable, weil er nur nach covered negatives,
@@ -33,8 +33,6 @@ import org.dllearner.utilities.owl.ConceptComparator;
  */
 public class NodeComparatorStable implements Comparator<Node> {
 
-	ConceptComparator conceptComparator = new ConceptComparator();
-	
 	// implementiert 
 	public int compare(Node n1, Node n2) {
 		
@@ -46,16 +44,17 @@ public class NodeComparatorStable implements Comparator<Node> {
 				else if(n1.getCoveredNegativeExamples()>n2.getCoveredNegativeExamples())
 					return -1;
 				else {
-					//TODO: es wäre geringfügig effizienter die Länge nicht mehrfach zu berechnen
-					if(n1.getConcept().getLength()<n2.getConcept().getLength())
-						return 1;
-					else if(n1.getConcept().getLength()>n2.getConcept().getLength())
-						return -1;
-					else
-						return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+					//prefer nodes with shorted concepts
+					int diff = OWLClassExpressionUtils.getLength(n2.getConcept()) - OWLClassExpressionUtils.getLength(n1.getConcept());
+					
+					if(diff == 0){
+						diff = n1.getConcept().compareTo(n2.getConcept());
+					}
+						
+					return diff;
 				}
 			} else
-				return conceptComparator.compare(n1.getConcept(), n2.getConcept());
+				return n1.getConcept().compareTo(n2.getConcept());
 		}
 		
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");

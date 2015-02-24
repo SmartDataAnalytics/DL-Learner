@@ -21,37 +21,28 @@ package org.dllearner.cli;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
-import org.dllearner.algorithms.BruteForceLearner;
-import org.dllearner.algorithms.RandomGuesser;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
-import org.dllearner.algorithms.fuzzydll.FuzzyCELOE;
-import org.dllearner.algorithms.gp.GP;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.algorithms.refinement.ROLearner;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.FuzzyPosNegLPStandard;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosNegLPStrict;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.reasoning.DIGReasoner;
 import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.FastRetrievalReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner;
 
 /**
  * Contains mappings from component classes to strings.
@@ -91,26 +82,20 @@ public class ConfMapper {
 		// edit this part manually
 		knowledgeSourceMapping.put("owlfile", OWLFile.class);
 		knowledgeSourceMapping.put("sparql", SparqlKnowledgeSource.class);
-		reasonerMapping.put("digReasoner", DIGReasoner.class);
+		knowledgeSourceMapping.put("kbfile", KBFile.class);
+		
 		reasonerMapping.put("owlAPIReasoner", OWLAPIReasoner.class);
-		reasonerMapping.put("fuzzyOwlAPIReasoner", FuzzyOWLAPIReasoner.class); // added by Josue
 		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
-		reasonerMapping.put("fastRetrievalReasoner", FastRetrievalReasoner.class);
+		
 		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
-		learningProblemMapping.put("fuzzyPosNegLPStandard", FuzzyPosNegLPStandard.class); // added by Josue
-		learningProblemMapping.put("posNegLPStrict", PosNegLPStrict.class);
 		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
 		learningProblemMapping.put("posOnlyLP", PosOnlyLP.class);
-		learningAlgorithmMapping.put("random", RandomGuesser.class);
-		learningAlgorithmMapping.put("bruteForce", BruteForceLearner.class);		
-		learningAlgorithmMapping.put("gp", GP.class);
-		learningAlgorithmMapping.put("refinement", ROLearner.class);
+		
 //		learningAlgorithmMapping.put("refexamples", OCEL.class);
 		learningAlgorithmMapping.put("ocel", OCEL.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);
-		learningAlgorithmMapping.put("fuzzyCeloe", FuzzyCELOE.class); // added by Josue
 		
 		// you do not need to edit anything below
 		

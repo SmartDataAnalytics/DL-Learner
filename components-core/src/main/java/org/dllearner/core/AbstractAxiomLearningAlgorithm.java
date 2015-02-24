@@ -20,6 +20,8 @@
 package org.dllearner.core;
 
 import java.net.SocketTimeoutException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,17 +38,13 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.config.IntegerEditor;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KBElement;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.TypedConstant;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -54,27 +52,34 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.owl.AxiomComparator;
+import org.dllearner.utilities.OWLAPIUtils;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.hp.hpl.jena.graph.Node;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.sparql.expr.E_Regex;
-import com.hp.hpl.jena.sparql.expr.E_Str;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.resultset.ResultSetMem;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -84,10 +89,12 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Lorenz Bühmann
  * @author Jens Lehmann
  */
-public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent implements AxiomLearningAlgorithm{
+public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject, E extends OWLEntity> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
 	protected LearningProblem learningProblem;
-	private static final Logger logger = LoggerFactory.getLogger(AbstractAxiomLearningAlgorithm.class);
+	protected final Logger logger;
+	
+	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
 	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
 	protected int maxExecutionTimeInSeconds = 10;
@@ -96,16 +103,22 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
 	protected int maxFetchedRows;
 	
-	protected SparqlEndpointKS ks;
-	protected SPARQLReasoner reasoner;
-	private QueryExecutionFactory qef;
 	
-	protected List<EvaluatedAxiom> currentlyBestAxioms;
-	protected SortedSet<Axiom> existingAxioms;
-	protected int fetchedRows;
+	protected SparqlEndpointKS ks;
+	
+	// the instances which are set
+	private SPARQLReasoner ksReasoner;
+	private QueryExecutionFactory ksQef;
+	
+	// the instances on which the algorithms are really applied
+	protected SPARQLReasoner reasoner;
+	protected QueryExecutionFactory qef;
+	
+	
+	protected SortedSet<EvaluatedAxiom<T>> currentlyBestAxioms;
+	protected SortedSet<T> existingAxioms;
 	
 	protected long startTime;
-	protected int limit = 1000;
 	
 	protected boolean timeout = true;
 	
@@ -122,13 +135,32 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected ParameterizedSparqlString iterativeQueryTemplate;
 	
-	protected Model workingModel;
+	protected Model sample;
+	
 	protected ParameterizedSparqlString posExamplesQueryTemplate;
 	protected ParameterizedSparqlString negExamplesQueryTemplate;
+	protected ParameterizedSparqlString existingAxiomsTemplate;
 	
+	protected OWLDataFactory df = new OWLDataFactoryImpl();
+	
+//	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
+	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
+	
+	protected AxiomType<T> axiomType;
+	
+	protected E entityToDescribe;
+	
+	protected boolean useSampling = true;
+	protected int popularity;
 	
 	public AbstractAxiomLearningAlgorithm() {
-		existingAxioms = new TreeSet<Axiom>(new AxiomComparator());
+		existingAxioms = new TreeSet<T>();
+		
+		logger = LoggerFactory.getLogger(this.getClass());
+	}
+	
+	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
+		this.ksQef = qef;
 	}
 	
 	@Override
@@ -141,6 +173,35 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
     public void setLearningProblem(LearningProblem learningProblem) {
         this.learningProblem = learningProblem;
     }	
+    
+    /**
+	 * @param entityToDescribe the entityToDescribe to set
+	 */
+	public void setEntityToDescribe(E entityToDescribe) {
+		this.entityToDescribe = entityToDescribe;
+	}
+	
+	/**
+	 * @return the entityToDescribe
+	 */
+	public E getEntityToDescribe() {
+		return entityToDescribe;
+	}
+	
+	public void setUseSampling(boolean useSampling) {
+		this.useSampling = useSampling;
+	}
+	
+	public boolean isUseSampling() {
+		return useSampling;
+	}
+    
+    /**
+	 * @return the axiomType
+	 */
+	public AxiomType<T> getAxiomType() {
+		return axiomType;
+	}
 	
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
@@ -155,7 +216,7 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	}
 
 	public void setReasoner(SPARQLReasoner reasoner) {
-		this.reasoner = reasoner;
+		this.ksReasoner = reasoner;
 	}
 
 	public boolean isReturnOnlyNewAxioms() {
@@ -180,86 +241,186 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 
 	@Override
 	public void start() {
+		logger.info("Started learning of " + axiomType.getName() + " axioms for " + 
+				OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID() + "...");
+		startTime = System.currentTimeMillis();
+		
+		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
+		
+		popularity = reasoner.getPopularity(entityToDescribe);
+		if(popularity == 0){
+			logger.warn("Cannot make " + axiomType.getName() + " axiom suggestions for empty " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID());
+			return;
+		}
+		
+		if(returnOnlyNewAxioms){
+			getExistingAxioms();
+		}
+		
+		if(useSampling){
+			generateSample();
+		} else {
+			qef = ksQef;
+			reasoner = ksReasoner;
+		}
+		
+		progressMonitor.learningStarted(axiomType);
+		try {
+			learnAxioms();
+		} catch (Exception e) {
+			progressMonitor.learningFailed(axiomType);
+			throw e;
+		} finally {
+			progressMonitor.learningStopped(axiomType);
+		}
+		
+		logger.info("...finished learning of " + axiomType.getName() 
+				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
+				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
+		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
+			logger.info("Suggested axiom: " + currentlyBestAxioms.first());
+		} else {
+			logger.info("Found " + currentlyBestAxioms.size() + " axiom candidates.");
+			if(!currentlyBestAxioms.isEmpty()){
+				logger.info("Best axiom candidate is " + currentlyBestAxioms.first());
+			}
+		}
 	}
-
-	public int getLimit() {
-		return limit;
+	
+	private void generateSample(){
+		logger.info("Generating sample...");
+		sample = ModelFactory.createDefaultModel();
+		
+		// we have to set up a new query execution factory working on our local model
+		qef = new QueryExecutionFactoryModel(sample);
+		reasoner = new SPARQLReasoner(qef, false);
+		
+		// get the page size 
+		//TODO put to base class
+		long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
+		
+		ParameterizedSparqlString sampleQueryTemplate = getSampleQuery();
+		sampleQueryTemplate.setIri("p", entityToDescribe.toStringID());
+		Query query = sampleQueryTemplate.asQuery();
+		query.setLimit(pageSize);
+		
+		
+		boolean isEmpty = false;
+		int i = 0;
+		while(!isTimeout() && !isEmpty){
+			// get next sample
+			logger.debug("Extending sample...");
+			query.setOffset(i++ * pageSize);
+			QueryExecution qe = ksQef.createQueryExecution(query);
+			Model tmp = qe.execConstruct();
+			sample.add(tmp);
+			
+			// if last call returned empty model, we can leave loop
+			isEmpty = tmp.isEmpty();
+		}
+		logger.info("...done. Sample size: " + sample.size() + " triples");
 	}
-
-	public void setLimit(int limit) {
-		this.limit = limit;
+	
+	/**
+	 * @param progressMonitor the progressMonitor to set
+	 */
+	public void setProgressMonitor(AxiomLearningProgressMonitor progressMonitor) {
+		this.progressMonitor = progressMonitor;
 	}
 
 	@Override
 	public void init() throws ComponentInitException {
 		if(ks.isRemote()){
-			SparqlEndpoint endpoint = ks.getEndpoint();
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			if(ks.getCache() != null){
-				qef = new QueryExecutionFactoryCacheEx(qef, ks.getCache());
-			}
-//			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-			
+			ksQef = ks.getQueryExecutionFactory();
 		} else {
-			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			ksQef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 		}
-		ks.init();
-		if(reasoner == null){
-			reasoner = new SPARQLReasoner((SparqlEndpointKS) ks);
+		if(ksReasoner == null){
+			ksReasoner = new SPARQLReasoner(ksQef);
 		}
-		timeout = true;
+//		ksReasoner.supportsSPARQL1_1();
+		reasoner = ksReasoner;
 	}
+	
+	/**
+	 * Get the defined axioms in the knowledge base.
+	 * @return
+	 */
+	protected abstract void getExistingAxioms();
+	
+	/**
+	 * Learn new OWL axioms based on instance data.
+	 */
+	protected abstract void learnAxioms();
+	
+	/**
+	 * The SPARQL CONSTRUCT query used to generate a sample for the given axiom type  and entity.
+	 * @return
+	 */
+	protected abstract ParameterizedSparqlString getSampleQuery();
 
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms() {
+	public List<T> getCurrentlyBestAxioms() {
 		return getCurrentlyBestAxioms(Integer.MAX_VALUE);
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+	public List<T> getCurrentlyBestAxioms(int nrOfAxioms) {
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
 	}
 	
-	public boolean isTimeout() {
+	public boolean wasTimeout() {
 		return timeout;
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms,
+	public boolean isTimeout(){
+		return maxExecutionTimeInSeconds != 0 && getRemainingRuntimeInMilliSeconds() <= 0;
+	}
+	
+	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
+		List<T> bestAxioms = new ArrayList<T>();
+		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
 	}
 	
-	public List<Axiom> getCurrentlyBestAxioms(double accuracyThreshold) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
+	public List<T> getCurrentlyBestAxioms(double accuracyThreshold) {
+		List<T> bestAxioms = new ArrayList<T>();
+		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
 		return bestAxioms;
 	}
 	
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
-		return currentlyBestAxioms;
+	public EvaluatedAxiom<T> getCurrentlyBestEvaluatedAxiom() {
+		List<EvaluatedAxiom<T>> currentlyBestEvaluatedAxioms = getCurrentlyBestEvaluatedAxioms(1);
+		if(currentlyBestEvaluatedAxioms.isEmpty()){
+			return null;
+		}
+		return currentlyBestEvaluatedAxioms.get(0);
+	}
+	
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
+		return new ArrayList<EvaluatedAxiom<T>>(currentlyBestAxioms);
 	}
 
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms, 0.0);
 	}
 	
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(double accuracyThreshold) {
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, accuracyThreshold);
 	}
 
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
+	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom> returnList = new ArrayList<EvaluatedAxiom>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
 		
 		//get the currently best evaluated axioms
-		List<EvaluatedAxiom> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
+		List<EvaluatedAxiom<T>> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
 		
-		for(EvaluatedAxiom evAx : currentlyBestEvAxioms){
+		for(EvaluatedAxiom<T> evAx : currentlyBestEvAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){
 				if(returnOnlyNewAxioms){
 					if(!existingAxioms.contains(evAx.getAxiom())){
@@ -274,21 +435,21 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		return returnList;
 	}
 	
-	public EvaluatedAxiom getBestEvaluatedAxiom(){
+	public EvaluatedAxiom<T> getBestEvaluatedAxiom(){
 		if(!currentlyBestAxioms.isEmpty()){
-			return new TreeSet<EvaluatedAxiom>(currentlyBestAxioms).last();
+			return new TreeSet<EvaluatedAxiom<T>>(currentlyBestAxioms).last();
 		}
 		return null;
 	}
 	
-	protected Set<NamedClass> getAllClasses() {
+	protected Set<OWLClass> getAllClasses() {
 		if(ks.isRemote()){
 			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
 		} else {
-			Set<NamedClass> classes = new TreeSet<NamedClass>();
+			Set<OWLClass> classes = new TreeSet<OWLClass>();
 			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).filterDrop(new RDFSFilter()).filterDrop(new RDFFilter()).toList()){
 				if(!cls.isAnon()){
-					classes.add(new NamedClass(cls.getURI()));
+					classes.add(df.getOWLClass(IRI.create(cls.getURI())));
 				}
 			}
 			return classes;
@@ -301,7 +462,6 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		QueryExecution qe = qef.createQueryExecution(query);
 		try {
 			Model model = qe.execConstruct();
-			fetchedRows += model.size();
 			timeout = false;
 			if(model.size() == 0){
 				fullDataLoaded = true;
@@ -373,18 +533,17 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 	
 	protected boolean terminationCriteriaSatisfied(){
 		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
-		boolean resultLimitExceeded = maxFetchedRows == 0 ? false : fetchedRows >= maxFetchedRows;
-		return  timeLimitExceeded || resultLimitExceeded; 
+		return  timeLimitExceeded ; 
 	}
 	
-	protected List<Entry<Description, Integer>> sortByValues(Map<Description, Integer> map, final boolean useHierachy){
-		List<Entry<Description, Integer>> entries = new ArrayList<Entry<Description, Integer>>(map.entrySet());
+	protected List<Entry<OWLClassExpression, Integer>> sortByValues(Map<OWLClassExpression, Integer> map, final boolean useHierachy){
+		List<Entry<OWLClassExpression, Integer>> entries = new ArrayList<Entry<OWLClassExpression, Integer>>(map.entrySet());
 		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
 		
-        Collections.sort(entries, new Comparator<Entry<Description, Integer>>() {
+        Collections.sort(entries, new Comparator<Entry<OWLClassExpression, Integer>>() {
 
 			@Override
-			public int compare(Entry<Description, Integer> o1, Entry<Description, Integer> o2) {
+			public int compare(Entry<OWLClassExpression, Integer> o1, Entry<OWLClassExpression, Integer> o2) {
 				int ret = o2.getValue().compareTo(o1.getValue());
 				//if the score is the same, than we optionally also take into account the subsumption hierarchy
 				if(ret == 0 && useHierachy){
@@ -410,138 +569,116 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
         return entries;
 	}
 	
-	protected Score computeScore(int total, int success){
+	protected AxiomScore computeScore(int total, int success){
+		return computeScore(total, success, false);
+	}
+	
+	protected AxiomScore computeScore(int total, int success, boolean sample){
 		if(success > total){
 			logger.warn("success value > total value");
 		}
-		success = Math.min(total, success);//TODO this is a workaround as Virtuoso sometimes returns wrong counts
 		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 		
-		double accuracy = (confidenceInterval[0] + confidenceInterval[1]) / 2;
+		double accuracy = Heuristics.getConfidenceInterval95WaldAverage(total, success);
 	
 		double confidence = confidenceInterval[1] - confidenceInterval[0];
 		
-		return new AxiomScore(accuracy, confidence, total, success, total-success);
+		return new AxiomScore(accuracy, confidence, success, total-success, sample);
 	}
+//	
+//	protected double accuracy(int total, int success){
+//		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
+//		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
+//	}
+//	
+//	protected double fMEasure(double precision, double recall){
+//		return 2 * precision * recall / (precision + recall);
+//	}
 	
-	protected double accuracy(int total, int success){
-		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
-		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
-	}
-	
-	protected double fMEasure(double precision, double recall){
-		return 2 * precision * recall / (precision + recall);
-	}
-	
-	protected ResultSet fetchData(){
-		setChunkConditions();
-		if(!fullDataLoaded){
-			Query query = buildQuery();
-			offset += chunkSize;
-			ResultSet rs = executeSelectQuery(query.toString());
-			chunkCount++;
-			return rs;
-		}
-		return new ResultSetMem();
-	}
-	
-	private void setChunkConditions() {
-		// adapt chunk size if needed
-		if (chunkCount == 1 && lastRowCount < chunkSize) {
-			logger.info("Adapting chunk size from " + chunkSize + " to " + lastRowCount);
-			chunkSize = lastRowCount;
-			offset = lastRowCount;
-		}
-
-		// check if full data was loaded
-		if(chunkCount != 0){
-			fullDataLoaded = (lastRowCount == 0) || (lastRowCount < chunkSize);
-			if (fullDataLoaded) {
-				logger.info("Loaded whole data. Early termination.");
-			}
-		}
-	}
-	
-	private Query buildQuery(){
-		Query query = iterativeQueryTemplate.asQuery();
-		for(String ns : allowedNamespaces){
-			((ElementGroup)query.getQueryPattern()).addElementFilter(
-					new ElementFilter(
-							new E_Regex(
-									new E_Str(new ExprVar(Node.createVariable("type"))),
-									ns, "")));
-		}
-		query.setLimit(chunkSize);
-		query.setOffset(offset);
-		return query;
-	}
 	
 	public void addFilterNamespace(String namespace){
 		allowedNamespaces.add(namespace);
 	}
 	
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom axiom){
-		if(workingModel != null){
-			SortedSet<KBElement> posExamples = new TreeSet<KBElement>();
-			
-			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-			RDFNode node;
-			while(rs.hasNext()){
-				node = rs.next().get("s");
-				if(node.isResource()){
-					posExamples.add(new Individual(node.asResource().getURI()));
-				} else if(node.isLiteral()){
-					posExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
-				}
+	@SuppressWarnings("unchecked")
+	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
+		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
+		Set<OWLObject> posExamples = new TreeSet<OWLObject>();
+		
+		RDFNode node;
+		while(rs.hasNext()){
+			node = rs.next().get("s");
+			if(node.isResource()){
+				posExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
+			} else if(node.isLiteral()){
+				posExamples.add(convertLiteral(node.asLiteral()));
 			}
-			
-			return posExamples;
-		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
 		}
+		
+		return (Set<S>) posExamples;
+//		throw new UnsupportedOperationException("Getting positive examples is not possible.");
+		
 	}
 	
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom axiom){
-		if(workingModel != null){
-			SortedSet<KBElement> negExamples = new TreeSet<KBElement>();
-			
-			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-			RDFNode node;
-			while(rs.hasNext()){
-				node = rs.next().get("s");
-				if(node.isResource()){
-					negExamples.add(new Individual(node.asResource().getURI()));
-				} else if(node.isLiteral()){
-					negExamples.add(new TypedConstant(node.asLiteral().getLexicalForm(), new Datatype(node.asLiteral().getDatatypeURI())));
-				}
+	@SuppressWarnings("unchecked")
+	public Set<S> getNegativeExamples(EvaluatedAxiom<T> axiom){
+		
+		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
+		
+		Set<OWLObject> negExamples = new TreeSet<OWLObject>();
+		
+		while(rs.hasNext()){
+			RDFNode node = rs.next().get("s");
+			if(node.isResource()){
+				negExamples.add(df.getOWLNamedIndividual(IRI.create(node.asResource().getURI())));
+			} else if(node.isLiteral()){
+				negExamples.add(convertLiteral(node.asLiteral()));
 			}
-			
-			return negExamples;
-		} else {
-			throw new UnsupportedOperationException("Getting negative examples is not possible.");
 		}
+		return (Set<S>) negExamples;
+//		throw new UnsupportedOperationException("Getting negative examples is not possible.");
 	}
 	
-	public void explainScore(EvaluatedAxiom evAxiom){
-		int posExampleCnt = getPositiveExamples(evAxiom).size();
-		int negExampleCnt = getNegativeExamples(evAxiom).size();
+	public void explainScore(EvaluatedAxiom<T> evAxiom){
+		AxiomScore score = evAxiom.getScore();
+		int posExampleCnt = score.getNrOfPositiveExamples();
+		int negExampleCnt = score.getNrOfNegativeExamples();
 		int total = posExampleCnt + negExampleCnt;
 		StringBuilder sb = new StringBuilder();
 		String lb = "\n";
 		sb.append("######################################").append(lb);
 		sb.append("Explanation:").append(lb);
 		sb.append("Score(").append(evAxiom.getAxiom()).append(") = ").append(evAxiom.getScore().getAccuracy()).append(lb);
-		sb.append("Fragment size:\t").append(workingModel.size()).append(" triples").append(lb);
 		sb.append("Total number of resources:\t").append(total).append(lb);
 		sb.append("Number of positive examples:\t").append(posExampleCnt).append(lb);
 		sb.append("Number of negative examples:\t").append(negExampleCnt).append(lb);
-		sb.append("Complete data processed:\t").append(fullDataLoaded).append(lb);
+		sb.append("Based on sample:            \t").append(score.isSampleBased()).append(lb);
+		if(sample != null){
+			sb.append("Sample size(#triples):      \t").append(sample.size()).append(lb);
+		}
 		sb.append("######################################");
 		System.out.println(sb.toString());
 	}
 	
 	public long getEvaluatedFramentSize(){
-		return workingModel.size();
+		return sample.size();
+	}
+	
+	/**
+	 * Converts a JENA API Literal object into an OWL API OWLLiteral object.
+	 * 
+	 * @param lit
+	 * @return
+	 */
+	protected OWLLiteral convertLiteral(Literal lit) {
+		String datatypeURI = lit.getDatatypeURI();
+		OWLLiteral owlLiteral;
+		if (datatypeURI == null) {// rdf:PlainLiteral
+			owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), lit.getLanguage());
+		} else {
+			owlLiteral = df.getOWLLiteral(lit.getLexicalForm(), df.getOWLDatatype(IRI.create(datatypeURI)));
+		}
+		return owlLiteral;
 	}
 	
 	public static <E> void printSubset(Collection<E> collection, int maxSize){
@@ -558,11 +695,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		System.out.println(sb.toString());
 	}
 	
-	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, V value ){
-		T values = map.get(key);
+	protected <K,J extends Set<V>, V> void addToMap(Map<K, J> map, K key, V value ){
+		J values = map.get(key);
 		if(values == null){
 			try {
-				values = (T) value.getClass().newInstance();
+				values = (J) value.getClass().newInstance();
 				values.add(value);
 			}
 			catch (InstantiationException e) {e.printStackTrace();return;}
@@ -571,11 +708,11 @@ public abstract class AbstractAxiomLearningAlgorithm extends AbstractComponent i
 		values.add(value);
 	}
 	
-	protected <K,T extends Set<V>, V> void addToMap(Map<K, T> map, K key, Collection<V> newValues ){
-		T values = map.get(key);
+	protected <K,J extends Set<V>, V> void addToMap(Map<K, J> map, K key, Collection<V> newValues ){
+		J values = map.get(key);
 		if(values == null){
 			try {
-				values = (T) newValues.getClass().newInstance();
+				values = (J) newValues.getClass().newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

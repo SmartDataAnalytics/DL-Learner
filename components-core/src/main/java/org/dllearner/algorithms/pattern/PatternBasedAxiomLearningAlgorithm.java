@@ -15,12 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Axiom;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.utilities.owl.DLLearnerAxiomConvertVisitor;
-import org.dllearner.utilities.owl.OWLAPIAxiomConvertVisitor;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
@@ -31,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
@@ -42,12 +39,12 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.rdf.arp.ARPOptions;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -57,13 +54,13 @@ import com.hp.hpl.jena.vocabulary.RDF;
  * @author Lorenz Buehmann
  *
  */
-public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm{
+public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlgorithm<OWLAxiom, OWLObject, OWLEntity>{
 	
 	private static final Logger logger = LoggerFactory.getLogger(PatternBasedAxiomLearningAlgorithm.class);
 	
 	
-	private Axiom pattern;
-	private NamedClass cls;
+	private OWLAxiom pattern;
+	private OWLClass cls;
 	
 	private FragmentExtractor fragmentExtractor;
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
@@ -91,39 +88,51 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	/**
 	 * @param pattern the pattern to set
 	 */
-	public void setPattern(Axiom pattern) {
+	public void setPattern(OWLAxiom pattern) {
 		this.pattern = pattern;
 	}
 	
 	/**
 	 * @param cls the cls to set
 	 */
-	public void setClass(NamedClass cls) {
+	public void setClass(OWLClass cls) {
 		this.cls = cls;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		
-		startTime = System.currentTimeMillis();
-		
+	protected void getExistingAxioms() {
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
 		logger.info("Pattern: " + pattern);
 		
 		//get the maximum modal depth in the pattern axioms
-		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(OWLAPIAxiomConvertVisitor.convertAxiom(pattern));modalDepth++;
+		int modalDepth = MaximumModalDepthDetector.getMaxModalDepth(pattern);modalDepth++;
 		logger.info("Modal depth: " + modalDepth);
 		
 		//extract fragment
 		Model fragment = fragmentExtractor.extractFragment(cls, modalDepth);
 		
 		//try to find instantiation of the pattern with confidence above threshold
-		Set<OWLAxiom> instantiations = applyPattern(OWLAPIAxiomConvertVisitor.convertAxiom(pattern), dataFactory.getOWLClass(IRI.create(cls.getName())), fragment);
+		Set<OWLAxiom> instantiations = applyPattern(pattern, dataFactory.getOWLClass(IRI.create(cls.toStringID())), fragment);
 		for (OWLAxiom instantiation : instantiations) {
 			System.out.println(instantiation);
 		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
 	}
 	
 	private Set<OWLAxiom> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
@@ -266,13 +275,13 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = SparqlEndpoint.getEndpointDBpediaLOD2Cloud();
 //		endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-		NamedClass cls = new NamedClass("http://dbpedia.org/ontology/SoccerPlayer");
+		OWLClass cls = df.getOWLClass(IRI.create("http://dbpedia.org/ontology/SoccerPlayer"));
 		OWLAxiom pattern = df.getOWLSubClassOfAxiom(df.getOWLClass("A", pm),
 				df.getOWLObjectAllValuesFrom(df.getOWLObjectProperty("p", pm), df.getOWLClass("B", pm)));
 		
 		PatternBasedAxiomLearningAlgorithm la = new PatternBasedAxiomLearningAlgorithm(new SparqlEndpointKS(endpoint), "cache", FragmentExtractionStrategy.INDIVIDUALS);
 		la.setClass(cls);
-		la.setPattern(DLLearnerAxiomConvertVisitor.getDLLearnerAxiom(pattern));
+		la.setPattern(pattern);
 		la.start();
 	}
 }

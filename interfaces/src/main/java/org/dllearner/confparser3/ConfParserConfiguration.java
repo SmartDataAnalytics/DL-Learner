@@ -32,7 +32,7 @@ public class ConfParserConfiguration implements IConfiguration {
         try {
 //          baseDir = source.getFile().getAbsoluteFile().getParent();
         	if(!(source instanceof InputStreamResource)){
-        		baseDir = source.getFile().getParentFile().toURI().toString();
+        		baseDir = source.getFile().getAbsoluteFile().getParentFile().toURI().toString();
         	} else {
         		baseDir = null;
         	}

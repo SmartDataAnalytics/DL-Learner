@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Description;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -95,10 +94,6 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	public VariablesMapping getVariablesMapping() {
 		return mapping;
 	}
-	
-	public String convert(String rootVariable, Description description){
-		return convert(rootVariable, OWLAPIConverter.getOWLAPIDescription(description));
-	}
 
 	public String convert(String rootVariable, OWLClassExpression expr){
 		this.expr = expr;
@@ -139,14 +134,6 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		queryString += triplePattern;
 		queryString += "}";
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
-	}
-	
-	public Query asCountQuery(Description description){
-		return asCountQuery(OWLAPIConverter.getOWLAPIDescription(description));
-	}
-	
-	public Query asQuery(String rootVariable, Description desc, boolean countQuery){
-		return asQuery(rootVariable, OWLAPIConverter.getOWLAPIDescription(desc), countQuery);
 	}
 	
 	public Query asQuery(String rootVariable, OWLClassExpression expr, Set<? extends OWLEntity> variableEntities){

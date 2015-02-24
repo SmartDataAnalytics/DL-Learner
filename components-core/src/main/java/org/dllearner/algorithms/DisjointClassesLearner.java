@@ -19,9 +19,7 @@
 
 package org.dllearner.algorithms;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,33 +34,32 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.NamedClassEditor;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.DisjointClassesAxiom;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
-import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.dllearner.learningproblems.Heuristics;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFactory;
+import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.OWL2;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * Learns disjoint classes using SPARQL queries.
@@ -72,35 +69,173 @@ import com.hp.hpl.jena.vocabulary.RDF;
  *
  */
 @ComponentAnn(name = "disjoint classes learner", shortName = "cldisjoint", version = 0.1)
-public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm implements ClassExpressionLearningAlgorithm {
+public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDisjointClassesAxiom, OWLIndividual, OWLClass>
+		implements ClassExpressionLearningAlgorithm {
 	
+	protected static final ParameterizedSparqlString CLASS_OVERLAP_QUERY = new ParameterizedSparqlString(
+			"SELECT ?cls_other (COUNT(?s) AS ?overlap) WHERE {"
+			+ "?s a ?cls, ?cls_other . "
+			+ "?cls_other a <http://www.w3.org/2002/07/owl#Class> . FILTER(?cls != ?cls_other)}"
+			+ " GROUP BY ?cls_other");
+
+	protected static final ParameterizedSparqlString GIVEN_CLASS_OVERLAP_QUERY = new ParameterizedSparqlString(
+					"SELECT (COUNT(?s) AS ?overlap) WHERE {?s a ?cls, ?cls_other . }");
 	
-	private static final Logger logger = LoggerFactory.getLogger(DisjointClassesLearner.class);
-	
-	@ConfigOption(name="classToDescribe", description="", propertyEditorClass=NamedClassEditor.class)
-	private NamedClass classToDescribe;
-	
+	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
+			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+
 	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
-	private SortedSet<Description> subClasses;
-	
+	private SortedSet<OWLClassExpression> subClasses;
+
 	private boolean useWordNetDistance = false;
 	private boolean suggestMostGeneralClasses = true;
 	private boolean useClassPopularity = true;
-	
-	private Set<NamedClass> allClasses;
-	
-	private int popularity;
-	
-	public DisjointClassesLearner(SparqlEndpointKS ks){
+
+	private Set<OWLClass> allClasses;
+
+	private boolean strictOWLMode = true;
+
+	public DisjointClassesLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
+		
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s a ?cls . FILTER NOT EXISTS {?s a ?cls_dis .}}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT ?s WHERE {?s a ?cls ; a ?cls_dis .}");
+		super.existingAxiomsTemplate = new ParameterizedSparqlString("SELECT ?cls_dis WHERE {?cls owl:disjointWith ?cls_dis .}");
+		
+		axiomType = AxiomType.DISJOINT_CLASSES;
 	}
-
-	public NamedClass getClassToDescribe() {
-		return classToDescribe;
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#setEntityToDescribe(org.semanticweb.owlapi.model.OWLEntity)
+	 */
+	@Override
+	public void setEntityToDescribe(OWLClass entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
+		
+		posExamplesQueryTemplate.setIri("cls", entityToDescribe.toStringID());
+		negExamplesQueryTemplate.setIri("cls", entityToDescribe.toStringID());
+		existingAxiomsTemplate.setIri("cls", entityToDescribe.toStringID());
+		
+		CLASS_OVERLAP_QUERY.setIri("cls", entityToDescribe.toStringID());
+		GIVEN_CLASS_OVERLAP_QUERY.setIri("cls", entityToDescribe.toStringID());
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#learnAxioms()
+	 */
+	@Override
+	protected void learnAxioms() {
+		run();
+//		runBatched();
+	}
+	
+	private void run() {
+		// get the candidates
+		SortedSet<OWLClass> candidates = getCandidates();
 
-	public void setClassToDescribe(NamedClass classToDescribe) {
-		this.classToDescribe = classToDescribe;
+		// check for each candidate if an overlap exists
+		int i = 1;
+		for (OWLClass cls : candidates) {
+			logger.debug("Analyzing candidate class " + cls.toStringID());
+			progressMonitor.learningProgressChanged(axiomType, i++, candidates.size());
+			
+			// get the popularity of the candidate
+			int candidatePopularity = reasoner.getPopularity(cls);
+			
+			if(candidatePopularity == 0){// skip empty classes
+				logger.warn("Cannot compute disjointness statements for empty candidate class " + cls);
+				continue;
+			}
+			
+			// get the number of overlapping instances, i.e. instances asserted to both classes
+			GIVEN_CLASS_OVERLAP_QUERY.setIri("cls_other", cls.toStringID());
+			ResultSet rs = executeSelectQuery(GIVEN_CLASS_OVERLAP_QUERY.toString());
+			int overlap = rs.next().getLiteral("overlap").getInt();
+			
+			// compute the score
+			double score = computeScore(candidatePopularity, popularity, overlap);
+			
+			int nrOfPosExamples = overlap;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
+							df.getOWLDisjointClassesAxiom(entityToDescribe, cls), 
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+		}
+	}
+	
+	/**
+	 * In this method we try to compute the overlap with each property in one single SPARQL query.
+	 * This method might be much slower as the query is much more complex.
+	 */
+	protected void runBatched() {
+		
+		ResultSet rs = executeSelectQuery(CLASS_OVERLAP_QUERY.toString());
+		ResultSetRewindable rsrw = ResultSetFactory.copyResults(rs);
+	    int size = rsrw.size();
+	    rs = rsrw;
+		while (rs.hasNext()) {
+			QuerySolution qs = rsrw.next();
+			OWLClass candidate = df.getOWLClass(IRI.create(qs.getResource("cls_other").getURI()));
+			logger.debug("Analyzing candidate class " + candidate.toStringID());
+			progressMonitor.learningProgressChanged(axiomType, rs.getRowNumber(), size);
+			
+			// get the popularity of the candidate
+			int candidatePopularity = reasoner.getPopularity(candidate);
+			
+			// get the number of overlapping triples, i.e. triples with the same subject and object
+			int overlap = qs.getLiteral("overlap").getInt();
+			
+			// compute the score
+			double score = 1 - computeScore(candidatePopularity, popularity, overlap);
+
+			int nrOfPosExamples = overlap;
+			
+			int nrOfNegExamples = popularity - nrOfPosExamples;
+			
+			currentlyBestAxioms.add(
+					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
+							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate), 
+							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
+		}
+	}
+	
+	/**
+	 * Returns the candidate properties for comparison.
+	 * @return
+	 */
+	private SortedSet<OWLClass> getCandidates(){
+		SortedSet<OWLClass> candidates;
+		
+		if (strictOWLMode) { 
+			candidates = reasoner.getOWLClasses();
+		} else {
+			candidates = reasoner.getClasses();
+		}
+		candidates.remove(entityToDescribe);
+		
+		// we do not have to consider subclasses
+		SortedSet<OWLClassExpression> subClasses = reasoner.getSubClasses(entityToDescribe, false);
+		candidates.removeAll(subClasses);
+		
+		return candidates;
+	}
+	
+	public double computeScore(int candidatePopularity, int popularity, int overlap){
+		// compute the estimated precision
+		double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
+
+		// compute the estimated recall
+		double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+		// compute the final score
+		double score = Heuristics.getFScore(recall, precision, 1.0);
+		
+		return score;
 	}
 
 	public boolean isUseWordNetDistance() {
@@ -118,279 +253,266 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 	public void setSuggestMostGeneralClasses(boolean suggestMostGeneralClasses) {
 		this.suggestMostGeneralClasses = suggestMostGeneralClasses;
 	}
-
-	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
-		
-		//we return here if the class contains no instances
-		popularity = reasoner.getPopularity(classToDescribe);
-		if(popularity == 0){
-			return;
-		}
-		
-		//at first get all existing classes in knowledge base
-		allClasses = getAllClasses();
-		allClasses.remove(classToDescribe);
-		
-		//get the subclasses
-		if(ks.isRemote()){
-			if(reasoner.isPrepared()){
-				subClasses = reasoner.getClassHierarchy().getSubClasses(classToDescribe, false);
-			} else {
-				subClasses = reasoner.getSubClasses(classToDescribe, true);
-			}
-		} else {
-			subClasses = new TreeSet<Description>();
-			OntModel ontModel = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
-			OntClass cls = ontModel.getOntClass(classToDescribe.getName());
-			for(OntClass sub : cls.listSubClasses(false).toSet()){
-				if(!sub.isAnon()){
-					subClasses.add(new NamedClass(sub.getURI()));
-				}
-			}
-			for(OntClass sup : cls.listSuperClasses().toSet()){
-				if(!sup.isAnon()){
-					subClasses.add(new NamedClass(sup.getURI()));
-				}
-			}
-		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-//			runSPARQL1_1_Mode();
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-		
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
-	}
 	
-	private void runSingleQueryMode(){
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
+	 */
+	@Override
+	protected ParameterizedSparqlString getSampleQuery() {
+		return SAMPLE_QUERY;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
+	@Override
+	protected void getExistingAxioms() {
+		ResultSet rs = executeSelectQuery(existingAxiomsTemplate.toString());
+		QuerySolution qs;
+		while (rs.hasNext()) {
+			qs = rs.next();
+			if(qs.get("cls_dis").isResource()){
+				OWLClass disjointClass = df.getOWLClass(IRI.create(qs.getResource("cls_dis").getURI()));
+				existingAxioms.add(df.getOWLDisjointClassesAxiom(entityToDescribe, disjointClass));
+			} else {
+				logger.warn("We do not support complex disjoint classes.");
+			}
+			
+		}
+	}
+
+	private void runSingleQueryMode() {
 		//compute the overlap if exist
-		Map<NamedClass, Integer> class2Overlap = new HashMap<NamedClass, Integer>(); 
-		String query = String.format("SELECT ?type (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s a ?type.} GROUP BY ?type", classToDescribe.getName());
+		Map<OWLClass, Integer> class2Overlap = new HashMap<OWLClass, Integer>();
+		String query = String.format("SELECT ?type (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s a ?type.} GROUP BY ?type",
+				entityToDescribe.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
-		while(rs.hasNext()){
+		while (rs.hasNext()) {
 			qs = rs.next();
-			NamedClass cls = new NamedClass(qs.getResource("type").getURI());
+			OWLClass cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 			int cnt = qs.getLiteral("cnt").getInt();
 			class2Overlap.put(cls, cnt);
 		}
 		//for each class in knowledge base
-		for(NamedClass cls : allClasses){if(!cls.toString().equals("http://dbpedia.org/ontology/MotorcycleRider"))continue;
+		for (OWLClass cls : allClasses) {
 			//get the popularity
 			int otherPopularity = reasoner.getPopularity(cls);
-			if(otherPopularity == 0){//skip empty properties
+			if (otherPopularity == 0) {//skip empty properties
 				continue;
-			}System.out.println(cls);
+			}
+			System.out.println(cls);
 			//get the overlap
 			int overlap = class2Overlap.containsKey(cls) ? class2Overlap.get(cls) : 0;
 			//compute the estimated precision
-			double precision = accuracy(otherPopularity, overlap);
-			//compute the estimated recall
-			double recall = accuracy(popularity, overlap);
-			//compute the final score
-			double score = 1 - fMEasure(precision, recall);
-			
+			// compute the estimated precision
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(otherPopularity, overlap);
+
+			// compute the estimated recall
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+			// compute the final score
+			double score = 1 - Heuristics.getFScore(recall, precision);
+
 			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, new AxiomScore(score)));
 		}
 	}
-	
-	private void runSPARQL1_0_Mode(){
+
+	private void runSPARQL1_0_Mode() {
 		Model model = ModelFactory.createDefaultModel();
 		int limit = 1000;
 		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s a <%s>. ?s a ?type.} WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);
+		String baseQuery = "CONSTRUCT {?s a <%s>. ?s a ?type.} WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
+		String query = String.format(baseQuery, entityToDescribe.toStringID(), entityToDescribe.toStringID(), limit,
+				offset);
 		Model newModel = executeConstructQuery(query);
-		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		NamedClass cls;
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
+		Map<OWLClass, Integer> result = new HashMap<OWLClass, Integer>();
+		OWLClass cls;
+		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
 			model.add(newModel);
 			//get total number of distinct instances
 			query = "SELECT (COUNT(DISTINCT ?s) AS ?count) WHERE {?s a ?type.}";
 			ResultSet rs = executeSelectQuery(query, model);
 			int total = rs.next().getLiteral("count").getInt();
-			
+
 			// get number of instances of s with <s p o>
-			query = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type.}" +
-					" GROUP BY ?type";
+			query = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type.}" + " GROUP BY ?type";
 			rs = executeSelectQuery(query, model);
 			QuerySolution qs;
-			while(rs.hasNext()){
+			while (rs.hasNext()) {
 				qs = rs.next();
-				if(qs.getResource("type") != null && !qs.getResource("type").isAnon()){
-					cls = new NamedClass(qs.getResource("type").getURI());
+				if (qs.getResource("type") != null && !qs.getResource("type").isAnon()) {
+					cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 					int newCnt = qs.getLiteral("count").getInt();
 					result.put(cls, newCnt);
 				}
-				
+
 			}
-			
-			if(!result.isEmpty()){
+
+			if (!result.isEmpty()) {
 				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses, total);
 			}
-			
+
 			offset += limit;
-			query = String.format(baseQuery, classToDescribe.getName(), classToDescribe.getName(), limit, offset);
+			query = String.format(baseQuery, entityToDescribe.toStringID(), entityToDescribe.toStringID(), limit, offset);
 			newModel = executeConstructQuery(query);
 		}
-		
+
 	}
-	
-	private void runSPARQL1_1_Mode(){
+
+	private void runSPARQL1_1_Mode() {
 		int limit = 1000;
 		int offset = 0;
-		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type. ?type a owl:Class" +
-		"{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d} " +
-		"} GROUP BY ?type";
+		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type. ?type a owl:Class"
+				+ "{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d} " + "} GROUP BY ?type";
 		String query;
-		Map<NamedClass, Integer> result = new HashMap<NamedClass, Integer>();
-		NamedClass cls;
+		Map<OWLClass, Integer> result = new HashMap<OWLClass, Integer>();
+		OWLClass cls;
 		Integer oldCnt;
 		boolean repeat = true;
-		
-		while(!terminationCriteriaSatisfied() && repeat){
-			query = String.format(queryTemplate, classToDescribe, limit, offset);System.out.println(query);
+
+		while (!terminationCriteriaSatisfied() && repeat) {
+			query = String.format(queryTemplate, entityToDescribe, limit, offset);
 			ResultSet rs = executeSelectQuery(query);
 			QuerySolution qs;
 			repeat = false;
 			Resource res;
-			while(rs.hasNext()){
+			while (rs.hasNext()) {
 				qs = rs.next();
 				res = qs.getResource("type");
-				if(res != null && !res.isAnon()){
-					cls = new NamedClass(qs.getResource("type").getURI());
+				if (res != null && !res.isAnon()) {
+					cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 					int newCnt = qs.getLiteral("count").getInt();
 					oldCnt = result.get(cls);
-					if(oldCnt == null){
+					if (oldCnt == null) {
 						oldCnt = Integer.valueOf(newCnt);
 					} else {
 						oldCnt += newCnt;
 					}
-					
+
 					result.put(cls, oldCnt);
 					repeat = true;
 				}
-				
+
 			}
-			if(!result.isEmpty()){
-				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses, result.get(classToDescribe));
+			if (!result.isEmpty()) {
+				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses,
+						result.get(entityToDescribe));
 				offset += 1000;
 			}
 		}
 	}
 
 	@Override
-	public List<Description> getCurrentlyBestDescriptions(int nrOfDescriptions) {
-		List<Description> bestDescriptions = new ArrayList<Description>();
-		for(EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)){
+	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
+		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
+		for (EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
 		return bestDescriptions;
 	}
 
 	@Override
-	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(
-			int nrOfDescriptions) {
+	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
-	
+
 	@Override
-	public List<Axiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<Axiom> bestAxioms = new ArrayList<Axiom>();
-		
-		for(EvaluatedAxiom evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)){
+	public List<OWLDisjointClassesAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
+		List<OWLDisjointClassesAxiom> bestAxioms = new ArrayList<OWLDisjointClassesAxiom>();
+
+		for (EvaluatedAxiom<OWLDisjointClassesAxiom> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)) {
 			bestAxioms.add(evAx.getAxiom());
 		}
-		
+
 		return bestAxioms;
 	}
 
 	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms() {
+	public List<EvaluatedAxiom<OWLDisjointClassesAxiom>> getCurrentlyBestEvaluatedAxioms() {
 		return getCurrentlyBestEvaluatedAxioms(currentlyBestEvaluatedDescriptions.size());
-	}	
-	
+	}
+
 	@Override
-	public List<EvaluatedAxiom> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		List<EvaluatedAxiom> axioms = new ArrayList<EvaluatedAxiom>();
-		List<Description> descriptions;
-		for(EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)){
-			descriptions = new ArrayList<Description>();
-			descriptions.add(classToDescribe);
+	public List<EvaluatedAxiom<OWLDisjointClassesAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
+		List<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new ArrayList<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
+		Set<OWLClassExpression> descriptions;
+		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
+			descriptions = new TreeSet<OWLClassExpression>();
+			descriptions.add(entityToDescribe);
 			descriptions.add(ed.getDescription());
-			axioms.add(new EvaluatedAxiom(new DisjointClassesAxiom(descriptions), new AxiomScore(ed.getAccuracy())));
+			axioms.add(new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(descriptions),
+					new AxiomScore(ed.getAccuracy())));
 		}
 		return axioms;
 	}
-	
-	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<NamedClass, Integer> class2Count, Set<NamedClass> allClasses, int total){
+
+	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<OWLClass, Integer> class2Count,
+			Set<OWLClass> allClasses, int total) {
 		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
-		
-		//Remove temporarily classToDescribe but keep track of their count
-//				Integer all = class2Count.get(classToDescribe);
-				class2Count.remove(classToDescribe);
-				
+
+		//Remove temporarily entityToDescribe but keep track of their count
+		//				Integer all = class2Count.get(entityToDescribe);
+		class2Count.remove(entityToDescribe);
+
 		//get complete disjoint classes
-		Set<NamedClass> completeDisjointclasses = new TreeSet<NamedClass>(allClasses);
+		Set<OWLClass> completeDisjointclasses = new TreeSet<OWLClass>(allClasses);
 		completeDisjointclasses.removeAll(class2Count.keySet());
-		
+
 		// we remove the asserted subclasses here
 		completeDisjointclasses.removeAll(subClasses);
-		for (Description subClass : subClasses) {
+		for (OWLClassExpression subClass : subClasses) {
 			class2Count.remove(subClass);
 		}
-		
+
 		//drop all classes which have a super class in this set
-		if(suggestMostGeneralClasses){
+		if (suggestMostGeneralClasses) {
 			keepMostGeneralClasses(completeDisjointclasses);
 		}
-		
-		
-		
-		
+
 		EvaluatedDescription evalDesc;
 		//firstly, create disjoint classexpressions which do not occur and give score of 1
-		for(NamedClass cls : completeDisjointclasses){
-			if(useClassPopularity){
+		for (OWLClass cls : completeDisjointclasses) {
+			if (useClassPopularity) {
 				int overlap = 0;
 				int pop;
-				if(ks.isRemote()){
+				if (ks.isRemote()) {
 					pop = reasoner.getPopularity(cls);
 				} else {
-					pop = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(cls.getName()).listInstances().toSet().size();
+					pop = ((LocalModelBasedSparqlEndpointKS) ks).getModel().getOntClass(cls.toStringID())
+							.listInstances().toSet().size();
 				}
 				//we skip classes with no instances
-				if(pop == 0) continue;
-				
-				//we compute the estimated precision
-				double precision = accuracy(pop, overlap);
-				//we compute the estimated recall
-				double recall = accuracy(popularity, overlap);
-				//compute the overall score
-				double score = 1 - fMEasure(precision, recall);
-				
+				if (pop == 0)
+					continue;
+
+				// compute the estimated precision
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(pop, overlap);
+
+				// compute the estimated recall
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+				// compute the final score
+				double score = 1 - Heuristics.getFScore(recall, precision);
+
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
 			} else {
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(1));
 			}
-			
+
 			evalDescs.add(evalDesc);
 		}
-		
+
 		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
-		NamedClass cls;
-		for (Entry<NamedClass, Integer> entry : sortByValues(class2Count)) {
+		OWLClass cls;
+		for (Entry<OWLClass, Integer> entry : sortByValues(class2Count)) {
 			cls = entry.getKey();
 			// drop classes from OWL and RDF namespace
-			if (cls.getName().startsWith(OWL2.getURI()) || cls.getName().startsWith(RDF.getURI()))
+			if (cls.getIRI().isReservedVocabulary())
 				continue;
 			if (useClassPopularity) {
 				int overlap = entry.getValue();
@@ -398,20 +520,21 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 				if (ks.isRemote()) {
 					pop = reasoner.getPopularity(cls);
 				} else {
-					pop = ((LocalModelBasedSparqlEndpointKS) ks).getModel()
-							.getOntClass(cls.getName()).listInstances().toSet()
-							.size();
+					pop = ((LocalModelBasedSparqlEndpointKS) ks).getModel().getOntClass(cls.toStringID())
+							.listInstances().toSet().size();
 				}
 				// we skip classes with no instances
 				if (pop == 0)
 					continue;
 
-				// we compute the estimated precision
-				double precision = accuracy(pop, overlap);
-				// we compute the estimated recall
-				double recall = accuracy(popularity, overlap);
-				// compute the overall score
-				double score = 1 - fMEasure(precision, recall);
+				// compute the estimated precision
+				double precision = Heuristics.getConfidenceInterval95WaldAverage(pop, overlap);
+
+				// compute the estimated recall
+				double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
+
+				// compute the final score
+				double score = 1 - Heuristics.getFScore(recall, precision);
 
 				evalDesc = new EvaluatedDescription(cls, new AxiomScore(score));
 			} else {
@@ -419,194 +542,183 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm imple
 			}
 			evalDescs.add(evalDesc);
 		}
-		
-		class2Count.put(classToDescribe, total);
+
+		class2Count.put(entityToDescribe, total);
 		return evalDescs;
 	}
-	
-	private void keepMostGeneralClasses(Set<NamedClass> classes){
-		if(ks.isRemote()){
-			if(reasoner.isPrepared()){
+
+	private void keepMostGeneralClasses(Set<OWLClass> classes) {
+		if (ks.isRemote()) {
+			if (reasoner.isPrepared()) {
 				ClassHierarchy h = reasoner.getClassHierarchy();
-				for(NamedClass nc : new HashSet<NamedClass>(classes)){
+				for (OWLClass nc : new HashSet<OWLClass>(classes)) {
 					classes.removeAll(h.getSubClasses(nc));
 				}
 			}
 		} else {
-			OntModel model = ((LocalModelBasedSparqlEndpointKS)ks).getModel();
-			
-//			Set<NamedClass> topClasses = new HashSet<NamedClass>();
-//			for(OntClass cls : model.listNamedClasses().toSet()){
-//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
-//				if(superClasses.isEmpty() || 
-//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
-//					topClasses.add(new NamedClass(cls.getURI()));
-//				}
-//				
-//			}
-//			classes.retainAll(topClasses);
-			for(NamedClass nc : new HashSet<NamedClass>(classes)){//System.out.print(nc + "::");
-				for(OntClass cls : model.getOntClass(nc.getName()).listSubClasses().toSet()){//System.out.print(cls + "|");
-					classes.remove(new NamedClass(cls.getURI()));
+			OntModel model = ((LocalModelBasedSparqlEndpointKS) ks).getModel();
+
+			//			Set<OWLClass> topClasses = new HashSet<OWLClass>();
+			//			for(OntClass cls : model.listOWLClasses().toSet()){
+			//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
+			//				if(superClasses.isEmpty() || 
+			//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
+			//					topClasses.add(df.getOWLClass(IRI.create(cls.getURI()));
+			//				}
+			//				
+			//			}
+			//			classes.retainAll(topClasses);
+			for (OWLClass nc : new HashSet<OWLClass>(classes)) {//System.out.print(nc + "::");
+				for (OntClass cls : model.getOntClass(nc.toStringID()).listSubClasses().toSet()) {//System.out.print(cls + "|");
+					classes.remove(df.getOWLClass(IRI.create(cls.getURI())));
 				}
-//				System.out.println();
+				//				System.out.println();
 			}
-			
+
 		}
 	}
-	
-	private void computeAllDisjointClassAxiomsOptimized(){
+
+	private void computeAllDisjointClassAxiomsOptimized() {
 		//get number of instances of A
-		int instanceCountA = reasoner.getPopularity(classToDescribe);
-		
+		int instanceCountA = reasoner.getPopularity(entityToDescribe);
+
 		//firstly, we compute the disjointness to all sibling classes
-		Set<EvaluatedDescription> disjointessOfSiblings = computeDisjointessOfSiblings(classToDescribe);
+		Set<EvaluatedDescription> disjointessOfSiblings = computeDisjointessOfSiblings(entityToDescribe);
 		System.out.println(disjointessOfSiblings);
-		
+
 		//we go the hierarchy up
-		SortedSet<Description> superClasses = reasoner.getSuperClasses(classToDescribe);
-		for (Description sup : superClasses) {
-			Set<EvaluatedDescription> disjointessOfSuperClass = computeDisjointessOfSiblings(sup.asNamedClass());
+		SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(entityToDescribe);
+		for (OWLClassExpression sup : superClasses) {
+			Set<EvaluatedDescription> disjointessOfSuperClass = computeDisjointessOfSiblings(sup.asOWLClass());
 			System.out.println(disjointessOfSuperClass);
 		}
 	}
-	
-	private Set<EvaluatedDescription> computeDisjointessOfSiblings(NamedClass cls){
+
+	private Set<EvaluatedDescription> computeDisjointessOfSiblings(OWLClass cls) {
 		Set<EvaluatedDescription> evaluatedDescriptions = new HashSet<EvaluatedDescription>();
-		
+
 		//get number of instances of A
 		int instanceCountA = reasoner.getPopularity(cls);
-		
-		if(instanceCountA > 0){
+
+		if (instanceCountA > 0) {
 			//we compute the disjointness to all sibling classes
-			Set<NamedClass> siblingClasses = reasoner.getSiblingClasses(cls);
-			
-			for (NamedClass sib : siblingClasses) {
+			Set<OWLClass> siblingClasses = reasoner.getSiblingClasses(cls);
+
+			for (OWLClass sib : siblingClasses) {
 				//get number of instances of B
 				int instanceCountB = reasoner.getPopularity(sib);
-				
-				if(instanceCountB > 0){
-					//get number of instances of (A and B)
-					int instanceCountAB = reasoner.getPopularity(new Intersection(cls, sib));
 
-					//we compute the estimated precision
-					double precision = accuracy(instanceCountB, instanceCountAB);
-					//we compute the estimated recall
-					double recall = accuracy(instanceCountA, instanceCountAB);
-					//compute the overall score
-					double score = 1 - fMEasure(precision, recall);
-					
+				if (instanceCountB > 0) {
+					//get number of instances of (A and B)
+					int instanceCountAB = reasoner.getPopularityOf(df.getOWLObjectIntersectionOf(cls, sib));
+
+					// compute the estimated precision
+					double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);
+
+					// compute the estimated recall
+					double recall = Heuristics.getConfidenceInterval95WaldAverage(instanceCountA, instanceCountAB);
+
+					// compute the final score
+					double score = 1 - Heuristics.getFScore(recall, precision);
+
 					EvaluatedDescription evalDesc = new EvaluatedDescription(sib, new AxiomScore(score));
 					evaluatedDescriptions.add(evalDesc);
 				}
 			}
 		}
-		
+
 		return evaluatedDescriptions;
 	}
-	
-	public EvaluatedAxiom computeDisjointess(NamedClass clsA, NamedClass clsB){
+
+	public EvaluatedAxiom<OWLDisjointClassesAxiom> computeDisjointess(OWLClass clsA, OWLClass clsB) {
 		logger.debug("Computing disjointness between " + clsA + " and " + clsB + "...");
-		
+
 		//if clsA = clsB
-		if(clsA.equals(clsB)){
-			return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), new AxiomScore(0d, 1d));
-		};
-		
+		if (clsA.equals(clsB)) {
+			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
+					new AxiomScore(0d, 1d));
+		}
+		;
+
 		//if the classes are connected via subsumption we assume that they are not disjoint 
-		if(reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)){
-			return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), new AxiomScore(0d, 1d));
-		};
-		
+		if (reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)) {
+			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
+					new AxiomScore(0d, 1d));
+		}
+		;
+
 		double scoreValue = 0;
-		
+
 		//get number of instances of A
 		int instanceCountA = reasoner.getPopularity(clsA);
-		
+
 		//get number of instances of B
 		int instanceCountB = reasoner.getPopularity(clsB);
-		
-		if(instanceCountA > 0 && instanceCountB > 0){
+
+		if (instanceCountA > 0 && instanceCountB > 0) {
 			//get number of instances of (A and B)
-			int instanceCountAB = reasoner.getPopularity(new Intersection(clsA, clsB));
-			
-			//we compute the estimated precision
-			double precision = accuracy(instanceCountB, instanceCountAB);
-			
-			//we compute the estimated recall
-			double recall = accuracy(instanceCountA, instanceCountAB);
-			
-			//compute the overall score
-			scoreValue = 1 - fMEasure(precision, recall);
-			
+			int instanceCountAB = reasoner.getPopularityOf(df.getOWLObjectIntersectionOf(clsA, clsB));
+
+			// compute the estimated precision
+			double precision = Heuristics.getConfidenceInterval95WaldAverage(instanceCountB, instanceCountAB);
+
+			// compute the estimated recall
+			double recall = Heuristics.getConfidenceInterval95WaldAverage(instanceCountA, instanceCountAB);
+
+			// compute the final score
+			scoreValue = 1 - Heuristics.getFScore(recall, precision);
+
 		}
-		
+
 		AxiomScore score = new AxiomScore(scoreValue);
-		
-		return new EvaluatedAxiom(new DisjointClassesAxiom(clsA, clsB), score);
+
+		return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB), score);
 	}
-	
-	public Set<EvaluatedAxiom> computeSchemaDisjointness(){
-		Set<EvaluatedAxiom> axioms = new HashSet<EvaluatedAxiom>();
-		
-		Set<NamedClass> classes = reasoner.getOWLClasses("http://dbpedia.org/ontology/");
+
+	public Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> computeSchemaDisjointness() {
+		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
+
+		Set<OWLClass> classes = reasoner.getOWLClasses("http://dbpedia.org/ontology/");
 		computeDisjointness(classes);
-		
+
 		//start from the top level classes, i.e. the classes whose direct super class is owl:Thing
-		SortedSet<Description> topLevelClasses = reasoner.getMostGeneralClasses();
-		axioms.addAll(computeDisjointness(asNamedClasses(topLevelClasses)));
-		
-		for (Description cls : topLevelClasses) {
-			
+		SortedSet<OWLClassExpression> topLevelClasses = reasoner.getMostGeneralClasses();
+		axioms.addAll(computeDisjointness(asOWLClasses(topLevelClasses)));
+
+		for (OWLClassExpression cls : topLevelClasses) {
+
 		}
-		
+
 		return axioms;
 	}
-	
-	public Set<EvaluatedAxiom> computeDisjointness(Set<NamedClass> classes){
-		Set<EvaluatedAxiom> axioms = new HashSet<EvaluatedAxiom>();
-		
-		for (NamedClass clsA : classes) {
-			for (NamedClass clsB : classes) {
+
+	public Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> computeDisjointness(Set<OWLClass> classes) {
+		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
+
+		for (OWLClass clsA : classes) {
+			for (OWLClass clsB : classes) {
 				axioms.add(computeDisjointess(clsA, clsB));
 			}
 		}
-		
+
 		return axioms;
 	}
-	
-	public static Set<NamedClass> asNamedClasses(Set<Description> descriptions){
-		Set<NamedClass> classes = new TreeSet<NamedClass>();
-		for (Description description : descriptions) {
-			if(description.isNamedClass()){
-				classes.add(description.asNamedClass());
+
+	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> descriptions) {
+		Set<OWLClass> classes = new TreeSet<OWLClass>();
+		for (OWLClassExpression description : descriptions) {
+			if (!description.isAnonymous()) {
+				classes.add(description.asOWLClass());
 			}
 		}
 		return classes;
 	}
 	
-	public static void main(String[] args) throws Exception{
-		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
-		ks = new LocalModelBasedSparqlEndpointKS(new URL("http://dl-learner.svn.sourceforge.net/viewvc/dl-learner/trunk/examples/swore/swore.rdf?revision=2217"));
-		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());
-		DisjointClassesLearner l = new DisjointClassesLearner(ks);
-		SPARQLReasoner sparqlReasoner = new SPARQLReasoner(ks, "cache");
-//		sparqlReasoner.prepareSubsumptionHierarchy();
-		sparqlReasoner.precomputeClassPopularity();
-		l.setReasoner(sparqlReasoner);
-		l.setClassToDescribe(new NamedClass("http://dbpedia.org/ontology/Actor"));
-		l.setMaxExecutionTimeInSeconds(60);
-		l.init();
-		l.computeSchemaDisjointness();
-		
-//		System.out.println(l.getReasoner().getClassHierarchy().getSubClasses(new NamedClass("http://dbpedia.org/ontology/Athlete"), false));System.exit(0);
-		l.start();
-		
-		for(EvaluatedAxiom e : l.getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, 0.0)){
-			System.out.println(e);
-		}
-		
+	public static void main(String[] args) throws Exception {
+		DisjointClassesLearner la = new DisjointClassesLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Actor")));
+		la.setUseSampling(false);
+		la.init();
+		la.start();
 	}
-
-
 }

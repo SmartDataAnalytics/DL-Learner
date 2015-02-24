@@ -151,6 +151,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     private boolean isBlankNode = false;
     
     private Set<Literal> literals = new HashSet<Literal>();
+
+	private NodeType nodeType;
     
     public QueryTreeImpl(N userObject) {
         this.userObject = userObject;
@@ -174,7 +176,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                 return label;
             }
         };
-        
+//        if(isVarNode() && !getUserObject().equals("?")){
+//    		System.out.println(getUserObject());
+//    		System.out.println("ERROR1");
+////    		System.exit(0);
+//    	}
     }
     
     public QueryTreeImpl(N userObject, NodeType nodeType) {
@@ -183,6 +189,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     public QueryTreeImpl(N userObject, NodeType nodeType, int id) {
         this.userObject = userObject;
+		this.nodeType = nodeType;
         this.id = id;
         children = new ArrayList<QueryTreeImpl<N>>();
         child2EdgeMap = new HashMap<QueryTree<N>, Object>();
@@ -200,7 +207,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
             			label += "Values: " + object.getLiterals();
             		}
             	}
-            	label += object.isResourceNode() + "," + object.isLiteralNode();
+//            	label += object.isResourceNode() + "," + object.isLiteralNode();
                 return  label;
             }
         };
@@ -209,10 +216,38 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         } else if(nodeType == NodeType.LITERAL){
         	isLiteralNode = true;
         }
+//        if(isVarNode() && !getUserObject().equals("?")){
+//    		System.out.println(getUserObject());
+//    		System.out.println("ERROR2");
+//    		System.exit(0);
+//    	}
     }
     
     public QueryTreeImpl(QueryTree<N> tree){
-    	this(tree.getUserObject());
+    	this(tree.getUserObject(), tree.getNodeType());
+    	
+//    	this.userObject = tree.getUserObject();
+//        children = new ArrayList<QueryTreeImpl<N>>();
+//        child2EdgeMap = new HashMap<QueryTree<N>, Object>();
+//        edge2ChildrenMap = new HashMap<String, List<QueryTree<N>>>();
+//        toStringRenderer = new NodeRenderer<N>() {
+//            public String render(QueryTree<N> object) {
+//            	String label = object.toString() + "(" + object.getId() + ")";
+//            	if(object.isLiteralNode()){
+////            		if(object.getLiterals().size() == 1){
+////            			label += object.getLiterals().iterator().next();
+////            		} else if(object.getLiterals().size() > 1){
+////            			label += "Values: " + object.getLiterals();
+////            		}
+//            		if(!object.getLiterals().isEmpty()){
+//            			label += "Values: " + object.getLiterals();
+//            		}
+//            	}
+////            	label += object.isResourceNode() + "," + object.isLiteralNode();
+//                return label;
+//            }
+//        };
+    	
     	setId(tree.getId());
     	QueryTreeImpl<N> subTree;
     	for(QueryTree<N> child : tree.getChildren()){
@@ -223,6 +258,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		subTree.addLiterals(child.getLiterals());
     		addChild(subTree, tree.getEdge(child));
     	}
+    	
     	setIsResourceNode(tree.isResourceNode());
     	setIsLiteralNode(tree.isLiteralNode());
     	addLiterals(tree.getLiterals());
@@ -251,6 +287,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public int getId() {
     	return id;
     }
+    
+	public NodeType getNodeType() {
+		return nodeType;
+	}
     
     @Override
     public boolean isEmpty(){
@@ -488,6 +528,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	if(!(tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject))){
     		return false;
     	}
+    	if(isResourceNode() && tree.isResourceNode() && this.userObject.equals(tree.getUserObject())){
+    		return true;
+    	}
     	Object edge;
     	for(QueryTree<N> child : tree.getChildren()){
     		boolean isSubsumed = false;
@@ -499,6 +542,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			}
     		}
     		if(!isSubsumed){
+//    			System.err.println(child.getParent() + "--" + child.getParent().getEdge(child) + "-->" + child);
+//    			System.err.println(child.getStringRepresentation(true));
 				return false;
 			}
     	}
@@ -523,11 +568,20 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			if(strategy == LiteralNodeSubsumptionStrategy.OFF){
         			return tree.getUserObject().equals("?") || tree.getUserObject().equals(this.userObject);
         		} else {
+        			// rdf:PlainLiteral
+        			if(tree.getDatatype() == null && this.getDatatype() == null) {
+        				return true;
+        			}
+        			if(tree.getLiterals().isEmpty()) {
+        				return true;
+        			}
         			return subsumes(tree.getLiterals(), this.getLiterals(), strategy);
         		}
     		}
     	} else if(!tree.isVarNode() && this.isVarNode()){
     		return false;
+    	} else if(tree.isVarNode() && this.isLiteralNode()) {
+    		return true;
     	} else if(tree.isResourceNode() && this.isLiteralNode || tree.isLiteralNode() && this.isResourceNode){//node type mismatch
     		return false;
     	}
@@ -542,6 +596,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			}
     		}
     		if(!isSubsumed){
+//    			System.err.println("not covered: " + QueryTreeUtils.printPathToRoot(child, tree));
 				return false;
 			}
     	}
@@ -549,10 +604,22 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     private boolean subsumes(Set<Literal> subsumer, Set<Literal> subsumee, LiteralNodeSubsumptionStrategy strategy){
+    	if(subsumer.isEmpty() || subsumee.isEmpty()){
+    		return false;
+    	}
     	if(strategy == LiteralNodeSubsumptionStrategy.DATATYPE){
     		//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			
+//			if(subsumerDatatype == null && subsumeeDatatype == null) {
+//				return true;
+//			}
+			
+			if(subsumerDatatype == null || subsumeeDatatype == null) {
+				return false;
+			}
+			
 			return subsumerDatatype.equals(subsumeeDatatype);
 		} else if(strategy == LiteralNodeSubsumptionStrategy.ENUMERATION){
 			return subsumer.containsAll(subsumee);
@@ -560,6 +627,11 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			//check if both datatypes are the same
 			RDFDatatype subsumerDatatype = getDatatype(subsumer);
 			RDFDatatype subsumeeDatatype = getDatatype(subsumee);
+			
+			if(subsumerDatatype == null || subsumeeDatatype == null) {
+				return false;
+			}
+			
 			if(!subsumerDatatype.equals(subsumeeDatatype)){
 				return false;
 			}
@@ -960,7 +1032,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     @Override
     public Object clone() throws CloneNotSupportedException {
-    	QueryTreeImpl<N> copy = new QueryTreeImpl<N>(this.userObject);
+    	QueryTreeImpl<N> copy = new QueryTreeImpl<N>(this.userObject, this.nodeType);
+    	copy.setIsResourceNode(isResourceNode);
+    	copy.setIsLiteralNode(isLiteralNode);
     	for(QueryTreeImpl<N> child : children){
     		copy.addChild((QueryTreeImpl<N>)child.clone(), getEdge(child));
     	}
@@ -1058,7 +1132,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		sb.append(filter).append("\n");
     	}
     	sb.append("}");
-    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxARQ);
+    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
     	
     	//get the used resources in the query
     	Set<String> usedResources = getUsedResources(query);
@@ -1148,6 +1222,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         			object = "?x" + cnt;
         		} else if(((String)object).startsWith("http://")){
         			object = "<" + object + ">";
+        		}
+        		if(child.isLiteralNode() && object.toString().contains("\n")) {
+        			object = "\"\"" + object + "\"\"";
         		}
         		sb.append(subject).append(" <").append(predicate).append("> ").append(object).append(".\n");
         		if(!objectIsResource){
@@ -1286,6 +1363,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     			min = (l.getFloat() < min.getFloat()) ? l : min;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
     			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
+    		} else if(l.getDatatype() == XSDDatatype.XSDgYear){
+    			min = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(min.getLexicalForm())) == -1) ? l : min;
     		} 
     	}
     	return min;
@@ -1304,6 +1383,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     		} else if(l.getDatatype() == XSDDatatype.XSDfloat){
     			max = (l.getFloat() > max.getFloat()) ? l : max;
     		} else if(l.getDatatype() == XSDDatatype.XSDdate){
+    			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
+    		} else if(l.getDatatype() == XSDDatatype.XSDgYear){
     			max = (DatatypeConverter.parseDate(l.getLexicalForm()).compareTo(DatatypeConverter.parseDate(max.getLexicalForm())) == 1) ? l : max;
     		} 
     	}
@@ -1424,9 +1505,16 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
     private Set<OWLClassExpression> buildOWLClassExpressions(OWLDataFactory df, QueryTree<N> tree, LiteralNodeConversionStrategy literalNodeConversionStrategy){
-    	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
     	
     	List<QueryTree<N>> children = tree.getChildren();
+    	
+    	// if tree has no children return owl:Thing
+    	if(children.isEmpty()) {
+    		return Collections.<OWLClassExpression>singleton(df.getOWLThing());
+    	}
+    	
+    	// process children
+    	Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
     	for(QueryTree<N> child : children){
     		String childLabel = (String) child.getUserObject();
     		String predicateString = (String) tree.getEdge(child);
@@ -1445,7 +1533,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     					Set<Literal> literals = child.getLiterals();
     					OWLDataRange dataRange = null;
     					if(literals.isEmpty()){//happens if there are heterogeneous datatypes
-    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getURI().toString();
+    						String datatypeURI = OWL2Datatype.RDFS_LITERAL.getIRI().toString();
     						dataRange = df.getOWLDatatype(IRI.create(datatypeURI));
     					} else {
     						if(literalNodeConversionStrategy == LiteralNodeConversionStrategy.DATATYPE){
@@ -1453,7 +1541,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                     			RDFDatatype datatype = lit.getDatatype();
                     			String datatypeURI;
                     			if(datatype == null){
-                    				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getURI().toString();
+                    				datatypeURI = OWL2Datatype.RDF_PLAIN_LITERAL.getIRI().toString();
                     			} else {
                     				datatypeURI = datatype.getURI();
                     			}
@@ -1479,6 +1567,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         			OWLObjectProperty p = df.getOWLObjectProperty(IRI.create((String) tree.getEdge(child)));
         			OWLClassExpression filler;
         			if(child.isVarNode()){//p some C
+//        				System.out.println(child + ":" + child.isVarNode() + ":" + child.isResourceNode());
             			Set<OWLClassExpression> fillerClassExpressions = buildOWLClassExpressions(df, child, literalNodeConversionStrategy);
             			if(fillerClassExpressions.isEmpty()){
             				filler = df.getOWLThing();

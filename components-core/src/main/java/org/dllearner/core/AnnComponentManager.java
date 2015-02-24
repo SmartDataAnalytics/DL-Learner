@@ -50,14 +50,14 @@ public class AnnComponentManager {
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.celoe.CELOE",
-            "org.dllearner.algorithms.celoe.PCELOE",
-            "org.dllearner.algorithms.el.ELLearningAlgorithm",
-            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
-            "org.dllearner.algorithms.BruteForceLearner",
-            "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.NaiveALLearner",
+            "org.dllearner.algorithms.celoe.CELOE", 
+//            "org.dllearner.algorithms.celoe.PCELOE",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithm",
+            "org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive",
+//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",   
+//            "org.dllearner.algorithms.BruteForceLearner",
+//            "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
             "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
@@ -85,18 +85,18 @@ public class AnnComponentManager {
             "org.dllearner.kb.sparql.SparqlKnowledgeSource",
             "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
             "org.dllearner.learningproblems.PosNegLPStandard",
-            "org.dllearner.learningproblems.PosNegLPStrict",
-            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
+//            "org.dllearner.learningproblems.PosNegLPStrict",
+//            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
             "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
+//            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.ocel.MultiHeuristic",
             "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
             "org.dllearner.refinementoperators.RhoDRDown",
-            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
+//            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
             // just for testing
             // "org.dllearner.refinementoperators.ExampleOperator",
     } ));
@@ -365,9 +365,9 @@ public class AnnComponentManager {
 	}
 
 	/**
-	 * Returns the description of a DL-Learner component.
+	 * Returns the OWLClassExpression of a DL-Learner component.
 	 * @param component
-	 * @return Description of the component.
+	 * @return OWLClassExpression of the component.
 	 */
 	public static String getDescription(Component component){
 		return getDescription(component.getClass());

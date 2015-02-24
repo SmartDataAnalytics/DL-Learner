@@ -26,8 +26,6 @@ import java.io.UnsupportedEncodingException;
 import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
 import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.dllearner.algorithms.pattern.ManchesterOWLSyntaxOWLObjectRendererImpl;
-import org.dllearner.core.owl.Axiom;
 import org.dllearner.utilities.StringFormatter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
@@ -41,6 +39,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
 /**
  * A collection of various render methods provided by 
  * OWL API.
@@ -50,9 +50,14 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
  */
 public class OWLAPIRenderers {
 	
-	private static final ManchesterOWLSyntaxOWLObjectRendererImpl manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private static final ManchesterOWLSyntaxOWLObjectRendererImplExt manchesterRenderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 	private static final DLSyntaxObjectRenderer dlSyntaxRenderer = new DLSyntaxObjectRenderer();
-
+	
+	static {
+		manchesterRenderer.setUseWrapping(false);
+		manchesterRenderer.setUseTabbing(false);
+	}
+	
 	/**
 	 * Converts an OWL API object to a DL syntax string.
 	 * 
@@ -66,27 +71,27 @@ public class OWLAPIRenderers {
 	/**
 	 * Converts an OWL API axiom to a Manchester OWL syntax string.
 	 * 
-	 * @param description Input OWLAxiom.
+	 * @param axiom input OWL axiom
 	 * @return Manchester OWL syntax string.
 	 */
-	public static String toManchesterOWLSyntax(OWLAxiom description) {
-		return manchesterRenderer.render(description);
+	public static String toManchesterOWLSyntax(OWLAxiom axiom) {
+		return manchesterRenderer.render(axiom);
 	}	
 	
 	/**
-	 * Converts an OWL API description to a Manchester OWL syntax string.
+	 * Converts an OWL API OWLClassExpression to a Manchester OWL syntax string.
 	 * 
-	 * @param description Input OWLDescription.
+	 * @param ce input OWL class expression
 	 * @return Manchester OWL syntax string.
 	 */
-	public static String toManchesterOWLSyntax(OWLClassExpression description) {
-		return manchesterRenderer.render(description);
+	public static String toManchesterOWLSyntax(OWLClassExpression ce) {
+		return manchesterRenderer.render(ce);
 	}
 	
 	/**
-	 * Converts an OWL API description to an OWL/XML syntax string.
+	 * Converts an OWL API OWLClassExpression to an OWL/XML syntax string.
 	 * 
-	 * @param description Input OWLDescription.
+	 * @param OWLClassExpression Input OWLDescription.
 	 * @return OWL/XML syntax string.
 	 */
 	public static String toOWLXMLSyntax(OWLClassExpression description) {
@@ -101,10 +106,6 @@ public class OWLAPIRenderers {
 		return sw.toString();
 	}	
 	
-	public static String toOWLXMLSyntax(Axiom axiom) {
-		return toOWLXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
-	}		
-	
 	public static String toOWLXMLSyntax(OWLAxiom axiom) {
 		StringWriter sw = new StringWriter();
 		try {
@@ -115,10 +116,6 @@ public class OWLAPIRenderers {
 			e.printStackTrace();
 		}
 		return sw.toString();
-	}		
-	
-	public static String toRDFXMLSyntax(Axiom axiom) {
-		return toRDFXMLSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom));
 	}		
 	
 	public static String toRDFXMLSyntax(OWLAxiom axiom) {
@@ -138,15 +135,6 @@ public class OWLAPIRenderers {
 			e.printStackTrace();
 		}
 		return str;
-	}		
-	
-	public static String toTurtleSyntax(Axiom axiom) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), false);
-	}		
-	
-	// short version = a lot of stuff thrown out (not a standalone Turtle file anymore)
-	public static String toTurtleSyntax(Axiom axiom, boolean shortVersion) {
-		return toTurtleSyntax(OWLAPIAxiomConvertVisitor.convertAxiom(axiom), shortVersion);
 	}		
 	
 	public static String toTurtleSyntax(OWLAxiom axiom, boolean shortVersion) {

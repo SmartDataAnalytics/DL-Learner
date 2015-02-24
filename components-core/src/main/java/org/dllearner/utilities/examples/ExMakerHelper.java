@@ -38,7 +38,7 @@ public class ExMakerHelper {
 			return null;
 		}
 		Random r = new Random();
-		String[] array = from.toArray(new String[] {});
+		String[] array = from.toArray(new String[from.size()]);
 		
 		int index = Math.round((float)(array.length*r.nextFloat()));
 //		m.stop();

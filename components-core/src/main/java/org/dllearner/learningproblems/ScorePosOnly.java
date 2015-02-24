@@ -22,7 +22,7 @@ package org.dllearner.learningproblems;
 import java.util.Set;
 
 import org.dllearner.core.Score;
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * @author Jens Lehmann
@@ -32,15 +32,15 @@ public class ScorePosOnly extends Score {
 
 	private static final long serialVersionUID = 2191608162129054464L;
 	
-	private Set<Individual> coveredInstances;
-	private Set<Individual> notCoveredPositives;
-	private Set<Individual> additionalInstances;
+	private Set<OWLIndividual> coveredInstances;
+	private Set<OWLIndividual> notCoveredPositives;
+	private Set<OWLIndividual> additionalInstances;
 	
 	private double coverage;
 	private double addition;
 	private double accuracy;	
 	
-	public ScorePosOnly(Set<Individual> coveredInstances, Set<Individual> notCoveredPositives, double coverage, Set<Individual> additionalInstances, double protusion, double accuracy) {
+	public ScorePosOnly(Set<OWLIndividual> coveredInstances, Set<OWLIndividual> notCoveredPositives, double coverage, Set<OWLIndividual> additionalInstances, double protusion, double accuracy) {
 		this.coveredInstances = coveredInstances;
 		this.notCoveredPositives = notCoveredPositives;
 		this.additionalInstances = additionalInstances;
@@ -57,7 +57,7 @@ public class ScorePosOnly extends Score {
 	}
 
 	/**
-	 * Let C be the considered class description and A the class to learn. 
+	 * Let C be the considered class OWLClassExpression and A the class to learn. 
 	 * The addition number is calculated as the number of instances of C which are also
 	 * instances of A divided by the number of instances of C.
 	 * @return Additional instances of the class description.
@@ -78,21 +78,21 @@ public class ScorePosOnly extends Score {
 	/**
 	 * @return the coveredInstances
 	 */
-	public Set<Individual> getCoveredInstances() {
+	public Set<OWLIndividual> getCoveredInstances() {
 		return coveredInstances;
 	}
 
 	/**
 	 * @return the coveredInstances
 	 */
-	public Set<Individual> getNotCoveredPositives() {
+	public Set<OWLIndividual> getNotCoveredPositives() {
 		return notCoveredPositives;
 	}
 	
 	/**
 	 * @return the additionalInstances
 	 */
-	public Set<Individual> getAdditionalInstances() {
+	public Set<OWLIndividual> getAdditionalInstances() {
 		return additionalInstances;
 	}		
 

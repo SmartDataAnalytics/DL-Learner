@@ -170,12 +170,12 @@ public class ClassNode extends Node {
 			//FIXME add languages
 			// watch for tail
 			if(one.getURIString().equals(OWLVocabulary.RDFS_COMMENT)){
-				OWLAnnotation annoComment = factory.getOWLAnnotation(factory.getRDFSComment(), factory.getOWLStringLiteral(one.getBPart().getLiteral().getString()));
+				OWLAnnotation annoComment = factory.getOWLAnnotation(factory.getRDFSComment(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
 				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoComment);
 				owlAPIOntologyCollector.addAxiom(ax);
 				
 			}else if(one.getURIString().equals(OWLVocabulary.RDFS_LABEL)) {
-				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLStringLiteral(one.getBPart().getLiteral().getString()));
+				OWLAnnotation annoLabel = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral(one.getBPart().getLiteral().getString()));
 				OWLAxiom ax = factory.getOWLAnnotationAssertionAxiom(me.getIRI(), annoLabel);
 				owlAPIOntologyCollector.addAxiom(ax);
 			}else {

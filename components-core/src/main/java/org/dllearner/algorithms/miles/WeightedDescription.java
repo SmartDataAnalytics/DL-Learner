@@ -3,7 +3,8 @@
  */
 package org.dllearner.algorithms.miles;
 
-import org.dllearner.core.owl.Description;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+
 
 /**
  * A description/concept that has a weight.
@@ -12,10 +13,10 @@ import org.dllearner.core.owl.Description;
  */
 public class WeightedDescription {
 	
-	private Description description;
+	private OWLClassExpression description;
 	private double weight;
 	
-	public WeightedDescription(Description description, double weight) {
+	public WeightedDescription(OWLClassExpression description, double weight) {
 		this.description = description;
 		this.weight = weight;
 	}
@@ -23,7 +24,7 @@ public class WeightedDescription {
 	/**
 	 * @return the description
 	 */
-	public Description getDescription() {
+	public OWLClassExpression getDescription() {
 		return description;
 	}
 	

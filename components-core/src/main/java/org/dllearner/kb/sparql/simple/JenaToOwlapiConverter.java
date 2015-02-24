@@ -13,14 +13,15 @@ import org.slf4j.LoggerFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 
 /**
- * 
+ * @deprecated Use org.dllearner.utilities.OwlApiJenaUtils instead
  * @author Didier Cherix
  *
  */
+@Deprecated
 public class JenaToOwlapiConverter {
-    
+
     private static Logger log = LoggerFactory.getLogger(JenaToOwlapiConverter.class);
-    
+
     /**
      * Convert a Jena Model to an OWL Ontology.
      *
@@ -43,5 +44,5 @@ public class JenaToOwlapiConverter {
         }
         return ontology;
     }
- 
+
 }

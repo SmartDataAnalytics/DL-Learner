@@ -22,7 +22,7 @@ package org.dllearner.utilities.examples;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.Individual;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 
 
@@ -40,11 +40,11 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	
 	private static SortedSet<ExampleContainer> exampleSets = new TreeSet<ExampleContainer>();
 
-	private SortedSet<Individual> positiveExamples  = new TreeSet<Individual>();
-	private SortedSet<Individual> negativeExamples = new TreeSet<Individual>();
+	private SortedSet<OWLIndividual> positiveExamples  = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
 	
 	
-	public ExampleContainer(SortedSet<Individual> positiveExamples, SortedSet<Individual> negativeExamples) {
+	public ExampleContainer(SortedSet<OWLIndividual> positiveExamples, SortedSet<OWLIndividual> negativeExamples) {
 		super();
 		this.positiveExamples = positiveExamples;
 		this.negativeExamples = negativeExamples;
@@ -89,10 +89,10 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 		
 	}
 	
-	public SortedSet<Individual> getNegativeExamples() {
+	public SortedSet<OWLIndividual> getNegativeExamples() {
 		return negativeExamples;
 	}
-	public SortedSet<Individual> getPositiveExamples() {
+	public SortedSet<OWLIndividual> getPositiveExamples() {
 		return positiveExamples;
 	}
 	

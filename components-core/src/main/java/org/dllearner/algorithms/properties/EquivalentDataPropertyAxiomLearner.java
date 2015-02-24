@@ -19,197 +19,46 @@
 
 package org.dllearner.algorithms.properties;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.DataPropertyEditor;
-import org.dllearner.core.owl.Datatype;
-import org.dllearner.core.owl.DatatypeProperty;
-import org.dllearner.core.owl.EquivalentDatatypePropertiesAxiom;
-import org.dllearner.core.owl.GenericDatatypePropertyAssertion;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.KBElement;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-
-@ComponentAnn(name="equivalent dataproperty axiom learner", shortName="dplequiv", version=0.1)
-public class EquivalentDataPropertyAxiomLearner extends AbstractAxiomLearningAlgorithm {
+@ComponentAnn(name="equivalent data properties axiom learner", shortName="dplequiv", version=0.1, description="A learning algorithm for equivalent data properties axioms.")
+public class EquivalentDataPropertyAxiomLearner extends DataPropertyHierarchyAxiomLearner<OWLEquivalentDataPropertiesAxiom> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(EquivalentDataPropertyAxiomLearner.class);
-	
-	@ConfigOption(name="propertyToDescribe", description="", propertyEditorClass=DataPropertyEditor.class)
-	private DatatypeProperty propertyToDescribe;
+	private final double BETA = 1.0;
 	
 	public EquivalentDataPropertyAxiomLearner(SparqlEndpointKS ks){
-		this.ks = ks;
-		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p ?o}");
-		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s ?o WHERE {?s ?p1 ?o. FILTER NOT EXISTS{?s ?p ?o}}");
-	
-	}
-	
-	public DatatypeProperty getPropertyToDescribe() {
-		return propertyToDescribe;
+		super(ks);
+		
+		setBeta(BETA);
+		
+		axiomType = AxiomType.EQUIVALENT_DATA_PROPERTIES;
 	}
 
-	public void setPropertyToDescribe(DatatypeProperty propertyToDescribe) {
-		this.propertyToDescribe = propertyToDescribe;
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getExistingAxioms()
+	 */
+	@Override
+	protected void getExistingAxioms() {
+		SortedSet<OWLDataProperty> existingEquivalentProperties = reasoner.getEquivalentProperties(entityToDescribe);
+		if (existingEquivalentProperties != null && !existingEquivalentProperties.isEmpty()) {
+			for (OWLDataProperty eqProp : existingEquivalentProperties) {
+				existingAxioms.add(df.getOWLEquivalentDataPropertiesAxiom(entityToDescribe, eqProp));
+			}
+			logger.info("Existing axioms:" + existingAxioms);
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.properties.DataPropertyHierarchyAxiomLearner#getAxiom(org.semanticweb.owlapi.model.OWLDataProperty, org.semanticweb.owlapi.model.OWLDataProperty)
+	 */
 	@Override
-	public void start() {
-		logger.info("Start learning...");
-		startTime = System.currentTimeMillis();
-		fetchedRows = 0;
-		currentlyBestAxioms = new ArrayList<EvaluatedAxiom>();
-		
-		if(returnOnlyNewAxioms){
-			//get existing domains
-			SortedSet<DatatypeProperty> existingSuperProperties = reasoner.getEquivalentProperties(propertyToDescribe);
-			if(existingSuperProperties != null && !existingSuperProperties.isEmpty()){
-				for(DatatypeProperty supProp : existingSuperProperties){
-					existingAxioms.add(new EquivalentDatatypePropertiesAxiom(propertyToDescribe, supProp));
-				}
-			}
-		}
-		
-		if(!forceSPARQL_1_0_Mode && ks.supportsSPARQL_1_1()){
-			runSingleQueryMode();
-		} else {
-			runSPARQL1_0_Mode();
-		}
-		logger.info("...finished in {}ms.", (System.currentTimeMillis()-startTime));
+	public OWLEquivalentDataPropertiesAxiom getAxiom(OWLDataProperty property, OWLDataProperty otherProperty) {
+		return df.getOWLEquivalentDataPropertiesAxiom(property, otherProperty);
 	}
-	
-	private void runSingleQueryMode(){
-		int total = reasoner.getPopularity(propertyToDescribe);
-		
-		if(total > 0){
-			String query = String.format("SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s <%s> ?o. ?s ?p ?o.} GROUP BY ?p", propertyToDescribe.getName());
-			ResultSet rs = executeSelectQuery(query);
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				DatatypeProperty prop = new DatatypeProperty(qs.getResource("p").getURI());
-				int cnt = qs.getLiteral("cnt").getInt();
-				if(!prop.equals(propertyToDescribe)){
-					currentlyBestAxioms.add(new EvaluatedAxiom(new EquivalentDatatypePropertiesAxiom(propertyToDescribe, prop), computeScore(total, cnt)));
-					
-				}
-			}
-		}
-	}
-	
-	private void runSPARQL1_0_Mode() {
-		workingModel = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery  = "CONSTRUCT {?s ?p ?o.} WHERE {?s <%s> ?o. ?s ?p ?o.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
-		Model newModel = executeConstructQuery(query);
-		while(!terminationCriteriaSatisfied() && newModel.size() != 0){
-			workingModel.add(newModel);
-			// get number of triples
-			int all = (int)workingModel.size();
-			
-			if (all > 0) {
-				// get class and number of instances
-				query = "SELECT ?p (COUNT(*) AS ?cnt) WHERE {?s ?p ?o.} GROUP BY ?p ORDER BY DESC(?cnt)";
-				ResultSet rs = executeSelectQuery(query, workingModel);
-				
-				currentlyBestAxioms.clear();
-				QuerySolution qs;
-				DatatypeProperty prop;
-				while(rs.hasNext()){
-					qs = rs.next();
-					prop = new DatatypeProperty(qs.get("p").asResource().getURI());
-					//omit property to describe as it is trivial
-					if(prop.equals(propertyToDescribe)){
-						continue;
-					}
-					currentlyBestAxioms.add(new EvaluatedAxiom(
-							new EquivalentDatatypePropertiesAxiom(propertyToDescribe, prop),
-							computeScore(all, qs.get("cnt").asLiteral().getInt())));
-				}
-				
-			}
-			offset += limit;
-			query = String.format(baseQuery, propertyToDescribe.getName(), limit, offset);
-			newModel = executeConstructQuery(query);
-		}
-	}
-	
-	@Override
-	public Set<KBElement> getPositiveExamples(EvaluatedAxiom evAxiom) {
-		EquivalentDatatypePropertiesAxiom axiom = (EquivalentDatatypePropertiesAxiom) evAxiom.getAxiom();
-		posExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
-		if(workingModel != null){
-			Set<KBElement> posExamples = new HashSet<KBElement>();
-			
-			ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString(), workingModel);
-			Individual subject;
-			Literal object;
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = qs.getLiteral("o");
-				posExamples.add(new GenericDatatypePropertyAssertion(
-						propertyToDescribe, subject, object.getLexicalForm(), new Datatype(object.getDatatypeURI())));
-			}
-			
-			return posExamples;
-		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
-		}
-	}
-	
-	@Override
-	public Set<KBElement> getNegativeExamples(EvaluatedAxiom evAxiom) {
-		EquivalentDatatypePropertiesAxiom axiom = (EquivalentDatatypePropertiesAxiom) evAxiom.getAxiom();
-		negExamplesQueryTemplate.setIri("p", axiom.getRole().toString());
-		if(workingModel != null){
-			Set<KBElement> negExamples = new HashSet<KBElement>();
-			
-			ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString(), workingModel);
-			Individual subject;
-			Literal object;
-			QuerySolution qs;
-			while(rs.hasNext()){
-				qs = rs.next();
-				subject = new Individual(qs.getResource("s").getURI());
-				object = qs.getLiteral("o");
-				negExamples.add(new GenericDatatypePropertyAssertion(
-						propertyToDescribe, subject, object.getLexicalForm(), new Datatype(object.getDatatypeURI())));
-			}
-			
-			return negExamples;
-		} else {
-			throw new UnsupportedOperationException("Getting positive examples is not possible.");
-		}
-	}
-	
-	public static void main(String[] args) throws Exception{
-		EquivalentDataPropertyAxiomLearner l = new EquivalentDataPropertyAxiomLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpediaLiveAKSW()));
-		l.setPropertyToDescribe(new DatatypeProperty("http://dbpedia.org/ontology/birthDate"));
-		l.setMaxExecutionTimeInSeconds(10);
-		l.init();
-		l.start();
-		System.out.println(l.getCurrentlyBestEvaluatedAxioms(5));
-	}
-
 }
