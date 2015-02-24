@@ -34,7 +34,7 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.owl.Hierarchy;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -46,7 +46,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
@@ -550,7 +549,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	private void keepMostGeneralClasses(Set<OWLClass> classes) {
 		if (ks.isRemote()) {
 			if (reasoner.isPrepared()) {
-				Hierarchy h = reasoner.getClassHierarchy();
+				ClassHierarchy h = reasoner.getClassHierarchy();
 				for (OWLClass nc : new HashSet<OWLClass>(classes)) {
 					classes.removeAll(h.getSubClasses(nc));
 				}

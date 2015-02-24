@@ -11,12 +11,19 @@ import java.util.Set;
 
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -26,6 +33,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
  *
  */
 public class OwlApiJenaUtils {
+	
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 
 	public static OWLOntology getOWLOntology(final Model model) {
 		OWLOntology ontology;
@@ -82,6 +91,21 @@ public class OwlApiJenaUtils {
 		} catch (Exception e) {
 			throw new RuntimeException("Could not convert OWL API ontology to JENA API model.", e);
 		}
+	}
+	
+	public static OWLLiteral getOWLLiteral(Literal lit){
+		OWLLiteral literal = null;
+		if(lit.getDatatypeURI() != null){
+			OWLDatatype datatype = dataFactory.getOWLDatatype(IRI.create(lit.getDatatypeURI()));
+			literal = dataFactory.getOWLLiteral(lit.getLexicalForm(), datatype);
+		} else {
+			if(lit.getLanguage() != null){
+				literal = dataFactory.getOWLLiteral(lit.getLexicalForm(), lit.getLanguage());
+			} else {
+				literal = dataFactory.getOWLLiteral(lit.getLexicalForm());
+			}
+		}
+		return literal;
 	}
 	
 	/**

@@ -1112,7 +1112,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	@Override
-	public Set<OWLObjectProperty> getObjectProperties() {
+	public Set<OWLObjectProperty> getObjectPropertiesImpl() {
 		return atomicRoles;
 	}
 

@@ -21,6 +21,7 @@ package org.dllearner.algorithms.celoe;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -292,7 +293,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
 //		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
 
@@ -651,13 +652,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-			System.out.println(description + " redundant");
+//			System.out.println(description + " redundant");
 			return false;
 		}
 		
 		// check whether the OWLClassExpression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-			System.out.println(description + " not allowed");
+//			System.out.println(description + " not allowed");
 			return false;
 		}
 		
@@ -677,7 +678,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //		System.out.println("acc: " + accuracy);
 //		System.out.println(OWLClassExpression + " " + accuracy);
 		if(accuracy == -1) {
-			System.out.println(description + " too weak");
+//			System.out.println(description + " too weak");
 			return false;
 		}
 		

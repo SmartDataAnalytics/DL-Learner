@@ -17,6 +17,11 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:Class .}";
 	public static final String SELECT_OBJECT_PROPERTIES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:ObjectProperty .}";
 	public static final String SELECT_DATA_PROPERTIES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty .}";
+	public static final String SELECT_INDIVIDUALS_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:NamedIndividual .}";
+	
+	// extended
+	public static final String SELECT_DATA_PROPERTIES_BY_RANGE_QUERY = PREFIXES
+			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";
 
 	// class hierarchy queries
 	public static final String SELECT_SUBCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf <%s> .}";
@@ -37,4 +42,5 @@ public class SPARQLQueryUtils {
 	// instance queries
 	public static final String SELECT_CLASS_INSTANCES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a <%s> .}";
 	public static final String SELECT_INSTANCE_TYPES_QUERY = PREFIXES + "SELECT ?var1 WHERE { <%s> a ?var1 .}";
+	public static final String SELECT_PROPERTY_RELATIONSHIPS_QUERY = PREFIXES + "SELECT ?var1 ?var2 WHERE { ?var1 <%s> ?var2 .}";
 }

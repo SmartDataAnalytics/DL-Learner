@@ -379,7 +379,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicRoles()
       */
-    public Set<OWLObjectProperty> getObjectProperties() {
+    public Set<OWLObjectProperty> getObjectPropertiesImpl() {
         return Collections.unmodifiableSet(atomicRoles);
     }
 

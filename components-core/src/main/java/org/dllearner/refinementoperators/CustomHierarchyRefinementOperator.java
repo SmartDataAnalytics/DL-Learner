@@ -18,8 +18,8 @@
  */
 package org.dllearner.refinementoperators;
 
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 
 
@@ -34,7 +34,7 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
  */
 public interface CustomHierarchyRefinementOperator extends RefinementOperator {
 
-	public void setClassHierarchy(Hierarchy classHierarchy);
+	public void setClassHierarchy(ClassHierarchy classHierarchy);
 	
 	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy);
 	

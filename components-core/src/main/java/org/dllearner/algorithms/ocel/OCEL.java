@@ -21,6 +21,7 @@ package org.dllearner.algorithms.ocel;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -341,7 +342,7 @@ public class OCEL extends AbstractCELA {
 		// during the run of the algorithm;
 		// in contrast to before, the learning algorithms have to maintain their
 		// own view on the class hierarchy
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
 		if(improveSubsumptionHierarchy)
 			classHierarchy.thinOutSubsumptionHierarchy();
 		

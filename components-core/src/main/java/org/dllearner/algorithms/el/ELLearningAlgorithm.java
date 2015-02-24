@@ -20,6 +20,7 @@
 package org.dllearner.algorithms.el;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -156,7 +157,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
 			// copy class hierarchy and modify it such that each class is only
 			// reachable via a single path
-			ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts);
+			ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
 			classHierarchy.thinOutSubsumptionHierarchy();
 		}
 		

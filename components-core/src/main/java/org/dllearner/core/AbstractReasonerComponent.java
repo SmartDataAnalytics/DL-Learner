@@ -893,7 +893,22 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			ret.put(e.getKey(), valuesString);
 		}
 		return ret;
-	}	
+	}
+	
+	@Override
+	public final Set<OWLObjectProperty> getObjectProperties() {
+		try {
+			return getObjectPropertiesImpl();
+		} catch (ReasoningMethodUnsupportedException e) {
+			handleExceptions(e);
+			return null;
+		}
+	}
+
+	protected Set<OWLObjectProperty> getObjectPropertiesImpl()
+			throws ReasoningMethodUnsupportedException {
+		throw new ReasoningMethodUnsupportedException();
+	}
 	
 	@Override
 	public final Set<OWLDataProperty> getDatatypeProperties() {

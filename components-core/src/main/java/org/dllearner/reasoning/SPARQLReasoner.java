@@ -28,16 +28,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceFactoryImpl;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -46,6 +42,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
+import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
@@ -57,6 +54,8 @@ import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.EntityType;
@@ -71,6 +70,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -914,6 +914,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				types.add(df.getOWLClass(IRI.create(resource.getURI())));
 			}
 		}
+		types.remove(df.getOWLThing());
+		types.remove(df.getOWLNothing());
 		return types;
 	}
 	
@@ -931,6 +933,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("var1").getURI())));
 		}
+		properties.remove(df.getOWLTopObjectProperty());
+		properties.remove(df.getOWLBottomObjectProperty());
 		return properties;
 	}
 	
@@ -948,6 +952,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("var1").getURI())));
 		}
+		properties.remove(df.getOWLTopDataProperty());
+		properties.remove(df.getOWLBottomDataProperty());
 		return properties;
 	}
 
@@ -1015,8 +1021,15 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public boolean hasTypeImpl(OWLClassExpression description, OWLIndividual individual) {
-		if(!description.isAnonymous()){
-			throw new UnsupportedOperationException("Only named classes are supported.");
+		if(description.isOWLThing()) {
+			return true;
+		} else if(description.isOWLNothing()) {
+			return false;
+		}
+		if(description.isAnonymous()){
+//			throw new UnsupportedOperationException("Only named classes are supported.");
+			logger.warn("Type check for complex class expressions not implemented yet!");
+			return false;
 		}
 		String query = String.format("ASK {<%s> a <%s>}", individual.toString(), ((OWLClass)description).toStringID());
 		boolean hasType = executeAskQuery(query);
@@ -1268,9 +1281,25 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	@Override
-	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembersImpl(OWLDataProperty dataProperty) {
+		Map<OWLIndividual, SortedSet<OWLLiteral>> subject2objects = new HashMap<OWLIndividual, SortedSet<OWLLiteral>>();
+		
+		String query = String.format(SPARQLQueryUtils.SELECT_PROPERTY_RELATIONSHIPS_QUERY, dataProperty.toStringID());
+
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			OWLIndividual sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
+			OWLLiteral obj = OwlApiJenaUtils.getOWLLiteral(qs.getLiteral("o"));
+			SortedSet<OWLLiteral> objects = subject2objects.get(sub);
+			if(objects == null){
+				objects = new TreeSet<OWLLiteral>();
+				subject2objects.put(sub, objects);
+			}
+			objects.add(obj);
+		}
+		return subject2objects;
 	}
 
 	@Override
@@ -1621,7 +1650,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public boolean isSuperClassOfImpl(OWLClassExpression superClass, OWLClassExpression subClass) {
 		if(subClass.isAnonymous() || superClass.isAnonymous()){
-			throw new IllegalArgumentException("Only named classes are supported.");
+//			throw new IllegalArgumentException("Only named classes are supported.");
+			return false;
 		}
 		String query = String.format("ASK {<%s> <%s> <%s>.}", 
 				((OWLClass)subClass).toStringID(),
@@ -1709,6 +1739,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			}
 		}
 		superClasses.remove(description);
+		superClasses.remove(df.getOWLThing());
 		return superClasses;
 	}
 
@@ -1761,6 +1792,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			subClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
 		}
 		subClasses.remove(description);
+		subClasses.remove(df.getOWLNothing());
 		return subClasses;
 	}
 
@@ -1777,6 +1809,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			superProperties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("sup").getURI())));
 		}
+		superProperties.remove(df.getOWLTopObjectProperty());
 		return superProperties;
 	}
 
@@ -1794,6 +1827,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			subProperties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("sub").getURI())));
 		}
+		subProperties.remove(df.getOWLBottomObjectProperty());
 		return subProperties;
 	}
 
@@ -1855,6 +1889,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			superProperties.add(df.getOWLDataProperty(IRI.create(qs.getResource("sup").getURI())));
 		}
+		superProperties.remove(df.getOWLTopDataProperty());
 		return superProperties;
 	}
 
@@ -1871,6 +1906,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			qs = rs.next();
 			subProperties.add(df.getOWLDataProperty(IRI.create(qs.getResource("sub").getURI())));
 		}
+		subProperties.remove(df.getOWLBottomDataProperty());
 		return subProperties;
 	}
 	
@@ -1961,23 +1997,97 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		return classes;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.BaseReasoner#getObjectProperties()
-	 */
-	@Override
-	public Set<OWLObjectProperty> getObjectProperties() {
-		return getOWLObjectProperties();
-	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.BaseReasoner#getIndividuals()
 	 */
 	@Override
 	public SortedSet<OWLIndividual> getIndividuals() {
-		return null;
+		return getOWLIndividuals();
+	}
+	
+	public SortedSet<OWLIndividual> getOWLIndividuals() {
+		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
+		String query = SPARQLQueryUtils.SELECT_INDIVIDUALS_QUERY;
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("var1").getURI())));
+		}
+		return individuals;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.BaseReasoner#getObjectProperties()
+	 */
+	@Override
+	public Set<OWLObjectProperty> getObjectPropertiesImpl() {
+		return getOWLObjectProperties();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getDatatypePropertiesImpl()
+	 */
+	@Override
+	protected Set<OWLDataProperty> getDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
+		return getOWLDataProperties();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getIntDatatypePropertiesImpl()
+	 */
+	@Override
+	protected Set<OWLDataProperty> getIntDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
+		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, XSDVocabulary.INT.getIRI().toString());
+
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("var1").getURI())));
+		}
+		return properties;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getDoubleDatatypePropertiesImpl()
+	 */
+	@Override
+	protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
+		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, XSDVocabulary.DOUBLE.getIRI().toString());
+
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("var1").getURI())));
+		}
+		return properties;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getBooleanDatatypePropertiesImpl()
+	 */
+	@Override
+	protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
+		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, XSDVocabulary.BOOLEAN.getIRI().toString());
+
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		
+		ResultSet rs = executeSelectQuery(query);
+		QuerySolution qs;
+		while(rs.hasNext()){
+			qs = rs.next();
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("var1").getURI())));
+		}
+		return properties;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.BaseReasoner#getBaseURI()
 	 */

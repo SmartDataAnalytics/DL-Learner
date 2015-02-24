@@ -22,6 +22,7 @@ package org.dllearner.test.junit;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -152,7 +153,7 @@ public class RefinementOperatorTests {
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ONE")));
 		Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
 		
-		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().cloneAndRestrict(usedConcepts); 
+		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts)); 
 		classHierarchy.thinOutSubsumptionHierarchy();
 		
 		System.out.println(" UNIT TEST INCOMPLETE AFTER FRAMEWORK CHANGE, BECAUSE CLASS HIERARCHY IS NOT PASSED TO REFINEMENT OPERATOR ");

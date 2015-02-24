@@ -1108,7 +1108,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 * @see org.dllearner.core.Reasoner#getAtomicRoles()
 	 */
 	@Override
-	public Set<OWLObjectProperty> getObjectProperties() {
+	public Set<OWLObjectProperty> getObjectPropertiesImpl() {
 		return objectProperties;
 	}
 

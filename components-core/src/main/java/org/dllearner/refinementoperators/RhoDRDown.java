@@ -42,6 +42,7 @@ import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
@@ -115,7 +116,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private AbstractReasonerComponent reasoner;
 	
 	// hierarchies
-	private Hierarchy subHierarchy;
+	private ClassHierarchy subHierarchy;
 	private ObjectPropertyHierarchy objectPropertyHierarchy;
 	private DatatypePropertyHierarchy dataPropertyHierarchy;
 	
@@ -1834,11 +1835,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.reasoner = reasoner;
 	}
 
-	public Hierarchy getSubHierarchy() {
+	public ClassHierarchy getSubHierarchy() {
 		return subHierarchy;
 	}
 
-	public void setSubHierarchy(Hierarchy subHierarchy) {
+	public void setSubHierarchy(ClassHierarchy subHierarchy) {
 		this.subHierarchy = subHierarchy;
 	}
 
@@ -1880,7 +1881,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	@Override
-	public void setClassHierarchy(Hierarchy classHierarchy) {
+	public void setClassHierarchy(ClassHierarchy classHierarchy) {
 		subHierarchy = classHierarchy;
 	}
 	
