@@ -633,13 +633,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
-		System.out.println("refining: " + node);
+//		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
-		System.out.println("refinements: " + refinements);
+//		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
-		System.out.println("refined node: " + node);
+//		System.out.println("refined node: " + node);
 		nodes.add(node);
 		return refinements;
 	}

@@ -299,7 +299,7 @@ public class LGGTest {
 //		}
 	}
 	
-	@Test
+//	@Test
 	public void testLGGWithSubsumption() throws Exception{
 		Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
 		Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
