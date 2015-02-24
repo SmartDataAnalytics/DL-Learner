@@ -26,7 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -49,7 +49,7 @@ import com.jamonapi.MonitorFactory;
 public final class Utility {
 		
 	private AbstractReasonerComponent reasoner;
-	ClassHierarchy sh; 
+	Hierarchy sh; 
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances

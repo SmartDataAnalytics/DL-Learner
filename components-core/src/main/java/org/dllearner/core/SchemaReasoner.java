@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -121,7 +121,7 @@ public interface SchemaReasoner {
 	 *
 	 * @return The subsumption hierarchy of this knowledge base.
 	 */
-	public ClassHierarchy getClassHierarchy();	
+	public Hierarchy getClassHierarchy();	
 	
 	/**
 	 * Returns direct super classes in the class hierarchy.

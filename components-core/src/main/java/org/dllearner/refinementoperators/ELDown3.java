@@ -41,8 +41,8 @@ import org.dllearner.algorithms.el.TreeAndRoleSet;
 import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -84,7 +84,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	private AbstractReasonerComponent rs;
 	
 	// hierarchies
-	private ClassHierarchy subsumptionHierarchy;
+	private Hierarchy subsumptionHierarchy;
 	private ObjectPropertyHierarchy opHierarchy;
 	private DatatypePropertyHierarchy dpHierarchy;
 	

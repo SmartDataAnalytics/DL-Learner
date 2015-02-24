@@ -50,9 +50,11 @@ import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
+import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -136,6 +138,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
 	private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+	
+	public SPARQLReasoner() {
+	}
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
 		this(ks, (String)null);
@@ -511,7 +516,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return qef.createQueryExecution(query).execAsk();
 	}
 
-	public final ClassHierarchy prepareSubsumptionHierarchyFast() {
+	public final Hierarchy prepareSubsumptionHierarchyFast() {
 		logger.info("Preparing subsumption hierarchy ...");
 		long startTime = System.currentTimeMillis();
 		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
@@ -705,12 +710,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public Set<OWLClass> getTypesImpl(OWLIndividual individual) {
 		Set<OWLClass> types = new HashSet<OWLClass>();
-		String query = String.format("SELECT DISTINCT ?class WHERE {<%s> a ?class.}", individual.toStringID());
+		String query = String.format(SPARQLQueryUtils.SELECT_INSTANCE_TYPES_QUERY, individual.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			types.add(df.getOWLClass(IRI.create(qs.getResource("class").getURI())));
+			types.add(df.getOWLClass(IRI.create(qs.getResource("var1").getURI())));
 		}
 		return types;
 	}
@@ -898,11 +903,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SortedSet<OWLClass> getOWLClasses(String namespace) {
 		SortedSet<OWLClass> types = new TreeSet<OWLClass>();
-		String query = "SELECT DISTINCT ?class WHERE {?class a <" + OWL.Class.getURI() + ">.";
-		if(namespace != null){
-			query += "FILTER(REGEX(STR(?class),'" + namespace + "'))";
-		}
-		query += "}";
+		String query = SPARQLQueryUtils.SELECT_CLASSES_QUERY;
+		
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -921,16 +923,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SortedSet<OWLObjectProperty> getOWLObjectProperties(String namespace) {
 		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
-		String query = "SELECT DISTINCT ?p WHERE {?p a <" + OWL.ObjectProperty.getURI() + ">.";
-		if(namespace != null){
-			query += "FILTER(REGEX(STR(?p),'" + namespace + "'))";
-		}
-		query += "}";
+		String query = SPARQLQueryUtils.SELECT_OBJECT_PROPERTIES_QUERY;
+		
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI())));
+			properties.add(df.getOWLObjectProperty(IRI.create(qs.getResource("var1").getURI())));
 		}
 		return properties;
 	}
@@ -941,16 +940,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public SortedSet<OWLDataProperty> getOWLDataProperties(String namespace) {
 		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
-		String query = "SELECT DISTINCT ?p WHERE {?p a <" + OWL.DatatypeProperty.getURI() + ">.";
-		if(namespace != null){
-			query += "FILTER(REGEX(STR(?p),'" + namespace + "'))";
-		}
-		query += "}";
+		String query = SPARQLQueryUtils.SELECT_DATA_PROPERTIES_QUERY;
+		
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI())));
+			properties.add(df.getOWLDataProperty(IRI.create(qs.getResource("var1").getURI())));
 		}
 		return properties;
 	}
@@ -1893,7 +1889,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return properties;
 	}
 
-	private ResultSet executeSelectQuery(String queryString){
+	protected ResultSet executeSelectQuery(String queryString){
 		logger.trace("Sending query \n {}", queryString);
 		Query query = QueryFactory.create(queryString, Syntax.syntaxSPARQL_11);
 		QueryExecution qe = qef.createQueryExecution(query);
@@ -1908,7 +1904,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 	}
 
-	private ResultSet executeSelectQuery(String query, long timeout){
+	protected ResultSet executeSelectQuery(String query, long timeout){
 		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		qe.setTimeout(timeout);
@@ -1916,7 +1912,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return rs;
 	}
 	
-	private boolean executeAskQuery(String query){
+	protected boolean executeAskQuery(String query){
 		logger.trace("Sending query \n {}", query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		boolean ret = qe.execAsk();
@@ -1971,7 +1967,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public Set<OWLObjectProperty> getObjectProperties() {
-		return null;
+		return getOWLObjectProperties();
 	}
 
 	/* (non-Javadoc)

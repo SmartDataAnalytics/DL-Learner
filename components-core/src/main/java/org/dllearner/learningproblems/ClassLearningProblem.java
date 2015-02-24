@@ -194,7 +194,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		
 		// we compute the instances of the super class to perform
 		// optimisations later on
-		Set<OWLClassExpression> superClasses = getReasoner().getClassHierarchy().getSuperClasses(classToDescribe);
+		Set<OWLClassExpression> superClasses = getReasoner().getSuperClasses(classToDescribe);
 		TreeSet<OWLIndividual> superClassInstancesTmp = new TreeSet<OWLIndividual>(getReasoner().getIndividuals());
 		for(OWLClassExpression superClass : superClasses) {
 			superClassInstancesTmp.retainAll(getReasoner().getIndividuals(superClass));

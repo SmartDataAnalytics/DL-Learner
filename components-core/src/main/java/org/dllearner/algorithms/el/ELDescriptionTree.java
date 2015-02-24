@@ -32,7 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.UnsupportedLanguageException;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -79,7 +79,7 @@ public class ELDescriptionTree implements Cloneable {
 	// since we store simulation information in the tree and simulation
 	// updates depend on background knowledge)
 	protected AbstractReasonerComponent rs;
-	protected ClassHierarchy subsumptionHierarchy;
+	protected Hierarchy subsumptionHierarchy;
 	protected ObjectPropertyHierarchy roleHierarchy;
 	
 	public ELDescriptionTree(AbstractReasonerComponent rs) {

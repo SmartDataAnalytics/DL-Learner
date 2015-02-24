@@ -25,6 +25,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 
 /**
  * Represents a hierarchy of datatype properties.
@@ -35,16 +38,20 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
  * @author Jens Lehmann
  *
  */
-public class DatatypePropertyHierarchy {
+public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty>{
 
-	TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyUp;
-	TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyDown;	
-	TreeSet<OWLDataProperty> mostGeneralRoles = new TreeSet<OWLDataProperty>();
-	TreeSet<OWLDataProperty> mostSpecialRoles = new TreeSet<OWLDataProperty>();
-	
-	public DatatypePropertyHierarchy(Set<OWLDataProperty> atomicRoles, TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyUp , TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> roleHierarchyDown) {
-		this.roleHierarchyUp = roleHierarchyUp;
-		this.roleHierarchyDown = roleHierarchyDown;
+	private TreeSet<OWLDataProperty> mostGeneralRoles = new TreeSet<OWLDataProperty>();
+	private TreeSet<OWLDataProperty> mostSpecialRoles = new TreeSet<OWLDataProperty>();
+
+	private static final OWLDataProperty OWL_TOP_DATA_PROPERTY = new OWLDataPropertyImpl(
+			OWLRDFVocabulary.OWL_TOP_DATA_PROPERTY.getIRI());
+	private static final OWLDataProperty OWL_BOTTOM_DATA_PROPERTY = new OWLDataPropertyImpl(
+			OWLRDFVocabulary.OWL_BOTTOM_DATA_PROPERTY.getIRI());
+
+	public DatatypePropertyHierarchy(Set<OWLDataProperty> atomicRoles,
+			TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyUp,
+			TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyDown) {
+		super(roleHierarchyUp, roleHierarchyDown);
 		
 		// find most general and most special roles
 		for(OWLDataProperty role : atomicRoles) {
@@ -56,59 +63,16 @@ public class DatatypePropertyHierarchy {
 	}
 	
 	public SortedSet<OWLDataProperty> getMoreGeneralRoles(OWLDataProperty role) {
-		// we clone all concepts before returning them such that they cannot be
-		// modified externally
-		return new TreeSet<OWLDataProperty>(roleHierarchyUp.get(role));	
+		return new TreeSet<OWLDataProperty>(getParents(role));	
 	}
 	
 	public SortedSet<OWLDataProperty> getMoreSpecialRoles(OWLDataProperty role) {
-		return new TreeSet<OWLDataProperty>(roleHierarchyDown.get(role));
+		return new TreeSet<OWLDataProperty>(getChildren(role));
 	}	
 	
-	@Override
-	public String toString() {
-		String str = "";
-		for(OWLDataProperty role : mostGeneralRoles) {
-			str += toString(roleHierarchyDown, role, 0);
-		}
-		return str;
-	}
-	
-	/**
-	 * Implements a subsumption check using the hierarchy (no further
-	 * reasoning checks are used).
-	 * @param subProperty The (supposedly) more special property.
-	 * @param superProperty The (supposedly) more general property.
-	 * @return True if <code>subProperty</code> is a subproperty of <code>superProperty</code>.
-	 */
 	public boolean isSubpropertyOf(OWLDataProperty subProperty, OWLDataProperty superProperty) {
-		if(subProperty.equals(superProperty)) {
-			return true;
-		} else {
-//			System.out.println("oph: " + subProperty + " " + superProperty);
-			for(OWLDataProperty moreGeneralProperty : roleHierarchyUp.get(subProperty)) {	
-				if(isSubpropertyOf(moreGeneralProperty, superProperty)) {
-					return true;
-				}
-			}
-			// we cannot reach the class via any of the upper classes,
-			// so it is not a super class
-			return false;
-		}
+		return isChildOf(subProperty, superProperty);
 	}	
-	
-	private String toString(TreeMap<OWLDataProperty,SortedSet<OWLDataProperty>> hierarchy, OWLDataProperty role, int depth) {
-		String str = "";
-		for(int i=0; i<depth; i++)
-			str += "  ";
-		str += role.toString() + "\n";
-		Set<OWLDataProperty> tmp = hierarchy.get(role);
-		if(tmp!=null) {
-			for(OWLDataProperty c : tmp)
-				str += toString(hierarchy, c, depth+1);
-		}
-		return str;
-	}
 
 	/**
 	 * @return The most general roles.
@@ -122,6 +86,22 @@ public class DatatypePropertyHierarchy {
 	 */
 	public TreeSet<OWLDataProperty> getMostSpecialRoles() {
 		return mostSpecialRoles;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AbstractHierarchy#getTopConcept()
+	 */
+	@Override
+	public OWLDataProperty getTopConcept() {
+		return OWL_TOP_DATA_PROPERTY;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AbstractHierarchy#getBottomConcept()
+	 */
+	@Override
+	public OWLDataProperty getBottomConcept() {
+		return OWL_BOTTOM_DATA_PROPERTY;
 	}
 	
 	

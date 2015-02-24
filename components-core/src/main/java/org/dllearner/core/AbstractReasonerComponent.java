@@ -126,6 +126,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private ObjectPropertyHierarchy roleHierarchy = null;
 	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 	
+	protected boolean precomputeClassHierarchy = true;
+	protected boolean precomputeObjectPropertyHierarchy = true;
+	protected boolean precomputeDataPropertyHierarchy = true;
+	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
 	/**
@@ -1047,7 +1051,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	@Override
 	public final SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
-		return getClassHierarchy().getSuperClasses(concept);
+		if(precomputeClassHierarchy) {
+			return getClassHierarchy().getSuperClasses(concept);
+		} else {
+			try {
+				return getSuperClassesImpl(concept);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	protected SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
@@ -1056,7 +1069,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	@Override
 	public final SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
-		return getClassHierarchy().getSubClasses(concept);
+		if(precomputeClassHierarchy) {
+			return getClassHierarchy().getSubClasses(concept);
+		} else {
+			try {
+				return getSubClassesImpl(concept);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	protected SortedSet<OWLClassExpression> getSubClassesImpl(OWLClassExpression concept) throws ReasoningMethodUnsupportedException {
@@ -1069,7 +1091,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	@Override
 	public final SortedSet<OWLObjectProperty> getSuperProperties(OWLObjectProperty role) {
-		return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
+		if(precomputeObjectPropertyHierarchy) {
+			return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
+		} else {
+			try {
+				return getSuperPropertiesImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
@@ -1078,7 +1109,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	@Override
 	public final SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty role) {
-		return getObjectPropertyHierarchy().getMoreSpecialRoles(role);
+		if(precomputeObjectPropertyHierarchy) {
+			return getObjectPropertyHierarchy().getMoreSpecialRoles(role);
+		} else {
+			try {
+				return getSuperPropertiesImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	protected SortedSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
@@ -1230,6 +1270,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 		return roleHierarchy;
 	}
+	
+	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
+		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
+			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
+		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
+			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
+		}
+		return false;
+	}
 
 	/**
 	 * Creates the data property hierarchy. Invoking this method is optional (if
@@ -1358,15 +1407,27 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return nrOfMultiInstanceChecks;
 	}
 	
-	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
-		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
-			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
-		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
-			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
-		}
-		return false;
+	/**
+	 * @param precomputeClassHierarchy the precomputeClassHierarchy to set
+	 */
+	public void setPrecomputeClassHierarchy(boolean precomputeClassHierarchy) {
+		this.precomputeClassHierarchy = precomputeClassHierarchy;
 	}
-
+	
+	/**
+	 * @param precomputeObjectPropertyHierarchy the precomputeObjectPropertyHierarchy to set
+	 */
+	public void setPrecomputeObjectPropertyHierarchy(boolean precomputeObjectPropertyHierarchy) {
+		this.precomputeObjectPropertyHierarchy = precomputeObjectPropertyHierarchy;
+	}
+	
+	/**
+	 * @param precomputeDataPropertyHierarchy the precomputeDataPropertyHierarchy to set
+	 */
+	public void setPrecomputeDataPropertyHierarchy(boolean precomputeDataPropertyHierarchy) {
+		this.precomputeDataPropertyHierarchy = precomputeDataPropertyHierarchy;
+	}
+	
 	@Override
 	public String toString() {
 		String str = "";
