@@ -13,27 +13,27 @@ import org.semanticweb.owlapi.model.OWLObject;
  */
 public interface Hierarchy<T extends OWLObject> {
 
-	public abstract SortedSet<T> getChildren(T entity);
+	SortedSet<T> getChildren(T entity);
 
-	public abstract SortedSet<T> getChildren(T entity, boolean direct);
+	SortedSet<T> getChildren(T entity, boolean direct);
 	
-	public abstract SortedSet<T> getParents(T entity);
+	SortedSet<T> getParents(T entity);
 
-	public abstract SortedSet<T> getParents(T entity, boolean direct);
+	SortedSet<T> getParents(T entity, boolean direct);
 
-	public abstract SortedSet<T> getSiblings(T entity);
+	SortedSet<T> getSiblings(T entity);
 
-	public abstract boolean isChildOf(T entity1, T entity2);
+	boolean isChildOf(T entity1, T entity2);
 
-	public abstract boolean isParentOf(T entity1, T entity2);
+	boolean isParentOf(T entity1, T entity2);
 
-	public abstract SortedSet<T> getRoots();
+	SortedSet<T> getRoots();
 
 	/**
 	 * Checks whether the entity is contained in the hierarchy.
 	 * @param entity
 	 * @return
 	 */
-	public abstract boolean contains(T entity);
+	boolean contains(T entity);
 
 }

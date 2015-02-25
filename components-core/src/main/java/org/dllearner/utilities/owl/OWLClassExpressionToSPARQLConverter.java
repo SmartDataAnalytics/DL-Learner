@@ -170,7 +170,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				}
 				queryString += " ORDER BY DESC(?cnt)";
 			}
-		}
+		}System.out.println(queryString);
 		return QueryFactory.create(queryString, Syntax.syntaxARQ);
 	}
 	

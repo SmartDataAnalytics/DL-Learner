@@ -26,10 +26,26 @@ public class SPARQLQueryUtils {
 	// class hierarchy queries
 	public static final String SELECT_SUBCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf <%s> .}";
 	public static final String SELECT_SUPERCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?var1 .}";
+	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES + 
+			"SELECT ?var1 {\n" + 
+			"		BIND( <%s> as ?concept )\n" + 
+			"		?concept rdfs:subClassOf ?var1 .\n" + 
+			"		OPTIONAL {\n" + 
+			"		?concept rdfs:subClassOf ?inbetweener .\n" + 
+			"		?inbetweener rdfs:subClassOf ?var1 .\n" + 
+			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
+			"		}\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		}";
 	public static final String SELECT_EQUIVALENT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{?var1 owl:equivalentClass <%s> .} UNION {<%s> owl:equivalentClass ?var1 .}}";
 	public static final String SELECT_DISJOINT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{?var1 owl:disjointWith <%s> .} UNION {<%s> owl:disjointWith ?var1 .}}";
+	public static final String ASK_SUBCLASS_OF_QUERY = PREFIXES + "ASK {<%s> rdfs:subClassOf <%s> .}";
+	public static final String ASK_EQUIVALENT_CLASSES_QUERY = PREFIXES + "ASK {"
+			+ "{<%s> owl:equivalentClass <%s> .} UNION {<%s> owl:equivalentClass ?var1 .}}";
+	public static final String ASK_DISJOINT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
+			+ "{<%s> owl:disjointWith <%s> .} UNION {<%s> owl:disjointWith <%s> .}}";
 
 	// property hierarchy
 	public static final String SELECT_SUBPROPERTY_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subPropertyOf <%s> .}";

@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractLearningProblem;
@@ -43,6 +44,8 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -98,6 +101,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	private boolean checkConsistency = true;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+	private boolean useInstanceChecks = true;
 	
 	public ClassLearningProblem() {
 		
@@ -589,24 +593,37 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 			
 			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
-			for(OWLIndividual ind : superClassInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					additionalInstances++;
+			if(useInstanceChecks) {
+				for(OWLIndividual ind : superClassInstances) {
+					if(getReasoner().hasType(description, ind)) {
+						additionalInstances++;
+					}
+					if(terminationTimeExpired()){
+						return 0;
+					}
 				}
-				if(terminationTimeExpired()){
-					return 0;
-				}
+			} else {
+				SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
+				individuals.retainAll(superClassInstances);
+				additionalInstances = individuals.size();
 			}
+			
 			
 			// computing R(A)
 			int coveredInstances = 0;
-			for(OWLIndividual ind : classInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					coveredInstances++;
+			if(useInstanceChecks) {
+				for(OWLIndividual ind : classInstances) {
+					if(getReasoner().hasType(description, ind)) {
+						coveredInstances++;
+					}
+					if(terminationTimeExpired()){
+						return 0;
+					}
 				}
-				if(terminationTimeExpired()){
-					return 0;
-				}
+			} else {
+				SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
+				individuals.retainAll(classInstances);
+				coveredInstances = individuals.size();
 			}
 			System.out.println(description + ":" + coveredInstances + "/" + classInstances.size());
 			double recall = coveredInstances/(double)classInstances.size();
@@ -951,5 +968,19 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 
 	public void setAccuracyMethod(String accuracyMethod) {
 		this.accuracyMethod = accuracyMethod;
+	}
+	
+	/**
+	 * @param useInstanceChecks the useInstanceChecks to set
+	 */
+	public void setUseInstanceChecks(boolean useInstanceChecks) {
+		this.useInstanceChecks = useInstanceChecks;
+	}
+	
+	/**
+	 * @return the useInstanceChecks
+	 */
+	public boolean isUseInstanceChecks() {
+		return useInstanceChecks;
 	}
 }
