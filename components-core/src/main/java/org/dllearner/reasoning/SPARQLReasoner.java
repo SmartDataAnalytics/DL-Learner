@@ -48,6 +48,7 @@ import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.LazyClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ExtractionDBCache;
@@ -1050,7 +1051,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		} else if(description.isOWLNothing()) { // owl:Nothing -> FALSE
 			return false;
 		} else if(!description.isAnonymous()) { // atomic classes
-			String query = String.format("ASK {<%s> a <%s>}", individual.toString(), ((OWLClass)description).toStringID());
+			String query = String.format("ASK {<%s> a <%s>}", individual.toStringID(), description.asOWLClass().toStringID());
 			boolean result = executeAskQuery(query);
 			return result;
 		} else { // complex class expressions
@@ -1058,6 +1059,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			String queryBody = converter.convert("?ind", description);
 			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
 			String query = "ASK {" + queryBody + "}";
+			//FIXME universal and cardinality restrictions do not work with ASK queries
 			boolean result = executeAskQuery(query);
 			return result;
 		}
@@ -1484,7 +1486,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			return df.getOWLObjectIntersectionOf(domains);
 		} 
 		
-		return null;
+		return df.getOWLThing();
 	}
 	
 	public Set<OWLObjectProperty> getObjectPropertiesWithDomain(OWLClass domain) {
@@ -1552,7 +1554,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		} else if(domains.size() > 1){
 			return df.getOWLObjectIntersectionOf(domains);
 		} 
-		return null;
+		return df.getOWLThing();
 	}
 
 	@Override
@@ -1575,7 +1577,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		} else if(domains.size() > 1){
 			return df.getOWLObjectIntersectionOf(domains);
 		} 
-		return null;
+		return df.getOWLThing();
 	}
 	
 	public SortedSet<OWLClass> getRanges(OWLObjectProperty objectProperty) {
@@ -1965,7 +1967,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		Collection<IRI> entityIRIs = new HashSet<IRI>();
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
-			entityIRIs.add(IRI.create(qs.getResource(var).getURI()));
+			Resource resource = qs.getResource(var);
+			if(resource.isURIResource()) {
+				entityIRIs.add(IRI.create(resource.getURI()));
+			}
 		}
 		return asOWLEntities(entityType, entityIRIs);
 	}

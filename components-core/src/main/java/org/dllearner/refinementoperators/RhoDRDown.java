@@ -1526,7 +1526,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 	
 	private boolean isDisjoint(OWLClassExpression d1, OWLClassExpression d2) {
-		
+		if(d1.isOWLThing() || d2.isOWLThing()) {
+			return false;
+		}
 //		System.out.println("| " + d1 + " " + d2);
 //		System.out.println("| " + cachedDisjoints);
 		

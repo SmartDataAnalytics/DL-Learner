@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -61,7 +62,6 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 			SortedMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp,
 			SortedMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown) {
 		super(subsumptionHierarchyUp, subsumptionHierarchyDown);
-		
 	}
 
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {

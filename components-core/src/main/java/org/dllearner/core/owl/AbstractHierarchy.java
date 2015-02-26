@@ -3,6 +3,8 @@
  */
 package org.dllearner.core.owl;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
@@ -288,8 +290,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		
 		try {
 			return this.getClass().getConstructor(
-					subsumptionHierarchyUpNew.getClass(), 
-					subsumptionHierarchyDownNew.getClass()).newInstance(
+					SortedMap.class, SortedMap.class).newInstance(
 							subsumptionHierarchyUpNew, subsumptionHierarchyDownNew);
 		} catch (Exception e) {
 			e.printStackTrace();
