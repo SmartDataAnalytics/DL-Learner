@@ -267,7 +267,6 @@ public class EnrichmentServlet extends HttpServlet {
 		ks.setSupportsSPARQL_1_1(supportsSPARQL_1_1);
 		
 		final SPARQLReasoner reasoner = new SPARQLReasoner(new SparqlEndpointKS(endpoint));
-		reasoner.setCache(new ExtractionDBCache(cacheDir));
 		if (useInference && !reasoner.isPrepared()) {
 			System.out.print("Precomputing subsumption hierarchy ... ");
 			long startTime = System.currentTimeMillis();

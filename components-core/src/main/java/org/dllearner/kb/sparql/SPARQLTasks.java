@@ -85,7 +85,7 @@ public class SPARQLTasks {
 		this.cache = cache;
 		this.sparqlEndpoint = sparqlEndpoint;
 		
-		reasoner = new SPARQLReasoner(sparqlEndpoint, null);
+		reasoner = new SPARQLReasoner(sparqlEndpoint);
 	}
 
 	/**

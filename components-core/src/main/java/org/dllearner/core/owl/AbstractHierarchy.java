@@ -54,10 +54,12 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		}
 		
 		result.remove(entity);
-		if(!direct) {
+		if(!direct) { // get transitive children
+			SortedSet<T> tmp = new TreeSet<T>();
 			for(T child : result){
-				result.addAll(getChildren(child, direct));
+				tmp.addAll(getChildren(child, direct));
 			}
+			result.addAll(tmp);
 		}
 		
 		return new TreeSet<T>(result);
@@ -85,9 +87,11 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		
 		result.remove(entity);
 		if(!direct) {
+			SortedSet<T> tmp = new TreeSet<T>();
 			for(T parent : result){
-				result.addAll(getParents(parent, direct));
+				tmp.addAll(getParents(parent, direct));
 			}
+			result.addAll(tmp);
 		}
 		
 		return new TreeSet<T>(result);

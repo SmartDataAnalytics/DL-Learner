@@ -32,7 +32,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
  */
 public class SomeOnlyReasonerTest {
 	
-    @Test
+//    @Test
     public void someOnlyTest() throws ComponentInitException, LearningProblemUnsupportedException {
         // TODO: use aksw-commons-sparql instead of sparql-scala
         
@@ -60,7 +60,7 @@ public class SomeOnlyReasonerTest {
         // ks.setUseCacheDatabase(true);
         ks.setRecursionDepth(1);
         ArrayList<String> ontologyUrls = new ArrayList<String>();
-        ontologyUrls.add("http://downloads.dbpedia.org/3.6/dbpedia_3.6.owl");
+        ontologyUrls.add("http://downloads.dbpedia.org/3.9/dbpedia_3.9.owl");
         ks.setOntologySchemaUrls(ontologyUrls);
         ks.setAboxfilter("FILTER ( !isLiteral(?o) &&   regex(str(?o), "
                 + "'^http://dbpedia.org/resource/') && "
