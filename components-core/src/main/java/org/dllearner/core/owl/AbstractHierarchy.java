@@ -3,8 +3,6 @@
  */
 package org.dllearner.core.owl;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
@@ -328,6 +326,10 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 */
 	public SortedMap<T, SortedSet<T>> getHierarchyDown() {
 		return hierarchyDown;
+	}
+	
+	public void precompute() {
+		
 	}
 	
 	@Override
