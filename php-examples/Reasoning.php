@@ -33,7 +33,7 @@ $wsdluri="http://localhost:8181/services?wsdl";
 Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
-$ontology = 'file:'.realpath("../../examples/family/father.owl");
+$ontology = 'file:'.realpath("../examples/family/father.owl");
 
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");

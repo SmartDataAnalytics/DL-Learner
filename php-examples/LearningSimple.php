@@ -33,7 +33,7 @@ $wsdluri="http://localhost:8181/services?wsdl";
 // Utilities::loadWSDLfiles($wsdluri);
 
 // specifiy ontology
-$ontology = 'file:'.realpath("../../examples/family/father.owl");
+$ontology = 'file:'.realpath("../examples/family/father.owl");
 
 // create DL-Learner client
 $client = new SoapClient("main.wsdl");
@@ -56,7 +56,7 @@ $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
 // choose refinement operator approach
-$la_id = $client->setLearningAlgorithm($id, "refexamples");
+$la_id = $client->setLearningAlgorithm($id, "celoe");
 // you can add the following to apply a config option to a component, e.g. ignore a concept
 $client->applyConfigEntryStringArray($id, $la_id, "ignoredConcepts", array('http://example.com/father#female'));
 

@@ -740,12 +740,18 @@ public class DLLearnerWS {
 	private void applyConfigEntry(int sessionID, int componentID, String optionName, Object value) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
-		System.out.println(component + "::" + optionName + "=" + value);
+		System.out.println("Config option->" + component + "::" + optionName + "=" + value);
 		try {
 			Field field = component.getClass().getDeclaredField(optionName);
 			field.setAccessible(true);
 			if(optionName.equals("classToDescribe")) {
 				value = new OWLClassImpl(IRI.create((URL)value));
+			} else if(optionName.equals("ignoredConcepts")) {
+				Set<OWLClass> ignoredConcepts = new HashSet<OWLClass>();
+				for (String iri : (TreeSet<String>)value) {
+					ignoredConcepts.add(new OWLClassImpl(IRI.create(iri)));
+				}
+				value = ignoredConcepts;
 			}
 			field.set(component, value);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | URISyntaxException e) {
