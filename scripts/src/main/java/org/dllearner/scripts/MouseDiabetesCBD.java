@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.dllearner.core.owl.Individual;
 import org.dllearner.examples.MouseDiabetes;
 import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -14,6 +13,7 @@ import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class MouseDiabetesCBD {
 	public static int nrOfPosExamples = 5;
 	public static int nrOfNegExamples = 5;
 	
-	private static List<Individual> exampleUris = new ArrayList<Individual>();
+	private static List<OWLIndividual> exampleUris = new ArrayList<OWLIndividual>();
 
     public static void main (String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -39,16 +39,16 @@ public class MouseDiabetesCBD {
         OWLAxiomCBDGenerator cbdGenartor = new OWLAxiomCBDGenerator(ontology);
         cbdGenartor.setFetchCompleteRelatedTBox(true);
         
-        List<Individual> posExamples = new ArrayList<Individual>(MouseDiabetes.loadPosExamples());
+        List<OWLIndividual> posExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadPosExamples());
         exampleUris.addAll(posExamples.subList(0, nrOfPosExamples ));
-        List<Individual> negExamples = new ArrayList<Individual>(MouseDiabetes.loadNegExamples());
+        List<OWLIndividual> negExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadNegExamples());
         exampleUris.addAll(negExamples.subList(0, nrOfNegExamples ));
 
         OWLOntology cbdOnt = man.createOntology();
 
-        for (Individual ind : exampleUris) {
+        for (OWLIndividual ind : exampleUris) {
             logger.info("Creating cbd for " + ind + "...");
-            Set<OWLAxiom> cbdAxioms = cbdGenartor.getCBD(factory.getOWLNamedIndividual(IRI.create(ind.getName())), cbdDepth);
+            Set<OWLAxiom> cbdAxioms = cbdGenartor.getCBD(factory.getOWLNamedIndividual(IRI.create(ind.toStringID())), cbdDepth);
             logger.info("  Done. Adding {} axioms to main CBD dataset...", cbdAxioms.size());
             man.addAxioms(cbdOnt, cbdAxioms);
             logger.info("  Also done");

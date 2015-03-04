@@ -79,6 +79,7 @@ import org.semanticweb.owlapi.reasoner.TimeOutException;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.hp.hpl.jena.query.Query;
@@ -384,7 +385,7 @@ public class SPARQLSampleDebugging {
 			}
 		});
 		OWLDataFactory f = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 		PrintWriter out = new PrintWriter( System.out );
 		for(OWLObjectProperty p : reasoner.getRootOntology().getObjectPropertiesInSignature()){
 			boolean satisfiable = reasoner.isSatisfiable(f.getOWLObjectExactCardinality(1, p));
@@ -445,7 +446,7 @@ public class SPARQLSampleDebugging {
 		Model model;
 		
 		FileWriter out = new FileWriter( "log/alljustifications" + System.currentTimeMillis() + ".txt" );
-		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 		renderer.startRendering(out );
 		
 		String query = "SELECT COUNT(DISTINCT ?s) WHERE {?s a ?type}";
@@ -522,7 +523,7 @@ public class SPARQLSampleDebugging {
 		renderer.endRendering();
 		
 		FileWriter sampleOut = new FileWriter( "log/sample_justifications" + System.currentTimeMillis() + ".txt" );
-		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer();
 		sampleRenderer.startRendering(sampleOut);
 		for(Set<OWLAxiom> exp : sampleExplanations){
 			try {
@@ -556,8 +557,8 @@ public class SPARQLSampleDebugging {
 		Model model;
 		FileWriter sampleOut = new FileWriter( "log/sample_justifications.txt" );
 		FileWriter out = new FileWriter( "log/alljustifications.txt" );
-		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
-		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer(dbpediaReasoner);
+		ManchesterSyntaxExplanationRenderer sampleRenderer = new ManchesterSyntaxExplanationRenderer();
+		ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 		sampleRenderer.startRendering(sampleOut);
 		renderer.startRendering(out );
 		for(String resource : resources){

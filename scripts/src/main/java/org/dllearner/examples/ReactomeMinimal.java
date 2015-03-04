@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -16,26 +15,23 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
-import org.dllearner.core.owl.Thing;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.ExistentialRestrictionMaterialization;
-import org.dllearner.reasoning.MaterializableFastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 
 public class ReactomeMinimal {
@@ -65,8 +61,8 @@ public class ReactomeMinimal {
         logger.debug("Starting...");
 
         logger.debug("creating positive and negative examples...");
-        Set<Individual> posExamples = makeIndividuals(posExampleUris);
-        Set<Individual> negExamples = makeIndividuals(negExampleUris);
+        Set<OWLIndividual> posExamples = makeIndividuals(posExampleUris);
+        Set<OWLIndividual> negExamples = makeIndividuals(negExampleUris);
         logger.debug("finished creating positive and negative examples");
 
         logger.debug("reading ontology...");
@@ -90,7 +86,7 @@ public class ReactomeMinimal {
         baseReasoner.init();
         Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
        
-        MaterializableFastInstanceChecker cwReasoner = new MaterializableFastInstanceChecker(ks);
+        ClosedWorldReasoner cwReasoner = new ClosedWorldReasoner(ks);
         cwReasoner.setReasonerComponent(baseReasoner);
         cwReasoner.setHandlePunning(false);
         cwReasoner.setUseMaterializationCaching(false);
@@ -107,11 +103,6 @@ public class ReactomeMinimal {
         lp.init();
         logger.debug("finished initializing learning problem");
         
-        Description d = new Intersection(
-        		new NamedClass("http://purl.obolibrary.org/obo/GO_0016773"),
-        		new ObjectSomeRestriction(new ObjectProperty("http://purl.obolibrary.org/obo/RO_0002233"), Thing.instance)
-        		);
-        System.out.println(d + ":" + lp.getAccuracyOrTooWeak(d, 1.0));
         
         logger.debug("initializing learning algorithm...");
         AbstractCELA la;
@@ -149,10 +140,6 @@ public class ReactomeMinimal {
         op.setObjectPropertyHierarchy(rc.getObjectPropertyHierarchy());
         op.setDataPropertyHierarchy(rc.getDatatypePropertyHierarchy());
         op.init();
-        Set<Description> refinements = op.refine(d, 5);
-        for (Description ref : refinements) {
-			System.out.println(ref + ":" + lp.getAccuracyOrTooWeak(ref, 1.0));
-		}
         logger.debug("finished initializing operator");
         if(la instanceof CELOE)
         	((CELOE) la).setOperator(op);
@@ -170,10 +157,10 @@ public class ReactomeMinimal {
     }
 
 
-    private static Set<Individual> makeIndividuals(List<String> uris) {
-        Set<Individual> individuals = new HashSet<Individual>();
+    private static Set<OWLIndividual> makeIndividuals(List<String> uris) {
+        Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
         for (String uri : uris) {
-            individuals.add(new Individual(uri));
+            individuals.add(new OWLNamedIndividualImpl(IRI.create(uri)));
         }
 
         return individuals;

@@ -3,7 +3,6 @@
 
 	<!-- <groupId>org.dllearner</groupId> -->
 	<artifactId>components-core</artifactId>
-	<version>1.0</version>
 
 	<name>DL Learner Core Components</name>
 	<url>http://aksw.org/Projects/DLLearner</url>

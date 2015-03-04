@@ -1395,5 +1395,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	public void setHandlePunning(boolean handlePunning) {
 		this.handlePunning = handlePunning;
 	}
+	
+	/**
+	 * @param materializeExistentialRestrictions the materializeExistentialRestrictions to set
+	 */
+	public void setMaterializeExistentialRestrictions(boolean materializeExistentialRestrictions) {
+		this.materializeExistentialRestrictions = materializeExistentialRestrictions;
+	}
 
 }

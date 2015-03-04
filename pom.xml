@@ -27,7 +27,7 @@
 		<module>components-core</module>
 		<module>components-ext</module>
 		<module>interfaces</module>
-		<!-- <module>scripts</module> -->
+		<module>scripts</module>
   </modules>
 
 

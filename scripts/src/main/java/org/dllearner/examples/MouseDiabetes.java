@@ -3,7 +3,6 @@ package org.dllearner.examples;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +22,9 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.Reasoner;
-import org.dllearner.core.owl.Description;
-import org.dllearner.core.owl.Individual;
-import org.dllearner.core.owl.Intersection;
-import org.dllearner.core.owl.NamedClass;
-import org.dllearner.core.owl.ObjectProperty;
-import org.dllearner.core.owl.ObjectSomeRestriction;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.MaterializableFastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.scripts.MouseDiabetesCBD;
@@ -40,14 +32,19 @@ import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.jamonapi.proxy.MonProxyFactory;
 
 
 public class MouseDiabetes {
@@ -73,11 +70,11 @@ public class MouseDiabetes {
         }
        
         logger.debug("reading positive and negative examples...");
-        Set<Individual> posExamples = readExamples(posExamplesFilePath);
-        Set<Individual> negExamples = readExamples(negExamplesFilePath);
+        Set<OWLIndividual> posExamples = readExamples(posExamplesFilePath);
+        Set<OWLIndividual> negExamples = readExamples(negExamplesFilePath);
         if(useCBD){
-        	posExamples = new HashSet<Individual>(new ArrayList<Individual>(posExamples).subList(0, MouseDiabetesCBD.nrOfPosExamples));
-        	negExamples = new HashSet<Individual>(new ArrayList<Individual>(negExamples).subList(0, MouseDiabetesCBD.nrOfNegExamples));
+        	posExamples = new HashSet<OWLIndividual>(new ArrayList<OWLIndividual>(posExamples).subList(0, MouseDiabetesCBD.nrOfPosExamples));
+        	negExamples = new HashSet<OWLIndividual>(new ArrayList<OWLIndividual>(negExamples).subList(0, MouseDiabetesCBD.nrOfNegExamples));
         }
         logger.debug("finished reading examples");
         
@@ -94,7 +91,7 @@ public class MouseDiabetes {
         Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
         logger.debug("finished initializing reasoner");
         logger.debug("initializing reasoner component...");
-        MaterializableFastInstanceChecker rc = new MaterializableFastInstanceChecker(ks);
+        ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
         rc.setReasonerComponent(baseReasoner);
         rc.setHandlePunning(true);
         rc.setMaterializeExistentialRestrictions(true);
@@ -122,7 +119,7 @@ public class MouseDiabetes {
         ((CELOE) la).setWriteSearchTree(false);
         ((CELOE) la).setReplaceSearchTree(true);
         ((CELOE) la).setSearchTreeFile("log/mouse-diabetis.log");
-        Description startClass = new NamedClass("http://dl-learner.org/smallis/Allelic_info");
+        OWLClassExpression startClass = new OWLClassImpl(IRI.create("http://dl-learner.org/smallis/Allelic_info"));
 //        startClass = new Intersection(
 //        		new NamedClass("http://dl-learner.org/smallis/Allelic_info"),
 //        		new ObjectSomeRestriction(new ObjectProperty("http://dl-learner.org/smallis/has_phenotype"), Thing.instance));
@@ -143,11 +140,6 @@ public class MouseDiabetes {
         logger.debug("finished initializing operator");
         ((CELOE) la).setOperator(op);
         
-        Description d = new Intersection(
-        		new NamedClass("http://dl-learner.org/smallis/Allelic_info"),
-        		new ObjectSomeRestriction(new ObjectProperty("http://dl-learner.org/smallis/has_phenotype"),
-        				new NamedClass("http://purl.obolibrary.org/obo/MP_0005389"))
-        		);
 //        Set<Description> refinements = op.refine(d, d.getLength()+4);
 //        for (Description ref : refinements) {
 //			System.out.println(ref + ":" + lp.getAccuracyOrTooWeak(ref, 1.0));
@@ -174,24 +166,24 @@ public class MouseDiabetes {
         la.start();
     }
     
-    public static Set<Individual> loadPosExamples() throws IOException {
-        Set<Individual> indivs = readExamples(posExamplesFilePath);
+    public static Set<OWLIndividual> loadPosExamples() throws IOException {
+        Set<OWLIndividual> indivs = readExamples(posExamplesFilePath);
         return indivs;
     }
     
-    public static Set<Individual> loadNegExamples() throws IOException {
-        Set<Individual> indivs = readExamples(negExamplesFilePath);
+    public static Set<OWLIndividual> loadNegExamples() throws IOException {
+        Set<OWLIndividual> indivs = readExamples(negExamplesFilePath);
         return indivs;
     }
     
-    public static Set<Individual> readExamples(String filePath) throws IOException {
-        Set<Individual> indivs = new TreeSet<Individual>();
+    public static Set<OWLIndividual> readExamples(String filePath) throws IOException {
+        Set<OWLIndividual> indivs = new TreeSet<OWLIndividual>();
         try(BufferedReader buffRead = new BufferedReader(new FileReader(new File(filePath)))){
 	        String line;
 	        while ((line = buffRead.readLine()) != null) {
 	            line = line.trim();
 	            line = line.substring(1, line.length()-1);  // strip off angle brackets
-	            indivs.add(new Individual(line));
+	            indivs.add(new OWLNamedIndividualImpl(IRI.create(line)));
 	        }
         }
         return indivs;
