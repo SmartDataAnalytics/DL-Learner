@@ -69,7 +69,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	 * @return
 	 */
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
-		return getSuperClasses(concept, true);
+		return getSuperClasses(concept, false);
 	}
 	
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept, boolean direct) {
@@ -82,7 +82,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	 * @return
 	 */
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
-		return getSubClasses(concept, true);
+		return getSubClasses(concept, false);
 	}
 	
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept, boolean direct) {

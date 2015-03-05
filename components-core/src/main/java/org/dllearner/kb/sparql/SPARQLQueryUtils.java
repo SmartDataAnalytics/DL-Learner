@@ -25,10 +25,29 @@ public class SPARQLQueryUtils {
 			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";
 
 	// class hierarchy queries
-	public static final String SELECT_SUPERCLASS_OF_QUERY2 = PREFIXES + "SELECT ?var1 WHERE { " +
+	public static final String SELECT_TOP_LEVEL_OWL_CLASSES = PREFIXES + 
+			"SELECT ?var1\n" + 
+			"WHERE { ?var1 a owl:Class .\n" + 
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
+			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" + 
+			"FILTER ( ?super != owl:Thing && ?super != ?var1 ) } .\n" + 
+			"FILTER ( !bound(?super) ) }";
+	
+	public static final String SELECT_SUPERCLASS_OF_QUERY_INF = PREFIXES + "SELECT ?var1 WHERE { " +
 	"<%s> (rdfs:subClassOf|owl:equivalentClass|^owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?var1 .}";
 
 	public static final String SELECT_SUBCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf <%s> .}";
+	public static final String SELECT_DIRECT_SUBCLASS_OF_QUERY = PREFIXES + 
+			"SELECT ?var1 {\n" + 
+			"		BIND( <%s> as ?concept )\n" + 
+			"		?var1 rdfs:subClassOf ?concept .\n" + 
+			"		OPTIONAL {\n" + 
+			"		?concept rdfs:subClassOf ?inbetweener .\n" + 
+			"		?var1 rdfs:subClassOf ?inbetweener .\n" + 
+			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
+			"		}\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		}";
 	public static final String SELECT_SUPERCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?var1 .}";
 	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES + 
 			"SELECT ?var1 {\n" + 

@@ -69,6 +69,7 @@ import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
@@ -87,6 +88,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -1723,7 +1725,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
 		}
 		superClasses.remove(description);
-
+		System.out.println("Sup(" + description + "):" + superClasses);
 		return superClasses;
 	}
 
@@ -1737,23 +1739,34 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			throw new IllegalArgumentException("Only named classes are supported.");
 		}
 		SortedSet<OWLClassExpression> subClasses = new TreeSet<OWLClassExpression>();
-		String query;
-		if(direct){
-			query = String.format("SELECT ?sub {?sub <%s> <%s>. FILTER(isIRI(?sub))}", 
-					RDFS.subClassOf.getURI(), description.asOWLClass().toStringID());
-		} else {
-			query = String.format("SELECT ?sub {?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf>* <%s>. }", 
-					description.asOWLClass().toStringID());
-		}
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while(rs.hasNext()){
-			qs = rs.next();
-			subClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
-		}
+//		if(ks.isRemote()){
+			
+			String query;
+			if(description.isOWLThing()) {
+				query = String.format(SPARQLQueryUtils.SELECT_TOP_LEVEL_OWL_CLASSES);
+			} else {
+				query = String.format(SPARQLQueryUtils.SELECT_SUBCLASS_OF_QUERY, description.asOWLClass().toStringID());
+				if(direct){
+					
+				} else {
+					
+				}
+			}
+			System.out.println(query);
+			
+			ResultSet rs = executeSelectQuery(query);
+			subClasses.addAll(asOWLEntities(EntityType.CLASS, rs, "var1"));
+//		} else {
+//			OntClass ontCls = ((LocalModelBasedSparqlEndpointKS)ks).getModel().getOntClass(description.asOWLClass().toStringID());
+//			ExtendedIterator<OntClass> iterator = ontCls.listSubClasses(direct);
+//			while(iterator.hasNext()) {
+//				subClasses.add(new OWLClassImpl(IRI.create(iterator.next().getURI())));
+//			}
+//		}
 		subClasses.remove(description);
 		subClasses.remove(df.getOWLNothing());
-		return subClasses;
+		System.out.println("Sub(" + description + "):" + subClasses);
+		return new TreeSet<OWLClassExpression>(subClasses);
 	}
 
 	@Override

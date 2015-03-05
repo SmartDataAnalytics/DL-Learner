@@ -495,6 +495,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		double highestAccuracy = 0.0;
 		OENode nextNode;
 
+		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
 		int loop = 0;
@@ -859,6 +860,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			niceDescription = description;
 		}
+		System.out.println(node + ":" + niceDescription);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
@@ -1210,7 +1212,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setEquivalence(false);
+//		lp.setEquivalence(false);
 		lp.setClassToDescribe(classToDescribe);
 		lp.init();
 		
