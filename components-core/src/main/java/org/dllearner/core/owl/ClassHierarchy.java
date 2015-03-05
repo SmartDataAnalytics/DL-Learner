@@ -63,16 +63,26 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 		super(subsumptionHierarchyUp, subsumptionHierarchyDown);
 	}
 
+	/**
+	 * Returns the direct super classes.
+	 * @param concept
+	 * @return
+	 */
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
-		return getSuperClasses(concept, false);
+		return getSuperClasses(concept, true);
 	}
 	
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept, boolean direct) {
 		return getParents(concept, direct);
 	}
 
+	/**
+	 * Returns the direct subclasses.
+	 * @param concept
+	 * @return
+	 */
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
-		return getSubClasses(concept, false);
+		return getSubClasses(concept, true);
 	}
 	
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept, boolean direct) {

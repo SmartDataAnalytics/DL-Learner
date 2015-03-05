@@ -66,6 +66,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
@@ -756,6 +757,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
 //					System.out.println("Test2");
+//					System.out.println(node + "->" + niceDescription);
 					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //					System.out.println("acc: " + accuracy);
 //					System.out.println(bestEvaluatedDescriptions);
@@ -841,8 +843,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if(cls.isOWLThing()) {
 			return false;
 		}
-        return description.containsConjunct(cls) ||
-                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
+		return (description instanceof OWLNaryBooleanClassExpression && 
+				((OWLNaryBooleanClassExpression)description).getOperands().contains(cls));
+//        return description.containsConjunct(cls) ||
+//                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
     }
 	
 	// check whether the node is a potential solution candidate

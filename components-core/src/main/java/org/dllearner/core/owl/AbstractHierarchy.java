@@ -36,7 +36,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 */
 	@Override
 	public SortedSet<T> getChildren(T entity) {
-		return getChildren(entity, false);
+		return getChildren(entity, true);
 	}
 
 	/* (non-Javadoc)
