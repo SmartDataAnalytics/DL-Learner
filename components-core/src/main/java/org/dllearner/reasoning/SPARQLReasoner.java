@@ -1752,7 +1752,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					
 				}
 			}
-			System.out.println(query);
 			
 			ResultSet rs = executeSelectQuery(query);
 			subClasses.addAll(asOWLEntities(EntityType.CLASS, rs, "var1"));
