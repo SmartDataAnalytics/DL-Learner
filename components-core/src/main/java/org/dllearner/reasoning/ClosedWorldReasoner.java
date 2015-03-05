@@ -800,7 +800,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()) {
-				return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
+				if(isDefaultNegation()){
+					return new TreeSet<OWLIndividual>(Sets.difference(individuals, classInstancesPos.get(operand)));
+				} else {
+					return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
+				}
 			}
 			// implement retrieval as default negation
 			return Helper.difference((TreeSet<OWLIndividual>) individuals.clone(), getIndividualsImpl(operand));
