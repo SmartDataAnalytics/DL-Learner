@@ -96,6 +96,12 @@
 	<artifactId>weka-dev</artifactId>
 	<version>3.7.11</version>
 </dependency>
+
+<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
         
     <!--
         <dependency>
