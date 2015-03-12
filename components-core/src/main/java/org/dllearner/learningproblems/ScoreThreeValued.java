@@ -133,7 +133,7 @@ public class ScoreThreeValued extends ScorePosNeg {
         	score -= (neutAsPos.size()*accuracyPenalty        
             + neutAsNeg.size()*accuracyPenalty);
         
-        // TODO: man könnte hier statt error penality auch accuracy penalty
+        // TODO: man könnte hier statt error penalty auch accuracy penalty
         // nehmen
         double worstValue = nrOfExamples * errorPenalty;
         // ergibt Zahl zwischen -1 und 0
@@ -166,6 +166,43 @@ public class ScoreThreeValued extends ScorePosNeg {
     @Override
     public double getScoreValue() {
         return score;
+    }
+    
+	/**
+	 * @return number of cases of individuals that got exactly the same
+	 *         classification with both definitions
+	 */
+    public int getMatchRate() {
+    	return posAsPos.size() + negAsNeg.size();
+    }
+    
+	/**
+	 * @return amount of individuals for which class-membership w.r.t.
+	 *         the given query could not determined using the induced
+	 *         definition, while they actually belong (do not belong) to the
+	 *         query concept
+	 */
+    public int getOmmissionErrorRate() {
+    	return posAsNeut.size() + negAsNeut.size();
+    }
+    
+	/**
+	 * @return amount of individuals found not to belong to the query concept
+	 *         according to the induced definition, while they actually belong
+	 *         to it and vice-versa
+	 */
+    public int getCommissionErrorRate() {
+    	return posAsNeg.size() + negAsPos.size();
+    }
+    
+	/**
+	 * @return amount of individuals found to belong or not to belong to the
+	 *         query concept according to the induced definition, while either
+	 *         case is not logically derivable from the knowledge base with the
+	 *         original definition
+	 */
+    public int getInductionRate() {
+    	return neutAsPos.size() + neutAsNeg.size();
     }
     
     @Override
