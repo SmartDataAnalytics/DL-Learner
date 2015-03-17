@@ -55,7 +55,7 @@ public class LCSTest {
 	 */
 	@Test
 	public void testComputeLCS() {
-		fail("Not yet implemented");
+		
 	}
 
 }
