@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl.operations;
+package org.dllearner.algorithms.qtl.operations.lcs;
 
 import java.util.HashMap;
 import java.util.HashSet;

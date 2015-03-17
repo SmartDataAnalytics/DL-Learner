@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.util.Set;
 
+import org.dllearner.algorithms.qtl.operations.lcs.LCS;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
@@ -51,7 +52,7 @@ public class LCSTest {
 	}
 
 	/**
-	 * Test method for {@link org.dllearner.algorithms.qtl.operations.LCS#computeLCS(org.dllearner.algorithms.qtl.operations.LCS.RootedRDFGraph, org.dllearner.algorithms.qtl.operations.LCS.RootedRDFGraph)}.
+	 * Test method for {@link org.dllearner.algorithms.qtl.operations.lcs.LCS#computeLCS(org.dllearner.algorithms.qtl.operations.lcs.LCS.RootedRDFGraph, org.dllearner.algorithms.qtl.operations.lcs.LCS.RootedRDFGraph)}.
 	 */
 	@Test
 	public void testComputeLCS() {
