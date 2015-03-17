@@ -153,7 +153,8 @@ public class QALDExperiment {
 	static {
 		try {
 			endpoint = new SparqlEndpoint(
-					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+//					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
+					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
 					"http://dbpedia.org");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -191,7 +192,7 @@ public class QALDExperiment {
 	
 	List<String> questionFiles;
 	QueryExecutionFactory qef;
-	String cacheDirectory = "cache/qtl";
+	String cacheDirectory = "./cache/qtl";
 	
 	int minNrOfPositiveExamples = 5;
 	int maxDepth = 2;
@@ -278,19 +279,20 @@ public class QALDExperiment {
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
-		int minNrOfExamples = 5;
-		int maxNrOfExamples = 5;
+		
+		int minNrOfExamples = 3;
+		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
 		double[] noiseIntervals = {
-//				0.0,
+				0.0,
 				0.2,
 //				0.4,
 //				0.6
 				};
 			
-		// loop of number of positive examples
-		for (int nrOfExamples = minNrOfExamples; nrOfExamples <= maxNrOfExamples; nrOfExamples = Math.min(nrOfExamples + stepSize, maxNrOfExamples)) {
+		// loop over number of positive examples
+		for (int nrOfExamples = minNrOfExamples; nrOfExamples <= maxNrOfExamples; nrOfExamples = nrOfExamples + stepSize) {
 			
 			// loop over noise value
 			for (int i = 0; i < noiseIntervals.length; i++) {
@@ -320,7 +322,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-					if(!sparqlQuery.contains("Cruise"))continue;
+//					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples

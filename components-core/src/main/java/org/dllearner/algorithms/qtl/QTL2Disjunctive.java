@@ -55,7 +55,6 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
@@ -111,9 +110,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private volatile boolean stop;
 	private boolean isRunning;
 
-	private Monitor subMon;
-	private Monitor lggMon;
-
 	private List<EvaluatedQueryTree<String>> partialSolutions;
 	
 	private EvaluatedDescription currentBestSolution;
@@ -134,20 +130,21 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	// maximum execution time to compute a part of the solution
 	private double maxTreeComputationTimeInSeconds = 10;
 	
-	// how important not to cover negatives
+	// how important it is not to cover negatives
 	private double beta = 1;
 	
 	// minimum score a query tree must have to be part of the solution
 	private double minimumTreeScore = 0.3;
 	
-	//If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, 
-	//it may lead to overfitting
+	// If TRUE the algorithm tries to cover all positive examples. Note that
+	// while this improves accuracy on the testing set,
+	// it may lead to overfitting
 	private boolean tryFullCoverage;
-	
-	//algorithm will terminate immediately when a correct definition is found
+
+	// algorithm will terminate immediately when a correct definition is found
 	private boolean stopOnFirstDefinition;
 	
-	//the (approximated) value of noise within the examples
+	// the (approximated) value of noise within the examples
 	private double noise = 0.0;
 	
 	private long startTime;
@@ -231,10 +228,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		startPosExamplesSize = currentPosExampleTrees.size();
 		
-		//some logging
-		subMon = MonitorFactory.getTimeMonitor("subsumption-mon");
-		lggMon = MonitorFactory.getTimeMonitor("lgg-mon");
-		
 		//console rendering of class expressions
 		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
 		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
@@ -247,7 +240,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //		allExamplesTrees.addAll(currentNegExampleTrees);
 //		QueryTree<String> lgg = lggGenerator.getLGG(allExamplesTrees);
 //		lgg.dump();
-		logger.info("Initialization finished.");
+		logger.info("...initialization finished.");
 	}
 	
 	private void generateQueryTrees(){
@@ -303,15 +296,15 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			logger.info("#Remaining pos. examples:" + currentPosExampleTrees.size());
 			logger.info("#Remaining neg. examples:" + currentNegExampleTrees.size());
 			
-			//compute best (partial) solution computed so far
+			// compute best (partial) solution computed so far
 			EvaluatedQueryTree<String> bestPartialSolution = computeBestPartialSolution();
 			
-			//add to partial solutions if criteria are satisfied
+			// add to partial solutions if criteria are satisfied
 			if(bestPartialSolution.getScore() >= minimumTreeScore){
 				
 				partialSolutions.add(bestPartialSolution);
 				
-				//remove all covered examples
+				// remove all examples covered by current partial solution
 				QueryTree<String> tree;
 				for (Iterator<QueryTree<String>> iterator = currentPosExampleTrees.iterator(); iterator.hasNext();) {
 					tree = iterator.next();
@@ -328,7 +321,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					}
 				}
 				
-				//build the current combined solution
+				// build the current combined solution from all partial solutions
 				currentBestSolution = buildCombinedSolution();
 				
 				logger.info("combined accuracy: " + dFormat.format(currentBestSolution.getAccuracy()));
@@ -523,9 +516,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				}
 				
 				// compute the LGG
-				lggMon.start();
+				MonitorFactory.getTimeMonitor("lgg").start();
 				QueryTree<String> lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
-				lggMon.stop();
+				MonitorFactory.getTimeMonitor("lgg").stop();
 				
 				// evaluate the LGG
 				Set<EvaluatedQueryTree<String>> solutions = evaluate(lgg, true);
@@ -568,12 +561,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		logger.info("Best partial solution: " + solutionAsString(bestPartialSolution) + "\n(" + bestPartialSolution.getScore() + ")");
 		
-		logger.trace("LGG time: " + lggMon.getTotal() + "ms");
-		logger.trace("Avg. LGG time: " + lggMon.getAvg() + "ms");
-		logger.info("#LGG computations: " + lggMon.getHits());
-		logger.trace("Subsumption test time: " + subMon.getTotal() + "ms");
-		logger.trace("Avg. subsumption test time: " + subMon.getAvg() + "ms");
-		logger.trace("#Subsumption tests: " + subMon.getHits());
+		logger.trace("LGG time: " + MonitorFactory.getTimeMonitor("lgg").getTotal() + "ms");
+		logger.trace("Avg. LGG time: " + MonitorFactory.getTimeMonitor("lgg").getAvg() + "ms");
+		logger.info("#LGG computations: " + MonitorFactory.getTimeMonitor("lgg").getHits());
+		
+		logger.trace("Subsumption test time: " + MonitorFactory.getTimeMonitor("subsumption").getTotal() + "ms");
+		logger.trace("Avg. subsumption test time: " + MonitorFactory.getTimeMonitor("subsumption").getAvg() + "ms");
+		logger.trace("#Subsumption tests: " + MonitorFactory.getTimeMonitor("subsumption").getHits());
 		
 		return bestPartialSolutionTree;
 	}
@@ -648,7 +642,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		}
 		//check if not already contained in solutions
 		for (EvaluatedQueryTree<String> evTree : currentPartialSolutions) {
-			if(sameTrees(solution.getTree(), evTree.getTree())){
+			if(QueryTreeUtils.sameTrees(solution.getTree(), evTree.getTree())){
 				logger.trace("Not added to partial solutions list: Already contained in.");
 				return;
 			}
@@ -923,8 +917,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		stop = false;
 		isRunning = true;
 		
-		subMon.reset();
-		lggMon.reset();
+		MonitorFactory.getTimeMonitor("lgg").reset();
 		
 		bestCurrentScore = minimumTreeScore;
 	}
@@ -1025,7 +1018,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private List<QueryTree<String>> getCoveredTrees(QueryTree<String> tree, List<QueryTree<String>> trees){
 		List<QueryTree<String>> coveredTrees = new ArrayList<QueryTree<String>>();
 		for (QueryTree<String> queryTree : trees) {
-			boolean subsumed = queryTree.isSubsumedBy(tree);
+			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
 			if(subsumed){
 				coveredTrees.add(queryTree);
 			}
@@ -1036,13 +1029,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	/**
 	 * Return all trees from the given list {@code allTrees} which are not already subsumed by {@code tree}.
 	 * @param tree
-	 * @param allTrees
+	 * @param trees
 	 * @return
 	 */
-	private List<QueryTree<String>> getUncoveredTrees(QueryTree<String> tree, List<QueryTree<String>> allTrees){
+	private List<QueryTree<String>> getUncoveredTrees(QueryTree<String> tree, List<QueryTree<String>> trees){
 		List<QueryTree<String>> uncoveredTrees = new ArrayList<QueryTree<String>>();
-		for (QueryTree<String> queryTree : allTrees) {
-			boolean subsumed = queryTree.isSubsumedBy(tree);
+		for (QueryTree<String> queryTree : trees) {
+			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
 			if(!subsumed){
 				uncoveredTrees.add(queryTree);
 			}
@@ -1050,10 +1043,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return uncoveredTrees;
 	}
 
-	private boolean sameTrees(QueryTree<String> tree1, QueryTree<String> tree2){
-		return tree1.isSubsumedBy(tree2) && tree2.isSubsumedBy(tree1);
-	}
-	
 	private boolean terminationCriteriaSatisfied() {
 		//stop was called or time expired
 		if(stop || isTimeExpired()){
