@@ -31,6 +31,10 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
     public boolean isRoot() {
     	return parent == null;
     }
+    
+    public boolean isLeaf() {
+    	return children.isEmpty();
+    }
 
     public int getNumberOfChildren() {
         return getChildren().size();

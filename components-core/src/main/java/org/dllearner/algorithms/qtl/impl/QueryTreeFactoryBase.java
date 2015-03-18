@@ -19,31 +19,38 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
+import org.dllearner.algorithms.qtl.util.StopURIsOWL;
+import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * 
@@ -51,185 +58,179 @@ import com.hp.hpl.jena.vocabulary.RDF;
  *
  */
 public class QueryTreeFactoryBase implements QueryTreeFactory {
-	
+
 	private int nodeId;
 	private Comparator<Statement> comparator = new StatementComparator();
-	
+
 	private int maxDepth = 3;
-	
-	private Set<String> allowedNamespaces = Sets.newHashSet(RDF.getURI());
-	private Set<String> ignoredProperties = Sets.newHashSet(OWL.sameAs.getURI());
-	
-	public QueryTreeFactoryBase(){
+
+	private Set<Filter<Statement>> dropFilters = new HashSet<Filter<Statement>>();
+
+	public QueryTreeFactoryBase() {
 	}
-	
+
 	/**
 	 * @param maxDepth the maximum depth of the generated query trees.
 	 */
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
-	
-	
+
 	public RDFResourceTree getQueryTree(String example, Model model) {
-		return createTreeOptimized(model.getResource(example), model);
+		return createTree(model.getResource(example), model);
 	}
 
 	public RDFResourceTree getQueryTree(Resource resource, Model model) {
-		return createTreeOptimized(resource, model);
+		return createTree(resource, model);
 	}
-	
-	private RDFResourceTree createTreeOptimized(Resource resource, Model model){
+
+	private RDFResourceTree createTree(Resource resource, Model model) {
 		nodeId = 0;
-		SortedMap<Resource, SortedSet<Statement>> resource2Statements = new TreeMap<Resource, SortedSet<Statement>>();
-		
-		fillMap(resource, model, resource2Statements);	
-		
-		RDFResourceTree tree = new RDFResourceTree("?", NodeType.VARIABLE);
-		int depth = 0;
-		fillTree(resource, tree, resource2Statements, depth);
-				
+		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<Resource, SortedSet<Statement>>();
+
+		fillMap(resource, model, resource2Statements);
+
+		RDFResourceTree tree = new RDFResourceTree();
+		fillTree(resource, tree, resource2Statements, 0);
+
 		return tree;
 	}
-	
-	private void fillMap(Resource s, Model model, SortedMap<Resource, SortedSet<Statement>> resource2Statements){
-		
+
+	private void fillMap(Resource s, Model model, Map<Resource, SortedSet<Statement>> resource2Statements) {
+
 		// get all statements with subject s
-		Iterator<Statement> it = model.listStatements(s, null, (RDFNode)null);
-		
+		ExtendedIterator<Statement> it = model.listStatements(s, null, (RDFNode) null);
+
+		// filter statement if necessary
+		if (!dropFilters.isEmpty()) {
+			Iterator<Filter<Statement>> iter = dropFilters.iterator();
+			Filter<Statement> keepFilter = iter.next();
+			while (iter.hasNext()) {
+				keepFilter = keepFilter.and(iter.next());
+			}
+			it = it.filterKeep(keepFilter);
+		}
+
 		SortedSet<Statement> statements = resource2Statements.get(s);
-		if(statements == null){
+		if (statements == null) {
 			statements = new TreeSet<Statement>(comparator);
 			resource2Statements.put(s, statements);
 		}
-		
-		while(it.hasNext()){
+
+		while (it.hasNext()) {
 			Statement st = it.next();
-			
+
 			statements.add(st);
-			if((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject().toString())){
+			if ((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject())) {
 				fillMap(st.getObject().asResource(), model, resource2Statements);
 			}
 		}
 	}
-	
-	private void fillTree(String root, RDFResourceTree tree, SortedMap<String, SortedSet<Statement>> resource2Statements, int depth){
+
+	private void fillTree(Resource root, RDFResourceTree tree, Map<Resource, SortedSet<Statement>> resource2Statements,
+			int depth) {
 		depth++;
-			if(resource2Statements.containsKey(root)){
-				RDFResourceTree subTree;
-				Property predicate;
-				RDFNode object;
-				for(Statement st : resource2Statements.get(root)){
-					predicate = st.getPredicate();
-					object = st.getObject();
-					
-					if(object.isLiteral()){
-						Literal lit = st.getLiteral();
-						String escapedLit = lit.getLexicalForm().replace("\"", "\\\"");
-						StringBuilder sb = new StringBuilder();
-						sb.append("\"").append(escapedLit).append("\"");
-						if(lit.getDatatypeURI() != null){
-							sb.append("^^<").append(lit.getDatatypeURI()).append(">");
+		if (resource2Statements.containsKey(root)) {
+			RDFResourceTree subTree;
+
+			for (Statement st : resource2Statements.get(root)) {
+				Node predicate = st.getPredicate().asNode();
+				RDFNode object = st.getObject();
+
+				if (object.isLiteral()) {
+					subTree = new RDFResourceTree(nodeId++, object.asNode());
+					tree.addChild(subTree, predicate);
+				} else if (object.isURIResource()) {
+					if (depth < maxDepth) {
+						subTree = new RDFResourceTree(nodeId++, st.getObject().asNode());
+						tree.addChild(subTree, predicate);
+						if (depth < maxDepth) {
+							fillTree(object.asResource(), subTree, resource2Statements, depth);
 						}
-						if(!lit.getLanguage().isEmpty()){
-							sb.append("@").append(lit.getLanguage());
-						}
-						subTree = new RDFResourceTree(sb.toString(), NodeType.LITERAL);
-//						subTree = new RDFResourceTree(lit.toString());
-						subTree.setId(nodeId++);
-						if(lit.getDatatype() == XSDDatatype.XSDinteger 
-								|| lit.getDatatype() == XSDDatatype.XSDdouble 
-								|| lit.getDatatype() == XSDDatatype.XSDdate
-								|| lit.getDatatype() == XSDDatatype.XSDint
-								|| lit.getDatatype() == XSDDatatype.XSDdecimal){
-							subTree.addLiteral(lit);
-						} else {
-							subTree.addLiteral(lit);
-						}
-						
-						tree.addChild(subTree, st.getPredicate().toString());
-					} else if(objectFilter.isRelevantResource(object.asResource().getURI())){
-						if(!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-							subTree = new RDFResourceTree(st.getObject().toString(), NodeType.RESOURCE);
-							subTree.setId(nodeId++);
-							tree.addChild(subTree, st.getPredicate().toString());
-							if(depth < maxDepth){
-								fillTree(st.getObject().toString(), subTree, resource2Statements, depth);
-							}
-							if(object.isAnon()){
-								subTree.setIsBlankNode(true);
-							}
-							
-						}
-					} else if(object.isAnon()){
-						if(depth < maxDepth &&
-								!tree.getUserObjectPathToRoot().contains(st.getObject().toString())){
-							subTree = new RDFResourceTree(st.getObject().toString(), NodeType.RESOURCE);
-							subTree.setIsResourceNode(true);
-							subTree.setId(nodeId++);
-							tree.addChild(subTree, st.getPredicate().toString());
-							fillTree(st.getObject().toString(), subTree, resource2Statements, depth);
-						}
+					}
+				} else if (object.isAnon()) {
+					subTree = new RDFResourceTree(nodeId++, object.asNode());
+					tree.addChild(subTree, predicate);
+					if (depth < maxDepth) {
+						fillTree(object.asResource(), subTree, resource2Statements, depth);
 					}
 				}
 			}
+		}
 		depth--;
 	}
-	
+
 	class StatementComparator implements Comparator<Statement> {
 
 		@Override
 		public int compare(Statement s1, Statement s2) {
-			return ComparisonChain
-					.start()
-					.compare(s1.getPredicate().getURI(),
-							s2.getPredicate().getURI())
-					.compare(s1.getObject().toString(),
-							s2.getObject().toString()).result();
+			return ComparisonChain.start().compare(s1.getPredicate().getURI(), s2.getPredicate().getURI())
+					.compare(s1.getObject().toString(), s2.getObject().toString()).result();
 		}
 	}
-	
+
 	public static String encode(String s) {
-        char [] htmlChars = s.toCharArray();
-        StringBuffer encodedHtml = new StringBuffer();
-        for (int i=0; i<htmlChars.length; i++) {
-            switch(htmlChars[i]) {
-            case '<':
-                encodedHtml.append("&lt;");
-                break;
-            case '>':
-                encodedHtml.append("&gt;");
-                break;
-            case '&':
-                encodedHtml.append("&amp;");
-                break;
-            case '\'':
-                encodedHtml.append("&#39;");
-                break;
-            case '"':
-                encodedHtml.append("&quot;");
-                break;
-            case '\\':
-                encodedHtml.append("&#92;");
-                break;
-            case (char)133:
-                encodedHtml.append("&#133;");
-                break;
-            default:
-                encodedHtml.append(htmlChars[i]);
-                break;
-            }
-        }
-        return encodedHtml.toString();
-    }
-	
+		char[] htmlChars = s.toCharArray();
+		StringBuffer encodedHtml = new StringBuffer();
+		for (int i = 0; i < htmlChars.length; i++) {
+			switch (htmlChars[i]) {
+			case '<':
+				encodedHtml.append("&lt;");
+				break;
+			case '>':
+				encodedHtml.append("&gt;");
+				break;
+			case '&':
+				encodedHtml.append("&amp;");
+				break;
+			case '\'':
+				encodedHtml.append("&#39;");
+				break;
+			case '"':
+				encodedHtml.append("&quot;");
+				break;
+			case '\\':
+				encodedHtml.append("&#92;");
+				break;
+			case (char) 133:
+				encodedHtml.append("&#133;");
+				break;
+			default:
+				encodedHtml.append(htmlChars[i]);
+				break;
+			}
+		}
+		return encodedHtml.toString();
+	}
+
+	/**
+	 * @param dropFilters the dropFilters to set
+	 */
+	public void addDropFilters(Filter<Statement>... dropFilters) {
+		this.dropFilters.addAll(Arrays.asList(dropFilters));
+	}
+
 	public static void main(String[] args) throws Exception {
 		QueryTreeFactoryBase factory = new QueryTreeFactoryBase();
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpediaLOD2Cloud());
+		factory.addDropFilters(
+				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+				new PredicateDropStatementFilter(StopURIsRDFS.get()),
+				new PredicateDropStatementFilter(StopURIsOWL.get()),
+				new NamespaceDropStatementFilter(
+						Sets.newHashSet(
+								"http://dbpedia.org/property/", 
+								"http://purl.org/dc/terms/",
+								"http://dbpedia.org/class/yago/",
+								FOAF.getURI()
+								)
+								)
+				);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(
+				SparqlEndpoint.getEndpointDBpediaLOD2Cloud());
 		String resourceURI = "http://dbpedia.org/resource/Athens";
-		Model cbd = cbdGen.getConciseBoundedDescription(resourceURI, 0);
+		Model cbd = cbdGen.getConciseBoundedDescription(resourceURI, 2);
 		RDFResourceTree queryTree = factory.getQueryTree(resourceURI, cbd);
-		System.out.println(queryTree.toSPARQLQueryString());
+		System.out.println(QueryTreeUtils.toSPARQLQuery(queryTree));
 	}
 
 }

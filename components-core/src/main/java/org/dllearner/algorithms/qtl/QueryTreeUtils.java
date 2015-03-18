@@ -10,12 +10,27 @@ import java.util.List;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.util.VarGenerator;
+import org.dllearner.utilities.StringFormatter;
+
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.shared.impl.PrefixMappingImpl;
+import com.hp.hpl.jena.sparql.serializer.SerializationContext;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 /**
  * @author Lorenz Buehmann
  *
  */
 public class QueryTreeUtils {
+	
+	private static final VarGenerator varGen = new VarGenerator("x");
+	private static final String TRIPLE_PATTERN_TEMPLATE = "%s %s %s .";
 	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
@@ -212,6 +227,43 @@ public class QueryTreeUtils {
     }
     
     /**
+	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
+	 * tree1.
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+    public static <N> boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
+    	// 1.compare the root nodes
+    	
+    	// if both nodes denote the same resource or literal
+    	if(!tree1.isVarNode() && tree1.getData().equals(tree2.getData())){
+    		return true;
+    	}
+    	
+    	// if node2 is more specific than node1
+    	if(tree1.isVarNode() && !tree2.isVarNode()) {
+    		return false;
+    	}
+    	
+    	// 2. compare the children
+    	for(RDFResourceTree child2 : tree2.getChildren()){
+    		boolean isSubsumed = false;
+//    		Node edge = tree2.getEdge(child2);
+//    		for(RDFResourceTree child1 : tree1.getChildren(edge)){
+//    			if(child1.isSubsumedBy(child2)){
+//    				isSubsumed = true;
+//    				break;
+//    			}
+//    		}
+    		if(!isSubsumed){
+				return false;
+			}
+    	}
+    	return true;
+    }
+    
+    /**
 	 * Determines if the trees are equivalent from a subsumptional point of view.
 	 * @param trees
 	 * @return
@@ -242,6 +294,83 @@ public class QueryTreeUtils {
 		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
 	}
 	
+	public static Query toSPARQLQuery(RDFResourceTree tree) {
+		return QueryFactory.create(toSPARQLQueryString(tree));
+	}
 	
+	public static String toSPARQLQueryString(RDFResourceTree tree) {
+    	return toSPARQLQueryString(tree, PrefixMapping.Standard);
+    }
+	
+	public static String toSPARQLQueryString(RDFResourceTree tree, PrefixMapping pm) {
+    	return toSPARQLQueryString(tree, null, pm);
+    }
+	
+	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+		if(!tree.hasChildren()){
+    		return "SELECT ?x0 WHERE {?x0 ?p ?o.}";
+    	}
+    	
+    	varGen.reset();
+    	
+    	SerializationContext context = new SerializationContext(pm);
+    	context.setBaseIRI(baseIRI);
+    	
+    	StringBuilder sb = new StringBuilder();
+    	
+    	// Add BASE declaration
+        if (baseIRI != null) {
+            sb.append("BASE ");
+            sb.append(FmtUtils.stringForURI(baseIRI, null, null));
+            sb.append('\n');
+        }
 
+        // Then pre-pend prefixes
+        for (String prefix : pm.getNsPrefixMap().keySet()) {
+            sb.append("PREFIX ");
+            sb.append(prefix);
+            sb.append(": ");
+            sb.append(FmtUtils.stringForURI(pm.getNsPrefixURI(prefix), null, null));
+            sb.append('\n');
+        }
+        
+        // header
+    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
+    	
+    	// triple patterns
+    	buildSPARQLQueryString(tree, sb, context);
+        
+        sb.append("}");
+    	
+    	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
+    	query.setPrefixMapping(pm);
+    	
+    	return query.toString();
+	}
+    
+    private static void buildSPARQLQueryString(RDFResourceTree tree, StringBuilder sb, SerializationContext context){
+    	// process subject
+    	String subjectStr = null;
+    	if(tree.isVarNode()){
+    		subjectStr = varGen.newVar();
+    	} else {
+    		subjectStr = FmtUtils.stringForNode(tree.getData(), context);
+    	}
+    	
+		if (!tree.isLeaf()) {
+			for (Node edge : tree.getEdges()) {
+				// process predicate
+				String predicateStr = FmtUtils.stringForNode(edge, context);
+				for (RDFResourceTree child : tree.getChildren(edge)) {
+					// process object
+					Node object = child.getData();
+					String objectStr = object.isVariable() ? varGen.newVar() : FmtUtils.stringForNode(object, context);
+					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
+					if (object.isVariable()) {
+						buildSPARQLQueryString(child, sb, context);
+					}
+				}
+			}
+		}
+    }
 }
