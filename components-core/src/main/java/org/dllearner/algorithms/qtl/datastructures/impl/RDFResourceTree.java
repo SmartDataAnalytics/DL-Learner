@@ -120,17 +120,18 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 		sb.append(ren);
 		sb.append("\n");
 		if (isRoot() || !isResourceNode() || (isResourceNode() && !stopIfChildIsResourceNode)) {
-			for (RDFResourceTree child : getChildren()) {
-				for (int i = 0; i < indent; i++) {
-					sb.append("\t");
+			for(Node edge : getEdges()) {
+				for (RDFResourceTree child : getChildren(edge)) {
+					for (int i = 0; i < indent; i++) {
+						sb.append("\t");
+					}
+					if (edge != null) {
+						sb.append("  ");
+						sb.append(edge);
+						sb.append(" ---> ");
+					}
+					sb.append(child.getStringRepresentation(stopIfChildIsResourceNode));
 				}
-				Object edge = getEdge(child);
-				if (edge != null) {
-					sb.append("  ");
-					sb.append(edge);
-					sb.append(" ---> ");
-				}
-				sb.append(child.getStringRepresentation(stopIfChildIsResourceNode));
 			}
 		}
 		return sb.toString();
