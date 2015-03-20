@@ -35,6 +35,9 @@ public class SPARQLQueryUtils {
 	
 	public static final String SELECT_SUPERCLASS_OF_QUERY_INF = PREFIXES + "SELECT ?var1 WHERE { " +
 	"<%s> (rdfs:subClassOf|owl:equivalentClass|^owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?var1 .}";
+	
+	public static final String SELECT_SUPERCLASS_OF_QUERY_RDFS = PREFIXES + "SELECT ?var1 WHERE { " +
+			"<%s> rdfs:subClassOf* ?var1 .}";
 
 	public static final String SELECT_SUBCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf <%s> .}";
 	public static final String SELECT_DIRECT_SUBCLASS_OF_QUERY = PREFIXES + 

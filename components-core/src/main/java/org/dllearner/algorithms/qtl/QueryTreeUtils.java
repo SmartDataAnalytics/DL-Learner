@@ -12,16 +12,19 @@ import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
-import org.dllearner.utilities.StringFormatter;
+import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.shared.impl.PrefixMappingImpl;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author Lorenz Buehmann
@@ -233,35 +236,125 @@ public class QueryTreeUtils {
 	 * @param tree2
 	 * @return
 	 */
-    public static <N> boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
+    public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
     	// 1.compare the root nodes
     	
-    	// if both nodes denote the same resource or literal
-    	if(!tree1.isVarNode() && tree1.getData().equals(tree2.getData())){
-    		return true;
+    	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+    	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+    		return tree1.getData().equals(tree2.getData());
     	}
     	
-    	// if node2 is more specific than node1
+    	// (T_1 = ?) and (T_2 != ?) --> FALSE
     	if(tree1.isVarNode() && !tree2.isVarNode()) {
     		return false;
     	}
     	
     	// 2. compare the children
-    	for(RDFResourceTree child2 : tree2.getChildren()){
-    		boolean isSubsumed = false;
-//    		Node edge = tree2.getEdge(child2);
-//    		for(RDFResourceTree child1 : tree1.getChildren(edge)){
-//    			if(child1.isSubsumedBy(child2)){
-//    				isSubsumed = true;
-//    				break;
-//    			}
-//    		}
-    		if(!isSubsumed){
-				return false;
-			}
+    	for(Node edge2 : tree2.getEdges()){
+    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
+    			boolean isSubsumed = false;
+        		for(RDFResourceTree child1 : tree1.getChildren(edge2)){
+        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){
+        				isSubsumed = true;
+        				break;
+        			}
+        		}
+        		if(!isSubsumed){
+    				return false;
+    			}
+    		}
     	}
     	return true;
     }
+    
+    /**
+   	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
+   	 * tree1.
+   	 * @param tree1
+   	 * @param tree2
+   	 * @return
+   	 */
+       public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, SPARQLReasoner reasoner) {
+       	// 1.compare the root nodes
+       	
+       	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+       	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+       		if(tree1.isResourceNode() && tree2.isResourceNode()) {
+       			
+       		}
+       		return tree1.getData().equals(tree2.getData());
+       	}
+       	
+       	// (T_1 = ?) and (T_2 != ?) --> FALSE
+       	if(tree1.isVarNode() && !tree2.isVarNode()) {
+       		return false;
+       	}
+       	
+       	// 2. compare the children
+       	for(Node edge2 : tree2.getEdges()){
+       		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
+       			boolean isSubsumed = false;
+           		for(RDFResourceTree child1 : tree1.getChildren(edge2)){
+           			if(QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))){
+           				isSubsumed = true;
+           				break;
+           			}
+           		}
+           		if(!isSubsumed){
+       				return false;
+       			}
+       		}
+       	}
+       	return true;
+       }
+       
+       /**
+      	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
+      	 * tree1.
+      	 * @param tree1
+      	 * @param tree2
+      	 * @return
+      	 */
+          public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, SPARQLReasoner reasoner, boolean typeNode) {
+          	// 1.compare the root nodes
+          	
+          	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+          	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+          		if(tree1.getData().equals(tree2.getData())) {
+          			return true;
+          		} else if(typeNode && tree1.isResourceNode() && tree2.isResourceNode()) {
+          			return reasoner.isSuperClassOf(
+          					new OWLClassImpl(IRI.create(tree2.getData().getURI())), 
+          					new OWLClassImpl(IRI.create(tree1.getData().getURI())));
+          		}
+          		return false;
+          	}
+          	
+          	// (T_1 = ?) and (T_2 != ?) --> FALSE
+          	if(tree1.isVarNode() && !tree2.isVarNode()) {
+          		return false;
+          	}
+          	
+          	// 2. compare the children
+          	for(Node edge2 : tree2.getEdges()){
+          		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
+          			boolean isSubsumed = false;
+              		List<RDFResourceTree> children = tree1.getChildren(edge2);
+              		if(children != null) {
+              			for(RDFResourceTree child1 : children){
+                  			if(QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))){
+                  				isSubsumed = true;
+                  				break;
+                  			}
+                  		}
+              		}
+              		if(!isSubsumed){
+          				return false;
+          			}
+          		}
+          	}
+          	return true;
+          }
     
     /**
 	 * Determines if the trees are equivalent from a subsumptional point of view.
@@ -334,11 +427,14 @@ public class QueryTreeUtils {
             sb.append('\n');
         }
         
+        //
+        String targetVar = "?s";
+        
         // header
-    	sb.append("SELECT DISTINCT ?x0 WHERE {\n");
+    	sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
     	
     	// triple patterns
-    	buildSPARQLQueryString(tree, sb, context);
+    	buildSPARQLQueryString(tree, targetVar, sb, context);
         
         sb.append("}");
     	
@@ -348,15 +444,7 @@ public class QueryTreeUtils {
     	return query.toString();
 	}
     
-    private static void buildSPARQLQueryString(RDFResourceTree tree, StringBuilder sb, SerializationContext context){
-    	// process subject
-    	String subjectStr = null;
-    	if(tree.isVarNode()){
-    		subjectStr = varGen.newVar();
-    	} else {
-    		subjectStr = FmtUtils.stringForNode(tree.getData(), context);
-    	}
-    	
+    private static void buildSPARQLQueryString(RDFResourceTree tree, String subjectStr, StringBuilder sb, SerializationContext context){
 		if (!tree.isLeaf()) {
 			for (Node edge : tree.getEdges()) {
 				// process predicate
@@ -367,7 +455,7 @@ public class QueryTreeUtils {
 					String objectStr = object.isVariable() ? varGen.newVar() : FmtUtils.stringForNode(object, context);
 					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
 					if (object.isVariable()) {
-						buildSPARQLQueryString(child, sb, context);
+						buildSPARQLQueryString(child, objectStr, sb, context);
 					}
 				}
 			}

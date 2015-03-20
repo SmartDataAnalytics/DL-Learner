@@ -1767,6 +1767,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		System.out.println("Sub(" + description + "):" + subClasses);
 		return new TreeSet<OWLClassExpression>(subClasses);
 	}
+	
+	public boolean isSuperClassOf(OWLClass sup, OWLClass sub, boolean direct) {
+		String query = direct ? SPARQLQueryUtils.SELECT_SUPERCLASS_OF_QUERY : SPARQLQueryUtils.SELECT_SUPERCLASS_OF_QUERY_RDFS;
+		query = String.format(query, sub.toStringID());
+		ResultSet rs = executeSelectQuery(query);
+		SortedSet<OWLClass> superClasses = asOWLEntities(EntityType.CLASS, rs, "var1");
+		return superClasses.contains(sup);
+	}
 
 	@Override
 	public SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty objectProperty) {

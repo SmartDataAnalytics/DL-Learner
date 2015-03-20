@@ -7,15 +7,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Node_URI;
+import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.sparql.util.NodeComparator;
 
 /**
@@ -46,6 +49,15 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	public RDFResourceTree(RDFResourceTree tree) {
 		super(tree.getData());
 		this.id = getID();
+		
+		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
+			Node edge = entry.getKey();
+			List<RDFResourceTree> children = entry.getValue();
+			
+			for (RDFResourceTree child : children) {
+				addChild(new RDFResourceTree(child), edge);
+			}
+		}
 	}
 	
 	/**
@@ -70,6 +82,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 		child.setParent(this);
 	}
 	
+	public void removeChild(RDFResourceTree child, Node edge) {
+		super.removeChild(child);
+		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
+		if(childrenForEdge != null) {
+			childrenForEdge.remove(child);
+		}
+	}
 	
 	public List<RDFResourceTree> getChildren() {
 		return super.getChildren();
@@ -100,7 +119,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
     }
 	
 	public String getStringRepresentation() {
-		return getStringRepresentation(false);
+		return getStringRepresentation(false, PrefixCCPrefixMapping.Full);
 	}
 	    
 	/**
@@ -109,31 +128,35 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	 * @param stopWhenLeafNode
 	 * @return
 	 */
-	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
-		int indent = 3;
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
-		if (isRoot()) {
-			sb.append("TREE\n\n");
-		}
-		String ren = this.getData().toString();
-		ren = ren.replace("\n", "\n" + sb);
-		sb.append(ren);
-		sb.append("\n");
+		
+		buildTreeString(sb, stopIfChildIsResourceNode, 0, pm);
+		
+		return "TREE [\n" + sb.toString() + "]";
+	}
+	
+	private void buildTreeString(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, PrefixMapping pm) {
+		
+		// render current node
+		String ren = FmtUtils.stringForNode(this.getData(), pm);
+		sb.append(ren).append("\n");
+		
+		// render edges + children
 		if (isRoot() || !isResourceNode() || (isResourceNode() && !stopIfChildIsResourceNode)) {
 			for(Node edge : getEdges()) {
 				for (RDFResourceTree child : getChildren(edge)) {
-					for (int i = 0; i < indent; i++) {
+					for (int i = 0; i < depth; i++) {
 						sb.append("\t");
 					}
 					if (edge != null) {
 						sb.append("  ");
-						sb.append(edge);
+						sb.append(FmtUtils.stringForNode(edge, pm));
 						sb.append(" ---> ");
 					}
-					sb.append(child.getStringRepresentation(stopIfChildIsResourceNode));
+					child.buildTreeString(sb, stopIfChildIsResourceNode, depth + 1, pm);
 				}
 			}
 		}
-		return sb.toString();
 	}
 }

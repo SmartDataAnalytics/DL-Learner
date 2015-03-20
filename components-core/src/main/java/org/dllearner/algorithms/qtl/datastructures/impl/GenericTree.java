@@ -52,6 +52,11 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         children.add(child);
         child.setParent((V) this);
     }
+    
+    public void removeChild(V child) {
+        children.remove(child);
+        child.setParent(null);
+    }
 
     public void addChildAt(int index, V child) throws IndexOutOfBoundsException {
         children.add(index, child);

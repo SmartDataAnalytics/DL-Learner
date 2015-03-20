@@ -50,7 +50,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
  * 
@@ -75,23 +74,31 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
-
+	
 	public RDFResourceTree getQueryTree(String example, Model model) {
-		return createTree(model.getResource(example), model);
+		return getQueryTree(example, model, maxDepth);
 	}
 
 	public RDFResourceTree getQueryTree(Resource resource, Model model) {
-		return createTree(resource, model);
+		return getQueryTree(resource, model, maxDepth);
 	}
 
-	private RDFResourceTree createTree(Resource resource, Model model) {
+	public RDFResourceTree getQueryTree(String example, Model model, int maxDepth) {
+		return createTree(model.getResource(example), model, maxDepth);
+	}
+
+	public RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth) {
+		return createTree(resource, model, maxDepth);
+	}
+
+	private RDFResourceTree createTree(Resource resource, Model model, int maxDepth) {
 		nodeId = 0;
 		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<Resource, SortedSet<Statement>>();
 
 		fillMap(resource, model, resource2Statements);
 
 		RDFResourceTree tree = new RDFResourceTree();
-		fillTree(resource, tree, resource2Statements, 0);
+		fillTree(resource, tree, resource2Statements, 0, maxDepth);
 
 		return tree;
 	}
@@ -128,8 +135,8 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 
 	private void fillTree(Resource root, RDFResourceTree tree, Map<Resource, SortedSet<Statement>> resource2Statements,
-			int depth) {
-		depth++;
+			int currentDepth, int maxDepth) {
+		currentDepth++;
 		if (resource2Statements.containsKey(root)) {
 			RDFResourceTree subTree;
 
@@ -141,23 +148,24 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 					subTree = new RDFResourceTree(nodeId++, object.asNode());
 					tree.addChild(subTree, predicate);
 				} else if (object.isURIResource()) {
-					if (depth < maxDepth) {
-						subTree = new RDFResourceTree(nodeId++, st.getObject().asNode());
-						tree.addChild(subTree, predicate);
-						if (depth < maxDepth) {
-							fillTree(object.asResource(), subTree, resource2Statements, depth);
+					subTree = new RDFResourceTree(nodeId++, object.asNode());
+					tree.addChild(subTree, predicate);
+//					System.out.println(root + "::" + object + "::" + (currentDepth < maxDepth));
+					if (currentDepth < maxDepth) {
+						if (currentDepth < maxDepth) {
+							fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
 						}
 					}
 				} else if (object.isAnon()) {
 					subTree = new RDFResourceTree(nodeId++, object.asNode());
 					tree.addChild(subTree, predicate);
-					if (depth < maxDepth) {
-						fillTree(object.asResource(), subTree, resource2Statements, depth);
+					if (currentDepth < maxDepth) {
+						fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);
 					}
 				}
 			}
 		}
-		depth--;
+		currentDepth--;
 	}
 
 	class StatementComparator implements Comparator<Statement> {
@@ -226,10 +234,11 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 								)
 				);
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(
-				SparqlEndpoint.getEndpointDBpediaLOD2Cloud());
+				SparqlEndpoint.getEndpointDBpedia());
 		String resourceURI = "http://dbpedia.org/resource/Athens";
 		Model cbd = cbdGen.getConciseBoundedDescription(resourceURI, 2);
 		RDFResourceTree queryTree = factory.getQueryTree(resourceURI, cbd);
+		System.out.println(queryTree.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQuery(queryTree));
 	}
 
