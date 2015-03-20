@@ -14,7 +14,8 @@ import com.hp.hpl.jena.vocabulary.OWL;
  */
 public class StopURIsOWL {
 	static final Set<String> uris = ImmutableSet.of(
-			OWL.sameAs.getURI()
+			OWL.sameAs.getURI(),
+			OWL.Class.getURI()
 			);
 	
 	public static Set<String> get() {
