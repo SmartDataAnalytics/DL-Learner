@@ -11,6 +11,7 @@ import java.util.List;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.IRI;
@@ -18,9 +19,15 @@ import org.semanticweb.owlapi.model.IRI;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
@@ -277,6 +284,50 @@ public class QueryTreeUtils {
    	 * tree1.
    	 * @param tree1
    	 * @param tree2
+   	 * @param entailment
+   	 * @return
+   	 */
+       public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment) {
+       	// 1.compare the root nodes
+       	
+       	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+       	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+       		return tree1.getData().equals(tree2.getData());
+       	}
+       	
+       	// (T_1 = ?) and (T_2 != ?) --> FALSE
+       	if(tree1.isVarNode() && !tree2.isVarNode()) {
+       		return false;
+       	}
+       	
+       	// 2. compare the children
+       	for(Node edge2 : tree2.getEdges()){ // for each edge in T_2
+       		List<RDFResourceTree> children1 = tree1.getChildren(edge2);
+         		if(children1 != null) {
+   	    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) { // and each child in T_2
+   	    			boolean isSubsumed = false;
+   	        		for(RDFResourceTree child1 : children1){ // there has to be at least one child in T_1 that is subsumed 
+   	        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){ 
+   	        				isSubsumed = true;
+   	        				break;
+   	        			}
+   	        		}
+   	        		if(!isSubsumed){
+   	    				return false;
+   	    			}
+   	    		}
+         		} else {
+         			return false;
+         		}
+       	}
+       	return true;
+       }
+    
+    /**
+   	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
+   	 * tree1.
+   	 * @param tree1
+   	 * @param tree2
    	 * @return
    	 */
        public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, SPARQLReasoner reasoner) {
@@ -396,6 +447,25 @@ public class QueryTreeUtils {
 	 */
 	public static <N> boolean sameTrees(QueryTree<N> tree1, QueryTree<N> tree2) {
 		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
+	}
+	
+	public static Model toModel(RDFResourceTree tree) {
+		Model model = ModelFactory.createDefaultModel();
+		buildModel(model, tree, model.asRDFNode(NodeFactory.createAnon()).asResource());
+		return model;
+	}
+	
+	private static void buildModel(Model model, RDFResourceTree tree, Resource subject) {
+		for(Node edge : tree.getEdges()) {
+			Property p = model.getProperty(edge.getURI());
+			for(RDFResourceTree child : tree.getChildren(edge)) {
+				RDFNode object = model.asRDFNode(NodeFactory.createAnon()).asResource();
+				model.add(subject, p, object);
+				if(child.isVarNode()) {
+					buildModel(model, child, object.asResource());
+				}
+			}
+		}
 	}
 	
 	public static Query toSPARQLQuery(RDFResourceTree tree) {
