@@ -18,6 +18,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Node_URI;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.sparql.util.NodeComparator;
 
@@ -39,6 +40,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
      */
     public RDFResourceTree() {
 		this(0, DEFAULT_VAR_NODE);
+	}
+    
+    /**
+     * Creates an empty resource tree with a default variable as label and the given ID.
+     */
+    public RDFResourceTree(int id) {
+		this(id, DEFAULT_VAR_NODE);
 	}
     
 	public RDFResourceTree(int id, Node data) {
@@ -119,7 +127,15 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
     }
 	
 	public String getStringRepresentation() {
-		return getStringRepresentation(false, PrefixCCPrefixMapping.Full);
+		return getStringRepresentation(false, null, PrefixCCPrefixMapping.Full);
+	}
+	
+	public String getStringRepresentation(String baseIRI) {
+		return getStringRepresentation(false, baseIRI, PrefixCCPrefixMapping.Full);
+	}
+	
+	public String getStringRepresentation(String baseIRI, PrefixMapping pm) {
+		return getStringRepresentation(false, baseIRI, pm);
 	}
 	    
 	/**
@@ -128,18 +144,21 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	 * @param stopWhenLeafNode
 	 * @return
 	 */
-	public String getStringRepresentation(boolean stopIfChildIsResourceNode, PrefixMapping pm) {
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode, String baseIRI, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		
-		buildTreeString(sb, stopIfChildIsResourceNode, 0, pm);
+		SerializationContext context = new SerializationContext(pm);
+		context.setBaseIRI(baseIRI);
+		
+		buildTreeString(sb, stopIfChildIsResourceNode, 0, context);
 		
 		return "TREE [\n" + sb.toString() + "]";
 	}
 	
-	private void buildTreeString(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, PrefixMapping pm) {
+	private void buildTreeString(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
 		
 		// render current node
-		String ren = FmtUtils.stringForNode(this.getData(), pm);
+		String ren = FmtUtils.stringForNode(this.getData(), context);
 		sb.append(ren).append("\n");
 		
 		// render edges + children
@@ -151,10 +170,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 					}
 					if (edge != null) {
 						sb.append("  ");
-						sb.append(FmtUtils.stringForNode(edge, pm));
+						sb.append(FmtUtils.stringForNode(edge, context));
 						sb.append(" ---> ");
 					}
-					child.buildTreeString(sb, stopIfChildIsResourceNode, depth + 1, pm);
+					child.buildTreeString(sb, stopIfChildIsResourceNode, depth + 1, context);
 				}
 			}
 		}

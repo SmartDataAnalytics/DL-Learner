@@ -157,7 +157,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 						}
 					}
 				} else if (object.isAnon()) {
-					subTree = new RDFResourceTree(nodeId++, object.asNode());
+					subTree = new RDFResourceTree(nodeId++);
 					tree.addChild(subTree, predicate);
 					if (currentDepth < maxDepth) {
 						fillTree(object.asResource(), subTree, resource2Statements, currentDepth, maxDepth);

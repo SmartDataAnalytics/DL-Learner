@@ -250,19 +250,24 @@ public class QueryTreeUtils {
     	}
     	
     	// 2. compare the children
-    	for(Node edge2 : tree2.getEdges()){
-    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
-    			boolean isSubsumed = false;
-        		for(RDFResourceTree child1 : tree1.getChildren(edge2)){
-        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){
-        				isSubsumed = true;
-        				break;
-        			}
-        		}
-        		if(!isSubsumed){
-    				return false;
-    			}
-    		}
+    	for(Node edge2 : tree2.getEdges()){ // for each edge in T_2
+    		List<RDFResourceTree> children1 = tree1.getChildren(edge2);
+      		if(children1 != null) {
+	    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) { // and each child in T_2
+	    			boolean isSubsumed = false;
+	        		for(RDFResourceTree child1 : children1){ // there has to be at least one child in T_1 that is subsumed 
+	        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){ 
+	        				isSubsumed = true;
+	        				break;
+	        			}
+	        		}
+	        		if(!isSubsumed){
+	    				return false;
+	    			}
+	    		}
+      		} else {
+      			return false;
+      		}
     	}
     	return true;
     }
@@ -292,18 +297,24 @@ public class QueryTreeUtils {
        	
        	// 2. compare the children
        	for(Node edge2 : tree2.getEdges()){
-       		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
-       			boolean isSubsumed = false;
-           		for(RDFResourceTree child1 : tree1.getChildren(edge2)){
-           			if(QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))){
-           				isSubsumed = true;
-           				break;
-           			}
-           		}
-           		if(!isSubsumed){
-       				return false;
-       			}
-       		}
+       		List<RDFResourceTree> children1 = tree1.getChildren(edge2);
+      		if(children1 != null) {
+	       		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
+	       			boolean isSubsumed = false;
+	       			
+	           		for(RDFResourceTree child1 : children1){
+	           			if(QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))){
+	           				isSubsumed = true;
+	           				break;
+	           			}
+	           		}
+	           		if(!isSubsumed){
+	       				return false;
+	       			}
+	       		}
+      		} else {
+      			return false;
+      		}
        	}
        	return true;
        }
