@@ -5,18 +5,26 @@ package org.dllearner.algorithms.qtl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -28,6 +36,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
@@ -41,6 +54,7 @@ public class QueryTreeUtils {
 	
 	private static final VarGenerator varGen = new VarGenerator("x");
 	private static final String TRIPLE_PATTERN_TEMPLATE = "%s %s %s .";
+	private static final OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
@@ -237,6 +251,22 @@ public class QueryTreeUtils {
     }
     
     /**
+     * Returns all nodes in the given query tree.
+     * @param tree
+     * @return
+     */
+    public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
+		List<RDFResourceTree> nodes = new ArrayList<RDFResourceTree>();
+		nodes.add(tree);
+		
+		for (RDFResourceTree child : tree.getChildren()) {
+			nodes.addAll(getNodes(child));
+		}
+		
+		return nodes;
+	}
+    
+    /**
 	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
 	 * tree1.
 	 * @param tree1
@@ -279,6 +309,10 @@ public class QueryTreeUtils {
     	return true;
     }
     
+    public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, LiteralNodeSubsumptionStrategy strategy) {
+		return isSubsumedBy(tree1, tree2);
+	}
+    
     /**
    	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
    	 * tree1.
@@ -287,41 +321,28 @@ public class QueryTreeUtils {
    	 * @param entailment
    	 * @return
    	 */
-       public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment) {
-       	// 1.compare the root nodes
-       	
-       	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
-       	if(!tree1.isVarNode() && !tree2.isVarNode()) {
-       		return tree1.getData().equals(tree2.getData());
-       	}
-       	
-       	// (T_1 = ?) and (T_2 != ?) --> FALSE
-       	if(tree1.isVarNode() && !tree2.isVarNode()) {
-       		return false;
-       	}
-       	
-       	// 2. compare the children
-       	for(Node edge2 : tree2.getEdges()){ // for each edge in T_2
-       		List<RDFResourceTree> children1 = tree1.getChildren(edge2);
-         		if(children1 != null) {
-   	    		for(RDFResourceTree child2 : tree2.getChildren(edge2)) { // and each child in T_2
-   	    			boolean isSubsumed = false;
-   	        		for(RDFResourceTree child1 : children1){ // there has to be at least one child in T_1 that is subsumed 
-   	        			if(QueryTreeUtils.isSubsumedBy(child1, child2)){ 
-   	        				isSubsumed = true;
-   	        				break;
-   	        			}
-   	        		}
-   	        		if(!isSubsumed){
-   	    				return false;
-   	    			}
-   	    		}
-         		} else {
-         			return false;
-         		}
-       	}
-       	return true;
-       }
+	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment) {
+		Resource root = ResourceFactory.createResource("http://example.org/root");
+		final Model m1 = toModel(tree1, root);
+		Model m2 = toModel(tree2, root);
+		Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
+		Model m1closure = ModelFactory.createDefaultModel();
+		m1closure.add(ModelFactory.createInfModel(reasoner, m1));
+		Model m2closure = ModelFactory.createDefaultModel();
+		m2closure.add(ModelFactory.createInfModel(reasoner, m2));
+		boolean sameClosure = m1closure.isIsomorphicWith(m2closure);
+
+		// check if each statement of m1 is contained in m2
+		StmtIterator iterator = m1closure.listStatements();
+		while (iterator.hasNext()) {
+			Statement st = iterator.next();
+			if (!m2closure.contains(st)) {
+				System.out.println(st + "  FALSE");
+				return false;
+			} 
+		}
+		return true;
+	}
     
     /**
    	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
@@ -449,23 +470,76 @@ public class QueryTreeUtils {
 		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
 	}
 	
+	public static <N> boolean sameTrees(RDFResourceTree tree1, RDFResourceTree tree2) {
+		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
+	}
+	
 	public static Model toModel(RDFResourceTree tree) {
 		Model model = ModelFactory.createDefaultModel();
 		buildModel(model, tree, model.asRDFNode(NodeFactory.createAnon()).asResource());
 		return model;
 	}
 	
+	public static Model toModel(RDFResourceTree tree, Resource subject) {
+		Model model = ModelFactory.createDefaultModel();
+		buildModel(model, tree, subject);
+		return model;
+	}
+	
 	private static void buildModel(Model model, RDFResourceTree tree, Resource subject) {
-		for(Node edge : tree.getEdges()) {
+		for (Node edge : tree.getEdges()) {
 			Property p = model.getProperty(edge.getURI());
-			for(RDFResourceTree child : tree.getChildren(edge)) {
-				RDFNode object = model.asRDFNode(NodeFactory.createAnon()).asResource();
+			for (RDFResourceTree child : tree.getChildren(edge)) {
+				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createAnon()).asResource() : model
+						.asRDFNode(child.getData());
 				model.add(subject, p, object);
-				if(child.isVarNode()) {
+				if (child.isVarNode()) {
 					buildModel(model, child, object.asResource());
 				}
 			}
 		}
+	}
+	
+	public static OWLClassExpression toOWLClassExpression(RDFResourceTree tree) {
+    	return buildOWLClassExpression(df, tree);
+	}
+	
+	private static OWLClassExpression buildOWLClassExpression(OWLDataFactory df, RDFResourceTree tree) {
+		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
+		for(Node edge : tree.getEdges()) {
+			for (RDFResourceTree child : tree.getChildren(edge)) {
+				if(edge.equals(RDF.type.asNode())) {
+					
+				} else {
+					// create r some C
+					if(child.isLiteralNode()) {
+						OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
+						classExpressions.add(df.getOWLDataHasValue(
+								df.getOWLDataProperty(IRI.create(edge.getURI())), 
+								value));
+					} else {
+						OWLClassExpression filler = null;
+						if(child.isVarNode()) {
+							filler = buildOWLClassExpression(df, child);
+						} else if (child.isResourceNode()) {
+							filler = df.getOWLClass(IRI.create(child.getData().getURI()));
+						}
+						classExpressions.add(df.getOWLObjectSomeValuesFrom(
+								df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+								filler));
+					}
+					
+					
+				}
+			}
+		}
+		if(classExpressions.isEmpty()) {
+			return df.getOWLThing();
+		} else if(classExpressions.size() == 1){
+    		return classExpressions.iterator().next();
+    	} else {
+    		return df.getOWLObjectIntersectionOf(classExpressions);
+    	}
 	}
 	
 	public static Query toSPARQLQuery(RDFResourceTree tree) {

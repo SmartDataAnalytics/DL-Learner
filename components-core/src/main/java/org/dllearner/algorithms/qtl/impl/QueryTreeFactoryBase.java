@@ -68,27 +68,52 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	public QueryTreeFactoryBase() {
 	}
 
-	/**
-	 * @param maxDepth the maximum depth of the generated query trees.
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#setMaxDepth(int)
 	 */
+	@Override
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model)
+	 */
+	@Override
 	public RDFResourceTree getQueryTree(String example, Model model) {
 		return getQueryTree(example, model, maxDepth);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model)
+	 */
+	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model) {
 		return getQueryTree(resource, model, maxDepth);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(java.lang.String, com.hp.hpl.jena.rdf.model.Model, int)
+	 */
+	@Override
 	public RDFResourceTree getQueryTree(String example, Model model, int maxDepth) {
 		return createTree(model.getResource(example), model, maxDepth);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#getQueryTree(com.hp.hpl.jena.rdf.model.Resource, com.hp.hpl.jena.rdf.model.Model, int)
+	 */
+	@Override
 	public RDFResourceTree getQueryTree(Resource resource, Model model, int maxDepth) {
 		return createTree(resource, model, maxDepth);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.impl.QueryTreeFactory#addDropFilters(com.hp.hpl.jena.util.iterator.Filter)
+	 */
+	@Override
+	public void addDropFilters(Filter<Statement>... dropFilters) {
+		this.dropFilters.addAll(Arrays.asList(dropFilters));
 	}
 
 	private RDFResourceTree createTree(Resource resource, Model model, int maxDepth) {
@@ -126,7 +151,6 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 		while (it.hasNext()) {
 			Statement st = it.next();
-
 			statements.add(st);
 			if ((st.getObject().isResource()) && !resource2Statements.containsKey(st.getObject())) {
 				fillMap(st.getObject().asResource(), model, resource2Statements);
@@ -211,15 +235,10 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 		return encodedHtml.toString();
 	}
 
-	/**
-	 * @param dropFilters the dropFilters to set
-	 */
-	public void addDropFilters(Filter<Statement>... dropFilters) {
-		this.dropFilters.addAll(Arrays.asList(dropFilters));
-	}
+	
 
 	public static void main(String[] args) throws Exception {
-		QueryTreeFactoryBase factory = new QueryTreeFactoryBase();
+		QueryTreeFactory factory = new QueryTreeFactoryBase();
 		factory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),

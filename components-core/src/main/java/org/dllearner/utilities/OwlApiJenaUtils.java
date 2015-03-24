@@ -23,10 +23,13 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -106,6 +109,10 @@ public class OwlApiJenaUtils {
 			}
 		}
 		return literal;
+	}
+	
+	public static OWLLiteral getOWLLiteral(LiteralLabel lit){
+		return getOWLLiteral(new LiteralImpl(NodeFactory.createLiteral(lit), null));
 	}
 	
 	/**

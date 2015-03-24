@@ -2888,3 +2888,8 @@ http://dbpedia.org/ontology/writer
 http://dbpedia.org/ontology/youthClub
 http://dbpedia.org/ontology/youthWing
 http://dbpedia.org/ontology/zodiacSign
+
+http://www.w3.org/2003/01/geo/wgs84_pos#geometry
+http://www.w3.org/2003/01/geo/wgs84_pos#lat
+http://www.w3.org/2003/01/geo/wgs84_pos#long
+http://www.georss.org/georss/point

@@ -9,6 +9,6 @@ package org.dllearner.algorithms.qtl.util;
  */
 public enum Entailment {
 	
-	SIMPLE, RDF, RDFS 
+	SIMPLE, RDF, RDFS, PD, OWL2RL
 
 }

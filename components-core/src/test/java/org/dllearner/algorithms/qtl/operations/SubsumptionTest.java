@@ -7,7 +7,9 @@ import java.io.ByteArrayInputStream;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +29,7 @@ public class SubsumptionTest {
 	
 	private static final String baseIRI = "http://test.org/";
 	
-	private static QueryTreeFactoryBase treeFactory;
+	private static QueryTreeFactory treeFactory;
 	private static Model model;
 
 	@BeforeClass
@@ -36,7 +38,8 @@ public class SubsumptionTest {
 				+ ":a1 :p1 _:b . "
 				+ ":a2 :p1 _:s . _:s :p2 :b ."
 				+ ":a3 a :A . "
-				+ ":a4 a _:cls . _:cls rdfs:subClassOf :A .";
+				+ ":a4 a _:cls . _:cls rdfs:subClassOf :A ."
+				+ ":a5 a _:cls2 . _:cls2 rdfs:subClassOf _:cls3 . _:cls3 rdfs:subClassOf :A .";
 		
 		model = ModelFactory.createDefaultModel();
 		model.read(new ByteArrayInputStream(kb.getBytes()), null, "TURTLE");
@@ -71,8 +74,13 @@ public class SubsumptionTest {
 		
 		RDFResourceTree tree2 = treeFactory.getQueryTree("http://test.org/a4", model);
 		print(tree2);
-		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2));
-		assertFalse(QueryTreeUtils.isSubsumedBy(tree2, tree1));
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2, Entailment.RDFS));
+		assertFalse(QueryTreeUtils.isSubsumedBy(tree2, tree1, Entailment.RDFS));
+		
+		RDFResourceTree tree3 = treeFactory.getQueryTree("http://test.org/a5", model);
+		print(tree3);
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree3, Entailment.RDFS));
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree3, tree2, Entailment.RDFS));
 	}
 	
 	public static void print(RDFResourceTree tree) {

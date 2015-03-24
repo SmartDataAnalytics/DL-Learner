@@ -28,6 +28,7 @@ import java.util.Set;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.util.DBpediaPredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
@@ -209,7 +210,7 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 		Model model;
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "cache");
 		cbdGenerator.setRecursionDepth(maxDepth);
-		QueryTreeFactoryBase treeFactory = new QueryTreeFactoryBase();
+		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.setMaxDepth(maxDepth);
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
@@ -46,6 +47,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -138,7 +140,7 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		RDFResourceTree lggChild;
 		
 		// loop over distinct edges
-		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
+		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){if(edge.equals(OWL.sameAs.asNode())) continue;
 			addedChildren = new HashSet<RDFResourceTree>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
@@ -192,7 +194,7 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		Model model;
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia(), "cache");
 		cbdGenerator.setRecursionDepth(1);
-		QueryTreeFactoryBase treeFactory = new QueryTreeFactoryBase();
+		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
