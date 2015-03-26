@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl.util;
+package org.dllearner.algorithms.qtl.util.filters;
 
 import java.util.Set;
 

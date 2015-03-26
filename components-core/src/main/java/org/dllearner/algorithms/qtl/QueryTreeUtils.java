@@ -16,6 +16,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
@@ -398,7 +399,7 @@ public class QueryTreeUtils {
       	 * @param tree2
       	 * @return
       	 */
-          public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, SPARQLReasoner reasoner, boolean typeNode) {
+          public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, AbstractReasonerComponent reasoner, boolean typeNode) {
           	// 1.compare the root nodes
           	
           	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2

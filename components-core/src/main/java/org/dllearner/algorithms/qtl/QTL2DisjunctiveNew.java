@@ -33,6 +33,7 @@ import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicNew;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimpleNew;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -73,7 +74,8 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	
 	private SparqlEndpointKS ks;
 	
-	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
+//	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
+	private LGGGenerator2 lggGenerator;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory treeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -214,6 +216,8 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 			heuristic = new QueryTreeHeuristicSimpleNew();
 			heuristic.setPosExamplesWeight(beta);
 		}
+		
+		lggGenerator = new LGGGeneratorSimple();// LGGGeneratorRDFS(reasoner);
 		
 		// generate the query trees
 		generateQueryTrees();
@@ -863,7 +867,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 //	@Autowired
 	public void setReasoner(AbstractReasonerComponent reasoner){
 		super.setReasoner(reasoner);
-		loadModel();
+//		loadModel();
 	}
 	
 	private void loadModel(){

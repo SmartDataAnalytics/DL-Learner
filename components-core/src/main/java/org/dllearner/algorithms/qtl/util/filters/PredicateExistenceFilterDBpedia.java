@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl.util;
+package org.dllearner.algorithms.qtl.util.filters;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +25,12 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class DBpediaPredicateExistenceFilter extends PredicateExistenceFilter{
+public class PredicateExistenceFilterDBpedia extends PredicateExistenceFilter{
 	
 	private File file = new File("dbpedia_meaningless_properties.txt");
 	private SparqlEndpointKS ks;
 	
-	public DBpediaPredicateExistenceFilter(SparqlEndpointKS ks) {
+	public PredicateExistenceFilterDBpedia(SparqlEndpointKS ks) {
 		
 		this.ks = ks;
 		Set<Node> existentialMeaninglessProperties = new TreeSet<Node>(new NodeComparator());

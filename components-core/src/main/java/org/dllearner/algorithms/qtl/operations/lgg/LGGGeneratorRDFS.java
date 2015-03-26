@@ -30,13 +30,14 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.DBpediaPredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -69,9 +70,9 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 	
 	private int subCalls;
 
-	private SPARQLReasoner reasoner;
+	private AbstractReasonerComponent reasoner;
 	
-	public LGGGeneratorRDFS(SPARQLReasoner reasoner) {
+	public LGGGeneratorRDFS(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 	}
 	
@@ -245,7 +246,7 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 		}
 		RDFResourceTree lgg = lggGen.getLGG(trees);
 		
-		lgg = new DBpediaPredicateExistenceFilter(ks).filter(lgg);
+		lgg = new PredicateExistenceFilterDBpedia(ks).filter(lgg);
 		System.out.println("LGG");
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));

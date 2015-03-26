@@ -12,16 +12,18 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.DBpediaPredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
@@ -71,6 +73,8 @@ public class QTLTest {
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
 				new PredicateDropStatementFilter(StopURIsOWL.get()),
 				new ObjectDropStatementFilter(StopURIsOWL.get()),
+				new PredicateDropStatementFilter(StopURIsSKOS.get()),
+				new ObjectDropStatementFilter(StopURIsSKOS.get()),
 				new NamespaceDropStatementFilter(
 						Sets.newHashSet(
 								"http://dbpedia.org/property/", 
@@ -95,6 +99,7 @@ public class QTLTest {
 				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Leipzig"))));
 		
 		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
+		la.setReasoner(new SPARQLReasoner(qef));
 		la.setTreeFactory(qtf);
 		la.init();
 		
@@ -102,7 +107,10 @@ public class QTLTest {
 		
 		List<EvaluatedRDFResourceTree> solutions = la.getSolutionsAsList();
 		RDFResourceTree bestSolution = solutions.get(0).getTree();
-		DBpediaPredicateExistenceFilter filter = new DBpediaPredicateExistenceFilter(null);
+		System.out.println(bestSolution.getStringRepresentation());
+		System.out.println(QueryTreeUtils.toSPARQLQueryString(bestSolution));
+		
+		PredicateExistenceFilterDBpedia filter = new PredicateExistenceFilterDBpedia(null);
 		System.out.println(filter.filter(bestSolution).getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution)));
 	}
