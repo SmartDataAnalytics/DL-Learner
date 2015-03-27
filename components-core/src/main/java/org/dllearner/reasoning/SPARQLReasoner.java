@@ -1716,6 +1716,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		
 		SortedSet<OWLClass> superClasses = asOWLEntities(EntityType.CLASS, rs, "var1");
 		superClasses.remove(description);
+		System.out.println("Sup(" + description + "):" + superClasses);
 		return new TreeSet<OWLClassExpression>(superClasses);
 	}
 

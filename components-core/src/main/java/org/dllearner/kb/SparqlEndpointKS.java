@@ -65,6 +65,10 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 
+	// some parameters for the query execution
+	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
+	private int queryDelay = 50;
+	
 	private QueryExecutionFactory qef;
 
 	public SparqlEndpointKS() {}

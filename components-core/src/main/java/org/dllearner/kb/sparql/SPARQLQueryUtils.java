@@ -49,7 +49,7 @@ public class SPARQLQueryUtils {
 			"		?var1 rdfs:subClassOf ?inbetweener .\n" + 
 			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
 			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
 			"		}";
 	public static final String SELECT_SUPERCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?var1 .}";
 	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES + 
@@ -61,7 +61,7 @@ public class SPARQLQueryUtils {
 			"		?inbetweener rdfs:subClassOf ?var1 .\n" + 
 			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
 			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
 			"		}";
 	public static final String SELECT_EQUIVALENT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{?var1 owl:equivalentClass <%s> .} UNION {<%s> owl:equivalentClass ?var1 .}}";
