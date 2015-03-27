@@ -34,16 +34,19 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
+import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
@@ -52,6 +55,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -184,7 +188,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		
 		if(qef == null) {
 			if(ks == null) {
-				ks = (SparqlEndpointKS) sources.iterator().next();
+				KnowledgeSource abstract_ks = sources.iterator().next();
+				try {
+					ks = (SparqlEndpointKS) abstract_ks;
+				} catch (ClassCastException e_class) {
+					OWLFile owl_file = (OWLFile) abstract_ks;
+					Model model = OwlApiJenaUtils.getModel(owl_file.createOWLOntology(OWLManager.createOWLOntologyManager()));
+					ks = new LocalModelBasedSparqlEndpointKS(model);
+				}
 			}
 			if(ks.isRemote()){
 				qef = ks.getQueryExecutionFactory();
