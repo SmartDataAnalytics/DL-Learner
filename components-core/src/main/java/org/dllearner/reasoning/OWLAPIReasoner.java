@@ -161,7 +161,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
     private OWLClassExpressionMinimizer minimizer;
-    
+
     private OWLReasoner fallbackReasoner;
     private boolean useFallbackReasoner = false;
 
@@ -291,7 +291,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         // remove classes that are built-in entities
 		Iterator<OWLClass> it = atomicConcepts.iterator();
 		while (it.hasNext()) {
-			OWLClass cls = (OWLClass) it.next();
+			OWLClass cls = it.next();
 			if(cls.getIRI().isReservedVocabulary()){
 				it.remove();
 			}
@@ -346,7 +346,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		}
 
         reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
-        
+
         if(useFallbackReasoner){
         	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
         }
@@ -372,6 +372,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicConcepts()
       */
+    @Override
     public Set<OWLClass> getClasses() {
         return Collections.unmodifiableSet(atomicConcepts);
     }
@@ -379,6 +380,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getAtomicRoles()
       */
+    @Override
     public Set<OWLObjectProperty> getObjectPropertiesImpl() {
         return Collections.unmodifiableSet(atomicRoles);
     }
@@ -391,6 +393,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getIndividuals()
       */
+    @Override
     public SortedSet<OWLIndividual> getIndividuals() {
         return individuals;
     }
@@ -464,7 +467,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         if(concept.isOWLThing()){
         	Iterator<OWLClassExpression> it = subClasses.iterator();
         	while (it.hasNext()) {
-				OWLClassExpression ce = (OWLClassExpression) it.next();
+				OWLClassExpression ce = it.next();
 				if(!ce.isAnonymous() && ce.asOWLClass().getIRI().isReservedVocabulary()){
 					it.remove();
 				}
@@ -911,6 +914,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getBaseURI()
       */
+    @Override
     public String getBaseURI() {
         return baseURI;
     }
@@ -918,6 +922,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getPrefixes()
       */
+    @Override
     public Map<String, String> getPrefixes() {
         return prefixes;
     }
@@ -1032,10 +1037,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return reasoner;
     }
 
+    @Deprecated
     public String getReasonerTypeString() {
         return reasonerTypeString;
     }
 
+    @Deprecated
     public void setReasonerTypeString(String reasonerTypeString) {
         this.reasonerTypeString = reasonerTypeString;
     }
@@ -1054,7 +1061,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     public void setOwlLinkURL(String owlLinkURL) {
         this.owlLinkURL = owlLinkURL;
     }
-    
+
     /**
      * Some reasoner implementations do not support all operations yet.
      * In that case a fallback reasoner based only on the asserted
