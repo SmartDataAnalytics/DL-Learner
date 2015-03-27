@@ -181,6 +181,20 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		objectPropertyPopularityMap = new HashMap<OWLObjectProperty, Integer>();
 		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
 		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
+		
+		if(qef == null) {
+			if(ks == null) {
+				ks = (SparqlEndpointKS) sources.iterator().next();
+			}
+			if(ks.isRemote()){
+				qef = ks.getQueryExecutionFactory();
+				qef = new QueryExecutionFactoryDelay(qef, 50);
+//				qef = new QueryExecutionFactoryCacheEx(qef, cache);
+				qef = new QueryExecutionFactoryPaginated(qef, 10000);
+			} else {
+				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
+			}
+		}
 	}
 	
 	public QueryExecutionFactory getQueryExecutionFactory() {
