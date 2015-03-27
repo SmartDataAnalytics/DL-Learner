@@ -1074,12 +1074,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			m.put(i, new TreeSet<OWLClassExpression>());
 		}
 
-		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing());
+		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing(), true);
 		m.put(1,m1);
 
 		SortedSet<OWLClassExpression> m2 = new TreeSet<OWLClassExpression>();
 		if(useNegation) {
-			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing());
+			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing(), true);
 			for(OWLClassExpression c : m2tmp) {
 				if(!c.isOWLThing()) {
 					m2.add(df.getOWLObjectComplementOf(c));

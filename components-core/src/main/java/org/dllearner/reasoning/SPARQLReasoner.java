@@ -34,7 +34,6 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -73,7 +72,6 @@ import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
@@ -92,7 +90,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -443,13 +440,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					);
 
 			// parents/children of top ...
-			SortedSet<OWLClassExpression> tmp = getSubClassesImpl(df.getOWLThing());
+			SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
 			subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
-			subsumptionHierarchyDown.put(df.getOWLThing(), tmp);
+			subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
 
 			// ... bottom ...
-			tmp = getSuperClassesImpl(df.getOWLNothing());
-			subsumptionHierarchyUp.put(df.getOWLNothing(), tmp);
+			SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
+			subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
 			subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
 
 			// ... and named classes
@@ -465,20 +462,23 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				}
 			}
 
-			for (OWLClass atom : atomicConcepts) {
-				tmp = getSubClassesImpl(atom);
-				// quality control: we explicitly check that no reasoner implementation returns null here
-				if(tmp == null) {
-					logger.error("Class hierarchy: getSubClasses returned null instead of empty set."); 
-				}			
-				subsumptionHierarchyDown.put(atom, tmp);
+			SortedSet<OWLClassExpression> tmp;
+			for (OWLClass cls : atomicConcepts) {
+				tmp = getSubClassesImpl(cls);
+				subsumptionHierarchyDown.put(cls, tmp);
+				
+				// put to super classes of owl:Nothing if class has no children
+				if(tmp.isEmpty()) {
+					leafClasses.add(cls);
+				}
 
-				tmp = getSuperClassesImpl(atom);
-				// quality control: we explicitly check that no reasoner implementation returns null here
-				if(tmp == null) {
-					logger.error("Class hierarchy: getSuperClasses returned null instead of empty set."); 
-				}			
-				subsumptionHierarchyUp.put(atom, tmp);
+				tmp = getSuperClassesImpl(cls);
+				subsumptionHierarchyUp.put(cls, tmp);
+				
+				// put to sub classes of owl:Thing if class has no parents
+				if(tmp.isEmpty()) {
+					topClasses.add(cls);
+				}
 			}		
 			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 			hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);

@@ -348,32 +348,33 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
-		String subject = variables.peek();
-		String objectVariable = mapping.newIndividualVariable();
-		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
-		OWLClassExpression filler = ce.getFiller();
-		if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
-			sparql += triple(objectVariable, predicate, variables.peek());
-		} else {
-			sparql += triple(variables.peek(), predicate, objectVariable);
+		if(!(ignoreGenericTypeStatements && ce.getFiller().isOWLThing())) {
+			String subject = variables.peek();
+			String objectVariable = mapping.newIndividualVariable();
+			OWLObjectPropertyExpression propertyExpression = ce.getProperty();
+			OWLObjectProperty predicate = propertyExpression.getNamedProperty();
+			OWLClassExpression filler = ce.getFiller();
+			if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
+				sparql += triple(objectVariable, predicate, variables.peek());
+			} else {
+				sparql += triple(variables.peek(), predicate, objectVariable);
+			}
+			
+			String var = mapping.newIndividualVariable();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
+			sparql += triple(subject, predicate, var);
+			variables.push(var);
+			filler.accept(this);
+			variables.pop();
+			sparql += "} GROUP BY " + subject + "}";
+			
+			var = mapping.newIndividualVariable();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
+			sparql += triple(subject, predicate, var);
+			sparql += "} GROUP BY " + subject + "}";
+			
+			sparql += "FILTER(?cnt1=?cnt2)";
 		}
-		
-		String var = mapping.newIndividualVariable();
-		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
-		sparql += triple(subject, predicate, var);
-		variables.push(var);
-		filler.accept(this);
-		variables.pop();
-		sparql += "} GROUP BY " + subject + "}";
-		
-		var = mapping.newIndividualVariable();
-		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
-		sparql += triple(subject, predicate, var);
-		sparql += "} GROUP BY " + subject + "}";
-		
-		sparql += "FILTER(?cnt1=?cnt2)";
-		
 	}
 
 	@Override

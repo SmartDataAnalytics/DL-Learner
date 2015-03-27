@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCache;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -67,9 +68,14 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	// some parameters for the query execution
 	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
-	private int queryDelay = 50;
+	private long queryDelay = 50;
+	
+	// caching options
+	private boolean useCache = true;
+	private String cacheDir = "./sparql-cache";
 	
 	private QueryExecutionFactory qef;
+	private long cacheTTL = TimeUnit.DAYS.toMillis(1);
 
 	public SparqlEndpointKS() {}
 
@@ -129,10 +135,19 @@ public class SparqlEndpointKS implements KnowledgeSource {
 			if(qef == null) {
 				qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
 						endpoint.getDefaultGraphURIs());
+				
+				if(useCache) {
+					qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
+				} else {
+					// use in-memory cache
+					qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+				}
+				
+				// add some delay
+				qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 			}
 
-			// add some delay
-			qef = new QueryExecutionFactoryDelay(qef, 100);
+			
 
 			initialized = true;
 		}
@@ -177,6 +192,35 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public void setSupportsSPARQL_1_1(boolean supportsSPARQL_1_1) {
 		this.supportsSPARQL_1_1 = supportsSPARQL_1_1;
 	}
+	
+	/**
+	 * @param queryDelay the queryDelay to set
+	 */
+	public void setQueryDelay(int queryDelay) {
+		this.queryDelay = queryDelay;
+	}
+	
+	/**
+	 * @param useCache the useCache to set
+	 */
+	public void setUseCache(boolean useCache) {
+		this.useCache = useCache;
+	}
+	
+	/**
+	 * @param cacheDir the cacheDir to set
+	 */
+	public void setCacheDir(String cacheDir) {
+		this.cacheDir = cacheDir;
+	}
+	
+	/**
+	 * @param cacheTTL the cacheTTL to set
+	 */
+	public void setCacheTTL(long cacheTTL) {
+		this.cacheTTL = cacheTTL;
+	}
+	
 
 	@Override
 	public String toString() {

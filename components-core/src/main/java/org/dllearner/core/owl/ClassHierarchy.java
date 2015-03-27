@@ -64,7 +64,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	}
 
 	/**
-	 * Returns the direct super classes.
+	 * Returns the all super classes.
 	 * @param concept
 	 * @return
 	 */
@@ -77,7 +77,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	}
 
 	/**
-	 * Returns the direct subclasses.
+	 * Returns the all subclasses.
 	 * @param concept
 	 * @return
 	 */

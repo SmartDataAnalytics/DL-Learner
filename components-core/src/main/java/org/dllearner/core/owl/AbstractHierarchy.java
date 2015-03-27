@@ -59,7 +59,6 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 			}
 			result.addAll(tmp);
 		}
-		
 		return new TreeSet<T>(result);
 	}
 

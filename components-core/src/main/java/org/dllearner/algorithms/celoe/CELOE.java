@@ -543,11 +543,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
-					
+//					System.out.println(refinement);
 //					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
+//					System.out.println(refinement);
 //					System.out.println("Operation took " + (mon2.getLastValue()) + "ms");
 					// adding nodes is potentially computationally expensive, so we have
 					// to check whether max time is exceeded	
