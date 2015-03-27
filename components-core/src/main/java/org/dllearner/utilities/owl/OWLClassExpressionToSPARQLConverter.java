@@ -72,8 +72,6 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private String sparql = "";
 	private Stack<String> variables = new Stack<String>();
 	
-	private OWLDataFactory df = new OWLDataFactoryImpl();
-	
 	private Multimap<Integer, OWLEntity> properties = HashMultimap.create();
 	
 	private Map<Integer, Boolean> intersection;
@@ -355,8 +353,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
 		OWLClassExpression filler = ce.getFiller();
-		if(propertyExpression.isAnonymous()){
-			//property expression is inverse of a property
+		if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
 			sparql += triple(objectVariable, predicate, variables.peek());
 		} else {
 			sparql += triple(variables.peek(), predicate, objectVariable);

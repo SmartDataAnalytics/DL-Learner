@@ -1013,13 +1013,15 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			boolean result = executeAskQuery(query);
 			return result;
 		} else { // complex class expressions
-			OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-			String queryBody = converter.convert("?ind", description);
-			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
-			String query = "ASK {" + queryBody + "}";
-			//FIXME universal and cardinality restrictions do not work with ASK queries
-			boolean result = executeAskQuery(query);
-			return result;
+			//TODO use ASK queries
+			SortedSet<OWLIndividual> individuals = getIndividuals(description);
+			return individuals.contains(individual);
+//			String queryBody = converter.convert("?ind", description);
+//			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
+//			String query = "ASK {" + queryBody + "}";
+//			// FIXME universal and cardinality restrictions do not work with ASK queries
+//			boolean result = executeAskQuery(query);
+//			return result;
 		}
 	}
 
@@ -1716,7 +1718,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		
 		SortedSet<OWLClass> superClasses = asOWLEntities(EntityType.CLASS, rs, "var1");
 		superClasses.remove(description);
-		System.out.println("Sup(" + description + "):" + superClasses);
+//		System.out.println("Sup(" + description + "):" + superClasses);
 		return new TreeSet<OWLClassExpression>(superClasses);
 	}
 
@@ -1779,7 +1781,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 //		}
 		subClasses.remove(description);
 		subClasses.remove(df.getOWLNothing());
-		System.out.println("Sub(" + description + "):" + subClasses);
+//		System.out.println("Sub(" + description + "):" + subClasses);
 		return new TreeSet<OWLClassExpression>(subClasses);
 	}
 	
