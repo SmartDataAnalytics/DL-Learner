@@ -548,6 +548,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
+//					System.out.println("Operation took " + (mon2.getLastValue()) + "ms");
 					// adding nodes is potentially computationally expensive, so we have
 					// to check whether max time is exceeded	
 					if(terminationCriteriaSatisfied()) {
@@ -860,7 +861,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			niceDescription = description;
 		}
-		System.out.println(node + ":" + niceDescription);
+//		System.out.println(node + ":" + niceDescription);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
