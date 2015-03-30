@@ -22,9 +22,9 @@ package org.dllearner.algorithms.qtl.examples;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.QueryTreeFactory;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -42,10 +42,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class DBpediaExample {
 	
-	public static List<QueryTree<String>> getPosExampleTrees(){
-		List<QueryTree<String>> posExampleTrees = new ArrayList<QueryTree<String>>();
-		
-		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
+	static QueryTreeFactory factory = new QueryTreeFactoryBase();
+	
+	public static List<RDFResourceTree> getPosExampleTrees(){
+		List<RDFResourceTree> posExampleTrees = new ArrayList<RDFResourceTree>();
 		
 		posExampleTrees.add(factory.getQueryTree("Leibnitz", getLeibnitzExampleModel()));
 		posExampleTrees.add(factory.getQueryTree("MaxImmelmann", getMaxImmelmannExampleModel()));
@@ -53,10 +53,8 @@ public class DBpediaExample {
 		return posExampleTrees;
 	}
 	
-	public static List<QueryTree<String>> getNegExampleTrees(){
-		List<QueryTree<String>> negExampleTrees = new ArrayList<QueryTree<String>>();
-		
-		QueryTreeFactory<String> factory = new QueryTreeFactoryImpl();
+	public static List<RDFResourceTree> getNegExampleTrees(){
+		List<RDFResourceTree> negExampleTrees = new ArrayList<RDFResourceTree>();
 		
 		negExampleTrees.add(factory.getQueryTree("CharlesGarnier", getCharlesGarnierExampleModel()));
 		
