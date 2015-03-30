@@ -24,6 +24,7 @@ import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -512,26 +513,34 @@ public class QueryTreeUtils {
 	}
 	
 	public static OWLClassExpression toOWLClassExpression(RDFResourceTree tree) {
-    	return buildOWLClassExpression(df, tree);
+    	return toOWLClassExpression(tree, LiteralNodeConversionStrategy.DATATYPE);
 	}
 	
-	private static OWLClassExpression buildOWLClassExpression(OWLDataFactory df, RDFResourceTree tree) {
+	public static OWLClassExpression toOWLClassExpression(RDFResourceTree tree, LiteralNodeConversionStrategy literalConversion) {
+    	return buildOWLClassExpression(tree, literalConversion);
+	}
+	
+	private static OWLClassExpression buildOWLClassExpression(RDFResourceTree tree, LiteralNodeConversionStrategy literalConversion) {
 		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
 				if(edge.equals(RDF.type.asNode())) {
-					
+					classExpressions.add(df.getOWLClass(IRI.create(child.getData().getURI())));
 				} else {
 					// create r some C
 					if(child.isLiteralNode()) {
-						OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
-						classExpressions.add(df.getOWLDataHasValue(
-								df.getOWLDataProperty(IRI.create(edge.getURI())), 
-								value));
+						OWLDataProperty dp = df.getOWLDataProperty(IRI.create(edge.getURI()));
+						if(!child.isLiteralValueNode()) {
+							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatype(IRI.create(child.getDatatype().getURI()))));
+						} else {
+							OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
+							classExpressions.add(df.getOWLDataHasValue(dp, value));
+						}
+						
 					} else {
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
-							filler = buildOWLClassExpression(df, child);
+							filler = buildOWLClassExpression(child, literalConversion);
 						} else if (child.isResourceNode()) {
 							filler = df.getOWLClass(IRI.create(child.getData().getURI()));
 						}
@@ -622,27 +631,42 @@ public class QueryTreeUtils {
     	return query.toString();
 	}
     
-    private static void buildSPARQLQueryString(RDFResourceTree tree, String subjectStr, StringBuilder sb, Collection<ExprNode> filters, SerializationContext context){
+	private static void buildSPARQLQueryString(RDFResourceTree tree,
+			String subjectStr, StringBuilder sb, Collection<ExprNode> filters,
+			SerializationContext context) {
 		if (!tree.isLeaf()) {
 			for (Node edge : tree.getEdges()) {
 				// process predicate
 				String predicateStr = FmtUtils.stringForNode(edge, context);
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					// process object
+					// pre-process object
 					Node object = child.getData();
 					
 					if(child.isVarNode()) {
+						// set a fresh var in the SPARQL query
 						object = varGen.newVar();
-					} else if(child.isLiteralNode() && !child.isLiteralValueNode()) {
+					} else if(child.isLiteralNode() && !child.isLiteralValueNode()) { 
+						// set a fresh var in the SPARQL query
 						object = varGen.newVar();
+						
+						// literal node describing a set of literals is rendered depending on the conversion strategy
 						ExprNode filter = new E_Equals(
 								new E_Datatype(new ExprVar(object)), 
 								NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
 						filters.add(filter);
 					} 
+					
+					// process object
 					String objectStr = FmtUtils.stringForNode(object, context);
 					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
-					if (object.isVariable()) {
+					
+					/*
+					 * only if child is var node recursively process children if
+					 * exist because for URIs it doesn't make sense to add the
+					 * triple pattern and for literals there can't exist a child
+					 * in the tree
+					 */
+					if (child.isVarNode()) {
 						buildSPARQLQueryString(child, objectStr, sb, filters, context);
 					}
 				}

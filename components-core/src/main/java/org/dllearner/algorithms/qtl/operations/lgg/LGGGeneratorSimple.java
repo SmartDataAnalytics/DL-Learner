@@ -204,9 +204,11 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGenerator.setRecursionDepth(1);
+		int maxDepth = 2;
+		cbdGenerator.setRecursionDepth(maxDepth);
 		
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
+		treeFactory.setMaxDepth(maxDepth);
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
@@ -243,6 +245,7 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		System.out.println("LGG");
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
+		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
 	}
 
 }
