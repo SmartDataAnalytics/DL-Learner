@@ -206,7 +206,12 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	private void buildTreeString(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
 		
 		// render current node
-		String ren = FmtUtils.stringForNode(this.getData(), context);
+		String ren;
+		if(isLiteralNode() && !isLiteralValueNode()) {
+			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
+		} else {
+			ren = FmtUtils.stringForNode(this.getData(), context);
+		}
 		sb.append(ren).append("\n");
 		
 		// render edges + children

@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.query.Query;
@@ -288,10 +289,26 @@ public class QueryTreeUtils {
 	 */
     public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
     	// 1.compare the root nodes
-    	
     	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
-    	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+    	if(tree1.isResourceNode() && tree2.isResourceNode()) {
     		return tree1.getData().equals(tree2.getData());
+    	} else if(tree1.isLiteralNode() && tree2.isLiteralNode()) {
+    		if(tree1.isLiteralValueNode()) {
+    			if(tree2.isLiteralValueNode()) {
+    				return tree1.getData().equals(tree2.getData());
+    			} else {
+    				RDFDatatype d1 = tree1.getData().getLiteralDatatype();
+    				return tree2.getDatatype().equals(d1);
+    			}
+    		} else {
+    			if(tree2.isLiteralValueNode()) {
+    				return false;
+    			} else {
+    				RDFDatatype d1 = tree1.getDatatype();
+    				return tree2.getDatatype().equals(d1);
+    			}
+    		}
+    		
     	}
     	
     	// (T_1 = ?) and (T_2 != ?) --> FALSE
