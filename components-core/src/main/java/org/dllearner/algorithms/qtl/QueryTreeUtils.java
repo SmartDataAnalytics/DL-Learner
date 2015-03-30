@@ -57,6 +57,7 @@ import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author Lorenz Buehmann
@@ -524,8 +525,12 @@ public class QueryTreeUtils {
 		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				if(edge.equals(RDF.type.asNode())) {
-					classExpressions.add(df.getOWLClass(IRI.create(child.getData().getURI())));
+				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode())) {
+					if(child.isVarNode()) {
+						classExpressions.add(buildOWLClassExpression(child, literalConversion));
+					} else {
+						classExpressions.add(df.getOWLClass(IRI.create(child.getData().getURI())));
+					}
 				} else {
 					// create r some C
 					if(child.isLiteralNode()) {
