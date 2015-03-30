@@ -24,7 +24,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -36,6 +41,7 @@ import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +85,7 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
 		
-		addNumbering(lgg);
+		addNumbering(0, lgg);
 		
 		return lgg;
 	}
@@ -104,7 +110,7 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		}
 		mon.stop();
 		
-		addNumbering(lgg);
+		addNumbering(0, lgg);
 		
 		return lgg;
 	}
@@ -122,25 +128,27 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 			return tree1;
 		}
 		
-		RDFResourceTree lgg = new RDFResourceTree();
-		
 		// handle literal nodes, i.e. collect literal values if both are of same datatype
 		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
 			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
 			if(d1 != null && d1.equals(d2)){
+				return new RDFResourceTree(d1);
 //				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
 //				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
 			}
 //			lgg.setIsLiteralNode(true);
 		}
 		
+		
+		RDFResourceTree lgg = new RDFResourceTree();
+		
 		Set<RDFResourceTree> addedChildren;
 		RDFResourceTree lggChild;
 		
 		// loop over distinct edges
-		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){if(edge.equals(OWL.sameAs.asNode())) continue;
+		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){//if(edge.equals(OWL.sameAs.asNode())) continue;
 			addedChildren = new HashSet<RDFResourceTree>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
@@ -180,20 +188,24 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		return lgg;
 	}
 	
-	private void addNumbering(RDFResourceTree tree){
-//		tree.setId(nodeId++);
+	private void addNumbering(int nodeId, RDFResourceTree tree){
+//		tree.setId(nodeId);
 		for(RDFResourceTree child : tree.getChildren()){
-			addNumbering(child);
+			addNumbering(nodeId++, child);
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
-		LGGGenerator2 lggGen = new LGGGeneratorSimple();
+		// knowledge base
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
+		qef = new QueryExecutionFactoryCacheEx(qef, CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)));
+		qef = new QueryExecutionFactoryPaginated(qef);
 		
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
-		Model model;
-		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia(), "cache");
+		// tree generation
+		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGenerator.setRecursionDepth(1);
+		
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
@@ -210,11 +222,12 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 								)
 								)
 				);
+		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Dresden");
 		for(String resource : resources){
 			try {
 				System.out.println(resource);
-				model = cbdGenerator.getConciseBoundedDescription(resource);
+				Model model = cbdGenerator.getConciseBoundedDescription(resource);
 				RDFResourceTree tree = treeFactory.getQueryTree(ResourceFactory.createResource(resource), model);
 				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);
@@ -222,7 +235,11 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 				e.printStackTrace();
 			}
 		}
+		
+		// LGG computation
+		LGGGenerator2 lggGen = new LGGGeneratorSimple();
 		RDFResourceTree lgg = lggGen.getLGG(trees);
+		
 		System.out.println("LGG");
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));

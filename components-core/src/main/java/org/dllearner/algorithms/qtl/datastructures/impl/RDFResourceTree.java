@@ -9,14 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Node_URI;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
@@ -31,6 +34,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	private final int id;
 	
 	private static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
+	private static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("");
+	
+	// a datatype which only exists if node is literal
+	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Object> child2Edge = new HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
@@ -51,6 +58,36 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
     
 	public RDFResourceTree(int id, Node data) {
 		super(data);
+		this.id = id;
+	}
+	
+	/**
+	 * Create empty literal node with given datatype.
+	 * @param id
+	 * @param datatype
+	 */
+	public RDFResourceTree(RDFDatatype datatype) {
+		this(0, datatype);
+	}
+	
+	/**
+	 * Create empty literal node with given datatype.
+	 * @param id
+	 * @param datatype
+	 */
+	public RDFResourceTree(int id, RDFDatatype datatype) {
+		super(DEFAULT_LITERAL_NODE);
+		this.id = id;
+		this.datatype = datatype;
+	}
+	
+	/**
+	 * Create empty literal node with given datatype.
+	 * @param id
+	 * @param datatype
+	 */
+	public RDFResourceTree(int id, RDFDatatype datatype, Set<Literal> literals) {
+		super(DEFAULT_LITERAL_NODE);
 		this.id = id;
 	}
 	
@@ -121,10 +158,21 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	public boolean isLiteralNode() {
 		return data.isLiteral();
 	}
+	
+	public boolean isLiteralValueNode() {
+		return data.isLiteral() && !data.equals(DEFAULT_LITERAL_NODE);
+	}
     
 	public boolean isVarNode() {
     	return data.isVariable();
     }
+	
+	/**
+	 * @return the datatype if node is literal node
+	 */
+	public RDFDatatype getDatatype() {
+		return datatype;
+	}
 	
 	public String getStringRepresentation() {
 		return getStringRepresentation(false, null, PrefixCCPrefixMapping.Full);

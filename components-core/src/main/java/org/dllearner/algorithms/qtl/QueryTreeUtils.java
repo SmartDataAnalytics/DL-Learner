@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.qtl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -43,6 +45,14 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.core.Vars;
+import com.hp.hpl.jena.sparql.expr.E_Datatype;
+import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
+import com.hp.hpl.jena.sparql.expr.ExprNode;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -552,10 +562,10 @@ public class QueryTreeUtils {
     }
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, PrefixMapping pm) {
-    	return toSPARQLQueryString(tree, null, pm);
+    	return toSPARQLQueryString(tree, null, pm, LiteralNodeConversionStrategy.DATATYPE);
     }
 	
-	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm, LiteralNodeConversionStrategy literalConversion) {
 		if(!tree.hasChildren()){
     		return "SELECT ?x0 WHERE {?x0 ?p ?o.}";
     	}
@@ -583,6 +593,8 @@ public class QueryTreeUtils {
             sb.append('\n');
         }
         
+        List<ExprNode> filters = new ArrayList<>();
+        
         //
         String targetVar = "?s";
         
@@ -590,8 +602,18 @@ public class QueryTreeUtils {
     	sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
     	
     	// triple patterns
-    	buildSPARQLQueryString(tree, targetVar, sb, context);
+    	buildSPARQLQueryString(tree, targetVar, sb, filters, context);
         
+    	// filters
+    	if(!filters.isEmpty()) {
+    		Iterator<ExprNode> it = filters.iterator();
+    		ExprNode filter = it.next();
+    		while(it.hasNext()) {
+    			filter = new E_LogicalAnd(filter, it.next());
+    		}
+    		sb.append("FILTER(").append(filter.toString()).append(")\n");
+    	}
+    	
         sb.append("}");
     	
     	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
@@ -600,7 +622,7 @@ public class QueryTreeUtils {
     	return query.toString();
 	}
     
-    private static void buildSPARQLQueryString(RDFResourceTree tree, String subjectStr, StringBuilder sb, SerializationContext context){
+    private static void buildSPARQLQueryString(RDFResourceTree tree, String subjectStr, StringBuilder sb, Collection<ExprNode> filters, SerializationContext context){
 		if (!tree.isLeaf()) {
 			for (Node edge : tree.getEdges()) {
 				// process predicate
@@ -608,10 +630,20 @@ public class QueryTreeUtils {
 				for (RDFResourceTree child : tree.getChildren(edge)) {
 					// process object
 					Node object = child.getData();
-					String objectStr = object.isVariable() ? varGen.newVar() : FmtUtils.stringForNode(object, context);
+					
+					if(child.isVarNode()) {
+						object = varGen.newVar();
+					} else if(child.isLiteralNode() && !child.isLiteralValueNode()) {
+						object = varGen.newVar();
+						ExprNode filter = new E_Equals(
+								new E_Datatype(new ExprVar(object)), 
+								NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
+						filters.add(filter);
+					} 
+					String objectStr = FmtUtils.stringForNode(object, context);
 					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
 					if (object.isVariable()) {
-						buildSPARQLQueryString(child, objectStr, sb, context);
+						buildSPARQLQueryString(child, objectStr, sb, filters, context);
 					}
 				}
 			}

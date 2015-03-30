@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.qtl.util;
 
+import com.hp.hpl.jena.sparql.core.Var;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -18,8 +20,8 @@ public class VarGenerator {
 		this("s");
 	}
 	
-	public String newVar(){
-		return header + base + cnt++;
+	public Var newVar(){
+		return Var.alloc(base + cnt++);
 	}
 	
 	public void reset(){
