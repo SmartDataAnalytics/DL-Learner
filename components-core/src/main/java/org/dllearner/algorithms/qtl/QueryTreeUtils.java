@@ -349,7 +349,7 @@ public class QueryTreeUtils {
 		StmtIterator iterator = m1closure.listStatements();
 		while (iterator.hasNext()) {
 			Statement st = iterator.next();
-			if (!m2closure.contains(st)) {
+			if (!st.getSubject().isAnon() && !st.getObject().isAnon() && !m2closure.contains(st)) {
 				System.out.println(st + "  FALSE");
 				return false;
 			} 
