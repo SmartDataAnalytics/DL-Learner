@@ -448,6 +448,10 @@ public class QueryTreeUtils {
           		return false;
           	}
           	
+          	if(typeNode) {
+          		return isSubsumedBy(tree1, tree2, Entailment.RDFS);
+          	}
+          	
           	// 2. compare the children
           	for(Node edge2 : tree2.getEdges()){
           		for(RDFResourceTree child2 : tree2.getChildren(edge2)) {
