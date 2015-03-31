@@ -428,6 +428,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
+    	if(superConcept.isOWLThing() || subConcept.isOWLNothing()) {
+    		return true;
+    	}
         return reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
     }
 
