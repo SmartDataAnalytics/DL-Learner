@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
+import org.aksw.jena_sparql_api.delay.core.QueryExecutionDelay;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -50,12 +52,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.OWL;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
+
 
 /**
  * 
@@ -198,9 +202,10 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 	public static void main(String[] args) throws Exception {
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		qef = new QueryExecutionFactoryCacheEx(qef, CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)));
-		qef = new QueryExecutionFactoryPaginated(qef);
+		QueryExecutionFactory qef = SparqlServiceBuilder
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
 		
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);

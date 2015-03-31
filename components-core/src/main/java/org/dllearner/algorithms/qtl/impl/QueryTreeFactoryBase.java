@@ -137,10 +137,11 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 		if (!dropFilters.isEmpty()) {
 			Iterator<Filter<Statement>> iter = dropFilters.iterator();
 			Filter<Statement> keepFilter = iter.next();
-			while (iter.hasNext()) {
-				keepFilter = keepFilter.and(iter.next());
-			}
 			it = it.filterKeep(keepFilter);
+			while (iter.hasNext()) {it = it.filterKeep(iter.next());
+//				keepFilter = keepFilter.and(iter.next());
+			}
+//			it = it.filterKeep(keepFilter);
 		}
 
 		SortedSet<Statement> statements = resource2Statements.get(s);

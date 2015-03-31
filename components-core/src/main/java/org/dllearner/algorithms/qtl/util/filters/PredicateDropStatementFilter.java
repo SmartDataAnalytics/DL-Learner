@@ -29,5 +29,13 @@ public class PredicateDropStatementFilter extends Filter<Statement> {
 	public boolean accept(Statement st) {
 		return !predicateIriBlackList.contains(st.getPredicate().toString());
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "!?p in " + predicateIriBlackList;
+	}
 
 }

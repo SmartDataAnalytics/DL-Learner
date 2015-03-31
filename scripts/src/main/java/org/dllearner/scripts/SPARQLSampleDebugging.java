@@ -265,7 +265,7 @@ public class SPARQLSampleDebugging {
 	private OWLOntology extractSampleModule(Set<String> resources){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "/tmp/cache");
 		Model model = ModelFactory.createDefaultModel();
 		for(String resource : resources){
 			model.add(cbdGen.getConciseBoundedDescription(resource, depth));
@@ -278,7 +278,7 @@ public class SPARQLSampleDebugging {
 	private OWLOntology extractSampleModule(String resource){
 		logger.info("Extracting sample module...");
 		long startTime = System.currentTimeMillis();
-		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, cache);
+		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "/tmp/cache");
 		Model model = cbdGen.getConciseBoundedDescription(resource, 3);
 		OWLOntology data = convert(model);
 		logger.info("...done in " + (System.currentTimeMillis()-startTime) + "ms.");
