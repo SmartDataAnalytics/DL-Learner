@@ -81,6 +81,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private boolean ignoreGenericTypeStatements = true;
 	private OWLClassExpression expr;
 	
+	private int cnt;
+	
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
 	}
@@ -178,6 +180,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		sparql = "";
 		intersection = new HashMap<Integer, Boolean>();
 		mapping.reset();
+		cnt = 1;
 	}
 	
 	private int modalDepth(){
@@ -253,6 +256,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String render(OWLLiteral literal){
 		return "\"" + literal.getLiteral() + "\"^^<" + literal.getDatatype().toStringID() + ">";
+	}
+	
+	private String newCountVar() {
+		return "?cnt" + cnt++;
 	}
 
 	@Override
@@ -361,7 +368,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			}
 			
 			String var = mapping.newIndividualVariable();
-			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
+			String cntVar1 = newCountVar();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar1 + ") WHERE {";
 			sparql += triple(subject, predicate, var);
 			variables.push(var);
 			filler.accept(this);
@@ -369,11 +377,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			sparql += "} GROUP BY " + subject + "}";
 			
 			var = mapping.newIndividualVariable();
-			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
+			String cntVar2 = newCountVar();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar2 + ") WHERE {";
 			sparql += triple(subject, predicate, var);
 			sparql += "} GROUP BY " + subject + "}";
 			
-			sparql += "FILTER(?cnt1=?cnt2)";
+			sparql += "FILTER(" + cntVar1 + "=" + cntVar2 + ")";
 		}
 	}
 
