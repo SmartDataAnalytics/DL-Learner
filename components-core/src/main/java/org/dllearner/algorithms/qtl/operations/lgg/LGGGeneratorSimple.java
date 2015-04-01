@@ -126,40 +126,37 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 	private RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		
-		// if both root nodes are resource nodes and have the same URI, just return one of the two tree as LGG
-		if(tree1.isResourceNode() && tree1.getData().equals(tree2.getData())){
+		// 1. compare the root node
+		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
+		if ((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())) {
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
 			return tree1;
 		}
 		
-		// handle literal nodes, i.e. collect literal values if both are of same datatype
-		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
+		// handle literal nodes with same datatype
+		if (tree1.isLiteralNode() && tree2.isLiteralNode()) {
 			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
-			if(d1 != null && d1.equals(d2)){
+			if (d1 != null && d1.equals(d2)) {
 				return new RDFResourceTree(d1);
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
+				// TODO collect literal values
 			}
-//			lgg.setIsLiteralNode(true);
 		}
 		
-		
+		// else create new empty tree
 		RDFResourceTree lgg = new RDFResourceTree();
 		
-		Set<RDFResourceTree> addedChildren;
-		RDFResourceTree lggChild;
-		
-		// loop over distinct edges
-		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){//if(edge.equals(OWL.sameAs.asNode())) continue;
-			addedChildren = new HashSet<RDFResourceTree>();
+		// 2. compare the edges
+		// we only have to compare edges contained in both trees
+		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
+			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
 				// loop over children of second tree
 				for(RDFResourceTree child2 : tree2.getChildren(edge)){
 					// compute the LGG
-					lggChild = computeLGG(child1, child2, learnFilters);
+					RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 					
 					// check if there was already a more specific child computed before
 					// and if so don't add the current one
