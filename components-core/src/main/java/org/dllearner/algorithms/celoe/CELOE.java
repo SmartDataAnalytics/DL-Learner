@@ -40,6 +40,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -798,6 +799,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 				}
 			}			
+		} else if (learningProblem instanceof ClassAsInstanceLearningProblem) {
+			return true;
 		}
 		
 		// perform forall sanity tests
