@@ -95,6 +95,19 @@ import com.hp.hpl.jena.vocabulary.OWL2;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+/**
+ * A reasoner implementation that provides inference services by the execution 
+ * of SPARQL queries on
+ * <ul>
+ * <li> local files (usually in forms of JENA API models)
+ * <li> remote SPARQL endpoints
+ * </ul>
+ * Compared to other reasoner implementations, it doesn't do any pre-computation
+ * by default because it might be too expensive on very large knowledge bases.
+ * 
+ * @author Lorenz Buehmann
+ *
+ */
 @ComponentAnn(name = "SPARQL Reasoner", shortName = "spr", version = 0.1)
 public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner {
 
@@ -136,33 +149,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 	
+	/**
+	 * Default constructor for usage of config files + Spring API.
+	 */
 	public SPARQLReasoner() {
 	}
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
-		this(ks, (String)null);
-	}
-	
-	public SPARQLReasoner(QueryExecutionFactory qef) {
-		this.qef = qef;
-	}
-	
-	public SPARQLReasoner(QueryExecutionFactory qef, boolean useCache) {
-		this.qef = qef;
-		this.useCache = useCache;
-	}
-	
-	public SPARQLReasoner(SparqlEndpointKS ks, String cacheDirectory) {
-		this.ks = ks;
-		
-		if(ks.isRemote()){
-			qef = ks.getQueryExecutionFactory();
-			qef = new QueryExecutionFactoryDelay(qef, 50);
-//			qef = new QueryExecutionFactoryCacheEx(qef, cache);
-			qef = new QueryExecutionFactoryPaginated(qef, 10000);
-		} else {
-			qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
-		}
+		this(ks.getQueryExecutionFactory());
 	}
 	
 	public SPARQLReasoner(SparqlEndpoint endpoint) {
@@ -171,6 +165,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	public SPARQLReasoner(Model model) {
 		this(new QueryExecutionFactoryModel(model));
+	}
+	
+	public SPARQLReasoner(QueryExecutionFactory qef) {
+		this.qef = qef;
 	}
 	
 	/* (non-Javadoc)
@@ -183,6 +181,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		dataPropertyPopularityMap = new HashMap<OWLDataProperty, Integer>();
 		individualPopularityMap = new HashMap<OWLIndividual, Integer>();
 		
+		// this is only done if the reasoner is setup via config file
 		if(qef == null) {
 			if(ks == null) {
 				KnowledgeSource abstract_ks = sources.iterator().next();

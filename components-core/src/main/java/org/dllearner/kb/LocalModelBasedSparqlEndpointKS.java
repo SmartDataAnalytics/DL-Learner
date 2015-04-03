@@ -1,10 +1,12 @@
 package org.dllearner.kb;
 
-import java.io.File;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
@@ -12,7 +14,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileManager;
 
 @ComponentAnn(name = "Local Endpoint", shortName = "local_sparql", version = 0.9)
 public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
@@ -41,8 +42,8 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 		this.model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM, model);
 	}
 	
-	@Override
-	public void init() throws ComponentInitException {
+//	@Override
+//	public void init() throws ComponentInitException {
 //		Model baseModel = ModelFactory.createDefaultModel();
 //		 // use the FileManager to find the input file
 //		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
@@ -54,6 +55,19 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 //		baseModel.read(in, null);
 //		
 //		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
+//	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.SparqlEndpointKS#buildQueryExecutionFactory()
+	 */
+	@Override
+	protected QueryExecutionFactory buildQueryExecutionFactory() {
+		QueryExecutionFactory qef = new QueryExecutionFactoryModel(model);
+		
+		// we are working on an in-memory model, but still should enable caching by default
+		qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+		
+		return qef;
 	}
 	
 	public void setFileName(String fileName) {
