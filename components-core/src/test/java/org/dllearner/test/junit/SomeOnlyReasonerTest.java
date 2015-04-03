@@ -10,7 +10,6 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -18,7 +17,7 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -32,9 +31,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
  */
 public class SomeOnlyReasonerTest {
 	
-//    @Test
+	@Ignore
     public void someOnlyTest() throws ComponentInitException, LearningProblemUnsupportedException {
-        // TODO: use aksw-commons-sparql instead of sparql-scala
         
         SortedSet<OWLIndividual> posExamples = new TreeSet<OWLIndividual>();
         posExamples.add(new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Archytas")));
