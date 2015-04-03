@@ -236,13 +236,14 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 					&& !edge1.getNameSpace().equals(RDFS.getURI())
 					&& !edge1.getNameSpace().equals(OWL.getURI())) {
 				// get related edges by subsumption
-				for (OWLObjectProperty p : reasoner.getSuperProperties(new OWLObjectPropertyImpl(IRI.create(edge1.getURI())))) {
+				OWLObjectPropertyImpl prop = new OWLObjectPropertyImpl(IRI.create(edge1.getURI()));
+				for (OWLObjectProperty p : reasoner.getSuperProperties(prop)) {
 					Node edge = NodeFactory.createURI(p.toStringID());
 					if(tree2.getEdges().contains(edge)) {
 						relatedEdges.put(edge1, edge);
 					}
 				}
-				for (OWLObjectProperty p : reasoner.getSubProperties(new OWLObjectPropertyImpl(IRI.create(edge1.getURI())))) {
+				for (OWLObjectProperty p : reasoner.getSubProperties(prop)) {
 					Node edge = NodeFactory.createURI(p.toStringID());
 					if(tree2.getEdges().contains(edge)) {
 						relatedEdges.put(edge1, edge);
