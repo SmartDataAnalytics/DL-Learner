@@ -41,8 +41,6 @@ public class LazyClassHierarchy extends ClassHierarchy {
 
 	public static Logger logger = LoggerFactory.getLogger(LazyClassHierarchy.class);
 	
-    private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
-
 	private AbstractReasonerComponent rc;
 	
 	public LazyClassHierarchy(AbstractReasonerComponent rc) {
@@ -71,5 +69,13 @@ public class LazyClassHierarchy extends ClassHierarchy {
 	@Override
 	public AbstractHierarchy<OWLClassExpression> cloneAndRestrict(Set<OWLClassExpression> allowedEntities) {
 		return new LazyClassHierarchy(rc);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AbstractHierarchy#thinOutSubsumptionHierarchy()
+	 */
+	@Override
+	public void thinOutSubsumptionHierarchy() {
+		// do nothing here because we don't have anything precomputed
 	}
 }
