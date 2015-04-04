@@ -296,24 +296,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
-		for(OWLObjectProperty op : reasoner.getObjectProperties()) {
-			opDomains.put(op, reasoner.getDomain(op));
-			opRanges.put(op, reasoner.getRange(op));
-
-			if(useHasValueConstructor) {
+		opDomains = reasoner.getObjectPropertyDomains();
+		opRanges = reasoner.getObjectPropertyRanges();
+		
+		if (useHasValueConstructor) {
+			for (OWLObjectProperty op : reasoner.getObjectProperties()) {
 				// init
 				Map<OWLIndividual, Integer> opMap = new TreeMap<OWLIndividual, Integer>();
 				valueFrequency.put(op, opMap);
 
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<OWLIndividual>> fillerSets = reasoner.getPropertyMembers(op).values();
-				for(SortedSet<OWLIndividual> fillerSet : fillerSets) {
-					for(OWLIndividual i : fillerSet) {
-//						System.out.println("op " + op + " i " + i);
+				for (SortedSet<OWLIndividual> fillerSet : fillerSets) {
+					for (OWLIndividual i : fillerSet) {
 						Integer value = opMap.get(i);
 
-						if(value != null) {
-							opMap.put(i, value+1);
+						if (value != null) {
+							opMap.put(i, value + 1);
 						} else {
 							opMap.put(i, 1);
 						}
@@ -322,32 +321,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// keep only frequent patterns
 				Set<OWLIndividual> frequentInds = new TreeSet<OWLIndividual>();
-				for(OWLIndividual i : opMap.keySet()) {
-					if(opMap.get(i) >= frequencyThreshold) {
+				for (OWLIndividual i : opMap.keySet()) {
+					if (opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
-//						break;
+						//						break;
 					}
 				}
 				frequentValues.put(op, frequentInds);
-
 			}
-
 		}
-
-		for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
-			dpDomains.put(dp, reasoner.getDomain(dp));
-
-			if(useDataHasValueConstructor) {
+		
+		if(useDataHasValueConstructor) {
+			for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 				Map<OWLLiteral, Integer> dpMap = new TreeMap<OWLLiteral, Integer>();
 				dataValueFrequency.put(dp, dpMap);
-
+	
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<OWLLiteral>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<OWLLiteral> fillerSet : fillerSets) {
 					for(OWLLiteral i : fillerSet) {
-//						System.out.println("op " + op + " i " + i);
 						Integer value = dpMap.get(i);
-
+	
 						if(value != null) {
 							dpMap.put(i, value+1);
 						} else {
@@ -355,7 +349,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-
+	
 				// keep only frequent patterns
 				Set<OWLLiteral> frequentInds = new TreeSet<OWLLiteral>();
 				for(OWLLiteral i : dpMap.keySet()) {

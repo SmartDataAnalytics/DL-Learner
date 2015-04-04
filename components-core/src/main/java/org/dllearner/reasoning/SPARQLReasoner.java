@@ -44,6 +44,7 @@ import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.LazyClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -52,6 +53,7 @@ import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.dllearner.utilities.QueryUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -206,7 +208,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			}
 		}
-		
 	}
 	
 	public QueryExecutionFactory getQueryExecutionFactory() {
@@ -435,58 +436,62 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
-		if(!prepared){
-			logger.info("Preparing subsumption hierarchy ...");
-			long startTime = System.currentTimeMillis();
-			TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-					);
-			TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-					);
-
-			// parents/children of top ...
-			SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
-			subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
-			subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
-
-			// ... bottom ...
-			SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
-			subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
-			subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
-
-			// ... and named classes
-			Set<OWLClass> atomicConcepts;
-			if(ks.isRemote()){
-				atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-			} else {
-				atomicConcepts = new TreeSet<OWLClass>();
-				for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
-					if(!cls.isAnon()){
-						atomicConcepts.add(df.getOWLClass(IRI.create(cls.getURI())));
+		if(precomputeClassHierarchy) {
+			if(!prepared){
+				logger.info("Preparing subsumption hierarchy ...");
+				long startTime = System.currentTimeMillis();
+				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+						);
+				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+						);
+	
+				// parents/children of top ...
+				SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
+				subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
+				subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
+	
+				// ... bottom ...
+				SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
+				subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
+				subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
+	
+				// ... and named classes
+				Set<OWLClass> atomicConcepts;
+				if(ks.isRemote()){
+					atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+				} else {
+					atomicConcepts = new TreeSet<OWLClass>();
+					for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+						if(!cls.isAnon()){
+							atomicConcepts.add(df.getOWLClass(IRI.create(cls.getURI())));
+						}
 					}
 				}
+	
+				SortedSet<OWLClassExpression> tmp;
+				for (OWLClass cls : atomicConcepts) {
+					tmp = getSubClassesImpl(cls);
+					subsumptionHierarchyDown.put(cls, tmp);
+					
+					// put to super classes of owl:Nothing if class has no children
+					if(tmp.isEmpty()) {
+						leafClasses.add(cls);
+					}
+	
+					tmp = getSuperClassesImpl(cls);
+					subsumptionHierarchyUp.put(cls, tmp);
+					
+					// put to sub classes of owl:Thing if class has no parents
+					if(tmp.isEmpty()) {
+						topClasses.add(cls);
+					}
+				}		
+				logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+				hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+				prepared = true;
 			}
-
-			SortedSet<OWLClassExpression> tmp;
-			for (OWLClass cls : atomicConcepts) {
-				tmp = getSubClassesImpl(cls);
-				subsumptionHierarchyDown.put(cls, tmp);
-				
-				// put to super classes of owl:Nothing if class has no children
-				if(tmp.isEmpty()) {
-					leafClasses.add(cls);
-				}
-
-				tmp = getSuperClassesImpl(cls);
-				subsumptionHierarchyUp.put(cls, tmp);
-				
-				// put to sub classes of owl:Thing if class has no parents
-				if(tmp.isEmpty()) {
-					topClasses.add(cls);
-				}
-			}		
-			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-			hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
-			prepared = true;
+		} else {
+			hierarchy = new LazyClassHierarchy(this);
 		}
 		return hierarchy;
 	}
@@ -1293,8 +1298,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			OWLIndividual sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			OWLLiteral obj = OwlApiJenaUtils.getOWLLiteral(qs.getLiteral("o"));
+			OWLIndividual sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("var1").getURI()));
+			OWLLiteral obj = OwlApiJenaUtils.getOWLLiteral(qs.getLiteral("var2"));
 			SortedSet<OWLLiteral> objects = subject2objects.get(sub);
 			if(objects == null){
 				objects = new TreeSet<OWLLiteral>();
@@ -1939,6 +1944,60 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		properties.remove(dataProperty);
 		return properties;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getObjectPropertyDomains()
+	 */
+	@Override
+	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
+		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
+		
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:ObjectProperty ; rdfs:domain ?dom .}";
+		ResultSet rs = executeSelectQuery(query);
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLObjectProperty op = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			OWLClassExpression domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			result.put(op, domain);
+		}
+		return result;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getObjectPropertyRanges()
+	 */
+	@Override
+	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyRanges() {
+		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
+		
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?ran WHERE {?p a owl:ObjectProperty ; rdfs:range ?ran .}";
+		ResultSet rs = executeSelectQuery(query);
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLObjectProperty op = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
+			OWLClassExpression range = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+			result.put(op, range);
+		}
+		return result;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getDataPropertyDomains()
+	 */
+	@Override
+	public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
+		Map<OWLDataProperty, OWLClassExpression> result = new HashMap<>();
+		
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:DatatypeProperty ; rdfs:domain ?dom .}";
+		ResultSet rs = executeSelectQuery(query);
+		while(rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			OWLDataProperty dp = df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI()));
+			OWLClassExpression domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			result.put(dp, domain);
+		}
+		return result;
 	}
 
 	

@@ -23,6 +23,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -1253,7 +1254,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 *             Thrown if a reasoning method for object property 
 	 *             hierarchy creation is not supported by the reasoner.
 	 */
-	public ObjectPropertyHierarchy prepareRoleHierarchy()
+	public ObjectPropertyHierarchy prepareObjectPropertyHierarchy()
 			throws ReasoningMethodUnsupportedException {
 		
 		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
@@ -1277,7 +1278,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 		try {
 			if (roleHierarchy == null) {
-				roleHierarchy = prepareRoleHierarchy();
+				roleHierarchy = prepareObjectPropertyHierarchy();
 			}
 		} catch (ReasoningMethodUnsupportedException e) {
 			handleExceptions(e);
@@ -1441,6 +1442,48 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 */
 	public void setPrecomputeDataPropertyHierarchy(boolean precomputeDataPropertyHierarchy) {
 		this.precomputeDataPropertyHierarchy = precomputeDataPropertyHierarchy;
+	}
+	
+	/**
+	 * @return all object properties with its domains.
+	 */
+	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
+		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
+		
+		for (OWLObjectProperty op : getObjectProperties()) {
+			OWLClassExpression domain = getDomain(op);
+			result.put(op, domain);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * @return all object properties with its range.
+	 */
+	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyRanges() {
+		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
+		
+		for (OWLObjectProperty op : getObjectProperties()) {
+			OWLClassExpression range = getRange(op);
+			result.put(op, range);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * @return all data properties with its domains.
+	 */
+	public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
+		Map<OWLDataProperty, OWLClassExpression> result = new HashMap<>();
+		
+		for (OWLDataProperty dp : getDatatypeProperties()) {
+			OWLClassExpression domain = getDomain(dp);
+			result.put(dp, domain);
+		}
+		
+		return result;
 	}
 	
 	@Override
