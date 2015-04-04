@@ -24,13 +24,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCache;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -143,7 +143,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 			initialized = true;
 		}
-		logger.info("SPARQL knowlede base initialized.\n" + toString());
+		logger.info("SPARQL KB setup:\n" + toString());
 	}
 	
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
@@ -249,7 +249,11 @@ public class SparqlEndpointKS implements KnowledgeSource {
 
 	@Override
 	public String toString() {
-		return qef.getId() + "\nCache directory: " + cacheDir + "\nQuery delay: " + queryDelay + "ms";
+		String out = String.format("%-15s %-25s%n", "Endpoint:", "Remote");
+		out += String.format("%-15s %-25s%n", "URL:", qef.getId());
+		out += String.format("%-15s %-25s%n", "Cache:", cacheDir);
+		out += String.format("%-15s %dms%n", "Delay:", queryDelay);
+		return out;
 	}
 
 }

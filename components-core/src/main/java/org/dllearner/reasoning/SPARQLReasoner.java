@@ -153,6 +153,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 * Default constructor for usage of config files + Spring API.
 	 */
 	public SPARQLReasoner() {
+		setPrecomputeClassHierarchy(false);
+		setPrecomputeObjectPropertyHierarchy(false);
+		setPrecomputeDataPropertyHierarchy(false);
 	}
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
@@ -168,6 +171,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public SPARQLReasoner(QueryExecutionFactory qef) {
+		this();
 		this.qef = qef;
 	}
 	
@@ -202,6 +206,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				qef = new QueryExecutionFactoryModel(((LocalModelBasedSparqlEndpointKS)ks).getModel());
 			}
 		}
+		
 	}
 	
 	public QueryExecutionFactory getQueryExecutionFactory() {
