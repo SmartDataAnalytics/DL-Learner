@@ -906,7 +906,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_INT);
+		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_INT));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_POSITIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NEGATIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NON_POSITIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NON_NEGATIVE_INTEGER));
+		return properties;
 	}
 
 	@Override
