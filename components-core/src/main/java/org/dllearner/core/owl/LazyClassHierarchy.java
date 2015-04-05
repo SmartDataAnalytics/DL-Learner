@@ -25,11 +25,8 @@ import java.util.TreeMap;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Represents a class subsumption hierarchy (ignoring equivalent concepts).

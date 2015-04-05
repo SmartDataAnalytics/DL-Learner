@@ -111,6 +111,14 @@ public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends A
 		
 		return result;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.utilities.split.ValuesSplitter#computeSplits(org.semanticweb.owlapi.model.OWLDataProperty)
+	 */
+	@Override
+	public <T extends Number & Comparable<T>> List<T> computeSplits(OWLDataProperty dp) {
+		return null;
+	}
 	
 	/**
 	 * Compute a split value between 2 succeeding values.

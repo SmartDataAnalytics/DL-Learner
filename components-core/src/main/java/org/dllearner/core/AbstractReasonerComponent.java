@@ -718,7 +718,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 	
 	@Override
-	public final <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
+	public final <T extends Number & Comparable<T>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(
 			OWLDataProperty datatypeProperty) {
 		try {
 			return getNumericDatatypeMembersImpl(datatypeProperty);
@@ -728,7 +728,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 	}
 	
-	protected <T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
+	protected <T extends Number & Comparable<T>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
 		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();

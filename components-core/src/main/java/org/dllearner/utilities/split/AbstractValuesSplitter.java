@@ -3,13 +3,14 @@
  */
 package org.dllearner.utilities.split;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 
 /**
@@ -33,6 +34,16 @@ public abstract class AbstractValuesSplitter extends AbstractComponent implement
 	public void init() throws ComponentInitException {
 		numericDataProperties = reasoner.getNumericDataProperties();
 	}
-
-
+	
+	@Override
+	public <T extends Number & Comparable<T>> Map<OWLDataProperty, List<T>> computeSplits() {
+		Map<OWLDataProperty, List<T>> result = new HashMap<OWLDataProperty, List<T>>();
+		
+		for (OWLDataProperty dp : numericDataProperties) {
+			List<T> splitValues = computeSplits(dp);
+			result.put(dp, splitValues);
+		}
+		
+		return result;
+	}
 }

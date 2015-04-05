@@ -1650,7 +1650,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	//TODO implement numerical splitting
 
-	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
+	private <T extends Number & Comparable<T>> void computeSplits2(OWLDataProperty dp) {
 		Set<T> valuesSet = new TreeSet<T>();
 //		Set<OWLIndividual> individuals = rs.getIndividuals();
 		Map<OWLIndividual, SortedSet<T>> valueMap = reasoner.getNumericDatatypeMembers(dp);
@@ -1685,7 +1685,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		splitsNumber.put(dp, splitsDP);
 	}
 
-	private <T extends Number & Comparable<Number>> T avg(T number1, T number2){
+	private <T extends Number & Comparable<T>> T avg(T number1, T number2){
 		return number1;
 //		T avg = null;
 //		if((number1 instanceof Integer && number2 instanceof Integer) ||
