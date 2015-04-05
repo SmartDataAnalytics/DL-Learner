@@ -361,6 +361,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     			OWL2Datatype.XSD_SHORT,
     			OWL2Datatype.XSD_INT,
     			OWL2Datatype.XSD_INTEGER,
+    			OWL2Datatype.XSD_POSITIVE_INTEGER,
+    			OWL2Datatype.XSD_NEGATIVE_INTEGER,
+    			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
+    			OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
     			OWL2Datatype.XSD_LONG,
     			OWL2Datatype.XSD_DOUBLE,
     			OWL2Datatype.XSD_FLOAT

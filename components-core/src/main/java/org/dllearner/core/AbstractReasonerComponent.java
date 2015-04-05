@@ -40,6 +40,7 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owlapi.model.IRI;
@@ -737,15 +738,20 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			SortedSet<OWLLiteral> values = entry.getValue();
 			SortedSet<T> numericValues = new TreeSet<T>();
 			for (OWLLiteral lit : values) {
-				try {
-					Number number = numberFormat.parse(lit.getLiteral());
-					if(number instanceof Long) {
-						number = Double.valueOf(number.toString());
+				if(OWLAPIUtils.isIntegerDatatype(lit)) {
+					numericValues.add((T) Integer.valueOf(lit.parseInteger()));
+				} else {
+					try {
+						Number number = numberFormat.parse(lit.getLiteral());
+						if(number instanceof Long) {
+							number = Double.valueOf(number.toString());
+						}
+						numericValues.add((T) (number) );
+					} catch (ParseException e) {
+						e.printStackTrace();
 					}
-					numericValues.add((T) (number) );
-				} catch (ParseException e) {
-					e.printStackTrace();
 				}
+				
 			}
 			ret.put(ind, numericValues);
 		}

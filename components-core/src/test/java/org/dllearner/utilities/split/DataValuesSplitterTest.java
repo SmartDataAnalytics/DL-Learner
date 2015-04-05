@@ -7,20 +7,25 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -32,6 +37,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 public class DataValuesSplitterTest {
 	
 	private static AbstractReasonerComponent reasoner;
+	private static PosNegLP lp;
 
 	@BeforeClass
 	public static void init() throws Exception {
@@ -42,15 +48,41 @@ public class DataValuesSplitterTest {
 				"@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
 				+ ":r a owl:DatatypeProperty ; rdfs:range xsd:nonNegativeInteger . ";
 		
-		for(int i = 1; i <= 100; i++) {
-			kb += String.format(":p%d :r %d .%n", i, i);
+		for(int i = 1; i <= 20; i++) {
+			kb += String.format(":p%d :r \"%d\"^^xsd:nonNegativeInteger .%n", i, i);
 		}
+		
+		for(int i = 21; i <= 40; i++) {
+			kb += String.format(":n%d :r \"%d\"^^xsd:nonNegativeInteger .%n", i, i);
+		}
+		
+		for(int i = 41; i <= 60; i++) {
+			kb += String.format(":p%d :r \"%d\"^^xsd:nonNegativeInteger .%n", i, i);
+		}
+		
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(kb.getBytes(StandardCharsets.UTF_8)));
 		KnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
 		reasoner = new OWLAPIReasoner(ks);
 		reasoner.init();
+		
+		// get examples
+		Set<OWLIndividual> posExamples = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> negExamples = new HashSet<OWLIndividual>();
+		
+		for(OWLIndividual ind : ontology.getIndividualsInSignature()) {
+			if(ind.toStringID().startsWith("http://example.org/p")) {
+				posExamples.add(ind);
+			} else {
+				negExamples.add(ind);
+			}
+		}
+		
+		// create learning problem
+		lp = new PosNegLPStandard(reasoner);
+		lp.setPositiveExamples(posExamples);
+		lp.setNegativeExamples(negExamples);
 	}
 	
 	
@@ -63,9 +95,11 @@ public class DataValuesSplitterTest {
 	public void testComputeSplits() throws ComponentInitException {
 		ValuesSplitter splitter = new DefaultValuesSplitter(reasoner);
 		splitter.init();
-		
 		System.out.println(splitter.computeSplits());
 		
+		splitter = new OptimizedValuesSplitter(reasoner, lp);
+		splitter.init();
+		System.out.println(splitter.computeSplits());
 	}
 
 }
