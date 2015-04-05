@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.celoe;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,37 +32,39 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
  * A node in the search tree of the ontology engineering algorithm.
- * 
+ *
  * Differences to the node structures in other algorithms (this may change):
  * - covered examples are not stored in node (i.e. coverage needs to be recomputed
  * for child nodes, which costs time but saves memory)
  * - only evaluated nodes are stored
  * - too weak nodes are not stored
  * - redundant nodes are not stored (?)
- * - only accuracy is stored to make the node structure reusable for different 
+ * - only accuracy is stored to make the node structure reusable for different
  *   learning problems and -algorithms
- * 
+ *
  * @author Jens Lehmann
  *
  */
-public class OENode implements SearchTreeNode {
+public class OENode implements SearchTreeNode, Serializable {
 
-	protected OWLClassExpression description;
-	
+    private static final long serialVersionUID = 6517812961459157908L;
+
+    protected OWLClassExpression description;
+
 	protected double accuracy;
-	
+
 	protected int horizontalExpansion;
-	
+
 	protected OENode parent;
 	protected List<OENode> children = new LinkedList<OENode>();
-	
+
 	// the refinement count corresponds to the number of refinements of the
 	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
 	private int refinementCount = 0;
-	
+
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	
+
 	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
 		this.parent = parentNode;
 		this.description = description;
@@ -76,11 +79,11 @@ public class OENode implements SearchTreeNode {
 	public void incHorizontalExpansion() {
 		horizontalExpansion++;
 	}
-	
+
 	public boolean isRoot() {
 		return (parent == null);
 	}
-	
+
 	/**
 	 * @return the description
 	 */
@@ -88,10 +91,11 @@ public class OENode implements SearchTreeNode {
 		return description;
 	}
 
-	public OWLClassExpression getExpression() {
+	@Override
+    public OWLClassExpression getExpression() {
 		return getDescription();
-	}	
-	
+	}
+
 	/**
 	 * @return the accuracy
 	 */
@@ -109,7 +113,8 @@ public class OENode implements SearchTreeNode {
 	/**
 	 * @return the children
 	 */
-	public List<OENode> getChildren() {
+	@Override
+    public List<OENode> getChildren() {
 		return children;
 	}
 
@@ -119,11 +124,11 @@ public class OENode implements SearchTreeNode {
 	public int getHorizontalExpansion() {
 		return horizontalExpansion;
 	}
-	
+
 	public String getShortDescription(String baseURI) {
 		return getShortDescription(baseURI, null);
 	}
-	
+
 	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
 		String ret = OWLAPIRenderers.toDLSyntax(description) + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
@@ -133,24 +138,24 @@ public class OENode implements SearchTreeNode {
 		ret += "ref:" + refinementCount + "]";
 		return ret;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getShortDescription(null);
 	}
-	
+
 	public String toTreeString() {
 		return toTreeString(0, null).toString();
 	}
-	
+
 	public String toTreeString(String baseURI) {
 		return toTreeString(0, baseURI).toString();
-	}	
-	
+	}
+
 	public String toTreeString(String baseURI, Map<String, String> prefixes) {
 		return toTreeString(0, baseURI, prefixes).toString();
-	}	
-	
+	}
+
 	private StringBuilder toTreeString(int depth, String baseURI) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
@@ -163,7 +168,7 @@ public class OENode implements SearchTreeNode {
 		}
 		return treeString;
 	}
-	
+
 	private StringBuilder toTreeString(int depth, String baseURI, Map<String, String> prefixes) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
