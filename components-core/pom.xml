@@ -404,5 +404,9 @@
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 			</dependency>
+			<dependency>
+				<groupId>mpj</groupId>
+				<artifactId>mpj-express</artifactId>
+			</dependency>
 	</dependencies>
 </project>

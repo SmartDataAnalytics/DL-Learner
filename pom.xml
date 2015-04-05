@@ -596,6 +596,11 @@
             	<artifactId>semlibsvm</artifactId>
             	<version>3.20-SNAPSHOT</version>
             </dependency>
+            <dependency>
+            	<groupId>mpj</groupId>
+            	<artifactId>mpj-express</artifactId>
+            	<version>0.43-SNAPSHOT</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
