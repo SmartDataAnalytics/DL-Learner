@@ -251,7 +251,6 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 				}
 			}
 		}
-		
 		return relatedEdges;
 	}
 	

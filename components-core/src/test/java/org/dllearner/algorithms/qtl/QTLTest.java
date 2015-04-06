@@ -95,8 +95,8 @@ public class QTLTest {
 		
 		PosNegLPStandard lp = new PosNegLPStandard();
 		lp.setPositiveExamples(Sets.<OWLIndividual>newHashSet(
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Dresden")),
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Leipzig"))));
+				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/All_the_Right_Moves_(film)")),
+				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Yelena_Isinbayeva"))));
 		
 		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
 		la.setReasoner(new SPARQLReasoner(qef));

@@ -600,6 +600,10 @@ public class QueryTreeUtils {
     	return toSPARQLQueryString(tree, null, pm, LiteralNodeConversionStrategy.DATATYPE);
     }
 	
+	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+    	return toSPARQLQueryString(tree, baseIRI, pm, LiteralNodeConversionStrategy.DATATYPE);
+    }
+	
 	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm, LiteralNodeConversionStrategy literalConversion) {
 		if(!tree.hasChildren()){
     		return "SELECT ?x0 WHERE {?x0 ?p ?o.}";
@@ -676,10 +680,13 @@ public class QueryTreeUtils {
 						object = varGen.newVar();
 						
 						// literal node describing a set of literals is rendered depending on the conversion strategy
-						ExprNode filter = new E_Equals(
-								new E_Datatype(new ExprVar(object)), 
-								NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
-						filters.add(filter);
+						if(child.getDatatype() != null) {
+							ExprNode filter = new E_Equals(
+									new E_Datatype(new ExprVar(object)), 
+									NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
+							filters.add(filter);
+						}
+						
 					} 
 					
 					// process object

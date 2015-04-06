@@ -84,7 +84,6 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public SparqlEndpointKS() {}
 
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
-		this(new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()));
 		this.endpoint = endpoint;
 	}
 
@@ -92,25 +91,9 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		this.qef = qef;
 	}
 
-	public SparqlEndpointKS(SparqlEndpoint endpoint, CacheFrontend cache) {
-		this.endpoint = endpoint;
-		this.cache = cache;
-		this.qef = 	new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
-						endpoint.getDefaultGraphURIs());
-		if(cache != null){
-			this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
-		}
-	}
-
 	public SparqlEndpointKS(SparqlEndpoint endpoint, String cacheDirectory) {
 		this.endpoint = endpoint;
-		this.qef = 	new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
-				endpoint.getDefaultGraphURIs());
-		if(cacheDirectory != null){
-				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				cache = CacheUtilsH2.createCacheFrontend(cacheDirectory, false, timeToLive);
-				this.qef = new QueryExecutionFactoryCacheEx(qef, cache);
-		}
+		this.cacheDir = cacheDirectory;
 	}
 
 	public CacheFrontend getCache() {

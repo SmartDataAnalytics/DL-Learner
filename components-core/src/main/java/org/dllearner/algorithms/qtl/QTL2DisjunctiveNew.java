@@ -85,9 +85,6 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	
 	private double bestCurrentScore = 0d;
 	
-	private Set<String> allowedNamespaces = new HashSet<String>();
-	private Set<String> ignoredProperties = new HashSet<String>();
-
 	private List<RDFResourceTree> currentPosExampleTrees = new ArrayList<RDFResourceTree>();
 	private List<RDFResourceTree> currentNegExampleTrees = new ArrayList<RDFResourceTree>();
 	private Set<OWLIndividual> currentPosExamples = new HashSet<OWLIndividual>();
@@ -217,7 +214,8 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
-		lggGenerator = new LGGGeneratorSimple();// LGGGeneratorRDFS(reasoner);
+		lggGenerator = new LGGGeneratorSimple();
+//		lggGenerator = new LGGGeneratorRDFS(reasoner);
 		
 		// generate the query trees
 		generateQueryTrees();
@@ -1070,14 +1068,6 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 		ArrayList<EvaluatedRDFResourceTree> list = new ArrayList<>(currentPartialSolutions);
 		Collections.sort(list, Collections.reverseOrder());
 		return list;
-	}
-	
-	public void setAllowedNamespaces(Set<String> allowedNamespaces){
-		this.allowedNamespaces = allowedNamespaces;
-	}
-	
-	public void setIgnoredPropperties(Set<String> ignoredProperties){
-		this.ignoredProperties = ignoredProperties;
 	}
 	
 	/**
