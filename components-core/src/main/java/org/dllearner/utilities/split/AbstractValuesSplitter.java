@@ -3,6 +3,7 @@
  */
 package org.dllearner.utilities.split;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,5 +46,31 @@ public abstract class AbstractValuesSplitter extends AbstractComponent implement
 		}
 		
 		return result;
+	}
+	
+	protected <T extends Number & Comparable<T>> T computeSplitValue(T number1, T number2){
+//		return number1;
+		T avg = null;
+		if((number1 instanceof Integer && number2 instanceof Integer) ||
+			(number1 instanceof Long && number2 instanceof Long) ||
+			(number1 instanceof Byte && number2 instanceof Byte)
+				) {
+			avg = number1;
+		} else if(number1 instanceof Double && number2 instanceof Double) {
+			avg = (T) Double.valueOf(
+					BigDecimal.valueOf(number1.doubleValue()).
+			add(BigDecimal.valueOf(number2.doubleValue()).divide(
+					BigDecimal.valueOf(0.5d))).doubleValue());
+		} else if(number1 instanceof Float && number2 instanceof Float) {
+			avg = (T) Float.valueOf(
+					BigDecimal.valueOf(number1.floatValue()).
+			add(BigDecimal.valueOf(number2.floatValue()).divide(
+					BigDecimal.valueOf(0.5d))).floatValue());
+		}
+		return avg;
+
+//		return (T) BigDecimal.valueOf(number1.doubleValue()).
+//				add(BigDecimal.valueOf(number2.doubleValue()).divide(
+//						BigDecimal.valueOf(0.5d)));
 	}
 }

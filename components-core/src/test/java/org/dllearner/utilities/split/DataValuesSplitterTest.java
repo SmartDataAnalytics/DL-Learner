@@ -85,19 +85,71 @@ public class DataValuesSplitterTest {
 		lp.setNegativeExamples(negExamples);
 	}
 	
-	
+	private void createOptimizedTestKB() throws Exception {
+		String kb = "@prefix : <http://example.org/> .\n" + 
+				"@prefix owl: <http://www.w3.org/2002/07/owl#> .\n" + 
+				"@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n" + 
+				"@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n" + 
+				"@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."
+				+ ":r a owl:DatatypeProperty ; rdfs:range xsd:nonNegativeInteger . ";
+		
+			kb += ":n1 :r \"1\"^^xsd:nonNegativeInteger .";
+			kb += ":n2 :r \"2\"^^xsd:nonNegativeInteger .";
+			kb += ":n3 :r \"3\"^^xsd:nonNegativeInteger .";
+			kb += ":n4 :r \"4\"^^xsd:nonNegativeInteger .";
+			kb += ":p1 :r \"5\"^^xsd:nonNegativeInteger .";
+			kb += ":p2 :r \"6\"^^xsd:nonNegativeInteger .";
+			kb += ":p3 :r \"10\"^^xsd:nonNegativeInteger .";
+			kb += ":p4 :r \"12\"^^xsd:nonNegativeInteger .";
+			kb += ":p5 :r \"16\"^^xsd:nonNegativeInteger .";
+			kb += ":p6 :r \"20\"^^xsd:nonNegativeInteger .";
+			kb += ":n5 :r \"28\"^^xsd:nonNegativeInteger .";
+			kb += ":n6 :r \"30\"^^xsd:nonNegativeInteger .";
+		
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new ByteArrayInputStream(kb.getBytes(StandardCharsets.UTF_8)));
+		KnowledgeSource ks = new OWLAPIOntology(ontology);
+		ks.init();
+		
+		reasoner = new OWLAPIReasoner(ks);
+		reasoner.init();
+		
+		// get examples
+		Set<OWLIndividual> posExamples = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> negExamples = new HashSet<OWLIndividual>();
+		
+		for(OWLIndividual ind : ontology.getIndividualsInSignature()) {
+			if(ind.toStringID().startsWith("http://example.org/p")) {
+				posExamples.add(ind);
+			} else {
+				negExamples.add(ind);
+			}
+		}
+		
+		// create learning problem
+		lp = new PosNegLPStandard(reasoner);
+		lp.setPositiveExamples(posExamples);
+		lp.setNegativeExamples(negExamples);
+	}
 
 	/**
 	 * Test method for {@link org.dllearner.utilities.split.DefaultValuesSplitter#computeSplits()}.
 	 * @throws ComponentInitException 
 	 */
 	@Test
-	public void testComputeSplits() throws ComponentInitException {
+	public void testComputeSplitsDefault() throws Exception {
 		ValuesSplitter splitter = new DefaultValuesSplitter(reasoner);
 		splitter.init();
 		System.out.println(splitter.computeSplits());
-		
-		splitter = new OptimizedValuesSplitter(reasoner, lp);
+	}
+	
+	/**
+	 * Test method for {@link org.dllearner.utilities.split.OptimizedValuesSplitter#computeSplits()}.
+	 * @throws ComponentInitException 
+	 */
+	@Test
+	public void testComputeSplitsOptimized() throws Exception {
+		createOptimizedTestKB();
+		ValuesSplitter splitter = new OptimizedValuesSplitter(reasoner, lp);
 		splitter.init();
 		System.out.println(splitter.computeSplits());
 	}

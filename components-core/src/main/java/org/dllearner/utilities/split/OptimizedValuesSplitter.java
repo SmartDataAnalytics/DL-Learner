@@ -175,9 +175,12 @@ public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends A
 			}
 		}
 		
+		SortedSet<T> allRelatedValues = Sets.newTreeSet(posRelatedValues);
+		allRelatedValues.addAll(negRelatedValues);
+		
 		boolean posBefore = false;
 		boolean negBefore = false;
-		for (T val : Sets.union(posRelatedValues, negRelatedValues)) {
+		for (T val : allRelatedValues) {
 			boolean pos = posRelatedValues.contains(val);
 			boolean neg = negRelatedValues.contains(val);
 			
@@ -199,19 +202,4 @@ public class OptimizedValuesSplitter<T extends Number & Comparable<T>> extends A
 		
 		return splitsDP;
 	}
-	
-	/**
-	 * Compute a split value between 2 succeeding values.
-	 * TODO: How to identify the splitting strategy here? For numbers we can use the avg, 
-	 * but for time values?
-	 */
-//	private T computeSplitValue(T priorValue, T subsequentValue) {
-//		if(clazz == Double.class){
-//			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
-//		} else if(clazz == Integer.class) {
-//			return (T) Double.valueOf( ((Double) priorValue + (Double) subsequentValue) / 2.0);
-//		}
-//		throw new UnsupportedOperationException("Split of type " + clazz + " not implemented yet.");
-//	}
-
 }
