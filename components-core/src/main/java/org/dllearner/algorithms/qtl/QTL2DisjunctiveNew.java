@@ -35,6 +35,7 @@ import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -153,6 +154,8 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	};
 	private QueryExecutionFactory qef;
 	
+	private Entailment entailment = Entailment.SIMPLE;
+	
 	public QTL2DisjunctiveNew() {}
 	
 	public QTL2DisjunctiveNew(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
@@ -214,8 +217,11 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
-		lggGenerator = new LGGGeneratorSimple();
-//		lggGenerator = new LGGGeneratorRDFS(reasoner);
+		if(entailment == Entailment.SIMPLE) {
+			lggGenerator = new LGGGeneratorSimple();
+		} else if(entailment == Entailment.RDFS){
+			lggGenerator = new LGGGeneratorRDFS(reasoner);
+		}
 		
 		// generate the query trees
 		generateQueryTrees();
@@ -235,6 +241,13 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 //		RDFResourceTree lgg = lggGenerator.getLGG(allExamplesTrees);
 //		lgg.dump();
 		logger.info("...initialization finished.");
+	}
+	
+	/**
+	 * @param entailment the entailment to set
+	 */
+	public void setEntailment(Entailment entailment) {
+		this.entailment = entailment;
 	}
 	
 	private void generateQueryTrees(){

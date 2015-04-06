@@ -50,6 +50,7 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -205,7 +206,11 @@ public class QALDExperiment {
 							"http://dbpedia.org/class/yago/",
 							FOAF.getURI()
 							)
-							)
+							),
+							new PredicateDropStatementFilter(
+									Sets.newHashSet(
+											"http://www.w3.org/2002/07/owl#equivalentClass", 
+											"http://www.w3.org/2002/07/owl#disjointWith"))
 			);
 //			queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
 //					Sets.newHashSet("bandleader", "play", "trumpet")));
@@ -300,6 +305,7 @@ public class QALDExperiment {
 //						la = new QTL2(lp, qef);
 						QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
 						la.setReasoner(kb.reasoner);
+						la.setEntailment(Entailment.SIMPLE);
 						la.setTreeFactory(queryTreeFactory);
 						la.setPositiveExampleTrees(generatedExamples);
 						la.setNoise(noise);
@@ -382,18 +388,16 @@ public class QALDExperiment {
 				}
 			}
 		}
-		
 	}
-		
 	
 	private EvaluatedRDFResourceTree findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
 		logger.info("Finding best matching query tree...");
 		//get the tree with the highest fmeasure
 		EvaluatedRDFResourceTree bestTree = null;
 		double bestFMeasure = -1;
-		PredicateExistenceFilterDBpedia filter = new PredicateExistenceFilterDBpedia(null);
+		
 		for (EvaluatedRDFResourceTree tree : trees) {
-			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(tree.getTree()), kb.baseIRI, kb.prefixMapping);
+			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree.getTree(), kb.baseIRI, kb.prefixMapping);
 			System.out.println(learnedSPARQLQuery);
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
@@ -1230,6 +1234,7 @@ public class QALDExperiment {
 	}
 	
 	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
+		System.out.println(learnedSPARQLQuery);
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
@@ -1238,9 +1243,9 @@ public class QALDExperiment {
 			return 0;
 		}
 	
-		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?x0\n" + 
+		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?s\n" + 
 				"WHERE\n" + 
-				"  { ?x0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
+				"  { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
 			return referenceResources.size() / (double) kbSize;
 		}
 

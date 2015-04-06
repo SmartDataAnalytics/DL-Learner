@@ -706,4 +706,39 @@ public class QueryTreeUtils {
 			}
 		}
     }
+	
+	public static void prune(RDFResourceTree tree, Entailment entailment) {
+		for(Node edge : tree.getEdges()) {
+			if(edge.equals(RDF.type.asNode())) {
+				List<RDFResourceTree> children = tree.getChildren(edge);
+				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
+					RDFResourceTree child = iterator.next();
+					if(!isNonTrivial(child, entailment)) {
+						iterator.remove();
+					}
+					
+				}
+			}
+		}
+	}
+	
+	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {
+		if(tree.isResourceNode() || tree.isLiteralNode()){
+    		return true;
+    	} else {
+    		for (Node edge : tree.getEdges()) {
+    			for (RDFResourceTree child : tree.getChildren(edge)) {
+        			if(!edge.equals(RDFS.subClassOf.asNode())){
+        				return true;
+        			} else if(child.isResourceNode()){
+        				return true;
+        			} else if(isNonTrivial(child, entailment)){
+        				return true;
+        			}
+        		}
+			}
+    		
+    	}
+    	return false;
+	}
 }

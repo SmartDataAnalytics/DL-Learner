@@ -36,6 +36,7 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -106,6 +107,9 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 		mon.start();
 		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
+		
+		// prune
+		QueryTreeUtils.prune(lgg, Entailment.RDFS);
 		
 		addNumbering(lgg);
 		

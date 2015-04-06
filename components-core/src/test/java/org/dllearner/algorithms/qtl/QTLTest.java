@@ -12,6 +12,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -82,7 +83,11 @@ public class QTLTest {
 								"http://dbpedia.org/class/yago/",
 								FOAF.getURI()
 								)
-								)
+								),
+								new PredicateDropStatementFilter(
+										Sets.newHashSet(
+												"http://www.w3.org/2002/07/owl#equivalentClass", 
+												"http://www.w3.org/2002/07/owl#disjointWith"))
 				);
 		qtf.setMaxDepth(3);
 		
@@ -101,6 +106,7 @@ public class QTLTest {
 		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
 		la.setReasoner(new SPARQLReasoner(qef));
 		la.setTreeFactory(qtf);
+		la.setEntailment(Entailment.RDFS);
 		la.init();
 		
 		la.start();
