@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dllearner.algorithms.qtl;
+package org.dllearner.algorithms.qtl.qald;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,25 +37,37 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryImpl;
-import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
+import org.dllearner.algorithms.qtl.QTL2;
+import org.dllearner.algorithms.qtl.QTL2DisjunctiveNew;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
+import org.dllearner.algorithms.qtl.util.StopURIsOWL;
+import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
+import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.QueryUtils;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
@@ -91,6 +103,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
@@ -113,6 +126,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
 /**
  * @author Lorenz Buehmann
@@ -123,7 +137,7 @@ public class QALDExperiment {
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
 	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
-			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> "
+			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 			+ "SELECT ?sup WHERE {"
 			+ "?sub ((rdfs:subClassOf|owl:equivalentClass)|^owl:equivalentClass)+ ?sup .}");
 	
@@ -148,47 +162,7 @@ public class QALDExperiment {
 		prefixes.put("dbpedia", "http://dbpedia.org/resource/");
 	}
 	
-	// DBpedia dataset related content
-	static SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-	static {
-		try {
-			endpoint = new SparqlEndpoint(
-//					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
-					"http://dbpedia.org");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
-	List<String> dbpediaQuestionFiles = Lists.newArrayList(
-			"org/dllearner/algorithms/qtl/qald-4_multilingual_train.xml",
-			"org/dllearner/algorithms/qtl/qald-4_multilingual_test.xml"
-			);
-	Set<String> allowedNamespaces = Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/");
-	Set<String> ignoredProperties = Sets.newHashSet("http://dbpedia.org/ontology/wikiPageID","http://dbpedia.org/ontology/wikiPageRevisionID",
-			"http://dbpedia.org/ontology/wikiPageExtracted", "http://dbpedia.org/ontology/wikiPageModified");
-	
-	// Biomedical dataset related content
-	static SparqlEndpoint biomedicalEndpoint;
-	static {
-		try {
-			biomedicalEndpoint = new SparqlEndpoint(
-					new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					"http://biomedical.org");
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-	}
-	File localBiomedicalDataDir = new File(
-			"/home/me/work/datasets/qald4/biomedical"
-//			"/home/user/work/datasets/qald4/biomedical"
-			);
-	//http://greententacle.techfak.uni-bielefeld.de/~cunger/qald/4/
-	List<String> biomedicalQuestionFiles = Lists.newArrayList(
-			"org/dllearner/algorithms/qtl/qald-4_biomedical_train.xml",
-			"org/dllearner/algorithms/qtl/qald-4_biomedical_test.xml"
-			);
-	
+	KB kb;
 	
 	List<String> questionFiles;
 	QueryExecutionFactory qef;
@@ -197,9 +171,8 @@ public class QALDExperiment {
 	int minNrOfPositiveExamples = 5;
 	int maxDepth = 2;
 	
-	private QueryTreeFactory<String> queryTreeFactory;
+	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
-	private QTL2 la;
 	
 	RandomDataGenerator rnd = new RandomDataGenerator();
 
@@ -209,60 +182,48 @@ public class QALDExperiment {
 	
 	private int kbSize;
 	
-	public QALDExperiment(Dataset dataset) {
-		this.dataset = dataset;
-		queryTreeFactory = new QueryTreeFactoryImpl();
+	public QALDExperiment(KB dataset) throws ComponentInitException {
+		this.kb = dataset;
+		
+		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxDepth);
 		
-		if(dataset == Dataset.DBPEDIA){
-			questionFiles = dbpediaQuestionFiles;
-			
-			qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-			long timeToLive = TimeUnit.DAYS.toMillis(60);
-			CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, false, timeToLive);
-			qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
+		if(dataset.id.equals(DBpediaKB.id)){
 			
 			// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
-			queryTreeFactory.addAllowedNamespaces(allowedNamespaces);
-			queryTreeFactory.addIgnoredPropperties(ignoredProperties);
+			queryTreeFactory.addDropFilters(
+					new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+					new PredicateDropStatementFilter(StopURIsRDFS.get()),
+					new PredicateDropStatementFilter(StopURIsOWL.get()),
+					new ObjectDropStatementFilter(StopURIsOWL.get()),
+					new PredicateDropStatementFilter(StopURIsSKOS.get()),
+					new ObjectDropStatementFilter(StopURIsSKOS.get()),
+					new NamespaceDropStatementFilter(
+					Sets.newHashSet(
+							"http://dbpedia.org/property/", 
+//							"http://purl.org/dc/terms/",
+							"http://dbpedia.org/class/yago/",
+							FOAF.getURI()
+							)
+							)
+			);
 //			queryTreeFactory.setStatementFilter(new KeywordBasedStatementFilter(
 //					Sets.newHashSet("bandleader", "play", "trumpet")));
-		} else if(dataset == Dataset.BIOMEDICAL){
-			questionFiles = biomedicalQuestionFiles;
-			
-			Model model = loadBiomedicalData();
-			qef = new QueryExecutionFactoryModel(model);
 		}
+		qef = kb.ks.getQueryExecutionFactory();
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		cbdGen.setRecursionDepth(maxDepth);
-		
-		la = new QTL2();
 		
 		rnd.reSeed(123);
 		
 		kbSize = getKBSize();
 	}
 	
-	private Model loadBiomedicalData(){
-		logger.info("Loading QALD biomedical data from local directory " + localBiomedicalDataDir + " ...");
-		Model model = ModelFactory.createDefaultModel();
-		
-		for (File file : localBiomedicalDataDir.listFiles()) {
-			if(file.isFile() && file.getName().endsWith(".nt")){
-				try(FileInputStream is = new FileInputStream(file)){
-					model.read(is, null, "N-TRIPLES");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		logger.info("...done.");
-		return model;
-	}
+	
 	
 	private int getKBSize() {
-		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a owl:Class .}";
+		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
 		
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
@@ -279,7 +240,6 @@ public class QALDExperiment {
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
-		
 		int minNrOfExamples = 3;
 		int maxNrOfExamples = 10;
 		int stepSize = 2;
@@ -322,7 +282,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("Cruise"))continue;
+					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -330,7 +290,7 @@ public class QALDExperiment {
 					
 					try {
 						// generate some random examples and add some noise if necessary
-						Map<OWLIndividual, QueryTree<String>> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
+						Map<OWLIndividual, RDFResourceTree> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
 
 						// run QTL
 						PosNegLPStandard lp = new PosNegLPStandard();
@@ -338,40 +298,41 @@ public class QALDExperiment {
 						
 						//						lp.init();
 //						la = new QTL2(lp, qef);
-						QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-						la.setAllowedNamespaces(allowedNamespaces);
-						la.setIgnoredPropperties(ignoredProperties);
+						QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
+						la.setReasoner(kb.reasoner);
 						la.setTreeFactory(queryTreeFactory);
 						la.setPositiveExampleTrees(generatedExamples);
 						la.setNoise(noise);
 						la.init();
 						la.start();
 
-						List<EvaluatedQueryTree<String>> solutions = new ArrayList<EvaluatedQueryTree<String>>(
-								la.getSolutions());
+						List<EvaluatedRDFResourceTree> solutions = new ArrayList<EvaluatedRDFResourceTree>(la.getSolutions());
 
 						// the best solution by QTL
-						EvaluatedQueryTree<String> bestSolution = solutions.get(0);
+						EvaluatedRDFResourceTree bestSolution = solutions.get(0);
 						logger.info("Got " + solutions.size() + " query trees.");
 						logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
-						String learnedSPARQLQuery = bestSolution.getTree().toSPARQLQueryString(true, false).trim();
+						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestSolution.getTree(), kb.baseIRI, kb.prefixMapping);
 
+						// compute precision
 						double precision = precision(sparqlQuery, learnedSPARQLQuery);
 						bestReturnedSolutionPrecisionStats.addValue(precision);
 
+						// compute recall
 						double recall = recall(sparqlQuery, learnedSPARQLQuery);
 						bestReturnedSolutionRecallStats.addValue(recall);
 
+						// compute F1-score
 						double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
 						bestReturnedSolutionFMeasureStats.addValue(fmeasure);
 
 						logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
 
 						// find the extensionally best matching tree in the list
-						EvaluatedQueryTree<String> bestMatchingTree = findBestMatchingTree(solutions, sparqlQuery);
+						EvaluatedRDFResourceTree bestMatchingTree = findBestMatchingTree(solutions, sparqlQuery);
 
 						// position of best tree in list of solutions
 						int position = solutions.indexOf(bestMatchingTree);
@@ -381,7 +342,7 @@ public class QALDExperiment {
 							logger.info("Position of best covering tree in list: " + position);
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-							String bestLearnedSPARQLQuery = bestMatchingTree.getTree().toSPARQLQueryString(true, false);
+							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestMatchingTree.getTree(), kb.baseIRI, kb.prefixMapping);
 							precision = precision(sparqlQuery, bestLearnedSPARQLQuery);
 							recall = recall(sparqlQuery, bestLearnedSPARQLQuery);
 							fmeasure = fMeasure(sparqlQuery, bestLearnedSPARQLQuery);
@@ -425,13 +386,15 @@ public class QALDExperiment {
 	}
 		
 	
-	private EvaluatedQueryTree<String> findBestMatchingTree(Collection<EvaluatedQueryTree<String>> trees, String targetSPARQLQuery){
+	private EvaluatedRDFResourceTree findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
 		logger.info("Finding best matching query tree...");
 		//get the tree with the highest fmeasure
-		EvaluatedQueryTree<String> bestTree = null;
+		EvaluatedRDFResourceTree bestTree = null;
 		double bestFMeasure = -1;
-		for (EvaluatedQueryTree<String> tree : trees) {
-			String learnedSPARQLQuery = tree.getTree().toSPARQLQueryString().trim();
+		PredicateExistenceFilterDBpedia filter = new PredicateExistenceFilterDBpedia(null);
+		for (EvaluatedRDFResourceTree tree : trees) {
+			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(tree.getTree()), kb.baseIRI, kb.prefixMapping);
+			System.out.println(learnedSPARQLQuery);
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
@@ -447,7 +410,7 @@ public class QALDExperiment {
 		return bestTree;
 	}
 	
-	private Map<OWLIndividual, QueryTree<String>> generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
+	private Map<OWLIndividual, RDFResourceTree> generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
 		Random randomGen = new Random(123);
 		
 		// get all resources returned by the query
@@ -464,9 +427,9 @@ public class QALDExperiment {
 		}
 		
 		// build query trees
-		Map<OWLIndividual, QueryTree<String>> queryTrees = new HashMap<>();
+		Map<OWLIndividual, RDFResourceTree> queryTrees = new HashMap<>();
 		for (String ex : examples) {
-			QueryTree<String> queryTree = getQueryTree(ex);
+			RDFResourceTree queryTree = getQueryTree(ex);
 			queryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
 		}
 		
@@ -476,15 +439,15 @@ public class QALDExperiment {
 		return queryTrees;
 	}
 	
-	private QueryTree<String> getSimilarTree(QueryTree<String> tree, String property, int maxTreeDepth){
-		String query = "SELECT ?o WHERE {?s <" + property + "> ?o. FILTER(isURI(?o) && ?o != <" + tree.getUserObject() + ">)} LIMIT 1";
+	private RDFResourceTree getSimilarTree(RDFResourceTree tree, String property, int maxTreeDepth){
+		String query = "SELECT ?o WHERE {?s <" + property + "> ?o. FILTER(isURI(?o) && ?o != <" + tree.getData() + ">)} LIMIT 1";
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		if(rs.hasNext()){
-			String uri = rs.next().getResource("o").getURI();
-			Model cbd = cbdGen.getConciseBoundedDescription(uri, maxTreeDepth);
-			QueryTree<String> similarTree = queryTreeFactory.getQueryTree(uri, cbd);
-			similarTree.setUserObject(uri);
+			Resource object = rs.next().getResource("o");
+			Model cbd = cbdGen.getConciseBoundedDescription(object.getURI(), maxTreeDepth);
+			RDFResourceTree similarTree = queryTreeFactory.getQueryTree(object, cbd);
+			similarTree.setData(object.asNode());
 			return similarTree;
 		}
 		return null;
@@ -552,7 +515,7 @@ public class QALDExperiment {
 		List<String> noiseExamples = new ArrayList<>();
 		
 		// get max number of instances in KB
-		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a owl:Class .}";
+		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		int max = rs.next().get("cnt").asLiteral().getInt();
@@ -696,8 +659,8 @@ public class QALDExperiment {
 		return new ArrayList<>(negExamples);
 	}
 	
-	private List<QueryTree<String>> getQueryTrees(List<String> resources){
-		List<QueryTree<String>> trees = new ArrayList<QueryTree<String>>();
+	private List<RDFResourceTree> getQueryTrees(List<String> resources){
+		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
 		
 		for (String resource : resources) {
 			trees.add(getQueryTree(resource));
@@ -706,7 +669,7 @@ public class QALDExperiment {
 		return trees;
 	}
 	
-	private QueryTree<String> getQueryTree(String resource){
+	private RDFResourceTree getQueryTree(String resource){
 		Model cbd = cbdGen.getConciseBoundedDescription(resource);
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
@@ -719,7 +682,7 @@ public class QALDExperiment {
 			e.printStackTrace();
 		}
 		
-		QueryTree<String> tree = queryTreeFactory.getQueryTree(resource, cbd);
+		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
 		return tree;
 	}
 	
@@ -830,7 +793,7 @@ public class QALDExperiment {
 		}
 		
 		// again split clusters to have only a maximum number of triple patterns
-		int maxNrOfTriplePatternsPerQuery = 10;// number of outgoing triple patterns form the target var in each executed query
+		int maxNrOfTriplePatternsPerQuery = 20;// number of outgoing triple patterns form the target var in each executed query
 		Set<Set<Triple>> newClusters = new HashSet<Set<Triple>>();
 		for (Set<Triple> cluster : clusters) {
 			int cnt = 0;
@@ -885,7 +848,6 @@ public class QALDExperiment {
 			q = rewriteForVirtuosoDateLiteralBug(q);
 //			q = rewriteForVirtuosoFloatingPointIssue(q);
 			logger.trace(q);
-			
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
 			
@@ -1002,7 +964,7 @@ public class QALDExperiment {
 		List<String> queries = new ArrayList<String>();
 		try {
 			int cnt = 0;
-			for(String file : questionFiles){
+			for(String file : kb.questionFiles){
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 	            DocumentBuilder db = dbf.newDocumentBuilder();
 	            Document doc = db.parse(this.getClass().getClassLoader().getResourceAsStream(file));
@@ -1348,7 +1310,7 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-		new QALDExperiment(Dataset.DBPEDIA).run();
+		new QALDExperiment(new DBpediaKB()).run();
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
