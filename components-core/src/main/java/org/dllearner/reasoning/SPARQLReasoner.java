@@ -44,7 +44,9 @@ import org.dllearner.core.SchemaReasoner;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.LazyClassHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -438,7 +440,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public final ClassHierarchy prepareSubsumptionHierarchy() {
 		if(precomputeClassHierarchy) {
 			if(!prepared){
-				logger.info("Preparing subsumption hierarchy ...");
+				logger.info("Preparing class subsumption hierarchy ...");
 				long startTime = System.currentTimeMillis();
 				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
 						);
@@ -536,51 +538,203 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return qef.createQueryExecution(query).execAsk();
 	}
 
+	/**
+	 * Pre-computes the class hierarchy. Instead of executing queries for each class,
+	 * we query by the predicate rdfs:subClassOf.
+	 * @return
+	 */
 	public final ClassHierarchy prepareSubsumptionHierarchyFast() {
-		logger.info("Preparing subsumption hierarchy ...");
+		logger.info("Preparing class subsumption hierarchy ...");
 		long startTime = System.currentTimeMillis();
 		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
 				);
 		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
 				);
 
-		String queryTemplate = "SELECT * WHERE {?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup} LIMIT <%d> OFFSET <%d>";
-		int limit = 1000;
-		int offset = 0;
-		boolean repeat = true;
-		while(repeat){
-			repeat = false;
-			String query = String.format(queryTemplate, limit, offset);
-			ResultSet rs = executeSelectQuery(query);
-			QuerySolution qs;
-			while(rs.hasNext()){
-				repeat = true;
-				qs = rs.next();
-				if(qs.get("sub").isURIResource() && qs.get("sup").isURIResource()){
-					OWLClassExpression sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
-					OWLClassExpression sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
-					//add subclasses
-					SortedSet<OWLClassExpression> subClasses = subsumptionHierarchyDown.get(sup);
-					if(subClasses == null){
-						subClasses = new TreeSet<OWLClassExpression>();
-						subsumptionHierarchyDown.put(sup, subClasses);
-					}
-					subClasses.add(sub);
-					//add superclasses
-					SortedSet<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(sub);
-					if(superClasses == null){
-						superClasses = new TreeSet<OWLClassExpression>();
-						subsumptionHierarchyUp.put(sub, superClasses);
-					}
-					superClasses.add(sup);
+		String query = "SELECT * WHERE {"
+				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
+				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
+				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup ."
+				+ "}";
+		ResultSet rs = executeSelectQuery(query);
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			if (qs.get("sub").isURIResource() && qs.get("sup").isURIResource()) {
+				OWLClassExpression sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
+				OWLClassExpression sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
+				
+				//add subclasses
+				SortedSet<OWLClassExpression> subClasses = subsumptionHierarchyDown.get(sup);
+				if (subClasses == null) {
+					subClasses = new TreeSet<OWLClassExpression>();
+					subsumptionHierarchyDown.put(sup, subClasses);
 				}
+				subClasses.add(sub);
+				
+				//add superclasses
+				SortedSet<OWLClassExpression> superClasses = subsumptionHierarchyUp.get(sub);
+				if (superClasses == null) {
+					superClasses = new TreeSet<OWLClassExpression>();
+					subsumptionHierarchyUp.put(sub, superClasses);
+				}
+				superClasses.add(sup);
 			}
-			offset += limit;
 		}
 
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 		return hierarchy;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#prepareObjectPropertyHierarchy()
+	 */
+	@Override
+	public ObjectPropertyHierarchy prepareObjectPropertyHierarchy() throws ReasoningMethodUnsupportedException {
+		logger.info("Preparing object property subsumption hierarchy ...");
+		long startTime = System.currentTimeMillis();
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+				);
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyDown = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+				);
+
+		String query = "SELECT * WHERE {"
+				+ "?sub a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+				+ "OPTIONAL {"
+				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
+				+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . }"
+				+ "}";
+		ResultSet rs = executeSelectQuery(query);
+		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			if (qs.get("sub").isURIResource()) {
+				OWLObjectProperty sub = df.getOWLObjectProperty(IRI.create(qs.get("sub").asResource().getURI()));
+				properties.add(sub);
+				
+				// add sub properties entry
+				if (!subsumptionHierarchyDown.containsKey(sub)) {
+					subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
+				}
+				
+				// add super properties entry
+				if (!subsumptionHierarchyUp.containsKey(sub)) {
+					subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
+				}
+				
+				// if there is a super property
+				if(qs.get("sup") != null && qs.get("sup").isURIResource()){
+					OWLObjectProperty sup = df.getOWLObjectProperty(IRI.create(qs.get("sup").asResource().getURI()));
+					properties.add(sup);
+					
+					// add sub properties entry
+					if (!subsumptionHierarchyDown.containsKey(sup)) {
+						subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+					}
+					
+					// add super properties entry
+					if (!subsumptionHierarchyUp.containsKey(sup)) {
+						subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+					}
+					
+					// add super properties entry
+					SortedSet<OWLObjectProperty> superClasses = subsumptionHierarchyUp.get(sub);
+					if (superClasses == null) {
+						superClasses = new TreeSet<OWLObjectProperty>();
+						subsumptionHierarchyUp.put(sub, superClasses);
+					}
+					superClasses.add(sup);
+					
+					// add sub properties entry
+					SortedSet<OWLObjectProperty> subProperties = subsumptionHierarchyDown.get(sup);
+					if (subProperties == null) {
+						subProperties = new TreeSet<OWLObjectProperty>();
+						subsumptionHierarchyDown.put(sup, subProperties);
+					}
+					subProperties.add(sub);
+				}
+				
+			}
+		}
+
+		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+		roleHierarchy = new ObjectPropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+		return roleHierarchy;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#prepareObjectPropertyHierarchy()
+	 */
+	@Override
+	public DatatypePropertyHierarchy prepareDatatypePropertyHierarchy() throws ReasoningMethodUnsupportedException {
+		logger.info("Preparing data property subsumption hierarchy ...");
+		long startTime = System.currentTimeMillis();
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> subsumptionHierarchyUp = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
+				);
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> subsumptionHierarchyDown = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
+				);
+
+		String query = "SELECT * WHERE {"
+				+ "?sub a <http://www.w3.org/2002/07/owl#DatatypeProperty> . "
+				+ "OPTIONAL {"
+				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
+				+ "?sup a <http://www.w3.org/2002/07/owl#DatatypeProperty> . }"
+				+ "}";
+		ResultSet rs = executeSelectQuery(query);
+		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		while (rs.hasNext()) {
+			QuerySolution qs = rs.next();
+			if (qs.get("sub").isURIResource()) {
+				OWLDataProperty sub = df.getOWLDataProperty(IRI.create(qs.get("sub").asResource().getURI()));
+				properties.add(sub);
+				
+				// add sub properties entry
+				if (!subsumptionHierarchyDown.containsKey(sub)) {
+					subsumptionHierarchyDown.put(sub, new TreeSet<OWLDataProperty>());
+				}
+				
+				// add super properties entry
+				if (!subsumptionHierarchyUp.containsKey(sub)) {
+					subsumptionHierarchyUp.put(sub, new TreeSet<OWLDataProperty>());
+				}
+				
+				// if there is a super property
+				if(qs.get("sup") != null && qs.get("sup").isURIResource()){
+					OWLDataProperty sup = df.getOWLDataProperty(IRI.create(qs.get("sup").asResource().getURI()));
+					properties.add(sup);
+					
+					// add sub properties entry
+					if (!subsumptionHierarchyDown.containsKey(sup)) {
+						subsumptionHierarchyDown.put(sup, new TreeSet<OWLDataProperty>());
+					}
+					
+					// add super properties entry
+					if (!subsumptionHierarchyUp.containsKey(sup)) {
+						subsumptionHierarchyUp.put(sup, new TreeSet<OWLDataProperty>());
+					}
+					
+					// add super properties entry
+					SortedSet<OWLDataProperty> superClasses = subsumptionHierarchyUp.get(sub);
+					if (superClasses == null) {
+						superClasses = new TreeSet<OWLDataProperty>();
+						subsumptionHierarchyUp.put(sub, superClasses);
+					}
+					superClasses.add(sup);
+					
+					// add sub properties entry
+					SortedSet<OWLDataProperty> subProperties = subsumptionHierarchyDown.get(sup);
+					if (subProperties == null) {
+						subProperties = new TreeSet<OWLDataProperty>();
+						subsumptionHierarchyDown.put(sup, subProperties);
+					}
+					subProperties.add(sub);
+				}
+			}
+		}
+
+		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+		datatypePropertyHierarchy = new DatatypePropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+		return datatypePropertyHierarchy;
 	}
 
 	public Model loadSchema(){

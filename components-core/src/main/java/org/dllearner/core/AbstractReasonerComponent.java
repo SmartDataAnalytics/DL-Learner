@@ -124,9 +124,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private List<OWLObjectProperty> atomicRolesList;
 
 	// hierarchies (they are computed the first time they are needed)
-	private ClassHierarchy subsumptionHierarchy = null;
-	private ObjectPropertyHierarchy roleHierarchy = null;
-	private DatatypePropertyHierarchy datatypePropertyHierarchy = null;
+	protected ClassHierarchy subsumptionHierarchy = null;
+	protected ObjectPropertyHierarchy roleHierarchy = null;
+	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 	
 	protected boolean precomputeClassHierarchy = true;
 	protected boolean precomputeObjectPropertyHierarchy = true;
