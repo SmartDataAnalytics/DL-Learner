@@ -26,12 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
-import org.aksw.jena_sparql_api.delay.core.QueryExecutionDelay;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -43,22 +40,15 @@ import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
 
 
 /**
@@ -66,64 +56,9 @@ import com.jamonapi.MonitorFactory;
  * @author Lorenz Bühmann
  *
  */
-public class LGGGeneratorSimple implements LGGGenerator2{
+public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	
-	private Logger logger = LoggerFactory.getLogger(LGGGeneratorSimple.class);
-	
-	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
-	
-	private int subCalls;
-	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return getLGG(tree1, tree2, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2,
-			boolean learnFilters) {
-		
-		reset();
-		
-		mon.start();
-		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
-		mon.stop();
-		
-		addNumbering(0, lgg);
-		
-		return lgg;
-	}
-
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees) {
-		return getLGG(trees, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees, boolean learnFilters) {
-		// if there is only 1 tree return it
-		if(trees.size() == 1){
-			return trees.get(0);
-		}
-		
-		// lgg(t_1, t_n)
-		mon.start();
-		RDFResourceTree lgg = trees.get(0);
-		for(int i = 1; i < trees.size(); i++) {
-			lgg = getLGG(lgg, trees.get(i), learnFilters);
-		}
-		mon.stop();
-		
-		addNumbering(0, lgg);
-		
-		return lgg;
-	}
-	
-	private void reset() {
-		subCalls = 0;
-	}
-	
-	private RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
+	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		
 		// 1. compare the root node
@@ -189,12 +124,6 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		return lgg;
 	}
 	
-	private void addNumbering(int nodeId, RDFResourceTree tree){
-//		tree.setId(nodeId);
-		for(RDFResourceTree child : tree.getChildren()){
-			addNumbering(nodeId++, child);
-		}
-	}
 	
 	public static void main(String[] args) throws Exception {
 		// knowledge base
