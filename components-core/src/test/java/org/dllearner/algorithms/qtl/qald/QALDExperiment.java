@@ -398,7 +398,7 @@ public class QALDExperiment {
 		
 		for (EvaluatedRDFResourceTree tree : trees) {
 			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree.getTree(), kb.baseIRI, kb.prefixMapping);
-			System.out.println(learnedSPARQLQuery);
+//			System.out.println(learnedSPARQLQuery);
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
@@ -1211,30 +1211,7 @@ public class QALDExperiment {
 		return q;
 	}
 	
-	private String getPrefixedQuery(String sparqlQuery){
-		for (Entry<String, String> entry : prefixes.entrySet()) {
-			String prefix = entry.getKey();
-			String namespace = entry.getValue();
-			Pattern p = Pattern.compile("(<" + Pattern.quote(namespace) + "[.\\S]*>)");
-		    Matcher m = p.matcher(sparqlQuery);
-		    boolean matched = false;
-		    while (m.find()){
-		    	matched = true;
-		    	String resource = m.group(1);
-		    	String prefixedResource = resource.replace("<", "").replace(">", "");
-		    	prefixedResource = prefixedResource.replace(namespace, prefix + ":");
-		        sparqlQuery = sparqlQuery.replace(resource, prefixedResource);
-		    }
-		    if(matched){
-		    	sparqlQuery = "PREFIX " + prefix + ": <" + namespace + "> \n" + sparqlQuery;
-		    }
-		}
-		System.out.println(sparqlQuery); 
-		return QueryFactory.create(sparqlQuery).toString(Syntax.syntaxSPARQL_11);
-	}
-	
 	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
-		System.out.println(learnedSPARQLQuery);
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if(referenceResources.isEmpty()){
@@ -1242,10 +1219,8 @@ public class QALDExperiment {
 //			System.exit(0);
 			return 0;
 		}
-	
-		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?s\n" + 
-				"WHERE\n" + 
-				"  { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
+		
+		if(learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
 			return referenceResources.size() / (double) kbSize;
 		}
 
@@ -1269,9 +1244,7 @@ public class QALDExperiment {
 	}
 	
 	private double recall(String referenceSparqlQuery, String learnedSPARQLQuery) {
-		if(learnedSPARQLQuery.equals("SELECT DISTINCT  ?x0\n" + 
-				"WHERE\n" + 
-				"  { ?x0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 }")) {
+		if(learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
 			return 1.0;
 		}
 		

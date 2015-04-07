@@ -89,7 +89,8 @@ public class QTLTest {
 												"http://www.w3.org/2002/07/owl#equivalentClass", 
 												"http://www.w3.org/2002/07/owl#disjointWith"))
 				);
-		qtf.setMaxDepth(3);
+		int maxTreeDepth = 2;
+		qtf.setMaxDepth(maxTreeDepth);
 		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
@@ -107,6 +108,7 @@ public class QTLTest {
 		la.setReasoner(new SPARQLReasoner(qef));
 		la.setTreeFactory(qtf);
 		la.setEntailment(Entailment.RDFS);
+		la.setMaxTreeDepth(maxTreeDepth);
 		la.init();
 		
 		la.start();

@@ -41,6 +41,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	
 	private Map<RDFResourceTree, Object> child2Edge = new HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+//	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
+//			new NodeComparator(), Ordering.arbitrary());
+    
+    
     
     /**
      * Creates an empty resource tree with a default variable as label.
@@ -129,9 +133,15 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	
 	public void removeChild(RDFResourceTree child, Node edge) {
 		super.removeChild(child);
+		
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge != null) {
 			childrenForEdge.remove(child);
+		}
+		
+		// if there are no other children for the given edge, remove whole edge
+		if(childrenForEdge.isEmpty()) {
+			edge2Children.remove(edge);
 		}
 	}
 	

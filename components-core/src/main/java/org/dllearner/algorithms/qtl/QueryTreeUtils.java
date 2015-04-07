@@ -70,6 +70,8 @@ public class QueryTreeUtils {
 	private static final String TRIPLE_PATTERN_TEMPLATE = "%s %s %s .";
 	private static final OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 	
+	public static String EMPTY_QUERY_TREE_QUERY = "SELECT ?s WHERE {?s ?p ?o.}";
+	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
 	 * a list of nodes starting from the given node.
@@ -588,6 +590,13 @@ public class QueryTreeUtils {
     	}
 	}
 	
+	/**
+	 * Returns a SPARQL query representing the query tree. Note, for empty trees
+	 * it just returns 
+	 * <p><code>SELECT ?s WHERE {?s ?p ?o.}</code></p>
+	 * @param tree
+	 * @return
+	 */
 	public static Query toSPARQLQuery(RDFResourceTree tree) {
 		return QueryFactory.create(toSPARQLQueryString(tree));
 	}
@@ -606,7 +615,7 @@ public class QueryTreeUtils {
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm, LiteralNodeConversionStrategy literalConversion) {
 		if(!tree.hasChildren()){
-    		return "SELECT ?x0 WHERE {?x0 ?p ?o.}";
+    		return EMPTY_QUERY_TREE_QUERY;
     	}
     	
     	varGen.reset();
@@ -634,7 +643,7 @@ public class QueryTreeUtils {
         
         List<ExprNode> filters = new ArrayList<>();
         
-        //
+        // target var
         String targetVar = "?s";
         
         // header
@@ -707,14 +716,20 @@ public class QueryTreeUtils {
 		}
     }
 	
+	/**
+	 * Remove trivial statements according to the given entailment semantics.
+	 * @param tree
+	 * @param entailment
+	 */
 	public static void prune(RDFResourceTree tree, Entailment entailment) {
 		for(Node edge : tree.getEdges()) {
 			if(edge.equals(RDF.type.asNode())) {
-				List<RDFResourceTree> children = tree.getChildren(edge);
+				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
 				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
 					RDFResourceTree child = iterator.next();
 					if(!isNonTrivial(child, entailment)) {
-						iterator.remove();
+//						iterator.remove();
+						tree.removeChild(child, edge);
 					}
 					
 				}

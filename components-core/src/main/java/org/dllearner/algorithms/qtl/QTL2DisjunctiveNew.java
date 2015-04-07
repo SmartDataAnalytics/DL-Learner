@@ -156,6 +156,8 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	
 	private Entailment entailment = Entailment.SIMPLE;
 	
+	private int maxTreeDepth = 2;
+	
 	public QTL2DisjunctiveNew() {}
 	
 	public QTL2DisjunctiveNew(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
@@ -205,11 +207,11 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 			qef = ks.getQueryExecutionFactory();
 		}
 		
-		if(treeFactory == null){
+		if(treeFactory == null) {
 			treeFactory = new QueryTreeFactoryBase();
 		}
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(2);
+		cbdGen.setRecursionDepth(maxTreeDepth);
 		
 		// set the used heuristic
 		if(heuristic == null){
@@ -1117,6 +1119,13 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	@Autowired
 	public void setKs(SparqlEndpointKS ks) {
 		this.ks = ks;
+	}
+	
+	/**
+	 * @param maxTreeDepth the maxTreeDepth to set
+	 */
+	public void setMaxTreeDepth(int maxTreeDepth) {
+		this.maxTreeDepth = maxTreeDepth;
 	}
 	
 	/* (non-Javadoc)
