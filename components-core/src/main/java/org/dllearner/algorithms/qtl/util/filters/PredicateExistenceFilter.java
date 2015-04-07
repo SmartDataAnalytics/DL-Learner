@@ -41,12 +41,17 @@ public class PredicateExistenceFilter {
 	 * @return
 	 */
 	public RDFResourceTree filter(RDFResourceTree tree) {
-		RDFResourceTree newTree = new RDFResourceTree(0, tree.getData());
+		RDFResourceTree newTree;
+		if(tree.isLiteralNode() && !tree.isLiteralValueNode()) {
+			newTree = new RDFResourceTree(tree.getDatatype());
+		} else {
+			newTree = new RDFResourceTree(0, tree.getData());
+		}
 		
 		for(Node edge : tree.getEdges()) {
 			if(existentialMeaninglessProperties.contains(edge)) {
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					if(!child.isVarNode() || !child.isLeaf()) {
+					if(child.isResourceNode() || child.isLiteralValueNode() || !child.isLeaf()) {
 						RDFResourceTree newChild = filter(child);
 						newTree.addChild(newChild, edge);
 					}

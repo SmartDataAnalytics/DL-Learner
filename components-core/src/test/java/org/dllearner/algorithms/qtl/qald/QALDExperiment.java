@@ -137,10 +137,15 @@ public class QALDExperiment {
 	
 	private static final Logger logger = Logger.getLogger(QALDExperiment.class.getName());
 	
-	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
+	private static final ParameterizedSparqlString superClassesQueryTemplate2 = new ParameterizedSparqlString(
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 			+ "SELECT ?sup WHERE {"
 			+ "?sub ((rdfs:subClassOf|owl:equivalentClass)|^owl:equivalentClass)+ ?sup .}");
+	
+	private static final ParameterizedSparqlString superClassesQueryTemplate = new ParameterizedSparqlString(
+			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+			+ "SELECT ?sup WHERE {"
+			+ "?sub (rdfs:subClassOf|owl:equivalentClass)+ ?sup .}");
 	
 	enum Dataset {
 		DBPEDIA, BIOMEDICAL
@@ -287,7 +292,7 @@ public class QALDExperiment {
 				
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-					if(!sparqlQuery.contains("Cruise"))continue;
+//					if(!sparqlQuery.contains("Cruise"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples

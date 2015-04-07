@@ -261,10 +261,14 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public final boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass) {
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
-		try {
-			result = isSuperClassOfImpl(superClass, subClass);
-		} catch (ReasoningMethodUnsupportedException e) {
-			handleExceptions(e);
+		if(precomputeClassHierarchy) {
+			return getClassHierarchy().getSuperClasses(subClass).contains(superClass);
+		} else {
+			try {
+				result = isSuperClassOfImpl(superClass, subClass);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
 		}
 		nrOfSubsumptionChecks++;
 		reasoningDurationTmp = System.nanoTime() - reasoningStartTimeTmp;
@@ -1112,6 +1116,57 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 	
 	@Override
+	public final <T extends OWLProperty> SortedSet<T> getSuperProperties(T role) {
+		if(OWLObjectProperty.class.isInstance(role) && precomputeObjectPropertyHierarchy) {
+			return (SortedSet<T>) getObjectPropertyHierarchy().getMoreGeneralRoles((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role) && precomputeDataPropertyHierarchy) {
+			return (SortedSet<T>) getDatatypePropertyHierarchy().getMoreGeneralRoles((OWLDataProperty) role);
+		} else {
+			try {
+				return getSuperPropertiesImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	protected <T extends OWLProperty> SortedSet<T> getSuperPropertiesImpl(T role) throws ReasoningMethodUnsupportedException {
+		if(OWLObjectProperty.class.isInstance(role)) {
+			return (SortedSet<T>) getSuperPropertiesImpl((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role)) {
+			return (SortedSet<T>) getSuperPropertiesImpl((OWLDataProperty) role);
+		}
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	@Override
+	public final <T extends OWLProperty> SortedSet<T> getSubProperties(T role) {
+		if(OWLObjectProperty.class.isInstance(role) && precomputeObjectPropertyHierarchy) {
+			return (SortedSet<T>) getObjectPropertyHierarchy().getMoreSpecialRoles((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role) && precomputeDataPropertyHierarchy) {
+			return (SortedSet<T>) getDatatypePropertyHierarchy().getMoreSpecialRoles((OWLDataProperty) role);
+		} else {
+			try {
+				return getSubPropertiesImpl(role);
+			} catch (ReasoningMethodUnsupportedException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	protected <T extends OWLProperty> SortedSet<T> getSubPropertiesImpl(T role) throws ReasoningMethodUnsupportedException {
+		if(OWLObjectProperty.class.isInstance(role)) {
+			return (SortedSet<T>) getSubPropertiesImpl((OWLObjectProperty) role);
+		} else if(OWLDataProperty.class.isInstance(role)) {
+			return (SortedSet<T>) getSubPropertiesImpl((OWLDataProperty) role);
+		}
+		throw new ReasoningMethodUnsupportedException();
+	}
+	
+	
+	@Override
 	public final SortedSet<OWLObjectProperty> getSuperProperties(OWLObjectProperty role) {
 		if(precomputeObjectPropertyHierarchy) {
 			return getObjectPropertyHierarchy().getMoreGeneralRoles(role);
@@ -1124,7 +1179,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		}
 		return null;
 	}
-
+	
 	protected SortedSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty role) throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}	

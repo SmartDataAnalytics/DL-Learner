@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
@@ -21,6 +22,8 @@ import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -30,6 +33,7 @@ import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
 import com.google.common.collect.Sets;
@@ -92,20 +96,28 @@ public class QTLTest {
 		int maxTreeDepth = 2;
 		qtf.setMaxDepth(maxTreeDepth);
 		
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+		ks.init();
+		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		
-		qef = new QueryExecutionFactoryCacheEx(qef, CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)));
+		qef = CacheUtilsH2.createQueryExecutionFactory(qef, "/tmp/sparql", false, TimeUnit.DAYS.toMillis(30));
 		qef = new QueryExecutionFactoryPaginated(qef);
-		
 		
 		PosNegLPStandard lp = new PosNegLPStandard();
 		lp.setPositiveExamples(Sets.<OWLIndividual>newHashSet(
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/All_the_Right_Moves_(film)")),
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Yelena_Isinbayeva"))));
+				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Ladislaus_the_Posthumous")),
+				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Nga_Kor_Ming")),
+				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/L._M._Shaw"))));
+		
+		AbstractReasonerComponent reasoner = new SPARQLReasoner(qef);
+		reasoner.setPrecomputeClassHierarchy(true);
+		reasoner.setPrecomputeObjectPropertyHierarchy(true);
+		reasoner.setPrecomputeDataPropertyHierarchy(true);
+		reasoner.init();
 		
 		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
-		la.setReasoner(new SPARQLReasoner(qef));
+		la.setReasoner(reasoner);
 		la.setTreeFactory(qtf);
 		la.setEntailment(Entailment.RDFS);
 		la.setMaxTreeDepth(maxTreeDepth);

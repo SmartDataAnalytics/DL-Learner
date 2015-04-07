@@ -50,9 +50,9 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.model.OWLProperty;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
@@ -135,6 +135,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 						boolean add = true;
 						for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
 							RDFResourceTree addedChild = it.next();
+							
 							if(QueryTreeUtils.isSubsumedBy(addedChild, lggChild, reasoner, edge1.equals(RDF.type.asNode()))){
 //								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
 //										addedChild.getStringRepresentation(),
@@ -177,15 +178,22 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			if (!edge1.getNameSpace().equals(RDF.getURI()) 
 					&& !edge1.getNameSpace().equals(RDFS.getURI())
 					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+				
 				// get related edges by subsumption
-				OWLObjectPropertyImpl prop = new OWLObjectPropertyImpl(IRI.create(edge1.getURI()));
-				for (OWLObjectProperty p : reasoner.getSuperProperties(prop)) {
+				OWLProperty prop;
+				if(tree1.isObjectPropertyEdge(edge1)) {
+					prop = new OWLObjectPropertyImpl(IRI.create(edge1.getURI()));
+				} else {
+					prop = new OWLDataPropertyImpl(IRI.create(edge1.getURI()));
+				}
+				
+				for (OWLProperty p : reasoner.getSuperProperties(prop)) {
 					Node edge = NodeFactory.createURI(p.toStringID());
 					if(tree2.getEdges().contains(edge)) {
 						relatedEdges.put(edge1, edge);
 					}
 				}
-				for (OWLObjectProperty p : reasoner.getSubProperties(prop)) {
+				for (OWLProperty p : reasoner.getSubProperties(prop)) {
 					Node edge = NodeFactory.createURI(p.toStringID());
 					if(tree2.getEdges().contains(edge)) {
 						relatedEdges.put(edge1, edge);

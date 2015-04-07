@@ -76,6 +76,7 @@ import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
@@ -437,59 +438,61 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 	}
 
-	public final ClassHierarchy prepareSubsumptionHierarchy() {
+	@Override
+	public ClassHierarchy prepareSubsumptionHierarchy() {
 		if(precomputeClassHierarchy) {
 			if(!prepared){
-				logger.info("Preparing class subsumption hierarchy ...");
-				long startTime = System.currentTimeMillis();
-				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-						);
-				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-						);
-	
-				// parents/children of top ...
-				SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
-				subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
-				subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
-	
-				// ... bottom ...
-				SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
-				subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
-				subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
-	
-				// ... and named classes
-				Set<OWLClass> atomicConcepts;
-				if(ks.isRemote()){
-					atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-				} else {
-					atomicConcepts = new TreeSet<OWLClass>();
-					for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
-						if(!cls.isAnon()){
-							atomicConcepts.add(df.getOWLClass(IRI.create(cls.getURI())));
-						}
-					}
-				}
-	
-				SortedSet<OWLClassExpression> tmp;
-				for (OWLClass cls : atomicConcepts) {
-					tmp = getSubClassesImpl(cls);
-					subsumptionHierarchyDown.put(cls, tmp);
-					
-					// put to super classes of owl:Nothing if class has no children
-					if(tmp.isEmpty()) {
-						leafClasses.add(cls);
-					}
-	
-					tmp = getSuperClassesImpl(cls);
-					subsumptionHierarchyUp.put(cls, tmp);
-					
-					// put to sub classes of owl:Thing if class has no parents
-					if(tmp.isEmpty()) {
-						topClasses.add(cls);
-					}
-				}		
-				logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-				hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+				hierarchy = prepareSubsumptionHierarchyFast();
+//				logger.info("Preparing class subsumption hierarchy ...");
+//				long startTime = System.currentTimeMillis();
+//				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+//						);
+//				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
+//						);
+//	
+//				// parents/children of top ...
+//				SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
+//				subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
+//				subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
+//	
+//				// ... bottom ...
+//				SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
+//				subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
+//				subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
+//	
+//				// ... and named classes
+//				Set<OWLClass> atomicConcepts;
+//				if(ks.isRemote()){
+//					atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
+//				} else {
+//					atomicConcepts = new TreeSet<OWLClass>();
+//					for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
+//						if(!cls.isAnon()){
+//							atomicConcepts.add(df.getOWLClass(IRI.create(cls.getURI())));
+//						}
+//					}
+//				}
+//	
+//				SortedSet<OWLClassExpression> tmp;
+//				for (OWLClass cls : atomicConcepts) {
+//					tmp = getSubClassesImpl(cls);
+//					subsumptionHierarchyDown.put(cls, tmp);
+//					
+//					// put to super classes of owl:Nothing if class has no children
+//					if(tmp.isEmpty()) {
+//						leafClasses.add(cls);
+//					}
+//	
+//					tmp = getSuperClassesImpl(cls);
+//					subsumptionHierarchyUp.put(cls, tmp);
+//					
+//					// put to sub classes of owl:Thing if class has no parents
+//					if(tmp.isEmpty()) {
+//						topClasses.add(cls);
+//					}
+//				}		
+//				logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+//				hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 				prepared = true;
 			}
 		} else {
@@ -553,8 +556,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		String query = "SELECT * WHERE {"
 				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
-				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
-				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup ."
+//				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
+				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>)* ?sup ."
 				+ "}";
 		ResultSet rs = executeSelectQuery(query);
 		while (rs.hasNext()) {
@@ -580,7 +583,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				superClasses.add(sup);
 			}
 		}
-
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 		return hierarchy;

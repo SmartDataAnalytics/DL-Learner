@@ -177,6 +177,14 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
     	return data.isVariable();
     }
 	
+	public boolean isObjectPropertyEdge(Node edge) {
+		return !edge2Children.get(edge).iterator().next().isLiteralNode();
+	}
+	
+	public boolean isDataPropertyEdge(Node edge) {
+		return edge2Children.get(edge).iterator().next().isLiteralNode();
+	}
+	
 	/**
 	 * @return the datatype if node is literal node
 	 */

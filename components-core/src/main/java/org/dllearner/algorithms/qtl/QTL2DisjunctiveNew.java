@@ -171,6 +171,10 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 		this.qef = qef;
 	}
 	
+	public QTL2DisjunctiveNew(PosNegLP lp, SparqlEndpointKS ks) {
+		this(lp, ks.getQueryExecutionFactory());
+	}
+	
 //	public QTL2Disjunctive(PosNegLP lp, Model model) {
 //		this.learningProblem = lp;
 //		this.model = model;
