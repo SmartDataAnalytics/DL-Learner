@@ -1,6 +1,7 @@
 package org.dllearner.algorithms.qtl;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
@@ -36,6 +37,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
@@ -75,6 +77,7 @@ public class QTLTest {
 		QueryTreeFactory qtf = new QueryTreeFactoryBase();
 		qtf.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+				new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
 				new PredicateDropStatementFilter(StopURIsOWL.get()),
 				new ObjectDropStatementFilter(StopURIsOWL.get()),
@@ -84,8 +87,8 @@ public class QTLTest {
 						Sets.newHashSet(
 								"http://dbpedia.org/property/", 
 //								"http://purl.org/dc/terms/",
-								"http://dbpedia.org/class/yago/",
-								FOAF.getURI()
+								"http://dbpedia.org/class/yago/"
+//								,FOAF.getURI()
 								)
 								),
 								new PredicateDropStatementFilter(
@@ -105,10 +108,19 @@ public class QTLTest {
 		qef = new QueryExecutionFactoryPaginated(qef);
 		
 		PosNegLPStandard lp = new PosNegLPStandard();
-		lp.setPositiveExamples(Sets.<OWLIndividual>newHashSet(
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Ladislaus_the_Posthumous")),
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Nga_Kor_Ming")),
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/L._M._Shaw"))));
+		Set<OWLIndividual> posExamples = Sets.newHashSet();
+		
+		String posExStr = "http://dbpedia.org/resource/Jimmy_Rosario, "
+				+ "http://dbpedia.org/resource/Jimmy_Anderson_(footballer_born_1932), "
+				+ "http://dbpedia.org/resource/Jimmy_Yancey";
+		
+//		String posExStr = "http://dbpedia.org/resource/Ladislaus_the_Posthumous,"
+//				+ " http://dbpedia.org/resource/Nga_Kor_Ming, "
+//				+ "http://dbpedia.org/resource/L._M._Shaw";
+		for (String uri : Splitter.on(',').trimResults().split(posExStr)) {
+			posExamples.add(new OWLNamedIndividualImpl(IRI.create(uri)));
+		}
+		lp.setPositiveExamples(posExamples);
 		
 		AbstractReasonerComponent reasoner = new SPARQLReasoner(qef);
 		reasoner.setPrecomputeClassHierarchy(true);

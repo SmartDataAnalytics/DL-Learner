@@ -58,6 +58,7 @@ import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
@@ -187,6 +188,10 @@ public class QALDExperiment {
 	private Map<String, List<String>> cache = new HashMap<String, List<String>>();
 	
 	private int kbSize;
+
+	private boolean splitComplexQueries = false;
+	
+	PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
 	
 	public QALDExperiment(KB dataset) throws ComponentInitException {
 		this.kb = dataset;
@@ -199,6 +204,7 @@ public class QALDExperiment {
 			// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
 			queryTreeFactory.addDropFilters(
 					new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+					new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 					new PredicateDropStatementFilter(StopURIsRDFS.get()),
 					new PredicateDropStatementFilter(StopURIsOWL.get()),
 					new ObjectDropStatementFilter(StopURIsOWL.get()),
@@ -207,9 +213,9 @@ public class QALDExperiment {
 					new NamespaceDropStatementFilter(
 					Sets.newHashSet(
 							"http://dbpedia.org/property/", 
-//							"http://purl.org/dc/terms/",
-							"http://dbpedia.org/class/yago/",
-							FOAF.getURI()
+							"http://purl.org/dc/terms/",
+							"http://dbpedia.org/class/yago/"
+//							,FOAF.getURI()
 							)
 							),
 							new PredicateDropStatementFilter(
@@ -310,7 +316,7 @@ public class QALDExperiment {
 //						la = new QTL2(lp, qef);
 						QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
 						la.setReasoner(kb.reasoner);
-						la.setEntailment(Entailment.SIMPLE);
+						la.setEntailment(Entailment.RDFS);
 						la.setTreeFactory(queryTreeFactory);
 						la.setPositiveExampleTrees(generatedExamples);
 						la.setNoise(noise);
@@ -326,7 +332,7 @@ public class QALDExperiment {
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
-						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestSolution.getTree(), kb.baseIRI, kb.prefixMapping);
+						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
 
 						// compute precision
 						double precision = precision(sparqlQuery, learnedSPARQLQuery);
@@ -353,7 +359,7 @@ public class QALDExperiment {
 							logger.info("Position of best covering tree in list: " + position);
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestMatchingTree.getTree(), kb.baseIRI, kb.prefixMapping);
+							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
 							precision = precision(sparqlQuery, bestLearnedSPARQLQuery);
 							recall = recall(sparqlQuery, bestLearnedSPARQLQuery);
 							fmeasure = fMeasure(sparqlQuery, bestLearnedSPARQLQuery);
@@ -401,18 +407,20 @@ public class QALDExperiment {
 		EvaluatedRDFResourceTree bestTree = null;
 		double bestFMeasure = -1;
 		
-		for (EvaluatedRDFResourceTree tree : trees) {
-			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree.getTree(), kb.baseIRI, kb.prefixMapping);
-//			System.out.println(learnedSPARQLQuery);
+		for (EvaluatedRDFResourceTree evalutedTree : trees) {
+			RDFResourceTree tree = evalutedTree.getTree();
+			tree = filter.filter(tree);
+			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, kb.baseIRI, kb.prefixMapping);
+			System.out.println(learnedSPARQLQuery);
 //			logger.info(getPrefixedQuery(learnedSPARQLQuery));
 //			logger.info("Tree Score: " + tree.getTreeScore());
 			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
 			if(fMeasure == 1.0){
-				return tree;
+				return evalutedTree;
 			}
 			if(fMeasure > bestFMeasure){
 				bestFMeasure = fMeasure;
-				bestTree = tree;
+				bestTree = evalutedTree;
 			}
 //			logger.info("Extensional fMeasure: " + fMeasure);
 		}
@@ -696,6 +704,9 @@ public class QALDExperiment {
 	}
 	
 	private List<String> getResult(String sparqlQuery){
+		if(splitComplexQueries) {
+			return getResultSplitted(sparqlQuery);
+		}
 		logger.trace(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null) {
@@ -705,7 +716,6 @@ public class QALDExperiment {
 			// we assume a single projection var
 			Query query = QueryFactory.create(sparqlQuery);
 			String projectVar = query.getProjectVars().get(0).getName();
-			
 			ResultSet rs = qef.createQueryExecution(sparqlQuery).execSelect();
 			QuerySolution qs;
 			while(rs.hasNext()){
@@ -1230,7 +1240,7 @@ public class QALDExperiment {
 		}
 
 		// get the learned resources
-		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
+		List<String> learnedResources = getResult(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			System.err.println(learnedSPARQLQuery);
@@ -1260,7 +1270,7 @@ public class QALDExperiment {
 		}
 		
 		// get the learned resources
-		List<String> learnedResources = getResultSplitted(learnedSPARQLQuery);
+		List<String> learnedResources = getResult(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			return 0;
 		}

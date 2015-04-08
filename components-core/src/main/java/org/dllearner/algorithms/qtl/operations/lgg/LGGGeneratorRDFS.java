@@ -35,6 +35,7 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -77,10 +78,9 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	
-	private AbstractReasonerComponent reasoner;
-	
 	public LGGGeneratorRDFS(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
+		this.entailment = Entailment.RDFS;
 	}
 	
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){

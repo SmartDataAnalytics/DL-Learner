@@ -18,6 +18,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 //import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
+/**
+ * {@inheritDoc}
+ * @author Lorenz Buehmann
+ *
+ */
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);

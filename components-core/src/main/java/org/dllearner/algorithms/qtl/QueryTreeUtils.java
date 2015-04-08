@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
@@ -29,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -71,6 +73,8 @@ public class QueryTreeUtils {
 	private static final OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 	
 	public static String EMPTY_QUERY_TREE_QUERY = "SELECT ?s WHERE {?s ?p ?o.}";
+	
+	private static Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
 	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
@@ -355,21 +359,26 @@ public class QueryTreeUtils {
    	 */
 	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment) {
 		Resource root = ResourceFactory.createResource("http://example.org/root");
-		final Model m1 = toModel(tree1, root);
+		
+		Model m1 = toModel(tree1, root);
 		Model m2 = toModel(tree2, root);
-		Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
+		
 		Model m1closure = ModelFactory.createDefaultModel();
 		m1closure.add(ModelFactory.createInfModel(reasoner, m1));
+		
 		Model m2closure = ModelFactory.createDefaultModel();
 		m2closure.add(ModelFactory.createInfModel(reasoner, m2));
+		
 		boolean sameClosure = m1closure.isIsomorphicWith(m2closure);
+		if(sameClosure) {
+			return true;
+		}
 
 		// check if each statement of m1 is contained in m2
 		StmtIterator iterator = m1closure.listStatements();
 		while (iterator.hasNext()) {
 			Statement st = iterator.next();
 			if (!st.getSubject().isAnon() && !st.getObject().isAnon() && !m2closure.contains(st)) {
-				System.out.println(st + "  FALSE");
 				return false;
 			} 
 		}
@@ -717,12 +726,21 @@ public class QueryTreeUtils {
     }
 	
 	/**
-	 * Remove trivial statements according to the given entailment semantics.
+	 * Remove trivial statements according to the given entailment semantics:
+	 * <h3>RDFS</h3>
+	 * <ul>
+	 * <li>remove trivial statements like <code>?s a ?x</code>
+	 * <li>remove type statements if this is given by domain and range 
+	 * of used statements.</li>
+	 * 
+	 * </ul>
 	 * @param tree
 	 * @param entailment
 	 */
-	public static void prune(RDFResourceTree tree, Entailment entailment) {
-		for(Node edge : tree.getEdges()) {
+	public static void prune(RDFResourceTree tree, AbstractReasonerComponent reasoner, Entailment entailment) {
+		
+		// remove trivial statements
+		for(Node edge : new TreeSet<Node>(tree.getEdges())) {
 			if(edge.equals(RDF.type.asNode())) {
 				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
 				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
@@ -735,6 +753,31 @@ public class QueryTreeUtils {
 				}
 			}
 		}
+		
+//		if(entailment == Entailment.RDFS) {
+//			if(reasoner != null) {
+//				List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+//				
+//				// compute implicit types
+//				Set<OWLClassExpression> implicitTypes = new HashSet<OWLClassExpression>();
+//				for(Node edge : tree.getEdges()) {
+//					if(!edge.equals(RDF.type.asNode())) {
+//						// get domain for property
+//						implicitTypes.add(reasoner.getDomain(new OWLObjectPropertyImpl(IRI.create(edge.getURI()))));
+//					}
+//				}
+//				if(typeChildren != null) {
+//					// remove type children which are already covered implicitely
+//					for (RDFResourceTree child : new ArrayList<RDFResourceTree>(tree.getChildren(RDF.type.asNode()))) {
+//						if(child.isResourceNode() && implicitTypes.contains(new OWLClassImpl(IRI.create(child.getData().getURI())))) {
+//							tree.removeChild(child, RDF.type.asNode());
+//							System.out.println("removing " + child.getData().getURI());
+//						}
+//					}
+//				}
+//				
+//			}
+//		}
 	}
 	
 	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {

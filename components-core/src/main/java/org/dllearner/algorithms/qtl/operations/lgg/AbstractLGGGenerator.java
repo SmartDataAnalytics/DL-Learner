@@ -8,6 +8,7 @@ import java.util.List;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.util.Entailment;
+import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,9 @@ public abstract class AbstractLGGGenerator implements LGGGenerator2 {
 	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
 	
 	protected int subCalls;
+	
+	protected Entailment entailment = Entailment.SIMPLE;
+	protected AbstractReasonerComponent reasoner;
 	
 
 	private void reset() {
@@ -51,7 +55,7 @@ public abstract class AbstractLGGGenerator implements LGGGenerator2 {
 		mon.stop();
 		
 		// prune
-		QueryTreeUtils.prune(lgg, Entailment.SIMPLE);
+		QueryTreeUtils.prune(lgg, reasoner, entailment);
 		
 		addNumbering(0, lgg);
 		

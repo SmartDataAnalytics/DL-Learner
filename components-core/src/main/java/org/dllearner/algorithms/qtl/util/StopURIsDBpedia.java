@@ -30,7 +30,11 @@ public class StopURIsDBpedia {
 			"http://dbpedia.org/ontology/wikiPageRevisionLink",
 			"http://www.w3.org/ns/prov#Entity",
 			"http://www.w3.org/2007/05/powder-s#describedby",
-			"http://dbpedia.org/ontology/viafId"
+			"http://dbpedia.org/ontology/viafId",
+			"http://www.opengis.net/gml/_Feature",
+			"http://www.w3.org/2003/01/geo/wgs84_pos#lat",
+			"http://www.w3.org/2003/01/geo/wgs84_pos#long",
+			"http://www.georss.org/georss/point"
 			);
 	
 	public static Set<String> get() {

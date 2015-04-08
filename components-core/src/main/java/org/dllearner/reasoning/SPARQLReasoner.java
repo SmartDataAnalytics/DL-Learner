@@ -560,11 +560,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>)* ?sup ."
 				+ "}";
 		ResultSet rs = executeSelectQuery(query);
+	
 		while (rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			if (qs.get("sub").isURIResource() && qs.get("sup").isURIResource()) {
-				OWLClassExpression sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
-				OWLClassExpression sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
+				OWLClass sub = df.getOWLClass(IRI.create(qs.get("sub").asResource().getURI()));
+				OWLClass sup = df.getOWLClass(IRI.create(qs.get("sup").asResource().getURI()));
 				
 				//add subclasses
 				SortedSet<OWLClassExpression> subClasses = subsumptionHierarchyDown.get(sup);
@@ -583,6 +584,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				superClasses.add(sup);
 			}
 		}
+		
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 		return hierarchy;

@@ -5,6 +5,7 @@ package org.dllearner.algorithms.qtl.util.filters;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,22 +28,21 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  */
 public class PredicateExistenceFilterDBpedia extends PredicateExistenceFilter{
 	
-	private File file = new File("dbpedia_meaningless_properties.txt");
+	private String PATH = "org/dllearner/algorithms/qtl/dbpedia_meaningless_properties.txt";
 	private SparqlEndpointKS ks;
 	
 	public PredicateExistenceFilterDBpedia(SparqlEndpointKS ks) {
-		
 		this.ks = ks;
 		Set<Node> existentialMeaninglessProperties = new TreeSet<Node>(new NodeComparator());
 		
 		try {
-			List<String> lines = Files.readLines(file, Charsets.UTF_8);
+			List<String> lines = Files.readLines(new File(this.getClass().getClassLoader().getResource(PATH).toURI()), Charsets.UTF_8);
 			for (String line : lines) {
 				if(!line.trim().isEmpty() && !line.startsWith("#")) {
 					existentialMeaninglessProperties.add(NodeFactory.createURI(line.trim()));
 				}
 			}
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 		setExistentialMeaninglessProperties(existentialMeaninglessProperties);
