@@ -466,12 +466,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if(description.isOWLNothing()) {
 			// cannot be further refined
 		} else if(!description.isAnonymous()) {
-			refinements.addAll(subHierarchy.getSubClasses(description));
+			refinements.addAll(subHierarchy.getSubClasses(description, true));
 			refinements.remove(df.getOWLNothing());
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()){
-				tmp = subHierarchy.getSuperClasses(operand);
+				tmp = subHierarchy.getSuperClasses(operand, true);
 
 				for(OWLClassExpression c : tmp) {
 					if(!c.isOWLThing()){
@@ -1294,7 +1294,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
-		for(OWLClassExpression candidate :  subHierarchy.getSubClasses(upperClass)) {
+		for(OWLClassExpression candidate :  subHierarchy.getSubClasses(upperClass, true)) {
 //				System.out.println("testing " + candidate + " ... ");
 
 //				NamedClass candidate = (OWLClass) d;

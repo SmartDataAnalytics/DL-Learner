@@ -1078,7 +1078,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	@Override
 	public final SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
 		if(precomputeClassHierarchy) {
-			return getClassHierarchy().getSuperClasses(concept);
+			return getClassHierarchy().getSuperClasses(concept, true);
 		} else {
 			try {
 				return getSuperClassesImpl(concept);
@@ -1096,7 +1096,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	@Override
 	public final SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
 		if(precomputeClassHierarchy) {
-			return getClassHierarchy().getSubClasses(concept);
+			return getClassHierarchy().getSubClasses(concept, true);
 		} else {
 			try {
 				return getSubClassesImpl(concept);
