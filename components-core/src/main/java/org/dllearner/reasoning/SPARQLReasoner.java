@@ -34,6 +34,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -199,7 +200,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					ks = (SparqlEndpointKS) abstract_ks;
 				} catch (ClassCastException e_class) {
 					OWLFile owl_file = (OWLFile) abstract_ks;
-					Model model = OwlApiJenaUtils.getModel(owl_file.createOWLOntology(OWLManager.createOWLOntologyManager()));
+					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
 					ks = new LocalModelBasedSparqlEndpointKS(model);
 				}
 			}
