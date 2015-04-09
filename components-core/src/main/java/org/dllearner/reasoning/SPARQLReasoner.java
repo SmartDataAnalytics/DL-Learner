@@ -81,6 +81,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -595,74 +596,76 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public ObjectPropertyHierarchy prepareObjectPropertyHierarchy() throws ReasoningMethodUnsupportedException {
-		logger.info("Preparing object property subsumption hierarchy ...");
-		long startTime = System.currentTimeMillis();
-		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
-				);
-		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyDown = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
-				);
-
-		String query = "SELECT * WHERE {"
-				+ "?sub a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
-				+ "OPTIONAL {"
-				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
-				+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . }"
-				+ "}";
-		ResultSet rs = executeSelectQuery(query);
-		SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
-		while (rs.hasNext()) {
-			QuerySolution qs = rs.next();
-			if (qs.get("sub").isURIResource()) {
-				OWLObjectProperty sub = df.getOWLObjectProperty(IRI.create(qs.get("sub").asResource().getURI()));
-				properties.add(sub);
-				
-				// add sub properties entry
-				if (!subsumptionHierarchyDown.containsKey(sub)) {
-					subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
-				}
-				
-				// add super properties entry
-				if (!subsumptionHierarchyUp.containsKey(sub)) {
-					subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
-				}
-				
-				// if there is a super property
-				if(qs.get("sup") != null && qs.get("sup").isURIResource()){
-					OWLObjectProperty sup = df.getOWLObjectProperty(IRI.create(qs.get("sup").asResource().getURI()));
-					properties.add(sup);
+//		if(precomputeObjectPropertyHierarchy) {
+			logger.info("Preparing object property subsumption hierarchy ...");
+			long startTime = System.currentTimeMillis();
+			TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+					);
+			TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> subsumptionHierarchyDown = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
+					);
+	
+			String query = "SELECT * WHERE {"
+					+ "?sub a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+					+ "OPTIONAL {"
+					+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
+					+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . }"
+					+ "}";
+			ResultSet rs = executeSelectQuery(query);
+			SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
+			while (rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				if (qs.get("sub").isURIResource()) {
+					OWLObjectProperty sub = df.getOWLObjectProperty(IRI.create(qs.get("sub").asResource().getURI()));
+					properties.add(sub);
 					
 					// add sub properties entry
-					if (!subsumptionHierarchyDown.containsKey(sup)) {
-						subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+					if (!subsumptionHierarchyDown.containsKey(sub)) {
+						subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
 					}
 					
 					// add super properties entry
-					if (!subsumptionHierarchyUp.containsKey(sup)) {
-						subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+					if (!subsumptionHierarchyUp.containsKey(sub)) {
+						subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
 					}
 					
-					// add super properties entry
-					SortedSet<OWLObjectProperty> superClasses = subsumptionHierarchyUp.get(sub);
-					if (superClasses == null) {
-						superClasses = new TreeSet<OWLObjectProperty>();
-						subsumptionHierarchyUp.put(sub, superClasses);
+					// if there is a super property
+					if(qs.get("sup") != null && qs.get("sup").isURIResource()){
+						OWLObjectProperty sup = df.getOWLObjectProperty(IRI.create(qs.get("sup").asResource().getURI()));
+						properties.add(sup);
+						
+						// add sub properties entry
+						if (!subsumptionHierarchyDown.containsKey(sup)) {
+							subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+						}
+						
+						// add super properties entry
+						if (!subsumptionHierarchyUp.containsKey(sup)) {
+							subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+						}
+						
+						// add super properties entry
+						SortedSet<OWLObjectProperty> superClasses = subsumptionHierarchyUp.get(sub);
+						if (superClasses == null) {
+							superClasses = new TreeSet<OWLObjectProperty>();
+							subsumptionHierarchyUp.put(sub, superClasses);
+						}
+						superClasses.add(sup);
+						
+						// add sub properties entry
+						SortedSet<OWLObjectProperty> subProperties = subsumptionHierarchyDown.get(sup);
+						if (subProperties == null) {
+							subProperties = new TreeSet<OWLObjectProperty>();
+							subsumptionHierarchyDown.put(sup, subProperties);
+						}
+						subProperties.add(sub);
 					}
-					superClasses.add(sup);
 					
-					// add sub properties entry
-					SortedSet<OWLObjectProperty> subProperties = subsumptionHierarchyDown.get(sup);
-					if (subProperties == null) {
-						subProperties = new TreeSet<OWLObjectProperty>();
-						subsumptionHierarchyDown.put(sup, subProperties);
-					}
-					subProperties.add(sub);
 				}
-				
 			}
-		}
-
-		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-		roleHierarchy = new ObjectPropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
+			roleHierarchy = new ObjectPropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+//		} 
+		
 		return roleHierarchy;
 	}
 	
@@ -1885,13 +1888,23 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@Override
 	public SortedSet<OWLClassExpression> getSuperClassesImpl(OWLClassExpression description) {
+		String query;
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
+		} else if(description.isOWLThing()) {
+			return ImmutableSortedSet.of();
+		} else if(description.isOWLNothing()) {
+			query = String.format(
+					SPARQLQueryUtils.SELECT_LEAF_CLASSES_OWL,
+					description.asOWLClass().toStringID()
+					);
+		} else {
+			query = String.format(
+					SPARQLQueryUtils.SELECT_DIRECT_SUPERCLASS_OF_QUERY,
+					description.asOWLClass().toStringID()
+					);
 		}
-		String query = String.format(
-				SPARQLQueryUtils.SELECT_DIRECT_SUPERCLASS_OF_QUERY,
-				description.asOWLClass().toStringID()
-				);
+		
 		ResultSet rs = executeSelectQuery(query);
 		
 		SortedSet<OWLClass> superClasses = asOWLEntities(EntityType.CLASS, rs, "var1");
@@ -2111,12 +2124,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyDomains() {
 		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
 		
-		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:ObjectProperty ; rdfs:domain ?dom .}";
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:ObjectProperty . OPTIONAL{?p rdfs:domain ?dom .}}";
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLObjectProperty op = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
-			OWLClassExpression domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			
+			// default domain is owl:Thing
+			OWLClassExpression domain = df.getOWLThing();
+			if(qs.get("dom") != null) {
+				domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			}
 			result.put(op, domain);
 		}
 		return result;
@@ -2129,12 +2147,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLObjectProperty, OWLClassExpression> getObjectPropertyRanges() {
 		Map<OWLObjectProperty, OWLClassExpression> result = new HashMap<>();
 		
-		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?ran WHERE {?p a owl:ObjectProperty ; rdfs:range ?ran .}";
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?ran WHERE {?p a owl:ObjectProperty . OPTIONAL{?p rdfs:range ?ran .}}";
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLObjectProperty op = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
-			OWLClassExpression range = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+			
+			// default range is owl:Thing
+			OWLClassExpression range = df.getOWLThing();
+			if (qs.get("ran") != null) {
+				range = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+			}
 			result.put(op, range);
 		}
 		return result;
@@ -2147,12 +2170,17 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
 		Map<OWLDataProperty, OWLClassExpression> result = new HashMap<>();
 		
-		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:DatatypeProperty ; rdfs:domain ?dom .}";
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:DatatypeProperty . OPTIONAL{rdfs:domain ?dom .}}";
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
 			OWLDataProperty dp = df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI()));
-			OWLClassExpression domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			
+			// default domain is owl:Thing
+			OWLClassExpression domain = df.getOWLThing();
+			if (qs.get("dom") != null) {
+				domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+			}
 			result.put(dp, domain);
 		}
 		return result;

@@ -427,9 +427,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					startClass = candidate;
 					
 					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
+						logger.info("Reusing existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
 					} else {
-						logger.info("Generalised existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
+						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
 					}
 					
 //					System.out.println("start class: " + startClass);
@@ -449,7 +449,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					} else {
 						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a OWLClassExpression in this case.");
+								"sensible to learn a class expression in this case.");
 					}					
 				}
 			}				
@@ -535,10 +535,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
 //				System.exit(0);
 //			}
-			
 			while(refinements.size() != 0) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
+				
 				int length = OWLClassExpressionUtils.getLength(refinement);
 //				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
 				// we ignore all refinements with lower length and too high depth

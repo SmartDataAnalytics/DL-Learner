@@ -189,7 +189,7 @@ public class QALDExperiment {
 	
 	private int kbSize;
 
-	private boolean splitComplexQueries = false;
+	private boolean splitComplexQueries = true;
 	
 	PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
 	
@@ -704,9 +704,6 @@ public class QALDExperiment {
 	}
 	
 	private List<String> getResult(String sparqlQuery){
-		if(splitComplexQueries) {
-			return getResultSplitted(sparqlQuery);
-		}
 		logger.trace(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null) {
@@ -1240,7 +1237,7 @@ public class QALDExperiment {
 		}
 
 		// get the learned resources
-		List<String> learnedResources = getResult(learnedSPARQLQuery);
+		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			System.err.println(learnedSPARQLQuery);
@@ -1270,7 +1267,7 @@ public class QALDExperiment {
 		}
 		
 		// get the learned resources
-		List<String> learnedResources = getResult(learnedSPARQLQuery);
+		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
 		if(learnedResources.isEmpty()){
 			return 0;
 		}
