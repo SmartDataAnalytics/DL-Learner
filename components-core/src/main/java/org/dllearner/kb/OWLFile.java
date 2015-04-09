@@ -45,6 +45,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import com.hazelcast.config.UrlXmlConfig;
+
 /**
  * @author Jens Lehmann
  * @author Sebastian Hellmann
@@ -129,12 +131,15 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
             }
 
         } else if (url == null) {
-            try {
-//              url = new URL("file://" + baseDir + "/" + fileName);
-          	 url = new URL((baseDir == null ? "file://" : baseDir + "/") + fileName);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+        	try {
+        		url = new URL(baseDir == null ? "file://"
+        				: (fileName.startsWith("/") ? "" : (baseDir + (baseDir.endsWith("/") ? "" : "/")))
+        				+ fileName).toURI().normalize().toURL();
+        	} catch (MalformedURLException e) {
+        		throw new RuntimeException(e);
+        	} catch (URISyntaxException e) {
+        		throw new RuntimeException(e);
+        	}
         }
     }
 
