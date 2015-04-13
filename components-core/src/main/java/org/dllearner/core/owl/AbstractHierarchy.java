@@ -47,7 +47,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		SortedSet<T> result =  hierarchyDown.get(entity);
 		
 		if(result == null) {
-			logger.error("Query for " + entity + " in hierarchy, but the entity is not contained in the (downward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
+			logger.debug("Query for " + entity + " in hierarchy, but the entity is not contained in the (downward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
 			return new TreeSet<T>();
 		}
 		
@@ -59,7 +59,6 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 			}
 			result.addAll(tmp);
 		}
-		
 		return new TreeSet<T>(result);
 	}
 
@@ -79,7 +78,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		SortedSet<T> result =  hierarchyUp.get(entity);
 		
 		if(result == null) {
-			logger.error("Query for " + entity + " in hierarchy, but the entity is not contained in the (upward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
+			logger.debug("Query for " + entity + " in hierarchy, but the entity is not contained in the (upward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
 			return new TreeSet<T>();
 		}
 		

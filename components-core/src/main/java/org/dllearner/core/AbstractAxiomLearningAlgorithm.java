@@ -293,7 +293,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		// we have to set up a new query execution factory working on our local model
 		qef = new QueryExecutionFactoryModel(sample);
-		reasoner = new SPARQLReasoner(qef, false);
+		reasoner = new SPARQLReasoner(qef);
 		
 		// get the page size 
 		//TODO put to base class

@@ -3,8 +3,12 @@ package org.dllearner.algorithms.qtl.heuristics;
 import static junit.framework.Assert.assertEquals;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.junit.Test;
+
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public class QueryTreeEditDistanceTest {
     /*
@@ -12,8 +16,8 @@ public class QueryTreeEditDistanceTest {
      */
     @Test
     public void test01() {
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
+        RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 0;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -24,8 +28,8 @@ public class QueryTreeEditDistanceTest {
      */
     @Test
     public void test02() {
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A1", NodeType.RESOURCE);
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A2", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A1"));
+    	RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A2"));
 
         double expectedDistance = 1;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -40,14 +44,14 @@ public class QueryTreeEditDistanceTest {
     public void test03() {
         // tree 1:
         // A
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
         // B
-        QueryTreeImpl<String> child1_1 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
-        tree1.addChild(child1_1, "p");
+    	RDFResourceTree child1_1 = new RDFResourceTree(NodeFactory.createURI("B"));
+        tree1.addChild(child1_1, NodeFactory.createURI("p"));
 
         // tree 2:
         // A
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 1;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -62,14 +66,14 @@ public class QueryTreeEditDistanceTest {
     public void test04() {
         // tree 1:
         // A
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         // tree 2:
         // A
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
         // B
-        QueryTreeImpl<String> child2_1 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
-        tree2.addChild(child2_1, "p");
+    	RDFResourceTree child2_1 = new RDFResourceTree(NodeFactory.createURI("B"));
+        tree2.addChild(child2_1, NodeFactory.createURI("p"));
 
         double expectedDistance = 1;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -86,25 +90,25 @@ public class QueryTreeEditDistanceTest {
     public void test05() {
         // tree 1:
         // A
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
         // B
-        QueryTreeImpl<String> child1_1 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+    	RDFResourceTree child1_1 = new RDFResourceTree(NodeFactory.createURI("B"));
         // C
-        QueryTreeImpl<String> child1_2 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+    	RDFResourceTree child1_2 = new RDFResourceTree(NodeFactory.createURI("C"));
         // D
-        QueryTreeImpl<String> grandChild1_2_1 = new QueryTreeImpl<String>("D", NodeType.RESOURCE);
+    	RDFResourceTree grandChild1_2_1 = new RDFResourceTree(NodeFactory.createURI("D"));
 
-        child1_2.addChild(grandChild1_2_1, "r");
-        tree1.addChild(child1_1, "p");
-        tree1.addChild(child1_2, "q");
+        child1_2.addChild(grandChild1_2_1, NodeFactory.createURI("r"));
+        tree1.addChild(child1_1, NodeFactory.createURI("p"));
+        tree1.addChild(child1_2, NodeFactory.createURI("q"));
 
         // tree 2:
         // A
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
         // C
-        QueryTreeImpl<String> child2_1 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+        RDFResourceTree child2_1 = new RDFResourceTree(NodeFactory.createURI("C"));
 
-        tree2.addChild(child2_1, "q");
+        tree2.addChild(child2_1, NodeFactory.createURI("q"));
 
         double expectedDistance = 2;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -119,23 +123,23 @@ public class QueryTreeEditDistanceTest {
      */
     @Test
     public void test06() {
-        // tree 1:
+    	// tree 1:
         // A
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
         // B
-        QueryTreeImpl<String> child1_1 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+    	RDFResourceTree child1_1 = new RDFResourceTree(NodeFactory.createURI("B"));
         // C
-        QueryTreeImpl<String> child1_2 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+    	RDFResourceTree child1_2 = new RDFResourceTree(NodeFactory.createURI("C"));
         // D
-        QueryTreeImpl<String> grandChild1_2_1 = new QueryTreeImpl<String>("D", NodeType.RESOURCE);
+    	RDFResourceTree grandChild1_2_1 = new RDFResourceTree(NodeFactory.createURI("D"));
 
-        child1_2.addChild(grandChild1_2_1, "r");
-        tree1.addChild(child1_1, "p");
-        tree1.addChild(child1_2, "q");
+        child1_2.addChild(grandChild1_2_1, NodeFactory.createURI("r"));
+        tree1.addChild(child1_1, NodeFactory.createURI("p"));
+        tree1.addChild(child1_2, NodeFactory.createURI("q"));
 
         // tree 2:
         // A
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 3;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -154,43 +158,43 @@ public class QueryTreeEditDistanceTest {
     public void test07() {
         // tree 1:
         // A
-        QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
         // B
-        QueryTreeImpl<String> child1_1 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
+    	RDFResourceTree child1_1 = new RDFResourceTree(NodeFactory.createURI("B"));
         // C
-        QueryTreeImpl<String> child1_2 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+    	RDFResourceTree child1_2 = new RDFResourceTree(NodeFactory.createURI("C"));
         // D
-        QueryTreeImpl<String> child1_3 = new QueryTreeImpl<String>("D", NodeType.RESOURCE);
+    	RDFResourceTree child1_3 = new RDFResourceTree(NodeFactory.createURI("D"));
         // E
-        QueryTreeImpl<String> child1_1_1 = new QueryTreeImpl<String>("E", NodeType.RESOURCE);
+    	RDFResourceTree child1_1_1 = new RDFResourceTree(NodeFactory.createURI("E"));
         // F
-        QueryTreeImpl<String> child1_3_1 = new QueryTreeImpl<String>("F", NodeType.RESOURCE);
+    	RDFResourceTree child1_3_1 = new RDFResourceTree(NodeFactory.createURI("F"));
 
-        child1_1.addChild(child1_1_1, "s");
-        child1_3.addChild(child1_3_1, "t");
-        tree1.addChild(child1_1, "p");
-        tree1.addChild(child1_2, "q");
-        tree1.addChild(child1_3, "r");
+        child1_1.addChild(child1_1_1, NodeFactory.createURI("s"));
+        child1_3.addChild(child1_3_1, NodeFactory.createURI("t"));
+        tree1.addChild(child1_1, NodeFactory.createURI("p"));
+        tree1.addChild(child1_2, NodeFactory.createURI("q"));
+        tree1.addChild(child1_3, NodeFactory.createURI("r"));
 
         // tree 2:
         // A
-        QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
+        RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
         // G
-        QueryTreeImpl<String> child2_1 = new QueryTreeImpl<String>("G", NodeType.RESOURCE);
+        RDFResourceTree child2_1 = new RDFResourceTree(NodeFactory.createURI("G"));
         // C
-        QueryTreeImpl<String> child2_2 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
+        RDFResourceTree child2_2 = new RDFResourceTree(NodeFactory.createURI("C"));
         // H
-        QueryTreeImpl<String> child2_3 = new QueryTreeImpl<String>("H", NodeType.RESOURCE);
+        RDFResourceTree child2_3 = new RDFResourceTree(NodeFactory.createURI("H"));
         // E
-        QueryTreeImpl<String> child2_1_1 = new QueryTreeImpl<String>("E", NodeType.RESOURCE);
+        RDFResourceTree child2_1_1 = new RDFResourceTree(NodeFactory.createURI("E"));
         // F
-        QueryTreeImpl<String> child2_3_1 = new QueryTreeImpl<String>("F", NodeType.RESOURCE);
+        RDFResourceTree child2_3_1 = new RDFResourceTree(NodeFactory.createURI("F"));
 
-        child2_1.addChild(child2_1_1, "s");
-        child2_3.addChild(child2_3_1, "t");
-        tree2.addChild(child2_1, "p");
-        tree2.addChild(child2_2, "q");
-        tree2.addChild(child2_3, "r");
+        child2_1.addChild(child2_1_1, NodeFactory.createURI("s"));
+        child2_3.addChild(child2_3_1, NodeFactory.createURI("t"));
+        tree2.addChild(child2_1, NodeFactory.createURI("p"));
+        tree2.addChild(child2_2, NodeFactory.createURI("q"));
+        tree2.addChild(child2_3, NodeFactory.createURI("r"));
 
         double expectedDistance = 2;
         assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
@@ -202,28 +206,28 @@ public class QueryTreeEditDistanceTest {
     	 *  A	--p--> ?
     	 *  			--p--> A1
     	 */
-    	QueryTreeImpl<String> tree1 = new QueryTreeImpl<String>("A", NodeType.RESOURCE);
-    	QueryTreeImpl<String> subTree1 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
-    	subTree1.addChild(new QueryTreeImpl<String>("A1", NodeType.RESOURCE), "p");
-    	tree1.addChild(subTree1, "p");
+    	RDFResourceTree tree1 = new RDFResourceTree(NodeFactory.createURI("A"));
+    	RDFResourceTree subTree1 = new RDFResourceTree();
+    	subTree1.addChild(new RDFResourceTree(NodeFactory.createURI("A1")), NodeFactory.createURI("p"));
+    	tree1.addChild(subTree1, NodeFactory.createURI("p"));
 
     	/*
     	 *  B	--p--> B1
     	 *  			 --p--> A1
     	 */
-    	QueryTreeImpl<String> tree2 = new QueryTreeImpl<String>("B", NodeType.RESOURCE);
-    	QueryTreeImpl<String> subTree2 = new QueryTreeImpl<String>("B1", NodeType.RESOURCE);
-    	subTree2.addChild(new QueryTreeImpl<String>("A1", NodeType.RESOURCE), "p");
-    	tree2.addChild(subTree2, "p");
+    	RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("B"));
+    	RDFResourceTree subTree2 = new RDFResourceTree(NodeFactory.createURI("B1"));
+    	subTree2.addChild(new RDFResourceTree(NodeFactory.createURI("A1")), NodeFactory.createURI("p"));
+    	tree2.addChild(subTree2, NodeFactory.createURI("p"));
 
     	/*
     	 *  C	--p--> ?
     	 *  			--p--> ?
     	 */
-    	QueryTreeImpl<String> tree3 = new QueryTreeImpl<String>("C", NodeType.RESOURCE);
-    	QueryTreeImpl<String> subTree3 = new QueryTreeImpl<String>("?", NodeType.VARIABLE);
-    	subTree3.addChild(new QueryTreeImpl<String>("?", NodeType.VARIABLE), "p");
-    	tree3.addChild(subTree3, "p");
+    	RDFResourceTree tree3 = new RDFResourceTree(NodeFactory.createURI("C"));
+    	RDFResourceTree subTree3 = new RDFResourceTree();
+    	subTree3.addChild(new RDFResourceTree(), NodeFactory.createURI("p"));
+    	tree3.addChild(subTree3, NodeFactory.createURI("p"));
 
         System.out.println(tree1.getStringRepresentation());
         System.out.println(tree2.getStringRepresentation());

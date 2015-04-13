@@ -91,6 +91,7 @@ public class AnnComponentManager {
             "org.dllearner.learningproblems.ClassLearningProblem",
             "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.OWLAPIReasoner",
+            "org.dllearner.reasoning.SPARQLReasoner",
 //            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
             "org.dllearner.algorithms.ocel.OCEL",
             "org.dllearner.algorithms.ocel.MultiHeuristic",

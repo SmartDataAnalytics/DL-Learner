@@ -31,7 +31,23 @@ public class SPARQLQueryUtils {
 			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
 			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" + 
 			"FILTER ( ?super != owl:Thing && ?super != ?var1 ) } .\n" + 
-			"FILTER ( !bound(?super) ) }";
+			"FILTER ( !BOUND(?super) ) }";
+	
+	public static final String SELECT_LEAF_CLASSES_OWL = PREFIXES + 
+			"SELECT ?var1\n" + 
+			"WHERE { ?var1 a owl:Class .\n" + 
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
+			"OPTIONAL { ?sub rdfs:subClassOf ?var1 .\n" + 
+			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" + 
+			"FILTER ( !BOUND(?sub) ) }";
+	
+	public static final String SELECT_LEAF_CLASSES = PREFIXES + 
+			"SELECT ?var1\n" + 
+			"WHERE { ?var1 a owl:Class .\n" + 
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
+			"OPTIONAL { ?var1 rdfs:subClassOf ?sub .\n" + 
+			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" + 
+			"FILTER ( !BOUND(?sub) ) }";
 	
 	public static final String SELECT_SUPERCLASS_OF_QUERY_INF = PREFIXES + "SELECT ?var1 WHERE { " +
 	"<%s> (rdfs:subClassOf|owl:equivalentClass|^owl:equivalentClass|(owl:intersectionOf/rdf:rest*/rdf:first))* ?var1 .}";
@@ -49,7 +65,7 @@ public class SPARQLQueryUtils {
 			"		?var1 rdfs:subClassOf ?inbetweener .\n" + 
 			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
 			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
 			"		}";
 	public static final String SELECT_SUPERCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?var1 .}";
 	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES + 
@@ -61,7 +77,7 @@ public class SPARQLQueryUtils {
 			"		?inbetweener rdfs:subClassOf ?var1 .\n" + 
 			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
 			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?super != ?concept)\n" + 
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
 			"		}";
 	public static final String SELECT_EQUIVALENT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{?var1 owl:equivalentClass <%s> .} UNION {<%s> owl:equivalentClass ?var1 .}}";

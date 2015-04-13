@@ -6,7 +6,7 @@ package org.dllearner.algorithms.qtl.util;
 import java.util.Collection;
 
 import org.apache.commons.math3.stat.clustering.Clusterable;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
 
 /**
@@ -17,16 +17,16 @@ import org.dllearner.algorithms.qtl.heuristics.QueryTreeEditDistance;
  */
 public class QueryTreePoint implements Clusterable<QueryTreePoint>{
 	
-	private QueryTree<String> queryTree;
+	private RDFResourceTree queryTree;
 
-	public QueryTreePoint(QueryTree<String> queryTree) {
+	public QueryTreePoint(RDFResourceTree queryTree) {
 		this.queryTree = queryTree;
 	}
 	
 	/**
 	 * @return the queryTree
 	 */
-	public QueryTree<String> getQueryTree() {
+	public RDFResourceTree getQueryTree() {
 		return queryTree;
 	}
 

@@ -3,7 +3,14 @@
  */
 package org.dllearner.utilities;
 
+import java.util.Set;
+
 import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author Lorenz Buehmann
@@ -11,6 +18,15 @@ import org.semanticweb.owlapi.model.EntityType;
  */
 public class OWLAPIUtils {
 	
+	private static final Set<IRI> intDatatypeIRIs = Sets.newHashSet(
+			OWL2Datatype.XSD_INTEGER.getIRI(),
+			OWL2Datatype.XSD_INT.getIRI(),
+			OWL2Datatype.XSD_POSITIVE_INTEGER.getIRI(),
+			OWL2Datatype.XSD_NON_POSITIVE_INTEGER.getIRI(),
+			OWL2Datatype.XSD_NEGATIVE_INTEGER.getIRI(),
+			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER.getIRI()
+			);
+
 	public static String getPrintName(EntityType entityType) {
 		String str = entityType.getName();
 		
@@ -39,6 +55,10 @@ public class OWLAPIUtils {
         }
         printName += new String(c, tokenStart, c.length - tokenStart);
         return printName.toLowerCase();
+	}
+	
+	public static boolean isIntegerDatatype(OWLLiteral lit) {
+		return intDatatypeIRIs.contains(lit.getDatatype().getIRI());
 	}
 
 }

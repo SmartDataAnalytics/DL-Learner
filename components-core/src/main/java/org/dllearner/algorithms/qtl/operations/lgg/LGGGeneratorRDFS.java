@@ -20,171 +20,142 @@
 package org.dllearner.algorithms.qtl.operations.lgg;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public class LGGGeneratorRDFS implements LGGGenerator2{
-	
-	private Logger logger = LoggerFactory.getLogger(LGGGeneratorRDFS.class);
-	
-	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
-	
-	private int subCalls;
-
-	private AbstractReasonerComponent reasoner;
+public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	
 	public LGGGeneratorRDFS(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
+		this.entailment = Entailment.RDFS;
 	}
 	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return getLGG(tree1, tree2, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2,
-			boolean learnFilters) {
-		
-		reset();
-		
-		mon.start();
-		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
-		mon.stop();
-		
-		addNumbering(lgg);
-		
-		return lgg;
-	}
-
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees) {
-		return getLGG(trees, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees, boolean learnFilters) {
-		// if there is only 1 tree return it
-		if(trees.size() == 1){
-			return trees.get(0);
-		}
-		
-		// lgg(t_1, t_n)
-		mon.start();
-		RDFResourceTree lgg = trees.get(0);
-		for(int i = 1; i < trees.size(); i++) {
-			lgg = getLGG(lgg, trees.get(i), learnFilters);
-		}
-		mon.stop();
-		
-		addNumbering(lgg);
-		
-		return lgg;
-	}
-	
-	private void reset() {
-		subCalls = 0;
-	}
-	
-	private RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
+	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		
-		// if both root nodes are resource nodes and have the same URI, just return one of the two tree as LGG
-		if(tree1.isResourceNode() && tree1.getData().equals(tree2.getData())){
+		// 1. compare the root node
+		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
+		if((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())){
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
 			return tree1;
 		}
 		
-		RDFResourceTree lgg = new RDFResourceTree();
-		
-		// handle literal nodes, i.e. collect literal values if both are of same datatype
+		// handle literal nodes with same datatype
 		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
 			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
 			if(d1 != null && d1.equals(d2)){
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
+				return new RDFResourceTree(d1);
+				// TODO collect literal values
 			}
-//			lgg.setIsLiteralNode(true);
 		}
 		
-		Set<RDFResourceTree> addedChildren;
-		RDFResourceTree lggChild;
+		// else create new empty tree
+		RDFResourceTree lgg = new RDFResourceTree();
 		
-		// loop over distinct edges
-		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
-			addedChildren = new HashSet<RDFResourceTree>();
+		// 2. compare the edges
+		// we only have to compare edges which are 
+		// a) contained in both trees
+		// b) related via subsumption, i.e. p1 ⊑ p2
+		
+		// get edges of tree 2 connected via subsumption
+		Multimap<Node, Node> relatedEdges = getRelatedEdges(tree1, tree2);
+		for (Entry<Node, Collection<Node>> entry : relatedEdges.asMap().entrySet()){
+			Node edge1 = entry.getKey();
+			Collection<Node> edges2 = entry.getValue();
+			
+			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
+		
+			
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge)){
-				// loop over children of second tree
-				for(RDFResourceTree child2 : tree2.getChildren(edge)){
-					// compute the LGG
-					lggChild = computeLGG(child1, child2, learnFilters);
-					
-					// check if there was already a more specific child computed before
-					// and if so don't add the current one
-					boolean add = true;
-					for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
-						RDFResourceTree addedChild = it.next();
-						if(QueryTreeUtils.isSubsumedBy(addedChild, lggChild, reasoner, edge.equals(RDF.type.asNode()))){
-//							logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
-//									addedChild.getStringRepresentation(),
-//									lggChild.getStringRepresentation());
-							add = false;
-							break;
-						} else if(QueryTreeUtils.isSubsumedBy(lggChild, addedChild, reasoner, edge.equals(RDF.type.asNode()))){
-//							logger.trace("Removing child node: {} is subsumed by previously added child {}.",
-//									lggChild.getStringRepresentation(),
-//									addedChild.getStringRepresentation());
-							lgg.removeChild(addedChild, edge);
-							it.remove();
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){
+				// for all related edges of tree 2
+				for (Node edge2 : edges2) {
+					// loop over children of second tree
+					for(RDFResourceTree child2 : tree2.getChildren(edge2)){
+						// compute the LGG
+						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
+						
+						// check if there was already a more specific child computed before
+						// and if so don't add the current one
+						boolean add = true;
+						for(Iterator<RDFResourceTree> it = addedChildren.iterator(); it.hasNext();){
+							RDFResourceTree addedChild = it.next();
+							
+							if(QueryTreeUtils.isSubsumedBy(addedChild, lggChild, reasoner, edge1.equals(RDF.type.asNode()))){
+//								logger.trace("Skipped adding: Previously added child {} is subsumed by {}.",
+//										addedChild.getStringRepresentation(),
+//										lggChild.getStringRepresentation());
+								add = false;
+								break;
+							} else if(QueryTreeUtils.isSubsumedBy(lggChild, addedChild, reasoner, edge1.equals(RDF.type.asNode()))){
+//								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
+//										lggChild.getStringRepresentation(),
+//										addedChild.getStringRepresentation());
+								lgg.removeChild(addedChild, edge1);
+								it.remove();
+							} 
+						}
+						if(add){
+							lgg.addChild(lggChild, edge1);
+							addedChildren.add(lggChild);
+//							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 						} 
 					}
-					if(add){
-						lgg.addChild(lggChild, edge);
-						addedChildren.add(lggChild);
-//						logger.trace("Adding child {}", lggChild.getStringRepresentation());
-					} 
 				}
 			}
 		}
@@ -192,51 +163,80 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 		return lgg;
 	}
 	
-	private void addNumbering(RDFResourceTree tree){
-//		tree.setId(nodeId++);
-		for(RDFResourceTree child : tree.getChildren()){
-			addNumbering(child);
+	/*
+	 * For each edge in tree 1 we compute the related edges in tree 2. 
+	 */
+	private Multimap<Node, Node> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2) {
+		Multimap<Node, Node> relatedEdges = HashMultimap.create();
+		
+		for(Node edge1 : tree1.getEdges()) {
+			// trivial
+			if(tree2.getEdges().contains(edge1)) {
+				relatedEdges.put(edge1, edge1);
+			}
+			// check if it's not a built-in properties
+			if (!edge1.getNameSpace().equals(RDF.getURI()) 
+					&& !edge1.getNameSpace().equals(RDFS.getURI())
+					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+				
+				// get related edges by subsumption
+				OWLProperty prop;
+				if(tree1.isObjectPropertyEdge(edge1)) {
+					prop = new OWLObjectPropertyImpl(IRI.create(edge1.getURI()));
+				} else {
+					prop = new OWLDataPropertyImpl(IRI.create(edge1.getURI()));
+				}
+				
+				for (OWLProperty p : reasoner.getSuperProperties(prop)) {
+					Node edge = NodeFactory.createURI(p.toStringID());
+					if(tree2.getEdges().contains(edge)) {
+						relatedEdges.put(edge1, edge);
+					}
+				}
+				for (OWLProperty p : reasoner.getSubProperties(prop)) {
+					Node edge = NodeFactory.createURI(p.toStringID());
+					if(tree2.getEdges().contains(edge)) {
+						relatedEdges.put(edge1, edge);
+					}
+				}
+			}
 		}
+		return relatedEdges;
 	}
 	
 	public static void main(String[] args) throws Exception {
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpediaLiveAKSW();
-		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint, "/tmp/cache");
-		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
-		LGGGenerator2 lggGen = new LGGGeneratorRDFS(reasoner);
-		
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		// knowledge base
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		QueryExecutionFactory qef = SparqlServiceBuilder
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
+
+		// tree generation
+		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
 		int maxDepth = 2;
-		
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
-		Model model;
-		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(endpoint, "cache");
 		cbdGenerator.setRecursionDepth(maxDepth);
+
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
 		treeFactory.setMaxDepth(maxDepth);
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
 				new PredicateDropStatementFilter(StopURIsOWL.get()),
-				new ObjectDropStatementFilter(Sets.union(StopURIsDBpedia.get(), StopURIsOWL.get())),
-				new NamespaceDropStatementFilter(
-						Sets.newHashSet(
-								"http://dbpedia.org/property/", 
-								"http://purl.org/dc/terms/",
-								"http://dbpedia.org/class/yago/",
-								"http://www.w3.org/2003/01/geo/wgs84_pos#",
-								"http://www.georss.org/georss/",
-								FOAF.getURI()
-								)
-								)
-				);
-		List<String> resources = Lists.newArrayList(
-//				"http://dbpedia.org/resource/Leipzig", 
-				"http://dbpedia.org/resource/Boston", 
-				"http://dbpedia.org/resource/New_York");
-		for(String resource : resources){
+				new ObjectDropStatementFilter(StopURIsOWL.get()),
+				new PredicateDropStatementFilter(StopURIsSKOS.get()),
+				new ObjectDropStatementFilter(StopURIsSKOS.get()),
+				new NamespaceDropStatementFilter(Sets.newHashSet("http://dbpedia.org/property/",
+						"http://purl.org/dc/terms/", "http://dbpedia.org/class/yago/",
+						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
+		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig",
+				"http://dbpedia.org/resource/Dresden");
+		for (String resource : resources) {
 			try {
 				System.out.println(resource);
-				model = cbdGenerator.getConciseBoundedDescription(resource);
+				Model model = cbdGenerator.getConciseBoundedDescription(resource);
 				RDFResourceTree tree = treeFactory.getQueryTree(ResourceFactory.createResource(resource), model);
 				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);
@@ -244,12 +244,15 @@ public class LGGGeneratorRDFS implements LGGGenerator2{
 				e.printStackTrace();
 			}
 		}
+
+		// LGG computation
+		LGGGenerator lggGen = new LGGGeneratorRDFS(new SPARQLReasoner(qef));
 		RDFResourceTree lgg = lggGen.getLGG(trees);
-		
-		lgg = new PredicateExistenceFilterDBpedia(ks).filter(lgg);
+
 		System.out.println("LGG");
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
+		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
 	}
 
 }

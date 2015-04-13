@@ -2893,3 +2893,9 @@ http://www.w3.org/2003/01/geo/wgs84_pos#geometry
 http://www.w3.org/2003/01/geo/wgs84_pos#lat
 http://www.w3.org/2003/01/geo/wgs84_pos#long
 http://www.georss.org/georss/point
+http://xmlns.com/foaf/0.1/name
+http://xmlns.com/foaf/0.1/givenName
+http://xmlns.com/foaf/0.1/surname
+http://xmlns.com/foaf/0.1/nick
+http://xmlns.com/foaf/0.1/homepage
+http://purl.org/dc/elements/1.1/description

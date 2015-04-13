@@ -13,11 +13,12 @@ import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
+ * A simple heuristic based which just takes the accuracy into account.
  * @author Lorenz Buehmann
  *
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
-public class QueryTreeHeuristicSimpleNew extends QueryTreeHeuristicNew {
+public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()

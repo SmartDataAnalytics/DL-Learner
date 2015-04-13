@@ -1,10 +1,12 @@
 package org.dllearner.algorithms.qtl;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
+import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
@@ -12,6 +14,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -20,6 +23,8 @@ import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia
 import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -29,8 +34,10 @@ import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
@@ -70,6 +77,7 @@ public class QTLTest {
 		QueryTreeFactory qtf = new QueryTreeFactoryBase();
 		qtf.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
+				new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
 				new PredicateDropStatementFilter(StopURIsOWL.get()),
 				new ObjectDropStatementFilter(StopURIsOWL.get()),
@@ -79,28 +87,52 @@ public class QTLTest {
 						Sets.newHashSet(
 								"http://dbpedia.org/property/", 
 //								"http://purl.org/dc/terms/",
-								"http://dbpedia.org/class/yago/",
-								FOAF.getURI()
+								"http://dbpedia.org/class/yago/"
+//								,FOAF.getURI()
 								)
-								)
+								),
+								new PredicateDropStatementFilter(
+										Sets.newHashSet(
+												"http://www.w3.org/2002/07/owl#equivalentClass", 
+												"http://www.w3.org/2002/07/owl#disjointWith"))
 				);
-		qtf.setMaxDepth(3);
+		int maxTreeDepth = 2;
+		qtf.setMaxDepth(maxTreeDepth);
 		
-		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+		SparqlEndpointKS ks = new SparqlEndpointKS(endpoint);
+		ks.init();
+		
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
-		
-		qef = new QueryExecutionFactoryCacheEx(qef, CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)));
+		qef = CacheUtilsH2.createQueryExecutionFactory(qef, "/tmp/sparql", false, TimeUnit.DAYS.toMillis(30));
 		qef = new QueryExecutionFactoryPaginated(qef);
 		
-		
 		PosNegLPStandard lp = new PosNegLPStandard();
-		lp.setPositiveExamples(Sets.<OWLIndividual>newHashSet(
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Dresden")),
-				new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Leipzig"))));
+		Set<OWLIndividual> posExamples = Sets.newHashSet();
+		
+		String posExStr = "http://dbpedia.org/resource/Jimmy_Rosario, "
+				+ "http://dbpedia.org/resource/Jimmy_Anderson_(footballer_born_1932), "
+				+ "http://dbpedia.org/resource/Jimmy_Yancey";
+		
+//		String posExStr = "http://dbpedia.org/resource/Ladislaus_the_Posthumous,"
+//				+ " http://dbpedia.org/resource/Nga_Kor_Ming, "
+//				+ "http://dbpedia.org/resource/L._M._Shaw";
+		for (String uri : Splitter.on(',').trimResults().split(posExStr)) {
+			posExamples.add(new OWLNamedIndividualImpl(IRI.create(uri)));
+		}
+		lp.setPositiveExamples(posExamples);
+		
+		AbstractReasonerComponent reasoner = new SPARQLReasoner(qef);
+		reasoner.setPrecomputeClassHierarchy(true);
+		reasoner.setPrecomputeObjectPropertyHierarchy(true);
+		reasoner.setPrecomputeDataPropertyHierarchy(true);
+		reasoner.init();
 		
 		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
-		la.setReasoner(new SPARQLReasoner(qef));
+		la.setReasoner(reasoner);
 		la.setTreeFactory(qtf);
+		la.setEntailment(Entailment.RDFS);
+		la.setMaxTreeDepth(maxTreeDepth);
 		la.init();
 		
 		la.start();

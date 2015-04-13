@@ -4,13 +4,16 @@
 package org.dllearner.algorithms.qtl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -22,11 +25,13 @@ import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.query.Query;
@@ -43,9 +48,16 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.expr.E_Datatype;
+import com.hp.hpl.jena.sparql.expr.E_Equals;
+import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
+import com.hp.hpl.jena.sparql.expr.ExprNode;
+import com.hp.hpl.jena.sparql.expr.ExprVar;
+import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * @author Lorenz Buehmann
@@ -56,6 +68,10 @@ public class QueryTreeUtils {
 	private static final VarGenerator varGen = new VarGenerator("x");
 	private static final String TRIPLE_PATTERN_TEMPLATE = "%s %s %s .";
 	private static final OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+	
+	public static String EMPTY_QUERY_TREE_QUERY = "SELECT ?s WHERE {?s ?p ?o.}";
+	
+	private static Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
 	
 	/**
 	 * Returns the path from the given node to the root of the given tree, i.e.
@@ -181,12 +197,12 @@ public class QueryTreeUtils {
 	 * </div>
 	 * <code>c(T) = 1 + log(|U| * α + |L| * β + |VAR| * γ) </code>
 	 * <div>
-	 * with <code>α, β, γ</code> being weight of the particular node types.
+	 * with <code>α, β, γ</code> being the weight of the particular node types.
 	 * </div>
 	 * @param tree
 	 * @return the set of edges in the query tree
 	 */
-	public static <N> double getComplexity(QueryTree<N> tree) {
+	public static <N> double getComplexity(RDFResourceTree tree) {
 		
 		double varNodeWeight = 0.8;
 		double resourceNodeWeight = 1.0;
@@ -194,20 +210,14 @@ public class QueryTreeUtils {
 		
 		double complexity = 0;
 		
-		List<QueryTree<N>> nodes = getNodes(tree);
-		for (QueryTree<N> node : nodes) {
-			switch (node.getNodeType()) {
-			case VARIABLE:
+		List<RDFResourceTree> nodes = getNodes(tree);
+		for (RDFResourceTree node : nodes) {
+			if(node.isVarNode()) {
 				complexity += varNodeWeight;
-				break;
-			case RESOURCE:
+			} else if(node.isResourceNode()) {
 				complexity += resourceNodeWeight;
-				break;
-			case LITERAL:
+			} else if(node.isLiteralNode()) {
 				complexity += literalNodeWeight;
-				break;
-			default:
-				break;
 			}
 		}
 		
@@ -268,6 +278,23 @@ public class QueryTreeUtils {
 	}
     
     /**
+     * Returns all nodes in the given query tree.
+     * @param tree
+     * @return
+     */
+    public static List<RDFResourceTree> getLeafs(RDFResourceTree tree) {
+		List<RDFResourceTree> leafs = new ArrayList<RDFResourceTree>();
+		
+		for (RDFResourceTree node : getNodes(tree)) {
+			if(node.isLeaf()) {
+				leafs.add(node);
+			}
+		}
+		
+		return leafs;
+	}
+    
+    /**
 	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
 	 * tree1.
 	 * @param tree1
@@ -276,10 +303,26 @@ public class QueryTreeUtils {
 	 */
     public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2) {
     	// 1.compare the root nodes
-    	
     	// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
-    	if(!tree1.isVarNode() && !tree2.isVarNode()) {
+    	if(tree1.isResourceNode() && tree2.isResourceNode()) {
     		return tree1.getData().equals(tree2.getData());
+    	} else if(tree1.isLiteralNode() && tree2.isLiteralNode()) {
+    		if(tree1.isLiteralValueNode()) {
+    			if(tree2.isLiteralValueNode()) {
+    				return tree1.getData().equals(tree2.getData());
+    			} else {
+    				RDFDatatype d1 = tree1.getData().getLiteralDatatype();
+    				return tree2.getDatatype().equals(d1);
+    			}
+    		} else {
+    			if(tree2.isLiteralValueNode()) {
+    				return false;
+    			} else {
+    				RDFDatatype d1 = tree1.getDatatype();
+    				return tree2.getDatatype().equals(d1);
+    			}
+    		}
+    		
     	}
     	
     	// (T_1 = ?) and (T_2 != ?) --> FALSE
@@ -324,21 +367,26 @@ public class QueryTreeUtils {
    	 */
 	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment) {
 		Resource root = ResourceFactory.createResource("http://example.org/root");
-		final Model m1 = toModel(tree1, root);
+		
+		Model m1 = toModel(tree1, root);
 		Model m2 = toModel(tree2, root);
-		Reasoner reasoner = ReasonerRegistry.getRDFSSimpleReasoner();
+		
 		Model m1closure = ModelFactory.createDefaultModel();
 		m1closure.add(ModelFactory.createInfModel(reasoner, m1));
+		
 		Model m2closure = ModelFactory.createDefaultModel();
 		m2closure.add(ModelFactory.createInfModel(reasoner, m2));
+		
 		boolean sameClosure = m1closure.isIsomorphicWith(m2closure);
+		if(sameClosure) {
+			return true;
+		}
 
 		// check if each statement of m1 is contained in m2
 		StmtIterator iterator = m1closure.listStatements();
 		while (iterator.hasNext()) {
 			Statement st = iterator.next();
-			if (!m2closure.contains(st)) {
-				System.out.println(st + "  FALSE");
+			if (!st.getSubject().isAnon() && !st.getObject().isAnon() && !m2closure.contains(st)) {
 				return false;
 			} 
 		}
@@ -417,6 +465,10 @@ public class QueryTreeUtils {
           	// (T_1 = ?) and (T_2 != ?) --> FALSE
           	if(tree1.isVarNode() && !tree2.isVarNode()) {
           		return false;
+          	}
+          	
+          	if(typeNode) {
+          		return isSubsumedBy(tree1, tree2, Entailment.RDFS);
           	}
           	
           	// 2. compare the children
@@ -502,26 +554,38 @@ public class QueryTreeUtils {
 	}
 	
 	public static OWLClassExpression toOWLClassExpression(RDFResourceTree tree) {
-    	return buildOWLClassExpression(df, tree);
+    	return toOWLClassExpression(tree, LiteralNodeConversionStrategy.DATATYPE);
 	}
 	
-	private static OWLClassExpression buildOWLClassExpression(OWLDataFactory df, RDFResourceTree tree) {
+	public static OWLClassExpression toOWLClassExpression(RDFResourceTree tree, LiteralNodeConversionStrategy literalConversion) {
+    	return buildOWLClassExpression(tree, literalConversion);
+	}
+	
+	private static OWLClassExpression buildOWLClassExpression(RDFResourceTree tree, LiteralNodeConversionStrategy literalConversion) {
 		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				if(edge.equals(RDF.type.asNode())) {
-					
+				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode())) {
+					if(child.isVarNode()) {
+						classExpressions.add(buildOWLClassExpression(child, literalConversion));
+					} else {
+						classExpressions.add(df.getOWLClass(IRI.create(child.getData().getURI())));
+					}
 				} else {
 					// create r some C
 					if(child.isLiteralNode()) {
-						OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
-						classExpressions.add(df.getOWLDataHasValue(
-								df.getOWLDataProperty(IRI.create(edge.getURI())), 
-								value));
+						OWLDataProperty dp = df.getOWLDataProperty(IRI.create(edge.getURI()));
+						if(!child.isLiteralValueNode()) {
+							classExpressions.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatype(IRI.create(child.getDatatype().getURI()))));
+						} else {
+							OWLLiteral value = OwlApiJenaUtils.getOWLLiteral(child.getData().getLiteral());
+							classExpressions.add(df.getOWLDataHasValue(dp, value));
+						}
+						
 					} else {
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
-							filler = buildOWLClassExpression(df, child);
+							filler = buildOWLClassExpression(child, literalConversion);
 						} else if (child.isResourceNode()) {
 							filler = df.getOWLClass(IRI.create(child.getData().getURI()));
 						}
@@ -543,6 +607,13 @@ public class QueryTreeUtils {
     	}
 	}
 	
+	/**
+	 * Returns a SPARQL query representing the query tree. Note, for empty trees
+	 * it just returns 
+	 * <p><code>SELECT ?s WHERE {?s ?p ?o.}</code></p>
+	 * @param tree
+	 * @return
+	 */
 	public static Query toSPARQLQuery(RDFResourceTree tree) {
 		return QueryFactory.create(toSPARQLQueryString(tree));
 	}
@@ -552,12 +623,16 @@ public class QueryTreeUtils {
     }
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, PrefixMapping pm) {
-    	return toSPARQLQueryString(tree, null, pm);
+    	return toSPARQLQueryString(tree, null, pm, LiteralNodeConversionStrategy.DATATYPE);
     }
 	
 	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm) {
+    	return toSPARQLQueryString(tree, baseIRI, pm, LiteralNodeConversionStrategy.DATATYPE);
+    }
+	
+	public static String toSPARQLQueryString(RDFResourceTree tree, String baseIRI, PrefixMapping pm, LiteralNodeConversionStrategy literalConversion) {
 		if(!tree.hasChildren()){
-    		return "SELECT ?x0 WHERE {?x0 ?p ?o.}";
+    		return EMPTY_QUERY_TREE_QUERY;
     	}
     	
     	varGen.reset();
@@ -583,15 +658,27 @@ public class QueryTreeUtils {
             sb.append('\n');
         }
         
-        //
+        List<ExprNode> filters = new ArrayList<>();
+        
+        // target var
         String targetVar = "?s";
         
         // header
     	sb.append(String.format("SELECT DISTINCT %s WHERE {\n", targetVar));
     	
     	// triple patterns
-    	buildSPARQLQueryString(tree, targetVar, sb, context);
+    	buildSPARQLQueryString(tree, targetVar, sb, filters, context);
         
+    	// filters
+    	if(!filters.isEmpty()) {
+    		Iterator<ExprNode> it = filters.iterator();
+    		ExprNode filter = it.next();
+    		while(it.hasNext()) {
+    			filter = new E_LogicalAnd(filter, it.next());
+    		}
+    		sb.append("FILTER(").append(filter.toString()).append(")\n");
+    	}
+    	
         sb.append("}");
     	
     	Query query = QueryFactory.create(sb.toString(), Syntax.syntaxSPARQL_11);
@@ -600,21 +687,124 @@ public class QueryTreeUtils {
     	return query.toString();
 	}
     
-    private static void buildSPARQLQueryString(RDFResourceTree tree, String subjectStr, StringBuilder sb, SerializationContext context){
+	private static void buildSPARQLQueryString(RDFResourceTree tree,
+			String subjectStr, StringBuilder sb, Collection<ExprNode> filters,
+			SerializationContext context) {
 		if (!tree.isLeaf()) {
 			for (Node edge : tree.getEdges()) {
 				// process predicate
 				String predicateStr = FmtUtils.stringForNode(edge, context);
 				for (RDFResourceTree child : tree.getChildren(edge)) {
-					// process object
+					// pre-process object
 					Node object = child.getData();
-					String objectStr = object.isVariable() ? varGen.newVar() : FmtUtils.stringForNode(object, context);
+					
+					if(child.isVarNode()) {
+						// set a fresh var in the SPARQL query
+						object = varGen.newVar();
+					} else if(child.isLiteralNode() && !child.isLiteralValueNode()) { 
+						// set a fresh var in the SPARQL query
+						object = varGen.newVar();
+						
+						// literal node describing a set of literals is rendered depending on the conversion strategy
+						if(child.getDatatype() != null) {
+							ExprNode filter = new E_Equals(
+									new E_Datatype(new ExprVar(object)), 
+									NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
+							filters.add(filter);
+						}
+						
+					} 
+					
+					// process object
+					String objectStr = FmtUtils.stringForNode(object, context);
 					sb.append(String.format(TRIPLE_PATTERN_TEMPLATE, subjectStr, predicateStr, objectStr)).append("\n");
-					if (object.isVariable()) {
-						buildSPARQLQueryString(child, objectStr, sb, context);
+					
+					/*
+					 * only if child is var node recursively process children if
+					 * exist because for URIs it doesn't make sense to add the
+					 * triple pattern and for literals there can't exist a child
+					 * in the tree
+					 */
+					if (child.isVarNode()) {
+						buildSPARQLQueryString(child, objectStr, sb, filters, context);
 					}
 				}
 			}
 		}
     }
+	
+	/**
+	 * Remove trivial statements according to the given entailment semantics:
+	 * <h3>RDFS</h3>
+	 * <ul>
+	 * <li>remove trivial statements like <code>?s a ?x</code>
+	 * <li>remove type statements if this is given by domain and range 
+	 * of used statements.</li>
+	 * 
+	 * </ul>
+	 * @param tree
+	 * @param entailment
+	 */
+	public static void prune(RDFResourceTree tree, AbstractReasonerComponent reasoner, Entailment entailment) {
+		
+		// remove trivial statements
+		for(Node edge : new TreeSet<Node>(tree.getEdges())) {
+			if(edge.equals(RDF.type.asNode())) {
+				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
+				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
+					RDFResourceTree child = iterator.next();
+					if(!isNonTrivial(child, entailment)) {
+//						iterator.remove();
+						tree.removeChild(child, edge);
+					}
+					
+				}
+			}
+		}
+		
+//		if(entailment == Entailment.RDFS) {
+//			if(reasoner != null) {
+//				List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+//				
+//				// compute implicit types
+//				Set<OWLClassExpression> implicitTypes = new HashSet<OWLClassExpression>();
+//				for(Node edge : tree.getEdges()) {
+//					if(!edge.equals(RDF.type.asNode())) {
+//						// get domain for property
+//						implicitTypes.add(reasoner.getDomain(new OWLObjectPropertyImpl(IRI.create(edge.getURI()))));
+//					}
+//				}
+//				if(typeChildren != null) {
+//					// remove type children which are already covered implicitely
+//					for (RDFResourceTree child : new ArrayList<RDFResourceTree>(tree.getChildren(RDF.type.asNode()))) {
+//						if(child.isResourceNode() && implicitTypes.contains(new OWLClassImpl(IRI.create(child.getData().getURI())))) {
+//							tree.removeChild(child, RDF.type.asNode());
+//							System.out.println("removing " + child.getData().getURI());
+//						}
+//					}
+//				}
+//				
+//			}
+//		}
+	}
+	
+	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {
+		if(tree.isResourceNode() || tree.isLiteralNode()){
+    		return true;
+    	} else {
+    		for (Node edge : tree.getEdges()) {
+    			for (RDFResourceTree child : tree.getChildren(edge)) {
+        			if(!edge.equals(RDFS.subClassOf.asNode())){
+        				return true;
+        			} else if(child.isResourceNode()){
+        				return true;
+        			} else if(isNonTrivial(child, entailment)){
+        				return true;
+        			}
+        		}
+			}
+    		
+    	}
+    	return false;
+	}
 }

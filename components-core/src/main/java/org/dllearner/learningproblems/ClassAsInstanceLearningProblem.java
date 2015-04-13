@@ -3,19 +3,37 @@
  */
 package org.dllearner.learningproblems;
 
+import java.io.File;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
  * A learning problem in which positive and negative examples are classes, i.e.
@@ -39,6 +57,8 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 
 	protected Set<OWLClass> positiveExamples = new TreeSet<OWLClass>();
 	protected Set<OWLClass> negativeExamples = new TreeSet<OWLClass>();
+	
+	
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
@@ -103,7 +123,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 */
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		return 0;
+		return getAccuracyOrTooWeakExact(description, noise);
 	}
 
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
@@ -214,6 +234,40 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 */
 	public void setPercentPerLengthUnit(double percentPerLengthUnit) {
 		this.percentPerLengthUnit = percentPerLengthUnit;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		File file = new File("../examples/father.owl");
+		OWLClass cls1 = new OWLClassImpl(IRI.create("http://example.com/father#male"));
+		OWLClass cls2 = new OWLClassImpl(IRI.create("http://example.com/father#female"));
+		
+		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		
+		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
+		ks.init();
+		
+		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
+		baseReasoner.setReasonerTypeString("hermit");
+        baseReasoner.init();
+		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
+		rc.setReasonerComponent(baseReasoner);
+		rc.init();
+		
+		ClassAsInstanceLearningProblem lp = new ClassAsInstanceLearningProblem();
+		lp.setPositiveExamples(Sets.newHashSet(cls1, cls2));
+		lp.setReasoner(rc);
+		lp.init();
+		
+		CELOE alg = new CELOE(lp, rc);
+		alg.setMaxExecutionTimeInSeconds(10);
+		alg.setWriteSearchTree(true);
+		alg.setSearchTreeFile("log/search-tree.log");
+		alg.setReplaceSearchTree(true);
+		alg.init();
+		
+		alg.start();
+		
 	}
 
 }

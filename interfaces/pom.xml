@@ -237,7 +237,7 @@
 				<finalName>dl-learner</finalName>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo.appassembler</groupId>
+						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
 						<version>1.9</version>
 						<executions>

@@ -361,6 +361,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     			OWL2Datatype.XSD_SHORT,
     			OWL2Datatype.XSD_INT,
     			OWL2Datatype.XSD_INTEGER,
+    			OWL2Datatype.XSD_POSITIVE_INTEGER,
+    			OWL2Datatype.XSD_NEGATIVE_INTEGER,
+    			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
+    			OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
     			OWL2Datatype.XSD_LONG,
     			OWL2Datatype.XSD_DOUBLE,
     			OWL2Datatype.XSD_FLOAT
@@ -428,6 +432,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
+    	if(superConcept.isOWLThing() || subConcept.isOWLNothing()) {
+    		return true;
+    	}
         boolean res;
         try {
             res = reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
@@ -946,7 +953,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_INT);
+		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_INT));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_POSITIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NEGATIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NON_POSITIVE_INTEGER));
+		properties.addAll((Set<OWLDataProperty>)datatype2Properties.get(OWL2Datatype.XSD_NON_NEGATIVE_INTEGER));
+		return properties;
 	}
 
 	@Override

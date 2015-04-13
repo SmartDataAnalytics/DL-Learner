@@ -296,24 +296,23 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
-		for(OWLObjectProperty op : reasoner.getObjectProperties()) {
-			opDomains.put(op, reasoner.getDomain(op));
-			opRanges.put(op, reasoner.getRange(op));
-
-			if(useHasValueConstructor) {
+		opDomains = reasoner.getObjectPropertyDomains();
+		opRanges = reasoner.getObjectPropertyRanges();
+		
+		if (useHasValueConstructor) {
+			for (OWLObjectProperty op : reasoner.getObjectProperties()) {
 				// init
 				Map<OWLIndividual, Integer> opMap = new TreeMap<OWLIndividual, Integer>();
 				valueFrequency.put(op, opMap);
 
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<OWLIndividual>> fillerSets = reasoner.getPropertyMembers(op).values();
-				for(SortedSet<OWLIndividual> fillerSet : fillerSets) {
-					for(OWLIndividual i : fillerSet) {
-//						System.out.println("op " + op + " i " + i);
+				for (SortedSet<OWLIndividual> fillerSet : fillerSets) {
+					for (OWLIndividual i : fillerSet) {
 						Integer value = opMap.get(i);
 
-						if(value != null) {
-							opMap.put(i, value+1);
+						if (value != null) {
+							opMap.put(i, value + 1);
 						} else {
 							opMap.put(i, 1);
 						}
@@ -322,32 +321,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// keep only frequent patterns
 				Set<OWLIndividual> frequentInds = new TreeSet<OWLIndividual>();
-				for(OWLIndividual i : opMap.keySet()) {
-					if(opMap.get(i) >= frequencyThreshold) {
+				for (OWLIndividual i : opMap.keySet()) {
+					if (opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
-//						break;
+						//						break;
 					}
 				}
 				frequentValues.put(op, frequentInds);
-
 			}
-
 		}
-
-		for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
-			dpDomains.put(dp, reasoner.getDomain(dp));
-
-			if(useDataHasValueConstructor) {
+		
+		if(useDataHasValueConstructor) {
+			for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 				Map<OWLLiteral, Integer> dpMap = new TreeMap<OWLLiteral, Integer>();
 				dataValueFrequency.put(dp, dpMap);
-
+	
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<OWLLiteral>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<OWLLiteral> fillerSet : fillerSets) {
 					for(OWLLiteral i : fillerSet) {
-//						System.out.println("op " + op + " i " + i);
 						Integer value = dpMap.get(i);
-
+	
 						if(value != null) {
 							dpMap.put(i, value+1);
 						} else {
@@ -355,7 +349,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-
+	
 				// keep only frequent patterns
 				Set<OWLLiteral> frequentInds = new TreeSet<OWLLiteral>();
 				for(OWLLiteral i : dpMap.keySet()) {
@@ -472,12 +466,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if(description.isOWLNothing()) {
 			// cannot be further refined
 		} else if(!description.isAnonymous()) {
-			refinements.addAll(subHierarchy.getSubClasses(description));
+			refinements.addAll(subHierarchy.getSubClasses(description, true));
 			refinements.remove(df.getOWLNothing());
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()){
-				tmp = subHierarchy.getSuperClasses(operand);
+				tmp = subHierarchy.getSuperClasses(operand, true);
 
 				for(OWLClassExpression c : tmp) {
 					if(!c.isOWLThing()){
@@ -1074,12 +1068,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			m.put(i, new TreeSet<OWLClassExpression>());
 		}
 
-		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing());
+		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing(), true);
 		m.put(1,m1);
 
 		SortedSet<OWLClassExpression> m2 = new TreeSet<OWLClassExpression>();
 		if(useNegation) {
-			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing());
+			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing(), true);
 			for(OWLClassExpression c : m2tmp) {
 				if(!c.isOWLThing()) {
 					m2.add(df.getOWLObjectComplementOf(c));
@@ -1300,7 +1294,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
-		for(OWLClassExpression candidate :  subHierarchy.getSubClasses(upperClass)) {
+		for(OWLClassExpression candidate :  subHierarchy.getSubClasses(upperClass, true)) {
 //				System.out.println("testing " + candidate + " ... ");
 
 //				NamedClass candidate = (OWLClass) d;
@@ -1656,7 +1650,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	//TODO implement numerical splitting
 
-	private <T extends Number & Comparable<Number>> void computeSplits2(OWLDataProperty dp) {
+	private <T extends Number & Comparable<T>> void computeSplits2(OWLDataProperty dp) {
 		Set<T> valuesSet = new TreeSet<T>();
 //		Set<OWLIndividual> individuals = rs.getIndividuals();
 		Map<OWLIndividual, SortedSet<T>> valueMap = reasoner.getNumericDatatypeMembers(dp);
@@ -1691,7 +1685,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		splitsNumber.put(dp, splitsDP);
 	}
 
-	private <T extends Number & Comparable<Number>> T avg(T number1, T number2){
+	private <T extends Number & Comparable<T>> T avg(T number1, T number2){
 		return number1;
 //		T avg = null;
 //		if((number1 instanceof Integer && number2 instanceof Integer) ||

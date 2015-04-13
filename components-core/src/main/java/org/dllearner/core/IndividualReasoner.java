@@ -164,7 +164,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty
 	 * @return
 	 */
-	<T extends Number & Comparable<Number>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty);
+	<T extends Number & Comparable<T>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty);
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as boolean value. Only "true" or "false" are 

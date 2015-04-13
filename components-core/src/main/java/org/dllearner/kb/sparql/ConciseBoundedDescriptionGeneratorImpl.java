@@ -1,6 +1,5 @@
 package org.dllearner.kb.sparql;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -11,18 +10,22 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
 //import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
+/**
+ * {@inheritDoc}
+ * @author Lorenz Buehmann
+ *
+ */
 public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDescriptionGenerator{
 	
-	private static final Logger logger = Logger.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
-	
-	private int chunkSize = 0;
+	private static final Logger logger = LoggerFactory.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
 	
 	private Model baseModel;
 	
@@ -30,14 +33,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private static final int MAX_RECURSION_DEPTH_DEFAULT = 1;
 	private int maxRecursionDepth = 1;
 	private QueryExecutionFactory qef;
-	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
-		this(endpoint, cache, MAX_RECURSION_DEPTH_DEFAULT);
-	}
-	
-	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache, int maxRecursionDepth) {
-		this(endpoint, cache.getCacheDirectory(), maxRecursionDepth);
-	}
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
@@ -63,12 +58,6 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		qef = new QueryExecutionFactoryPaginated(qef, 10000);
 	}
 	
-	public ConciseBoundedDescriptionGeneratorImpl(Model model, int maxRecursionDepth) {
-		this.maxRecursionDepth = maxRecursionDepth;
-		
-		qef = new QueryExecutionFactoryModel(model);
-	}
-	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, String cacheDir) {
 		this(endpoint, cacheDir, MAX_RECURSION_DEPTH_DEFAULT);
 	}
@@ -88,7 +77,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
-		return getModelChunked(resourceURI, depth);
+		return getConciseBoundedDescription(resourceURI, depth, false);
 	}
 	
 	/* (non-Javadoc)
@@ -96,20 +85,14 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	 */
 	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
-		String query = makeConstructQueryOptional(resourceURI, depth, withTypesForLeafs);
+		logger.trace("Computing CBD for {} ...", resourceURI);
+		long start = System.currentTimeMillis();
+		String query = generateQuery(resourceURI, depth, withTypesForLeafs);
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
-		return model;
-	}
-	
-	public void setChunkSize(int chunkSize) {
-		this.chunkSize = chunkSize;
-	}
-	
-	private Model getModelChunked(String resource, int depth){
-		String query = makeConstructQueryOptional(resource, chunkSize, 0, depth);
-		QueryExecution qe = qef.createQueryExecution(query);
-		Model model = qe.execConstruct();
+		qe.close(); 
+		long end = System.currentTimeMillis();
+		logger.trace("Got {} triples in {} ms.", model.size(), (end - start));
 		return model;
 	}
 	
@@ -128,43 +111,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	 * @param example The example resource for which a CONSTRUCT query is created.
 	 * @return The JENA ARQ Query object.
 	 */
-	private String makeConstructQueryOptional(String resource, int limit, int offset, int depth){
-		StringBuilder sb = new StringBuilder();
-		sb.append("CONSTRUCT {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-//		sb.append("?p0 a ?type0.\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-//			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
-		}
-		sb.append("}\n");
-		sb.append("WHERE {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		sb.append(createNamespacesFilter("?p0"));
-//		sb.append("?p0 a ?type0.\n");
-		for(int i = 1; i < depth; i++){
-			sb.append("OPTIONAL{\n");
-			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-//			sb.append("?p").append(i).append(" ").append("a").append(" ").append("?type").append(i).append(".\n");
-			sb.append(createNamespacesFilter("?p" + i));
-		}
-		for(int i = 1; i < depth; i++){
-			sb.append("}");
-		}
-		sb.append("}\n");
-		if(chunkSize > 0){
-			sb.append("LIMIT ").append(limit).append("\n");
-			sb.append("OFFSET ").append(offset);
-		}
-		return sb.toString();
-	}
-	
-	/**
-	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
-	 * @param example The example resource for which a CONSTRUCT query is created.
-	 * @return The JENA ARQ Query object.
-	 */
-	private String makeConstructQueryOptional(String resource, int depth, boolean withTypesForLeafs){
+	private String generateQuery(String resource, int depth, boolean withTypesForLeafs){
 		int lastIndex = Math.max(0, depth - 1);
 		
 		StringBuilder sb = new StringBuilder();
@@ -217,23 +164,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		ConciseBoundedDescriptionGenerator cbdGen = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpediaLiveAKSW());
 		cbdGen = new CachingConciseBoundedDescriptionGenerator(cbdGen);
 //		cbdGen.setRestrictToNamespaces(Arrays.asList(new String[]{"http://dbpedia.org/ontology/", RDF.getURI(), RDFS.getURI()}));
-		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 1);
+		Model cbd = cbdGen.getConciseBoundedDescription("http://dbpedia.org/resource/Leipzig", 3);
 		System.out.println(cbd.size());
-		
-		
-		String query = "CONSTRUCT {\n" + 
-				"<http://dbpedia.org/resource/Trey_Parker> ?p0 ?o0.\n" + 
-				"?o0 ?p1 ?o1.\n" + 
-				"}\n" + 
-				"WHERE {\n" + 
-				"<http://dbpedia.org/resource/Trey_Parker> ?p0 ?o0.\n" + 
-				"OPTIONAL{\n" + 
-				"?o0 ?p1 ?o1.\n" + 
-				"}}";
-		com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP qe = new com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP("http://dbpedia.org/sparql", query);
-		qe.setDefaultGraphURIs(Collections.singletonList("http://dbpedia.org"));
-		Model model = qe.execConstruct();
-		qe.close();
 	}
 
 	

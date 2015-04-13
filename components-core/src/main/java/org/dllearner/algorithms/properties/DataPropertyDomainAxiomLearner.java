@@ -82,7 +82,7 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			existingAxioms.add(df.getOWLDataPropertyDomainAxiom(entityToDescribe, existingDomain));
 			if(reasoner.isPrepared()){
 				if(reasoner.getClassHierarchy().contains(existingDomain)){
-					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain)){
+					for(OWLClassExpression sup : reasoner.getClassHierarchy().getSuperClasses(existingDomain, false)){
 						existingAxioms.add(df.getOWLDataPropertyDomainAxiom(entityToDescribe, existingDomain));
 						logger.info("Existing domain(inferred): " + sup);
 					}

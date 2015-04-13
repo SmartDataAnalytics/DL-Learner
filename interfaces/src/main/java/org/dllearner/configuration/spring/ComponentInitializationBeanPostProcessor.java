@@ -31,13 +31,15 @@ public class ComponentInitializationBeanPostProcessor implements BeanPostProcess
 
             String componentName = AnnComponentManager.getName(c);
             try {
-
-                Date startTime = new Date();
+            	
+            	logger.info("Initializing component '{}' of type {} ...", beanName, componentName);
+                long startTime = System.currentTimeMillis();
                 c.init();
-                Date stopTime = new Date();
-                long elapsedTime = stopTime.getTime() - startTime.getTime();
+                long stopTime = System.currentTimeMillis();
+                long elapsedTime = stopTime - startTime;
 
-                logger.info("Initializing Component \"" + componentName + "\"... OK (" + Helper.prettyPrintMilliSeconds(elapsedTime) + ")");
+                logger.info("... initialized component '{}' in {}. Status: OK", 
+                		new String[]{beanName, Helper.prettyPrintMilliSeconds(elapsedTime)});
             } catch (ComponentInitException e) {
                 throw new RuntimeException("Problem initializing the component \"" + componentName + "\" with beanName: " + beanName, e);
             } catch (Exception e) {

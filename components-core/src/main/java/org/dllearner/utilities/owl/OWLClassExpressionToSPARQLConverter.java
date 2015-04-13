@@ -72,8 +72,6 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private String sparql = "";
 	private Stack<String> variables = new Stack<String>();
 	
-	private OWLDataFactory df = new OWLDataFactoryImpl();
-	
 	private Multimap<Integer, OWLEntity> properties = HashMultimap.create();
 	
 	private Map<Integer, Boolean> intersection;
@@ -82,6 +80,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	private VariablesMapping mapping;
 	private boolean ignoreGenericTypeStatements = true;
 	private OWLClassExpression expr;
+	
+	private int cnt;
 	
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
@@ -180,6 +180,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		sparql = "";
 		intersection = new HashMap<Integer, Boolean>();
 		mapping.reset();
+		cnt = 1;
 	}
 	
 	private int modalDepth(){
@@ -255,6 +256,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String render(OWLLiteral literal){
 		return "\"" + literal.getLiteral() + "\"^^<" + literal.getDatatype().toStringID() + ">";
+	}
+	
+	private String newCountVar() {
+		return "?cnt" + cnt++;
 	}
 
 	@Override
@@ -350,33 +355,35 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
-		String subject = variables.peek();
-		String objectVariable = mapping.newIndividualVariable();
-		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
-		OWLClassExpression filler = ce.getFiller();
-		if(propertyExpression.isAnonymous()){
-			//property expression is inverse of a property
-			sparql += triple(objectVariable, predicate, variables.peek());
-		} else {
-			sparql += triple(variables.peek(), predicate, objectVariable);
+		if(!(ignoreGenericTypeStatements && ce.getFiller().isOWLThing())) {
+			String subject = variables.peek();
+			String objectVariable = mapping.newIndividualVariable();
+			OWLObjectPropertyExpression propertyExpression = ce.getProperty();
+			OWLObjectProperty predicate = propertyExpression.getNamedProperty();
+			OWLClassExpression filler = ce.getFiller();
+			if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
+				sparql += triple(objectVariable, predicate, variables.peek());
+			} else {
+				sparql += triple(variables.peek(), predicate, objectVariable);
+			}
+			
+			String var = mapping.newIndividualVariable();
+			String cntVar1 = newCountVar();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar1 + ") WHERE {";
+			sparql += triple(subject, predicate, var);
+			variables.push(var);
+			filler.accept(this);
+			variables.pop();
+			sparql += "} GROUP BY " + subject + "}";
+			
+			var = mapping.newIndividualVariable();
+			String cntVar2 = newCountVar();
+			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar2 + ") WHERE {";
+			sparql += triple(subject, predicate, var);
+			sparql += "} GROUP BY " + subject + "}";
+			
+			sparql += "FILTER(" + cntVar1 + "=" + cntVar2 + ")";
 		}
-		
-		String var = mapping.newIndividualVariable();
-		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt1) WHERE {";
-		sparql += triple(subject, predicate, var);
-		variables.push(var);
-		filler.accept(this);
-		variables.pop();
-		sparql += "} GROUP BY " + subject + "}";
-		
-		var = mapping.newIndividualVariable();
-		sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS ?cnt2) WHERE {";
-		sparql += triple(subject, predicate, var);
-		sparql += "} GROUP BY " + subject + "}";
-		
-		sparql += "FILTER(?cnt1=?cnt2)";
-		
 	}
 
 	@Override
