@@ -428,7 +428,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public boolean isSuperClassOfImpl(OWLClassExpression superConcept, OWLClassExpression subConcept) {
-        return reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
+        boolean res;
+        try {
+            res = reasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
+        } catch (UnsupportedOperationException e) {
+            res = fallbackReasoner.isEntailed(df.getOWLSubClassOfAxiom(subConcept, superConcept));
+        }
+        return res;
     }
 
     /* (non-Javadoc)
@@ -497,13 +503,24 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     protected TreeSet<OWLObjectProperty> getSuperPropertiesImpl(OWLObjectProperty objectProperty) {
-        NodeSet<OWLObjectPropertyExpression> properties = reasoner.getSuperObjectProperties(objectProperty, true);
+        NodeSet<OWLObjectPropertyExpression> properties;
+        try {
+            properties = reasoner.getSuperObjectProperties(objectProperty, true);
+        } catch (UnsupportedOperationException e) {
+            properties = fallbackReasoner.getSubObjectProperties(objectProperty, true);
+        }
         return getFirstObjectProperties(properties);
     }
 
     @Override
     protected TreeSet<OWLObjectProperty> getSubPropertiesImpl(OWLObjectProperty objectProperty) {
-        NodeSet<OWLObjectPropertyExpression> properties = reasoner.getSubObjectProperties(objectProperty, true);
+        NodeSet<OWLObjectPropertyExpression> properties;
+
+        try {
+            properties = reasoner.getSubObjectProperties(objectProperty, true);
+        } catch (UnsupportedOperationException e) {
+            properties = fallbackReasoner.getSubObjectProperties(objectProperty, true);
+        }
         return getFirstObjectProperties(properties);
     }
 
@@ -568,13 +585,24 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	domains.addAll(objectProperty.getDomains(ontology));
 
     	// do the same for all super properties
-    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	NodeSet<OWLObjectPropertyExpression> superProperties;
+    	try {
+    	    superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	} catch (UnsupportedOperationException e) {
+    	    superProperties = fallbackReasoner.getSuperObjectProperties(objectProperty, false);
+    	}
     	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
     		domains.addAll(supProp.getDomains(ontology));
 		}
 
     	// last but not least, call a reasoner
-        NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
+        NodeSet<OWLClass> nodeSet;
+        try {
+            nodeSet = reasoner.getObjectPropertyDomains(objectProperty, true);
+        } catch (UnsupportedOperationException e) {
+            nodeSet = fallbackReasoner.getObjectPropertyDomains(objectProperty, true);
+        }
+
         domains.addAll(nodeSet.getFlattened());
 
         domains.remove(df.getOWLThing());
@@ -662,13 +690,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     	ranges.addAll(objectProperty.getRanges(ontology));
 
     	// do the same for all super properties
-    	NodeSet<OWLObjectPropertyExpression> superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	NodeSet<OWLObjectPropertyExpression> superProperties;
+    	try {
+    	    superProperties = reasoner.getSuperObjectProperties(objectProperty, false);
+    	} catch (UnsupportedOperationException e) {
+    	    superProperties = fallbackReasoner.getSuperObjectProperties(objectProperty, false);
+    	}
     	for (OWLObjectPropertyExpression supProp : superProperties.getFlattened()) {
 			ranges.addAll(supProp.getRanges(ontology));
 		}
 
     	// last but not least, call a reasoner
-        NodeSet<OWLClass> nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
+    	NodeSet<OWLClass> nodeSet;
+    	try {
+    	    nodeSet = reasoner.getObjectPropertyRanges(objectProperty, true);
+    	} catch (UnsupportedOperationException e) {
+    	    nodeSet = fallbackReasoner.getObjectPropertyRanges(objectProperty, true);
+    	}
         ranges.addAll(nodeSet.getFlattened());
 
         OWLClassExpression range;
@@ -781,7 +819,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
     public Set<OWLIndividual> getRelatedIndividualsImpl(OWLIndividual individual, OWLObjectProperty objectProperty) {
-    	Set<OWLNamedIndividual> namedIndividuals = reasoner.getObjectPropertyValues(individual.asOWLNamedIndividual(), objectProperty).getFlattened();
+        Set<OWLNamedIndividual> namedIndividuals;
+        try {
+            namedIndividuals = reasoner.getObjectPropertyValues(individual.asOWLNamedIndividual(), objectProperty).getFlattened();
+        } catch (UnsupportedOperationException e) {
+            namedIndividuals = fallbackReasoner.getObjectPropertyValues(individual.asOWLNamedIndividual(), objectProperty).getFlattened();
+        }
     	Set<OWLIndividual> values = new HashSet<OWLIndividual>(namedIndividuals.size());
     	for (OWLNamedIndividual namedIndividual : namedIndividuals) {
 			values.add(namedIndividual);
