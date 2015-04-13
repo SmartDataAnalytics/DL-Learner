@@ -51,11 +51,11 @@ public class AnnComponentManager {
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
     private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
             "org.dllearner.algorithms.NaiveALLearner",
-            "org.dllearner.algorithms.celoe.CELOE", 
+            "org.dllearner.algorithms.celoe.CELOE",
 //            "org.dllearner.algorithms.celoe.PCELOE",
             "org.dllearner.algorithms.el.ELLearningAlgorithm",
             "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",   
+//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
 //            "org.dllearner.algorithms.BruteForceLearner",
 //            "org.dllearner.algorithms.RandomGuesser",
             "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
@@ -100,6 +100,8 @@ public class AnnComponentManager {
 //            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
             // just for testing
             // "org.dllearner.refinementoperators.ExampleOperator",
+            "org.dllearner.utilities.semkernel.SemKernelWorkflow",
+            "org.dllearner.utilities.semkernel.MPSemKernelWorkflow",
     } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;
