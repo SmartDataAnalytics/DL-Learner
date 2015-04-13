@@ -128,7 +128,7 @@ public class QTLTest {
 		reasoner.setPrecomputeDataPropertyHierarchy(true);
 		reasoner.init();
 		
-		QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
+		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 		la.setReasoner(reasoner);
 		la.setTreeFactory(qtf);
 		la.setEntailment(Entailment.RDFS);

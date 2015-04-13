@@ -26,47 +26,49 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
+public class BruteForceNBRStrategy implements NBRStrategy {
 	
 	private static final Logger logger = Logger.getLogger(BruteForceNBRStrategy.class);
 
 	@Override
-	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees) {
+	public RDFResourceTree computeNBR(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees) {
 		logger.info("Making NBR on");
 		logger.info(posExampleTree.getStringRepresentation());
 		logger.info("with negative examples");
-		for(QueryTree<N> tree : negExampleTrees){
+		for(RDFResourceTree tree : negExampleTrees){
 			logger.info(tree.getStringRepresentation());
 		}
 		
-		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		RDFResourceTree nbr = new RDFResourceTree(posExampleTree);
 		if(subsumesTrees(posExampleTree, negExampleTrees)){
 			logger.info("Warning: Positive example already covers all negative examples. Skipping NBR computation...");
 			return nbr;
 		}
 		
-		Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
+		Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
 		Object edge;
-		QueryTree<N> parent;
+		RDFResourceTree parent;
 		while(!(tested.size() == nbr.getLeafs().size()) ){
-			for(QueryTree<N> leaf : nbr.getLeafs()){
+			for(RDFResourceTree leaf : nbr.getLeafs()){
 				if(leaf.isRoot()){
 					return nbr;
 				}
 				parent = leaf.getParent();
-				edge = parent.getEdge(leaf);
-				parent.removeChild((QueryTreeImpl<N>)leaf);
+				edge = parent.getEdgeToChild(leaf);
+				parent.removeChild(leaf);
 				boolean isSubsumedBy = false;
-				for(QueryTree<N> negTree : negExampleTrees){
-					isSubsumedBy = negTree.isSubsumedBy(nbr);
+				for(RDFResourceTree negTree : negExampleTrees){
+					isSubsumedBy = QueryTreeUtils.isSubsumedBy(negTree, nbr);
 					if(isSubsumedBy){
 						break;
 					}
@@ -82,12 +84,12 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 	}
 
 	@Override
-	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public List<RDFResourceTree> computeNBRs(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		logger.info("Making NBR on");
 		logger.info(posExampleTree.getStringRepresentation());
 		logger.info("with negative examples");
-		for(QueryTree<N> tree : negExampleTrees){
+		for(RDFResourceTree tree : negExampleTrees){
 			logger.info(tree.getStringRepresentation());
 		}
 		
@@ -96,37 +98,37 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 			return Collections.singletonList(posExampleTree);
 		}
 		
-		List<QueryTree<N>> nbrs = new ArrayList<QueryTree<N>>();
+		List<RDFResourceTree> nbrs = new ArrayList<RDFResourceTree>();
 		
 		compute(posExampleTree, negExampleTrees, nbrs);
 		
 		return nbrs;
 	}
 	
-	private void compute(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees, List<QueryTree<N>> nbrs) {
+	private void compute(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees, List<RDFResourceTree> nbrs) {
 		
-		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
+		RDFResourceTree nbr = new RDFResourceTree(posExampleTree);
 		if(subsumesTrees(posExampleTree, negExampleTrees)){
 //			nbrs.add(posExampleTree);
 			return;
 		}
 		
-		for(QueryTree<N> n : nbrs){
+		for(RDFResourceTree n : nbrs){
 			removeTree(nbr, n);
 		}
 		
 		if(!subsumesTrees(nbr, negExampleTrees)){
-			Set<QueryTree<N>> tested = new HashSet<QueryTree<N>>();
+			Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
 			Object edge;
-			QueryTree<N> parent;
+			RDFResourceTree parent;
 			while(!(tested.size() == nbr.getLeafs().size()) ){
-				for(QueryTree<N> leaf : nbr.getLeafs()){
+				for(RDFResourceTree leaf : nbr.getLeafs()){
 					parent = leaf.getParent();
 					edge = parent.getEdge(leaf);
 					parent.removeChild((QueryTreeImpl<N>)leaf);
 					boolean isSubsumedBy = false;
-					for(QueryTree<N> negTree : negExampleTrees){
+					for(RDFResourceTree negTree : negExampleTrees){
 						isSubsumedBy = negTree.isSubsumedBy(nbr);
 						if(isSubsumedBy){
 							break;
@@ -146,10 +148,10 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		
 	}
 	
-	private boolean subsumesTrees(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees){
+	private boolean subsumesTrees(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees){
 		boolean subsumesTree = false;
-		for(QueryTree<N> negTree : negExampleTrees){
+		for(RDFResourceTree negTree : negExampleTrees){
 			subsumesTree = negTree.isSubsumedBy(posExampleTree);
 			if(subsumesTree){
 				break;
@@ -158,11 +160,11 @@ public class BruteForceNBRStrategy<N> implements NBRStrategy<N> {
 		return subsumesTree;
 	}
 	
-	private void removeTree(QueryTree<N> tree, QueryTree<N> node){
+	private void removeTree(RDFResourceTree tree, RDFResourceTree node){
 		Object edge;
-		for(QueryTree<N> child1 : node.getChildren()){
+		for(RDFResourceTree child1 : node.getChildren()){
 			edge = node.getEdge(child1);
-			for(QueryTree<N> child2 : tree.getChildren(edge)){
+			for(RDFResourceTree child2 : tree.getChildren(edge)){
 				if(child1.isLeaf() && child1.getUserObject().equals(child2.getUserObject())){
 					child2.getParent().removeChild((QueryTreeImpl<N>) child2);
 				} else {

@@ -38,7 +38,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.qtl.QTL2DisjunctiveNew;
+import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -300,7 +300,7 @@ public class QALDExperiment {
 						
 						//						lp.init();
 //						la = new QTL2(lp, qef);
-						QTL2DisjunctiveNew la = new QTL2DisjunctiveNew(lp, qef);
+						QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 						la.setReasoner(kb.reasoner);
 						la.setEntailment(Entailment.RDFS);
 						la.setTreeFactory(queryTreeFactory);
@@ -1282,7 +1282,7 @@ public class QALDExperiment {
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);
-		Logger.getLogger(QTL2DisjunctiveNew.class).setLevel(Level.INFO);
+		Logger.getLogger(QTL2Disjunctive.class).setLevel(Level.INFO);
 		Logger.getLogger(QALDExperiment.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		

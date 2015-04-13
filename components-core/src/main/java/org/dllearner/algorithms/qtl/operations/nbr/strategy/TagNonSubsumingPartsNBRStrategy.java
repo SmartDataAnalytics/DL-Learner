@@ -21,8 +21,9 @@ package org.dllearner.algorithms.qtl.operations.nbr.strategy;
 
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 
 /**
@@ -30,32 +31,32 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
  * @author Lorenz Bühmann
  *
  */
-public class TagNonSubsumingPartsNBRStrategy<N> implements NBRStrategy<N>{
+public class TagNonSubsumingPartsNBRStrategy implements NBRStrategy{
 
 	@Override
-	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public RDFResourceTree computeNBR(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		
-		for(QueryTree<N> negExampleTree : negExampleTrees){
-			negExampleTree.isSubsumedBy(posExampleTree, true);
+		for(RDFResourceTree negExampleTree : negExampleTrees){
+			QueryTreeUtils.isSubsumedBy(negExampleTree, posExampleTree);
 		}
 		
-		QueryTree<N> nbr = buildNBR(posExampleTree);
+		RDFResourceTree nbr = buildNBR(posExampleTree);
 		
 		return nbr;
 	}
 
 	@Override
-	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public List<RDFResourceTree> computeNBRs(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	private QueryTreeImpl<N> buildNBR(QueryTree<N> tree){
-		QueryTreeImpl<N> nbr = new QueryTreeImpl<N>(tree.getUserObject());
+	private RDFResourceTree buildNBR(RDFResourceTree tree){
+		RDFResourceTree nbr = new RDFResourceTree(tree.getData());
 		
-		for(QueryTree<N> child : tree.getChildren()){
+		for(RDFResourceTree child : tree.getChildren()){
 			if(child.isTagged()){
 				nbr.addChild(buildNBR(child), tree.getEdge(child));
 			}

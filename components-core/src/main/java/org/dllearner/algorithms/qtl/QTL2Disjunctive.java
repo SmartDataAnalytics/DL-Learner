@@ -64,9 +64,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
-public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
+public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
-	private static final Logger logger = Logger.getLogger(QTL2DisjunctiveNew.class);
+	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class);
 	private final DecimalFormat dFormat = new DecimalFormat("0.00"); 
 	
 	private SparqlEndpointKS ks;
@@ -152,20 +152,20 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	
 	private int maxTreeDepth = 2;
 	
-	public QTL2DisjunctiveNew() {}
+	public QTL2Disjunctive() {}
 	
-	public QTL2DisjunctiveNew(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
+	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
 		super(learningProblem, reasoner);
 		loadModel();
 	}
 	
-	public QTL2DisjunctiveNew(PosNegLP lp, QueryExecutionFactory qef) {
+	public QTL2Disjunctive(PosNegLP lp, QueryExecutionFactory qef) {
 		super.learningProblem = lp;
 		this.lp = lp;
 		this.qef = qef;
 	}
 	
-	public QTL2DisjunctiveNew(PosNegLP lp, SparqlEndpointKS ks) {
+	public QTL2Disjunctive(PosNegLP lp, SparqlEndpointKS ks) {
 		this(lp, ks.getQueryExecutionFactory());
 	}
 	
@@ -178,7 +178,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	 * Copy constructor.
 	 * @param qtl
 	 */
-	public QTL2DisjunctiveNew(QTL2DisjunctiveNew qtl) {
+	public QTL2Disjunctive(QTL2Disjunctive qtl) {
 		super(qtl.getLearningProblem(), qtl.getReasoner());
 		this.model = ModelFactory.createDefaultModel();
 		this.model.add(qtl.model);
@@ -1124,6 +1124,6 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		return new QTL2DisjunctiveNew(this);
+		return new QTL2Disjunctive(this);
 	}
 }

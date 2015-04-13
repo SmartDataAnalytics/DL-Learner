@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.qtl.QTL2DisjunctiveNew;
+import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -146,8 +146,8 @@ public class CLI {
 		
 			if (performCrossValidation) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
-				if(la instanceof QTL2DisjunctiveNew){
-					new SPARQLCrossValidation((QTL2DisjunctiveNew) la,lp,rs,nrOfFolds,false);	
+				if(la instanceof QTL2Disjunctive){
+					new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);	
 				} else {
 					new CrossValidation(la,lp,rs,nrOfFolds,false);	
 				}
