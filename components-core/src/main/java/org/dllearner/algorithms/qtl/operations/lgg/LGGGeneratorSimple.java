@@ -170,7 +170,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 		}
 		
 		// LGG computation
-		LGGGenerator2 lggGen = new LGGGeneratorSimple();
+		LGGGenerator lggGen = new LGGGeneratorSimple();
 		RDFResourceTree lgg = lggGen.getLGG(trees);
 		
 		System.out.println("LGG");

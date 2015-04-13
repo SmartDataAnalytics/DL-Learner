@@ -23,15 +23,14 @@ import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.qtl.cache.QueryTreeCache;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicNew;
-import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimpleNew;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
+import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
@@ -73,7 +72,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	private SparqlEndpointKS ks;
 	
 //	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
-	private LGGGenerator2 lggGenerator;
+	private LGGGenerator lggGenerator;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory treeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -91,8 +90,6 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	private Map<RDFResourceTree, OWLIndividual> tree2Individual = new HashMap<RDFResourceTree, OWLIndividual>();
 	private Map<OWLIndividual, RDFResourceTree> individual2Tree = new HashMap<OWLIndividual, RDFResourceTree>();
 	
-	private QueryTreeCache treeCache;
-
 	private PosNegLP lp;
 
 	private Model model;
@@ -104,7 +101,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	
 	private EvaluatedDescription currentBestSolution;
 	
-	private QueryTreeHeuristicNew heuristic;
+	private QueryTreeHeuristic heuristic;
 	
 	//Parameters
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
@@ -216,7 +213,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 		
 		// set the used heuristic
 		if(heuristic == null){
-			heuristic = new QueryTreeHeuristicSimpleNew();
+			heuristic = new QueryTreeHeuristicSimple();
 			heuristic.setPosExamplesWeight(beta);
 		}
 		
@@ -905,13 +902,6 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 		}
 	}
 	
-	/**
-	 * @return the treeCache
-	 */
-	public QueryTreeCache getTreeCache() {
-		return treeCache;
-	}
-
 	private Set<OWLIndividual> asIndividuals(Collection<RDFResourceTree> trees){
 		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>(trees.size());
 		for (RDFResourceTree queryTree : trees) {
@@ -1054,14 +1044,14 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 	/**
 	 * @return the heuristic
 	 */
-	public QueryTreeHeuristicNew getHeuristic() {
+	public QueryTreeHeuristic getHeuristic() {
 		return heuristic;
 	}
 	
 	/**
 	 * @param heuristic the heuristic to set
 	 */
-	public void setHeuristic(QueryTreeHeuristicNew heuristic) {
+	public void setHeuristic(QueryTreeHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
 	

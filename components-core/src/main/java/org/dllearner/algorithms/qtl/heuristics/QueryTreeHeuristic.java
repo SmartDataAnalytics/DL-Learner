@@ -18,13 +18,13 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Lorenz Buehmann
  *
  */
-public abstract class QueryTreeHeuristicNew extends AbstractComponent implements Heuristic,
+public abstract class QueryTreeHeuristic extends AbstractComponent implements Heuristic,
 		Comparator<EvaluatedRDFResourceTree> {
 
 	protected double posExamplesWeight = 1.0;
 	protected HeuristicType heuristicType = HeuristicType.PRED_ACC;
 
-	public QueryTreeHeuristicNew() {
+	public QueryTreeHeuristic() {
 		super();
 	}
 

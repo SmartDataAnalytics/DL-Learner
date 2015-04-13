@@ -246,7 +246,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		}
 
 		// LGG computation
-		LGGGenerator2 lggGen = new LGGGeneratorRDFS(new SPARQLReasoner(qef));
+		LGGGenerator lggGen = new LGGGeneratorRDFS(new SPARQLReasoner(qef));
 		RDFResourceTree lgg = lggGen.getLGG(trees);
 
 		System.out.println("LGG");

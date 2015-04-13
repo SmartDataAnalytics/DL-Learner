@@ -9,7 +9,7 @@ import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -37,8 +37,8 @@ private static final String baseIRI = "http://test.org/";
 
 	private static AbstractReasonerComponent reasoner;
 
-	private static LGGGenerator2 lggGenSimple;
-	private static LGGGenerator2 lggGenRDFS;
+	private static LGGGenerator lggGenSimple;
+	private static LGGGenerator lggGenRDFS;
 	
 	@BeforeClass
 	public static void init() {

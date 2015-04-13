@@ -27,13 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.qtl.QTL2;
+import org.dllearner.algorithms.qtl.QTL2DisjunctiveNew;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -50,19 +48,11 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.utilities.Files;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * 
@@ -156,8 +146,8 @@ public class CLI {
 		
 			if (performCrossValidation) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
-				if(la instanceof QTL2){
-					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
+				if(la instanceof QTL2DisjunctiveNew){
+					new SPARQLCrossValidation((QTL2DisjunctiveNew) la,lp,rs,nrOfFolds,false);	
 				} else {
 					new CrossValidation(la,lp,rs,nrOfFolds,false);	
 				}

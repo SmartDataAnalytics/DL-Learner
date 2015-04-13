@@ -3,11 +3,8 @@ package org.dllearner.algorithms.qtl.heuristics;
 import java.util.List;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
-import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 
 public class QueryTreeEditDistance {
@@ -102,7 +99,7 @@ public class QueryTreeEditDistance {
      * @return
      */
 	public static <T> double getDistanceApprox(RDFResourceTree tree1, RDFResourceTree tree2) {
-		LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
+		LGGGenerator lggGenerator = new LGGGeneratorSimple();
 
 		// compute the LGG of tree1 and tree2
 		RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);

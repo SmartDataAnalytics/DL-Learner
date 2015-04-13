@@ -278,6 +278,23 @@ public class QueryTreeUtils {
 	}
     
     /**
+     * Returns all nodes in the given query tree.
+     * @param tree
+     * @return
+     */
+    public static List<RDFResourceTree> getLeafs(RDFResourceTree tree) {
+		List<RDFResourceTree> leafs = new ArrayList<RDFResourceTree>();
+		
+		for (RDFResourceTree node : getNodes(tree)) {
+			if(node.isLeaf()) {
+				leafs.add(node);
+			}
+		}
+		
+		return leafs;
+	}
+    
+    /**
 	 * Determines if tree1 is subsumed by tree2, i.e. whether tree2 is more general than
 	 * tree1.
 	 * @param tree1

@@ -33,7 +33,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	
 	private final int id;
 	
-	private static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
+	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
 	private static final Node DEFAULT_LITERAL_NODE = NodeFactory.createLiteral("");
 	
 	// a datatype which only exists if node is literal

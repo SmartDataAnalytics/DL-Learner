@@ -19,7 +19,7 @@ import com.jamonapi.MonitorFactory;
  * @author Lorenz Buehmann
  *
  */
-public abstract class AbstractLGGGenerator implements LGGGenerator2 {
+public abstract class AbstractLGGGenerator implements LGGGenerator {
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	

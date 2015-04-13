@@ -19,11 +19,11 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
-public class ComplexQueryTreeHeuristic extends QueryTreeHeuristicNew {
+public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 
 	private QueryExecutionFactory qef;
 
-	public ComplexQueryTreeHeuristic(QueryExecutionFactory qef) {
+	public QueryTreeHeuristicComplex(QueryExecutionFactory qef) {
 		this.qef = qef;
 	}
 	
