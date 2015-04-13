@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator2;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorImpl;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 
 public class QueryTreeEditDistance {
 
-    public static <T> double getDistance(QueryTree<T> tree1, QueryTree<T> tree2) {
+    public static <T> double getDistance(RDFResourceTree tree1, RDFResourceTree tree2) {
         double distance = 0;
 
         // compare root node
@@ -20,7 +23,7 @@ public class QueryTreeEditDistance {
         // null vs. node
         } else if (tree1 == null) {
             distance += 1;
-            for (QueryTree<T> child : tree2.getChildren()) {
+            for (RDFResourceTree child : tree2.getChildren()) {
                 distance += getDistance(null, child);
             }
             return distance;
@@ -28,34 +31,34 @@ public class QueryTreeEditDistance {
         // node vs. null
         } else if (tree2 == null) {
             distance += 1;
-            for (QueryTree<T> child : tree1.getChildren()) {
+            for (RDFResourceTree child : tree1.getChildren()) {
                 distance += getDistance(child, null);
             }
             return distance;
 
         // node vs. node
         } else {
-            distance += tree1.getUserObject().equals(tree2.getUserObject()) ? 0 : 1;
+            distance += tree1.getData().equals(tree2.getData()) ? 0 : 1;
         }
 
-        List<QueryTree<T>> tree1queue = tree1.getChildren();
-        List<QueryTree<T>> tree2queue = tree2.getChildren();
+        List<RDFResourceTree> tree1queue = tree1.getChildren();
+        List<RDFResourceTree> tree2queue = tree2.getChildren();
 
         // make tree1queue the longer queue
         if (tree1queue.size() < tree2queue.size()) {
-            List<QueryTree<T>> tmp = tree1queue;
+            List<RDFResourceTree> tmp = tree1queue;
             tree1queue = tree2queue;
             tree2queue = tmp;
         }
 
         while (tree1queue.size() > 0) {
             double minDistance = Double.MAX_VALUE;
-            QueryTree<T> minDistanceTree1Child = null;
-            QueryTree<T> minDistanceTree2Child = null;
+            RDFResourceTree minDistanceTree1Child = null;
+            RDFResourceTree minDistanceTree2Child = null;
 
             // try all combinations of tree 1 and tree 2 children and chose
             // those with the smallest distance as 'match'
-            for (QueryTree<T> queryTree1 : tree1queue) {
+            for (RDFResourceTree queryTree1 : tree1queue) {
                 double tmpDistance;
 
                 // case 1: tree 2 queue is empty:
@@ -69,7 +72,7 @@ public class QueryTreeEditDistance {
 
                 // case 2: tree 2 queue is not empty:
                 } else {
-                    for (QueryTree<T> queryTree2 : tree2queue) {
+                    for (RDFResourceTree queryTree2 : tree2queue) {
                         tmpDistance = getDistance(queryTree1, queryTree2);
 
                         if (tmpDistance <= minDistance) {
@@ -98,11 +101,11 @@ public class QueryTreeEditDistance {
      * @param tree2
      * @return
      */
-	public static <T> double getDistanceApprox(QueryTree<T> tree1, QueryTree<T> tree2) {
-		LGGGenerator<T> lggGenerator = new LGGGeneratorImpl<T>();
+	public static <T> double getDistanceApprox(RDFResourceTree tree1, RDFResourceTree tree2) {
+		LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
 
 		// compute the LGG of tree1 and tree2
-		QueryTree<T> lgg = lggGenerator.getLGG(tree1, tree2);
+		RDFResourceTree lgg = lggGenerator.getLGG(tree1, tree2);
 
 		// we define the distance as the maximum difference between the complexity
 		// of tree1 to LGG and tree2 to LGG

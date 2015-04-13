@@ -105,5 +105,4 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	public boolean supportsSPARQL_1_1() {
 		return true;
 	}
-
 }

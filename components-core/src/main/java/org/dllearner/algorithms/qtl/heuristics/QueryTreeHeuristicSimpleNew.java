@@ -13,6 +13,7 @@ import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
+ * A simple heuristic based which just takes the accuracy into account.
  * @author Lorenz Buehmann
  *
  */

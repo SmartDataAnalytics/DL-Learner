@@ -65,6 +65,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 		this.id = id;
 	}
 	
+	public RDFResourceTree(Node data) {
+		this(0, data);
+	}
+	
 	/**
 	 * Create empty literal node with given datatype.
 	 * @param id

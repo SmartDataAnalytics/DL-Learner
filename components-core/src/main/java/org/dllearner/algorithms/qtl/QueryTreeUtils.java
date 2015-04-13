@@ -30,7 +30,6 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -49,8 +48,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.core.Vars;
 import com.hp.hpl.jena.sparql.expr.E_Datatype;
 import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
@@ -200,12 +197,12 @@ public class QueryTreeUtils {
 	 * </div>
 	 * <code>c(T) = 1 + log(|U| * α + |L| * β + |VAR| * γ) </code>
 	 * <div>
-	 * with <code>α, β, γ</code> being weight of the particular node types.
+	 * with <code>α, β, γ</code> being the weight of the particular node types.
 	 * </div>
 	 * @param tree
 	 * @return the set of edges in the query tree
 	 */
-	public static <N> double getComplexity(QueryTree<N> tree) {
+	public static <N> double getComplexity(RDFResourceTree tree) {
 		
 		double varNodeWeight = 0.8;
 		double resourceNodeWeight = 1.0;
@@ -213,20 +210,14 @@ public class QueryTreeUtils {
 		
 		double complexity = 0;
 		
-		List<QueryTree<N>> nodes = getNodes(tree);
-		for (QueryTree<N> node : nodes) {
-			switch (node.getNodeType()) {
-			case VARIABLE:
+		List<RDFResourceTree> nodes = getNodes(tree);
+		for (RDFResourceTree node : nodes) {
+			if(node.isVarNode()) {
 				complexity += varNodeWeight;
-				break;
-			case RESOURCE:
+			} else if(node.isResourceNode()) {
 				complexity += resourceNodeWeight;
-				break;
-			case LITERAL:
+			} else if(node.isLiteralNode()) {
 				complexity += literalNodeWeight;
-				break;
-			default:
-				break;
 			}
 		}
 		

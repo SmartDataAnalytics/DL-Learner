@@ -4,7 +4,8 @@
 package org.dllearner.algorithms.qtl.heuristics;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.QueryTreeScore;
@@ -18,7 +19,7 @@ import com.hp.hpl.jena.query.ResultSet;
  *
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
-public class ComplexQueryTreeHeuristic extends QueryTreeHeuristic {
+public class ComplexQueryTreeHeuristic extends QueryTreeHeuristicNew {
 
 	private QueryExecutionFactory qef;
 
@@ -34,7 +35,7 @@ public class ComplexQueryTreeHeuristic extends QueryTreeHeuristic {
 	}
 
 	@Override
-	public double getScore(EvaluatedQueryTree<String> tree) {
+	public double getScore(EvaluatedRDFResourceTree tree) {
 		QueryTreeScore treeScore = tree.getTreeScore();
 		
 		// accuracy as baseline
@@ -48,9 +49,9 @@ public class ComplexQueryTreeHeuristic extends QueryTreeHeuristic {
 
 	
 
-	private int getResultCount(EvaluatedQueryTree<String> evaluatedQueryTree) {
+	private int getResultCount(EvaluatedRDFResourceTree evaluatedQueryTree) {
 		int cnt = 0;
-		String query = evaluatedQueryTree.getTree().toSPARQLQueryString();
+		String query = QueryTreeUtils.toSPARQLQueryString(evaluatedQueryTree.getTree());
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
 		QuerySolution qs;

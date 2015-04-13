@@ -28,7 +28,6 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicNew;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimpleNew;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
@@ -63,8 +62,6 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLOb
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.jamonapi.MonitorFactory;
 
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
@@ -377,7 +374,7 @@ public class QTL2DisjunctiveNew extends AbstractCELA implements Cloneable{
 			
 			double accuracy = solution.getTreeScore().getAccuracy();
 			
-			double mas = QueryTreeHeuristic.getMaximumAchievableScore(heuristic.getHeuristicType());
+			double mas = heuristic.getMaximumAchievableScore(solution);
 			
 			double epsilon = 0.01;
 			

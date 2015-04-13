@@ -101,16 +101,16 @@ public abstract class QueryTreeHeuristicNew extends AbstractComponent implements
 	}
 
 	/**
-	 * Returns the maximum achievable score according to the used score
+	 * Returns the maximum achievable accuracy score according to the used score
 	 * function.
 	 * The idea is as follows:
-	 * For algorithms which make the found solution more general, we know that
+	 * For algorithms which make the current solution more general, we know that
 	 * 1. all already covered positive examples remain covered
 	 * 2. all already covered negative examples remain covered
 	 * 3. uncovered positive examples might be covered by more general solutions
 	 * 4. uncovered negative examples might be covered by more general solutions
 	 * That means, in the optimal case we get a solution which covers all
-	 * uncovered positive examples, but not of the uncovered negative examples.
+	 * uncovered positive examples, but non of the uncovered negative examples.
 	 * 
 	 * @param tp
 	 * @param tn
@@ -143,17 +143,6 @@ public abstract class QueryTreeHeuristicNew extends AbstractComponent implements
 		}
 		return mas;
 	}
-	
-	public static double getMaximumAchievableScore(HeuristicType heuristicType) {
-		switch (heuristicType) {
-		case FMEASURE: return 1;
-		case PRED_ACC: return 1;
-		case ENTROPY: return 1;
-		case MATTHEWS_CORRELATION: return 1;
-		case YOUDEN_INDEX: return 1;
-		default: return 1;
-		}
-	}
 
 	@Override
 	public int compare(EvaluatedRDFResourceTree tree1, EvaluatedRDFResourceTree tree2) {
@@ -170,7 +159,7 @@ public abstract class QueryTreeHeuristicNew extends AbstractComponent implements
 	}
 
 	/**
-	 * @param heuristicType the heuristicType to set
+	 * @param heuristicType the type of accuracy measure to set
 	 */
 	public void setHeuristicType(HeuristicType heuristicType) {
 		this.heuristicType = heuristicType;
