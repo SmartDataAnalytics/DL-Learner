@@ -57,9 +57,10 @@ public class TagNonSubsumingPartsNBRStrategy implements NBRStrategy{
 		RDFResourceTree nbr = new RDFResourceTree(tree.getData());
 		
 		for(RDFResourceTree child : tree.getChildren()){
-			if(child.isTagged()){
-				nbr.addChild(buildNBR(child), tree.getEdge(child));
-			}
+//			if(child.isTagged()){
+//				nbr.addChild(buildNBR(child), tree.getEdgeToChild(child));
+//			}
+			//TODO refactor
 		}
 		
 		return nbr;
