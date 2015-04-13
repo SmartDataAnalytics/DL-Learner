@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.operations.nbr.strategy.BruteForceNBRStrategy;
 import org.dllearner.algorithms.qtl.operations.nbr.strategy.NBRStrategy;
 
@@ -32,52 +33,52 @@ import org.dllearner.algorithms.qtl.operations.nbr.strategy.NBRStrategy;
  * @param <N>
  *
  */
-public class NBRGeneratorImpl<N> implements NBRGenerator<N>{
+public class NBRGeneratorImpl implements NBRGenerator{
 	
-	NBRStrategy<N> strategy;
+	NBRStrategy strategy;
 	
 	public NBRGeneratorImpl(){
-		this.strategy = new BruteForceNBRStrategy<N>();
+		this.strategy = new BruteForceNBRStrategy();
 	}
 	
-	public NBRGeneratorImpl(NBRStrategy<N> strategy){
+	public NBRGeneratorImpl(NBRStrategy strategy){
 		this.strategy = strategy;
 	}
 
 	@Override
-	public QueryTree<N> getNBR(QueryTree<N> posExampleTree,
-			QueryTree<N> negExampleTree) {
+	public RDFResourceTree getNBR(RDFResourceTree posExampleTree,
+			RDFResourceTree negExampleTree) {
 		return strategy.computeNBR(posExampleTree, Collections.singletonList(negExampleTree));
 	}
 
 	@Override
-	public QueryTree<N> getNBR(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public RDFResourceTree getNBR(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		return strategy.computeNBR(posExampleTree, negExampleTrees);
 	}
 
 	@Override
-	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
-			QueryTree<N> negExampleTree) {
+	public List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree,
+			RDFResourceTree negExampleTree) {
 		return strategy.computeNBRs(posExampleTree, Collections.singletonList(negExampleTree));
 	}
 
 	@Override
-	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		return strategy.computeNBRs(posExampleTree, negExampleTrees);
 	}
 
 	@Override
-	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
-			QueryTree<N> negExampleTree, int limit) {
+	public List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree,
+			RDFResourceTree negExampleTree, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees, int limit) {
+	public List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}

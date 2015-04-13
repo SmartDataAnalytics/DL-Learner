@@ -39,7 +39,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	// a datatype which only exists if node is literal
 	private RDFDatatype datatype;
 	
-	private Map<RDFResourceTree, Object> child2Edge = new HashMap<>();
+	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
@@ -155,6 +155,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	
 	public List<RDFResourceTree> getChildren(Node edge) {
 		return edge2Children.get(edge);
+	}
+	
+	public Node getEdgeToChild(RDFResourceTree child) { 
+		return child2Edge.get(child);
 	}
 	
 	/**

@@ -29,7 +29,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.qtl.QTL2DisjunctiveNew;
+import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -80,7 +80,7 @@ public class SPARQLCrossValidation {
 		
 	}
 	
-	public SPARQLCrossValidation(QTL2DisjunctiveNew la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
+	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 
@@ -249,7 +249,7 @@ public class SPARQLCrossValidation {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2DisjunctiveNew qtl) {
+	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2Disjunctive qtl) {
 		Set<OWLIndividual> coveredIndividuals = new HashSet<OWLIndividual>();
 		RDFResourceTree solutionTree = qtl.getBestSolution().getTree();
 		
@@ -259,7 +259,7 @@ public class SPARQLCrossValidation {
 		return coveredIndividuals;
 	}
 	
-	protected int getCorrectPosClassified(Set<OWLIndividual> testSetPos, QTL2DisjunctiveNew qtl) {
+	protected int getCorrectPosClassified(Set<OWLIndividual> testSetPos, QTL2Disjunctive qtl) {
 		return qtl.getBestSolution().getTreeScore().getCoveredPositives().size();
 	}
 	
@@ -267,7 +267,7 @@ public class SPARQLCrossValidation {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
-	protected int getCorrectNegClassified(Set<OWLIndividual> testSetNeg, QTL2DisjunctiveNew qtl) {
+	protected int getCorrectNegClassified(Set<OWLIndividual> testSetNeg, QTL2Disjunctive qtl) {
 		return qtl.getBestSolution().getTreeScore().getNotCoveredNegatives().size();
 	}
 	
