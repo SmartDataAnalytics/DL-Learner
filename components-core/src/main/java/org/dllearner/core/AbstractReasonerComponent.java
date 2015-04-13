@@ -262,7 +262,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		reasoningStartTimeTmp = System.nanoTime();
 		boolean result = false;
 		if(precomputeClassHierarchy) {
-			return getClassHierarchy().getSuperClasses(subClass).contains(superClass);
+			if(superClass.isAnonymous() || subClass.isAnonymous()) {
+				try {
+					result = isSuperClassOfImpl(superClass, subClass);
+				} catch (ReasoningMethodUnsupportedException e) {
+					e.printStackTrace();
+				}
+			} else {
+				return getClassHierarchy().isSubclassOf(subClass, superClass);
+			}
 		} else {
 			try {
 				result = isSuperClassOfImpl(superClass, subClass);
