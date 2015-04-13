@@ -148,6 +148,10 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>enrichment</name>
 								</program>
+								<program>
+									<mainClass>org.dllearner.cli.SemKernelCLI</mainClass>
+									<name>semkernel</name>
+								</program>
 								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
 									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
 									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
