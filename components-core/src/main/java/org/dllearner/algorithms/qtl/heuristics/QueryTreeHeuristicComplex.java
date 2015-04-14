@@ -11,7 +11,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.QueryTreeScore;
 
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
 /**
@@ -20,6 +19,9 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 @ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
 public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
+	
+	
+	private double resultSetSizePenalty = 0.0001;
 
 	private QueryExecutionFactory qef;
 
@@ -43,20 +45,21 @@ public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 
 		// distance penalty
 		score -= treeScore.getDistancePenalty();
+		
+		// result set weight
+		int resultCount = getResultCount(tree);
 
 		return score;
 	}
-
-	
 
 	private int getResultCount(EvaluatedRDFResourceTree evaluatedQueryTree) {
 		int cnt = 0;
 		String query = QueryTreeUtils.toSPARQLQueryString(evaluatedQueryTree.getTree());
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
-		QuerySolution qs;
+		
 		while (rs.hasNext()) {
-			qs = rs.next();
+			rs.next();
 			cnt++;
 		}
 		qe.close();
