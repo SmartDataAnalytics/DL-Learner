@@ -8,6 +8,9 @@ import java.util.Set;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
+ * A wrapper class that contains a set of positive and negative examples
+ * and represents a partition of an original set of examples.
+ * 
  * @author Lorenz Buehmann
  *
  */
@@ -33,6 +36,14 @@ public class Partition {
 	 */
 	public Set<OWLIndividual> getNegExamples() {
 		return negExamples;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "E+=" + posExamples + "\nE-=" + negExamples;
 	}
 
 }
