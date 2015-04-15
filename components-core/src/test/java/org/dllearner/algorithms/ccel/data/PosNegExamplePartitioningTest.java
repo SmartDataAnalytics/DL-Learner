@@ -54,8 +54,9 @@ public class PosNegExamplePartitioningTest {
 		ExamplesPartitioning partitioning = new PosNegExamplesPartitioning();
 		
 		List<Partition> partitions = partitioning.computePartitions(posExamples, negExamples, nrOfPartitions);
-		print(partitions);
+		Partition.print(partitions);
 		
+		// size check
 		assertTrue(partitions.size() == nrOfPartitions);
 		
 	}
@@ -70,16 +71,14 @@ public class PosNegExamplePartitioningTest {
 		ExamplesPartitioning partitioning = new PosExamplesPartitioning();
 		
 		List<Partition> partitions = partitioning.computePartitions(posExamples, negExamples, nrOfPartitions);
-		print(partitions);
+		Partition.print(partitions);
 		
+		// size check
 		assertTrue(partitions.size() == nrOfPartitions);
 		
-	}
-	
-	public static void print(List<Partition> partitions) {
-		int i = 1;
+		// each partition should contain all negative examples
 		for (Partition partition : partitions) {
-			System.out.println("P" + i++ + "{\n" + partition + "\n}");
+			assertTrue(partition.getNegExamples().equals(negExamples));
 		}
 	}
 

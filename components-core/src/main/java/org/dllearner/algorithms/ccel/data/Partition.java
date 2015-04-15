@@ -3,6 +3,7 @@
  */
 package org.dllearner.algorithms.ccel.data;
 
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -44,6 +45,17 @@ public class Partition {
 	@Override
 	public String toString() {
 		return "E+=" + posExamples + "\nE-=" + negExamples;
+	}
+	
+	/**
+	 * Print a list of partitions.
+	 * @param partitions
+	 */
+	public static void print(List<Partition> partitions) {
+		int i = 1;
+		for (Partition partition : partitions) {
+			System.out.println("P" + i++ + "{\n" + partition + "\n}");
+		}
 	}
 
 }
