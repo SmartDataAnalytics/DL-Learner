@@ -1,7 +1,5 @@
 /**
- * 
- */
-/**
+ * A cluster-based clas expression learning algorithm.
  * @author Lorenz Buehmann
  *
  */

@@ -1,7 +1,5 @@
 /**
- * 
- */
-/**
+ * Utility classes for partitioning of the examples.
  * @author Lorenz Buehmann
  *
  */
