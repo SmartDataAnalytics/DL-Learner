@@ -34,6 +34,7 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -320,23 +321,27 @@ public class QALDExperiment {
 						// convert to SPARQL query
 						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution.getTree()), kb.baseIRI, kb.prefixMapping);
 
+						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
+						
 						// compute precision
-						double precision = precision(sparqlQuery, learnedSPARQLQuery);
+						double precision = score.getPrecision();
 						bestReturnedSolutionPrecisionStats.addValue(precision);
 
 						// compute recall
-						double recall = recall(sparqlQuery, learnedSPARQLQuery);
+						double recall = score.getRecall();
 						bestReturnedSolutionRecallStats.addValue(recall);
 
 						// compute F1-score
-						double fmeasure = fMeasure(sparqlQuery, learnedSPARQLQuery);
+						double fmeasure = score.getFmeasure();
 						bestReturnedSolutionFMeasureStats.addValue(fmeasure);
 
 						logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
 
 						// find the extensionally best matching tree in the list
-						EvaluatedRDFResourceTree bestMatchingTree = findBestMatchingTree(solutions, sparqlQuery);
-
+						Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTree(solutions, sparqlQuery);
+						EvaluatedRDFResourceTree bestMatchingTree = bestMatchingTreeWithScore.getFirst();
+						Score bestMatchingScore = bestMatchingTreeWithScore.getSecond();
+						
 						// position of best tree in list of solutions
 						int position = solutions.indexOf(bestMatchingTree);
 						bestSolutionPositionStats.addValue(position);
@@ -346,9 +351,9 @@ public class QALDExperiment {
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 							logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(filter.filter(bestMatchingTree.getTree()), kb.baseIRI, kb.prefixMapping);
-							precision = precision(sparqlQuery, bestLearnedSPARQLQuery);
-							recall = recall(sparqlQuery, bestLearnedSPARQLQuery);
-							fmeasure = fMeasure(sparqlQuery, bestLearnedSPARQLQuery);
+							precision = bestMatchingScore.getPrecision();
+							recall = bestMatchingScore.getRecall();
+							fmeasure = bestMatchingScore.getFmeasure();
 							logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
 						} else {
 							logger.info("Best returned solution was also the best covering solution.");
@@ -387,30 +392,33 @@ public class QALDExperiment {
 		}
 	}
 	
-	private EvaluatedRDFResourceTree findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
+	private Pair<EvaluatedRDFResourceTree, Score> findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
 		logger.info("Finding best matching query tree...");
 		//get the tree with the highest fmeasure
 		EvaluatedRDFResourceTree bestTree = null;
+		Score bestScore = null;
 		double bestFMeasure = -1;
 		
 		for (EvaluatedRDFResourceTree evalutedTree : trees) {
 			RDFResourceTree tree = evalutedTree.getTree();
+			// apply predicate existence filter
 			tree = filter.filter(tree);
 			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, kb.baseIRI, kb.prefixMapping);
 			System.out.println(learnedSPARQLQuery);
-//			logger.info(getPrefixedQuery(learnedSPARQLQuery));
-//			logger.info("Tree Score: " + tree.getTreeScore());
-			double fMeasure = fMeasure(targetSPARQLQuery, learnedSPARQLQuery);
+			// compute score
+			Score score = computeScore(targetSPARQLQuery, learnedSPARQLQuery);
+			double fMeasure = score.getFmeasure();
+			// we can stop if f-score is 1
 			if(fMeasure == 1.0){
-				return evalutedTree;
+				return new Pair<>(evalutedTree, score);
 			}
 			if(fMeasure > bestFMeasure){
 				bestFMeasure = fMeasure;
 				bestTree = evalutedTree;
+				bestScore = score;
 			}
-//			logger.info("Extensional fMeasure: " + fMeasure);
 		}
-		return bestTree;
+		return new Pair<>(bestTree, bestScore);
 	}
 	
 	private Map<OWLIndividual, RDFResourceTree> generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
@@ -851,7 +859,9 @@ public class QALDExperiment {
 //			q = rewriteForVirtuosoFloatingPointIssue(q);
 			logger.trace(q);
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
-			Set<String> resourcesTmp = new HashSet<String>(getResult(q.toString()));
+			System.out.println(q);
+			List<String> partialResult = getResult(q.toString());
+			Set<String> resourcesTmp = new HashSet<String>(partialResult);
 			
 			if(resourcesTmp.isEmpty()) {
 				System.err.println("Empty query result");
@@ -1209,72 +1219,38 @@ public class QALDExperiment {
 		return q;
 	}
 	
-	private double precision(String referenceSparqlQuery, String learnedSPARQLQuery) {
+	private Score computeScore(String referenceSparqlQuery, String learnedSPARQLQuery) {
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
-		if(referenceResources.isEmpty()){
+		if (referenceResources.isEmpty()) {
 			logger.error("Reference SPARQL query returns no result.\n" + referenceSparqlQuery);
-//			System.exit(0);
-			return 0;
+			return new Score();
 		}
-		
-		if(learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
-			return referenceResources.size() / (double) kbSize;
+
+		// if query is most general one P=|TARGET|/|KB| R=1
+		if (learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
+			double precision = referenceResources.size() / (double) kbSize;
+			double recall = 1.0;
+			double fMeasure = Heuristics.getFScore(recall, precision);
+			return new Score(precision, recall, fMeasure);
 		}
 
 		// get the learned resources
 		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		if(learnedResources.isEmpty()){
+		if (learnedResources.isEmpty()) {
 			logger.error("Learned SPARQL query returns no result.\n" + learnedSPARQLQuery);
 			System.err.println(learnedSPARQLQuery);
-//			System.exit(0);
-			return 0;
+			return new Score();
 		}
 
 		// get the overlapping resources
-		int overlap = Sets.intersection(
-				Sets.newHashSet(referenceResources),
-				Sets.newHashSet(learnedResources)).size();
+		int overlap = Sets.intersection(Sets.newHashSet(referenceResources), Sets.newHashSet(learnedResources)).size();
 
 		double precision = overlap / (double) learnedResources.size();
-
-		return precision;
-	}
-	
-	private double recall(String referenceSparqlQuery, String learnedSPARQLQuery) {
-		if(learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
-			return 1.0;
-		}
-		
-		// get the reference resources
-		List<String> referenceResources = getResult(referenceSparqlQuery);
-		if(referenceResources.isEmpty()){
-			return 0;
-		}
-		
-		// get the learned resources
-		List<String> learnedResources = splitComplexQueries ? getResultSplitted(learnedSPARQLQuery) : getResult(learnedSPARQLQuery);
-		if(learnedResources.isEmpty()){
-			return 0;
-		}
-
-		int overlap = Sets.intersection(
-				Sets.newHashSet(referenceResources),
-				Sets.newHashSet(learnedResources)).size();
-
 		double recall = overlap / (double) referenceResources.size();
-
-		return recall;
-	}
-	
-	private double fMeasure(String referenceSparqlQuery, String learnedSPARQLQuery){
-		double precision = precision(referenceSparqlQuery, learnedSPARQLQuery);
-		
-		double recall = recall(referenceSparqlQuery, learnedSPARQLQuery);
-		
 		double fMeasure = Heuristics.getFScore(recall, precision);
-		
-		return fMeasure;
+
+		return new Score(precision, recall, fMeasure);
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -1289,6 +1265,31 @@ public class QALDExperiment {
 		new QALDExperiment(new DBpediaKB()).run();
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
+	}
+	
+	class Score {
+		double precision, recall, fmeasure = 0;
+
+		public Score() {}
+		
+		public Score(double precision, double recall, double fmeasure) {
+			this.precision = precision;
+			this.recall = recall;
+			this.fmeasure = fmeasure;
+		}
+		
+		public double getPrecision() {
+			return precision;
+		}
+		
+		public double getRecall() {
+			return recall;
+		}
+		
+		public double getFmeasure() {
+			return fmeasure;
+		}
+		
 	}
 	
 	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{

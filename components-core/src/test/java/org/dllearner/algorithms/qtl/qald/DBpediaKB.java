@@ -29,7 +29,7 @@ public class DBpediaKB extends KB {
 				new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
 				"http://dbpedia.org");
 		ks = new SparqlEndpointKS(endpoint);
-		ks.setCacheDir("./qtl-qald-iswc2015-cache");
+		ks.setCacheDir("./cache-qtl/qtl-qald-iswc2015-cache;mv_store=false");
 		ks.init();
 		
 		reasoner = new SPARQLReasoner(ks);
