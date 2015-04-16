@@ -229,7 +229,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 * @return A copy of this hierarchy, which is restricted to a certain set
 	 * of entities.
 	 */
-	public AbstractHierarchy<T> cloneAndRestrict(Set<T> allowedEntities) {
+	public AbstractHierarchy<T> cloneAndRestrict(Set<? extends T> allowedEntities) {
 		// currently TOP and BOTTOM are always allowed
 		// (TODO would be easier if Thing/Nothing were declared as named classes)
 		Set<T> allowed = new TreeSet<T>();
