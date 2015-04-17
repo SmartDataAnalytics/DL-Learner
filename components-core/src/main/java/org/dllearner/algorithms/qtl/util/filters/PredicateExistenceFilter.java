@@ -67,27 +67,7 @@ public class PredicateExistenceFilter {
 		}
 		
 		// we have to run the subsumption check one more time to prune the tree
-		for(Node edge : tree.getEdges()) {
-			Set<RDFResourceTree> children2Remove = new HashSet<RDFResourceTree>();
-			for (RDFResourceTree child1 : tree.getChildren(edge)) {
-				for (RDFResourceTree child2 : tree.getChildren(edge)) {
-					if(!child1.equals(child2) && !children2Remove.contains(child2)) {
-						if(QueryTreeUtils.isSubsumedBy(child1, child2)) {
-							children2Remove.add(child2);
-						} else if(QueryTreeUtils.isSubsumedBy(child2, child1)) {
-							children2Remove.add(child1);
-						}
-					}
-				}
-				
-			}
-			for (RDFResourceTree child : children2Remove) {
-				tree.removeChild(child, edge);
-			}
-		}
-		
 		QueryTreeUtils.prune(newTree, null, Entailment.RDFS);
-		
 		return newTree;
 	}
 

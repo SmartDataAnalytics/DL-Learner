@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
+import com.google.common.base.Objects;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -256,5 +257,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 				}
 			}
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.algorithms.qtl.datastructures.impl.GenericTree#equals(org.dllearner.algorithms.qtl.datastructures.impl.GenericTree)
+	 */
+	@Override
+	public boolean equals(RDFResourceTree other) {
+		if(this.isResourceNode() || this.isLiteralValueNode()) {
+			return this.getData().equals(other.getData());
+		}
+		return this == other;
 	}
 }

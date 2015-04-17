@@ -283,9 +283,10 @@ public class QALDExperiment {
 				
 				DescriptiveStatistics bestSolutionPositionStats = new DescriptiveStatistics();
 				
+//				if(nrOfExamples != 7) continue;
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("Cruise"))continue;
+//					if(!sparqlQuery.contains("Nobel_Prize_in_Literature"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -401,6 +402,7 @@ public class QALDExperiment {
 		
 		for (EvaluatedRDFResourceTree evalutedTree : trees) {
 			RDFResourceTree tree = evalutedTree.getTree();
+			
 			// apply predicate existence filter
 			tree = filter.filter(tree);
 			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, kb.baseIRI, kb.prefixMapping);

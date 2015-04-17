@@ -783,6 +783,34 @@ public class QueryTreeUtils {
 			}
 		}
 		
+		// we have to run the subsumption check one more time to prune the tree
+		for (Node edge : tree.getEdges()) {
+			Set<RDFResourceTree> children2Remove = new HashSet<RDFResourceTree>();
+			List<RDFResourceTree> children = tree.getChildren(edge);
+			for(int i = 0; i < children.size(); i++) {
+				RDFResourceTree child1 = children.get(i);
+				if(!children2Remove.contains(child1)) {
+					for(int j = i + 1; j < children.size(); j++) {
+						RDFResourceTree child2 = children.get(j);
+//						System.out.println(QueryTreeUtils.getPathToRoot(tree, child1));
+//						System.out.println(QueryTreeUtils.getPathToRoot(tree, child2));
+						if(!children2Remove.contains(child2)) {
+							if (QueryTreeUtils.isSubsumedBy(child1, child2)) {
+								children2Remove.add(child2);
+							} else if (QueryTreeUtils.isSubsumedBy(child2, child1)) {
+								children2Remove.add(child1);
+							}
+						}
+					}
+				}
+				
+			}
+			
+			for (RDFResourceTree child : children2Remove) {
+				tree.removeChild(child, edge);
+			}
+		}
+		
 //		if(entailment == Entailment.RDFS) {
 //			if(reasoner != null) {
 //				List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
