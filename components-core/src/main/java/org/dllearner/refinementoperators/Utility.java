@@ -185,7 +185,7 @@ public final class Utility {
 		// there are 4 checks a class has to satisfy to get into the set;
 		// for 2 of them we can stop further traversal in the subsumption
 		// hierarchy
-		for(OWLClassExpression d : sh.getSubClasses(upperClass)) {
+		for(OWLClassExpression d : sh.getSubClasses(upperClass, true)) {
 //			System.out.println("d: " + d);
 			// owl:Nothing is never a candidate (not in EL)
 			if(!d.isOWLNothing()) {

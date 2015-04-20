@@ -309,7 +309,7 @@ public class Enrichment {
 	}
 
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
-		reasoner = new SPARQLReasoner(ks, cacheDir);
+		reasoner = new SPARQLReasoner(ks);
 		reasoner.init();
 
 		if(useInference){

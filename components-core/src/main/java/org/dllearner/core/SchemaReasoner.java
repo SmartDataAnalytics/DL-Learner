@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
 
 /**
  * Reasoning requests related to the schema of the knowledge base.
@@ -218,5 +219,17 @@ public interface SchemaReasoner {
 	 * @return The most special roles.
 	 */
 	public TreeSet<OWLDataProperty> getMostSpecialDatatypeProperties();
+
+	/**
+	 * @param role
+	 * @return
+	 */
+	<T extends OWLProperty> SortedSet<T> getSuperProperties(T role);
+
+	/**
+	 * @param role
+	 * @return
+	 */
+	<T extends OWLProperty> SortedSet<T> getSubProperties(T role);
 	
 }

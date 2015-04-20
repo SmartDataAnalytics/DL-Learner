@@ -21,26 +21,26 @@ package org.dllearner.algorithms.qtl.operations.nbr;
 
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 /**
- * 
+ * Negative based reduction of query trees.
  * @author Lorenz Bühmann
  *
  */
-public interface NBRGenerator<N> {
+public interface NBRGenerator {
 	
-	QueryTree<N> getNBR(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
+	RDFResourceTree getNBR(RDFResourceTree posExampleTree, RDFResourceTree negExampleTree);
 	
-	QueryTree<N> getNBR(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees);
+	RDFResourceTree getNBR(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees);
 	
-	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree);
+	List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree, RDFResourceTree negExampleTree);
 	
-	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees);
+	List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees);
 	
-	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, QueryTree<N> negExampleTree, int limit);
+	List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree, RDFResourceTree negExampleTree, int limit);
 	
-	List<QueryTree<N>> getNBRs(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees, int limit);
+	List<RDFResourceTree> getNBRs(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees, int limit);
 	
 
 }

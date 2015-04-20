@@ -29,9 +29,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.qtl.QTL2;
+import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
@@ -79,7 +80,7 @@ public class SPARQLCrossValidation {
 		
 	}
 	
-	public SPARQLCrossValidation(QTL2 la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
+	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 
@@ -248,57 +249,26 @@ public class SPARQLCrossValidation {
 		return rs.hasType(concept, testSetPos).size();
 	}
 	
-	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2 qtl) {
+	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2Disjunctive qtl) {
 		Set<OWLIndividual> coveredIndividuals = new HashSet<OWLIndividual>();
-		QueryTree<String> solutionTree = qtl.getBestSolution().getTree();
-		QueryTree<String> tree;
+		RDFResourceTree solutionTree = qtl.getBestSolution().getTree();
+		
 		for (OWLIndividual ind : individuals) {
-			tree = qtl.getTreeCache().getQueryTree(ind.toStringID());
-			if(tree.isSubsumedBy(solutionTree, literalNodeSubsumptionStrategy)){
-				coveredIndividuals.add(ind);
-			} else {
-//				System.out.println("NOT COVERED");
-//				System.out.println(tree.isSubsumedBy(solutionTree, literalNodeSubsumptionStrategy));
-//				System.out.println(tree.isSubsumedBy(solutionTree));
-//				tree.isSubsumedBy(solutionTree, literalNodeSubsumptionStrategy);
-//				tree.dump();
-			}
+			throw new RuntimeException("Not implemented yet.");
 		}
 		return coveredIndividuals;
 	}
 	
-	protected int getCorrectPosClassified(Set<OWLIndividual> testSetPos, QTL2 qtl) {
-		QueryTree<String> tree = qtl.getBestSolution().getTree();
-		QueryTree<String> posTree;
-		int i = 0;
-		for (OWLIndividual posInd : testSetPos) {
-			posTree = qtl.getTreeCache().getQueryTree(posInd.toStringID());
-			if(posTree.isSubsumedBy(tree, literalNodeSubsumptionStrategy)){
-				i++;
-			} 
-			else {
-				System.out.println("POS NOT COVERED");
-				posTree.dump();
-			}
-		}
-		return i;
+	protected int getCorrectPosClassified(Set<OWLIndividual> testSetPos, QTL2Disjunctive qtl) {
+		return qtl.getBestSolution().getTreeScore().getCoveredPositives().size();
 	}
 	
 	protected int getCorrectNegClassified(SPARQLReasoner rs, OWLClassExpression concept, Set<OWLIndividual> testSetNeg) {
 		return testSetNeg.size() - rs.hasType(concept, testSetNeg).size();
 	}
 	
-	protected int getCorrectNegClassified(Set<OWLIndividual> testSetNeg, QTL2 qtl) {
-		QueryTree<String> tree = qtl.getBestSolution().getTree();
-		QueryTree<String> negTree;
-		int i = testSetNeg.size();
-		for (OWLIndividual negInd : testSetNeg) {
-			negTree = qtl.getTreeCache().getQueryTree(negInd.toStringID());
-			if(negTree.isSubsumedBy(tree, literalNodeSubsumptionStrategy)){
-				i--;
-			}
-		}
-		return i;
+	protected int getCorrectNegClassified(Set<OWLIndividual> testSetNeg, QTL2Disjunctive qtl) {
+		return qtl.getBestSolution().getTreeScore().getNotCoveredNegatives().size();
 	}
 	
 	public static Set<OWLIndividual> getTestingSet(List<OWLIndividual> examples, int[] splits, int fold) {

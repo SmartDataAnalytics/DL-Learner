@@ -28,6 +28,18 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         return this.children;
     }
     
+    public List<V> getLeafs() {
+    	List<V> leafs = new ArrayList<V>();
+    	for(V child : children) {
+    		if(child.isLeaf()) {
+    			leafs.add(child);
+    		} else {
+    			leafs.addAll(child.getLeafs());
+    		}
+    	}
+        return leafs;
+    }
+    
     public boolean isRoot() {
     	return parent == null;
     }

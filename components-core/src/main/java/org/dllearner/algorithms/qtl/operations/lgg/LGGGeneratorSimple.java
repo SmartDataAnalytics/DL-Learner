@@ -24,21 +24,23 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -47,107 +49,49 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public class LGGGeneratorSimple implements LGGGenerator2{
+public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	
-	private Logger logger = LoggerFactory.getLogger(LGGGeneratorSimple.class);
-	
-	private Monitor mon = MonitorFactory.getTimeMonitor("lgg");
-	
-	private int subCalls;
-	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return getLGG(tree1, tree2, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2,
-			boolean learnFilters) {
-		
-		reset();
-		
-		mon.start();
-		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
-		mon.stop();
-		
-		addNumbering(lgg);
-		
-		return lgg;
-	}
-
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees) {
-		return getLGG(trees, false);
-	}
-	
-	@Override
-	public RDFResourceTree getLGG(List<RDFResourceTree> trees, boolean learnFilters) {
-		// if there is only 1 tree return it
-		if(trees.size() == 1){
-			return trees.get(0);
-		}
-		
-		// lgg(t_1, t_n)
-		mon.start();
-		RDFResourceTree lgg = trees.get(0);
-		for(int i = 1; i < trees.size(); i++) {
-			lgg = getLGG(lgg, trees.get(i), learnFilters);
-		}
-		mon.stop();
-		
-		addNumbering(lgg);
-		
-		return lgg;
-	}
-	
-	private void reset() {
-		subCalls = 0;
-	}
-	
-	private RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
+	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		
-		// if both root nodes are resource nodes and have the same URI, just return one of the two tree as LGG
-		if(tree1.isResourceNode() && tree1.getData().equals(tree2.getData())){
+		// 1. compare the root node
+		// if both root nodes have same URI or literal value, just return one of the two trees as LGG
+		if ((tree1.isResourceNode() || tree1.isLiteralValueNode()) && tree1.getData().equals(tree2.getData())) {
 			logger.trace("Early termination. Tree 1 {}  and tree 2 {} describe the same resource.", tree1, tree2);
 			return tree1;
 		}
 		
-		RDFResourceTree lgg = new RDFResourceTree();
-		
-		// handle literal nodes, i.e. collect literal values if both are of same datatype
-		if(tree1.isLiteralNode() && tree2.isLiteralNode()){
+		// handle literal nodes with same datatype
+		if (tree1.isLiteralNode() && tree2.isLiteralNode()) {
 			RDFDatatype d1 = tree1.getData().getLiteralDatatype();
 			RDFDatatype d2 = tree2.getData().getLiteralDatatype();
 
-			if(d1 != null && d1.equals(d2)){
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree1).getLiterals());
-//				((QueryTreeImpl<N>)lgg).addLiterals(((QueryTreeImpl<N>)tree2).getLiterals());
+			if (d1 != null && d1.equals(d2)) {
+				return new RDFResourceTree(d1);
+				// TODO collect literal values
 			}
-//			lgg.setIsLiteralNode(true);
 		}
 		
-		Set<RDFResourceTree> addedChildren;
-		RDFResourceTree lggChild;
+		// else create new empty tree
+		RDFResourceTree lgg = new RDFResourceTree();
 		
-		// loop over distinct edges
-		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){if(edge.equals(OWL.sameAs.asNode())) continue;
-			addedChildren = new HashSet<RDFResourceTree>();
+		// 2. compare the edges
+		// we only have to compare edges contained in both trees
+		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
+			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
 				// loop over children of second tree
 				for(RDFResourceTree child2 : tree2.getChildren(edge)){
 					// compute the LGG
-					lggChild = computeLGG(child1, child2, learnFilters);
+					RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 					
 					// check if there was already a more specific child computed before
 					// and if so don't add the current one
@@ -180,21 +124,22 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 		return lgg;
 	}
 	
-	private void addNumbering(RDFResourceTree tree){
-//		tree.setId(nodeId++);
-		for(RDFResourceTree child : tree.getChildren()){
-			addNumbering(child);
-		}
-	}
 	
 	public static void main(String[] args) throws Exception {
-		LGGGenerator2 lggGen = new LGGGeneratorSimple();
+		// knowledge base
+		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
+		QueryExecutionFactory qef = SparqlServiceBuilder
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
 		
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
-		Model model;
-		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint.getEndpointDBpedia(), "cache");
-		cbdGenerator.setRecursionDepth(1);
+		// tree generation
+		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
+		int maxDepth = 2;
+		cbdGenerator.setRecursionDepth(maxDepth);
+		
 		QueryTreeFactory treeFactory = new QueryTreeFactoryBase();
+		treeFactory.setMaxDepth(maxDepth);
 		treeFactory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),
@@ -210,11 +155,12 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 								)
 								)
 				);
+		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Dresden");
 		for(String resource : resources){
 			try {
 				System.out.println(resource);
-				model = cbdGenerator.getConciseBoundedDescription(resource);
+				Model model = cbdGenerator.getConciseBoundedDescription(resource);
 				RDFResourceTree tree = treeFactory.getQueryTree(ResourceFactory.createResource(resource), model);
 				System.out.println(tree.getStringRepresentation());
 				trees.add(tree);
@@ -222,10 +168,15 @@ public class LGGGeneratorSimple implements LGGGenerator2{
 				e.printStackTrace();
 			}
 		}
+		
+		// LGG computation
+		LGGGenerator lggGen = new LGGGeneratorSimple();
 		RDFResourceTree lgg = lggGen.getLGG(trees);
+		
 		System.out.println("LGG");
 		System.out.println(lgg.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(lgg));
+		System.out.println(QueryTreeUtils.toOWLClassExpression(lgg));
 	}
 
 }

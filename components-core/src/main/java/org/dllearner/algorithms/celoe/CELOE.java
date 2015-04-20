@@ -40,6 +40,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
@@ -426,9 +427,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					startClass = candidate;
 					
 					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
+						logger.info("Reusing existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
 					} else {
-						logger.info("Generalised existing OWLClassExpression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
+						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
 					}
 					
 //					System.out.println("start class: " + startClass);
@@ -440,7 +441,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					}
 					
 				} else {
-					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
 					if(superClasses.size() > 1) {
 						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
 					} else if(superClasses.size() == 1){
@@ -448,7 +449,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					} else {
 						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a OWLClassExpression in this case.");
+								"sensible to learn a class expression in this case.");
 					}					
 				}
 			}				
@@ -534,20 +535,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
 //				System.exit(0);
 //			}
-			
 			while(refinements.size() != 0) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
+				
 				int length = OWLClassExpressionUtils.getLength(refinement);
 //				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
-					
+//					System.out.println(refinement);
 //					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
 					Monitor mon2 = MonitorFactory.start("addNode");
 					addNode(refinement, nextNode);
 					mon2.stop();
+//					System.out.println(refinement);
+//					System.out.println("Operation took " + (mon2.getLastValue()) + "ms");
 					// adding nodes is potentially computationally expensive, so we have
 					// to check whether max time is exceeded	
 					if(terminationCriteriaSatisfied()) {
@@ -796,6 +799,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 				}
 			}			
+		} else if (learningProblem instanceof ClassAsInstanceLearningProblem) {
+			return true;
 		}
 		
 		// perform forall sanity tests
@@ -860,7 +865,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			niceDescription = description;
 		}
-		System.out.println(node + ":" + niceDescription);
+//		System.out.println(node + ":" + niceDescription);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;

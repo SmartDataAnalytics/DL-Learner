@@ -4,7 +4,7 @@
 
 	<groupId>org.dllearner</groupId>
 	<artifactId>dllearner-parent</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>DL Learner Parent Pom</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
@@ -20,7 +20,7 @@
         <solr.version>4.4.0</solr.version>
         <owlapi.version>3.5.1</owlapi.version>
         <spring.version>3.2.13.RELEASE</spring.version>
-        <jena.sparql.api.version>2.12.1-3</jena.sparql.api.version>
+        <jena.sparql.api.version>2.12.1-7</jena.sparql.api.version>
 	</properties>
 
 	<modules>

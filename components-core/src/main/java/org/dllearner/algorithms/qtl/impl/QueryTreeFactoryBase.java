@@ -31,11 +31,11 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.util.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.PredicateDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
+import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
+import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -137,10 +137,11 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 		if (!dropFilters.isEmpty()) {
 			Iterator<Filter<Statement>> iter = dropFilters.iterator();
 			Filter<Statement> keepFilter = iter.next();
-			while (iter.hasNext()) {
-				keepFilter = keepFilter.and(iter.next());
-			}
 			it = it.filterKeep(keepFilter);
+			while (iter.hasNext()) {it = it.filterKeep(iter.next());
+//				keepFilter = keepFilter.and(iter.next());
+			}
+//			it = it.filterKeep(keepFilter);
 		}
 
 		SortedSet<Statement> statements = resource2Statements.get(s);

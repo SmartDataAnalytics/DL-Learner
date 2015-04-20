@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.0</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -148,6 +148,10 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>enrichment</name>
 								</program>
+								<program>
+									<mainClass>org.dllearner.cli.SemKernelCLI</mainClass>
+									<name>semkernel</name>
+								</program>
 								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
 									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
 									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
@@ -233,7 +237,7 @@
 				<finalName>dl-learner</finalName>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo.appassembler</groupId>
+						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
 						<version>1.9</version>
 						<executions>

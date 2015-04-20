@@ -19,6 +19,7 @@
 
 package org.dllearner.kb.sparql;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -56,6 +57,10 @@ public class SparqlEndpoint {
 	
 	public URL getURL() {
 		return this.url;
+	}
+	
+	public static SparqlEndpoint create(String url, String defaultGraphURI) throws MalformedURLException {
+		return new SparqlEndpoint(new URL(url), defaultGraphURI);
 	}
 	
 	public String getHTTPRequest() {

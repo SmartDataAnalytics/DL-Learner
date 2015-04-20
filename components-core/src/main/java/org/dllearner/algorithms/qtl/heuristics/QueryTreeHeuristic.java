@@ -6,11 +6,11 @@ package org.dllearner.algorithms.qtl.heuristics;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.dllearner.algorithms.qtl.operations.lgg.EvaluatedQueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.Heuristic;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.Heuristics;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.QueryTreeScore;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -19,7 +19,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  *
  */
 public abstract class QueryTreeHeuristic extends AbstractComponent implements Heuristic,
-		Comparator<EvaluatedQueryTree<String>> {
+		Comparator<EvaluatedRDFResourceTree> {
 
 	protected double posExamplesWeight = 1.0;
 	protected HeuristicType heuristicType = HeuristicType.PRED_ACC;
@@ -28,7 +28,7 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 		super();
 	}
 
-	public abstract double getScore(EvaluatedQueryTree<String> tree);
+	public abstract double getScore(EvaluatedRDFResourceTree tree);
 
 	/**
 	 * @param posExamplesWeight the posExamplesWeight to set
@@ -37,7 +37,7 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 		this.posExamplesWeight = posExamplesWeight;
 	}
 	
-	protected double getAccuracy(EvaluatedQueryTree<String> tree) {
+	protected double getAccuracy(EvaluatedRDFResourceTree tree) {
 		QueryTreeScore treeScore = tree.getTreeScore();
 
 		Set<OWLIndividual> truePositives = treeScore.getCoveredPositives();
@@ -84,7 +84,7 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 	 * 
 	 * @return
 	 */
-	public double getMaximumAchievableScore(EvaluatedQueryTree<String> tree) {
+	public double getMaximumAchievableScore(EvaluatedRDFResourceTree tree) {
 		QueryTreeScore treeScore = tree.getTreeScore();
 
 		Set<OWLIndividual> truePositives = treeScore.getCoveredPositives();
@@ -101,16 +101,16 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 	}
 
 	/**
-	 * Returns the maximum achievable score according to the used score
+	 * Returns the maximum achievable accuracy score according to the used score
 	 * function.
 	 * The idea is as follows:
-	 * For algorithms which make the found solution more general, we know that
+	 * For algorithms which make the current solution more general, we know that
 	 * 1. all already covered positive examples remain covered
 	 * 2. all already covered negative examples remain covered
 	 * 3. uncovered positive examples might be covered by more general solutions
 	 * 4. uncovered negative examples might be covered by more general solutions
 	 * That means, in the optimal case we get a solution which covers all
-	 * uncovered positive examples, but not of the uncovered negative examples.
+	 * uncovered positive examples, but non of the uncovered negative examples.
 	 * 
 	 * @param tp
 	 * @param tn
@@ -143,20 +143,9 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 		}
 		return mas;
 	}
-	
-	public static double getMaximumAchievableScore(HeuristicType heuristicType) {
-		switch (heuristicType) {
-		case FMEASURE: return 1;
-		case PRED_ACC: return 1;
-		case ENTROPY: return 1;
-		case MATTHEWS_CORRELATION: return 1;
-		case YOUDEN_INDEX: return 1;
-		default: return 1;
-		}
-	}
 
 	@Override
-	public int compare(EvaluatedQueryTree<String> tree1, EvaluatedQueryTree<String> tree2) {
+	public int compare(EvaluatedRDFResourceTree tree1, EvaluatedRDFResourceTree tree2) {
 		double diff = getScore(tree1) - getScore(tree2);
 
 		if (diff > 0) {
@@ -170,7 +159,7 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 	}
 
 	/**
-	 * @param heuristicType the heuristicType to set
+	 * @param heuristicType the type of accuracy measure to set
 	 */
 	public void setHeuristicType(HeuristicType heuristicType) {
 		this.heuristicType = heuristicType;

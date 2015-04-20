@@ -28,9 +28,10 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
+import com.hp.hpl.jena.graph.Node;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -39,7 +40,7 @@ import com.jamonapi.MonitorFactory;
  * @author Lorenz Bühmann
  *
  */
-public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
+public class GreedyNBRStrategy implements NBRStrategy{
 	
 	private static final Logger logger = Logger.getLogger(GreedyNBRStrategy.class);
 	
@@ -54,17 +55,17 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 
 	@Override
-	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public RDFResourceTree computeNBR(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		if(logger.isInfoEnabled()){
 			logger.info("Making NBR...");
 		}
-		logger.info("LGG:\n" + posExampleTree.toSPARQLQueryString());
+		logger.info("LGG:\n" + QueryTreeUtils.toSPARQLQueryString(posExampleTree));
 		Monitor mon = MonitorFactory.getTimeMonitor("NBR");
 		mon.start();
 		
-		QueryTree<N> nbr = new QueryTreeImpl<N>(posExampleTree);
-		Map<QueryTree<N>, List<Integer>> matrix = new HashMap<QueryTree<N>, List<Integer>>();
+		RDFResourceTree nbr = new RDFResourceTree(posExampleTree);
+		Map<RDFResourceTree, List<Integer>> matrix = new HashMap<RDFResourceTree, List<Integer>>();
 		
 		for(int i = 0; i < negExampleTrees.size(); i++){
 			checkTree(matrix, nbr, negExampleTrees.get(i), i);
@@ -72,32 +73,32 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 		
 		
 		int negTreeSize = negExampleTrees.size();
-		Map<QueryTree<N>, Double> rowValues = new HashMap<QueryTree<N>, Double>();
+		Map<RDFResourceTree, Double> rowValues = new HashMap<RDFResourceTree, Double>();
 		double value;
-		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
+		for(Entry<RDFResourceTree, List<Integer>> entry : matrix.entrySet()){
 			value = (sum(entry.getValue())+1.0)/(negTreeSize+2.0);
 			rowValues.put(entry.getKey(), value);
 		}
 
 		
-		List<QueryTree<N>> candidates2Remove = new ArrayList<QueryTree<N>>();
+		List<RDFResourceTree> candidates2Remove = new ArrayList<RDFResourceTree>();
 		if(useWeakGeneralisation){
-			for(Entry<QueryTree<N>, Double> entry : rowValues.entrySet()){
+			for(Entry<RDFResourceTree, Double> entry : rowValues.entrySet()){
 				if(random.nextDouble() < entry.getValue()){
 					candidates2Remove.add(entry.getKey());
 				}
 			}
 			useWeakGeneralisation = false;
 		} else {
-			for(Entry<QueryTree<N>, Double> entry : rowValues.entrySet()){
+			for(Entry<RDFResourceTree, Double> entry : rowValues.entrySet()){
 				if(random.nextDouble() < (1 - entry.getValue())){
 					candidates2Remove.add(entry.getKey());
 				}
 			}
 		}
 		
-//		QueryTree<N> parent;
-//		for(QueryTree<N> leaf : new ArrayList<QueryTree<N>>(nbr.getLeafs())){
+//		RDFResourceTree parent;
+//		for(RDFResourceTree leaf : new ArrayList<RDFResourceTree>(nbr.getLeafs())){
 //			parent = leaf.getParent();
 //			if(candidates2Remove.contains(leaf)){
 //				if(logger.isInfoEnabled()){
@@ -116,18 +117,18 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 //				}
 //			}
 //		}
-		QueryTree<N> parent;
-		for(QueryTree<N> candidate : candidates2Remove){
+		RDFResourceTree parent;
+		for(RDFResourceTree candidate : candidates2Remove){
 			if(candidate.isRoot())continue;
 			parent = candidate.getParent();
-			parent.removeChild((QueryTreeImpl<N>) candidate);
+			parent.removeChild(candidate);
 			if(logger.isInfoEnabled()){
-				logger.info("Checking if removal leads to cover a negative tree...");
+				logger.info("Checking if removal leads to coverage of a negative tree...");
 			}
 			if(coversNegativeTree(nbr, negExampleTrees)){
-				parent.addChild((QueryTreeImpl<N>) candidate);
+				parent.addChild(candidate);
 				if(logger.isInfoEnabled()){
-					logger.info("Removal of the edge leads to cover a negative tree. Undoing removal.");
+					logger.info("Removal of the edge leads to coverage of a negative tree. Undoing removal.");
 				}
 			}
 		}
@@ -148,32 +149,32 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 		
 	}
 	
-	private boolean coversNegativeTree(QueryTree<N> posTree, List<QueryTree<N>> negTrees){
-		for(QueryTree<N> negTree : negTrees){
-			if(negTree.isSubsumedBy(posTree)){
+	private boolean coversNegativeTree(RDFResourceTree posTree, List<RDFResourceTree> negTrees){
+		for(RDFResourceTree negTree : negTrees){
+			if(QueryTreeUtils.isSubsumedBy(negTree, posTree)){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private void removeLeafs(QueryTree<N> nbr, List<QueryTree<N>> candidates2Remove){
-		for(QueryTree<N> leaf : new ArrayList<QueryTree<N>>(nbr.getLeafs())){
+	private void removeLeafs(RDFResourceTree nbr, List<RDFResourceTree> candidates2Remove){
+		for(RDFResourceTree leaf : new ArrayList<RDFResourceTree>(nbr.getLeafs())){
 			if(candidates2Remove.contains(leaf)){
 				logger.info("REMOVE " + leaf);
-				leaf.getParent().removeChild((QueryTreeImpl<N>) leaf);
+				leaf.getParent().removeChild(leaf);
 			}
 		}
 	}
 	
-	private void removeEqualEdgesFromRoot(QueryTree<N> tree){
-		List<QueryTree<N>> children;
+	private void removeEqualEdgesFromRoot(RDFResourceTree tree){
+		List<RDFResourceTree> children;
 		int childCount = 1;
-		for(Object edge : tree.getEdges()){
+		for(Node edge : tree.getEdges()){
 			children = tree.getChildren(edge);
 			childCount = children.size();
 			while(childCount > maxEqualEdgesFromRoot){
-				tree.removeChild((QueryTreeImpl<N>) children.get(childCount-1));
+				tree.removeChild(children.get(childCount-1));
 				childCount--;
 			}
 		}
@@ -181,20 +182,20 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 	
 	
-	private String printTreeWithValues(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
-		int depth = tree.getPathToRoot().size();
+	private String printTreeWithValues(RDFResourceTree tree, Map<RDFResourceTree, List<Integer>> matrix){
+		int depth = QueryTreeUtils.getDepth(tree);
         StringBuilder sb = new StringBuilder();
         if(tree.isRoot()){
         	sb.append("TREE\n\n");
         }
 //        ren = ren.replace("\n", "\n" + sb);
-        sb.append(tree.getUserObject() + "(" +matrix.get(tree) +  ")");
+        sb.append(tree.getData() + "(" +matrix.get(tree) +  ")");
         sb.append("\n");
-        for (QueryTree<N> child : tree.getChildren()) {
+        for (RDFResourceTree child : tree.getChildren()) {
             for (int i = 0; i < depth; i++) {
                 sb.append("\t");
             }
-            Object edge = tree.getEdge(child);
+            Node edge = tree.getEdgeToChild(child);
             if (edge != null) {
             	sb.append("  ");
             	sb.append(edge);
@@ -214,20 +215,20 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 
 	@Override
-	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-			List<QueryTree<N>> negExampleTrees) {
+	public List<RDFResourceTree> computeNBRs(RDFResourceTree posExampleTree,
+			List<RDFResourceTree> negExampleTrees) {
 		return Collections.singletonList(computeNBR(posExampleTree, negExampleTrees));
 	}
 	
-//	private void checkTree(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> posTree, QueryTree<N> negTree, int index){
+//	private void checkTree(Map<RDFResourceTree, List<Integer>> matrix, RDFResourceTree posTree, RDFResourceTree negTree, int index){
 //		int entry;
 //		if(!posTree.getUserObject().equals("?") && !posTree.getUserObject().equals(negTree.getUserObject())){
 //			entry = 1;
 //		} else {
 //			entry = 1;
 //			for(Object edge : posTree.getEdges()){
-//				for(QueryTree<N> child1 : posTree.getChildren(edge)){
-//					for(QueryTree<N> child2 : negTree.getChildren(edge)){
+//				for(RDFResourceTree child1 : posTree.getChildren(edge)){
+//					for(RDFResourceTree child2 : negTree.getChildren(edge)){
 //						if(!posTree.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
 //							entry = 0;break;
 //						}
@@ -238,9 +239,9 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 //				}
 //			}
 //			Object edge;
-//			for(QueryTree<N> child1 : posTree.getChildren()){
+//			for(RDFResourceTree child1 : posTree.getChildren()){
 //	    		edge = posTree.getEdge(child1);
-//	    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
+//	    		for(RDFResourceTree child2 : negTree.getChildren(edge)){
 //	    			
 //	    		}
 //	    		
@@ -248,29 +249,29 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 //		}
 //		setMatrixEntry(matrix, posTree, index, entry);
 //		if(entry == 1){
-//			for(QueryTree<N> child : posTree.getChildrenClosure()){
+//			for(RDFResourceTree child : posTree.getChildrenClosure()){
 //				setMatrixEntry(matrix, child, index, 0);
 //			}
 //		}
 //	}
 	
-	private void checkTree(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> posTree, QueryTree<N> negTree, int index){
+	private void checkTree(Map<RDFResourceTree, List<Integer>> matrix, RDFResourceTree posTree, RDFResourceTree negTree, int index){
 		int entry = 1;
-		Object edge;
-		for(QueryTree<N> child1 : posTree.getChildren()){
+		for(RDFResourceTree child1 : posTree.getChildren()){
 			entry = 1;
-    		edge = posTree.getEdge(child1);
-    		for(QueryTree<N> child2 : negTree.getChildren(edge)){
-    			if(!child1.getUserObject().equals("?") && child1.getUserObject().equals(child2.getUserObject())){
-    				entry = 0;checkTree(matrix, child1, child2, index);
-    			} else if(child1.getUserObject().equals("?")){
+    		Node edge = posTree.getEdgeToChild(child1);
+    		for(RDFResourceTree child2 : negTree.getChildren(edge)){
+    			if(!child1.isVarNode() && child1.getData().equals(child2.getData())){
+    				entry = 0;
+    				checkTree(matrix, child1, child2, index);
+    			} else if(child1.isVarNode()){
     				entry = 0;
     				checkTree(matrix, child1, child2, index);
     			}
     		}
     		setMatrixEntry(matrix, child1, index, entry);
     		if(entry == 1){
-    			for(QueryTree<N> child : posTree.getChildrenClosure()){
+    			for(RDFResourceTree child : QueryTreeUtils.getNodes(posTree)) {
     				setMatrixEntry(matrix, child, index, 0);
     			}
     		}
@@ -278,7 +279,7 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 		
 	}
 	
-	private void setMatrixEntry(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> row, int column, int entry){
+	private void setMatrixEntry(Map<RDFResourceTree, List<Integer>> matrix, RDFResourceTree row, int column, int entry){
 		List<Integer> list = matrix.get(row);
 		if(list == null){
 			list = new ArrayList<Integer>();
@@ -292,30 +293,30 @@ public class GreedyNBRStrategy<N> implements NBRStrategy<N>{
 	}
 
 //	@Override
-//	public QueryTree<N> computeNBR(QueryTree<N> posExampleTree,
-//			List<QueryTree<N>> negExampleTrees) {
-//		Map<QueryTree<N>, Integer> map = new HashMap<QueryTree<N>, Integer>();
-//		for(QueryTree<N> negExampleTree : negExampleTrees){
+//	public RDFResourceTree computeNBR(RDFResourceTree posExampleTree,
+//			List<RDFResourceTree> negExampleTrees) {
+//		Map<RDFResourceTree, Integer> map = new HashMap<RDFResourceTree, Integer>();
+//		for(RDFResourceTree negExampleTree : negExampleTrees){
 //			checkSubsumptionBreadthFirst(posExampleTree, negExampleTree, map);
 //		}
 //		
-//		Map<QueryTree<N>, Integer> sortedMap = sortByValues(map);
+//		Map<RDFResourceTree, Integer> sortedMap = sortByValues(map);
 //		System.out.println(sortedMap);
 //		return null;
 //	}
 //
 //	@Override
-//	public List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree,
-//			List<QueryTree<N>> negExampleTrees) {
+//	public List<RDFResourceTree> computeNBRs(RDFResourceTree posExampleTree,
+//			List<RDFResourceTree> negExampleTrees) {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
 //	
-//	private void checkSubsumptionBreadthFirst(QueryTree<N> tree1, QueryTree<N> tree2, Map<QueryTree<N>, Integer> map){
+//	private void checkSubsumptionBreadthFirst(RDFResourceTree tree1, RDFResourceTree tree2, Map<RDFResourceTree, Integer> map){
 //		Object edge;
-//		for(QueryTree<N> child1 : tree1.getChildren()){
+//		for(RDFResourceTree child1 : tree1.getChildren()){
 //			edge = tree1.getEdge(child1);
-//			for(QueryTree<N> child2 : tree2.getChildren(edge)){
+//			for(RDFResourceTree child2 : tree2.getChildren(edge)){
 //				if(child1.getUserObject().equals("?") || child2.getUserObject().equals(child1.getUserObject())){
 //					Integer i = map.get(child1);
 //					if(i == null){
