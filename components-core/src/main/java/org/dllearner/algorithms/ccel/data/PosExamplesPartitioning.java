@@ -34,7 +34,7 @@ public class PosExamplesPartitioning implements ExamplesPartitioning{
 		// create partitions
 		List<Partition> partitions = new ArrayList<>();
 		for(int i = 0; i < nrOfPartitions; i++) {
-			List<OWLIndividual> pos = (i < posPartitions.size()) ? posPartitions.get(i) : Collections.emptyList();
+			List<OWLIndividual> pos = (i < posPartitions.size()) ? posPartitions.get(i) : Collections.<OWLIndividual>emptyList();
 			
 			partitions.add(new Partition(Sets.newHashSet(pos), Sets.newHashSet(negExamples)));
 		}

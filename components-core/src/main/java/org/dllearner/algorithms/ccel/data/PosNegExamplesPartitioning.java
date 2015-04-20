@@ -34,8 +34,8 @@ public class PosNegExamplesPartitioning implements ExamplesPartitioning {
 		// create partitions
 		List<Partition> partitions = new ArrayList<>();
 		for(int i = 0; i < nrOfPartitions; i++) {
-			List<OWLIndividual> pos = (i < posPartitions.size()) ? posPartitions.get(i) : Collections.emptyList();
-			List<OWLIndividual> neg = (i < negPartitions.size()) ? negPartitions.get(i) : Collections.emptyList();
+			List<OWLIndividual> pos = (i < posPartitions.size()) ? posPartitions.get(i) : Collections.<OWLIndividual>emptyList();
+			List<OWLIndividual> neg = (i < negPartitions.size()) ? negPartitions.get(i) : Collections.<OWLIndividual>emptyList();
 			
 			partitions.add(new Partition(Sets.newHashSet(pos),Sets.newHashSet(neg)));
 		}
