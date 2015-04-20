@@ -666,9 +666,9 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                 Request request = MPI.COMM_WORLD.Irecv(new byte[0], 0, 0,
                         MPI.BYTE, aggregator, newBestExprMsgType);
                 if (request.Test() != null) {
-                    logger.debug("|<--| Distributor\t<<< Aggregator: TERM (RECEIVING)");
+                    logger.info("|<--| Distributor\t<<< Aggregator: TERM (RECEIVING)");
                     request.Wait();
-                    logger.debug("|<--| Distributor\t<-- Aggregator: TERM (RECEIVED)");
+                    logger.info("|<--| Distributor\t<-- Aggregator: TERM (RECEIVED)");
                     logger.info("Distributor received termination message " +
                             "from aggregator");
                     break;
@@ -696,7 +696,7 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
 
                     } else {
                         // rebuild node object
-                        logger.debug("|<--| Distributor\t<<< worker: node (RECEIVING)");
+                        logger.info("|<--| Distributor\t<<< worker: node (RECEIVING)");
                         Status status = request.Wait();
 
                         ByteArrayInputStream bis = new ByteArrayInputStream(nodeBuf);
@@ -705,7 +705,7 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                             in = new ObjectInputStream(bis);
                           Object obj = in.readObject();
                           node = (OENode) obj;
-                          logger.debug("|<--| Distributor\t<-- worker " +
+                          logger.info("|<--| Distributor\t<-- worker " +
                                   status.source + ": node " + node + "(RECEIVED");
                           nodes.add(node);
 
@@ -748,12 +748,12 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                             e.printStackTrace();
                         }
 
-                        logger.debug("|-->| Distributor\t>>> Worker " +
+                        logger.info("|-->| Distributor\t>>> Worker " +
                                 nextTarget + ": refinement " + refinement +
                                 " (SENDING)");
                         MPI.COMM_WORLD.Send(buf, 0, buf.length, MPI.BYTE,
                                 nextTarget, refinementMsgType);
-                        logger.debug("|-->| Distributor\t--> Worker " +
+                        logger.info("|-->| Distributor\t--> Worker " +
                                 nextTarget + ": refinement " + refinement +
                                 " (SENT)");
 
@@ -792,9 +792,9 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
             logger.info("Distributor is going to send termination message to " +
                     "all other processes...");
             for (int i=1; i < size; i++) {
-                logger.debug("|-->| Distributor\t>>> worker " + i + ": TERM (SENDING)");
+                logger.info("|-->| Distributor\t>>> worker " + i + ": TERM (SENDING)");
                 MPI.COMM_WORLD.Send(new byte[0], 0, 0, MPI.BYTE, i, termMsgType);
-                logger.debug("|-->| Distributor\t--> worker " + i + ": TERM (SENT)");
+                logger.info("|-->| Distributor\t--> worker " + i + ": TERM (SENT)");
             }
             stop = true;
 
@@ -833,18 +833,18 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                     (terminateOnNoiseReached &&
                         (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
                     (stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1))) {
-                    logger.debug("|-->| Aggregator\t>>> distributor: TERM (SENDING)");
+                    logger.info("|-->| Aggregator\t>>> distributor: TERM (SENDING)");
                     MPI.COMM_WORLD.Isend(buf, 0, 0, MPI.BYTE, distributor, newBestExprMsgType);
-                    logger.debug("|-->| Aggregator\t--> distributor: TERM (SENT)");
+                    logger.info("|-->| Aggregator\t--> distributor: TERM (SENT)");
                 }
 
-                logger.debug("|<--| Aggregator\t<<< ANY: ANY (RECEIVING)");
+                logger.info("|<--| Aggregator\t<<< ANY: ANY (RECEIVING)");
                 Status status = MPI.COMM_WORLD.Recv(buf, 0, bufferSize,
                         MPI.BYTE, MPI.ANY_SOURCE, MPI.ANY_TAG);
 
                 // check if the read message is a termination signal
                 if (status.tag == termMsgType) {
-                    logger.debug("|<--| Aggregator\t<-- distributor: TERM (RECEIVED)");
+                    logger.info("|<--| Aggregator\t<-- distributor: TERM (RECEIVED)");
                     break;
 
                 } else if (status.tag == newBestExprMsgType){
@@ -861,7 +861,7 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                         e.printStackTrace();
                         continue;
                     }
-                    logger.debug("|<--| Aggregator\t<-- worker" +
+                    logger.info("|<--| Aggregator\t<-- worker" +
                             status.source + ": new best description " +
                             newLocalBestExpr.getDescription() + " (RECEIVED)");
 
@@ -960,13 +960,13 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
             while (true) {
                 byte[] recvBuf = new byte[bufferSize];
                 // check if termination message
-                logger.debug("|<--| Worker " + rank + "\t<<< distributor: class expr or TERM (RECEIVING)");
+                logger.info("|<--| Worker " + rank + "\t<<< distributor: class expr or TERM (RECEIVING)");
                 Status status = MPI.COMM_WORLD.Recv(recvBuf, 0, bufferSize,
                         MPI.BYTE, MPI.ANY_SOURCE, MPI.ANY_TAG);
 
                 // check if the read message is a termination signal
                 if (status.tag == termMsgType) {
-                    logger.debug("|<--| Worker " + rank + "\t<-- " +
+                    logger.info("|<--| Worker " + rank + "\t<-- " +
                             "distributor: TERM (RECEIVED)");
                     break;
 
@@ -983,7 +983,7 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                         continue;
                     }
 
-                    logger.debug("|<--| Worker " + rank + "\t<-- distributor: " +
+                    logger.info("|<--| Worker " + rank + "\t<-- distributor: " +
                             "class expression " + refinementData.refinement +
                             " (RECEIVED)");
                     OWLClassExpression description = refinementData.refinement;
@@ -1099,12 +1099,12 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                             e.printStackTrace();
                         }
 
-                        logger.debug("|-->| Worker " + rank + "\t>>> " +
+                        logger.info("|-->| Worker " + rank + "\t>>> " +
                                 "aggregator: new best description " +
                                 description + " (SENDING)");
                         MPI.COMM_WORLD.Send(buf, 0, buf.length, MPI.BYTE,
                                 aggregator, newBestExprMsgType);
-                        logger.debug("|-->| Worker " + rank + "\t--> " +
+                        logger.info("|-->| Worker " + rank + "\t--> " +
                                 "aggregator: new best description " +
                                 description + " (SENT)");
                     }
@@ -1125,7 +1125,7 @@ public class DistCELOE extends AbstractCELA implements Cloneable{
                         continue;
                     }
 
-                    logger.debug("|-->| Worker " + rank + "\t>>> distributor: " +
+                    logger.info("|-->| Worker " + rank + "\t>>> distributor: " +
                             "node " + node + " (SENDING ASYNC)");
                     request = MPI.COMM_WORLD.Isend(nodeSendBuf, 0,
                             nodeSendBuf.length, MPI.BYTE, distributor,
