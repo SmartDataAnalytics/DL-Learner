@@ -298,6 +298,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// (because they are used often in the operator)
 		opDomains = reasoner.getObjectPropertyDomains();
 		opRanges = reasoner.getObjectPropertyRanges();
+		dpDomains = reasoner.getDataPropertyDomains();
 		
 		if (useHasValueConstructor) {
 			for (OWLObjectProperty op : reasoner.getObjectProperties()) {

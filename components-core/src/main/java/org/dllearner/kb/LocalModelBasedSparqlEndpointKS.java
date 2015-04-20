@@ -7,6 +7,7 @@ import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -36,8 +37,16 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 		this.model = model;
 	}
 	
+	public LocalModelBasedSparqlEndpointKS(Model model, boolean reasoningEnabled) {
+		this.model = ModelFactory.createOntologyModel(reasoningEnabled ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM, model);
+	}
+	
+	/**
+	 * No reasoning enabled by default.
+	 * @param model
+	 */
 	public LocalModelBasedSparqlEndpointKS(Model model) {
-		this.model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM, model);
+		this(model, false);
 	}
 	
 //	@Override

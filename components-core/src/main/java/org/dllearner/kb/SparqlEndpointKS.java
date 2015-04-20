@@ -79,7 +79,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
 	
-	private QueryExecutionFactory qef;
+	protected QueryExecutionFactory qef;
 
 	public SparqlEndpointKS() {}
 
@@ -114,10 +114,12 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@Override
 	public void init() throws ComponentInitException {
 		if(!initialized){
-			if(endpoint == null) {
-				endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+			if(isRemote()) {
+				if(endpoint == null) {
+					endpoint = new SparqlEndpoint(url, defaultGraphURIs, namedGraphURIs);
+				}
+				supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
 			}
-			supportsSPARQL_1_1 = new SPARQLTasks(endpoint).supportsSPARQL_1_1();
 
 			if(qef == null) {
 				qef = buildQueryExecutionFactory();

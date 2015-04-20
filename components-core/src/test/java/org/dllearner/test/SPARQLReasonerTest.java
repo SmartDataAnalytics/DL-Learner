@@ -35,14 +35,18 @@ public class SPARQLReasonerTest {
 	public static void main(String[] args) throws Exception{
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		
-		//Model model = RDFDataMgr.loadModel("../examples/swore/swore.rdf");
-		//AbstractReasonerComponent rc = new SPARQLReasoner(new LocalModelBasedSparqlEndpointKS(model));
-		AbstractReasonerComponent rc = new SPARQLReasoner(new SparqlEndpointKS(new SparqlEndpoint(
-				new URL("http://localhost:8890/sparql"), "http://family-benchmark.owl")));
+		Model model = RDFDataMgr.loadModel("../examples/swore/swore.rdf");
+		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(model, true);
+		ks.setEnableReasoning(false);
+		ks.init();
+		
+		AbstractReasonerComponent rc = new SPARQLReasoner(ks);
+//		AbstractReasonerComponent rc = new SPARQLReasoner(new SparqlEndpointKS(new SparqlEndpoint(
+//				new URL("http://localhost:8890/sparql"), "http://family-benchmark.owl")));
         rc.init();
         
-        //OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
-        OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://www.benchmark.org/family#Female"));
+        OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
+//        OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://www.benchmark.org/family#Female"));
         SortedSet<OWLIndividual> posExamples = rc.getIndividuals(classToDescribe);
         SortedSet<OWLIndividual> negExamples = rc.getIndividuals();
         negExamples.removeAll(posExamples);

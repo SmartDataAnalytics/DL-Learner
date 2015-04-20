@@ -441,7 +441,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					}
 					
 				} else {
-					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe);
+					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
 					if(superClasses.size() > 1) {
 						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
 					} else if(superClasses.size() == 1){

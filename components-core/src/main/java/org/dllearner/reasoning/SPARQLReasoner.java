@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
@@ -53,13 +54,10 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
-import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.dllearner.utilities.QueryUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -73,25 +71,21 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -155,6 +149,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
 	private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+	private OWLObjectDuplicator duplicator = new OWLObjectDuplicator(df);
 	
 	/**
 	 * Default constructor for usage of config files + Spring API.
@@ -166,7 +161,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public SPARQLReasoner(SparqlEndpointKS ks) {
-		this(ks.getQueryExecutionFactory());
+		super(ks);
 	}
 	
 	public SPARQLReasoner(SparqlEndpoint endpoint) {
@@ -346,12 +341,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		logger.info("... done in " + (end - start) + "ms.");
 	}
 
-	public int getSubjectCountForProperty(OWLProperty p, long timeout){
+	public int getSubjectCountForProperty(OWLProperty p, long timeout, TimeUnit timeoutUnits){
 		int cnt = -1;
 		String query = String.format(
 				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}",
 				p.toString());
-		ResultSet rs = executeSelectQuery(query, timeout);
+		ResultSet rs = executeSelectQuery(query, timeout, timeoutUnits);
 		if(rs.hasNext()){
 			cnt = rs.next().getLiteral("cnt").getInt();
 		}
@@ -372,12 +367,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return cnt;
 	}
 
-	public int getObjectCountForProperty(OWLObjectProperty p, long timeout){
+	public int getObjectCountForProperty(OWLObjectProperty p, long timeout, TimeUnit timeoutUnits){
 		int cnt = -1;
 		String query = String.format(
 				"SELECT (COUNT(DISTINCT ?o) AS ?cnt) WHERE {?s <%s> ?o.}",
 				p.toStringID());
-		ResultSet rs = executeSelectQuery(query, timeout);
+		ResultSet rs = executeSelectQuery(query, timeout, timeoutUnits);
 		if(rs.hasNext()){
 			cnt = rs.next().getLiteral("cnt").getInt();
 		}
@@ -559,7 +554,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String query = "SELECT * WHERE {"
 				+ "?sub a <http://www.w3.org/2002/07/owl#Class> . "
 //				+ "?sup a <http://www.w3.org/2002/07/owl#Class> . "
-				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>)* ?sup ."
+				+ "?sub (<http://www.w3.org/2000/01/rdf-schema#subClassOf>|<http://www.w3.org/2002/07/owl#equivalentClass>) ?sup ."
+				+ "FILTER(?sub != ?sup)"
 				+ "}";
 		ResultSet rs = executeSelectQuery(query);
 	
@@ -589,6 +585,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 		hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+		
 		return hierarchy;
 	}
 	
@@ -1220,21 +1217,19 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit) {
-		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		// we need to copy it to get something like A AND B from A AND A AND B 
+		description = duplicator.duplicateObject(description);
 		
-//		if(!(OWLClassExpression instanceof NamedClass)){
-//			throw new UnsupportedOperationException("Only named classes are supported.");
-//		}
 		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
-//		String query = String.format("SELECT DISTINCT ?ind WHERE {?ind a <%s>}", ((OWLClass)description).toStringID());
 		String query = converter.asQuery("?ind", description, false).toString();//System.out.println(query);
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
+//		query = String.format(SPARQLQueryUtils.PREFIXES + " SELECT ?ind WHERE {?ind rdf:type/rdfs:subClassOf* <%s> .}", description.asOWLClass().toStringID());
+//		System.out.println(query);
 		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
 		while(rs.hasNext()){
-			qs = rs.next();
+			QuerySolution qs = rs.next();
 			if(qs.get("ind").isURIResource()){
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
@@ -2134,8 +2129,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			// default domain is owl:Thing
 			OWLClassExpression domain = df.getOWLThing();
 			if(qs.get("dom") != null) {
-				domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
-			}
+				if(qs.get("dom").isURIResource()) {
+					domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+					
+				} else {
+					logger.warn("Can not resolve complex domain for object property " + op);
+				}
+			} 
 			result.put(op, domain);
 		}
 		return result;
@@ -2157,7 +2157,11 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			// default range is owl:Thing
 			OWLClassExpression range = df.getOWLThing();
 			if (qs.get("ran") != null) {
-				range = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+				if(qs.get("ran").isURIResource()) {
+					range = df.getOWLClass(IRI.create(qs.getResource("ran").getURI()));
+				} else {
+					logger.warn("Can not resolve complex range for object property " + op);
+				}
 			}
 			result.put(op, range);
 		}
@@ -2171,7 +2175,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Map<OWLDataProperty, OWLClassExpression> getDataPropertyDomains() {
 		Map<OWLDataProperty, OWLClassExpression> result = new HashMap<>();
 		
-		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:DatatypeProperty . OPTIONAL{rdfs:domain ?dom .}}";
+		String query = SPARQLQueryUtils.PREFIXES + "SELECT ?p ?dom WHERE {?p a owl:DatatypeProperty . OPTIONAL{?p rdfs:domain ?dom .}}";
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()) {
 			QuerySolution qs = rs.next();
@@ -2180,7 +2184,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			// default domain is owl:Thing
 			OWLClassExpression domain = df.getOWLThing();
 			if (qs.get("dom") != null) {
-				domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+				if (qs.get("dom").isURIResource()) {
+					domain = df.getOWLClass(IRI.create(qs.getResource("dom").getURI()));
+
+				} else {
+					logger.warn("Can not resolve complex domain for data property " + dp);
+				}
 			}
 			result.put(dp, domain);
 		}
@@ -2229,27 +2238,22 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return entities;
 	}
 
-	protected ResultSet executeSelectQuery(String query, long timeout){
-		logger.trace("Sending query \n {}", query);
-		QueryExecution qe = qef.createQueryExecution(query);
+	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits){
+		logger.trace("Sending query \n {}", queryString);
+		// parse to check syntax
+//		Query query = QueryFactory.create(queryString, Syntax.syntaxSPARQL_11);
+		QueryExecution qe = qef.createQueryExecution(queryString);
 		qe.setTimeout(timeout);
-		ResultSet rs = qe.execSelect();
-		return rs;
+		try {
+			ResultSet rs = qe.execSelect();
+			return rs;
+		} catch (QueryExceptionHTTP e) {
+			throw new QueryExceptionHTTP("Error sending query \"" + queryString + "\" to endpoint " + qef.getId(), e);
+		}
 	}
 	
-	protected ResultSet executeSelectQuery(String queryString){
-		logger.trace("Sending query \n {}", queryString);
-		Query query = QueryFactory.create(queryString, Syntax.syntaxSPARQL_11);
-		QueryExecution qe = qef.createQueryExecution(query);
-		try
-		{
-		ResultSet rs = qe.execSelect();
-		return rs;
-		}
-		catch(QueryExceptionHTTP e)
-		{
-			throw new QueryExceptionHTTP("Error sending query \""+query+"\" to endpoint "+ qef.getId(),e);
-		}
+	protected ResultSet executeSelectQuery(String queryString) {
+		return executeSelectQuery(queryString, -1, TimeUnit.MILLISECONDS);
 	}
 	
 	protected boolean executeAskQuery(String query){
