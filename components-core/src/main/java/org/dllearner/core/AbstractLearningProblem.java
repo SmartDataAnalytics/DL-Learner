@@ -67,27 +67,27 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * Computes the <code>Score</code> of a given class description
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
-	 * to measure how good the OWLClassExpression fits the learning problem.
+	 * to measure how good the class expression fits the learning problem.
 	 * Score objects are used to store e.g. covered examples, accuracy etc.,
 	 * so often it is more efficient to only create score objects for
 	 * promising class descriptions.
-	 * @param OWLClassExpression A class OWLClassExpression (as solution candidate for this learning problem).
+	 * @param description A class expression (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
 	public abstract Score computeScore(OWLClassExpression description);
 	
 	/**
-	 * Evaluates the OWLClassExpression by computing the score and returning an
-	 * evaluated OWLClassExpression of the correct type (ClassLearningProblem
+	 * Evaluates the class expression by computing the score and returning an
+	 * evaluated class expression of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
-	 * @param OWLClassExpression Description to evaluate.
+	 * @param description Description to evaluate.
 	 * @return 
 	 */
 	public abstract EvaluatedDescription evaluate(OWLClassExpression description);
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class OWLClassExpression solves a learning problem. There can be different
+	 * class expression solves a learning problem. There can be different
 	 * ways to compute accuracy depending on the type of learning problem
 	 * and other factors. However, all implementations are required to 
 	 * return a value between 0 and 1, where 1 stands for the highest
@@ -103,7 +103,7 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * OWLClassExpression is below the given threshold and 2.) the accuracy of all
 	 * more special w.r.t. subsumption descriptions is below the given threshold.
 	 * This is used for efficiency reasons, i.e. -1 can be returned instantly if
-	 * it is clear that the OWLClassExpression and all its refinements are not 
+	 * it is clear that the class expression and all its refinements are not 
 	 * sufficiently accurate.
 	 * 
 	 * @return A value between 0 and 1 indicating the quality (of a class description)

@@ -35,11 +35,17 @@ import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
+import com.google.common.collect.Sets;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -287,10 +293,12 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					
 					// System.out.println("pos classified: " + posClassified);
 					
-					return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
-							negAsNeg);
+					return new ScoreTwoValued(
+							OWLClassExpressionUtils.getLength(concept), 
+							getPercentPerLengthUnit(),
+							posAsPos, posAsNeg, 
+							negAsPos, negAsNeg);
 				} else {
-					
 					for (OWLIndividual example : positiveExamples) {
 						if (getReasoner().hasType(concept, example)) {
 							posAsPos.add(example);
@@ -299,10 +307,11 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 						}
 					}
 					for (OWLIndividual example : negativeExamples) {
-						if (getReasoner().hasType(concept, example))
+						if (getReasoner().hasType(concept, example)) {
 							negAsPos.add(example);
-						else
+						} else {
 							negAsNeg.add(example);
+						}
 					}
 					return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
 							negAsNeg);
@@ -315,22 +324,31 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			SortedSet<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
 			SortedSet<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
 			
-			for (OWLIndividual example : positiveExamples) {
-				if (getReasoner().hasType(concept, example)) {
-					posAsPos.add(example);
-				} else {
-					posAsNeg.add(example);
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(concept);
+				
+				posAsPos.addAll(Sets.intersection(positiveExamples, individuals));
+				posAsNeg.addAll(Sets.difference(positiveExamples, individuals));
+				negAsNeg.addAll(Sets.difference(negativeExamples, individuals));
+				negAsPos.addAll(Sets.intersection(negativeExamples, individuals));
+			} else {
+				for (OWLIndividual example : positiveExamples) {
+					if (getReasoner().hasType(concept, example)) {
+						posAsPos.add(example);
+					} else {
+						posAsNeg.add(example);
+					}
 				}
-			}
-			for (OWLIndividual example : negativeExamples) {
-				if (getReasoner().hasType(concept, example))
-					negAsPos.add(example);
-				else
-					negAsNeg.add(example);
+				for (OWLIndividual example : negativeExamples) {
+					if (getReasoner().hasType(concept, example))
+						negAsPos.add(example);
+					else
+						negAsNeg.add(example);
+				}
 			}
 			
 			// TODO: this computes accuracy twice - more elegant method should be implemented 
-			double accuracy = getAccuracyOrTooWeakExact(concept,1);
+			double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), 1.0);
 			
 			return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
 						negAsNeg, accuracy);
@@ -483,28 +501,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			return getPredAccuracyOrTooWeakExact(description, noise);
 		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
 			return getFMeasureOrTooWeakExact(description, noise);
-			/*
-			// computing R(C) restricted to relevant instances
-			int additionalInstances = 0;
-			for(OWLIndividual ind : negativeExamples) {
-				if(reasoner.hasType(description, ind)) {
-					additionalInstances++;
-				}
-			}
-			
-			// computing R(A)
-			int coveredInstances = 0;
-			for(OWLIndividual ind : positiveExamples) {
-				if(reasoner.hasType(description, ind)) {
-					coveredInstances++;
-				}
-			}
-			
-			double recall = coveredInstances/(double)positiveExamples.size();
-			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);			
-			
-			return Heuristics.getFScore(recall, precision);
-			*/
 		} else {
 			throw new Error("Heuristic " + heuristic + " not implemented.");
 		}		
@@ -529,20 +525,33 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
 		
-		for (OWLIndividual example : positiveExamples) {
-			if (!getReasoner().hasType(description, example)) {
-				notCoveredPos++;
-				
-//				System.out.println("d:" + OWLClassExpression + "; ex:" + example);
-				
-				if(notCoveredPos >= maxNotCovered) {
-					return -1;
+		// we have to distinguish between a standard OWL reasoner or a SPARQL
+		// which in fact is more expensive when using multiple instance checks
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			// get all instances of the concept to be tested
+			System.err.println(description);
+			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(description);
+			
+			// compute diff with positive examples
+			notCoveredPos = Sets.difference(positiveExamples, individuals).size();
+			
+			// compute diff with negative examples
+			notCoveredNeg = Sets.difference(negativeExamples, individuals).size();
+		} else {
+			for (OWLIndividual example : positiveExamples) {
+				if (!getReasoner().hasType(description, example)) {
+					notCoveredPos++;
+					
+					// we can stop if too many pos examples are not covered
+					if(notCoveredPos >= maxNotCovered) {
+						return -1;
+					}
+				} 
+			}
+			for (OWLIndividual example : negativeExamples) {
+				if (!getReasoner().hasType(description, example)) {
+					notCoveredNeg++;
 				}
-			} 
-		}
-		for (OWLIndividual example : negativeExamples) {
-			if (!getReasoner().hasType(description, example)) {
-				notCoveredNeg++;
 			}
 		}
 		
@@ -556,6 +565,28 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 //		} else {
 			return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
 //		}
+	}
+	
+	public double getAccuracy(int posAsPos, int posAsNeg, int negAsPos, int negAsNeg, double noise) {
+		int maxNotCovered = (int) Math.ceil(noise * positiveExamples.size());
+		
+		switch (heuristic) {
+		case PRED_ACC:
+			return (posAsPos + negAsNeg) / (double) allExamples.size();
+		case FMEASURE:
+			double recall = (posAsPos + negAsPos)/(double)positiveExamples.size();
+			
+			if(recall < 1 - noise) {
+				return -1;
+			}
+			
+			double precision = (negAsPos + posAsPos == 0) ? 0 : posAsPos / (double) (posAsPos + negAsPos);
+			
+			return Heuristics.getFScore(recall, precision);		
+		default:
+			throw new Error("Heuristic " + heuristic + " not implemented.");
+		}
+
 	}
 
 	public double getFMeasureOrTooWeakExact(OWLClassExpression description, double noise) {

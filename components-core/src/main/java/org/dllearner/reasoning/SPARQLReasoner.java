@@ -2235,13 +2235,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		entities.remove(df.getOWLBottomObjectProperty());
 		entities.remove(df.getOWLTopDataProperty());
 		entities.remove(df.getOWLBottomDataProperty());
+		
 		return entities;
 	}
 
 	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits){
-		logger.trace("Sending query \n {}", queryString);
-		// parse to check syntax
-//		Query query = QueryFactory.create(queryString, Syntax.syntaxSPARQL_11);
+		logger.trace("Sending query \n {}", queryString);System.out.println(queryString);
 		QueryExecution qe = qef.createQueryExecution(queryString);
 		qe.setTimeout(timeout);
 		try {
@@ -2256,9 +2255,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return executeSelectQuery(queryString, -1, TimeUnit.MILLISECONDS);
 	}
 	
-	protected boolean executeAskQuery(String query){
-		logger.trace("Sending query \n {}", query);
-		QueryExecution qe = qef.createQueryExecution(query);
+	protected boolean executeAskQuery(String queryString){
+		logger.trace("Sending query \n {}", queryString);
+		QueryExecution qe = qef.createQueryExecution(queryString);
 		boolean ret = qe.execAsk();
 		return ret;
 	}

@@ -75,8 +75,6 @@ public class AnnComponentManager {
             "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
             "org.dllearner.algorithms.DisjointClassesLearner",
             "org.dllearner.algorithms.SimpleSubclassLearner",
-            "org.dllearner.algorithms.qtl.QTL",
-            "org.dllearner.algorithms.qtl.QTL2",
             "org.dllearner.algorithms.qtl.QTL2Disjunctive",
             "org.dllearner.kb.KBFile",
             "org.dllearner.kb.OWLFile",

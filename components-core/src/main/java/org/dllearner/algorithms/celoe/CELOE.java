@@ -498,9 +498,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
-		int loop = 0;
 		while (!terminationCriteriaSatisfied()) {
-//			System.out.println("loop " + loop);
 			
 			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
 				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
@@ -515,102 +513,48 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
 			
-			// apply operator
-			Monitor mon = MonitorFactory.start("refineNode");
-//			System.out.print("NEXT NODE: " + nextNode);
+			// apply refinement operator
 			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-//			System.out.println(
-//					"||" + OWLClassExpressionUtils.getLength(nextNode.getDescription()) 
-//					+ "||" + heuristic.getNodeScore(nextNode)
-//					+ "##" + refinements.size()
-//					);
-			mon.stop();
 				
-//			System.out.println("#refinements: " + refinements.size());
-//			for(OWLClassExpression refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
-//			}
-//			if((loop+1) % 500 == 0) {
-//				System.out.println(getMinimumHorizontalExpansion() + " - " + getMaximumHorizontalExpansion());
-//				System.exit(0);
-//			}
-			while(refinements.size() != 0) {
+			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
 				
+				// get length of class expression
 				int length = OWLClassExpressionUtils.getLength(refinement);
-//				System.out.print(OWLAPIRenderers.toDLSyntax(refinement));
+				
 				// we ignore all refinements with lower length and too high depth
 				// (this also avoids duplicate node children)
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
-//					System.out.println(refinement);
-//					System.out.println("potentially adding " + refinement + " to search tree as child of " + nextNode + " " + new Date());
-					Monitor mon2 = MonitorFactory.start("addNode");
+					// add node to search tree
 					addNode(refinement, nextNode);
-					mon2.stop();
-//					System.out.println(refinement);
-//					System.out.println("Operation took " + (mon2.getLastValue()) + "ms");
-					// adding nodes is potentially computationally expensive, so we have
-					// to check whether max time is exceeded	
-					if(terminationCriteriaSatisfied()) {
-						break;
-					}
-//					System.out.println("addNode finished" + " " + new Date());
 				} else {
 //					System.out.println();
 				}
-		
-//				System.out.println("  refinement queue length: " + refinements.size());
 			}
 			
+			// update the global min and max horizontal expansion values
 			updateMinMaxHorizExp(nextNode);
 			
-			// writing the search tree (if configured)
+			// write the search tree (if configured)
 			if (writeSearchTree) {
-				String treeString = "best node: " + bestEvaluatedDescriptions.getBest() + "\n";
-				if (refinements.size() > 1) {
-					treeString += "all expanded nodes:\n";
-					for (OWLClassExpression n : refinements) {
-						treeString += "   " + n + "\n";
-					}
-				}
-				treeString += startNode.toTreeString(baseURI, prefixes);
-				treeString += "\n";
-
-				if (replaceSearchTree)
-					Files.createFile(new File(searchTreeFile), treeString);
-				else
-					Files.appendToFile(new File(searchTreeFile), treeString);
+				writeSearchTree(refinements);
 			}
-			
-//			System.out.println(loop);
-			loop++;
 		}
 		
-		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
-		} else {
-			totalRuntimeNs = System.nanoTime()-nanoStartTime;
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
-            logger.info(reasoner.toString());
-		}
-
 		if(singleSuggestionMode) {
 			bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
-		}		
+		}	
+		
+		// print some stats
+		printAlgorithmRunStats();
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
 		
-//		System.out.println(startNode.toTreeString(baseURI));
-		
 		isRunning = false;
-
-//		System.err.println(MonitorFactory.start("refineNode"));
-//		System.err.println(MonitorFactory.start("addNode"));
-//		System.err.println(MonitorFactory.start("lp"));
 	}
-
+	
 	private OENode getNextNodeToExpand() {
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
@@ -634,11 +578,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// expand node horizontically
 	private TreeSet<OWLClassExpression> refineNode(OENode node) {
+		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
-//		System.out.println("refining: " + node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
 //		System.out.println("refinements: " + refinements);
@@ -646,43 +590,43 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		node.setRefinementCount(refinements.size());
 //		System.out.println("refined node: " + node);
 		nodes.add(node);
+		MonitorFactory.getTimeMonitor("refineNode").stop();
 		return refinements;
 	}
 	
-	// add node to search tree if it is not too weak
-	// returns true if node was added and false otherwise
-	private boolean addNode(OWLClassExpression description, OENode parentNode) {
+	/**
+	 * Add node to search tree if it is not too weak.
+	 * @return TRUE if node was added and FALSE otherwise
+	 */
+	private boolean addNode(OWLClassExpression description, OENode parentNode) {System.err.println("#####################################\n" + description);
+		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-//			System.out.println(description + " redundant");
 			return false;
 		}
 		
-		// check whether the OWLClassExpression is allowed
+		// check whether the class expression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-//			System.out.println(description + " not allowed");
 			return false;
 		}
 		
-//		System.out.println("Test " + new Date());
-		// quality of OWLClassExpression (return if too weak)
+		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		mon.stop();
+		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			logger.warn("Invalid accuracy value " + accuracy + " for OWLClassExpression " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+			logger.warn("Invalid accuracy value " + accuracy + " for class expression " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 			System.exit(0);
 		}
 		
-//		System.out.println("Test2 " + new Date());
 		expressionTests++;
-//		System.out.println("acc: " + accuracy);
-//		System.out.println(OWLClassExpression + " " + accuracy);
+		
+		// return FALSE if 'too weak'
 		if(accuracy == -1) {
-//			System.out.println(description + " too weak");
 			return false;
 		}
 		
@@ -694,11 +638,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			parentNode.addChild(node);
 		}
-//		System.out.println(node + "::" + heuristic.getNodeScore(node));
 		nodes.add(node);
-//		System.out.println("Test3 " + new Date());
 		
-		// in some cases (e.g. mutation) fully evaluating even a single OWLClassExpression is too expensive
+		// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
 		if(singleSuggestionMode) {
 			if(accuracy > bestAccuracy) {
@@ -708,8 +650,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			}
 			return true;
 		} 
-		
-//		System.out.println("description " + OWLClassExpression + " accuracy " + accuracy);
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -723,9 +663,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
 		}
 		
-//		System.out.println(isCandidate);
-		
-//		System.out.println("Test4 " + new Date());
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewriteNode(node);
 			ConceptTransformation.transformToOrderedForm(niceDescription);
@@ -738,7 +675,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //			if(!isDescriptionAllowed(niceDescription, node)) {
 //				return false;
 //			}
-//			Description niceDescription = node.getDescription();
 			
 			// another test: none of the other suggested descriptions should be 
 			// a subdescription of this one unless accuracy is different
@@ -759,7 +695,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			if(!shorterDescriptionExists) {
 				if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
-//					System.out.println("Test2");
 //					System.out.println(node + "->" + niceDescription);
 					bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
 //					System.out.println("acc: " + accuracy);
@@ -772,12 +707,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //			System.out.println(bestEvaluatedDescriptions.getSet().size());
 		}
 		
-//		System.out.println("Test5 " + new Date());
-//		System.out.println("best evaluated descriptions size: " + bestEvaluatedDescriptions.size() + " worst: " + bestEvaluatedDescriptions.getWorst());
 		return true;
 	}	
 	
-	// checks whether the OWLClassExpression is allowed
+	// checks whether the class expression is allowed
 	private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
 		if(isClassLearningProblem) {
 			if(isEquivalenceProblem) {
@@ -905,6 +838,34 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		expressionTests = 0;
 	}
 	
+	private void printAlgorithmRunStats() {
+		if (stop) {
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
+		} else {
+			totalRuntimeNs = System.nanoTime()-nanoStartTime;
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+            logger.info(reasoner.toString());
+		}
+	}
+	
+	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
+		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
+		if (refinements.size() > 1) {
+			treeString.append("all expanded nodes:\n");
+			for (OWLClassExpression ref : refinements) {
+				treeString.append("   ").append(ref).append("\n");
+			}
+		}
+		treeString.append(startNode.toTreeString(baseURI, prefixes)).append("\n");
+
+		// replace or append
+		if (replaceSearchTree) {
+			Files.createFile(new File(searchTreeFile), treeString.toString());
+		} else {
+			Files.appendToFile(new File(searchTreeFile), treeString.toString());
+		}
+	}
+	
 	@Override
 	public boolean isRunning() {
 		return isRunning;
@@ -924,10 +885,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
 		return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
 	}	
-	
-//	private String getTemporaryString(OWLClassExpression description) {
-//		return descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")";
-//	}
 	
 	private void updateMinMaxHorizExp(OENode node) {
 		int newHorizExp = node.getHorizontalExpansion();
