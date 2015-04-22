@@ -101,7 +101,7 @@ import com.google.common.hash.Hashing;
  * @author Jens Lehmann
  * 
  */
-@ComponentAnn(name = "fast instance checker", shortName = "fic", version = 0.9)
+@ComponentAnn(name = "closed world reasoner", shortName = "cwr", version = 0.9)
 public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasoner.class);
@@ -688,6 +688,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				
 				if(datatype.isDouble()){
 					SortedSet<Double> values = dd.get(property).get(individual);
+					
+					// no value exists
+					if(values == null) {
+						return false;
+					}
 					
 					double min = -Double.MAX_VALUE;
 					double max = Double.MAX_VALUE;
