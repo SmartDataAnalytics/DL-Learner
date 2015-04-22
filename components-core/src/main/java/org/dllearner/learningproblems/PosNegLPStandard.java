@@ -525,8 +525,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
 		
-		// we have to distinguish between a standard OWL reasoner or a SPARQL
-		// which in fact is more expensive when using multiple instance checks
+		// we have to distinguish between a standard OWL reasoner or a SPARQL-based, 
+		// which probably is more expensive when using multiple instance checks
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			// get all instances of the concept to be tested
 			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(description);
@@ -536,6 +536,11 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			
 			// compute diff with negative examples
 			notCoveredNeg = Sets.difference(negativeExamples, individuals).size();
+			
+			// return 'too weak' if too many pos examples are not covered
+			if(notCoveredPos >= maxNotCovered) {
+				return -1;
+			}
 		} else {
 			for (OWLIndividual example : positiveExamples) {
 				if (!getReasoner().hasType(description, example)) {
