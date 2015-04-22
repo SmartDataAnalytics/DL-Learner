@@ -6,6 +6,8 @@ package org.dllearner.algorithms.qtl.experiments;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
@@ -18,6 +20,9 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -71,6 +76,28 @@ public class DBpediaLearningProblemsGenerator {
 				Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID(), maxDepth);
 				data.add(cbd);
 			}
+			
+			String query = "SELECT ?s1 ?s2 ?p ?o WHERE {"
+					+ "?s1 a <%s> . ?s1 ?p1_1 ?o1_1 . ?o1_1 ?p ?o ."
+					+ "?s2 a <%s> . ?s2 ?p2_1 ?o2_1 . ?o2_1 ?p ?o ."
+					+ "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+					+ "FILTER(?s1 != ?s2)"
+					+ "FILTER(?p != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  && "
+					+ "?p != <http://www.w3.org/2000/01/rdf-schema#label> && "
+					+ "?p != <http://www.w3.org/2000/01/rdf-schema#subClassOf> && "
+					+ "?p != <http://www.w3.org/ns/prov#wasDerivedFrom> && "
+					+ "?p != <http://www.w3.org/2002/07/owl#equivalentClass> && "
+					+ "?p != <http://www.w3.org/2000/01/rdf-schema#comment> && "
+					+ "?p != <http://www.w3.org/2002/07/owl#disjointWith>)"
+					+ "} LIMIT 1000";
+			query = String.format(query, cls.toStringID(), cls.toStringID());
+			QueryExecutionFactoryModel qef = new QueryExecutionFactoryModel(data);
+			QueryExecution qe = qef.createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			System.out.println(ResultSetFormatter.asText(rs));
+			
+			
+			break;
 		}
 	}
 	

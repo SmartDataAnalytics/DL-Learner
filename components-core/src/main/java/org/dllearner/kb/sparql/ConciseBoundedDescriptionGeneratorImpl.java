@@ -116,7 +116,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append(String.format("<%s> ?p0 ?o0 .\n", resource));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
