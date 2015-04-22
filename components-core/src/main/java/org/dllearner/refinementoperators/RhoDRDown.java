@@ -47,9 +47,12 @@ import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -84,8 +87,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -1346,30 +1353,56 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
-		for(OWLClassExpression candidate :  subHierarchy.getSuperClasses(lowerClass)) {
-			if(!candidate.isOWLThing()) {
-//				System.out.println("candidate: " + candidate);
-				// check disjointness with index/range (should not be disjoint otherwise not useful)
-				if(!isDisjoint(df.getOWLObjectComplementOf(candidate),index)) {
-					boolean meaningful;
-//					System.out.println("not disjoint");
-					if(instanceBasedDisjoints) {
-						SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
-						tmp.removeAll(reasoner.getIndividuals(df.getOWLObjectComplementOf(candidate)));
-						meaningful = tmp.size() != 0;
-//						System.out.println("instances " + tmp.size());
-					} else {
-						meaningful = !isDisjoint(candidate,index);
-					}
+		SortedSet<OWLClassExpression> superClasses = subHierarchy.getSuperClasses(lowerClass);
+		
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
+			String query = "SELECT ?concept WHERE {";
+			query += conv.convert("?ind", index);
+			query += "?ind a ?concept . ";
+			query += "VALUES ?concept {" + Joiner.on(" ").join(superClasses) + "}";
+			query += "}";
+//			System.out.println(query);
+			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
+			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
+			}
+			qe.close();
+			candidates.addAll(meaningfulClasses);
+			// recursive call, i.e. go class hierarchy up for non-meaningful classes
+//			for (OWLClassExpression cls : Sets.difference(superClasses, meaningfulClasses)) {
+//				candidates.addAll(getNegClassCandidatesRecursive(index, cls));
+//			}
+		} else {
+			for(OWLClassExpression candidate : superClasses) {
+				if(!candidate.isOWLThing()) {
+					OWLObjectComplementOf negatedCandidate = df.getOWLObjectComplementOf(candidate);
+					
+					// check disjointness with index/range (should not be disjoint otherwise not useful)
+					if(!isDisjoint(negatedCandidate,index)) {
+						boolean meaningful;
+						
+						if(instanceBasedDisjoints) {
+							SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
+							tmp.removeAll(reasoner.getIndividuals(negatedCandidate));
+							meaningful = tmp.size() != 0;
+						} else {
+							meaningful = !isDisjoint(candidate,index);
+						}
 
-					if(meaningful) {
-						candidates.add(df.getOWLObjectComplementOf(candidate));
-					} else {
-						candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
+						if(meaningful) {
+							candidates.add(negatedCandidate);
+						} else {
+							candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
+						}
 					}
 				}
 			}
 		}
+		
 		return candidates;
 	}
 
@@ -1524,60 +1557,57 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(d1.isOWLThing() || d2.isOWLThing()) {
 			return false;
 		}
-//		System.out.println("| " + d1 + " " + d2);
-//		System.out.println("| " + cachedDisjoints);
+		
+		if(d1.isOWLNothing() || d2.isOWLNothing()) {
+			return true;
+		}
 
 		// check whether we have cached this query
 		Map<OWLClassExpression,Boolean> tmp = cachedDisjoints.get(d1);
-		Boolean tmp2 = null;
-		if(tmp != null)
-			tmp2 = tmp.get(d2);
-
-//		System.out.println("| " + tmp + " " + tmp2);
-
-		if(tmp2==null) {
-			Boolean result;
-			if(instanceBasedDisjoints) {
-				result = isDisjointInstanceBased(d1,d2);
-			} else {
-				OWLClassExpression d = df.getOWLObjectIntersectionOf(d1, d2);
-				result = reasoner.isSuperClassOf(df.getOWLNothing(), d);
-			}
-			// add the result to the cache (we add it twice such that
-			// the order of access does not matter)
-
-//			System.out.println("| result: " + result);
-
-			// create new entries if necessary
-			Map<OWLClassExpression,Boolean> map1 = new TreeMap<OWLClassExpression,Boolean>();
-			Map<OWLClassExpression,Boolean> map2 = new TreeMap<OWLClassExpression,Boolean>();
-			if(tmp == null)
-				cachedDisjoints.put(d1, map1);
-			if(!cachedDisjoints.containsKey(d2))
-				cachedDisjoints.put(d2, map2);
-
-			// add result symmetrically in the OWLClassExpression matrix
-			cachedDisjoints.get(d1).put(d2, result);
-			cachedDisjoints.get(d2).put(d1, result);
-//			System.out.println("---");
-			return result;
-		} else {
-//			System.out.println("===");
-			return tmp2;
+		if(tmp != null && tmp.containsKey(d2)) {
+			return tmp.get(d2);
 		}
+
+		// compute the disjointness
+		Boolean result;
+		if (instanceBasedDisjoints) {
+			result = isDisjointInstanceBased(d1, d2);
+		} else {
+			OWLClassExpression d = df.getOWLObjectIntersectionOf(d1, d2);
+			result = reasoner.isSuperClassOf(df.getOWLNothing(), d);
+		}
+		// add the result to the cache (we add it twice such that
+		// the order of access does not matter)
+
+		// create new entries if necessary
+		Map<OWLClassExpression, Boolean> map1 = new TreeMap<OWLClassExpression, Boolean>();
+		Map<OWLClassExpression, Boolean> map2 = new TreeMap<OWLClassExpression, Boolean>();
+		if (tmp == null)
+			cachedDisjoints.put(d1, map1);
+		if (!cachedDisjoints.containsKey(d2))
+			cachedDisjoints.put(d2, map2);
+
+		// add result symmetrically in the OWLClassExpression matrix
+		cachedDisjoints.get(d1).put(d2, result);
+		cachedDisjoints.get(d2).put(d1, result);
+		//			System.out.println("---");
+		return result;
 	}
 
 	private boolean isDisjointInstanceBased(OWLClassExpression d1, OWLClassExpression d2) {
-		SortedSet<OWLIndividual> d1Instances = reasoner.getIndividuals(d1);
-		SortedSet<OWLIndividual> d2Instances = reasoner.getIndividuals(d2);
-//		System.out.println(d1 + " " + d2);
-//		System.out.println(d1 + " " + d1Instances);
-//		System.out.println(d2 + " " + d2Instances);
-		for(OWLIndividual d1Instance : d1Instances) {
-			if(d2Instances.contains(d1Instance))
-				return false;
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(df.getOWLObjectIntersectionOf(d1, d2));
+			return individuals.isEmpty();
+		} else {
+			SortedSet<OWLIndividual> d1Instances = reasoner.getIndividuals(d1);
+			SortedSet<OWLIndividual> d2Instances = reasoner.getIndividuals(d2);
+			
+			for(OWLIndividual d1Instance : d1Instances) {
+				if(d2Instances.contains(d1Instance))
+					return false;
+			}
+			return true;
 		}
-		return true;
 	}
 
 	/*
