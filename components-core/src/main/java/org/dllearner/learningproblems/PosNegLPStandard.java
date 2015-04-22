@@ -529,7 +529,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		// which in fact is more expensive when using multiple instance checks
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			// get all instances of the concept to be tested
-			System.err.println(description);
 			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(description);
 			
 			// compute diff with positive examples

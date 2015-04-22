@@ -2240,7 +2240,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	protected ResultSet executeSelectQuery(String queryString, long timeout, TimeUnit timeoutUnits){
-		logger.trace("Sending query \n {}", queryString);System.out.println(queryString);
+		logger.trace("Sending query \n {}", queryString);//System.out.println(queryString);
 		QueryExecution qe = qef.createQueryExecution(queryString);
 		qe.setTimeout(timeout);
 		try {

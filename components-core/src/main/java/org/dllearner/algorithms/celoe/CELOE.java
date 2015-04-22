@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections15.SetUtils;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -46,6 +47,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
@@ -77,6 +79,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -598,7 +601,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
 	 */
-	private boolean addNode(OWLClassExpression description, OENode parentNode) {System.err.println("#####################################\n" + description);
+	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
@@ -736,7 +739,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		// perform forall sanity tests
-		if(parentNode != null && ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription())) {
+		if (parentNode != null && 
+				(ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription()))) {
 			// we have an additional \forall construct, so we now fetch the contexts
 			// in which it occurs
 			SortedSet<PropertyContext> contexts = ConceptTransformation.getForallContexts(description);
@@ -751,13 +755,18 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				// transform [r,s] to \exists r.\exists s.\top
 				OWLClassExpression existentialContext = context.toExistentialContext();
 				boolean fillerFound = false;
-				for(OWLIndividual instance : examples) {
-					if(reasoner.hasType(existentialContext, instance)) {
-//						System.out.println(instance + "  " + existentialContext);
-						fillerFound = true;
-						break;
+				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+					SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(existentialContext);
+					fillerFound = !Sets.intersection(individuals, examples).isEmpty();
+				} else {
+					for(OWLIndividual instance : examples) {
+						if(reasoner.hasType(existentialContext, instance)) {
+							fillerFound = true;
+							break;
+						}
 					}
 				}
+				
 				// if we do not find a filler, this means that putting \forall at
 				// that position is not meaningful
 				if(!fillerFound) {
