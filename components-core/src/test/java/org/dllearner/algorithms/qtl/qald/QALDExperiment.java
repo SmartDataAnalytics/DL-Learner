@@ -293,25 +293,8 @@ public class QALDExperiment {
 					int possibleNrOfExamples = Math.min(getResultCount(sparqlQuery), nrOfExamples);
 					
 					try {
-						// generate some random examples and add some noise if necessary
-						Map<OWLIndividual, RDFResourceTree> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
-
-						// run QTL
-						PosNegLPStandard lp = new PosNegLPStandard();
-						lp.setPositiveExamples(generatedExamples.keySet());
-						
-						//						lp.init();
-//						la = new QTL2(lp, qef);
-						QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
-						la.setReasoner(kb.reasoner);
-						la.setEntailment(Entailment.RDFS);
-						la.setTreeFactory(queryTreeFactory);
-						la.setPositiveExampleTrees(generatedExamples);
-						la.setNoise(noise);
-						la.init();
-						la.start();
-
-						List<EvaluatedRDFResourceTree> solutions = new ArrayList<EvaluatedRDFResourceTree>(la.getSolutions());
+						// compute or load cached solutions
+						List<EvaluatedRDFResourceTree> solutions = generateSolutions(sparqlQuery, possibleNrOfExamples, noise);
 
 						// the best solution by QTL
 						EvaluatedRDFResourceTree bestSolution = solutions.get(0);
@@ -391,6 +374,30 @@ public class QALDExperiment {
 				}
 			}
 		}
+	}
+	
+	private List<EvaluatedRDFResourceTree> generateSolutions(String sparqlQuery, int possibleNrOfExamples, double noise) throws ComponentInitException {
+		Map<OWLIndividual, RDFResourceTree> generatedExamples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
+
+		
+		
+		// run QTL
+		PosNegLPStandard lp = new PosNegLPStandard();
+		lp.setPositiveExamples(generatedExamples.keySet());
+//		lp.init();
+
+		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+		la.setReasoner(kb.reasoner);
+		la.setEntailment(Entailment.RDFS);
+		la.setTreeFactory(queryTreeFactory);
+		la.setPositiveExampleTrees(generatedExamples);
+		la.setNoise(noise);
+		la.init();
+		la.start();
+
+		List<EvaluatedRDFResourceTree> solutions = new ArrayList<EvaluatedRDFResourceTree>(la.getSolutions());
+		
+		return solutions;
 	}
 	
 	private Pair<EvaluatedRDFResourceTree, Score> findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
