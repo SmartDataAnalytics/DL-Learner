@@ -69,7 +69,7 @@ public class LazyClassHierarchy extends ClassHierarchy {
 	 * @see org.dllearner.core.owl.AbstractHierarchy#cloneAndRestrict(java.util.Set)
 	 */
 	@Override
-	public AbstractHierarchy<OWLClassExpression> cloneAndRestrict(Set<OWLClassExpression> allowedEntities) {
+	public AbstractHierarchy<OWLClassExpression> cloneAndRestrict(Set<? extends OWLClassExpression> allowedEntities) {
 		return new LazyClassHierarchy(rc);
 	}
 }
