@@ -6,9 +6,7 @@ package org.dllearner.algorithms.qtl.experiments;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -43,7 +41,7 @@ public class DBpediaLearningProblemsGenerator {
 		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		
 		ks = new SparqlEndpointKS(endpoint);
-		ks.setCacheDir("./qtl-benchmark/cache");
+		ks.setCacheDir("./qtl-benchmark/cache;mv_store=false");
 		ks.init();
 		
 		reasoner = new SPARQLReasoner(ks);
@@ -63,7 +61,7 @@ public class DBpediaLearningProblemsGenerator {
 		while(i < size && !classes.isEmpty()) {
 			
 			// pick class randomly
-			OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Actor"));
+			OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/MusicalArtist"));
 			
 			// get individuals
 			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(cls);
@@ -78,17 +76,11 @@ public class DBpediaLearningProblemsGenerator {
 			}
 			
 			String query = "SELECT ?s1 ?s2 ?p ?o WHERE {"
-					+ "?s1 a <%s> . ?s1 ?p1_1 ?o1_1 . ?o1_1 ?p ?o ."
-					+ "?s2 a <%s> . ?s2 ?p2_1 ?o2_1 . ?o2_1 ?p ?o ."
-					+ "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
-					+ "FILTER(?s1 != ?s2)"
-					+ "FILTER(?p != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  && "
-					+ "?p != <http://www.w3.org/2000/01/rdf-schema#label> && "
-					+ "?p != <http://www.w3.org/2000/01/rdf-schema#subClassOf> && "
-					+ "?p != <http://www.w3.org/ns/prov#wasDerivedFrom> && "
-					+ "?p != <http://www.w3.org/2002/07/owl#equivalentClass> && "
-					+ "?p != <http://www.w3.org/2000/01/rdf-schema#comment> && "
-					+ "?p != <http://www.w3.org/2002/07/owl#disjointWith>)"
+					+ "?s1 a <%s> . ?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
+					+ "?s2 a <%s> . ?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
+					+ "?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+					+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+					+ "FILTER(?s1 != ?s2 && ?o1_1 != ?o2_1)"
 					+ "} LIMIT 1000";
 			query = String.format(query, cls.toStringID(), cls.toStringID());
 			QueryExecutionFactoryModel qef = new QueryExecutionFactoryModel(data);
@@ -100,11 +92,6 @@ public class DBpediaLearningProblemsGenerator {
 			break;
 		}
 	}
-	
-	
-	
-	
-	
 	
 	public static void main(String[] args) throws Exception {
 		new DBpediaLearningProblemsGenerator().generateBenchmark(1, 3);

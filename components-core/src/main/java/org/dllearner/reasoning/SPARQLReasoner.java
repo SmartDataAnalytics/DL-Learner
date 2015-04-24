@@ -1628,7 +1628,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLObjectProperty> getObjectPropertiesWithDomain(OWLClass domain) {
 		Set<OWLObjectProperty> properties = new TreeSet<>();
 		
-		String query = "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> <" + domain + ">.}";
+		String query = "SELECT ?p WHERE {?p <http://www.w3.org/2000/01/rdf-schema#domain> <" + domain.toStringID() + ">.}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1642,7 +1642,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLObjectProperty> getObjectProperties(OWLClass cls) {
 		Set<OWLObjectProperty> properties = new TreeSet<>();
 		
-		String query = "SELECT DISTINCT ?p WHERE {?s a <" + cls + ">. ?s ?p ?o}";
+		String query = "SELECT DISTINCT ?p WHERE {?s a <" + cls.toStringID() + ">. ?s ?p ?o}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){

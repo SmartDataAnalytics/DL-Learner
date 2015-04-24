@@ -494,7 +494,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// refine the child; the new max length is the current max length minus
 				// the currently considered concept plus the length of the child
 				// TODO: add better explanation
-				tmp = refine(child, maxLength - OWLClassExpressionUtils.getLength(description) + OWLClassExpressionUtils.getLength(child),null,currDomain);
+				int length = OWLClassExpressionUtils.getLength(description);
+				int childLength = OWLClassExpressionUtils.getLength(child);
+				tmp = refine(child, maxLength - length + childLength, null, currDomain);
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
@@ -523,7 +525,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				System.out.println("union child: " + child + " " + maxLength + " " + description.getLength() + " " + child.getLength());
 
 				// refine child
-				tmp = refine(child, maxLength - OWLClassExpressionUtils.getLength(description)+OWLClassExpressionUtils.getLength(child),null,currDomain);
+				int length = OWLClassExpressionUtils.getLength(description);
+				int childLength = OWLClassExpressionUtils.getLength(child);
+				tmp = refine(child, maxLength - length + childLength, null, currDomain);
 
 				// construct union (see above)
 				for(OWLClassExpression c : tmp) {

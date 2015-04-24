@@ -298,8 +298,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// reachable via a single path
 //		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
 		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
-		classHierarchy.thinOutSubsumptionHierarchy();
-		
+//		classHierarchy.thinOutSubsumptionHierarchy();
 
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
@@ -531,8 +530,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 					// add node to search tree
 					addNode(refinement, nextNode);
-				} else {
-//					System.out.println();
 				}
 			}
 			
@@ -580,7 +577,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	// expand node horizontically
-	private TreeSet<OWLClassExpression> refineNode(OENode node) {
+	private TreeSet<OWLClassExpression> refineNode(OENode node) {System.err.println("REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -601,17 +598,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
 	 */
-	private boolean addNode(OWLClassExpression description, OENode parentNode) {
+	private boolean addNode(OWLClassExpression description, OENode parentNode) {System.err.print("DESC: " + description);
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
-		if(!nonRedundant) {
+		if(!nonRedundant) {System.err.println("REDUNDANT");
 			return false;
 		}
 		
 		// check whether the class expression is allowed
-		if(!isDescriptionAllowed(description, parentNode)) {
+		if(!isDescriptionAllowed(description, parentNode)) {System.err.println("NOT ALLOWED");
 			return false;
 		}
 		
@@ -619,6 +616,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		Monitor mon = MonitorFactory.start("lp");
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		mon.stop();
+		System.err.println(accuracy);
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
