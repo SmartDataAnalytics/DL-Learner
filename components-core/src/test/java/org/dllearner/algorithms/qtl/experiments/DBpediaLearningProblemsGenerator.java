@@ -33,7 +33,7 @@ import com.google.common.io.Files;
 import com.google.common.net.UrlEscapers;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -51,15 +51,17 @@ public class DBpediaLearningProblemsGenerator {
 	SPARQLReasoner reasoner;
 	ConciseBoundedDescriptionGenerator cbdGen;
 	
-	File dataDir = new File("eval/dbpedia/");
+	File dataDir;
 	private Model schema;
+	private File benchmarkDirectory;
 	
-	
-	public DBpediaLearningProblemsGenerator() throws Exception {
+	public DBpediaLearningProblemsGenerator(File benchmarkDirectory) throws Exception {
+		this.benchmarkDirectory = benchmarkDirectory;
+		
 		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		
 		ks = new SparqlEndpointKS(endpoint);
-		ks.setCacheDir("./qtl-benchmark/cache;mv_store=false");
+		ks.setCacheDir(new File(benchmarkDirectory, "cache").getPath() + ";mv_store=false");
 //		ks.setPageSize(100000);
 //		ks.setUseCache(false);
 		ks.setQueryDelay(100);
@@ -70,10 +72,11 @@ public class DBpediaLearningProblemsGenerator {
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		
+		dataDir = new File(benchmarkDirectory, "data/dbpedia/");
 		dataDir.mkdirs();
 		
 		schema = ModelFactory.createDefaultModel();
-		schema.read(new FileInputStream("/home/user/work/datasets/qtl/dbpedia_2014.owl"), null, "RDF/XML");
+		schema.read(new FileInputStream(new File(benchmarkDirectory, "dbpedia_2014.owl")), null, "RDF/XML");
 	}
 	
 	private Set<OWLClass> getClasses() {
@@ -96,7 +99,7 @@ public class DBpediaLearningProblemsGenerator {
 			// load data
 			System.out.print("Loading data...");
 			long s = System.currentTimeMillis();
-			data = loadFromCacheOrCompute(cls, maxDepth, false);
+			data = loadDataFromCacheOrCompute(cls, maxDepth, true);
 			System.out.println(data.size() + " triples in " + (System.currentTimeMillis() - s) + "ms");
 			
 			// analyze
@@ -147,6 +150,7 @@ public class DBpediaLearningProblemsGenerator {
 		
 		QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(template.toString());
 		ResultSet rs = qe.execSelect();
+		StringBuilder sb = new StringBuilder();
 		while(rs.hasNext()) {
 			String property1 = rs.next().getResource("p").getURI();
 			template2.setIri("p1", property1);
@@ -159,17 +163,30 @@ public class DBpediaLearningProblemsGenerator {
 				template3.setIri("p1", property1);
 				template3.setIri("p2", property2);
 				
-				System.out.println(template3.asQuery());
+//				System.out.println(template3.asQuery());
 				QueryExecution qe3 = new QueryExecutionFactoryModel(model).createQueryExecution(template3.toString());
 				ResultSet rs3 = qe3.execSelect();
 				String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".log";
-				System.out.println(ResultSetFormatter.asText(rs3));
-	//			try {
-	//				Files.write(ResultSetFormatter.asText(rs), new File(dataDir, filename), Charsets.UTF_8);
-	//			} catch (IOException e) {
-	//				// TODO Auto-generated catch block
-	//				e.printStackTrace();
-	//			}
+				
+				String delimiter = "\t";
+				QuerySolution qs;
+				while(rs3.hasNext()) {
+					qs = rs3.next();
+					if(qs.get("o") != null) {
+						sb.append(property1).append(delimiter).
+						append(property2).append(delimiter).
+						append(qs.getResource("o").getURI()).append(delimiter).
+						append(qs.getLiteral("cnt").getInt()).
+						append("\n");
+					}
+				}
+//				sb.append(ResultSetFormatter.asText(rs));
+//				System.out.println(sb);
+				try {
+					Files.write(sb.toString(), new File(dataDir, filename), Charsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				qe3.close();
 			}
 			qe2.close();
@@ -186,6 +203,73 @@ public class DBpediaLearningProblemsGenerator {
 		
 	}
 	
+	private void analyzeSingleQuery(OWLClass cls, Model model) {
+		ParameterizedSparqlString template = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?p WHERE {"
+				+ "?s a ?cls . "
+				+ "?s ?p ?o . "
+				+ "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+		template.setIri("cls", cls.toStringID());
+		
+		ParameterizedSparqlString template2 = new ParameterizedSparqlString(
+				"SELECT ?p2 ?o (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
+				+ "?s a ?cls . "
+				+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+				+ "?s ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
+				+ "FILTER EXISTS {?s2 a ?cls . ?s ?p1 ?o2_1 . ?o2_1 ?p2 ?o . FILTER(?s2 != ?s && ?o2_1 != ?o1_1)}"
+				+ "} GROUP BY ?p2 ?o HAVING(?cnt > 10) ORDER BY ?p2 DESC(?cnt)");
+		template2.setIri("cls", cls.toStringID());
+		
+		QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(template.toString());
+		ResultSet rs = qe.execSelect();
+		while(rs.hasNext()) {
+			String property1 = rs.next().getResource("p").getURI();
+			System.out.println(property1);
+			template2.setIri("p1", property1);
+			QueryExecution qe2 = new QueryExecutionFactoryModel(model).createQueryExecution(template2.toString());
+			ResultSet rs2 = qe2.execSelect();
+			System.out.println(ResultSetFormatter.asText(rs2));
+			qe2.close();
+		}
+	//			try {
+	//				Files.write(ResultSetFormatter.asText(rs), new File(dataDir, filename), Charsets.UTF_8);
+	//			} catch (IOException e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			}
+		qe.close();
+		
+//		query = String.format(, cls.toStringID(), cls.toStringID());
+		
+	}
+	
+	private void analyzeSingleQuery2(OWLClass cls, Model model) {
+		ParameterizedSparqlString template = new ParameterizedSparqlString(
+				"SELECT ?p1 ?p2 ?o (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
+				+ "?s a ?cls . "
+				+ "?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+				+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+				+ "?s ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
+				+ "FILTER EXISTS {?s2 a ?cls . ?s ?p1 ?o2_1 . ?o2_1 ?p2 ?o . FILTER(?s2 != ?s && ?o2_1 != ?o1_1)}"
+				+ "} GROUP BY ?p1 ?p2 ?o HAVING(?cnt > 10) ORDER BY ?p1 ?p2 DESC(?cnt)");
+		template.setIri("cls", cls.toStringID());
+		
+		
+		QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(template.toString());
+		ResultSet rs = qe.execSelect();
+		System.out.println(ResultSetFormatter.asText(rs));
+	//			try {
+	//				Files.write(ResultSetFormatter.asText(rs), new File(dataDir, filename), Charsets.UTF_8);
+	//			} catch (IOException e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			}
+		qe.close();
+		
+//		query = String.format(, cls.toStringID(), cls.toStringID());
+		
+	}
+	
 	private Model loadData(OWLClass cls, int maxDepth) {
 		Model model = ModelFactory.createDefaultModel();
 		try(InputStream is = new BufferedInputStream(new FileInputStream("/home/user/work/datasets/qtl/Airport2.ttl"))){
@@ -197,7 +281,7 @@ public class DBpediaLearningProblemsGenerator {
 		return model;
 	}
 	
-	private Model loadFromCacheOrCompute(OWLClass cls, int maxDepth, boolean singleQuery) {
+	private Model loadDataFromCacheOrCompute(OWLClass cls, int maxDepth, boolean singleQuery) {
 		String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".ttl";
 		File file = new File(dataDir, filename);
 		
@@ -270,7 +354,8 @@ public class DBpediaLearningProblemsGenerator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		new DBpediaLearningProblemsGenerator().generateBenchmark(1, 2);
+		File dir = new File(args[0]);
+		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(1, 2);
 	}
 	
 
