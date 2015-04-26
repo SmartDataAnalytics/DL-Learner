@@ -196,10 +196,10 @@
 		</dependency>
     -->
 
-        <dependency>
+      <!--   <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-        </dependency>
+        </dependency> -->
     <!-- 
          <dependency>
             <groupId>org.apache.jena</groupId>
@@ -362,6 +362,12 @@
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
 				<artifactId>jena-sparql-api-core</artifactId>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-ext</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
@@ -404,5 +410,6 @@
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 			</dependency>
+			
 	</dependencies>
 </project>
