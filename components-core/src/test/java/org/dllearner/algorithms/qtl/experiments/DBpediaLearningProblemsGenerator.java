@@ -31,7 +31,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.net.UrlEscapers;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -108,39 +110,80 @@ public class DBpediaLearningProblemsGenerator {
 	}
 	
 	private void analyze(OWLClass cls, Model model) {
-		String query = String.format("SELECT ?p2 ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
-				+ "?s1 a <%s> . "
-				+ "?s2 a <%s> . "
-				+ "?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> . ?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+		ParameterizedSparqlString template = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?p WHERE {"
+				+ "?s a ?cls . "
+				+ "?s ?p ?o . "
+				+ "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+		template.setIri("cls", cls.toStringID());
+		
+		ParameterizedSparqlString template2 = new ParameterizedSparqlString(
+				"SELECT DISTINCT ?p2 WHERE {"
+				+ "?s a ?cls . "
+				+ "?s ?p1 ?o1 . "
+				+ "?o1 ?p2 ?o2 . "
+				+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+		template2.setIri("cls", cls.toStringID());
+		
+		ParameterizedSparqlString template3 = new ParameterizedSparqlString(
+				"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
+				+ "?s1 a ?cls . "
+				+ "?s2 a ?cls . "
+//				+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
 				+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
 				+ "?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
-				+ "FILTER(?s1 != ?s2 && ?o1_1 != ?o2_1)"
-				+ "} GROUP BY ?p2 ?o ORDER BY ?p2 DESC(?cnt)", cls.toStringID(), cls.toStringID());
-//		query = String.format("SELECT * WHERE {"
-//				+ "?s1 a <%s> . ?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
-//				+ "?s2 a <%s> . ?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
-////				+ "?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> . ?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
-//				+ "FILTER(?s1 != ?s2 && ?o1_1 != ?o2_1)"
-//				+ "} LIMIT 100", cls.toStringID(), cls.toStringID());
-//		query = "prefix dbo:<http://dbpedia.org/ontology/>\n" + 
-//				"select ?s1 ?o1_1 ?s2 ?o2_1 ?o {\n" + 
-//				"?s1 a dbo:AcademicJournal . ?s1 dbo:publisher ?o1_1. ?o1_1 dbo:headquarter ?o.\n" + 
-//				"?s2 a dbo:AcademicJournal . ?s2 dbo:publisher ?o2_1. ?o2_1 dbo:headquarter ?o.\n" + 
-//				"filter(?s1 != ?s2 && ?o1_1 != ?o2_1)\n" + 
-//				"}\n" + 
-//				"\n" + 
-//				"limit 100";
-		System.out.println(query);
-		QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(query);
+				+ "FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1))"
+				+ "} GROUP BY ?o ORDER BY DESC(?cnt)");
+		template3 = new ParameterizedSparqlString(
+				"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
+				+ "?s1 a ?cls . "
+				+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
+				+ "FILTER EXISTS{?s2 a ?cls . ?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
+				+ "FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1))}"
+				+ "} GROUP BY ?o ORDER BY DESC(?cnt)");
+		template3.setIri("cls", cls.toStringID());
+		
+		
+		
+		QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(template.toString());
 		ResultSet rs = qe.execSelect();
-		String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".log";
-		try {
-			Files.write(ResultSetFormatter.asText(rs), new File(dataDir, filename), Charsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while(rs.hasNext()) {
+			String property1 = rs.next().getResource("p").getURI();
+			template2.setIri("p1", property1);
+			
+			QueryExecution qe2 = new QueryExecutionFactoryModel(model).createQueryExecution(template2.toString());
+			ResultSet rs2 = qe2.execSelect();
+			
+			while(rs2.hasNext()) {
+				String property2 = rs2.next().getResource("p2").getURI();
+				template3.setIri("p1", property1);
+				template3.setIri("p2", property2);
+				
+				System.out.println(template3.asQuery());
+				QueryExecution qe3 = new QueryExecutionFactoryModel(model).createQueryExecution(template3.toString());
+				ResultSet rs3 = qe3.execSelect();
+				String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".log";
+				System.out.println(ResultSetFormatter.asText(rs3));
+	//			try {
+	//				Files.write(ResultSetFormatter.asText(rs), new File(dataDir, filename), Charsets.UTF_8);
+	//			} catch (IOException e) {
+	//				// TODO Auto-generated catch block
+	//				e.printStackTrace();
+	//			}
+				qe3.close();
+			}
+			qe2.close();
 		}
 		qe.close();
+		
+//		query = String.format("SELECT ?p1 ?p2 ?o (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
+//				+ "?s a <%s> . "
+//				+ "?p1 a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+//				+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+//				+ "?s ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
+//				+ "FILTER EXISTS {?s2 a <%s> . ?s ?p1 ?o2_1 . ?o2_1 ?p2 ?o . FILTER(?s2 != ?s && ?o2_1 != ?o1_1)}"
+//				+ "} GROUP BY ?p1 ?p2 ?o HAVING(?cnt > 10) ORDER BY ?p1 ?p2 DESC(?cnt)", cls.toStringID(), cls.toStringID());
+		
 	}
 	
 	private Model loadData(OWLClass cls, int maxDepth) {
