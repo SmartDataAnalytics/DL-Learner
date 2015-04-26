@@ -86,15 +86,15 @@ public class DBpediaLearningProblemsGenerator {
 		return reasoner.getMostSpecificClasses();
 	}
 	
-	public void generateBenchmark(int size, final int maxDepth) {
+	public void generateBenchmark(int threadCount, int size, final int maxDepth) {
 		Set<OWLClass> classes = getClasses();
 		
 		Iterator<OWLClass> iterator = classes.iterator();
 		int i = 0;
 		
-		ExecutorService tp = Executors.newFixedThreadPool(4);
+		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		while(i < size && !classes.isEmpty()) {
-			i++;
+//			i++;
 			
 			// pick class randomly
 			final OWLClass cls = iterator.next();
@@ -103,9 +103,9 @@ public class DBpediaLearningProblemsGenerator {
 			
 			tp.submit(new Worker(ks, cls, maxDepth));
 			
-			if(i == 8) {
-				break;
-			}
+//			if(i == 8) {
+//				break;
+//			}
 		}
 		
 		tp.shutdown();
@@ -207,7 +207,7 @@ public class DBpediaLearningProblemsGenerator {
 				System.out.println(Thread.currentThread().getId() + ":" + "Loading data for " + cls.toStringID() + "...");
 				long s = System.currentTimeMillis();
 				Model data = loadDataFromCacheOrCompute(cls, maxDepth, true);
-				System.out.println(Thread.currentThread().getId() + ":" + "Got " + data.size() + " triples for " + cls.toStringID() + "in " + (System.currentTimeMillis() - s) + "ms");
+				System.out.println(Thread.currentThread().getId() + ":" + "Got " + data.size() + " triples for " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
 				
 				// analyze
 				System.out.println(Thread.currentThread().getId() + ":" + "Analyzing " + cls.toStringID() + "...");
@@ -384,7 +384,8 @@ public class DBpediaLearningProblemsGenerator {
 	
 	public static void main(String[] args) throws Exception {
 		File dir = new File(args[0]);
-		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(10, 2);
+		int threadCount = Integer.parseInt(args[1]);
+		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(threadCount, 10, 2);
 	}
 	
 
