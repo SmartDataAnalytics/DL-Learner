@@ -81,6 +81,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	
 	protected QueryExecutionFactory qef;
 
+	private long pageSize = 10000;
+
 	public SparqlEndpointKS() {}
 
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
@@ -145,9 +147,13 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 		
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-		qef = new QueryExecutionFactoryPaginated(qef, 10000);
+		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 		
 		return qef;
+	}
+	
+	public void setPageSize(long pageSize) {
+		this.pageSize = pageSize;
 	}
 
 	public SparqlEndpoint getEndpoint() {
