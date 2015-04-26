@@ -93,7 +93,7 @@ public class DBpediaLearningProblemsGenerator {
 		int i = 0;
 		
 		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
-		while(i < size && !classes.isEmpty()) {
+		while(i < size && iterator.hasNext()) {
 //			i++;
 			
 			// pick class randomly
