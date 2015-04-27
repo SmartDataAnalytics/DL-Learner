@@ -202,17 +202,24 @@ public class DBpediaLearningProblemsGenerator {
 		@Override
 		public void run() {
 			try {
-				// load data
-				System.out.println(Thread.currentThread().getId() + ":" + "Loading data for " + cls.toStringID() + "...");
-				long s = System.currentTimeMillis();
-				Model data = loadDataFromCacheOrCompute(cls, maxDepth, true);
-				System.out.println(Thread.currentThread().getId() + ":" + "Got " + data.size() + " triples for " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
-				
-				// analyze
-				System.out.println(Thread.currentThread().getId() + ":" + "Analyzing " + cls.toStringID() + "...");
-				s = System.currentTimeMillis();
-				analyze(cls, data);
-				System.out.println(Thread.currentThread().getId() + ":" + "Analyzed " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
+				// check if class was already processed
+				String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".log";
+				File file = new File(dataDir, filename);
+				if(!file.exists()) {
+					// load data
+					System.out.println(Thread.currentThread().getId() + ":" + "Loading data for " + cls.toStringID() + "...");
+					long s = System.currentTimeMillis();
+					Model data = loadDataFromCacheOrCompute(cls, maxDepth, true);
+					System.out.println(Thread.currentThread().getId() + ":" + "Got " + data.size() + " triples for " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
+					
+					// analyze
+					System.out.println(Thread.currentThread().getId() + ":" + "Analyzing " + cls.toStringID() + "...");
+					s = System.currentTimeMillis();
+					analyze(cls, data);
+					System.out.println(Thread.currentThread().getId() + ":" + "Analyzed " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
+				} else {
+					System.out.println(Thread.currentThread().getId() + ":" + cls.toStringID() + " already analyzed.");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
