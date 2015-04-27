@@ -3,13 +3,11 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -18,8 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -32,10 +28,12 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.net.UrlEscapers;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
@@ -88,6 +86,7 @@ public class DBpediaLearningProblemsGenerator {
 	
 	public void generateBenchmark(int threadCount, int size, final int maxDepth) {
 		Set<OWLClass> classes = getClasses();
+		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal")));
 		
 		Iterator<OWLClass> iterator = classes.iterator();
 		int i = 0;
@@ -98,7 +97,6 @@ public class DBpediaLearningProblemsGenerator {
 			
 			// pick class randomly
 			final OWLClass cls = iterator.next();
-//			cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal"));
 			
 			tp.submit(new Worker(ks, cls, maxDepth));
 			
@@ -203,9 +201,11 @@ public class DBpediaLearningProblemsGenerator {
 		public void run() {
 			try {
 				// check if class was already processed
-				String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".log";
+				String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + "-" + maxDepth + ".log";
 				File file = new File(dataDir, filename);
+				
 				if(!file.exists()) {
+					
 					// load data
 					System.out.println(Thread.currentThread().getId() + ":" + "Loading data for " + cls.toStringID() + "...");
 					long s = System.currentTimeMillis();
@@ -215,7 +215,7 @@ public class DBpediaLearningProblemsGenerator {
 					// analyze
 					System.out.println(Thread.currentThread().getId() + ":" + "Analyzing " + cls.toStringID() + "...");
 					s = System.currentTimeMillis();
-					analyze(cls, data);
+					analyze(cls, data, maxDepth);
 					System.out.println(Thread.currentThread().getId() + ":" + "Analyzed " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
 				} else {
 					System.out.println(Thread.currentThread().getId() + ":" + cls.toStringID() + " already analyzed.");
@@ -226,7 +226,7 @@ public class DBpediaLearningProblemsGenerator {
 		}
 		
 		private Model loadDataFromCacheOrCompute(OWLClass cls, int maxDepth, boolean singleQuery) {
-			String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + ".ttl";
+			String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + "-" + maxDepth + ".ttl";
 			File file = new File(dataDir, filename);
 			
 			Model model;
@@ -286,11 +286,21 @@ public class DBpediaLearningProblemsGenerator {
 					e.printStackTrace();
 				}
 			} else {
-				String query = "construct{?s ?p0 ?o0 . ?o0 ?p1 ?o1 .} "
-						+ "where {"
+				String query = "construct{"
+						+ "?s ?p0 ?o0 . ";
+				for(int i = 1; i < maxDepth; i++) {
+					query += String.format("?o%d ?p%d ?o%d .", i-1, i, i);
+				}
+				query += "} where {"
 						+ "?s a <" + cls.toStringID() + ">. "
-						+ "?s ?p0 ?o0 . "
-						+ "optional{?o0 ?p1 ?o1 .}}";
+						+ "?s ?p0 ?o0 . ";
+				for(int i = 1; i < maxDepth; i++) {
+					query += String.format("optional{?o%d ?p%d ?o%d .", i-1, i, i);
+				}
+				for(int i = 1; i < maxDepth; i++) {
+					query += String.format("}");
+				}
+				query += "}";
 				model = ks.getQueryExecutionFactory().createQueryExecution(query).execConstruct();
 			}
 			
@@ -333,8 +343,10 @@ public class DBpediaLearningProblemsGenerator {
 						"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
 						+ "?s1 a ?cls . "
 						+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o ."
-						+ "FILTER EXISTS{?s2 a ?cls . ?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
-						+ "FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1))}"
+						+ "FILTER EXISTS{"
+						+ "	?s2 a ?cls . ?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o ."
+						+ "	FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1))"
+						+ "}"
 						+ "} GROUP BY ?o HAVING(?cnt >= 10) ORDER BY DESC(?cnt)");
 				template3.setIri("cls", cls.toStringID());
 				
@@ -386,12 +398,135 @@ public class DBpediaLearningProblemsGenerator {
 				}
 			}
 		}
+		
+		private void analyze(OWLClass cls, Model model, int depth) {
+			String filename = UrlEscapers.urlFormParameterEscaper().escape(cls.toStringID()) + "-" + depth + ".log";
+			File file = new File(dataDir, filename);
+			
+			if(!file.exists()) {
+				
+				StringBuilder sb = new StringBuilder();
+				
+				ParameterizedSparqlString templatePropertiesDepth1 = new ParameterizedSparqlString(
+						"SELECT DISTINCT ?p WHERE {"
+						+ "?s a ?cls . "
+						+ "?s ?p ?o . "
+						+ "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+				templatePropertiesDepth1.setIri("cls", cls.toStringID());
+				
+				ParameterizedSparqlString templatePropertiesDepth2 = new ParameterizedSparqlString(
+						"SELECT DISTINCT ?p2 WHERE {"
+						+ "?s a ?cls . "
+						+ "?s ?p1 ?o1 . "
+						+ "?o1 ?p2 ?o2 . "
+						+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+				templatePropertiesDepth2.setIri("cls", cls.toStringID());
+				
+				ParameterizedSparqlString templatePropertiesDepth3 = new ParameterizedSparqlString(
+						"SELECT DISTINCT ?p3 WHERE {"
+						+ "?s a ?cls . "
+						+ "?s ?p1 ?o1 . ?o1 ?p2 ?o2 . ?o2 ?p3 ?o3 ."
+						+ "?p3 a <http://www.w3.org/2002/07/owl#ObjectProperty> .}");
+				templatePropertiesDepth3.setIri("cls", cls.toStringID());
+				
+				ParameterizedSparqlString templateDepth3Exists = new ParameterizedSparqlString(
+						"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
+						+ "?s1 a ?cls . "
+						+ "?s2 a ?cls . "
+//						+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+						+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o1_2 . ?o1_2 ?p3 ?o ."
+						+ "FILTER EXISTS{ ?s2 ?p1 ?o2_1 . ?o1_1 ?p2 ?o2_2 . ?o2_2 ?p3 ?o ."
+						+ "				FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1) && !sameterm(?o1_2, ?o2_2))"
+						+ "}"
+						+ "} GROUP BY ?o HAVING(?cnt >= 10) ORDER BY DESC(?cnt)");
+				
+				ParameterizedSparqlString templateDepth3Join = new ParameterizedSparqlString(
+						"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
+						+ "?s1 a ?cls . "
+						+ "?s2 a ?cls . "
+//						+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
+						+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o1_2 . ?o1_2 ?p3 ?o ."
+						+ "?s2 ?p1 ?o2_1 . ?o1_1 ?p2 ?o2_2 . ?o2_2 ?p3 ?o ."
+						+ "FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1) && !sameterm(?o1_2, ?o2_2))"
+						+ "} GROUP BY ?o HAVING(?cnt >= 10) ORDER BY DESC(?cnt)");
+				
+				ParameterizedSparqlString templateDepth3 = templateDepth3Join;
+				templateDepth3.setIri("cls", cls.toStringID());
+				
+				
+				QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(templatePropertiesDepth1.toString());
+				ResultSet rs = qe.execSelect();
+				
+				// for each property p1 of depth 1
+				while(rs.hasNext()) {
+					String property1 = rs.next().getResource("p").getURI();
+					templatePropertiesDepth2.setIri("p1", property1);
+					templatePropertiesDepth3.setIri("p1", property1);
+					
+					QueryExecution qe2 = new QueryExecutionFactoryModel(model).createQueryExecution(templatePropertiesDepth2.toString());
+					ResultSet rs2 = qe2.execSelect();
+					
+					// for each property p2 of depth 2
+					while(rs2.hasNext()) {
+						String property2 = rs2.next().getResource("p2").getURI();
+						templatePropertiesDepth3.setIri("p2", property2);
+						
+						QueryExecution qe3 = new QueryExecutionFactoryModel(model).createQueryExecution(templatePropertiesDepth3.toString());
+						ResultSet rs3 = qe3.execSelect();
+						
+						// for each property p3 of depth 3
+						while(rs3.hasNext()) {
+							String property3 = rs3.next().getResource("p3").getURI();
+							
+							templateDepth3.setIri("p1", property1);
+							templateDepth3.setIri("p2", property2);
+							templateDepth3.setIri("p3", property3);
+							
+							System.out.println("Path: " + property1 + "--" + property2 + "--" + property3);
+							System.out.println(templateDepth3.asQuery());
+							QueryExecution qe4 = new QueryExecutionFactoryModel(model).createQueryExecution(templateDepth3.toString());
+							ResultSet rs4 = qe4.execSelect();
+						
+							String delimiter = "\t";
+							QuerySolution qs;
+							while(rs4.hasNext()) {
+								qs = rs4.next();
+								if(qs.get("o") != null) {
+									sb.append(property1).append(delimiter).
+									append(property2).append(delimiter).
+									append(property3).append(delimiter).
+									append(qs.getResource("o").getURI()).append(delimiter).
+									append(qs.getLiteral("cnt").getInt()).
+									append("\n");
+								}
+							}
+		//					sb.append(ResultSetFormatter.asText(rs));
+		//					System.out.println(sb);
+							
+							qe4.close();
+						}
+						qe3.close();
+					}
+					qe2.close();
+				}
+				qe.close();
+				
+				try {
+					Files.write(sb.toString(), file, Charsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
+	
+	
+
 	
 	public static void main(String[] args) throws Exception {
 		File dir = new File(args[0]);
 		int threadCount = Integer.parseInt(args[1]);
-		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(threadCount, 10, 2);
+		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(threadCount, 10, 3);
 	}
 	
 
