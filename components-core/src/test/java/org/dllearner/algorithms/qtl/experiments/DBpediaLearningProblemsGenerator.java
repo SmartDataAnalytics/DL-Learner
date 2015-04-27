@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -16,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
+import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -64,7 +66,7 @@ public class DBpediaLearningProblemsGenerator {
 		ks = new SparqlEndpointKS(endpoint);
 		ks.setCacheDir(new File(benchmarkDirectory, "cache").getPath() + ";mv_store=false");
 		ks.setPageSize(50000);
-		ks.setUseCache(false);
+		ks.setUseCache(true);
 		ks.setQueryDelay(100);
 		ks.init();
 		
@@ -91,6 +93,7 @@ public class DBpediaLearningProblemsGenerator {
 		Iterator<OWLClass> iterator = classes.iterator();
 		int i = 0;
 		
+		// generate paths of depths <= maxDepth
 		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		while(i < size && iterator.hasNext()) {
 //			i++;
@@ -111,6 +114,16 @@ public class DBpediaLearningProblemsGenerator {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		// randomly pick classes and paths
+		JDKRandomGenerator rndGen = new JDKRandomGenerator();
+		rndGen.setSeed(123);
+		Set<String> queries = new HashSet<String>();
+		
+//		int chunkSize = size / maxDepth;
+//		while(queries.size() < size) {
+//			int pathLength = rndGen.nextInt(3) + 1;
+//		}
 	}
 	
 	
@@ -446,9 +459,9 @@ public class DBpediaLearningProblemsGenerator {
 						+ "?s2 a ?cls . "
 //						+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
 						+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o1_2 . ?o1_2 ?p3 ?o ."
-						+ "?s2 ?p1 ?o2_1 . ?o1_1 ?p2 ?o2_2 . ?o2_2 ?p3 ?o ."
-						+ "FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1) && !sameterm(?o1_2, ?o2_2))"
-						+ "} GROUP BY ?o HAVING(?cnt >= 10) ORDER BY DESC(?cnt)");
+						+ "?s2 ?p1 ?o2_1 . ?o2_1 ?p2 ?o2_2 . ?o2_2 ?p3 ?o ."
+						+ "FILTER(?s1 != ?s2 && ?o1_1 != ?o2_1 && ?o1_2 != ?o2_2)"
+						+ "} GROUP BY ?o HAVING(count(distinct ?s1) >= 10) ORDER BY DESC(?cnt)");
 				
 				ParameterizedSparqlString templateDepth3 = templateDepth3Join;
 				templateDepth3.setIri("cls", cls.toStringID());
@@ -482,9 +495,9 @@ public class DBpediaLearningProblemsGenerator {
 							templateDepth3.setIri("p2", property2);
 							templateDepth3.setIri("p3", property3);
 							
-							System.out.println("Path: " + property1 + "--" + property2 + "--" + property3);
+							System.out.println(Thread.currentThread().getId() + " Path: " + property1 + "--" + property2 + "--" + property3);
 							System.out.println(templateDepth3.asQuery());
-							QueryExecution qe4 = new QueryExecutionFactoryModel(model).createQueryExecution(templateDepth3.toString());
+							QueryExecution qe4 = ks.getQueryExecutionFactory().createQueryExecution(templateDepth3.toString());
 							ResultSet rs4 = qe4.execSelect();
 						
 							String delimiter = "\t";

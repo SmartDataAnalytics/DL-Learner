@@ -148,7 +148,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 		
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
+//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 		
 		return qef;
 	}
