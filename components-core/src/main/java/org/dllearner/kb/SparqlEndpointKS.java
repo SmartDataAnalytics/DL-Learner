@@ -133,14 +133,15 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	}
 	
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
+				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 		
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
 			// use in-memory cache
-			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+//			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
 		
 		// add some delay

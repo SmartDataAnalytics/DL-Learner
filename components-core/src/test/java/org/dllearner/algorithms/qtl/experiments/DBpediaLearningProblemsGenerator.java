@@ -99,7 +99,6 @@ public class DBpediaLearningProblemsGenerator {
 			// pick class randomly
 			final OWLClass cls = iterator.next();
 //			cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal"));
-			System.out.println(cls);
 			
 			tp.submit(new Worker(ks, cls, maxDepth));
 			
