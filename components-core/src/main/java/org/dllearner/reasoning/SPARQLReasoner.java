@@ -607,7 +607,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					+ "?sub a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
 					+ "OPTIONAL {"
 					+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
-					+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . }"
+					+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+					+ "}"
+					+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomObjectProperty>)"
 					+ "}";
 			ResultSet rs = executeSelectQuery(query);
 			SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
