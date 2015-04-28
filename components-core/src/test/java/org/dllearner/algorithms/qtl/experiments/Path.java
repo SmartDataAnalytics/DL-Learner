@@ -46,11 +46,12 @@ public class Path {
 		for (int i = 0; i < properties.size() - 1; i++) {
 			String property = properties.get(i);
 			Var joinVarTmp = Var.alloc("o" + i);
-			query += joinVar + "<" + property + "> " + joinVarTmp;
+			query += joinVar + " <" + property + "> " + joinVarTmp + " .";
 			joinVar = joinVarTmp;
 		}
 		query += joinVar + " <" + lastProperty + "> <" + object + "> .";
 
+		query += "}";
 		return query;
 	}
 
@@ -64,6 +65,7 @@ public class Path {
 			query += "/" + "<" + p + ">";
 		}
 		query += " <" + object + "> .";
+		query += "}";
 		return query;
 	}
 }
