@@ -57,9 +57,11 @@ public class DBpediaLearningProblemsGenerator {
 	File dataDir;
 	private Model schema;
 	private File benchmarkDirectory;
+	private int threadCount;
 	
-	public DBpediaLearningProblemsGenerator(File benchmarkDirectory) throws Exception {
+	public DBpediaLearningProblemsGenerator(File benchmarkDirectory, int threadCount) throws Exception {
 		this.benchmarkDirectory = benchmarkDirectory;
+		this.threadCount = threadCount;
 		
 		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		
@@ -86,7 +88,8 @@ public class DBpediaLearningProblemsGenerator {
 		return reasoner.getMostSpecificClasses();
 	}
 	
-	public void generateBenchmark(int threadCount, int size, final int maxDepth) {
+	
+	public void generateBenchmark(int nrOfSPARQLQueries, final int minDepth, final int maxDepth) {
 		Set<OWLClass> classes = getClasses();
 		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal")));
 		
@@ -95,17 +98,13 @@ public class DBpediaLearningProblemsGenerator {
 		
 		// generate paths of depths <= maxDepth
 		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
-		while(i < size && iterator.hasNext()) {
-//			i++;
+		while(i < nrOfSPARQLQueries && iterator.hasNext()) {
 			
 			// pick class randomly
 			final OWLClass cls = iterator.next();
 			
 			tp.submit(new Worker(ks, cls, maxDepth));
 			
-//			if(i == 8) {
-//				break;
-//			}
 		}
 		
 		tp.shutdown();
@@ -443,15 +442,29 @@ public class DBpediaLearningProblemsGenerator {
 				templatePropertiesDepth3.setIri("cls", cls.toStringID());
 				
 				ParameterizedSparqlString templateDepth3Exists = new ParameterizedSparqlString(
-						"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
-						+ "?s1 a ?cls . "
-						+ "?s2 a ?cls . "
-//						+ "?p2 a <http://www.w3.org/2002/07/owl#ObjectProperty> ."
-						+ "?s1 ?p1 ?o1_1 . ?o1_1 ?p2 ?o1_2 . ?o1_2 ?p3 ?o ."
-						+ "FILTER EXISTS{ ?s2 ?p1 ?o2_1 . ?o1_1 ?p2 ?o2_2 . ?o2_2 ?p3 ?o ."
-						+ "				FILTER(!sameterm(?s1, ?s2) && !sameterm(?o1_1, ?o2_1) && !sameterm(?o1_2, ?o2_2))"
-						+ "}"
-						+ "} GROUP BY ?o HAVING(?cnt >= 10) ORDER BY DESC(?cnt)");
+						"select ?o (count(distinct ?s1) AS ?cnt) {\n" + 
+						"    ?s1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/AcademicJournal> .\n" + 
+						"    ?s1 <http://dbpedia.org/ontology/publisher> ?o1_1 .\n" + 
+						"    ?o1_1 <http://dbpedia.org/ontology/country> ?o1_2 .\n" + 
+						"    ?o1_2 <http://dbpedia.org/ontology/leader> ?o .\n" + 
+						"filter exists{" + 
+						"?s2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/AcademicJournal> .\n" + 
+						"    ?s2 <http://dbpedia.org/ontology/publisher> ?o2_1 .\n" + 
+						"    ?o2_1 <http://dbpedia.org/ontology/country> ?o2_2 .\n" + 
+						"    ?o2_2 <http://dbpedia.org/ontology/leader> ?o\n" + 
+						"FILTER ( ( ( ?s1 != ?s2 ) && ( ?o1_1 != ?o2_1 ) ) && ( ?o1_2 != ?o2_2 ) )\n" + 
+						"}" + 
+						"{ SELECT  distinct ?o \n" + 
+						"WHERE{\n" + 
+						"    ?s2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/AcademicJournal> .\n" + 
+						"    ?s2 <http://dbpedia.org/ontology/publisher> ?o2_1 .\n" + 
+						"    ?o2_1 <http://dbpedia.org/ontology/country> ?o2_2 .\n" + 
+						"    ?o2_2 <http://dbpedia.org/ontology/leader> ?o\n" + 
+						"}" + 
+						"}" + 
+						"group by ?o \n" + 
+						"HAVING ( count(distinct ?s1) >= 10 )\n" + 
+						"ORDER BY DESC(?cnt)");
 				
 				ParameterizedSparqlString templateDepth3Join = new ParameterizedSparqlString(
 						"SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {"
@@ -539,7 +552,7 @@ public class DBpediaLearningProblemsGenerator {
 	public static void main(String[] args) throws Exception {
 		File dir = new File(args[0]);
 		int threadCount = Integer.parseInt(args[1]);
-		new DBpediaLearningProblemsGenerator(dir).generateBenchmark(threadCount, 10, 3);
+		new DBpediaLearningProblemsGenerator(dir, threadCount).generateBenchmark(10, 1, 3);
 	}
 	
 
