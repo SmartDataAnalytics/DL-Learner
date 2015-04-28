@@ -6,8 +6,11 @@ package org.dllearner.algorithms.qtl.experiments;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -77,12 +80,13 @@ public class DBpediaLearningProblemsGenerator {
 	
 	
 	public void generateBenchmark(int nrOfSPARQLQueries, final int minDepth, final int maxDepth, int minNrOfExamples) {
-		Set<OWLClass> classes = getClasses();
+		Collection<OWLClass> classes = getClasses();
+		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
+		Collections.shuffle(classesList, new Random(123));
+		classes = classesList;
 //		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal")));
 		
 		Iterator<OWLClass> iterator = classes.iterator();
-		int i = 0;
-		
 		
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		List<Future<Path>> futures = new ArrayList<Future<Path>>();
@@ -95,38 +99,61 @@ public class DBpediaLearningProblemsGenerator {
 				
 		JDKRandomGenerator rndGen = new JDKRandomGenerator();
 		rndGen.setSeed(123);
-		// generate paths of depths <= maxDepth
-		while(i < nrOfSPARQLQueries && iterator.hasNext()) {
-			
-			// pick class randomly
-			OWLClass cls = iterator.next();
-			
-			int depth = rndGen.nextInt(maxDepth) + 1;
-			
-			Future<Path> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
-			futures.add(future);
+		
+		int nrOfQueriesPerDepth = nrOfSPARQLQueries / (maxDepth - minDepth + 1);
+		
+		for(int depth = minDepth; depth <= maxDepth; depth++) {
+			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
+			List<Path> pathsForDepth = new ArrayList<Path>();
+			// generate paths of depths <= maxDepth
+			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
+				
+				// pick next class
+				OWLClass cls = iterator.next();
+				
+//				int depth = rndGen.nextInt(maxDepth) + 1;
+				
+				Future<Path> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
+//				futures.add(future);
+				try {
+					 Path path = future.get();
+			    	  if(path != null) {
+			    		  pathsForDepth.add(path);
+			    	  }
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+			paths.addAll(pathsForDepth);
 		}
 		
-		for (Future<Path> future : futures) {
-		      try {
-		    	  Path path = future.get();
-		    	  if(path != null) {
-		    		  paths.add(path);
-		    	  }
-		    	  if(paths.size() == nrOfSPARQLQueries) {
-			    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
-			    	  tp.shutdownNow();
-			      }
-			} catch (InterruptedException | ExecutionException e) {
-				e.printStackTrace();
-			}
-		      if(paths.size() == nrOfSPARQLQueries) {
-		    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
-		    	  tp.shutdownNow();
-		      }
-		}
+		
+//		for (Future<Path> future : futures) {
+//		      try {
+//		    	  Path path = future.get();
+//		    	  if(path != null) {
+//		    		  paths.add(path);
+//		    	  }
+//		    	  if(paths.size() == nrOfSPARQLQueries) {
+//			    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
+//			    	  tp.shutdownNow();
+//			      }
+//			} catch (InterruptedException | ExecutionException e) {
+//				e.printStackTrace();
+//			}
+//		      if(paths.size() == nrOfSPARQLQueries) {
+//		    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
+//		    	  tp.shutdownNow();
+//		      }
+//		}
 		
 		tp.shutdownNow();
+		try {
+			tp.awaitTermination(1, TimeUnit.HOURS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		try {
 //			tp.awaitTermination(1, TimeUnit.DAYS);
 //		} catch (InterruptedException e) {
