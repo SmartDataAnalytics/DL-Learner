@@ -566,6 +566,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		logger.trace("Added to TODO list.");
+		todoList.add(solution);
 	}
 	
 	private EvaluatedRDFResourceTree evaluateSimple(RDFResourceTree tree, boolean useSpecifity){

@@ -161,7 +161,7 @@ public class QTLEvaluation {
 	String cacheDirectory = "./cache/qtl";
 	
 	int minNrOfPositiveExamples = 5;
-	int maxDepth = 2;
+	int maxDepth = 3;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -230,7 +230,7 @@ public class QTLEvaluation {
 		double[] noiseIntervals = {
 				0.0,
 				0.2,
-				0.4,
+//				0.4,
 //				0.6
 				};
 			
