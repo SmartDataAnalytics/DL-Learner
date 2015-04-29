@@ -223,14 +223,14 @@ public class QTLEvaluation {
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
-		int minNrOfExamples = 7;
+		int minNrOfExamples = 3;
 		int maxNrOfExamples = 10;
 		int stepSize = 2;
 		
 		double[] noiseIntervals = {
-//				0.0,
+				0.0,
 				0.2,
-//				0.4,
+				0.4,
 //				0.6
 				};
 			
