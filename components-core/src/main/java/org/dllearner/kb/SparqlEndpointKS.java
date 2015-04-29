@@ -81,6 +81,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	
 	protected QueryExecutionFactory qef;
 
+	private long pageSize = 10000;
+
 	public SparqlEndpointKS() {}
 
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
@@ -131,23 +133,28 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	}
 	
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
+				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 		
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
 			// use in-memory cache
-			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+//			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
 		
 		// add some delay
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 		
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-		qef = new QueryExecutionFactoryPaginated(qef, 10000);
+//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 		
 		return qef;
+	}
+	
+	public void setPageSize(long pageSize) {
+		this.pageSize = pageSize;
 	}
 
 	public SparqlEndpoint getEndpoint() {

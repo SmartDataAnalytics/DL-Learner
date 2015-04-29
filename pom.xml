@@ -17,7 +17,7 @@
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
-        <solr.version>4.4.0</solr.version>
+        <solr.version>4.9.0</solr.version>
         <owlapi.version>3.5.1</owlapi.version>
         <spring.version>3.2.13.RELEASE</spring.version>
         <jena.sparql.api.version>2.12.1-7</jena.sparql.api.version>
@@ -356,7 +356,7 @@
 				<version>2.79</version>
 			</dependency>
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-core</artifactId>
 				 <version>2.11.2</version>
@@ -366,7 +366,7 @@
 				<groupId>org.apache.jena</groupId>
 				<artifactId>jena-arq</artifactId>
 				<version>2.11.2</version>
-			</dependency>
+			</dependency> -->
 			
 			<dependency>
 				<groupId>commons-pool</groupId>

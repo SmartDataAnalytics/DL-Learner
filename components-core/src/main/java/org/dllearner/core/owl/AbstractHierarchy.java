@@ -191,7 +191,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 			// look whether there are more general concepts
 			// (if yes, pick the first one)
 			SortedSet<T> moreGeneral = getParents(c);
-			if (moreGeneral != null && moreGeneral.size() != 0) {
+			if (moreGeneral != null && !moreGeneral.isEmpty()) {
 				T chosenParent = moreGeneral.first();
 				hierarchyDownNew.get(chosenParent).add(c);
 			}
@@ -199,7 +199,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 
 		for (T c : conceptsInSubsumptionHierarchy) {
 			SortedSet<T> moreSpecial = getChildren(c);
-			if (moreSpecial != null && moreSpecial.size() != 0) {
+			if (moreSpecial != null && !moreSpecial.isEmpty()) {
 				T chosenChild = moreSpecial.first();
 				hierarchyUpNew.get(chosenChild).add(c);
 			}

@@ -1343,11 +1343,12 @@ public class ROLearner2 {
 			result = true;
 		} else if(solutions.size() >= guaranteeXgoodDescriptions && terminateOnNoiseReached) {
 				if(guaranteeXgoodDescriptions != 1) {
-				logger.info("Minimum number (" + guaranteeXgoodDescriptions
-						+ ") of good descriptions reached.");
+					logger.info("Minimum number (" + guaranteeXgoodDescriptions
+							+ ") of good descriptions reached.");
+					
+					guaranteeXgoodAlreadyReached = true;
+					result = true;
 				}
-				guaranteeXgoodAlreadyReached = true;
-				result = true;
 		}
 		
 				

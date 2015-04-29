@@ -3,6 +3,9 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +18,6 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
-import com.google.common.base.Objects;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -30,7 +32,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
 	
 	private final int id;
 	
@@ -268,5 +270,17 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 			return this.getData().equals(other.getData());
 		}
 		return this == other;
+	}
+	
+	/**
+	 * Serialize this instance.
+	 * 
+	 * @param out Target to which this instance is written.
+	 * @throws IOException Thrown if exception occurs during serialization.
+	 */
+	private void writeObject(final ObjectOutputStream out) throws IOException {
+		out.writeInt(this.id);
+		out.writeObject(datatype == null ? null : this.datatype.getURI());
+		out.writeObject(this.data);
 	}
 }
