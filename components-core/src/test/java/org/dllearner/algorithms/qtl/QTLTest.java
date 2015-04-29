@@ -108,11 +108,9 @@ public class QTLTest {
 		qef = new QueryExecutionFactoryPaginated(qef);
 		
 		PosNegLPStandard lp = new PosNegLPStandard();
-		Set<OWLIndividual> posExamples = Sets.newHashSet();
+		Set<OWLIndividual> posExamples = Sets.newTreeSet();
 		
-		String posExStr = "http://dbpedia.org/resource/Jimmy_Rosario, "
-				+ "http://dbpedia.org/resource/Jimmy_Anderson_(footballer_born_1932), "
-				+ "http://dbpedia.org/resource/Jimmy_Yancey";
+		String posExStr = "http://dbpedia.org/resource/Paul_Porter, http://dbpedia.org/resource/Stanley_Hewitt, http://dbpedia.org/resource/Testicular_artery, http://dbpedia.org/resource/Descending_aorta, http://dbpedia.org/resource/Lumbar_arteries, http://dbpedia.org/resource/Superior_mesenteric_artery, http://dbpedia.org/resource/Aortic_bifurcation";
 		
 //		String posExStr = "http://dbpedia.org/resource/Ladislaus_the_Posthumous,"
 //				+ " http://dbpedia.org/resource/Nga_Kor_Ming, "
@@ -138,6 +136,8 @@ public class QTLTest {
 		la.start();
 		
 		List<EvaluatedRDFResourceTree> solutions = la.getSolutionsAsList();
+		System.out.println(solutions.size());
+		
 		RDFResourceTree bestSolution = solutions.get(0).getTree();
 		System.out.println(bestSolution.getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(bestSolution));

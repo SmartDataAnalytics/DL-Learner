@@ -470,7 +470,7 @@ public class QTLEvaluation {
 		Random randomGen = new Random(123);
 		
 		// get all resources returned by the query
-		List<String> resources = getResult(sparqlQuery);
+		List<String> resources = getResult(sparqlQuery, false);
 		
 		// pick some random positive examples from the list
 		Collections.shuffle(resources, randomGen);
@@ -748,9 +748,13 @@ public class QTLEvaluation {
 	}
 	
 	private List<String> getResult(String sparqlQuery){
+		return getResult(sparqlQuery, true);
+	}
+	
+	private List<String> getResult(String sparqlQuery, boolean useCache){
 		logger.trace(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
-		if(resources == null) {
+		if(resources == null || !useCache) {
 			resources = new ArrayList<String>();
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			

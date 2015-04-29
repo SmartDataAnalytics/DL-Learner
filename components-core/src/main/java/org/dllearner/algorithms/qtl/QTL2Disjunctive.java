@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.TimeLimitingCollector.TimeExceededException;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -425,9 +426,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				for (RDFResourceTree queryTree : baseQueryTrees) {
 					s += index.get(queryTree) + ",";
 				}
-//				System.err.println(s);
+				System.err.println(s);
 				if(!processedCombinations.add(baseQueryTrees)) {
-//					System.err.println("skipping");
+					System.err.println("skipping");
 					continue;
 				}
 				
@@ -454,23 +455,24 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						}
 						// add to ToDo list, if not already contained in ToDo list or solution list
 						if(bestCurrentScore == 1.0 || mas > score){
-							todo(solution);
+//							todo(solution);
 						}
 					} else if(bestCurrentScore == 1.0 || mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
-						todo(solution);
+//						todo(solution);
 					} else {
 						logger.trace("Too weak:" + solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
-						todo(solution);
+//						todo(solution);
 					}
-					
+					todo(solution);
 					addToSolutions(solution);
 				}
 			}
 //			addToSolutions(currentElement);
 		}
+		
 		long endTime = System.currentTimeMillis();
 		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
@@ -564,7 +566,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 		}
 		logger.trace("Added to TODO list.");
-		todoList.add(solution);
 	}
 	
 	private EvaluatedRDFResourceTree evaluateSimple(RDFResourceTree tree, boolean useSpecifity){
@@ -999,7 +1000,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private void showSetup(){
 		String setup = "Setup:";
 		setup += "\n#Pos. examples:" + currentPosExampleTrees.size();
-		setup += "\n#Neg. examples:" + currentPosExampleTrees.size();
+		setup += "\n#Neg. examples:" + currentNegExampleTrees.size();
 		setup += "\nHeuristic:" + heuristic.getHeuristicType().name();
 		setup += "\nbeta=" + beta;
 		logger.info(setup);
