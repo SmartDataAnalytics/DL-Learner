@@ -31,7 +31,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
  * @author Lorenz Buehmann
  *
  */
-public class DBpediaDataset extends Dataset {
+public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
 	static SparqlEndpoint endpoint;
 	
@@ -48,7 +48,7 @@ public class DBpediaDataset extends Dataset {
 	}
 
 	
-	public DBpediaDataset() {
+	public DBpediaEvaluationDataset() {
 		// set KS
 		try {
 			ks = new SparqlEndpointKS(endpoint);

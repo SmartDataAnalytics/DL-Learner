@@ -168,7 +168,7 @@ public class QTLEvaluation {
 	
 	RandomDataGenerator rnd = new RandomDataGenerator();
 
-	private Dataset dataset;
+	private EvaluationDataset dataset;
 	
 	private Map<String, List<String>> cache = new HashMap<String, List<String>>();
 	
@@ -184,7 +184,7 @@ public class QTLEvaluation {
 
 	private List<String> correctExamples;
 	
-	public QTLEvaluation(Dataset dataset) throws ComponentInitException {
+	public QTLEvaluation(EvaluationDataset dataset) throws ComponentInitException {
 		this.dataset = dataset;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
@@ -1205,7 +1205,7 @@ public class QTLEvaluation {
 		Logger.getLogger(QTLEvaluation.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-		new QTLEvaluation(new DBpediaDataset()).run();
+		new QTLEvaluation(new DBpediaEvaluationDataset()).run();
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

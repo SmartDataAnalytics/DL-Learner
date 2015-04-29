@@ -20,7 +20,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
  * @author Lorenz Buehmann
  *
  */
-public class Dataset {
+public class EvaluationDataset {
 
 	SparqlEndpointKS ks;
 	String baseIRI;
