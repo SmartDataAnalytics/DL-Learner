@@ -160,8 +160,8 @@ public class QTLEvaluation {
 	QueryExecutionFactory qef;
 	String cacheDirectory = "./cache/qtl";
 	
-	int minNrOfPositiveExamples = 5;
-	int maxDepth = 3;
+	int minNrOfPositiveExamples = 9;
+	int maxDepth = 2;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -220,6 +220,8 @@ public class QTLEvaluation {
 	public void run(){
 		
 		List<String> sparqlQueries = dataset.getSparqlQueries();
+		// TODO remove
+		sparqlQueries = sparqlQueries.subList(0, 10);
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -266,7 +268,7 @@ public class QTLEvaluation {
 //				if(nrOfExamples != 7) continue;
 				// loop over SPARQL queries
 				for (String sparqlQuery : sparqlQueries) {
-//					if(!sparqlQuery.contains("AustralianRulesFootballPlayer"))continue;
+//					if(!sparqlQuery.contains("Alternative_rock"))continue;
 					logger.info("##############################################################");
 					logger.info("Processing query\n" + sparqlQuery);
 					// some queries can return less examples
@@ -884,13 +886,17 @@ public class QTLEvaluation {
 			}
 		}
 		for (Set<Triple> cluster : newClusters) {
-			Set<Triple> additionalTriples = new HashSet<Triple>();
-			for (Triple triple : cluster) {
-				if(triple.getObject().isVariable()){
-					additionalTriples.addAll(var2TriplePatterns.get(Var.alloc(triple.getObject())));
+			
+			for(int i = 1; i < maxDepth; i++) {
+				Set<Triple> additionalTriples = new HashSet<Triple>();
+				for (Triple triple : cluster) {
+					if(triple.getObject().isVariable()){
+						additionalTriples.addAll(var2TriplePatterns.get(Var.alloc(triple.getObject())));
+					}
 				}
+				cluster.addAll(additionalTriples);
 			}
-			cluster.addAll(additionalTriples);
+			
 		}
 //		clusters = newClusters;
 		
