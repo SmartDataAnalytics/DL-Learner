@@ -1302,47 +1302,72 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	private SortedSet<OWLClassExpression> getClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression upperClass) {
 		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
-//		System.out.println("index " + index + " upper class " + upperClass);
 
-		// we descend the subsumption hierarchy to ensure that we get
-		// the most general concepts satisfying the criteria
-		for(OWLClassExpression candidate :  subHierarchy.getSubClasses(upperClass, true)) {
-//				System.out.println("testing " + candidate + " ... ");
-
-//				NamedClass candidate = (OWLClass) d;
-				// check disjointness with index (if not no further traversal downwards is necessary)
-				if(!isDisjoint(candidate,index)) {
-//					System.out.println( " passed disjointness test ... ");
-					// check whether the class is meaningful, i.e. adds something to the index
-					// to do this, we need to make sure that the class is not a superclass of the
-					// index (otherwise we get nothing new) - for instance based disjoints, we
-					// make sure that there is at least one individual, which is not already in the
-					// upper class
-					boolean meaningful;
-					if(instanceBasedDisjoints) {
-						// bug: tests should be performed against the index, not the upper class
-//						SortedSet<OWLIndividual> tmp = rs.getIndividuals(upperClass);
-						SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
-						tmp.removeAll(reasoner.getIndividuals(candidate));
-//						System.out.println("  instances of " + index + " and not " + candidate + ": " + tmp.size());
-						meaningful = tmp.size() != 0;
-					} else {
-						meaningful = !isDisjoint(df.getOWLObjectComplementOf(candidate),index);
+		SortedSet<OWLClassExpression> subClasses = subHierarchy.getSubClasses(upperClass, true);
+		
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
+			String query = "SELECT DISTINCT ?concept WHERE {";
+			query += conv.convert("?ind", index);
+			query += "?ind a ?concept . ";
+			query += "VALUES ?concept {" + Joiner.on(" ").join(subClasses) + "}";
+			query += "}";
+//			System.out.println(query);
+			
+			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
+			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			while(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				meaningfulClasses.add(df.getOWLClass(IRI.create(qs.getResource("concept").getURI())));
+			}
+			qe.close();
+			candidates.addAll(meaningfulClasses);
+			// recursive call, i.e. go class hierarchy down for non-meaningful classes
+//			for (OWLClassExpression cls : Sets.difference(superClasses, meaningfulClasses)) {
+//				candidates.addAll(getNegClassCandidatesRecursive(index, cls));
+//			}
+		} else {
+			
+			// we descend the subsumption hierarchy to ensure that we get
+			// the most general concepts satisfying the criteria
+			for(OWLClassExpression candidate :  subClasses) {
+//					System.out.println("testing " + candidate + " ... ");
+	//				NamedClass candidate = (OWLClass) d;
+					// check disjointness with index (if not no further traversal downwards is necessary)
+					if(!isDisjoint(candidate,index)) {
+//						System.out.println( " passed disjointness test ... ");
+						// check whether the class is meaningful, i.e. adds something to the index
+						// to do this, we need to make sure that the class is not a superclass of the
+						// index (otherwise we get nothing new) - for instance based disjoints, we
+						// make sure that there is at least one individual, which is not already in the
+						// upper class
+						boolean meaningful;
+						if(instanceBasedDisjoints) {
+							// bug: tests should be performed against the index, not the upper class
+	//						SortedSet<OWLIndividual> tmp = rs.getIndividuals(upperClass);
+							SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
+							tmp.removeAll(reasoner.getIndividuals(candidate));
+	//						System.out.println("  instances of " + index + " and not " + candidate + ": " + tmp.size());
+							meaningful = tmp.size() != 0;
+						} else {
+							meaningful = !isDisjoint(df.getOWLObjectComplementOf(candidate),index);
+						}
+	
+						if(meaningful) {
+							// candidate went successfully through all checks
+							candidates.add(candidate);
+	//						System.out.println(" real refinement");
+						} else {
+							// descend subsumption hierarchy to find candidates
+	//						System.out.println(" enter recursion");
+							candidates.addAll(getClassCandidatesRecursive(index, candidate));
+						}
 					}
-
-					if(meaningful) {
-						// candidate went successfully through all checks
-						candidates.add(candidate);
-//						System.out.println(" real refinement");
-					} else {
-						// descend subsumption hierarchy to find candidates
-//						System.out.println(" enter recursion");
-						candidates.addAll(getClassCandidatesRecursive(index, candidate));
-					}
-				}
-//				else {
-//					System.out.println(" ruled out, because it is disjoint");
-//				}
+	//				else {
+	//					System.out.println(" ruled out, because it is disjoint");
+	//				}
+			}
 		}
 //		System.out.println("cc method exit");
 		return candidates;
@@ -1361,7 +1386,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
-			String query = "SELECT ?concept WHERE {";
+			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
 			query += "?ind a ?concept . ";
 			query += "VALUES ?concept {" + Joiner.on(" ").join(superClasses) + "}";
