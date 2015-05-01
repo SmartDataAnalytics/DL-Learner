@@ -26,10 +26,6 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -45,16 +41,8 @@ import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
-import org.dllearner.algorithms.qtl.util.StopURIsOWL;
-import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -64,10 +52,6 @@ import org.dllearner.utilities.QueryUtils;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
@@ -91,7 +75,6 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -108,8 +91,10 @@ import com.hp.hpl.jena.sparql.expr.E_NumAbs;
 import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.E_Subtract;
 import com.hp.hpl.jena.sparql.expr.Expr;
+import com.hp.hpl.jena.sparql.expr.ExprAggregator;
 import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
+import com.hp.hpl.jena.sparql.expr.aggregate.AggCountVarDistinct;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
@@ -217,11 +202,22 @@ public class QTLEvaluation {
 		return size;
 	}
 	
+	private List<String> getSparqlQueries() {
+		List<String> sparqlQueries = new ArrayList<String>();
+		
+		for (String query : dataset.getSparqlQueries()) {
+			Query q = QueryFactory.create(query);
+			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
+			if(subjectObjectJoinDepth < maxDepth) {
+				sparqlQueries.add(query);
+			}
+		}
+		return sparqlQueries;
+	}
+	
 	public void run(){
 		
-		List<String> sparqlQueries = dataset.getSparqlQueries();
-		// TODO remove
-		sparqlQueries = sparqlQueries.subList(0, 10);
+		List<String> sparqlQueries = getSparqlQueries();
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -285,9 +281,10 @@ public class QTLEvaluation {
 						logger.info("Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
+						RDFResourceTree tree = bestSolution.getTree();
+//						filter.filter(tree);
 						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
-								filter.filter(bestSolution.getTree()), 
-								dataset.getBaseIRI(), dataset.getPrefixMapping());
+								tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 
 						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
 						
@@ -452,7 +449,7 @@ public class QTLEvaluation {
 					coveredCorrectTrees++;
 				}
 			}
-			System.err.println("+" + coveredCorrectTrees + "|-" + coveredNoiseTrees);
+//			System.err.println("+" + coveredCorrectTrees + "|-" + coveredNoiseTrees);
 			// this is obviously the most perfect solution according to the input
 			if(coveredNoiseTrees == 0 && coveredCorrectTrees == correctPositiveExampleTrees.size()) {
 				bestTree = evalutedTree;
@@ -1173,6 +1170,10 @@ public class QTLEvaluation {
 	}
 	
 	private Score computeScore(String referenceSparqlQuery, String learnedSPARQLQuery) {
+		if(QueryUtils.getTriplePatterns(QueryFactory.create(learnedSPARQLQuery)).size() < 30) {
+			return computeScoreBySparqlCount(referenceSparqlQuery, learnedSPARQLQuery);
+		}
+		
 		// get the reference resources
 		List<String> referenceResources = getResult(referenceSparqlQuery);
 		if (referenceResources.isEmpty()) {
@@ -1201,6 +1202,69 @@ public class QTLEvaluation {
 
 		double precision = overlap / (double) learnedResources.size();
 		double recall = overlap / (double) referenceResources.size();
+		double fMeasure = Heuristics.getFScore(recall, precision);
+
+		return new Score(precision, recall, fMeasure);
+	}
+	
+	private Score computeScoreBySparqlCount(String referenceSparqlQuery, String learnedSPARQLQuery) {
+		final ExprVar s = new ExprVar("s");
+		Var cntVar = Var.alloc("cnt");
+		
+		// Q1
+		Query q1 = QueryFactory.create(referenceSparqlQuery);
+		Query q1Count = QueryFactory.create();
+		q1Count.setQuerySelectType();
+		q1Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
+		q1Count.setQueryPattern(q1.getQueryPattern());
+		QueryExecution qe = qef.createQueryExecution(q1Count);
+		ResultSet rs = qe.execSelect();
+		QuerySolution qs = rs.next();
+		int referenceCnt = qs.getLiteral(cntVar.getName()).getInt();
+		qe.close();
+				
+		// if query is most general one P=|TARGET|/|KB| R=1
+		if (learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
+			double precision = referenceCnt / (double) kbSize;
+			double recall = 1.0;
+			double fMeasure = Heuristics.getFScore(recall, precision);
+			return new Score(precision, recall, fMeasure);
+		}
+				
+		// Q2
+		Query q2 = QueryFactory.create(learnedSPARQLQuery);
+		Query q2Count = QueryFactory.create();
+		q2Count.setQuerySelectType();
+		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
+		q2Count.setQueryPattern(q2.getQueryPattern());
+		qe = qef.createQueryExecution(q2Count);
+		rs = qe.execSelect();
+		qs = rs.next();
+		int learnedCnt = qs.getLiteral(cntVar.getName()).getInt();
+		qe.close();
+		System.err.println(q2Count);
+		
+		// Q1 ∪ Q2
+		Query q12 = QueryFactory.create();
+		q12.setQuerySelectType();
+		q12.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
+		ElementGroup whereClause = new ElementGroup();
+		for (Element el : ((ElementGroup)q1.getQueryPattern()).getElements()) {
+			whereClause.addElement(el);
+		}
+		for (Element el : ((ElementGroup)q2.getQueryPattern()).getElements()) {
+			whereClause.addElement(el);
+		}
+		q12.setQueryPattern(whereClause);
+		System.err.println(q12);
+		qe = qef.createQueryExecution(q12);
+		rs = qe.execSelect();
+		qs = rs.next();
+		int overlap = qs.getLiteral(cntVar.getName()).getInt();
+		qe.close();
+		
+		double precision = overlap / (double) learnedCnt;
+		double recall = overlap / (double) referenceCnt;
 		double fMeasure = Heuristics.getFScore(recall, precision);
 
 		return new Score(precision, recall, fMeasure);
