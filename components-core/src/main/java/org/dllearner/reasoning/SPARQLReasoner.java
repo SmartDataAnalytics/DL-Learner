@@ -197,7 +197,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				} catch (ClassCastException e_class) {
 					OWLFile owl_file = (OWLFile) abstract_ks;
 					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
-					ks = new LocalModelBasedSparqlEndpointKS(model);
+					ks = new LocalModelBasedSparqlEndpointKS(model, true);
 				}
 			}
 			if(ks.isRemote()){
