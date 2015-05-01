@@ -605,12 +605,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 			String query = "SELECT * WHERE {"
 					+ "?sub a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
+					+ "FILTER NOT EXISTS{?sub a <http://www.w3.org/2002/07/owl#DatatypeProperty>}" // TODO remove workaround
+					+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomObjectProperty> && ?sub != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
 					+ "OPTIONAL {"
 					+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
 					+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
 					+ "FILTER(?sup != ?sub && ?sup != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
 					+ "}"
-					+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomObjectProperty> && ?sub != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
 					+ "}";
 			ResultSet rs = executeSelectQuery(query);
 			SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
@@ -669,7 +670,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
 			roleHierarchy = new ObjectPropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
 //		} 
-		
 		return roleHierarchy;
 	}
 	
