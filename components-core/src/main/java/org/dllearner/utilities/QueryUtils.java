@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -35,6 +36,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.sparql.syntax.ElementWalker;
 import com.hp.hpl.jena.sparql.util.VarUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -114,6 +116,150 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				vars.add(Var.alloc(tp.getSubject()));
 			} 
 		}
+		
+		return vars;
+	}
+	
+	/**
+	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
+	 * @param query
+	 * @return
+	 */
+	public static Set<Var> getSubjectVars(Query query){
+		final Set<Var> vars = new HashSet<Var>();
+		
+		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				Iterator<Triple> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	Triple triple = triples.next();
+	            	if(triple.getSubject().isVariable()) {
+	            		vars.add(Var.alloc(triples.next().getSubject()));
+	            	}
+	            }
+			}
+			
+			@Override
+			public void visit(ElementPathBlock el) {
+				Iterator<TriplePath> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	TriplePath triple = triples.next();
+	            	if(triple.getSubject().isVariable()) {
+	            		vars.add(Var.alloc(triples.next().getSubject()));
+	            	}
+	            }
+			}
+		});
+		
+		return vars;
+	}
+	
+	public static Set<Triple> getTriplePatterns(Query query){
+		final Set<Triple> triplePatterns = Sets.newHashSet();
+		
+		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				Iterator<Triple> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	Triple triple = triples.next();
+	            	triplePatterns.add(triple);
+	            }
+			}
+			
+			@Override
+			public void visit(ElementPathBlock el) {
+				Iterator<TriplePath> triplePaths = el.patternElts();
+	            while (triplePaths.hasNext()) {
+	            	TriplePath tp = triplePaths.next();
+	            	if(tp.isTriple()) {
+	            		Triple triple = tp.asTriple();
+	            		triplePatterns.add(triple);
+	            	}
+	            }
+			}
+		});
+		return triplePatterns;
+	}
+	
+	/**
+	 * Given a SPARQL query and a start node, return the maximum subject-object
+	 * join depth.
+	 * @param query
+	 * @return
+	 */
+	public static int getSubjectObjectJoinDepth(Query query, final Node source){
+		final Set<Triple> outgoingTriples = Sets.newHashSet();
+		
+		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				Iterator<Triple> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	Triple triple = triples.next();
+	            	Node subject = triple.getSubject();
+	            	if(subject.equals(source) && triple.getObject().isVariable()) {
+	            		outgoingTriples.add(triple);
+	            	}
+	            }
+			}
+			
+			@Override
+			public void visit(ElementPathBlock el) {
+				Iterator<TriplePath> triplePaths = el.patternElts();
+	            while (triplePaths.hasNext()) {
+	            	TriplePath tp = triplePaths.next();
+	            	if(tp.isTriple()) {
+	            		Triple triple = tp.asTriple();
+		            	Node subject = triple.getSubject();
+		            	if(subject.equals(source) && triple.getObject().isVariable()) {
+		            		outgoingTriples.add(triple);
+		            	}
+	            	}
+	            }
+			}
+		});
+		
+		int maxDepth = 0;
+		for (Triple triple : outgoingTriples) {
+			maxDepth = Math.max(maxDepth, 1 + getSubjectObjectJoinDepth(query, triple.getObject()));
+		}
+		
+		return maxDepth;
+	}
+	
+	/**
+	 * Returns all variables that occur as object in a triple pattern of the SPARQL query.
+	 * @param query
+	 * @return
+	 */
+	public static Set<Var> getObjectVars(Query query){
+		final Set<Var> vars = new HashSet<Var>();
+		
+		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				Iterator<Triple> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	Triple triple = triples.next();
+	            	if(triple.getObject().isVariable()) {
+	            		vars.add(Var.alloc(triples.next().getObject()));
+	            	}
+	            }
+			}
+			
+			@Override
+			public void visit(ElementPathBlock el) {
+				Iterator<TriplePath> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	TriplePath triple = triples.next();
+	            	if(triple.getObject().isVariable()) {
+	            		vars.add(Var.alloc(triples.next().getObject()));
+	            	}
+	            }
+			}
+		});
 		
 		return vars;
 	}
@@ -338,7 +484,6 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				}
 			}
 		}
-		
 		return triplePattern;
 	}
 	
@@ -586,5 +731,13 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 				"  }");
 		
 		System.out.println(queryUtils.removeUnboundObjectVarTriples(q));
+		
+		String query = "SELECT DISTINCT ?s WHERE {"
+				+ "?s a <http://dbpedia.org/ontology/BeautyQueen> ."
+				+ "?s <http://dbpedia.org/ontology/birthPlace> ?o0 ."
+				+ "?o0 <http://dbpedia.org/ontology/isPartOf> ?o1 ."
+				+ "?o1 <http://dbpedia.org/ontology/timeZone> <http://dbpedia.org/resource/Eastern_Time_Zone> .}";
+		
+		System.out.println(QueryUtils.getSubjectObjectJoinDepth(QueryFactory.create(query), Var.alloc("s")));
 	}
 }
