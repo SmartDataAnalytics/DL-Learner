@@ -608,60 +608,62 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					+ "OPTIONAL {"
 					+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
 					+ "?sup a <http://www.w3.org/2002/07/owl#ObjectProperty> . "
-					+ "FILTER(?sup != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
+					+ "FILTER(?sup != ?sub && ?sup != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
 					+ "}"
-					+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomObjectProperty>)"
+					+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomObjectProperty> && ?sub != <http://www.w3.org/2002/07/owl#topObjectProperty>)"
 					+ "}";
 			ResultSet rs = executeSelectQuery(query);
 			SortedSet<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
 			while (rs.hasNext()) {
 				QuerySolution qs = rs.next();
 				if (qs.get("sub").isURIResource()) {
-					OWLObjectProperty sub = df.getOWLObjectProperty(IRI.create(qs.get("sub").asResource().getURI()));
-					properties.add(sub);
-					
-					// add sub properties entry
-					if (!subsumptionHierarchyDown.containsKey(sub)) {
-						subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
-					}
-					
-					// add super properties entry
-					if (!subsumptionHierarchyUp.containsKey(sub)) {
-						subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
-					}
-					
-					// if there is a super property
-					if(qs.get("sup") != null && qs.get("sup").isURIResource()){
-						OWLObjectProperty sup = df.getOWLObjectProperty(IRI.create(qs.get("sup").asResource().getURI()));
-						properties.add(sup);
+					IRI iri = IRI.create(qs.get("sub").asResource().getURI());
+					if(!iri.isReservedVocabulary()) {
+						OWLObjectProperty sub = df.getOWLObjectProperty(iri);
+						properties.add(sub);
 						
 						// add sub properties entry
-						if (!subsumptionHierarchyDown.containsKey(sup)) {
-							subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+						if (!subsumptionHierarchyDown.containsKey(sub)) {
+							subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
 						}
 						
 						// add super properties entry
-						if (!subsumptionHierarchyUp.containsKey(sup)) {
-							subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+						if (!subsumptionHierarchyUp.containsKey(sub)) {
+							subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
 						}
 						
-						// add super properties entry
-						SortedSet<OWLObjectProperty> superClasses = subsumptionHierarchyUp.get(sub);
-						if (superClasses == null) {
-							superClasses = new TreeSet<OWLObjectProperty>();
-							subsumptionHierarchyUp.put(sub, superClasses);
+						// if there is a super property
+						if(qs.get("sup") != null && qs.get("sup").isURIResource()){
+							OWLObjectProperty sup = df.getOWLObjectProperty(IRI.create(qs.get("sup").asResource().getURI()));
+							properties.add(sup);
+							
+							// add sub properties entry
+							if (!subsumptionHierarchyDown.containsKey(sup)) {
+								subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+							}
+							
+							// add super properties entry
+							if (!subsumptionHierarchyUp.containsKey(sup)) {
+								subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+							}
+							
+							// add super properties entry
+							SortedSet<OWLObjectProperty> superClasses = subsumptionHierarchyUp.get(sub);
+							if (superClasses == null) {
+								superClasses = new TreeSet<OWLObjectProperty>();
+								subsumptionHierarchyUp.put(sub, superClasses);
+							}
+							superClasses.add(sup);
+							
+							// add sub properties entry
+							SortedSet<OWLObjectProperty> subProperties = subsumptionHierarchyDown.get(sup);
+							if (subProperties == null) {
+								subProperties = new TreeSet<OWLObjectProperty>();
+								subsumptionHierarchyDown.put(sup, subProperties);
+							}
+							subProperties.add(sub);
 						}
-						superClasses.add(sup);
-						
-						// add sub properties entry
-						SortedSet<OWLObjectProperty> subProperties = subsumptionHierarchyDown.get(sup);
-						if (subProperties == null) {
-							subProperties = new TreeSet<OWLObjectProperty>();
-							subsumptionHierarchyDown.put(sup, subProperties);
-						}
-						subProperties.add(sub);
 					}
-					
 				}
 			}
 			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
@@ -688,9 +690,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				+ "OPTIONAL {"
 				+ "?sub <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> ?sup ."
 				+ "?sup a <http://www.w3.org/2002/07/owl#DatatypeProperty> . "
-				+ "FILTER(?sup != <http://www.w3.org/2002/07/owl#topDatatypeProperty>)"
+				+ "FILTER(?sup != ?sub && ?sup != <http://www.w3.org/2002/07/owl#topDatatypeProperty> )"
 				+ "}"
-				+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#bottomDatatypeProperty>)"
+				+ "FILTER(?sub != <http://www.w3.org/2002/07/owl#topDatatypeProperty> && ?sub != <http://www.w3.org/2002/07/owl#bottomDatatypeProperty>)"
 				+ "}";
 		ResultSet rs = executeSelectQuery(query);
 		SortedSet<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
@@ -2232,7 +2234,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private <E extends OWLEntity> SortedSet<E> asOWLEntities(EntityType<E> entityType, Collection<IRI> entityIRIs) {
 		SortedSet<E> entities = new TreeSet<E>();
 		for (IRI iri : entityIRIs) {
-			entities.add(df.getOWLEntity(entityType, iri));
+			if(!iri.isReservedVocabulary()) {
+				entities.add(df.getOWLEntity(entityType, iri));
+			}
 		}
 		
 		// remove top and bottom entities
