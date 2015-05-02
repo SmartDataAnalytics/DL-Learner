@@ -43,12 +43,14 @@ import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
+import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
+import org.dllearner.utilities.experiments.Jamon;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -104,6 +106,8 @@ import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.util.iterator.Filter;
+import com.jamonapi.MonKeyBase;
+import com.jamonapi.MonitorFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -222,7 +226,7 @@ public class QTLEvaluation {
 		
 		// parameters
 		int minNrOfExamples = 3;
-		int maxNrOfExamples = 10;
+		int maxNrOfExamples = 30;
 		int stepSize = 2;
 		
 		double[] noiseIntervals = {
@@ -251,6 +255,8 @@ public class QTLEvaluation {
 				
 				logger.info("#examples: " + nrOfExamples + " noise: " + noise);
 				
+				DescriptiveStatistics nrOfReturnedSolutionsStats = new DescriptiveStatistics();
+				
 				DescriptiveStatistics bestReturnedSolutionPrecisionStats = new DescriptiveStatistics();
 				DescriptiveStatistics bestReturnedSolutionRecallStats = new DescriptiveStatistics();
 				DescriptiveStatistics bestReturnedSolutionFMeasureStats = new DescriptiveStatistics();
@@ -260,6 +266,9 @@ public class QTLEvaluation {
 				DescriptiveStatistics bestSolutionFMeasureStats = new DescriptiveStatistics();
 				
 				DescriptiveStatistics bestSolutionPositionStats = new DescriptiveStatistics();
+				
+				MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).reset();
+				MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).reset();
 				
 //				if(nrOfExamples != 7) continue;
 				// loop over SPARQL queries
@@ -273,8 +282,9 @@ public class QTLEvaluation {
 					try {
 						// compute or load cached solutions
 						List<EvaluatedRDFResourceTree> solutions = generateSolutions(sparqlQuery, possibleNrOfExamples, noise);
-
-						// the best solution by QTL
+						nrOfReturnedSolutionsStats.addValue(solutions.size());
+						
+						// the best returned solution by QTL
 						EvaluatedRDFResourceTree bestSolution = solutions.get(0);
 						logger.info("Got " + solutions.size() + " query trees.");
 						logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
@@ -286,21 +296,12 @@ public class QTLEvaluation {
 						String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
 								tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 
+						// compute score
 						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
-						
-						// compute precision
-						double precision = score.getPrecision();
-						bestReturnedSolutionPrecisionStats.addValue(precision);
-
-						// compute recall
-						double recall = score.getRecall();
-						bestReturnedSolutionRecallStats.addValue(recall);
-
-						// compute F1-score
-						double fmeasure = score.getFmeasure();
-						bestReturnedSolutionFMeasureStats.addValue(fmeasure);
-
-						logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
+						bestReturnedSolutionPrecisionStats.addValue(score.getPrecision());
+						bestReturnedSolutionRecallStats.addValue(score.getRecall());
+						bestReturnedSolutionFMeasureStats.addValue(score.getFmeasure());
+						logger.info(score);
 
 						// find the extensionally best matching tree in the list
 						Pair<EvaluatedRDFResourceTree, Score> bestMatchingTreeWithScore = findBestMatchingTreeFast(solutions, sparqlQuery);
@@ -311,6 +312,7 @@ public class QTLEvaluation {
 						int position = solutions.indexOf(bestMatchingTree);
 						bestSolutionPositionStats.addValue(position);
 
+						Score bestScore = score;
 						if (position > 0) {
 							logger.info("Position of best covering tree in list: " + position);
 							logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
@@ -318,16 +320,14 @@ public class QTLEvaluation {
 							String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
 									filter.filter(bestMatchingTree.getTree()), 
 									dataset.getBaseIRI(), dataset.getPrefixMapping());
-							precision = bestMatchingScore.getPrecision();
-							recall = bestMatchingScore.getRecall();
-							fmeasure = bestMatchingScore.getFmeasure();
-							logger.info(String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure));
+							bestScore = bestMatchingScore;
+							logger.info(bestMatchingScore);
 						} else {
 							logger.info("Best returned solution was also the best covering solution.");
 						}
-						bestSolutionRecallStats.addValue(recall);
-						bestSolutionPrecisionStats.addValue(precision);
-						bestSolutionFMeasureStats.addValue(fmeasure);
+						bestSolutionRecallStats.addValue(bestScore.getRecall());
+						bestSolutionPrecisionStats.addValue(bestScore.getPrecision());
+						bestSolutionFMeasureStats.addValue(bestScore.getFmeasure());
 
 					} catch (Exception e) {
 						logger.error("Error occured.", e);
@@ -338,6 +338,8 @@ public class QTLEvaluation {
 				Logger.getRootLogger().removeAppender(appender);
 				
 				String result = "";
+				result += "\n#Returned solutions:" + nrOfReturnedSolutionsStats + "\n";
+				
 				result += "\nOverall Precision:\n" + bestReturnedSolutionPrecisionStats;
 				result += "\nOverall Recall:\n" + bestReturnedSolutionRecallStats;
 				result += "\nOverall FMeasure:\n" + bestReturnedSolutionFMeasureStats;
@@ -347,6 +349,11 @@ public class QTLEvaluation {
 				result += "\nOverall Precision of best solution:\n" + bestSolutionPrecisionStats;
 				result += "\nOverall Recall of best solution:\n" + bestSolutionRecallStats;
 				result += "\nOverall FMeasure of best solution:\n" + bestSolutionFMeasureStats;
+				
+				result += "\nCBD generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getTotal() + "\n";
+				result += "CBD generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getAvg() + "\n";
+				result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
+				result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
 						
 				logger.info(result);
 				
@@ -432,6 +439,8 @@ public class QTLEvaluation {
 		
 		
 		EvaluatedRDFResourceTree bestTree = null;
+		int coveredNoiseTreesBest = 0;
+		int coveredCorrectTreesBest = 0;
 		
 		for (EvaluatedRDFResourceTree evalutedTree : trees) {
 			RDFResourceTree tree = evalutedTree.getTree();
@@ -455,6 +464,12 @@ public class QTLEvaluation {
 				bestTree = evalutedTree;
 				break;
 			}
+			
+			if(coveredCorrectTrees > coveredCorrectTreesBest || coveredNoiseTrees < coveredNoiseTreesBest) {
+				bestTree = evalutedTree;
+				coveredCorrectTreesBest = coveredCorrectTrees;
+				coveredNoiseTreesBest = coveredNoiseTrees;
+			} 
 		}
 		
 		// compute score
@@ -730,7 +745,10 @@ public class QTLEvaluation {
 	}
 	
 	private RDFResourceTree getQueryTree(String resource){
+		// get CBD
+		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
 		Model cbd = cbdGen.getConciseBoundedDescription(resource);
+		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
 			String modelAsString = new String(baos.toByteArray());
@@ -742,7 +760,10 @@ public class QTLEvaluation {
 			e.printStackTrace();
 		}
 		
+		// generate tree
+		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
+		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
 		return tree;
 	}
 	
@@ -1305,6 +1326,14 @@ public class QTLEvaluation {
 		
 		public double getFmeasure() {
 			return fmeasure;
+		}
+		
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return String.format("P=%f\nR=%f\nF-score=%f", precision, recall, fmeasure);
 		}
 		
 	}

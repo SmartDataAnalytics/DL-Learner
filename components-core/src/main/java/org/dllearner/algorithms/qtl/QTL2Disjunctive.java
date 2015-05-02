@@ -153,6 +153,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private int maxTreeDepth = 2;
 	
+	private boolean useDisjunction = false;
+	
 	public QTL2Disjunctive() {}
 	
 	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
@@ -302,7 +304,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		reset();
 		
 		int i = 1;
-		while(!terminationCriteriaSatisfied()){
+		while(!terminationCriteriaSatisfied() && (useDisjunction || i == 1)){
 			logger.info(i++ + ". iteration...");
 			logger.info("#Remaining pos. examples:" + currentPosExampleTrees.size());
 			logger.info("#Remaining neg. examples:" + currentNegExampleTrees.size());
@@ -422,13 +424,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
 				Set<RDFResourceTree> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
 				baseQueryTrees.add(uncoveredTree);
-				String s = "";
-				for (RDFResourceTree queryTree : baseQueryTrees) {
-					s += index.get(queryTree) + ",";
-				}
-				System.err.println(s);
+//				String s = "";
+//				for (RDFResourceTree queryTree : baseQueryTrees) {
+//					s += index.get(queryTree) + ",";
+//				}
+//				System.err.println(s);
 				if(!processedCombinations.add(baseQueryTrees)) {
-					System.err.println("skipping");
+//					System.err.println("skipping");
 					continue;
 				}
 				
