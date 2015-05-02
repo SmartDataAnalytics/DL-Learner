@@ -607,15 +607,15 @@ public class QueryTreeUtils {
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
 							filler = buildOWLClassExpression(child, literalConversion);
+							classExpressions.add(df.getOWLObjectSomeValuesFrom(
+									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									filler));
 						} else if (child.isResourceNode()) {
-							filler = df.getOWLClass(IRI.create(child.getData().getURI()));
+							classExpressions.add(df.getOWLObjectHasValue(
+									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									df.getOWLNamedIndividual(IRI.create(child.getData().getURI()))));
 						}
-						classExpressions.add(df.getOWLObjectSomeValuesFrom(
-								df.getOWLObjectProperty(IRI.create(edge.getURI())), 
-								filler));
 					}
-					
-					
 				}
 			}
 		}
