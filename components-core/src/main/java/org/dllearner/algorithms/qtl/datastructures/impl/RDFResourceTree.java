@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +19,9 @@ import java.util.TreeMap;
 
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
+import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Node_URI;
@@ -46,7 +49,6 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
-    
     
     
     /**
@@ -273,6 +275,13 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
+	 * @param datatype the datatype to set
+	 */
+	public void setDatatype(RDFDatatype datatype) {
+		this.datatype = datatype;
+	}
+	
+	/**
 	 * Serialize this instance.
 	 * 
 	 * @param out Target to which this instance is written.
@@ -280,7 +289,59 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 */
 	private void writeObject(final ObjectOutputStream out) throws IOException {
 		out.writeInt(this.id);
-		out.writeObject(datatype == null ? null : this.datatype.getURI());
-		out.writeObject(this.data);
+		out.writeObject(datatype == null ? "" : this.datatype.getURI());
+		out.writeObject(this.data.toString());
+		
+		SortedSet<Node> edges = getEdges();
+		if(edges.isEmpty()) {
+			out.writeObject(null);
+		}
+		for (Node edge : edges) {
+			List<RDFResourceTree> children = getChildren(edge);
+			out.writeObject(edge.toString());
+			out.writeObject(children);
+		}
+		out.writeObject(null);
+	}
+	
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		child2Edge = new HashMap<>();
+	    edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+	    
+		// default deserialization
+//		ois.defaultReadObject();
+		
+		int id = ois.readInt();
+		
+		String datatypeURI = (String) ois.readObject();
+		if(datatypeURI != null) {
+			if(datatypeURI.equals(XSDDatatype.XSD)) {
+				setDatatype(new XSDDatatype(datatypeURI));
+			} else {
+				setDatatype(new BaseDatatype(datatypeURI));
+			}
+		}
+		
+		
+		String dataString = (String) ois.readObject();
+		Node data;
+		if(dataString.equals(RDFResourceTree.DEFAULT_VAR_NODE.toString())) {
+			data = RDFResourceTree.DEFAULT_VAR_NODE;
+		} else if(dataString.equals(RDFResourceTree.DEFAULT_LITERAL_NODE.toString())) {
+			data = RDFResourceTree.DEFAULT_LITERAL_NODE;
+		} else {
+			data = NodeFactory.createURI(dataString);
+		}
+		setData(data);
+		
+		Object edgeObject;
+		while((edgeObject = ois.readObject()) != null) {
+			Node edge = NodeFactory.createURI((String) edgeObject);
+			List<RDFResourceTree> children = (List<RDFResourceTree>) ois.readObject();
+			for (RDFResourceTree child : children) {
+				addChild(child, edge);
+			}
+		}
+		
 	}
 }
