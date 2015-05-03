@@ -36,7 +36,14 @@ private static final String baseIRI = "http://test.org/";
 					+ ":b a :A , :B ; :p2 \"lit\" ."
 				+ ":a :p2 _:b1 . _:b1 a :C . "
 				+ ":a :p2 _:b2 . _:b2 a :C . "
-				+ ":a :p2 _:b3 . ";
+				+ ":a :p2 _:b3 . "
+				
+				+ ":t2 :p :c . :c a :A, _:b7 . "
+				+ ":t2 a _:b4 . "
+				+ ":t2 a _:b5 . _:b5 rdfs:subClassOf _:b6 ."
+				
+				+ ":t3 :p :c . :c a :D; :p _:b7 . _:b7 :p1 _:b8 ."
+				+ ":t3 a _:b4 . ";
 //		String kb = "@prefix : <http://test.org/> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
 //				+ ":a a :A, :B ; :p :b . ";
 		
@@ -56,9 +63,18 @@ private static final String baseIRI = "http://test.org/";
 	@Test
 	public void testPruneTree(){
 		RDFResourceTree tree = treeFactory.getQueryTree("http://test.org/a", model);
-		
 		System.out.println(tree.getStringRepresentation());
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
+		System.out.println(tree.getStringRepresentation());
+		
+		tree = treeFactory.getQueryTree("http://test.org/t2", model);
+		System.out.println(tree.getStringRepresentation());
+		QueryTreeUtils.prune(tree, null, Entailment.RDF);
+		System.out.println(tree.getStringRepresentation());
+		
+		tree = treeFactory.getQueryTree("http://test.org/t3", model);
+		System.out.println(tree.getStringRepresentation());
+		QueryTreeUtils.removeVarLeafs(tree);
 		System.out.println(tree.getStringRepresentation());
 	}
 
