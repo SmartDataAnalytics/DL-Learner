@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -770,15 +771,19 @@ public class QueryTreeUtils {
 		
 		// remove trivial statements
 		for(Node edge : new TreeSet<Node>(tree.getEdges())) {
-			if(edge.equals(RDF.type.asNode())) {
+			if(edge.equals(RDF.type.asNode())) { // check outgoing rdf:type edges
 				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
 				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
 					RDFResourceTree child = iterator.next();
 					if(!isNonTrivial(child, entailment)) {
-//						iterator.remove();
 						tree.removeChild(child, edge);
 					}
-					
+				}
+			} else {// recursively apply pruning on all subtrees
+				List<RDFResourceTree> children = tree.getChildren(edge);
+				
+				for (RDFResourceTree child : children) {
+					prune(child, reasoner, entailment);
 				}
 			}
 		}
@@ -835,6 +840,34 @@ public class QueryTreeUtils {
 //				
 //			}
 //		}
+	}
+	
+	/**
+	 * Recursively removes edges that lead to a leaf node which is a variable.
+	 * @param tree
+	 * @param entailment
+	 */
+	public static boolean removeVarLeafs(RDFResourceTree tree) {
+		SortedSet<Node> edges = new TreeSet<>(tree.getEdges());
+		
+		boolean modified = false;
+		for (Node edge : edges) {
+			List<RDFResourceTree> children = new ArrayList<>(tree.getChildren(edge));
+//			
+			for (RDFResourceTree child : children) {
+				if(child.isLeaf() && child.isVarNode()) {
+					tree.removeChild(child, edge);
+					modified = true;
+				} else {
+					modified = removeVarLeafs(child);
+					if(modified && child.isLeaf() && child.isVarNode()) {
+						tree.removeChild(child, edge);
+						modified = true;
+					}
+				}
+			}
+		}
+		return modified;
 	}
 	
 	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {
