@@ -25,6 +25,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.iterator.Filter;
 
 /**
@@ -96,7 +97,7 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 					"http://dbpedia.org/property/", 
 					"http://purl.org/dc/terms/",
 					"http://dbpedia.org/class/yago/"
-	//				,FOAF.getURI()
+					,FOAF.getURI()
 					)
 					),
 					new PredicateDropStatementFilter(

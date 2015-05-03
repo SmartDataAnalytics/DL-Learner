@@ -63,6 +63,9 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -288,7 +291,7 @@ public class QTLEvaluation {
 						EvaluatedRDFResourceTree bestSolution = solutions.get(0);
 						logger.info("Got " + solutions.size() + " query trees.");
 						logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
-						logger.info("Score:\n" + bestSolution.getTreeScore());
+						logger.info("QTL Score:\n" + bestSolution.getTreeScore());
 
 						// convert to SPARQL query
 						RDFResourceTree tree = bestSolution.getTree();
@@ -297,7 +300,7 @@ public class QTLEvaluation {
 								tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 
 						// compute score
-						Score score = computeScore(sparqlQuery, learnedSPARQLQuery);
+						Score score = computeScore(sparqlQuery, tree);
 						bestReturnedSolutionPrecisionStats.addValue(score.getPrecision());
 						bestReturnedSolutionRecallStats.addValue(score.getRecall());
 						bestReturnedSolutionFMeasureStats.addValue(score.getFmeasure());
@@ -388,6 +391,19 @@ public class QTLEvaluation {
 		return solutions;
 	}
 	
+	private void solutionsFromCache(String sparqlQuery, int possibleNrOfExamples, double noise) {
+		HashFunction hf = Hashing.md5();
+		String hash = hf.newHasher()
+				.putString(sparqlQuery, Charsets.UTF_8)
+				.putInt(possibleNrOfExamples)
+				.putDouble(noise)
+				.hash().toString();
+		File file = new File(cacheDirectory, hash + "-data.ttl");
+		if(file.exists()) {
+			
+		}
+	}
+	
 	private Pair<EvaluatedRDFResourceTree, Score> findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery){
 		logger.info("Finding best matching query tree...");
 		//get the tree with the highest fmeasure
@@ -398,17 +414,15 @@ public class QTLEvaluation {
 		for (EvaluatedRDFResourceTree evalutedTree : trees) {
 			RDFResourceTree tree = evalutedTree.getTree();
 			
-			// apply predicate existence filter
-			tree = filter.filter(tree);
-			String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
-			System.out.println(learnedSPARQLQuery);
 			// compute score
-			Score score = computeScore(targetSPARQLQuery, learnedSPARQLQuery);
+			Score score = computeScore(targetSPARQLQuery, tree);
 			double fMeasure = score.getFmeasure();
+			
 			// we can stop if f-score is 1
 			if(fMeasure == 1.0){
 				return new Pair<>(evalutedTree, score);
 			}
+			
 			if(fMeasure > bestFMeasure){
 				bestFMeasure = fMeasure;
 				bestTree = evalutedTree;
@@ -476,7 +490,7 @@ public class QTLEvaluation {
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(bestTree.getTree(), dataset.getBaseIRI(), dataset.getPrefixMapping());
 		System.out.println(learnedSPARQLQuery);
 		
-		Score score = computeScore(targetSPARQLQuery, learnedSPARQLQuery);
+		Score score = computeScore(targetSPARQLQuery, bestTree.getTree());
 		return new Pair<>(bestTree, score);
 	}
 	
@@ -1190,7 +1204,13 @@ public class QTLEvaluation {
 		return q;
 	}
 	
-	private Score computeScore(String referenceSparqlQuery, String learnedSPARQLQuery) {
+	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree) {
+		// apply some filters
+		QueryTreeUtils.removeVarLeafs(tree);
+		QueryTreeUtils.prune(tree, null, Entailment.RDF);
+		
+		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
+		
 		if(QueryUtils.getTriplePatterns(QueryFactory.create(learnedSPARQLQuery)).size() < 30) {
 			return computeScoreBySparqlCount(referenceSparqlQuery, learnedSPARQLQuery);
 		}
@@ -1258,12 +1278,13 @@ public class QTLEvaluation {
 		q2Count.setQuerySelectType();
 		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q2Count.setQueryPattern(q2.getQueryPattern());
+		System.err.println(q2Count);
 		qe = qef.createQueryExecution(q2Count);
 		rs = qe.execSelect();
 		qs = rs.next();
 		int learnedCnt = qs.getLiteral(cntVar.getName()).getInt();
 		qe.close();
-		System.err.println(q2Count);
+		
 		
 		// Q1 ∪ Q2
 		Query q12 = QueryFactory.create();
