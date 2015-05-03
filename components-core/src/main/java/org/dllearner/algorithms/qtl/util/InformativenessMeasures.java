@@ -12,6 +12,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLProperty;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.hp.hpl.jena.query.QueryExecution;
@@ -47,8 +48,9 @@ public class InformativenessMeasures {
 		return itf;
 	}
 	
-	public double getOutgoingPredicateFrequency(OWLIndividual individual, OWLProperty property) {
-		String query = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {<%s> <%s> ?o .}", individual.toStringID(), property.toStringID());
+	public double getPredicateFrequency(OWLIndividual individual, OWLProperty property, boolean outgoing) {
+		String query = outgoing ? "SELECT (COUNT(*) AS ?cnt) WHERE {<%s> <%s> ?o .}" : "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> <%s> .}";
+		query = String.format(query, individual.toStringID(), property.toStringID());
 		QueryExecution qe = qef.createQueryExecution(query);
 		int pf = qe.execSelect().next().getLiteral("cnt").getInt();
 		qe.close();
@@ -56,13 +58,10 @@ public class InformativenessMeasures {
 		return pf;
 	}
 	
-	public double getIncomingPredicateFrequency(OWLIndividual individual, OWLProperty property) {
-		String query = String.format("SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> <%s> .}", property.toStringID(), individual.toStringID());
-		QueryExecution qe = qef.createQueryExecution(query);
-		int pf = qe.execSelect().next().getLiteral("cnt").getInt();
-		qe.close();
-		
-		return pf;
+	public double getPF_ITF(OWLIndividual individual, OWLProperty property, boolean outgoing) {
+		double itf = getInverseTripleFrequency(property);
+		double pf = getPredicateFrequency(individual, property, outgoing);
+		return pf * itf;
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -71,11 +70,28 @@ public class InformativenessMeasures {
 					"http://dbpedia.org"));
 		ks.init();
 		
-		OWLProperty property = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/birthPlace"));
+		OWLProperty p1 = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/birthPlace"));
+		OWLProperty p2 = new OWLObjectPropertyImpl(IRI.create("http://dbpedia.org/ontology/genre"));
 		
-		double itf = new InformativenessMeasures(ks.getQueryExecutionFactory()).getInverseTripleFrequency(property);
+		OWLIndividual ind1 = new OWLNamedIndividualImpl(IRI.create("http://dbpedia.org/resource/Kid_Canaveral"));
 		
-		System.out.println(itf);
+		InformativenessMeasures informativenessMeasures = new InformativenessMeasures(ks.getQueryExecutionFactory());
+		
+		double itf1 = informativenessMeasures.getInverseTripleFrequency(p1);
+		System.out.println("itf(" + p1 + ") = " + itf1);
+		
+		double itf2 = informativenessMeasures.getInverseTripleFrequency(p2);
+		System.out.println("itf(" + p2 + ") = " + itf2);
+		
+		double pf1_out = informativenessMeasures.getPredicateFrequency(ind1, p1, true);
+		double pf1_in = informativenessMeasures.getPredicateFrequency(ind1, p1, false);
+		System.out.println("pf_out(" + ind1 + "," + p1 + ") = " + pf1_out);
+		System.out.println("pf_in(" + ind1 + "," + p1 + ") = " + pf1_in);
+		
+		double pf2_out = informativenessMeasures.getPredicateFrequency(ind1, p2, true);
+		double pf2_in = informativenessMeasures.getPredicateFrequency(ind1, p2, false);
+		System.out.println("pf_out(" + ind1 + "," + p2 + ") = " + pf2_out);
+		System.out.println("pf_in(" + ind1 + "," + p2 + ") = " + pf2_in);
 	}
 
 }
