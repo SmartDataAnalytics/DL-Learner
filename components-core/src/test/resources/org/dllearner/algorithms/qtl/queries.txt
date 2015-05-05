@@ -1,0 +1,60 @@
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/AustralianRulesFootballPlayer> .?s <http://dbpedia.org/ontology/debutTeam> <http://dbpedia.org/resource/Collingwood_Football_Club> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Bacteria> .?s <http://dbpedia.org/ontology/class> <http://dbpedia.org/resource/Alphaproteobacteria> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Band> .?s <http://dbpedia.org/ontology/instrument> <http://dbpedia.org/resource/Guitar> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/BeachVolleyballPlayer> .?s <http://dbpedia.org/ontology/hometown> ?o0 .?o0 <http://dbpedia.org/ontology/language> <http://dbpedia.org/resource/English_language> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/BeautyQueen> .?s <http://dbpedia.org/ontology/education> ?o0 .?o0 <http://dbpedia.org/ontology/type> <http://dbpedia.org/resource/Public_university> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Bodybuilder> .?s <http://dbpedia.org/ontology/birthPlace> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Brain> .?s <http://dbpedia.org/ontology/artery> ?o0 .?o0 <http://dbpedia.org/ontology/branchFrom> <http://dbpedia.org/resource/Internal_carotid_artery> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Bridge> .?s <http://dbpedia.org/ontology/maintainedBy> ?o0 .?o0 <http://dbpedia.org/ontology/parentOrganisation> <http://dbpedia.org/resource/New_York_City> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Canal> .?s <http://dbpedia.org/ontology/startPoint> ?o0 .?o0 <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/United_Kingdom> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Canoeist> .?s <http://dbpedia.org/ontology/birthPlace> ?o0 .?o0 <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Cardinal> .?s <http://dbpedia.org/ontology/nationality> ?o0 .?o0 <http://dbpedia.org/ontology/religion> <http://dbpedia.org/resource/Catholic_Church> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/CricketGround> .?s <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/England> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Cricketer> .?s <http://dbpedia.org/ontology/deathPlace> <http://dbpedia.org/resource/England> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Crustacean> .?s <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Animal> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/CyclingRace> .?s <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Belgium> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/FigureSkater> .?s <http://dbpedia.org/ontology/residence> ?o0 .?o0 <http://dbpedia.org/ontology/governmentType> <http://dbpedia.org/resource/Federalism> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/FilmFestival> .?s <http://dbpedia.org/ontology/language> ?o0 .?o0 <http://dbpedia.org/ontology/languageFamily> <http://dbpedia.org/resource/Germanic_languages> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/FootballMatch> .?s <http://dbpedia.org/ontology/city> <http://dbpedia.org/resource/Dublin> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/FormulaOneRacer> .?s <http://dbpedia.org/ontology/nationality> ?o0 .?o0 <http://dbpedia.org/ontology/capital> <http://dbpedia.org/resource/Rome> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/GovernmentAgency> .?s <http://dbpedia.org/ontology/location> ?o0 .?o0 <http://dbpedia.org/ontology/largestCity> <http://dbpedia.org/resource/New_York_City> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/GrandPrix> .?s <http://dbpedia.org/ontology/fastestDriver> ?o0 .?o0 <http://dbpedia.org/ontology/firstRace> <http://dbpedia.org/resource/1950_British_Grand_Prix> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Grape> .?s <http://dbpedia.org/ontology/origin> <http://dbpedia.org/resource/France> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/GreenAlga> .?s <http://dbpedia.org/ontology/genus> ?o0 .?o0 <http://dbpedia.org/ontology/kingdom> <http://dbpedia.org/resource/Plant> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Guitarist> .?s <http://dbpedia.org/ontology/instrument> <http://dbpedia.org/resource/Guitar> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Historian> .?s <http://dbpedia.org/ontology/birthPlace> ?o0 .?o0 <http://dbpedia.org/ontology/timeZone> <http://dbpedia.org/resource/Eastern_Time_Zone> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/HistoricPlace> .?s <http://dbpedia.org/ontology/architect> <http://dbpedia.org/resource/Samuel_Hannaford> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/HorseRace> .?s <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/IceHockeyLeague> .?s <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/InformationAppliance> .?s <http://dbpedia.org/ontology/operatingSystem> ?o0 .?o0 <http://dbpedia.org/ontology/language> <http://dbpedia.org/resource/English_language> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Judge> .?s <http://dbpedia.org/ontology/deathPlace> ?o0 .?o0 <http://dbpedia.org/ontology/timeZone> <http://dbpedia.org/resource/Eastern_Time_Zone> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/LawFirm> .?s <http://dbpedia.org/ontology/headquarter> ?o0 .?o0 <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Manga> .?s <http://dbpedia.org/ontology/author> ?o0 .?o0 <http://dbpedia.org/ontology/residence> <http://dbpedia.org/resource/Japan> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/MemberOfParliament> .?s <http://dbpedia.org/ontology/president> ?o0 .?o0 <http://dbpedia.org/ontology/almaMater> <http://dbpedia.org/resource/University_of_Ghana> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/MilitaryConflict> .?s <http://dbpedia.org/ontology/commander> <http://dbpedia.org/resource/Napoleon> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/MilitaryPerson> .?s <http://dbpedia.org/ontology/deathPlace> <http://dbpedia.org/resource/Germany> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Model> .?s <http://dbpedia.org/ontology/birthPlace> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/MotorsportSeason> .?s <http://dbpedia.org/ontology/series> <http://dbpedia.org/resource/Grand_Prix_motorcycle_racing> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/NCAATeamSeason> .?s <http://dbpedia.org/ontology/coach> <http://dbpedia.org/resource/Bobby_Bowden> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Nerve> .?s <http://dbpedia.org/ontology/branchFrom> ?o0 .?o0 <http://dbpedia.org/ontology/branchFrom> <http://dbpedia.org/resource/Trigeminal_nerve> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/NetballPlayer> .?s <http://dbpedia.org/ontology/birthPlace> <http://dbpedia.org/resource/New_Zealand> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Noble> .?s <http://dbpedia.org/ontology/deathPlace> ?o0 .?o0 <http://dbpedia.org/ontology/province> <http://dbpedia.org/resource/Province_of_Rome> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/OlympicEvent> .?s <http://dbpedia.org/ontology/nextEvent> <http://dbpedia.org/resource/2016_Summer_Olympics> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/PokerPlayer> .?s <http://dbpedia.org/ontology/hometown> <http://dbpedia.org/resource/Nevada> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Pope> .?s <http://dbpedia.org/ontology/birthPlace> ?o0 .?o0 <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Italy> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/President> .?s <http://dbpedia.org/ontology/occupation> <http://dbpedia.org/resource/Politician> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/PrimeMinister> .?s <http://dbpedia.org/ontology/party> ?o0 .?o0 <http://dbpedia.org/ontology/colour> <http://dbpedia.org/resource/Red> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Prison> .?s <http://dbpedia.org/ontology/location> ?o0 .?o0 <http://dbpedia.org/ontology/isPartOf> <http://dbpedia.org/resource/Texas> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Racecourse> .?s <http://dbpedia.org/ontology/owner> ?o0 .?o0 <http://dbpedia.org/ontology/type> <http://dbpedia.org/resource/Privately_held_company> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/RoadJunction> .?s <http://dbpedia.org/ontology/type> <http://dbpedia.org/resource/Traffic_circle> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Rower> .?s <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Ship> .?s <http://dbpedia.org/ontology/powerType> ?o0 .?o0 <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/Germany> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/SkiArea> .?s <http://dbpedia.org/ontology/nearestCity> ?o0 .?o0 <http://dbpedia.org/ontology/type> <http://dbpedia.org/resource/City> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/SoccerClubSeason> .?s <http://dbpedia.org/ontology/league> <http://dbpedia.org/resource/Football_League_First_Division> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/TelevisionStation> .?s <http://dbpedia.org/ontology/broadcastNetwork> ?o0 .?o0 <http://dbpedia.org/ontology/broadcastArea> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/TennisPlayer> .?s <http://dbpedia.org/ontology/residence> <http://dbpedia.org/resource/United_States> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/TennisTournament> .?s <http://dbpedia.org/ontology/championInSingleFemale> <http://dbpedia.org/resource/Serena_Williams> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/VideoGame> .?s <http://dbpedia.org/ontology/developer> ?o0 .?o0 <http://dbpedia.org/ontology/regionServed> <http://dbpedia.org/resource/Japan> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Weapon> .?s <http://dbpedia.org/ontology/origin> ?o0 .?o0 <http://dbpedia.org/ontology/ethnicGroup> <http://dbpedia.org/resource/White_people> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/Website> .?s <http://dbpedia.org/ontology/type> <http://dbpedia.org/resource/Social_networking_service> .}
+SELECT DISTINCT ?s WHERE {?s a <http://dbpedia.org/ontology/WineRegion> .?s <http://dbpedia.org/ontology/location> <http://dbpedia.org/resource/United_States> .}
