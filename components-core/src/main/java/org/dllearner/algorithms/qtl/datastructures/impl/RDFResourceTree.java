@@ -288,10 +288,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 * @throws IOException Thrown if exception occurs during serialization.
 	 */
 	private void writeObject(final ObjectOutputStream out) throws IOException {
+		// ID
 		out.writeInt(this.id);
+		
+		// datatype
 		out.writeObject(datatype == null ? "" : this.datatype.getURI());
+		
+		// data
 		out.writeObject(this.data.toString());
 		
+		// edge + children
 		SortedSet<Node> edges = getEdges();
 		if(edges.isEmpty()) {
 			out.writeObject(null);
@@ -307,12 +313,11 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		child2Edge = new HashMap<>();
 	    edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
-	    
-		// default deserialization
-//		ois.defaultReadObject();
 		
+	    // ID
 		int id = ois.readInt();
 		
+		// datatype
 		String datatypeURI = (String) ois.readObject();
 		if(datatypeURI != null) {
 			if(datatypeURI.equals(XSDDatatype.XSD)) {
@@ -322,7 +327,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			}
 		}
 		
-		
+		// data
 		String dataString = (String) ois.readObject();
 		Node data;
 		if(dataString.equals(RDFResourceTree.DEFAULT_VAR_NODE.toString())) {
@@ -334,6 +339,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		}
 		setData(data);
 		
+		// edge + children
 		Object edgeObject;
 		while((edgeObject = ois.readObject()) != null) {
 			Node edge = NodeFactory.createURI((String) edgeObject);

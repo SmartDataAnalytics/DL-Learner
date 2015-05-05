@@ -180,12 +180,18 @@ public class QTLEvaluation {
 
 	private List<String> correctExamples;
 
-	private boolean write2DB = true;
 
 	private Connection conn;
 	
-	public QTLEvaluation(EvaluationDataset dataset) throws ComponentInitException {
+	private File benchmarkDirectory;
+
+	private boolean write2DB;
+
+	
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB) throws ComponentInitException {
 		this.dataset = dataset;
+		this.benchmarkDirectory = benchmarkDirectory;
+		this.write2DB = write2DB;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxDepth);
@@ -284,12 +290,6 @@ public class QTLEvaluation {
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
-		int minNrOfExamples = 5;
-		int maxNrOfExamples = 30;
-		int stepSize = 5;
-		
-		File benchmarkDir = new File("log/qtl");
-		
 		int[] nrOfExamplesIntervals = {
 				5, 10, 15, 20, 25, 30
 				}; 
@@ -323,10 +323,11 @@ public class QTLEvaluation {
 					double noise = noiseIntervals[j];
 					
 					// check if not already processed
-					File logFile = new File(benchmarkDir, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + ".log");
-					File statsFile = new File(benchmarkDir, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + ".stats");
+					File logFile = new File(benchmarkDirectory, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + ".log");
+					File statsFile = new File(benchmarkDirectory, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + ".stats");
 					
 					if(logFile.exists() && statsFile.exists()) {
+						logger.info("Eval config already processed. For re-running please remove corresponding output files.");
 						continue;
 					}
 					
@@ -359,7 +360,7 @@ public class QTLEvaluation {
 	//				if(nrOfExamples != 7) continue;
 					// loop over SPARQL queries
 					for (String sparqlQuery : sparqlQueries) {
-	//					if(!sparqlQuery.contains("Alternative_rock"))continue;
+//						if(!sparqlQuery.contains("Alternative_rock"))continue;
 						logger.info("##############################################################");
 						logger.info("Processing query\n" + sparqlQuery);
 						// some queries can return less examples
@@ -451,10 +452,12 @@ public class QTLEvaluation {
 					
 					data[i][j] = bestReturnedSolutionFMeasureStats.getMean();
 					
-					write2DB(heuristicName, nrOfExamples, noise, 
-							bestReturnedSolutionFMeasureStats.getMean(), 
-							bestReturnedSolutionPrecisionStats.getMean(), 
-							bestReturnedSolutionRecallStats.getMean());
+					if(write2DB) {
+						write2DB(heuristicName, nrOfExamples, noise, 
+								bestReturnedSolutionFMeasureStats.getMean(), 
+								bestReturnedSolutionPrecisionStats.getMean(), 
+								bestReturnedSolutionRecallStats.getMean());
+					}
 				}
 			}
 			
@@ -473,32 +476,12 @@ public class QTLEvaluation {
 				content += "\n";
 			}
 			
-			File examplesVsNoise = new File(benchmarkDir, "examplesVsNoise.txt");
+			File examplesVsNoise = new File(benchmarkDirectory, "examplesVsNoise.txt");
 			try {
 				Files.write(content, examplesVsNoise, Charsets.UTF_8);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-	
-	private void write2DB(String heuristic, int nrOfExamples, double noise, double fmeasure, double precision, double recall) {
-		try {
-			
-			String sql = "INSERT INTO eval_overall (heuristic, nrOfExamples, noise, fscore_top, precision_top, recall_top)" + 
-					"VALUES (?,?,?,?,?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, heuristic);
-			ps.setInt(2, nrOfExamples);
-			ps.setDouble(3, noise);
-			ps.setDouble(4, fmeasure);
-			ps.setDouble(5, precision);
-			ps.setDouble(6, recall);
-			
-			ps.execute(sql);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -1454,6 +1437,26 @@ public class QTLEvaluation {
 		return new Score(precision, recall, fMeasure);
 	}
 	
+	private void write2DB(String heuristic, int nrOfExamples, double noise, double fmeasure, double precision, double recall) {
+		try {
+			
+			String sql = "INSERT INTO eval_overall (heuristic, nrOfExamples, noise, fscore_top, precision_top, recall_top)" + 
+					"VALUES (?,?,?,?,?,?)";
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setString(1, heuristic);
+			ps.setInt(2, nrOfExamples);
+			ps.setDouble(3, noise);
+			ps.setDouble(4, fmeasure);
+			ps.setDouble(5, precision);
+			ps.setDouble(6, recall);
+			
+			ps.execute(sql);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args) throws Exception {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getLogger(QTLEvaluation.class).addAppender(
@@ -1463,7 +1466,15 @@ public class QTLEvaluation {
 		Logger.getLogger(QTLEvaluation.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-		new QTLEvaluation(new DBpediaEvaluationDataset()).run();
+		if(args.length < 2) {
+			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <write2Database>");
+			System.exit(0);
+		}
+		
+		File benchmarkDirectory = new File(args[0]);
+		boolean write2DB = Boolean.valueOf(args[1]);
+		
+		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB).run();
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
