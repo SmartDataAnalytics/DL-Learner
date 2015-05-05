@@ -344,7 +344,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				
 				logger.info("combined accuracy: " + dFormat.format(currentBestSolution.getAccuracy()));
 			} else {
-				String message = "No tree found, which satisfies the minimum criteria.";
+				String message = "No partial tree found which satisfies the minimal criteria.";
 				if(currentBestSolution != null) {
 					message += "- the best was: "
 							+ currentBestSolution.getDescription()
@@ -362,10 +362,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		logger.info(expressionTests +" descriptions tested");
-		logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
-		
-		logger.info(currentBestSolution.getScore());
-		
+		if(currentBestSolution != null) {
+			logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
+			logger.info(currentBestSolution.getScore());
+		} else {
+			logger.info("Could not find a solution in the given time.");
+		}
 	}
 	
 	/**
