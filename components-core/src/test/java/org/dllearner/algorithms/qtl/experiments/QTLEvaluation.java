@@ -187,6 +187,8 @@ public class QTLEvaluation {
 
 	private boolean write2DB;
 
+	private PreparedStatement psInsertOverallEval;
+
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB) throws ComponentInitException {
 		this.dataset = dataset;
@@ -250,6 +252,10 @@ public class QTLEvaluation {
 				
 				stmt = conn.createStatement();
 //				stmt.execute(sql);
+				
+				sql = "INSERT INTO eval_overall (heuristic, nrOfExamples, noise, fscore_top, precision_top, recall_top)" + 
+						"VALUES (?,?,?,?,?,?)";
+				psInsertOverallEval = conn.prepareStatement(sql);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -271,22 +277,22 @@ public class QTLEvaluation {
 		return size;
 	}
 	
-	private List<String> getSparqlQueries() {
+	private List<String> getSparqlQueries(File queriesFile) throws IOException {
 		List<String> sparqlQueries = new ArrayList<String>();
 		
-		for (String query : dataset.getSparqlQueries()) {
-			Query q = QueryFactory.create(query);
+		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
+			Query q = QueryFactory.create(queryString);
 			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
 			if(subjectObjectJoinDepth < maxDepth) {
-				sparqlQueries.add(query);
+				sparqlQueries.add(queryString);
 			}
 		}
 		return sparqlQueries;
 	}
 	
-	public void run(){
+	public void run(File queriesFile) throws Exception{
 		
-		List<String> sparqlQueries = getSparqlQueries();
+		List<String> sparqlQueries = getSparqlQueries(queriesFile);
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -1439,19 +1445,14 @@ public class QTLEvaluation {
 	
 	private void write2DB(String heuristic, int nrOfExamples, double noise, double fmeasure, double precision, double recall) {
 		try {
-			
-			String sql = "INSERT INTO eval_overall (heuristic, nrOfExamples, noise, fscore_top, precision_top, recall_top)" + 
-					"VALUES (?,?,?,?,?,?)";
-			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, heuristic);
-			ps.setInt(2, nrOfExamples);
-			ps.setDouble(3, noise);
-			ps.setDouble(4, fmeasure);
-			ps.setDouble(5, precision);
-			ps.setDouble(6, recall);
-			
-			ps.execute(sql);
-			
+			psInsertOverallEval.setString(1, heuristic);
+			psInsertOverallEval.setInt(2, nrOfExamples);
+			psInsertOverallEval.setDouble(3, noise);
+			psInsertOverallEval.setDouble(4, fmeasure);
+			psInsertOverallEval.setDouble(5, precision);
+			psInsertOverallEval.setDouble(6, recall);
+			System.out.println(psInsertOverallEval);
+			psInsertOverallEval.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1467,14 +1468,15 @@ public class QTLEvaluation {
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
 		if(args.length < 2) {
-			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <write2Database>");
+			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <path/to/benchmark-queries> <write2Database>");
 			System.exit(0);
 		}
 		
 		File benchmarkDirectory = new File(args[0]);
-		boolean write2DB = Boolean.valueOf(args[1]);
+		File queries = new File(args[1]);
+		boolean write2DB = Boolean.valueOf(args[2]);
 		
-		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB).run();
+		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB).run(queries);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
