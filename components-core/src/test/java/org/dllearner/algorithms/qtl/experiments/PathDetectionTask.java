@@ -7,8 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -16,6 +19,8 @@ import java.util.concurrent.RunnableFuture;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.semanticweb.owlapi.model.OWLClass;
 
@@ -23,6 +28,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.google.common.net.UrlEscapers;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -41,6 +47,7 @@ public class PathDetectionTask implements Callable<Path> {
 		private boolean cancelled;
 		private File dataDir;
 		private Model schema;
+		RandomGenerator rndGen = new JDKRandomGenerator();
 
 		public PathDetectionTask(File dataDir, SparqlEndpointKS ks, Model schema, OWLClass cls, int depth, int minNrOfExamples) {
 			this.dataDir = dataDir;
@@ -49,6 +56,8 @@ public class PathDetectionTask implements Callable<Path> {
 			this.cls = cls;
 			this.depth = depth;
 			this.minNrOfExamples = minNrOfExamples;
+			
+			rndGen.setSeed(123);
 		}
 
 		/* (non-Javadoc)
@@ -70,7 +79,14 @@ public class PathDetectionTask implements Callable<Path> {
 						lines = Files.readLines(file, Charsets.UTF_8);
 						ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
 						String object = split.remove(split.size() - 1);
-						return new Path(cls, split, object);
+						List<Set<String>> propertyClusters = new ArrayList<Set<String>>();
+						Set<String> cluster = new TreeSet<String>();
+						for (String clusterString : split) {
+							for (String property : Splitter.on(",").split(clusterString)) {
+								cluster.add(property);
+							}
+						}
+						return new Path(cls, propertyClusters, object);
 					} catch (IOException e) {
 						throw new RuntimeException("Path loading failed. ", e);
 					}
@@ -176,48 +192,80 @@ public class PathDetectionTask implements Callable<Path> {
 			return model;
 		}
 		
-		
-		private List<String> getPropertiesOnPath(Model model, OWLClass cls, List<String> propertiesOnPath) {
-			List<String> properties = new ArrayList<String>();
+		private List<Set<String>> getCooccuringPropertiesOnPath(Model model, OWLClass cls, List<Set<String>> propertiesOnPath, int clusterSize) {
+			List<Set<String>> properties = new ArrayList<Set<String>>();
 			
-			String query = "SELECT DISTINCT ?p WHERE {"
-					+ "?s0 a <" + cls.toStringID() + "> . ";
+			String query = "SELECT DISTINCT "; 
+			for(int i = 0; i < clusterSize; i++) {
+				query += "?p" + i + " ";
+			}
+			query += "WHERE {" + "?s0 a <" + cls.toStringID() + "> . ";
 			
 			for(int i = 0; i < propertiesOnPath.size(); i++) {
-				String property = propertiesOnPath.get(i);
+				Set<String> propertyCluster = propertiesOnPath.get(i);
 				
-				query += "?s" + i + " <" + property + "> ?s" + (i+1) + ".";
+				for (String property : propertyCluster) {
+					query += "?s" + i + " <" + property + "> ?s" + (i+1) + ".";
+				}
 			}
 			
-			query += "?s" + propertiesOnPath.size() + " ?p ?o .";
-			query += "?p a <http://www.w3.org/2002/07/owl#ObjectProperty> .} ";
-			query +=  "GROUP BY ?p HAVING(COUNT(DISTINCT ?s0) >= " + minNrOfExamples + ")";
+			for(int i = 0; i < clusterSize; i++) {
+				query += "?s" + propertiesOnPath.size() + " ?p" + i + " ?o .";
+				query += "?p" + i + " a <http://www.w3.org/2002/07/owl#ObjectProperty> . ";
+			}
 			
+			if(clusterSize > 1) {
+				String filter = "FILTER(";
+				List<String> conditions = new ArrayList<String>();
+				for(int i = 0; i < clusterSize; i++) {
+					for(int j = i + 1; j < clusterSize; j++) {
+						conditions.add("(?p" + i + "!=" + "?p" + j + ")");
+					}
+				}
+				filter += Joiner.on(" && ").join(conditions);
+				filter += ")";
+				query += filter;
+			}
+			
+			query +=  "} GROUP BY ";
+			for(int i = 0; i < clusterSize; i++) {
+				query += "?p" + i + " ";
+			}
+			query += " HAVING(COUNT(DISTINCT ?s0) >= " + minNrOfExamples + ")";
+					
+			System.out.println(query);
 //			System.out.println(query);
 			QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(query);
 			ResultSet rs = qe.execSelect();
 			
 			while(rs.hasNext()) {
 				QuerySolution qs = rs.next();
-				String property = qs.getResource("p").getURI();
-				properties.add(property);
+				TreeSet<String> propertyCluster = Sets.newTreeSet();
+				
+				for(int i = 0; i < clusterSize; i++) {
+					String property = qs.getResource("p" + i).getURI();
+					propertyCluster.add(property);
+				}
+				
+				properties.add(propertyCluster);
 			}
-			return properties;
+			return new ArrayList<Set<String>>(new HashSet<Set<String>>(properties));
 		}
 		
 		private Path findPathOfDepthN(OWLClass cls, Model model, int depth) {
 			// generate possible property paths of length n
 
-			List<List<String>> paths = new ArrayList<List<String>>();
-			paths.add(Collections.<String> emptyList());
+			List<List<Set<String>>> paths = new ArrayList<List<Set<String>>>();
+			paths.add(Lists.<Set<String>>newArrayList());
 
 			for (int i = 0; i < depth; i++) {
-				List<List<String>> pathsNew = new ArrayList<List<String>>();
-				for (List<String> path : paths) {
-					List<String> properties = getPropertiesOnPath(model, cls, path);
-					for (String property : properties) {
-						List<String> newPath = new ArrayList<String>(path);
-						newPath.add(property);
+				List<List<Set<String>>> pathsNew = new ArrayList<List<Set<String>>>();
+				for (List<Set<String>> path : paths) {
+					int clusterSize = rndGen.nextInt(3) + 1;
+					List<Set<String>> propertyClusters = getCooccuringPropertiesOnPath(model, cls, path, depth == 1 ? clusterSize : 1);
+					for (Set<String> propertyCluster : propertyClusters) {
+						List<Set<String>> newPath = new ArrayList<Set<String>>(path);
+						newPath.add(propertyCluster);
 						pathsNew.add(newPath);
 					}
 				}
@@ -227,13 +275,16 @@ public class PathDetectionTask implements Callable<Path> {
 				
 			Collections.shuffle(paths, new Random(123));
 			// randomly search in possible paths for query
-			for (List<String> path : paths) {
+			for (List<Set<String>> path : paths) {
 				String query = "SELECT ?o (COUNT(DISTINCT ?s1) AS ?cnt) WHERE {";
 				query +=  "?s1 a <" + cls.toStringID() + "> . ?s2 a <" + cls.toStringID() + "> . ";
 				for(int i = 0; i < path.size(); i++) {
-					String property = path.get(i);
-					query += (i == 0 ? "?s1" : ("?o1_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o1_" + (i+1))) + " .";
-					query += (i == 0 ? "?s2" : ("?o2_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o2_" + (i+1))) + " .";
+					Set<String> propertyCluster = path.get(i);
+					
+					for (String property : propertyCluster) {
+						query += (i == 0 ? "?s1" : ("?o1_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o1_" + (i+1))) + " .";
+						query += (i == 0 ? "?s2" : ("?o2_" + i)) + " <" + property + "> " + (i+1 == path.size() ? "?o" : ("?o2_" + (i+1))) + " .";
+					}
 				}
 				query += "FILTER(?s1 != ?s2 ";
 				for (int i = 1; i < path.size(); i++) {
@@ -261,7 +312,7 @@ public class PathDetectionTask implements Callable<Path> {
 					String object = qs.getResource("o").getURI();
 					int cnt = qs.getLiteral("cnt").getInt();
 
-					if(cnt >= minNrOfExamples) {
+					if(cnt >= minNrOfExamples) { //should always be true because of HAVING clause
 						return new Path(cls, path, object);
 					}
 				}
