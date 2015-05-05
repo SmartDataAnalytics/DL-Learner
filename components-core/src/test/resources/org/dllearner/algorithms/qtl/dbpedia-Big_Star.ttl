@@ -1,0 +1,396 @@
+<http://dbpedia.org/resource/Rykodisc>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://schema.org/Organization> , <http://dbpedia.org/ontology/RecordLabel> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/Company> , <http://dbpedia.org/ontology/Agent> , <http://dbpedia.org/ontology/Organisation> ;
+        <http://dbpedia.org/ontology/country>
+                <http://dbpedia.org/resource/United_States> ;
+        <http://dbpedia.org/ontology/distributingCompany>
+                <http://dbpedia.org/resource/Alternative_Distribution_Alliance> ;
+        <http://dbpedia.org/ontology/distributingLabel>
+                <http://dbpedia.org/resource/Alternative_Distribution_Alliance> ;
+        <http://dbpedia.org/ontology/foundedBy>
+                <http://dbpedia.org/resource/Arthur_Mann_(music)> , <http://dbpedia.org/resource/Doug_Lexa> ;
+        <http://dbpedia.org/ontology/foundingYear>
+                "1983+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Rock_music> , <http://dbpedia.org/resource/Pop_music> ;
+        <http://dbpedia.org/ontology/parentCompany>
+                <http://dbpedia.org/resource/Warner_Music_Group> .
+
+<http://dbpedia.org/resource/Chris_Bell_(musician)>
+        a       <http://dbpedia.org/ontology/Artist> , <http://schema.org/MusicGroup> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/MusicalArtist> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://wikidata.dbpedia.org/resource/Q215627> , <http://dbpedia.org/ontology/Agent> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/Person> , <http://wikidata.dbpedia.org/resource/Q5> , <http://xmlns.com/foaf/0.1/Person> , <http://schema.org/Person> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "1978+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1963+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/background>
+                "solo_singer" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1951-01-12+01:00"^^<http://www.w3.org/2001/XMLSchema#date> , "1951-01-25+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/Memphis,_Tennessee> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1951+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/deathDate>
+                "1978-12-27+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/deathYear>
+                "1978+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Rock_music> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/Memphis,_Tennessee> , <http://dbpedia.org/resource/Tennessee> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Guitar> ;
+        <http://dbpedia.org/ontology/occupation>
+                <http://dbpedia.org/resource/Musician> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Songwriter> ;
+        <http://dbpedia.org/ontology/viafId>
+                "1682201" ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American singer"@en , "American singer" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Chris"@en , "Christopher Branford Bell"@en ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Chris Bell"@en , "Bell, Chris"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Bell"@en .
+
+<http://dbpedia.org/resource/Stax_Records>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/Agent> , <http://dbpedia.org/ontology/Company> , <http://dbpedia.org/ontology/Organisation> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/RecordLabel> , <http://schema.org/Organization> ;
+        <http://dbpedia.org/ontology/country>
+                <http://dbpedia.org/resource/United_States> ;
+        <http://dbpedia.org/ontology/distributingCompany>
+                <http://dbpedia.org/resource/Universal_Music_Group> , <http://dbpedia.org/resource/Concord_Records> ;
+        <http://dbpedia.org/ontology/distributingLabel>
+                <http://dbpedia.org/resource/Universal_Music_Group> , <http://dbpedia.org/resource/Concord_Records> ;
+        <http://dbpedia.org/ontology/foundedBy>
+                <http://dbpedia.org/resource/Jim_Stewart_(record_producer)> , <http://dbpedia.org/resource/Estelle_Axton> ;
+        <http://dbpedia.org/ontology/foundingYear>
+                "1957+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Blues> , <http://dbpedia.org/resource/Soul_music> , <http://dbpedia.org/resource/Rhythm_and_blues> ;
+        <http://dbpedia.org/ontology/location>
+                <http://dbpedia.org/resource/Memphis,_Tennessee> ;
+        <http://dbpedia.org/ontology/parentCompany>
+                <http://dbpedia.org/resource/Concord_Music_Group> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.staxrecords.com> .
+
+<http://dbpedia.org/resource/Ken_Stringfellow>
+        a       <http://wikidata.dbpedia.org/resource/Q215627> , <http://dbpedia.org/ontology/Person> , <http://dbpedia.org/ontology/Artist> , <http://wikidata.dbpedia.org/resource/Q5> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Person> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://xmlns.com/foaf/0.1/Person> , <http://dbpedia.org/ontology/Agent> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/MusicalArtist> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1988+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/The_Posies> , <http://dbpedia.org/resource/R.E.M.> , <http://dbpedia.org/resource/The_Disciplines> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/R.E.M.> , <http://dbpedia.org/resource/The_Disciplines> , <http://dbpedia.org/resource/The_Posies> , <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/background>
+                "non_vocal_instrumentalist" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1968-10-30+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/United_States> , <http://dbpedia.org/resource/Hollywood> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1968+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Punk_rock> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Sony_Music_Entertainment> , <http://dbpedia.org/resource/Parasol_Records> , <http://dbpedia.org/resource/Yep_Roc_Records> , <http://dbpedia.org/resource/Lojinx> , <http://dbpedia.org/resource/Thick_Syrup_Records> , <http://dbpedia.org/resource/Manifesto_Records> ;
+        <http://dbpedia.org/ontology/viafId>
+                "17469001" ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American musician" , "American musician"@en ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Ken"@en ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://kenstringfellow.com> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Ken Stringfellow"@en , "Stringfellow, Ken"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Stringfellow"@en .
+
+<http://dbpedia.org/resource/Ardent_Records>
+        a       <http://dbpedia.org/ontology/Company> , <http://dbpedia.org/ontology/Organisation> , <http://dbpedia.org/ontology/RecordLabel> , <http://dbpedia.org/ontology/Agent> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://schema.org/Organization> , <http://www.w3.org/2002/07/owl#Thing> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> ;
+        <http://dbpedia.org/ontology/foundedBy>
+                <http://dbpedia.org/resource/John_Fry_(record_producer)> ;
+        <http://dbpedia.org/ontology/foundingYear>
+                "1959+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/parentCompany>
+                <http://dbpedia.org/resource/Ardent_Music_LLC> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.ardentrecords.com/> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Ardent Records"@en .
+
+<http://dbpedia.org/resource/Andy_Hummel>
+        a       <http://dbpedia.org/ontology/MusicalArtist> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Person> , <http://dbpedia.org/ontology/Artist> , <http://xmlns.com/foaf/0.1/Person> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://wikidata.dbpedia.org/resource/Q215627> , <http://dbpedia.org/ontology/Agent> , <http://wikidata.dbpedia.org/resource/Q5> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://dbpedia.org/ontology/Person> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "1974+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1966+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/background>
+                "solo_singer" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1951-01-26+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/Valley_Forge,_Pennsylvania> ;
+        <http://dbpedia.org/ontology/deathDate>
+                "2010-07-19+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/deathPlace>
+                <http://dbpedia.org/resource/Weatherford,_Texas> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "John Andrew Hummel"@en ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Andy Hummel"@en .
+
+<http://dbpedia.org/ontology/Organisation>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "組織"@ja , "Organisation"@de , "organisatie"@nl , "organisation"@fr , "organisation"@en , "organizacija"@sl , "organização"@pt , "조직"@ko , "οργάνωση"@el ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://dbpedia.org/ontology/Agent> ;
+        <http://www.w3.org/2002/07/owl#disjointWith>
+                <http://dbpedia.org/ontology/wgs84_pos:SpatialThing> ;
+        <http://www.w3.org/2002/07/owl#equivalentClass>
+                <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://schema.org/Organization> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Organisation> .
+
+<http://dbpedia.org/resource/Jody_Stephens>
+        a       <http://xmlns.com/foaf/0.1/Person> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://schema.org/MusicGroup> , <http://dbpedia.org/ontology/MusicalArtist> , <http://dbpedia.org/ontology/Artist> , <http://dbpedia.org/ontology/Person> , <http://wikidata.dbpedia.org/resource/Q5> , <http://dbpedia.org/ontology/Agent> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Person> , <http://wikidata.dbpedia.org/resource/Q215627> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1971+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Golden_Smog> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Golden_Smog> ;
+        <http://dbpedia.org/ontology/background>
+                "non_vocal_instrumentalist" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1952-10-04+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/Memphis,_Tennessee> , <http://dbpedia.org/resource/Tennessee> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1952+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Rock_music> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Drum_kit> , <http://dbpedia.org/resource/Singing> ;
+        <http://dbpedia.org/ontology/occupation>
+                <http://dbpedia.org/resource/Drummer> ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American drummer"@en , "American drummer" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Jody"@en ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Jody Stephens"@en , "Stephens, Jody"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Stephens"@en .
+
+<http://dbpedia.org/resource/Jon_Auer>
+        a       <http://wikidata.dbpedia.org/resource/Q5> , <http://xmlns.com/foaf/0.1/Person> , <http://wikidata.dbpedia.org/resource/Q215627> , <http://dbpedia.org/ontology/Person> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://dbpedia.org/ontology/Artist> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/MusicalArtist> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Person> , <http://schema.org/MusicGroup> , <http://dbpedia.org/ontology/Agent> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/The_Posies> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/The_Posies> ;
+        <http://dbpedia.org/ontology/background>
+                "solo_singer" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1969-09-29+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1969+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Grunge> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Drum_kit> , <http://dbpedia.org/resource/Guitar> ;
+        <http://dbpedia.org/ontology/occupation>
+                <http://dbpedia.org/resource/Musician> ;
+        <http://dbpedia.org/ontology/viafId>
+                "74149422" ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American musician"@en , "American musician" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Jon"@en ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.myspace.com/jonauermusic> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Auer, Jon"@en , "Jon Auer"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Auer"@en .
+
+<http://dbpedia.org/resource/Alex_Chilton>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/Agent> , <http://dbpedia.org/ontology/Artist> , <http://schema.org/MusicGroup> , <http://dbpedia.org/ontology/Person> , <http://www.w3.org/2002/07/owl#Thing> , <http://xmlns.com/foaf/0.1/Person> , <http://wikidata.dbpedia.org/resource/Q215627> , <http://dbpedia.org/ontology/MusicalArtist> , <http://wikidata.dbpedia.org/resource/Q5> , <http://schema.org/Person> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "2010+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1966+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/The_Box_Tops> , <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Tav_Falco's_Panther_Burns> , <http://dbpedia.org/resource/Terry_Manning> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Tav_Falco's_Panther_Burns> , <http://dbpedia.org/resource/Terry_Manning> , <http://dbpedia.org/resource/The_Box_Tops> ;
+        <http://dbpedia.org/ontology/background>
+                "solo_singer" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1950-12-28+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/United_States> , <http://dbpedia.org/resource/Memphis,_Tennessee> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1950+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/deathDate>
+                "2010-03-17+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/deathPlace>
+                <http://dbpedia.org/resource/United_States> , <http://dbpedia.org/resource/New_Orleans> ;
+        <http://dbpedia.org/ontology/deathYear>
+                "2010+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Rock_and_roll> , <http://dbpedia.org/resource/Protopunk> , <http://dbpedia.org/resource/Indie_rock> , <http://dbpedia.org/resource/Blue-eyed_soul> , <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Hard_rock> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Guitar> ;
+        <http://dbpedia.org/ontology/occupation>
+                <http://dbpedia.org/resource/Musician> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Songwriter> , <http://dbpedia.org/resource/Record_producer> ;
+        <http://dbpedia.org/ontology/viafId>
+                "200231" ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American musician" , "American musician"@en ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "William Alexander Chilton"@en , "Alex"@en ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Alex Chilton"@en , "Chilton, Alex"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Chilton"@en .
+
+<http://dbpedia.org/resource/The_Posies>
+        a       <http://dbpedia.org/ontology/Agent> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Organization> , <http://dbpedia.org/ontology/Band> , <http://dbpedia.org/ontology/Organisation> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1986+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Sunny_Day_Real_Estate> , <http://dbpedia.org/resource/The_Minus_5> , <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Fountains_of_Wayne> , <http://dbpedia.org/resource/Flop_(band)> , <http://dbpedia.org/resource/The_Orange_Humble_Band> , <http://dbpedia.org/resource/Sky_Cries_Mary> , <http://dbpedia.org/resource/Fastbacks> , <http://dbpedia.org/resource/Love_Battery> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Love_Battery> , <http://dbpedia.org/resource/Big_Star> , <http://dbpedia.org/resource/Fountains_of_Wayne> , <http://dbpedia.org/resource/Fastbacks> , <http://dbpedia.org/resource/Sunny_Day_Real_Estate> , <http://dbpedia.org/resource/Sky_Cries_Mary> , <http://dbpedia.org/resource/Flop_(band)> , <http://dbpedia.org/resource/The_Orange_Humble_Band> , <http://dbpedia.org/resource/The_Minus_5> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/bandMember>
+                <http://dbpedia.org/resource/Jon_Auer> , <http://dbpedia.org/resource/Ken_Stringfellow> ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Brian_Young_(drummer)> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/United_States> , <http://dbpedia.org/resource/Bellingham,_Washington> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Rykodisc> , <http://dbpedia.org/resource/PopLlama_Records> , <http://dbpedia.org/resource/DGC_Records> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.theposies.net> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "The Posies"@en .
+
+<http://dbpedia.org/resource/Power_pop>
+        a       <http://dbpedia.org/ontology/MusicGenre> , <http://dbpedia.org/ontology/Genre> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept> , <http://dbpedia.org/ontology/TopicalConcept> ;
+        <http://dbpedia.org/ontology/derivative>
+                <http://dbpedia.org/resource/Indie_pop> , <http://dbpedia.org/resource/Pop_punk> , <http://dbpedia.org/resource/Noise_pop> , <http://dbpedia.org/resource/Britpop> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Synthesizer> ;
+        <http://dbpedia.org/ontology/musicSubgenre>
+                <http://dbpedia.org/resource/Mod_revival> , <http://dbpedia.org/resource/Jangle_pop> ;
+        <http://dbpedia.org/ontology/stylisticOrigin>
+                <http://dbpedia.org/resource/Garage_rock> , <http://dbpedia.org/resource/Rock_and_roll> , <http://dbpedia.org/resource/Rhythm_and_blues> , <http://dbpedia.org/resource/Pop_rock> , <http://dbpedia.org/resource/Beat_music> , <http://dbpedia.org/resource/Hard_rock> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Power pop"@en .
+
+<http://dbpedia.org/ontology/Band>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Musikgruppe"@de , "band"@nl , "groupe de musique"@fr , "gruppo musicale"@it , "バンド_(音楽)"@ja , "banda"@es , "μουσικό συγκρότημα"@el , "banda"@pt , "Band"@en , "음악 그룹"@ko ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://dbpedia.org/ontology/Organisation> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Band> .
+
+<http://dbpedia.org/resource/Rock_music>
+        a       <http://dbpedia.org/ontology/MusicGenre> , <http://dbpedia.org/ontology/TopicalConcept> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept> , <http://dbpedia.org/ontology/Genre> ;
+        <http://dbpedia.org/ontology/derivative>
+                <http://dbpedia.org/resource/Synthpop> , <http://dbpedia.org/resource/New-age_music> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Bass_guitar> , <http://dbpedia.org/resource/Piano> , <http://dbpedia.org/resource/Drum_kit> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Keyboard_instrument> , <http://dbpedia.org/resource/Acoustic_guitar> , <http://dbpedia.org/resource/Synthesizer> , <http://dbpedia.org/resource/Electric_guitar> ;
+        <http://dbpedia.org/ontology/musicFusionGenre>
+                <http://dbpedia.org/resource/Anatolian_rock> , <http://dbpedia.org/resource/Sufi_rock> , <http://dbpedia.org/resource/Ra%C3%AF> , <http://dbpedia.org/resource/Raga_rock> , <http://dbpedia.org/resource/Pop_rock> , <http://dbpedia.org/resource/Industrial_rock> , <http://dbpedia.org/resource/Bhangra_(music)> , <http://dbpedia.org/resource/New_Flamenco> , <http://dbpedia.org/resource/Blues_rock> , <http://dbpedia.org/resource/Samba_rock> , <http://dbpedia.org/resource/Aboriginal_rock> , <http://dbpedia.org/resource/Space_rock> , <http://dbpedia.org/resource/Electronic_rock> , <http://dbpedia.org/resource/Country_rock> , <http://dbpedia.org/resource/Rap_rock> , <http://dbpedia.org/resource/Indorock> , <http://dbpedia.org/resource/Folk_rock> , <http://dbpedia.org/resource/Rockabilly> , <http://dbpedia.org/resource/Music_of_Cuba> , <http://dbpedia.org/resource/Jazz_fusion> , <http://dbpedia.org/resource/Afro-rock> , <http://dbpedia.org/resource/Punta_rock> , <http://dbpedia.org/resource/Glam_punk> , <http://dbpedia.org/resource/Funk_rock> , <http://dbpedia.org/resource/Stoner_rock> ;
+        <http://dbpedia.org/ontology/musicSubgenre>
+                <http://dbpedia.org/resource/Experimental_rock> , <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Britpop> , <http://dbpedia.org/resource/Soft_rock> , <http://dbpedia.org/resource/Madchester> , <http://dbpedia.org/resource/Instrumental_rock> , <http://dbpedia.org/resource/Punk_rock> , <http://dbpedia.org/resource/Progressive_rock> , <http://dbpedia.org/resource/Emo> , <http://dbpedia.org/resource/Symphonic_rock> , <http://dbpedia.org/resource/Baroque_pop> , <http://dbpedia.org/resource/Gothic_rock> , <http://dbpedia.org/resource/Glam_rock> , <http://dbpedia.org/resource/Indie_rock> , <http://dbpedia.org/resource/Beat_music> , <http://dbpedia.org/resource/Hard_rock> , <http://dbpedia.org/resource/Psychedelic_rock> , <http://dbpedia.org/resource/Post-Britpop> , <http://dbpedia.org/resource/Heartland_rock> , <http://dbpedia.org/resource/Southern_rock> , <http://dbpedia.org/resource/Protopunk> , <http://dbpedia.org/resource/Garage_rock> , <http://dbpedia.org/resource/Grunge> , <http://dbpedia.org/resource/Alternative_rock> , <http://dbpedia.org/resource/Jangle_pop> , <http://dbpedia.org/resource/Heavy_metal_music> , <http://dbpedia.org/resource/Art_rock> , <http://dbpedia.org/resource/Krautrock> , <http://dbpedia.org/resource/Surf_music> , <http://dbpedia.org/resource/Group_Sounds> ;
+        <http://dbpedia.org/ontology/stylisticOrigin>
+                <http://dbpedia.org/resource/Blues> , <http://dbpedia.org/resource/Folk_music> , <http://dbpedia.org/resource/Rock_and_roll> , <http://dbpedia.org/resource/Soul_music> , <http://dbpedia.org/resource/Electric_blues> , <http://dbpedia.org/resource/Jazz> , <http://dbpedia.org/resource/Country_music> , <http://dbpedia.org/resource/Rhythm_and_blues> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Rock music"@en .
+
+<http://dbpedia.org/resource/Big_Star>
+        a       <http://dbpedia.org/ontology/Band> , <http://dbpedia.org/ontology/Organisation> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://schema.org/Organization> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/Agent> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "1971+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1971+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/The_Posies> , <http://dbpedia.org/resource/The_Box_Tops> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/The_Box_Tops> , <http://dbpedia.org/resource/The_Posies> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Jon_Auer> , <http://dbpedia.org/resource/Andy_Hummel> , <http://dbpedia.org/resource/Chris_Bell_(musician)> , <http://dbpedia.org/resource/Ken_Stringfellow> , <http://dbpedia.org/resource/Jody_Stephens> , <http://dbpedia.org/resource/Alex_Chilton> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Rock_music> , <http://dbpedia.org/resource/Power_pop> ;
+        <http://dbpedia.org/ontology/lccnId>
+                "n/93/054836" ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Rykodisc> , <http://dbpedia.org/resource/Ardent_Records> , <http://dbpedia.org/resource/Stax_Records> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.bigstarband.com> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Big Star"@en .
+
+<http://dbpedia.org/resource/The_Box_Tops>
+        a       <http://dbpedia.org/ontology/Organisation> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://schema.org/Organization> , <http://dbpedia.org/ontology/Agent> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/Band> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "1963+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1963+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/alias>
+                "The Devilles" ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Big_Star> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Alex_Chilton> , <http://dbpedia.org/resource/Thomas_Boggs> , <http://dbpedia.org/resource/Dave_Waterbury> , <http://dbpedia.org/resource/Bill_Cunningham_(musician)> , <http://dbpedia.org/resource/The_Box_Tops> , <http://dbpedia.org/resource/Gary_Talley> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Blue-eyed_soul> , <http://dbpedia.org/resource/Pop_rock> , <http://dbpedia.org/resource/Psychedelic_rock> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/Memphis,_Tennessee> , <http://dbpedia.org/resource/United_States> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.boxtops.com/> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "The Box Tops"@en .
+
+<http://dbpedia.org/ontology/Agent>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ανάλογα με την κλάση foaf:Agent, ένας πράκτορας είναι μια οντότητα που ενεργεί. Αυτό προορίζεται να είναι μια υπερκλάση της κλάσης Άτόμο και Οργανισμός."@el , "Analogous to a foaf:Agent, an agent is an entity that acts. This is intended to be the super class of Person and Organisation."@en ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "agent"@fr , "agent"@nl , "agent"@en , "Agent"@de , "agente"@it , "agente"@es , "エージェント"@ja , "πράκτορας"@el ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://www.w3.org/2002/07/owl#Thing> ;
+        <http://www.w3.org/2002/07/owl#disjointWith>
+                <http://dbpedia.org/ontology/Place> ;
+        <http://www.w3.org/2002/07/owl#equivalentClass>
+                <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Agent> .
