@@ -1,11 +1,10 @@
 package org.dllearner.algorithms.ccel.utils;
 
-import java.io.Serializable;
-
 import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.algorithms.distributed.MessageContainer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-public class RefinementAndScoreContainer implements Serializable {
+public class RefinementAndScoreContainer implements MessageContainer {
     private static final long serialVersionUID = 1L;
 
     private OWLClassExpression refinement;
@@ -40,5 +39,10 @@ public class RefinementAndScoreContainer implements Serializable {
 
     public OENode getParentNode() {
         return this.parentNode;
+    }
+
+    @Override
+    public String toString() {
+        return refinement.toString();
     }
 }
