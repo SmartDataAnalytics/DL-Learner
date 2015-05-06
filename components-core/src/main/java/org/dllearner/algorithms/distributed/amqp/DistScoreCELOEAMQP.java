@@ -31,8 +31,6 @@ import java.util.TreeSet;
 
 import javax.jms.JMSException;
 
-import mpi.MPIException;
-
 import org.dllearner.algorithms.ccel.utils.RefinementAndScoreContainer;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.celoe.OENode;
@@ -825,7 +823,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
     // </------------------------------ master ------------------------------->
 
     // <------------------------------- worker ------------------------------->
-    private void listenForScoreComputationRequests() throws MPIException, JMSException {
+    private void listenForScoreComputationRequests() throws JMSException {
         int dbgCntr = 0;
         while (true) {
             logger.debug(this + " listen loop " + ++dbgCntr);
