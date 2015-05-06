@@ -404,9 +404,19 @@
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 			</dependency>
+			<!--
 			<dependency>
 				<groupId>mpj</groupId>
 				<artifactId>mpj-express</artifactId>
+			</dependency>
+			-->
+			<dependency>
+				<groupId>org.apache.qpid</groupId>
+				<artifactId>qpid-client</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>javax.jms</groupId>
+				<artifactId>javax.jms-api</artifactId>
 			</dependency>
 	</dependencies>
 </project>

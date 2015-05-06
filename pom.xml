@@ -601,6 +601,16 @@
             	<artifactId>mpj-express</artifactId>
             	<version>0.43-SNAPSHOT</version>
             </dependency>
+            <dependency>
+            	<groupId>org.apache.qpid</groupId>
+            	<artifactId>qpid-client</artifactId>
+            	<version>0.32</version>
+            </dependency>
+            <dependency>
+            	<groupId>javax.jms</groupId>
+            	<artifactId>javax.jms-api</artifactId>
+            	<version>2.0.1-b01</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
