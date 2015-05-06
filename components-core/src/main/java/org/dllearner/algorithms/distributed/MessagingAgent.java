@@ -25,4 +25,8 @@ public interface MessagingAgent {
     public int getAgentID();
 
     public boolean isMaster();
+
+    public int getReceivedMessagesCount();
+
+    public int getSentMessagesCount();
 }
