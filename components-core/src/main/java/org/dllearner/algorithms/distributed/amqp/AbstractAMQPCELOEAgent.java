@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.jms.CompletionListener;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -20,6 +19,7 @@ import javax.jms.TopicSubscriber;
 import org.apache.qpid.AMQException;
 import org.apache.qpid.client.AMQConnection;
 import org.apache.qpid.client.AMQQueue;
+import org.apache.qpid.client.AMQSession;
 import org.apache.qpid.client.AMQTopic;
 import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MessageContainer;
@@ -27,8 +27,11 @@ import org.dllearner.algorithms.distributed.MessagingAgent;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements MessagingAgent{
+    private Logger logger = LoggerFactory.getLogger(AbstractAMQPCELOEAgent.class);
 
     // default AMPQ values
     private String user = "admin";
@@ -42,7 +45,10 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     private final String workerDefaultSendQueueIdentifier = "response send";
     private final String workerDefaultReceiveQueueIdentifier = "request receive";
 
-    private int myID;
+    // misc
+    protected int myID;
+    private int receivedMessagesCount;
+    private int sentMessagesCount;
 
     // connection, session, queue, consumers, ...
     private Connection connection;
@@ -64,6 +70,7 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     // AMQP settings
     private boolean transactional = false;
     private boolean isMaster = false;
+    private long maxBlockingWaitMilisecs = 5000;
 
 
     public AbstractAMQPCELOEAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -81,7 +88,7 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
         }
 
         AMQConfiguration url = new AMQConfiguration(user, password, null, null, host, port);
-        connection = new AMQConnection(url.toString());
+        connection = new AMQConnection(url.getURL());
         connection.start();
         session = connection.createSession(transactional, Session.AUTO_ACKNOWLEDGE);
 
@@ -101,33 +108,61 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
 
     @Override
     public void blockingSend(MessageContainer msgContainer) throws JMSException {
+        logSend(msgContainer.toString(), true);
         Message msg = ((org.apache.qpid.jms.Session) session).createObjectMessage(msgContainer);
         sender.send(msg);
+
+        sentMessagesCount++;
     }
 
     @Override
     public void nonBlockingSend(MessageContainer msgContainer) throws JMSException {
+        logSend(msgContainer.toString(), false);
         Message msg = ((org.apache.qpid.jms.Session) session).createObjectMessage(msgContainer);
-        CompletionListener completionListener = new DummyCompletionListener();
-        sender.send(msg, completionListener);
+//        CompletionListener completionListener = new DummyCompletionListener();
+        /* FIXME: asynchronous sending is not implemented in the default message
+         * producers:
+         * Exception in thread "main" java.lang.AbstractMethodError: org.apache.qpid.client.BasicMessageProducer_0_10.send(Ljavax/jms/Message;Ljavax/jms/CompletionListener;)V
+         * at org.dllearner.algorithms.distributed.amqp.AbstractAMQPCELOEAgent.nonBlockingSend(AbstractAMQPCELOEAgent.java:118)
+         * at org.dllearner.algorithms.distributed.amqp.DistScoreCELOEAMQP.startMaster(DistScoreCELOEAMQP.java:646)
+         * at org.dllearner.algorithms.distributed.amqp.DistScoreCELOEAMQP.start(DistScoreCELOEAMQP.java:560)
+         * at org.dllearner.algorithms.distributed.amqp.DistScoreCELOEAMQP.main(DistScoreCELOEAMQP.java:1509)
+         *
+         * TODO: check if we really need this async stuff here; I guess async
+         * just means non-blocking delivery to the queue, not to the receiver
+         */
+//        sender.send(msg, completionListener);
+        sender.send(msg);
+
+        sentMessagesCount++;
     }
 
     @Override
     public MessageContainer blockingReceive() throws JMSException {
-        ObjectMessage msg = (ObjectMessage) receiver.receive();
+        logReceive(true);
+        // FIXME: find a better solution than using a timeout
+        ObjectMessage msg = (ObjectMessage) receiver.receive(maxBlockingWaitMilisecs );
+
+        if (msg == null) return null;
+
         MessageContainer msgContainer = (MessageContainer) msg.getObject();
+
+        receivedMessagesCount++;
 
         return msgContainer;
     }
 
     @Override
     public MessageContainer nonBlockingReceive() throws JMSException {
+        logReceive(false);
         ObjectMessage msg = (ObjectMessage) receiver.receiveNoWait();
 
         if (msg == null) {
             return null;
+
         } else {
             MessageContainer msgContainer = (MessageContainer) msg.getObject();
+            receivedMessagesCount++;
 
             return msgContainer;
         }
@@ -162,6 +197,16 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     @Override
     public boolean isMaster() {
         return isMaster;
+    }
+
+    @Override
+    public int getReceivedMessagesCount() {
+        return receivedMessagesCount;
+    }
+
+    @Override
+    public int getSentMessagesCount() {
+        return sentMessagesCount;
     }
 
     // <------------------------ non-interface methods ----------------------->
@@ -223,8 +268,43 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     private void initQueues() throws JMSException {
         sendQueue = new AMQQueue((AMQConnection) connection, sendQueueIdentifier);
         sender = session.createProducer(sendQueue);
+        ((AMQSession<?, ?>) session).createProducer(sendQueue);
 
         receiveQueue = new AMQQueue((AMQConnection) connection, receiveQueueIdentifier);
         receiver = session.createConsumer(receiveQueue);
+    }
+
+    @Override
+    public String toString() {
+        if (isMaster) return "Master (" + myID + ")";
+        else return "Worker " + myID;
+    }
+
+    private void logSend(String what, boolean blocking) {
+        StringBuilder sb = new StringBuilder();
+
+        if (blocking) sb.append("|-->| ");
+        else sb.append("|>--| ");
+
+        sb.append(this + " sending " + what);
+
+        logger.info(sb.toString());
+    }
+
+    private void logReceive(boolean blocking) {
+        StringBuilder sb = new StringBuilder();
+
+        if (blocking) {
+            sb.append("|<--| ");
+            sb.append(this);
+            sb.append(" wating for incoming messages");
+        }
+        else {
+            sb.append("|--<| ");
+            sb.append(this);
+            sb.append(" checking incoming messages");
+        }
+
+        logger.info(sb.toString());
     }
  }
