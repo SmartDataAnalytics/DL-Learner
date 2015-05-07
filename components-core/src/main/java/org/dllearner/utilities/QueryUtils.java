@@ -184,6 +184,47 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	/**
+	 * Given a SPARQL query and a start node, return the outgoing
+	 * triple patterns.
+	 * @param query
+	 * @return
+	 */
+	public static Set<Triple> getOutgoingTriplePatterns(Query query, final Node source){
+		final Set<Triple> outgoingTriples = Sets.newHashSet();
+		
+		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
+			@Override
+			public void visit(ElementTriplesBlock el) {
+				Iterator<Triple> triples = el.patternElts();
+	            while (triples.hasNext()) {
+	            	Triple triple = triples.next();
+	            	Node subject = triple.getSubject();
+	            	if(subject.equals(source)) {
+	            		outgoingTriples.add(triple);
+	            	}
+	            }
+			}
+			
+			@Override
+			public void visit(ElementPathBlock el) {
+				Iterator<TriplePath> triplePaths = el.patternElts();
+	            while (triplePaths.hasNext()) {
+	            	TriplePath tp = triplePaths.next();
+	            	if(tp.isTriple()) {
+	            		Triple triple = tp.asTriple();
+		            	Node subject = triple.getSubject();
+		            	if(subject.equals(source)) {
+		            		outgoingTriples.add(triple);
+		            	}
+	            	}
+	            }
+			}
+		});
+		
+		return outgoingTriples;
+	}
+	
+	/**
 	 * Given a SPARQL query and a start node, return the maximum subject-object
 	 * join depth.
 	 * @param query

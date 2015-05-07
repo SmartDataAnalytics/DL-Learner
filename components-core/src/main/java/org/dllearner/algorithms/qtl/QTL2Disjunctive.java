@@ -263,7 +263,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			for (OWLIndividual ind : lp.getPositiveExamples()) {
 				try {
 					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());
-					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
+//					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
 					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
 					tree2Individual.put(queryTree, ind);
 					currentPosExampleTrees.add(queryTree);
@@ -451,14 +451,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //					System.err.println("skipping");
 					continue;
 				}
-//				System.err.println("################################################");
-//				System.err.println(currentTree.getStringRepresentation());
-//				System.err.println(uncoveredTree.getStringRepresentation());
+				
 				// compute the LGG
 				MonitorFactory.getTimeMonitor("lgg").start();
 				RDFResourceTree lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				MonitorFactory.getTimeMonitor("lgg").stop();
-//				System.err.println(lgg.getStringRepresentation());
 				
 				// evaluate the LGG
 				Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);

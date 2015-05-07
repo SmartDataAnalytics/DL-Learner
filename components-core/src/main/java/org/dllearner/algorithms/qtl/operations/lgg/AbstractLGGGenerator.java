@@ -50,14 +50,16 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 	public RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters) {
 		reset();
 		
+		// apply some pre-processing
+		preProcess(tree1);
+		
+		// compute the LGG
 		mon.start();
 		RDFResourceTree lgg = computeLGG(tree1, tree2, learnFilters);
 		mon.stop();
 		
-		// prune
-		QueryTreeUtils.prune(lgg, reasoner, entailment);
-		
-		addNumbering(0, lgg);
+		// apply some post-processing
+		postProcess(lgg);
 		
 		return lgg;
 	}
@@ -91,6 +93,17 @@ public abstract class AbstractLGGGenerator implements LGGGenerator {
 		addNumbering(0, lgg);
 
 		return lgg;
+	}
+	
+	protected void postProcess(RDFResourceTree tree) {
+		// prune the tree according to the given entailment
+		QueryTreeUtils.prune(tree, reasoner, entailment);
+		
+		addNumbering(0, tree);
+	}
+	
+	protected void preProcess(RDFResourceTree tree) {
+		
 	}
 	
 
