@@ -1473,7 +1473,7 @@ public class QTLEvaluation {
 			double precision = referenceResources.size() / (double) kbSize;
 			if(Double.isNaN(precision)){
 				System.err.println("ERROR!!!" + learnedSPARQLQuery);
-				System.exit(0);
+				throw new Exception("Precision not a number.");
 			}
 			double recall = 1.0;
 			double fMeasure = Heuristics.getFScore(recall, precision);
@@ -1493,7 +1493,7 @@ public class QTLEvaluation {
 		double precision = overlap / (double) learnedResources.size();
 		if(Double.isNaN(precision)){
 			System.err.println("ERROR!!!" + learnedSPARQLQuery);
-			System.exit(0);
+			throw new Exception("Precision not a number.");
 		}
 		double recall = overlap / (double) referenceResources.size();
 		double fMeasure = Heuristics.getFScore(recall, precision);
@@ -1525,7 +1525,7 @@ public class QTLEvaluation {
 			double precision = referenceCnt / (double) kbSize;
 			if(Double.isNaN(precision)){
 				System.err.println("ERROR!!!" + learnedSPARQLQuery);
-				System.exit(0);
+				throw new Exception("Precision not a number.");
 			}
 			double recall = 1.0;
 			double fMeasure = Heuristics.getFScore(recall, precision);
@@ -1574,7 +1574,7 @@ public class QTLEvaluation {
 		double precision = overlap / (double) learnedCnt;
 		if(Double.isNaN(precision)){
 			System.err.println("ERROR!!!" + learnedSPARQLQuery);
-			System.exit(0);
+			throw new Exception("Precision not a number.");
 		}
 		double recall = overlap / (double) referenceCnt;
 		double fMeasure = Heuristics.getFScore(recall, precision);
