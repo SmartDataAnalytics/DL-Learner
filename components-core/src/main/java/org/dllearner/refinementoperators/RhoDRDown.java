@@ -49,6 +49,7 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToStringIDTransformer;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
@@ -89,8 +90,9 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -118,6 +120,7 @@ import com.hp.hpl.jena.query.ResultSet;
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
 	private static final ToStringIDTransformer TO_STRINGID_FUNCTION = new ToStringIDTransformer();
+	private static final OWLCLassExpressionToOWLClassTransformer OWLCLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 
@@ -1315,7 +1318,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
 			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {" + Joiner.on(" ").join(Iterables.transform(subClasses, TO_STRINGID_FUNCTION)) + "}";
+			query += "VALUES ?concept {"
+					+ Joiner.on(" ").join(
+							FluentIterable.from(subClasses)
+							.transform(Functions.compose(TO_STRINGID_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+							+ "}";
 			query += "}";
 //			System.out.println(query);
 			
@@ -1394,7 +1401,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
 			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {" + Joiner.on(" ").join(Iterables.transform(superClasses, TO_STRINGID_FUNCTION)) + "}";
+			query += "VALUES ?concept {"
+					+ Joiner.on(" ").join(
+							FluentIterable.from(superClasses)
+							.transform(Functions.compose(TO_STRINGID_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+							+ "}";
 			query += "}";
 //			System.out.println(query);
 			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
