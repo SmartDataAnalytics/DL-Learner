@@ -30,7 +30,7 @@ public class SPARQLQueryUtils {
 			"WHERE { ?var1 a owl:Class .\n" + 
 			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
 			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" + 
-			"FILTER ( ?super != owl:Thing && ?super != ?var1 ) } .\n" + 
+			"FILTER ( ?super != owl:Thing && ?super != ?var1 && ?super != rdfs:Resource) } .\n" + 
 			"FILTER ( !BOUND(?super) ) }";
 	
 	public static final String SELECT_LEAF_CLASSES_OWL = PREFIXES + 
