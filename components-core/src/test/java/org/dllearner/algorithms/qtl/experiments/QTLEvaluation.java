@@ -197,6 +197,8 @@ public class QTLEvaluation {
 
 	private PreparedStatement psInsertDetailEval;
 
+	private boolean failed;
+
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB) throws ComponentInitException {
 		this.dataset = dataset;
@@ -396,7 +398,7 @@ public class QTLEvaluation {
 						MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).reset();
 						
 						ExecutorService tp = Executors.newFixedThreadPool(4);
-						
+						failed = false;
 		//				if(nrOfExamples != 7) continue;
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
@@ -474,6 +476,7 @@ public class QTLEvaluation {
 												bestQuery, position, bestScore.getFmeasure(), bestScore.getPrecision(), bestScore.getRecall());
 				
 									} catch (Exception e) {
+										failed = true;
 										logger.error("Error occured.", e);
 										System.exit(0);
 									}
@@ -485,44 +488,46 @@ public class QTLEvaluation {
 					
 						Logger.getRootLogger().removeAppender(appender);
 						
-						String result = "";
-						result += "#Returned solutions:\n" + nrOfReturnedSolutionsStats;
-						
-						result += "\nOverall Precision:\n" + bestReturnedSolutionPrecisionStats;
-						result += "\nOverall Recall:\n" + bestReturnedSolutionRecallStats;
-						result += "\nOverall FMeasure:\n" + bestReturnedSolutionFMeasureStats;
-						result += "\nPositions of best solution:\n" + Arrays.toString(bestSolutionPositionStats.getValues());
-						result += "\nPosition of best solution stats:\n" + bestSolutionPositionStats;
-						
-						result += "\nOverall Precision of best solution:\n" + bestSolutionPrecisionStats;
-						result += "\nOverall Recall of best solution:\n" + bestSolutionRecallStats;
-						result += "\nOverall FMeasure of best solution:\n" + bestSolutionFMeasureStats;
-						
-						result += "\nCBD generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getTotal() + "\n";
-						result += "CBD generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getAvg() + "\n";
-						result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
-						result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
-								
-						logger.info(result);
-						
-						try {
-							Files.write(result, statsFile, Charsets.UTF_8);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						
-						data[i][j] = bestReturnedSolutionFMeasureStats.getMean();
-						
-						if(write2DB) {
-							write2DB(heuristicName, measureName, nrOfExamples, noise, 
-									bestReturnedSolutionFMeasureStats.getMean(), 
-									bestReturnedSolutionPrecisionStats.getMean(), 
-									bestReturnedSolutionRecallStats.getMean(),
-									bestSolutionPositionStats.getMean(),
-									bestSolutionFMeasureStats.getMean(),
-									bestSolutionPrecisionStats.getMean(),
-									bestSolutionRecallStats.getMean()
-									);
+						if(!failed) {
+							String result = "";
+							result += "#Returned solutions:\n" + nrOfReturnedSolutionsStats;
+							
+							result += "\nOverall Precision:\n" + bestReturnedSolutionPrecisionStats;
+							result += "\nOverall Recall:\n" + bestReturnedSolutionRecallStats;
+							result += "\nOverall FMeasure:\n" + bestReturnedSolutionFMeasureStats;
+							result += "\nPositions of best solution:\n" + Arrays.toString(bestSolutionPositionStats.getValues());
+							result += "\nPosition of best solution stats:\n" + bestSolutionPositionStats;
+							
+							result += "\nOverall Precision of best solution:\n" + bestSolutionPrecisionStats;
+							result += "\nOverall Recall of best solution:\n" + bestSolutionRecallStats;
+							result += "\nOverall FMeasure of best solution:\n" + bestSolutionFMeasureStats;
+							
+							result += "\nCBD generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getTotal() + "\n";
+							result += "CBD generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getAvg() + "\n";
+							result += "Tree generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getTotal() + "\n";
+							result += "Tree generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).getAvg() + "\n";
+									
+							logger.info(result);
+							
+							try {
+								Files.write(result, statsFile, Charsets.UTF_8);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							
+							data[i][j] = bestReturnedSolutionFMeasureStats.getMean();
+							
+							if(write2DB) {
+								write2DB(heuristicName, measureName, nrOfExamples, noise, 
+										bestReturnedSolutionFMeasureStats.getMean(), 
+										bestReturnedSolutionPrecisionStats.getMean(), 
+										bestReturnedSolutionRecallStats.getMean(),
+										bestSolutionPositionStats.getMean(),
+										bestSolutionFMeasureStats.getMean(),
+										bestSolutionPrecisionStats.getMean(),
+										bestSolutionRecallStats.getMean()
+										);
+							}
 						}
 					}
 				}
@@ -589,7 +594,7 @@ public class QTLEvaluation {
 	}
 	
 	private Pair<EvaluatedRDFResourceTree, Score> findBestMatchingTree(Collection<EvaluatedRDFResourceTree> trees,
-			String targetSPARQLQuery, double noise) {
+			String targetSPARQLQuery, double noise) throws Exception {
 	logger.info("Finding best matching query tree...");
 		//get the tree with the highest fMeasure
 		EvaluatedRDFResourceTree bestTree = null;
@@ -621,10 +626,11 @@ public class QTLEvaluation {
 	 * find best query tree by searching for the tree which covers
 	 * (1) most of the correct positive examples and
 	 * (2) none of the noise positive examples
+	 * @throws Exception 
 	 */
 	private Pair<EvaluatedRDFResourceTree, Score> findBestMatchingTreeFast(
 			Collection<EvaluatedRDFResourceTree> trees, String targetSPARQLQuery, double noise,
-			ExamplesWrapper examples){
+			ExamplesWrapper examples) throws Exception{
 		logger.info("Finding best matching query tree...");
 		
 		Set<RDFResourceTree> correctPositiveExampleTrees = new HashSet<RDFResourceTree>();
@@ -1444,7 +1450,7 @@ public class QTLEvaluation {
 		return copy;
 	}
 	
-	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree, double noise) {
+	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
 		// apply some filters
 		QueryTreeUtils.removeVarLeafs(tree);
 		QueryTreeUtils.prune(tree, null, Entailment.RDF);
@@ -1495,7 +1501,7 @@ public class QTLEvaluation {
 		return new Score(precision, recall, fMeasure);
 	}
 	
-	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) {
+	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
 		
 		String learnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(tree, dataset.getBaseIRI(), dataset.getPrefixMapping());
 		
