@@ -67,6 +67,12 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         child.setParent((V) this);
     }
     
+    public void addChildren(List<V> children) {
+        for (V v : children) {
+			addChild(v);
+		}
+    }
+    
     public void removeChild(V child) {
         children.remove(child);
         child.setParent(null);
