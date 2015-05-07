@@ -86,6 +86,7 @@ import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -1492,16 +1493,20 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			Object val = qs.getLiteral("o").getValue();
+			Literal val = qs.getLiteral("o").asLiteral();
+			if ("NAN".equals(val.getLexicalForm())) {
+				// DBPedia bug
+				obj = Double.NaN;
+			} else {
+				obj = val.getDouble();
+			}
 			//obj = qs.getLiteral("o").getDouble();
 			objects = subject2objects.get(sub);
 			if(objects == null){
 				objects = new TreeSet<Double>();
 				subject2objects.put(sub, objects);
 			}
-			if (Double.class.isAssignableFrom(val.getClass())) {
-				objects.add((Double) val);
-			}
+			objects.add(obj);
 
 		}
 		return subject2objects;
