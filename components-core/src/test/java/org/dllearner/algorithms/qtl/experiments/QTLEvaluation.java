@@ -311,24 +311,24 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, 20);
+//		sparqlQueries = sparqlQueries.subList(0, 20);
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
 		int[] nrOfExamplesIntervals = {
-//				5,
+				5,
 				10,
-//				15,
-//				20, 
-//				25,
-//				30
+				15,
+				20, 
+				25,
+				30
 				}; 
 		
 		double[] noiseIntervals = {
 				0.0,
-//				0.1,
+				0.1,
 				0.2,
-//				0.3,
+				0.3,
 				0.4,
 //				0.6
 				};
