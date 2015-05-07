@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -34,6 +35,7 @@ import org.semanticweb.owlapi.model.OWLDataUnionOf;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
 import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -56,6 +58,7 @@ import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 import org.semanticweb.owlapi.model.PrefixManager;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
@@ -636,6 +639,39 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLDatatypeRestriction node) {
+		Set<OWLFacetRestriction> facets = node.getFacetRestrictions();
+		
+		for (OWLFacetRestriction facetRestriction : facets) {
+			OWLFacet facet = facetRestriction.getFacet();
+			OWLLiteral value = facetRestriction.getFacetValue();
+			
+			switch(facet) {
+			case FRACTION_DIGITS:
+				break;
+			case LANG_RANGE:
+				break;
+			case LENGTH:
+				break;
+			case MAX_EXCLUSIVE: sparql += "FILTER(" + variables.peek() + " < " + "\"" + value.getLiteral() + "\"^^<" + value.getDatatype().toStringID() + ">)";
+				break;
+			case MAX_INCLUSIVE: sparql += "FILTER(" + variables.peek() + " <= " + "\"" + value.getLiteral() + "\"^^<" + value.getDatatype().toStringID() + ">)";
+				break;
+			case MAX_LENGTH:
+				break;
+			case MIN_EXCLUSIVE: sparql += "FILTER(" + variables.peek() + " > " + "\"" + value.getLiteral() + "\"^^<" + value.getDatatype().toStringID() + ">)";
+				break;
+			case MIN_INCLUSIVE: sparql += "FILTER(" + variables.peek() + " >= " + "\"" + value.getLiteral() + "\"^^<" + value.getDatatype().toStringID() + ">)";
+				break;
+			case MIN_LENGTH:
+				break;
+			case PATTERN:
+				break;
+			case TOTAL_DIGITS:
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {
