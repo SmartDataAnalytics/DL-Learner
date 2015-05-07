@@ -1492,13 +1492,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		while(rs.hasNext()){
 			qs = rs.next();
 			sub = df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
-			obj = qs.getLiteral("o").getDouble();
+			Object val = qs.getLiteral("o").getValue();
+			//obj = qs.getLiteral("o").getDouble();
 			objects = subject2objects.get(sub);
 			if(objects == null){
 				objects = new TreeSet<Double>();
 				subject2objects.put(sub, objects);
 			}
-			objects.add(obj);
+			if (Double.class.isAssignableFrom(val.getClass())) {
+				objects.add((Double) val);
+			}
 
 		}
 		return subject2objects;
