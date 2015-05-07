@@ -733,7 +733,7 @@ public class QueryTreeUtils {
 							ExprNode filter = new E_Equals(
 									new E_Datatype(new ExprVar(object)), 
 									NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
-							filters.add(filter);
+//							filters.add(filter);
 						}
 						
 					} 
