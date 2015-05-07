@@ -24,7 +24,6 @@ public abstract class QueryTreeHeuristic extends AbstractComponent implements He
 	protected double posExamplesWeight = 1.0;
 	protected HeuristicType heuristicType = HeuristicType.PRED_ACC;
 	
-	
 
 	public QueryTreeHeuristic() {
 		super();

@@ -31,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -786,6 +787,61 @@ public class QueryTreeUtils {
 					prune(child, reasoner, entailment);
 				}
 			}
+		}
+		
+		if(entailment == entailment.RDFS) {
+//			// 1. rdfs:domain:
+//			// remove rdf:type edges if this is implicitly given by the other outgoing edges
+//			// 2. rdfs:range:
+//			// remove rdf:type edges if this is implicitly given by the incoming edge
+//			if (!tree.isLeaf()) {
+//				SortedSet<Node> edges = tree.getEdges(NodeType.RESOURCE);
+//				
+//				List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+//				
+//				if(typeChildren != null && !typeChildren.isEmpty()) {
+//					// get domains
+//					Set<Node> domains = new HashSet<Node>();
+//					for (Node edge : edges) {
+//						OWLClassExpression domain = reasoner.getDomain(new OWLObjectPropertyImpl(IRI.create(edge.getURI())));
+//						if(!domain.isAnonymous()) {
+//							domains.add(NodeFactory.createURI(domain.asOWLClass().toStringID()));
+//						}
+//					}
+//					
+//					// get range of incoming edge
+//					Set<Node> ranges = new HashSet<Node>();
+//					
+//					if(!tree.isRoot()) {
+//						// get the incoming edge from parent node
+//						Node incomingEdge = tree.getParent().getEdgeToChild(tree);
+//						
+//						OWLClassExpression rangeExpression = reasoner.getRange(new OWLObjectPropertyImpl(IRI.create(incomingEdge.getURI())));
+//						if(rangeExpression.isAnonymous()) {
+//							// TODO we have to handle complex class expressions, e.g. split intersections
+//						} else {
+//							ranges.add(NodeFactory.createURI(rangeExpression.asOWLClass().toStringID()));
+//						}
+//					}
+//
+//					// remove rdf:type children if implicitly given by domain or range
+//					for (RDFResourceTree child : new ArrayList<>(typeChildren)) {
+//						if(domains.contains(child.getData()) || ranges.contains(child.getData())) {
+//							tree.removeChild(child, RDF.type.asNode());
+//						}
+//					}
+//				}
+//			}
+//			
+//			// apply recursively on children
+//			SortedSet<Node> edges = tree.getEdges();
+//			for (Node edge : edges) {
+//				if(!edge.equals(RDF.type.asNode())) {
+//					for (RDFResourceTree child : tree.getChildren(edge)) {
+//						prune(child, reasoner, entailment);
+//					}
+//				}
+//			}
 		}
 		
 		// we have to run the subsumption check one more time to prune the tree

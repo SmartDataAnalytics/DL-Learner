@@ -16,9 +16,13 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -133,6 +137,18 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.add(child);
+		
+		child2Edge.put(child, edge);
+	}
+	
+	public void addChildren(List<RDFResourceTree> children, Node edge) {
+		super.addChildren(children);
+		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
+		if(childrenForEdge == null) {
+			childrenForEdge = new ArrayList<RDFResourceTree>();
+			edge2Children.put(edge, childrenForEdge);
+		}
+		childrenForEdge.addAll(children);
 	}
 	
 	public void addChildAt(int index, RDFResourceTree child, Node_URI edge) throws IndexOutOfBoundsException {
@@ -152,6 +168,8 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		if(childrenForEdge.isEmpty()) {
 			edge2Children.remove(edge);
 		}
+		
+		child2Edge.remove(child);
 	}
 	
 	public List<RDFResourceTree> getChildren() {
@@ -172,6 +190,27 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 */
 	public SortedSet<Node> getEdges() {
 		return edge2Children.navigableKeySet();
+	}
+	
+	/**
+	 * Returns all outgoing different edges.
+	 * @return
+	 */
+	public SortedSet<Node> getEdges(NodeType nodeType) {
+		SortedSet<Node> edges = new TreeSet<Node>(new NodeComparator());
+		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
+			Node edge = entry.getKey();
+			List<RDFResourceTree> children = entry.getValue();
+			
+			for (RDFResourceTree child : children) {
+				if ((nodeType == NodeType.LITERAL && child.isLiteralNode())
+						|| (nodeType == NodeType.RESOURCE && child.isResourceNode())) {
+					edges.add(edge);
+					break;
+				}
+			}
+		}
+		return edges;
 	}
 	
 	public boolean isResourceNode() {
