@@ -160,12 +160,12 @@
 			<groupId>org.ini4j</groupId>
 			<artifactId>ini4j</artifactId>
 		</dependency>
-    <!--
+    
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-    -->
+    
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
