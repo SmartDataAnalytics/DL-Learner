@@ -50,7 +50,7 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
-import org.dllearner.utilities.ToStringIDTransformer;
+import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -119,7 +119,7 @@ import com.hp.hpl.jena.query.ResultSet;
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
 
-	private static final ToStringIDTransformer TO_STRINGID_FUNCTION = new ToStringIDTransformer();
+	private static final ToIRIFunction TO_IRI_FUNCTION = new ToIRIFunction(true);
 	private static final OWLCLassExpressionToOWLClassTransformer OWLCLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
@@ -1321,7 +1321,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			query += "VALUES ?concept {"
 					+ Joiner.on(" ").join(
 							FluentIterable.from(subClasses)
-							.transform(Functions.compose(TO_STRINGID_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+							.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
 							+ "}";
 			query += "}";
 //			System.out.println(query);
@@ -1404,7 +1404,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			query += "VALUES ?concept {"
 					+ Joiner.on(" ").join(
 							FluentIterable.from(superClasses)
-							.transform(Functions.compose(TO_STRINGID_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
+							.transform(Functions.compose(TO_IRI_FUNCTION, OWLCLASS_TRANSFORM_FUNCTION)))
 							+ "}";
 			query += "}";
 //			System.out.println(query);
