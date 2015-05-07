@@ -49,6 +49,7 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.ToStringIDTransformer;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -87,7 +88,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -113,6 +116,8 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 @ComponentAnn(name = "rho refinement operator", shortName = "rho", version = 0.8)
 public class RhoDRDown extends RefinementOperatorAdapter implements Component, CustomHierarchyRefinementOperator, CustomStartRefinementOperator, ReasoningBasedRefinementOperator {
+
+	private static final ToStringIDTransformer TO_STRINGID_FUNCTION = new ToStringIDTransformer();
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
 
@@ -1310,7 +1315,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
 			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {" + Joiner.on(" ").join(subClasses) + "}";
+			query += "VALUES ?concept {" + Joiner.on(" ").join(Iterables.transform(subClasses, TO_STRINGID_FUNCTION)) + "}";
 			query += "}";
 //			System.out.println(query);
 			
@@ -1389,7 +1394,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
 			query += "?ind a ?concept . ";
-			query += "VALUES ?concept {" + Joiner.on(" ").join(superClasses) + "}";
+			query += "VALUES ?concept {" + Joiner.on(" ").join(Iterables.transform(superClasses, TO_STRINGID_FUNCTION)) + "}";
 			query += "}";
 //			System.out.println(query);
 			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();

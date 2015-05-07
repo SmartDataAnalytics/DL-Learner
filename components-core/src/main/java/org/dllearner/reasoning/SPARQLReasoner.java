@@ -346,7 +346,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		int cnt = -1;
 		String query = String.format(
 				"SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s <%s> ?o.}",
-				p.toString());
+				p.toStringID());
 		ResultSet rs = executeSelectQuery(query, timeout, timeoutUnits);
 		if(rs.hasNext()){
 			cnt = rs.next().getLiteral("cnt").getInt();
