@@ -325,8 +325,7 @@
 									<goal>jdeb</goal>
 								</goals>
 								<configuration>
-									<deb>${basedir}/target/dl-learner-${release.name}.deb</deb>
-									<version>${release.name}</version>
+									<deb>${basedir}/target/dl-learner_[[version]]_all.deb</deb>
 									<controlDir>${basedir}/src/debian</controlDir>
 									<dataSet>
 										<data>
