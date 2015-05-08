@@ -1511,7 +1511,7 @@ public class QTLEvaluation {
 					multiply(BigDecimal.valueOf(tp + fn)).
 					multiply(BigDecimal.valueOf(tn + fp)).
 					multiply(BigDecimal.valueOf(tn + fn));
-			double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
+			double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 			
 			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
 				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
@@ -1550,7 +1550,7 @@ public class QTLEvaluation {
 				multiply(BigDecimal.valueOf(tp + fn)).
 				multiply(BigDecimal.valueOf(tn + fp)).
 				multiply(BigDecimal.valueOf(tn + fn));
-		double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
+		double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 		
 		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
 			System.err.println("ERROR!!!Precision not a number\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
@@ -1600,7 +1600,7 @@ public class QTLEvaluation {
 					multiply(BigDecimal.valueOf(tp + fn)).
 					multiply(BigDecimal.valueOf(tn + fp)).
 					multiply(BigDecimal.valueOf(tn + fn));
-			double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
+			double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 			
 			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
 				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
@@ -1668,7 +1668,7 @@ public class QTLEvaluation {
 				multiply(BigDecimal.valueOf(tp + fn)).
 				multiply(BigDecimal.valueOf(tn + fp)).
 				multiply(BigDecimal.valueOf(tn + fn));
-		double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
+		double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 		
 		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
 			System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
