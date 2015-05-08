@@ -39,19 +39,19 @@ public class Diagrams {
 		Connection conn = DriverManager.getConnection(url, username, password);
 		
 		int[] nrOfExamplesIntervals = {
-//				5,
+				5,
 				10,
-//				15,
-//				20, 
-//				25,
-//				30
+				15,
+				20, 
+				25,
+				30
 				}; 
 		
 		double[] noiseIntervals = {
 				0.0,
-//				0.1,
+				0.1,
 				0.2,
-//				0.3,
+				0.3,
 				0.4,
 //				0.6
 				};

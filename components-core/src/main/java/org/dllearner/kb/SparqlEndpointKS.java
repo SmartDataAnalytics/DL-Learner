@@ -28,9 +28,11 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -78,6 +80,8 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private boolean useCache = true;
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
+	
+	protected int retryCount = 3;
 	
 	protected QueryExecutionFactory qef;
 
@@ -137,6 +141,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 		
+
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
@@ -146,6 +151,10 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		
 		// add some delay
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
+		
+		if(retryCount > 0) {
+			qef = new QueryExecutionFactoryRetry(qef, 3, 1, TimeUnit.SECONDS);
+		}
 		
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
 //		qef = new QueryExecutionFactoryPaginated(qef, pageSize);

@@ -32,8 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import jena.rdfcat;
-
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -478,7 +476,7 @@ public class QTLEvaluation {
 									} catch (Exception e) {
 										failed = true;
 										logger.error("Error occured.", e);
-										System.exit(0);
+//										System.exit(0);
 									}
 								}});
 						}
@@ -685,7 +683,7 @@ public class QTLEvaluation {
 		return new Pair<>(bestTree, score);
 	}
 	
-	private ExamplesWrapper generateExamples(String sparqlQuery, int maxNrOfExamples, double noise){
+	private ExamplesWrapper generateExamples(String sparqlQuery, int maxNrOfExamples, double noise) throws Exception{
 		Random randomGen = new Random(123);
 		
 		// get all resources returned by the query
@@ -707,15 +705,23 @@ public class QTLEvaluation {
 		// build query trees
 		Map<OWLIndividual, RDFResourceTree> posQueryTrees = new HashMap<>();
 		for (String ex : examples) {
-			RDFResourceTree queryTree = getQueryTree(ex);
-			posQueryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
+			try {
+				RDFResourceTree queryTree = getQueryTree(ex);
+				posQueryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 		
 		List<String> negativeExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfExamples);
 		Map<OWLIndividual, RDFResourceTree> negQueryTrees = new HashMap<>();
 		for (String ex : negativeExamples) {
-			RDFResourceTree queryTree = getQueryTree(ex);
-			negQueryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
+			try {
+				RDFResourceTree queryTree = getQueryTree(ex);
+				negQueryTrees.put(new OWLNamedIndividualImpl(IRI.create(ex)), queryTree);
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 		
 		// add noise by modifying the query trees
