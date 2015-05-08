@@ -1514,9 +1514,9 @@ public class QTLEvaluation {
 			double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 			
 			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-				System.err.println("ERROR!!!" + learnedSPARQLQuery);
+				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
 				System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-				throw new Exception("Not a number.");
+				throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
 			}
 			
 			return new Score(precision, recall, fMeasure, predAcc, mathCorr);
@@ -1534,7 +1534,7 @@ public class QTLEvaluation {
 
 		double precision = overlap / (double) learnedResources.size();
 		if(Double.isNaN(precision)){
-			System.err.println("ERROR!!!" + learnedSPARQLQuery);
+			System.err.println("ERROR!!!Precision not a number" + learnedSPARQLQuery);
 			throw new Exception("Precision not a number.");
 		}
 		double recall = overlap / (double) referenceResources.size();
@@ -1553,9 +1553,9 @@ public class QTLEvaluation {
 		double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 		
 		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-			System.err.println("ERROR!!!" + learnedSPARQLQuery);
+			System.err.println("ERROR!!!Precision not a number\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
 			System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-			throw new Exception("Not a number.");
+			throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
 		}
 		
 		return new Score(precision, recall, fMeasure, predAcc, mathCorr);
@@ -1584,7 +1584,7 @@ public class QTLEvaluation {
 		if (learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
 			double precision = referenceCnt / (double) kbSize;
 			if(Double.isNaN(precision)){
-				System.err.println("ERROR!!!" + learnedSPARQLQuery);
+				System.err.println("ERROR!!!Precision not a number" + learnedSPARQLQuery);
 				throw new Exception("Precision not a number.");
 			}
 			double recall = 1.0;
@@ -1603,9 +1603,9 @@ public class QTLEvaluation {
 			double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 			
 			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-				System.err.println("ERROR!!!" + learnedSPARQLQuery);
+				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
 				System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-				throw new Exception("Not a number.");
+				throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
 			}
 			
 			return new Score(precision, recall, fMeasure, predAcc, mathCorr);
@@ -1652,7 +1652,7 @@ public class QTLEvaluation {
 		
 		double precision = overlap / (double) learnedCnt;
 		if(Double.isNaN(precision)){
-			System.err.println("ERROR!!!" + learnedSPARQLQuery);
+			System.err.println("ERRORPrecision not a number!!!" + learnedSPARQLQuery);
 			throw new Exception("Precision not a number.");
 		}
 		double recall = overlap / (double) referenceCnt;
@@ -1671,9 +1671,9 @@ public class QTLEvaluation {
 		double mathCorr = (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 		
 		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-			System.err.println("ERROR!!!" + learnedSPARQLQuery);
+			System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
 			System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-			throw new Exception("Not a number.");
+			throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
 		}
 		
 		return new Score(precision, recall, fMeasure, predAcc, mathCorr);
@@ -1813,7 +1813,7 @@ public class QTLEvaluation {
 				
 				Query q = queries.remove(0);
 				q.setLimit(size);
-				System.err.println(q);
+//				System.err.println(q);
 				QueryExecution qe = qef.createQueryExecution(q);
 				ResultSet rs = qe.execSelect();
 				while(rs.hasNext()) {
