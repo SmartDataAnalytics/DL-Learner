@@ -73,6 +73,8 @@ import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -95,6 +97,7 @@ import com.jamonapi.MonitorFactory;
 public class CELOE extends AbstractCELA implements Cloneable{
 
 	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
+	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
 //	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
@@ -560,8 +563,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = nodes.descendingIterator();
+		logger.debug(sparql_debug,"`getnext"+nodes);
 		while(it.hasNext()) {
 			OENode node = it.next();
+			logger.debug(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 			} else {
@@ -578,7 +583,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// expand node horizontically
 	private TreeSet<OWLClassExpression> refineNode(OENode node) {
-//		System.err.println("REFINE NODE " + node);
+		logger.debug(sparql_debug,"REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -599,17 +604,21 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
 	 */
-	private boolean addNode(OWLClassExpression description, OENode parentNode) {//System.err.print("DESC: " + description);
+	private boolean addNode(OWLClassExpression description, OENode parentNode) {
+		String sparql_debug_out = "";
+		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description; 
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
-		if(!nonRedundant) {//System.err.println("REDUNDANT");
+		if(!nonRedundant) {
+			logger.debug(sparql_debug, sparql_debug_out + "REDUNDANT");
 			return false;
 		}
 		
 		// check whether the class expression is allowed
-		if(!isDescriptionAllowed(description, parentNode)) {//System.err.println("NOT ALLOWED");
+		if(!isDescriptionAllowed(description, parentNode)) {
+			logger.debug(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
 		
@@ -617,7 +626,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		Monitor mon = MonitorFactory.start("lp");
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
 		mon.stop();
-//		System.err.println(accuracy);
+		logger.debug(sparql_debug, sparql_debug_out + accuracy);
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
