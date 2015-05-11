@@ -40,10 +40,10 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     private String clientId = null;
     private String virtualHost = null;
     private int port = 5672;
-    private final String masterDefaultSendQueueIdentifier = "request send";
-    private final String masterDefaultReceiveQueueIdentifier = "response receive";
-    private final String workerDefaultSendQueueIdentifier = "response send";
-    private final String workerDefaultReceiveQueueIdentifier = "request receive";
+    private final String masterDefaultSendQueueIdentifier = "request queue";
+    private final String masterDefaultReceiveQueueIdentifier = "response queue";
+    private final String workerDefaultSendQueueIdentifier = "response queue";
+    private final String workerDefaultReceiveQueueIdentifier = "request queue";
 
     // misc
     protected int myID;

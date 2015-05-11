@@ -34,6 +34,7 @@ import javax.jms.JMSException;
 import org.dllearner.algorithms.ccel.utils.RefinementAndScoreContainer;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.celoe.OENode;
+import org.dllearner.algorithms.distributed.MessageContainer;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
@@ -556,7 +557,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
         try {
             initMessaging();
             if (isMaster()) startMaster();
-            else listenForScoreComputationRequests();;
+            else listenForScoreComputationRequests();
             finalizeMessaging();
         } catch (Exception e) {
             e.printStackTrace();
@@ -718,7 +719,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
         }
 
         logger.info("solutions:\n" + getSolutionString());
-        logger.info("Master sent " + getSentMessagesCount() + " nodes");
+        logger.info("Master sent " + getSentMessagesCount() + " messages");
 
         terminateAgents();
         isRunning = false;
@@ -968,7 +969,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
         // (rationale: further extension is likely to add irrelevant syntactical constructs)
         Iterator<OENode> it = nodes.descendingIterator();
         while(it.hasNext()) {
-            System.out.println("next node choice loop");
+//            System.out.println("next node choice loop");
             OENode node = it.next();
             if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
                     return node;
