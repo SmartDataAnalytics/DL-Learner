@@ -36,6 +36,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -117,7 +118,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 //		configurator = new ELLearningAlgorithmConfigurator(this);
-		timeMonitor = MonitorFactory.getTimeMonitor("time");
+		
 	}
 	
 	public static String getName() {
@@ -167,6 +168,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		noise = noisePercentage/100d;
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
+		
+		timeMonitor = MonitorFactory.getTimeMonitor("time");
 	}	
 	
 	/**
@@ -336,39 +339,43 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}
 	
 	private boolean isDescriptionAllowed(OWLClassExpression description) {
-		if(isEquivalenceProblem) {
-			// the class to learn must not appear on the outermost property level
-			if(occursOnFirstLevel(description, classToDescribe)) {
-				return false;
-			}
-			
-			//non of the equivalent classes must occur on the first level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
-			if(classToDescribe != null){
-				toTest.add(classToDescribe);
-			}
-			while(!toTest.isEmpty()) {
-				OWLClassExpression d = toTest.pollFirst();
-				if(occursOnFirstLevel(description, d)) {
+		if(learningProblem instanceof ClassLearningProblem) {
+			if(isEquivalenceProblem) {
+				// the class to learn must not appear on the outermost property level
+				if(occursOnFirstLevel(description, classToDescribe)) {
 					return false;
 				}
-				toTest.addAll(reasoner.getEquivalentClasses(d));
-			}
-		} else {
-			// none of the superclasses of the class to learn must appear on the
-			// outermost property level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
-			if(classToDescribe != null){
-				toTest.add(classToDescribe);
-			}
-			while(!toTest.isEmpty()) {
-				OWLClassExpression d = toTest.pollFirst();
-				if(occursOnFirstLevel(description, d)) {
-					return false;
+				
+				//non of the equivalent classes must occur on the first level
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				if(classToDescribe != null){
+					toTest.add(classToDescribe);
 				}
-				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
-			}
-		}	
+				while(!toTest.isEmpty()) {
+					OWLClassExpression d = toTest.pollFirst();
+					if(occursOnFirstLevel(description, d)) {
+						return false;
+					}
+					toTest.addAll(reasoner.getEquivalentClasses(d));
+				}
+			} else {
+				// none of the superclasses of the class to learn must appear on the
+				// outermost property level
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				if(classToDescribe != null){
+					toTest.add(classToDescribe);
+				}
+				while(!toTest.isEmpty()) {
+					OWLClassExpression d = toTest.pollFirst();
+					if(occursOnFirstLevel(description, d)) {
+						return false;
+					}
+					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
+				}
+			}	
+			return true;
+		}
+		
 		return true;
 	}
 	
