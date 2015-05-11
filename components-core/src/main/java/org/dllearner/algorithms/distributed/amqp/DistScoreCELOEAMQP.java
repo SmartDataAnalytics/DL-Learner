@@ -1421,8 +1421,49 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
     // </---------------------- original CELOE methods ----------------------->
 
     /**
-     * example slurm setup:
-     * TODO
+     * example scripts to run this main function:
+     *
+     * ------------------------------------------------
+     * dist_score_celoe_master_worker.sh
+     *
+     *   #!/bin/sh
+     *   #SBATCH --ntasks=5
+     *   srun --multi-prog master.conf
+     *
+     * ------------------------------------------------
+     * master.conf:
+     *
+     *   0 ./master.sh
+     *   1-4 ./worker.sh
+     *
+     * ------------------------------------------------
+     * master.sh:
+     *
+     *   #!/bin/bash
+     *
+     *   # starting qpid
+     *   ./qpid-broker/0.32/bin/qpid-server &
+     *   sleep 3
+     *
+     *   mypid=$$
+     *   java -jar dist_score_celoe.jar $mypid 1
+     *
+     *   sleep 11
+     *   ./qpid-broker/0.32/bin/qpid.stop
+     *
+     *   exit 0
+     *
+     * ------------------------------------------------
+     * worker.sh:
+     *
+     *   #!/bin/bash
+     *
+     *   mypid=$$
+     *   sleep 3
+     *
+     *   java -jar dist_score_celoe.jar $mypid 0
+     *
+     *   exit 0
      *
      * @param args args should provide an iteger ID as first parameter and an
      *      indicator whether DistScoreCELOE runs as master (1) or worker (0)

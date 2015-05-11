@@ -1269,6 +1269,51 @@ public class DistRefinementCELOEAMQP extends AbstractAMQPCELOEAgent implements C
     }
     // </---------------------- original CELOE methods ----------------------->
 
+    /*
+     * example scripts to run this main function:
+     *
+     * ------------------------------------------------
+     * dist_refinement_celoe_master_worker.sh:
+     *
+     *  #!/bin/sh
+     *  #SBATCH --ntasks=4
+     *  srun --multi-prog master.conf
+     *
+     * ------------------------------------------------
+     * master.conf:
+     *
+     *   0 ./master.sh
+     *   1-3 ./worker.sh
+     *
+     * ------------------------------------------------
+     * master.sh:
+     *
+     *   #!/bin/bash
+     *
+     *   # starting qpid
+     *   ./qpid-broker/0.32/bin/qpid-server &
+     *   sleep 3
+     *
+     *   mypid=$$
+     *   java -jar dist_refinement_celoe.jar $mypid 1
+     *
+     *   sleep 11
+     *   ./qpid-broker/0.32/bin/qpid.stop
+     *
+     *   exit 0
+     *
+     * ------------------------------------------------
+     * worker.sh:
+     *
+     *   #!/bin/bash
+     *
+     *   mypid=$$
+     *   sleep 3
+     *
+     *   java -jar dist_refinement_celoe.jar $mypid 0
+     *
+     *   exit 0
+     */
     public static void main(String[] args) throws Exception{
         if (args.length < 2) {
             throw new Exception("Please provide an worker ID (int) as first " +
