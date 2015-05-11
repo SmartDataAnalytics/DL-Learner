@@ -1,4 +1,4 @@
-package org.dllearner.algorithms.distributed;
+package org.dllearner.algorithms.distributed.containers;
 
 import java.io.Serializable;
 

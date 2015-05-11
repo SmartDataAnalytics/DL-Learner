@@ -1,7 +1,6 @@
-package org.dllearner.algorithms.ccel.utils;
+package org.dllearner.algorithms.distributed.containers;
 
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.algorithms.distributed.MessageContainer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class RefinementAndScoreContainer implements MessageContainer {

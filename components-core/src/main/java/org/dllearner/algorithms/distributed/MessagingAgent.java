@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.distributed;
 
+import org.dllearner.algorithms.distributed.containers.MessageContainer;
+
 
 
 public interface MessagingAgent {

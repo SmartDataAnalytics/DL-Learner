@@ -1,19 +1,18 @@
-package org.dllearner.algorithms.ccel.utils;
+package org.dllearner.algorithms.distributed.containers;
 
-import java.io.Serializable;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.OENode;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-public class RefinementData implements Serializable {
+public class RefinementDataContainer implements MessageContainer {
     private static final long serialVersionUID = 1L;
 
     private OENode refinedNode;
     private TreeSet<OWLClassExpression> refinements;
     private int originalNodeLength;
 
-    public RefinementData(OENode refinedNode,
+    public RefinementDataContainer(OENode refinedNode,
             TreeSet<OWLClassExpression> refinements, int originalNodeLength) {
         this.refinedNode = refinedNode;
         this.refinements = refinements;

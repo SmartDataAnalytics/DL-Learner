@@ -31,10 +31,9 @@ import java.util.TreeSet;
 
 import javax.jms.JMSException;
 
-import org.dllearner.algorithms.ccel.utils.RefinementAndScoreContainer;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.algorithms.distributed.MessageContainer;
+import org.dllearner.algorithms.distributed.containers.RefinementAndScoreContainer;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
@@ -1419,6 +1418,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
     public Object clone() throws CloneNotSupportedException {
         return new DistScoreCELOEAMQP(this);
     }
+    // </---------------------- original CELOE methods ----------------------->
 
     /**
      * example slurm setup:
@@ -1504,7 +1504,5 @@ public class DistScoreCELOEAMQP extends AbstractAMQPCELOEAgent implements Clonea
         alg.init();
 
         alg.start();
-
     }
-    // </---------------------- original CELOE methods ----------------------->
 }
