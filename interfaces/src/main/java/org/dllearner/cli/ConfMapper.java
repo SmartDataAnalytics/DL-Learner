@@ -30,6 +30,8 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.ocel.OCEL;
+import org.dllearner.algorithms.tdts.TDTClassifier;
+import org.dllearner.algorithms.tdts.evidentialclassifier.DSTTDTClassifier;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -40,10 +42,10 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.SPARQLReasoner;
 
 /**
  * Contains mappings from component classes to strings.
@@ -91,13 +93,17 @@ public class ConfMapper {
 		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
 		learningProblemMapping.put("classLearning", ClassLearningProblem.class);
 		learningProblemMapping.put("posOnlyLP", PosOnlyLP.class);
+		learningProblemMapping.put("posNegUnd", PosNegUndLP.class);
 		
 //		learningAlgorithmMapping.put("refexamples", OCEL.class);
 		learningAlgorithmMapping.put("ocel", OCEL.class);
 		learningAlgorithmMapping.put("el", ELLearningAlgorithm.class);
 		learningAlgorithmMapping.put("disjunctiveEL", ELLearningAlgorithmDisjunctive.class);
 		learningAlgorithmMapping.put("celoe", CELOE.class);
+		learningAlgorithmMapping.put("tdt", TDTClassifier.class);
+		learningAlgorithmMapping.put("etdt", DSTTDTClassifier.class);
 		
+
 		// you do not need to edit anything below
 		
 		// build union of all
