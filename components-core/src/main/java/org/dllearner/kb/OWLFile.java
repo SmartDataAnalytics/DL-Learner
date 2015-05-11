@@ -67,6 +67,8 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     private List<String> defaultGraphURIs = new LinkedList<String>();
     private List<String> namedGraphURIs = new LinkedList<String>();
 
+	private boolean enableReasoning = true;
+
     public static String getName() {
         return "OWL file";
     }
@@ -230,4 +232,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void setNamedGraphURIs(List<String> namedGraphURIs) {
         this.namedGraphURIs = namedGraphURIs;
     }
+
+	public boolean getEnableReasoning() {
+		return this.enableReasoning ;
+	}
+	public void setEnableReasoning(boolean enableReasoning) {
+		this.enableReasoning = enableReasoning;
+	}
 }

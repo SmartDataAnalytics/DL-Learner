@@ -84,6 +84,8 @@ import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -123,6 +125,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private static final OWLCLassExpressionToOWLClassTransformer OWLCLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 
 	private static Logger logger = LoggerFactory.getLogger(RhoDRDown.class);
+	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
 
 	private static final OWLClass OWL_THING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_THING.getIRI());
@@ -1082,7 +1085,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// compute M_\top
 	private void computeM() {
 		long mComputationTimeStartNs = System.nanoTime();
-
+		logger.debug(sparql_debug, "computeM");
 		// initialise all possible lengths (1 to 3)
 		for(int i=1; i<=mMaxLength; i++) {
 			m.put(i, new TreeSet<OWLClassExpression>());
@@ -1104,6 +1107,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// boolean datatypes, e.g. testPositive = true
 		if(useBooleanDatatypes) {
 			Set<OWLDataProperty> booleanDPs = reasoner.getBooleanDatatypeProperties();
+			logger.debug(sparql_debug, "BOOL DPs:"+booleanDPs);
 			for(OWLDataProperty dp : booleanDPs) {
 				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(true)));
 				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(false)));
@@ -1129,7 +1133,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(useNumericDatatypes) {
 			Set<OWLDataProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
-
+			logger.debug(sparql_debug, "DOUBLE DPs:"+doubleDPs);
 			for(OWLDataProperty dp : doubleDPs) {
 				if(splits.get(dp).size() > 0) {
 					double min = splits.get(dp).get(0);
@@ -1142,6 +1146,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(useDataHasValueConstructor) {
 			Set<OWLDataProperty> stringDPs = reasoner.getStringDatatypeProperties();
+			logger.debug(sparql_debug, "STRING DPs:"+stringDPs);
 			for(OWLDataProperty dp : stringDPs) {
 				// loop over frequent values
 				Set<OWLLiteral> freqValues = frequentDataValues.get(dp);
@@ -1155,8 +1160,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		SortedSet<OWLClassExpression> m4 = new TreeSet<OWLClassExpression>();
 		if(useCardinalityRestrictions) {
+			logger.debug(sparql_debug, "most general properties:");
 			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
 				int maxFillers = maxNrOfFillers.get(r);
+				logger.debug(sparql_debug, "`"+r+"="+maxFillers);
 				// zero fillers: <= -1 r.C does not make sense
 				// one filler: <= 0 r.C is equivalent to NOT EXISTS r.C,
 				// but we still keep it, because ALL r.NOT C may be difficult to reach
@@ -1166,7 +1173,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		m.put(4,m4);
 
-//		System.out.println("m: " + m);
+		logger.debug(sparql_debug, "m: " + m);
 
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}

@@ -75,6 +75,8 @@ import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.helpers.BasicMarkerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -114,6 +116,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaReasoner, IndividualReasoner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SPARQLReasoner.class);
+	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
+	
 	
 	public enum PopularityType {
 		CLASS, OBJECT_PROPERTY, DATA_PROPERTY;
@@ -193,12 +197,13 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(qef == null) {
 			if(ks == null) {
 				KnowledgeSource abstract_ks = sources.iterator().next();
-				try {
+				if (SparqlEndpointKS.class.isAssignableFrom(abstract_ks.getClass())) {
 					ks = (SparqlEndpointKS) abstract_ks;
-				} catch (ClassCastException e_class) {
+				} else {
 					OWLFile owl_file = (OWLFile) abstract_ks;
 					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
-					ks = new LocalModelBasedSparqlEndpointKS(model, true);
+					logger.debug(sparql_debug, "file reasoning: " + owl_file.getEnableReasoning());
+					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getEnableReasoning());
 				}
 			}
 			if(ks.isRemote()){
@@ -1044,7 +1049,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public Set<OWLDataProperty> getDataPropertiesByRange(XSDVocabulary xsdType) {
 		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, xsdType.getIRI().toString());
-
+		logger.debug(sparql_debug, "get properties by range query: " + query);
 		ResultSet rs = executeSelectQuery(query);
 		
 		SortedSet<OWLDataProperty> properties = asOWLEntities(EntityType.DATA_PROPERTY, rs, "var1");
@@ -1236,7 +1241,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			query += " LIMIT " + limit;
 		}
 //		query = String.format(SPARQLQueryUtils.PREFIXES + " SELECT ?ind WHERE {?ind rdf:type/rdfs:subClassOf* <%s> .}", description.asOWLClass().toStringID());
-//		System.out.println(query);
+		//logger.debug(sparql_debug, "get individuals query: " + query);
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
