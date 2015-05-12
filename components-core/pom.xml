@@ -404,12 +404,10 @@
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 			</dependency>
-			<!--
 			<dependency>
-				<groupId>mpj</groupId>
-				<artifactId>mpj-express</artifactId>
+				<groupId>open-mpi</groupId>
+				<artifactId>ompi</artifactId>
 			</dependency>
-			-->
 			<dependency>
 				<groupId>org.apache.qpid</groupId>
 				<artifactId>qpid-client</artifactId>
