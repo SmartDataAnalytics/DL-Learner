@@ -506,42 +506,42 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public boolean isFunctional(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isInverseFunctional(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL.InverseFunctionalProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL.InverseFunctionalProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isAsymmetric(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL2.AsymmetricProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL2.AsymmetricProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isSymmetric(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL2.SymmetricProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL2.SymmetricProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isIrreflexive(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL2.IrreflexiveProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL2.IrreflexiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isReflexive(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL2.ReflexiveProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL2.ReflexiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isTransitive(OWLObjectProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL2.TransitiveProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL2.TransitiveProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 	
 	public boolean isFunctional(OWLDataProperty property){
-		String query = "ASK {<" + property + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
+		String query = "ASK {<" + property.toStringID() + "> a <" + OWL.FunctionalProperty.getURI() + ">}";
 		return qef.createQueryExecution(query).execAsk();
 	}
 
