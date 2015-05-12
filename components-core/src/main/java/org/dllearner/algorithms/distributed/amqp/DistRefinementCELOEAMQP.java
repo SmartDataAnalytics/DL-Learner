@@ -79,7 +79,7 @@ import com.jamonapi.MonitorFactory;
             "with the refinement task being distributed over several " +
             "operators. See http://jens-lehmann.org/files/2011/celoe.pdf for" +
             "reference of the general CELOE algorithm.")
-public class DistRefinementCELOEAMQP extends AbstractAMQPCELOEAgent implements Cloneable{
+public class DistRefinementCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
     private static Logger logger = LoggerFactory.getLogger(DistRefinementCELOEAMQP.class);
 
     private boolean isRunning = false;
@@ -1269,7 +1269,7 @@ public class DistRefinementCELOEAMQP extends AbstractAMQPCELOEAgent implements C
     }
     // </---------------------- original CELOE methods ----------------------->
 
-    /*
+    /**
      * example scripts to run this main function:
      *
      * ------------------------------------------------

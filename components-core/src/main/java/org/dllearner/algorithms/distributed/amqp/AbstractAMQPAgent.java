@@ -30,8 +30,8 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements MessagingAgent{
-    private Logger logger = LoggerFactory.getLogger(AbstractAMQPCELOEAgent.class);
+public abstract class AbstractAMQPAgent extends AbstractCELA implements MessagingAgent{
+    private Logger logger = LoggerFactory.getLogger(AbstractAMQPAgent.class);
 
     // default AMPQ values
     private String user = "admin";
@@ -73,11 +73,11 @@ public abstract class AbstractAMQPCELOEAgent extends AbstractCELA implements Mes
     private long maxBlockingWaitMilisecs = 5000;
 
 
-    public AbstractAMQPCELOEAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+    public AbstractAMQPAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
         super(problem, reasoner);
     }
 
-    public AbstractAMQPCELOEAgent() {
+    public AbstractAMQPAgent() {
     }
 
     @Override
