@@ -98,6 +98,9 @@ public abstract class AbstractAMQPAgent extends AbstractCELA implements Messagin
         termTopic = new AMQTopic((AMQConnection) connection, termRoutingKey);
         termMsgSubscriber = session.createDurableSubscriber(termTopic, Integer.toString(myID));
         termMsgPublisher = session.createProducer(termTopic);
+
+        sentMessagesCount = 0;
+        receivedMessagesCount = 0;
     }
 
     @Override
@@ -146,7 +149,6 @@ public abstract class AbstractAMQPAgent extends AbstractCELA implements Messagin
         if (msg == null) return null;
 
         MessageContainer msgContainer = (MessageContainer) msg.getObject();
-
         receivedMessagesCount++;
 
         return msgContainer;
