@@ -13,6 +13,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -33,7 +34,9 @@ public class ReasonerTests {
 		Logger.getRootLogger().setLevel(Level.OFF);
 		Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
 		
-		String[] reasonerImplementations = new String[]{"elk", "trowl", "fact", "hermit", "pellet"};
+		ReasonerImplementation[] reasonerImplementations = new ReasonerImplementation[]{
+				ReasonerImplementation.ELK, ReasonerImplementation.TROWL, ReasonerImplementation.JFACT,
+				ReasonerImplementation.HERMIT, ReasonerImplementation.PELLET};
 		
 		int maxExecutionTimeInSeconds = 10;
 		
@@ -46,12 +49,12 @@ public class ReasonerTests {
 		
 		OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
 		
-		for (String reasonerImpl : reasonerImplementations) {
+		for (ReasonerImplementation reasonerImpl : reasonerImplementations) {
 			System.out.println("Testing " + reasonerImpl);
 			
 			try {
 				OWLAPIReasoner reasoner = new OWLAPIReasoner(ks);
-				reasoner.setReasonerTypeString(reasonerImpl);
+				reasoner.setReasonerImplementation(reasonerImpl);
 				reasoner.setUseFallbackReasoner(true);
 				reasoner.init();
 				Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);

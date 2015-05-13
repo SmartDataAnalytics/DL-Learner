@@ -116,32 +116,17 @@ import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 @ComponentAnn(name = "OWL API Reasoner", shortName = "oar", version = 0.8)
 public class OWLAPIReasoner extends AbstractReasonerComponent {
 
-//	private static Logger logger = Logger
-//	.getLogger(OWLAPIReasoner.class);
-
-    //private String reasonerType = "pellet";
     private OWLReasoner reasoner;
     private OWLOntologyManager manager;
 
     private OWLOntology ontology;
     // the data factory is used to generate OWL API objects
     private OWLDataFactory df;
-    // static factory
-//	private static OWLDataFactory staticFactory = OWLManager.createOWLOntologyManager().getOWLDataFactory();
-
-//	private ClassHierarchy subsumptionHierarchy;
-//	private ObjectPropertyHierarchy roleHierarchy;
-//	private OWLDataPropertyHierarchy datatypePropertyHierarchy;
-//	private Set<OWLClassExpression> allowedConceptsInSubsumptionHierarchy;
 
     // primitives
     Set<OWLClass> atomicConcepts = new TreeSet<OWLClass>();
     Set<OWLObjectProperty> atomicRoles = new TreeSet<OWLObjectProperty>();
     SortedSet<OWLDataProperty> datatypeProperties = new TreeSet<OWLDataProperty>();
-//    SortedSet<OWLDataProperty> booleanDatatypeProperties = new TreeSet<OWLDataProperty>();
-//    SortedSet<OWLDataProperty> doubleDatatypeProperties = new TreeSet<OWLDataProperty>();
-//    SortedSet<OWLDataProperty> intDatatypeProperties = new TreeSet<OWLDataProperty>();
-//    SortedSet<OWLDataProperty> stringDatatypeProperties = new TreeSet<OWLDataProperty>();
     SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
 
     private Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
@@ -152,9 +137,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     // references to OWL API ontologies
     private Set<OWLOntology> owlAPIOntologies = new HashSet<OWLOntology>();
-    @ConfigOption(name = "reasonerType", description = "The name of the OWL APIReasoner to use {\"fact\", \"hermit\", \"owllink\", \"pellet\", \"elk\", \"cel\"}", defaultValue = "pellet", required = false, propertyEditorClass = StringTrimmerEditor.class)
-    private String reasonerTypeString = "pellet";
-    @ConfigOption(name = "owlLinkURL", description = "The URL to the owl server", defaultValue = "", required = false, propertyEditorClass = StringTrimmerEditor.class)
     private String owlLinkURL;
 
     // default reasoner is Pellet
@@ -298,6 +280,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		}
 
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
+		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
     }
 
     private void initBaseReasoner() {
@@ -345,7 +328,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			reasonerFactory = PelletReasonerFactory.getInstance();
 		}
 
-        reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
+		if (null != reasonerFactory) {
+			reasoner = reasonerFactory.createNonBufferingReasoner(ontology, conf);
+		}
 
         if(useFallbackReasoner){
         	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
@@ -421,13 +406,16 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
       */
     @Override
     public ReasonerType getReasonerType() {
-        if (getReasonerTypeString().equals("fact")) {
-            return ReasonerType.OWLAPI_FACT;
-        } else if (getReasonerTypeString().equals("hermit")) {
-            return ReasonerType.OWLAPI_HERMIT;
-        } else {
-            return ReasonerType.OWLAPI_PELLET;
-        }
+    	if (reasoner instanceof org.semanticweb.HermiT.Reasoner) {
+    		return ReasonerType.OWLAPI_HERMIT;
+    	}
+    	else if (reasoner instanceof com.clarkparsia.pellet.owlapiv3.PelletReasoner) {
+    		return ReasonerType.OWLAPI_PELLET;
+    	}
+    	else if (reasoner instanceof uk.ac.manchester.cs.jfact.JFactReasoner) {
+    		return ReasonerType.OWLAPI_FACT;
+    	}
+    	return ReasonerType.OWLAPI_FUZZY; // TODO
     }
 
     @Override
@@ -1092,16 +1080,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
      */
     public OWLReasoner getReasoner() {
         return reasoner;
-    }
-
-    @Deprecated
-    public String getReasonerTypeString() {
-        return reasonerTypeString;
-    }
-
-    @Deprecated
-    public void setReasonerTypeString(String reasonerTypeString) {
-        this.reasonerTypeString = reasonerTypeString;
     }
 
     /**

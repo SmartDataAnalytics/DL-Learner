@@ -17,6 +17,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -248,7 +249,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 		ks.init();
 		
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-		baseReasoner.setReasonerTypeString("hermit");
+		baseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
         baseReasoner.init();
 		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
 		rc.setReasonerComponent(baseReasoner);

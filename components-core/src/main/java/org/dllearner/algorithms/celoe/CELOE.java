@@ -47,6 +47,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
@@ -1183,7 +1184,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		ks.init();
 		
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-		baseReasoner.setReasonerTypeString("hermit");
+		baseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
         baseReasoner.init();
 		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
 		rc.setReasonerComponent(baseReasoner);
