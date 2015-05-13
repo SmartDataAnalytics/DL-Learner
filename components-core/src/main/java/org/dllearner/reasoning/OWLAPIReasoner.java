@@ -93,6 +93,7 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
+import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -303,6 +304,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		case JFACT:
 			reasonerFactory = new JFactFactory();
 			break;
+		case FACT:
+			reasonerFactory = new FaCTPlusPlusReasonerFactory();
+			break;
 		case ELK:
 			reasonerFactory = new ElkReasonerFactory();
 			break;
@@ -413,6 +417,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     		return ReasonerType.OWLAPI_PELLET;
     	}
     	else if (reasoner instanceof uk.ac.manchester.cs.jfact.JFactReasoner) {
+    		return ReasonerType.OWLAPI_FACT;
+    	}
+    	else if (reasoner instanceof uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasoner) {
     		return ReasonerType.OWLAPI_FACT;
     	}
     	return ReasonerType.OWLAPI_FUZZY; // TODO
