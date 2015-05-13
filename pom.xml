@@ -353,7 +353,7 @@
 			<dependency>
 				<groupId>com.jamonapi</groupId>
 				<artifactId>jamon</artifactId>
-				<version>2.79</version>
+				<version>2.81</version>
 			</dependency>
 
 			<!-- <dependency>
@@ -676,4 +676,16 @@
 			</build>
 		</profile>
 	</profiles>
+	<dependencies>
+		<dependency>
+			<groupId>edu.berkeley.compbio</groupId>
+			<artifactId>jlibsvm</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>google-collections</artifactId>
+					<groupId>com.google.collections</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
 </project>
