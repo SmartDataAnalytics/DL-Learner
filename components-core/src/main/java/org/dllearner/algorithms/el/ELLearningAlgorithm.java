@@ -32,7 +32,6 @@ import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -44,11 +43,9 @@ import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -66,11 +63,6 @@ import com.jamonapi.MonitorFactory;
 public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
-	
-	
-	
-	private boolean isRunning = false;
-	private boolean stop = false;
 	
 	private double treeSearchTimeSeconds = 10.0;
 	private long treeStartTime;
@@ -181,16 +173,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
 				addDescriptionTree(refinement, best);
 			}
-//			System.out.println("Hits:" + timeMonitor.getHits());
-//			System.out.println("Total:" + timeMonitor.getTotal());
-//			System.out.println("Avg:" + timeMonitor.getAvg());
-//			System.out.println("Max:" + timeMonitor.getMax());
-//			System.out.println(maxDescription);
-			timeMonitor.reset();
-			loop++;
+			
 			// logging
 			if(logger.isTraceEnabled()) {
 				logger.trace("Choosen node " + best);
@@ -239,7 +224,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			node.setAccuracy(accuracy);
 			node.setScore(accuracy);
 			
-//			System.out.println(OWLClassExpression + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
 				startNode = node;
@@ -270,38 +254,9 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		}
 	}
 	
-	/**
-	 * Replace role fillers with the range of the property, if exists.
-	 * @param d
-	 * @return
-	 */
-	private OWLClassExpression getNiceDescription(OWLClassExpression d){
-		OWLClassExpression rewrittenClassExpression = d;
-		if(d instanceof OWLObjectIntersectionOf){
-			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
-			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
-				newOperands.add(getNiceDescription(operand));
-			}
-			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
-		} else if(d instanceof OWLObjectSomeValuesFrom) {
-			// \exists r.\bot \equiv \bot
-			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
-			if(filler.isOWLThing()) {
-				OWLClassExpression range = reasoner.getRange(property);
-				filler = range;
-			} else if(filler.isAnonymous()){
-				filler = getNiceDescription(filler);
-			}
-			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
-		}
-		return rewrittenClassExpression;
-	}
-	
 	private boolean stoppingCriteriaSatisfied() {
 		// in some cases, there could be no candidate left ...
 		if(candidates.isEmpty()) {
-//			System.out.println("EMPTY");
 			return true;
 		}
 		
@@ -329,7 +284,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		if(learningProblem instanceof ClassLearningProblem) {
 			if(isEquivalenceProblem) {
 				// the class to learn must not appear on the outermost property level
-				if(occursOnFirstLevel(description, classToDescribe)) {
+				if(OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
 					return false;
 				}
 				
@@ -340,7 +295,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				}
 				while(!toTest.isEmpty()) {
 					OWLClassExpression d = toTest.pollFirst();
-					if(occursOnFirstLevel(description, d)) {
+					if(OWLClassExpressionUtils.occursOnFirstLevel(description, d)) {
 						return false;
 					}
 					toTest.addAll(reasoner.getEquivalentClasses(d));
@@ -354,7 +309,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				}
 				while(!toTest.isEmpty()) {
 					OWLClassExpression d = toTest.pollFirst();
-					if(occursOnFirstLevel(description, d)) {
+					if(OWLClassExpressionUtils.occursOnFirstLevel(description, d)) {
 						return false;
 					}
 					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
@@ -366,44 +321,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		return true;
 	}
 	
-	// determine whether a named class occurs on the outermost level, i.e. property depth 0
-		// (it can still be at higher depth, e.g. if intersections are nested in unions)
-		private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
-            return description.containsConjunct(cls);
-
-        }
-	
-	@Override
-	public void stop() {
-		stop = true;
-	}
-	
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}	
-	
 	/**
 	 * @param heuristic the heuristic to set
 	 */
 	public void setHeuristic(ELHeuristic heuristic) {
 		this.heuristic = heuristic;
 	}
-	
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		return getCurrentlyBestEvaluatedDescription().getDescription();
-	}
-
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return bestEvaluatedDescriptions.toDescriptionList();
-	}
-	
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return bestEvaluatedDescriptions.getSet().last();
-	}	
 	
 	public boolean isInstanceBasedDisjoints() {
 		return instanceBasedDisjoints;
@@ -412,12 +335,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
 		this.instanceBasedDisjoints = instanceBasedDisjoints;
 	}
-
-	@Override
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
-		return bestEvaluatedDescriptions.getSet();
-	}		
-	
 	
 	/**
 	 * @param stopOnFirstDefinition the stopOnFirstDefinition to set

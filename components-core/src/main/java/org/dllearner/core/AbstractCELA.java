@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +39,9 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +81,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
+	protected boolean isRunning = false;
+	protected boolean stop = false;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -157,20 +163,21 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 //	@Deprecated
 //	public abstract Score getSolutionScore();
 	
+
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
 	 * @return The best class OWLClassExpression found by the learning algorithm so far.
 	 */
-	public abstract OWLClassExpression getCurrentlyBestDescription();
+	public OWLClassExpression getCurrentlyBestDescription() {
+		return getCurrentlyBestEvaluatedDescription().getDescription();
+	}
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		List<OWLClassExpression> ds = new LinkedList<OWLClassExpression>();
-		ds.add(getCurrentlyBestDescription());
-		return ds;
+		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	
 	/**
@@ -207,9 +214,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * Returns the best descriptions obtained so far.
-	 * @return Best class OWLClassExpression found so far.
+	 * @return Best class class expression found so far.
 	 */
-	public abstract EvaluatedDescription getCurrentlyBestEvaluatedDescription();
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return bestEvaluatedDescriptions.getSet().last();
+	}
 	
 	/**
 	 * Returns a sorted set of the best descriptions found so far. We
@@ -218,9 +227,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @return Best class descriptions found so far.
 	 */
 	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
-		TreeSet<EvaluatedDescription> ds = new TreeSet<EvaluatedDescription>();
-		ds.add(getCurrentlyBestEvaluatedDescription());
-		return ds;
+		return bestEvaluatedDescriptions.getSet();
 	}
 	
 	/**
@@ -383,4 +390,42 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
         baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
     }
+    
+    @Override
+	public void stop() {
+		stop = true;
+	}
+	
+	@Override
+	public boolean isRunning() {
+		return isRunning;
+	}	
+    
+    /**
+	 * Replace role fillers with the range of the property, if exists.
+	 * @param d
+	 * @return
+	 */
+	protected OWLClassExpression getNiceDescription(OWLClassExpression d){
+		OWLClassExpression rewrittenClassExpression = d;
+		if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
+				newOperands.add(getNiceDescription(operand));
+			}
+			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
+		} else if(d instanceof OWLObjectSomeValuesFrom) {
+			// \exists r.\bot \equiv \bot
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			if(filler.isOWLThing()) {
+				OWLClassExpression range = reasoner.getRange(property);
+				filler = range;
+			} else if(filler.isAnonymous()){
+				filler = getNiceDescription(filler);
+			}
+			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
+		}
+		return rewrittenClassExpression;
+	}
 }
