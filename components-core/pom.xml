@@ -403,10 +403,6 @@
 				<version>3.6.9</version>
 			</dependency> -->
 			<dependency>
-				<groupId>edu.berkeley.compbio</groupId>
-				<artifactId>jlibsvm</artifactId>
-			</dependency>
-			<dependency>
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
 			</dependency>
