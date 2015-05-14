@@ -202,8 +202,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				} else {
 					OWLFile owl_file = (OWLFile) abstract_ks;
 					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
-					logger.debug(sparql_debug, "file reasoning: " + owl_file.getEnableReasoning());
-					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getEnableReasoning());
+					logger.debug(sparql_debug, "file reasoning: " + owl_file.getReasoning());
+					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getReasoning());
 				}
 			}
 			if(ks.isRemote()){
@@ -1241,7 +1241,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			query += " LIMIT " + limit;
 		}
 //		query = String.format(SPARQLQueryUtils.PREFIXES + " SELECT ?ind WHERE {?ind rdf:type/rdfs:subClassOf* <%s> .}", description.asOWLClass().toStringID());
-		//logger.debug(sparql_debug, "get individuals query: " + query);
+		logger.debug(sparql_debug, "get individuals query: " + query);
 		ResultSet rs = executeSelectQuery(query);
 		while(rs.hasNext()){
 			QuerySolution qs = rs.next();
@@ -1249,6 +1249,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				individuals.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("ind").getURI())));
 			}
 		}
+		logger.debug(sparql_debug, "get individuals result: " + individuals);
 		return individuals;
 	}	
 

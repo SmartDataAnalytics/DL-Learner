@@ -29,6 +29,7 @@ import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.ReasonerType;
 
 /**
@@ -64,12 +65,20 @@ public class ReasonerComponentFactory {
 				break;
 			case OWLAPI_FACT:
 				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).setReasonerTypeString("fact");
+				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.JFACT);
 				break;
 			case OWLAPI_PELLET:
 				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).setReasonerTypeString("pellet");
 				break;
+			//case DIG:
+			//case FAST_RETRIEVAL:
+			//case KAON2:
+			//case OWLAPI_FUZZY:
+			case OWLAPI_HERMIT:
+				rc = cm.reasoner(OWLAPIReasoner.class, ks);
+				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.HERMIT);
+				break;
+			//case SPARQL_NATIVE:
 			default:
 				rc = cm.reasoner(FastInstanceChecker.class, ks);
 				break;

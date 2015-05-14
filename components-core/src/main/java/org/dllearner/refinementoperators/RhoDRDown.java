@@ -242,13 +242,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "useBooleanDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useBooleanDatatypes = true;
 
-	@ConfigOption(name = "useDoubleDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
-	private boolean useDoubleDatatypes = true;
-
-	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
-	private boolean useIntDatatypes = true;
-
-	@ConfigOption(name = "useIntDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useNumericDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useNumericDatatypes = true;
 
 	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
@@ -294,13 +288,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		setUseBooleanDatatypes(op.useBooleanDatatypes);
 		setUseCardinalityRestrictions(op.useCardinalityRestrictions);
 		setUseDataHasValueConstructor(op.useDataHasValueConstructor);
-		setUseDoubleDatatypes(op.useDoubleDatatypes);
 		setUseExistsConstructor(op.useExistsConstructor);
 		setUseHasValueConstructor(op.useHasValueConstructor);
-		setUseIntDatatypes(op.useIntDatatypes);
 		setUseNegation(op.useNegation);
 		setUseObjectValueNegation(op.useObjectValueNegation);
 		setUseStringDatatypes(op.useStringDatatypes);
+		setUseNumericDatatypes(op.useNumericDatatypes);
 		isInitialised = false;
 	}
 
@@ -1867,34 +1860,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useBooleanDatatypes = useBooleanDatatypes;
 	}
 
-	public boolean isUseDoubleDatatypes() {
-		return useDoubleDatatypes;
-	}
-
-	public void setUseDoubleDatatypes(boolean useDoubleDatatypes) {
-		this.useDoubleDatatypes = useDoubleDatatypes;
-	}
-
 	public boolean isUseStringDatatypes() {
 		return useStringDatatypes;
 	}
 
 	public void setUseStringDatatypes(boolean useStringDatatypes) {
 		this.useStringDatatypes = useStringDatatypes;
-	}
-
-	/**
-	 * @param useIntDatatypes the useIntDatatypes to set
-	 */
-	public void setUseIntDatatypes(boolean useIntDatatypes) {
-		this.useIntDatatypes = useIntDatatypes;
-	}
-
-	/**
-	 * @return the useIntDatatypes
-	 */
-	public boolean isUseIntDatatypes() {
-		return useIntDatatypes;
 	}
 
 	public boolean isInstanceBasedDisjoints() {
@@ -1972,5 +1943,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	 */
 	public void setUseObjectValueNegation(boolean useObjectValueNegation) {
 		this.useObjectValueNegation = useObjectValueNegation;
+	}
+
+	public boolean isUseNumericDatatypes() {
+		return useNumericDatatypes;
+	}
+
+	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
+		this.useNumericDatatypes = useNumericDatatypes;
 	}
 }

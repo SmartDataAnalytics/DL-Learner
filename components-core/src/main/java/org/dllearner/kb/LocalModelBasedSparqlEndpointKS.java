@@ -37,7 +37,11 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	}
 	
 	public LocalModelBasedSparqlEndpointKS(Model model, boolean reasoningEnabled) {
-		this.model = ModelFactory.createOntologyModel(reasoningEnabled ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM, model);
+		this(model, reasoningEnabled ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM);
+	}
+	
+	public LocalModelBasedSparqlEndpointKS(Model model, OntModelSpec reasoning) {
+		this.model = ModelFactory.createOntologyModel(reasoning, model);
 	}
 	
 	/**

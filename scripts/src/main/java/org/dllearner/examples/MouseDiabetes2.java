@@ -108,7 +108,6 @@ public class MouseDiabetes2 {
 
         logger.debug("initializing reasoner...");
         OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-        baseReasoner.setReasonerTypeString("pellet");
         baseReasoner.setUseFallbackReasoner(true);
         baseReasoner.init();
         Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
