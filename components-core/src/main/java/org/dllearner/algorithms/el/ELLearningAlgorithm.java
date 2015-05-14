@@ -66,16 +66,14 @@ import com.jamonapi.MonitorFactory;
 public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
-//	private ELLearningAlgorithmConfigurator configurator;
 	
-	private ELDown3 operator;
+	
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
 	
 	private double treeSearchTimeSeconds = 10.0;
 	private long treeStartTime;
-	// "instanceBasedDisjoints", "Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator."
 	
 	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", propertyEditorClass=BooleanEditor.class)
 	private boolean instanceBasedDisjoints = true;
@@ -104,6 +102,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+	private ELDown3 operator;
 
 	private boolean isEquivalenceProblem = true;
 	private Monitor timeMonitor;
@@ -111,14 +110,10 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	double max = -1d;
 	OWLClassExpression maxDescription;
 	
-	public ELLearningAlgorithm() {
-		
-	}
+	public ELLearningAlgorithm() {}
 	
 	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-//		configurator = new ELLearningAlgorithmConfigurator(this);
-		
 	}
 	
 	public static String getName() {
@@ -130,20 +125,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		problems.add(PosNegLP.class);
 		return problems;
 	}
-	
-
-//	@Override
-//	public ELLearningAlgorithmConfigurator getConfigurator() {
-//		return configurator;
-//	}	
-	
-//	public static Collection<ConfigOption<?>> createConfigOptions() {
-//		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-////		options.add(CommonConfigOptions.getNoisePercentage());
-////		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-//		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-//		return options;
-//	}		
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -169,15 +150,8 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
-		timeMonitor = MonitorFactory.getTimeMonitor("time");
+		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
 	}	
-	
-	/**
-	 * @param heuristic the heuristic to set
-	 */
-	public void setHeuristic(ELHeuristic heuristic) {
-		this.heuristic = heuristic;
-	}
 	
 	@Override
 	public void start() {
@@ -185,6 +159,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = true;
 		reset();
 		treeStartTime = System.nanoTime();
+		nanoStartTime = System.nanoTime();
 		
 		// create start node
 		if(startClass == null){
@@ -193,13 +168,17 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
 		
+		double highestAccuracy = 0.0;
+		
 		// main loop
 		int loop = 0;
 		while(!stop && !stoppingCriteriaSatisfied()) {
 			// pick the best candidate according to the heuristic
 			SearchTreeNode best = candidates.pollLast();
+			
 			// apply operator
 			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
+			
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
 //				System.out.println("refinement: " + refinement);
@@ -218,6 +197,14 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				logger.trace(startNode.getTreeString());
 				logger.trace("Loop " + loop + " completed.");
 			}
+			
+			if(bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
+				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+				long durationInMillis = getCurrentRuntimeInMilliSeconds();
+				String durationStr = getDurationAsString(durationInMillis);
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+			}
+			
 		}
 		
 		// print solution(s)
@@ -226,7 +213,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a OWLClassExpression in tree form
+	// evaluates a class expression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
@@ -395,6 +382,13 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public boolean isRunning() {
 		return isRunning;
 	}	
+	
+	/**
+	 * @param heuristic the heuristic to set
+	 */
+	public void setHeuristic(ELHeuristic heuristic) {
+		this.heuristic = heuristic;
+	}
 	
 	@Override
 	public OWLClassExpression getCurrentlyBestDescription() {
