@@ -127,7 +127,6 @@ public class OCEL extends AbstractCELA {
 //	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 //	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 //	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
-//	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
 	private OWLClass startClass = null;
@@ -220,7 +219,6 @@ public class OCEL extends AbstractCELA {
 		options.add(CommonConfigOptions.cardinalityLimit());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.useDoubleDatatypes());
 		options.add(CommonConfigOptions.useStringDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
