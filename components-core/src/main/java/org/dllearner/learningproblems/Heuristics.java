@@ -109,6 +109,10 @@ public class Heuristics {
 		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (double) (nrOfPosExamples + beta * nrOfNegExamples);
 	}
 	
+	public static double getMatthewsCorrelationCoefficient(int tp, int fp, int tn, int fn) {
+		return (tp * tn - fp * fn) / Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));
+	}
+	
 	/**
 	 * Computes the 95% confidence interval of an experiment with boolean outcomes,
 	 * e.g. heads or tails coin throws. It uses the very efficient, but still accurate

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractLearningProblem extends AbstractComponent implements LearningProblem {
+public abstract class AbstractLearningProblem<T extends Score>  extends AbstractComponent implements LearningProblem {
 	
 	protected AbstractReasonerComponent reasoner;
 
@@ -74,7 +74,23 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @param description A class expression (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
-	public abstract Score computeScore(OWLClassExpression description);
+	public T computeScore(OWLClassExpression description) {
+		return computeScore(description, 0.0);
+	}
+	
+	/**
+	 * Computes the <code>Score</code> of a given class description
+	 * with respect to this learning problem.
+	 * This can (but does not need to) be used by learning algorithms
+	 * to measure how good the class expression fits the learning problem.
+	 * Score objects are used to store e.g. covered examples, accuracy etc.,
+	 * so often it is more efficient to only create score objects for
+	 * promising class descriptions.
+	 * @param description A class expression (as solution candidate for this learning problem).
+	 * @param noise the (approximated) value of noise within the examples
+	 * @return A <code>Score</code> object.
+	 */
+	public abstract T computeScore(OWLClassExpression concept, double noise);
 	
 	/**
 	 * Evaluates the class expression by computing the score and returning an
@@ -83,7 +99,21 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * @param description Description to evaluate.
 	 * @return 
 	 */
-	public abstract EvaluatedDescription evaluate(OWLClassExpression description);
+	public EvaluatedDescription evaluate(OWLClassExpression description){
+		return evaluate(description, 0.0);
+	}
+	
+	/**
+	 * Evaluates the class expression by computing the score and returning an
+	 * evaluated class expression of the correct type (ClassLearningProblem
+	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
+	 * @param description Description to evaluate.
+	 * @param noise the (approximated) value of noise within the examples
+	 * @return 
+	 */
+	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
+		return null;
+	}
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
@@ -95,7 +125,24 @@ public abstract class AbstractLearningProblem extends AbstractComponent implemen
 	 * 
 	 * @return A value between 0 and 1 indicating the quality (of a class description).
 	 */	
-	public abstract double getAccuracy(OWLClassExpression description);	
+	public double getAccuracy(OWLClassExpression description) {
+		return getAccuracy(description, 0.0);
+	}
+	
+	/**
+	 * This method returns a value, which indicates how accurate a
+	 * class expression solves a learning problem. There can be different
+	 * ways to compute accuracy depending on the type of learning problem
+	 * and other factors. However, all implementations are required to 
+	 * return a value between 0 and 1, where 1 stands for the highest
+	 * possible accuracy and 0 for the lowest possible accuracy.
+	 * 
+	 * @param description Description to evaluate.
+	 * @param noise the (approximated) value of noise within the examples
+	 * 
+	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 */	
+	public abstract double getAccuracy(OWLClassExpression description, double noise);
 	
 	/**
 	 * This method computes the accuracy as {@link #getAccuracy(OWLClassExpression)},

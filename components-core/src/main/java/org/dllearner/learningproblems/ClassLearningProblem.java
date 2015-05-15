@@ -45,8 +45,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
@@ -57,7 +55,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  *
  */
 @ComponentAnn(name = "ClassLearningProblem", shortName = "clp", version = 0.6)
-public class ClassLearningProblem extends AbstractLearningProblem {
+public class ClassLearningProblem extends AbstractLearningProblem<ClassScore> {
 	
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
@@ -229,7 +227,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	}
 		
 	@Override
-	public ClassScore computeScore(OWLClassExpression description) {
+	public ClassScore computeScore(OWLClassExpression description, double noise) {
 		
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
@@ -257,13 +255,13 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 		
 		double acc = 0;
 		if(heuristic.equals(HeuristicType.FMEASURE)) {
-			acc = getFMeasure(recall, precision);
+			acc = Heuristics.getFScore(recall, precision, coverageFactor);
 		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
 			acc = Heuristics.getAScore(recall, precision, coverageFactor);
 		} else {
 			// TODO: some superfluous instance checks are required to compute accuracy => 
 			// move accuracy computation here if possible 
-			acc = getAccuracyOrTooWeakExact(description, 1);
+			acc = getAccuracyOrTooWeakExact(description, noise);
 		}
 		
 		if(checkConsistency) {
@@ -295,9 +293,9 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(OWLClassExpression description) {
+	public double getAccuracy(OWLClassExpression description, double noise) {
 		// a noise value of 1.0 means that we never return too weak (-1.0) 
-		return getAccuracyOrTooWeak(description, 1.0);
+		return getAccuracyOrTooWeak(description, noise);
 	}
 
 	@Override
@@ -648,7 +646,7 @@ public class ClassLearningProblem extends AbstractLearningProblem {
 				if(((1+Math.sqrt(coverageFactor))*recall)/(Math.sqrt(coverageFactor)+1)<1-noise) {
 					return -1;
 				} else {
-					return getFMeasure(recall, precision);
+					return Heuristics.getFScore(recall, precision, coverageFactor);
 				}
 			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
 				if((coverageFactor * coveredInstances + superClassInstances.size()) / (double) (coverageFactor * classInstances.size() + superClassInstances.size()) < 1 -noise) {

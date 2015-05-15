@@ -45,7 +45,7 @@ import com.google.common.collect.Sets.SetView;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends AbstractLearningProblem {
+public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
 	private static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
@@ -195,6 +195,4 @@ public abstract class PosNegLP extends AbstractLearningProblem {
     public void setUseMultiInstanceChecks(UseMultiInstanceChecks useMultiInstanceChecks) {
         this.useMultiInstanceChecks = useMultiInstanceChecks;
     }
-
-
 }

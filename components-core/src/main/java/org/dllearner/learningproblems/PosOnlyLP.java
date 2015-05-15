@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  *
  */
 @ComponentAnn(name = "positive only learning problem", shortName = "posonlylp", version = 0.6)
-public class PosOnlyLP extends AbstractLearningProblem {
+public class PosOnlyLP extends AbstractLearningProblem<ScorePosOnly> {
 	
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;
@@ -163,7 +163,7 @@ public class PosOnlyLP extends AbstractLearningProblem {
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosOnly computeScore(OWLClassExpression description) {
+	public ScorePosOnly computeScore(OWLClassExpression description, double noise) {
 		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 		
 		Set<OWLIndividual> instancesCovered = new TreeSet<OWLIndividual>();
@@ -184,20 +184,12 @@ public class PosOnlyLP extends AbstractLearningProblem {
 		return new ScorePosOnly(instancesCovered, instancesNotCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));		
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public EvaluatedDescriptionPosOnly evaluate(OWLClassExpression description) {
-		ScorePosOnly score = computeScore(description);
-		return new EvaluatedDescriptionPosOnly(description, score);		
-	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(OWLClassExpression description) {
+	public double getAccuracy(OWLClassExpression description, double noise) {
 		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 		
 		int instancesCovered = 0;

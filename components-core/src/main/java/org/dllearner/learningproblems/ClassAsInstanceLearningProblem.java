@@ -47,7 +47,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
  * @author Lorenz Buehmann
  *
  */
-public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
+public class ClassAsInstanceLearningProblem extends AbstractLearningProblem<ScorePosNeg<OWLClass>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 
@@ -72,7 +72,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description) {
+	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description, double noise) {
 		SortedSet<OWLClass> posAsPos = new TreeSet<OWLClass>();
 		SortedSet<OWLClass> posAsNeg = new TreeSet<OWLClass>();
 		SortedSet<OWLClass> negAsPos = new TreeSet<OWLClass>();
@@ -115,8 +115,8 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(OWLClassExpression description) {
-		return getAccuracyOrTooWeak(description, 1.0);
+	public double getAccuracy(OWLClassExpression description, double noise) {
+		return getAccuracyOrTooWeak(description, noise);
 	}
 
 	/* (non-Javadoc)

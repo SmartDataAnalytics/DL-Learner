@@ -255,7 +255,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 * @return Corresponding Score object.
 	 */
 	@Override
-	public ScorePosNeg computeScore(OWLClassExpression concept) {
+	public ScorePosNeg computeScore(OWLClassExpression concept, double noise) {
 		if(useOldDIGOptions) {
 			if (isUseRetrievalForClassification()) {
 				SortedSet<OWLIndividual> posClassified = getReasoner().getIndividuals(concept);
@@ -273,7 +273,10 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					if (!posClassified.contains(negExample))
 						negAsNeg.add(negExample);
 				}
-				return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos, negAsNeg);
+				return new ScoreTwoValued(
+						OWLClassExpressionUtils.getLength(concept), 
+						getPercentPerLengthUnit(), 
+						posAsPos, posAsNeg, negAsPos, negAsNeg);
 			// instance checks for classification
 			} else {		
 				Set<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
@@ -348,10 +351,13 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			}
 			
 			// TODO: this computes accuracy twice - more elegant method should be implemented 
-			double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), 1.0);
+			double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), noise);
 			
-			return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
-						negAsNeg, accuracy);
+			return new ScoreTwoValued(
+					OWLClassExpressionUtils.getLength(concept), 
+					getPercentPerLengthUnit(), 
+					posAsPos, posAsNeg, negAsPos, negAsNeg, 
+					accuracy);
 		}
 
 	}
@@ -360,26 +366,18 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
+	public double getAccuracy(OWLClassExpression description, double noise) {
+		// a noise value of 1.0 means that we never return too weak (-1.0) 
+		return getAccuracyOrTooWeak(description, noise);		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
+	 */
+	@Override
 	public double getAccuracy(OWLClassExpression description) {
 		// a noise value of 1.0 means that we never return too weak (-1.0) 
 		return getAccuracyOrTooWeak(description, 1.0);		
-		/*				
-		int coveredPos = 0;
-		int coveredNeg = 0;
-		
-		for (OWLIndividual example : positiveExamples) {
-			if (reasoner.hasType(description, example)) {
-				coveredPos++;
-			} 
-		}
-		for (OWLIndividual example : negativeExamples) {
-			if (reasoner.hasType(description, example)) {
-				coveredNeg++;
-			}
-		}
-		
-		return coveredPos + negativeExamples.size() - coveredNeg / (double) allExamples.size();
-		*/
 	}
 
 	@Override
@@ -574,6 +572,10 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public double getAccuracy(int posAsPos, int posAsNeg, int negAsPos, int negAsNeg, double noise) {
 		int maxNotCovered = (int) Math.ceil(noise * positiveExamples.size());
 		
+		if(posAsNeg > maxNotCovered) {
+			return -1;
+		}
+		
 		switch (heuristic) {
 		case PRED_ACC:
 			return (posAsPos + negAsNeg) / (double) allExamples.size();
@@ -745,13 +747,12 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return getFMeasure(recall, precision);
 	}
 		
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescription evaluate(OWLClassExpression description) {
-		ScorePosNeg score = computeScore(description);
+	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
+		ScorePosNeg score = computeScore(description, noise);
 		return new EvaluatedDescriptionPosNeg(description, score);
 	}
 
