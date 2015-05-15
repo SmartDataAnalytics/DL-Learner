@@ -99,7 +99,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private TreeSet<SearchTreeNode> candidates;
 	// all trees (for fast redundancy check)
 	private TreeSet<ELDescriptionTree> trees;
-	private OWLClass classToDescribe;
 	private double noise;
 	
 	@ConfigOption(name = "treeSearchTimeSeconds", defaultValue = "1.0", description="Specifies how long the algorithm should search for a partial solution (a tree).")
@@ -137,9 +136,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private DecimalFormat decFormat = new DecimalFormat("0.00"); 
 	
-	public ELLearningAlgorithmDisjunctive() {
-		
-	}	
+	public ELLearningAlgorithmDisjunctive() {}	
 	
 	public ELLearningAlgorithmDisjunctive(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
@@ -154,15 +151,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		problems.add(PosNegLP.class);
 		return problems;
 	}
-	
-	
-//	public static Collection<ConfigOption<?>> createConfigOptions() {
-//		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-//		options.add(CommonConfigOptions.getNoisePercentage());
-//		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-//		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-//		return options;
-//	}		
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -236,7 +224,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 			if(bestCurrentScore > minimumTreeScore) {
 				// we found a tree (partial solution)
 				currentSolution.add(bestCurrentNode.getDescriptionTree());
-				OWLClassExpression bestDescription = bestCurrentNode.getDescriptionTree().transformToDescription();
+				OWLClassExpression bestDescription = bestCurrentNode.getDescriptionTree().transformToClassExpression();
 				OWLClassExpression bestCombinedDescription = bestDescription;
 				// form union of trees found so far with 
 				if(treeCount==0) {
@@ -274,7 +262,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				logger.info("tree found: " + OWLAPIRenderers.toManchesterOWLSyntax(bestDescription) + " (" + posCov + " pos covered, " + currentPosExamples.size() + " remaining, " + negCov + " neg covered, " + currentNegExamples.size() + " remaining, score: " + bestCurrentNode.getScore() + ")");
 				logger.info("combined accuracy: " + decFormat.format(bestEvaluatedDescription.getAccuracy()));
 			} else {
-				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + OWLAPIRenderers.toManchesterOWLSyntax(bestCurrentNode.getDescriptionTree().transformToDescription()) + " with score " + bestCurrentNode.getScore());
+				logger.info("no tree found, which satisfies the minimum criteria - the best was: " + OWLAPIRenderers.toManchesterOWLSyntax(bestCurrentNode.getDescriptionTree().transformToClassExpression()) + " with score " + bestCurrentNode.getScore());
 			}
 			
 			logger.info(trees.size() + " trees checked");
@@ -337,7 +325,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	private double getTreeScore(ELDescriptionTree tree) {
 		
-		OWLClassExpression d = tree.transformToDescription();
+		OWLClassExpression d = tree.transformToClassExpression();
 		
 		double score = 0;
 		
@@ -349,7 +337,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				score += 1;
 			}
 		}
-//		double posPercentage = posCovered/(double)currentPosExamples.size();
 		
 		// penalty if a minimum coverage is not achieved (avoids too many trees where
 		// each tree has only little impact)
@@ -368,7 +355,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				score -= posWeight;
 			}
 		}
-//		double negPercentage = negCovered/(double)currentNegExamples.size();
 		
 		// remove - does not make sense
 		// check whether tree is too weak, i.e. covers more than noise % negatives
@@ -378,7 +364,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //		}
 		
 		// length penalty
-		score -= 0.1*tree.getSize();
+		score -= 0.1 * tree.getSize();
 		
 //		System.out.println("score: " + score);
 		
@@ -438,26 +424,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //		startNegExamplesSize = currentNegExamples.size();
 	}
 	
-	@Override
-	public void stop() {
-		stop = true;
-	}
-	
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}	
-	
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		return bestEvaluatedDescription.getDescription();
-	}
-	
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return bestEvaluatedDescription;
-	}			
-	
 	/**
 	 * @return the startNode
 	 */
@@ -498,23 +464,16 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}	
 	
 	/**
-	 * @return the noisePercentage
+	 * @return the estimated noise value in percentage
 	 */
 	public double getNoisePercentage() {
 		return noisePercentage;
 	}
 	
 	/**
-	 * @param noisePercentage the noisePercentage to set
+	 * @param noisePercentage the estimated noise value in percentage to set
 	 */
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
-	}
-	
-	/**
-	 * @param classToDescribe the classToDescribe to set
-	 */
-	public void setClassToDescribe(OWLClass classToDescribe) {
-		this.classToDescribe = classToDescribe;
 	}
 }
