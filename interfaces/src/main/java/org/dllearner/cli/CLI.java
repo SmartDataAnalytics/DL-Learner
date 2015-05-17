@@ -33,7 +33,10 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.qtl.QTL2;
+import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
+import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
+import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
+//import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
@@ -67,9 +70,7 @@ import org.springframework.core.io.Resource;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import org.dllearner.algorithms.tdts.*;
-import org.dllearner.algorithms.tdts.evidentialclassifier.*;
-import org.dllearner.algorithms.tdts.refinementoperators.DLTreesRefinementOperator;
+
 
 /**
  * 
@@ -163,9 +164,9 @@ public class CLI {
 		
 			if (performCrossValidation) {
 				PosNegLP lp = context.getBean(PosNegLP.class);
-				if(la instanceof QTL2){
-					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
-				} 
+//				if(la instanceof QTL2){
+//					//new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);	
+//				} 
 				if((la instanceof TDTClassifier)||(la instanceof DSTTDTClassifier) ){
 					
 					//TODO:  verify if the quality of the code can be improved

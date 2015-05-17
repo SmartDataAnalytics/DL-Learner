@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.dllearner.learningproblems.PosNegUndLP;
-
-import org.dllearner.algorithms.tdts.evidentialclassifier.DSTTDTClassifier;
+import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
+import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
 import org.dllearner.cli.*;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
@@ -36,7 +36,6 @@ import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import com.google.common.collect.Sets;
 
-import org.dllearner.algorithms.tdts.TDTClassifier;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 

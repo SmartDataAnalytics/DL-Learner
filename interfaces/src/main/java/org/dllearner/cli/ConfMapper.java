@@ -27,11 +27,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
+import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.algorithms.tdts.TDTClassifier;
-import org.dllearner.algorithms.tdts.evidentialclassifier.DSTTDTClassifier;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
