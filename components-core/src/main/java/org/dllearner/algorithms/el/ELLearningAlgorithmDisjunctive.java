@@ -85,14 +85,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithmDisjunctive.class);	
 	
-	String baseURI;
-	Map<String,String> prefixes;
-	
 	private ELDown3 operator;
 	private OWLClassExpressionMinimizer minimizer;
-	
-	private boolean isRunning = false;
-	private boolean stop = false;
 	
 	private SearchTreeNode startNode;
 	private ELHeuristic heuristic;
@@ -163,8 +157,6 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		}
 		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
-//		noise = configurator.getNoisePercentage()/(double)100;
-		
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
 		
@@ -209,7 +201,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				// logging
 				if(logger.isTraceEnabled()) {
 					logger.trace("Choosen node " + best);
-					logger.trace(startNode.getTreeString());
+					logger.trace(startNode.getTreeString(renderer));
 					logger.trace("Loop " + loop + " completed.");
 				}
 				
