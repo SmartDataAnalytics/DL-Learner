@@ -89,7 +89,7 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	
 	public double getNodeScore(SearchTreeNode node){
 		double score = node.getAccuracy();
-		OWLClassExpression d = node.getDescriptionTree().transformToDescription();
+		OWLClassExpression d = node.getDescriptionTree().transformToClassExpression();
 		for (RelevanceMetric metric : relevanceMetrics) {
 			score += weightings.getWeight(metric.getClass()) * metric.getRelevance(classToDescribe, d);
 		}
