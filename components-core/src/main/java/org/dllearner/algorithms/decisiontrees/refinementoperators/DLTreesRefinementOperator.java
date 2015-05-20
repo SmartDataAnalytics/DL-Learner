@@ -10,11 +10,9 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.LearningProblem;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.PsiDown;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -28,8 +26,6 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.truemesh.squiggle.criteria.IsNullCriteria;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 //import evaluation.Parameters;
@@ -346,7 +342,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 			rho.setUseCardinalityRestrictions(false);
 			rho.setUseNegation(true);
 			rho.setUseBooleanDatatypes(false);
-			rho.setUseDoubleDatatypes(false);
+			rho.setUseNumericDatatypes(false);
 			rho.setUseStringDatatypes(false);
 
 
