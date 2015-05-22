@@ -135,6 +135,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	@ConfigOption(name = "useCache", description = "Whether to use a file-based cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
 	private boolean useCache = true;
+	
+	private boolean laxMode = false;
 
 	private QueryExecutionFactory qef;
 
@@ -981,7 +983,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public SortedSet<OWLClass> getOWLClasses(String namespace) {
-		ResultSet rs = executeSelectQuery(SPARQLQueryUtils.SELECT_CLASSES_QUERY);
+		ResultSet rs;
+		if (!laxMode) {
+			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_CLASSES_QUERY);
+		} else {
+			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_CLASSES_QUERY_ALT);
+		}
 		
 		SortedSet<OWLClass> classes = asOWLEntities(EntityType.CLASS, rs, "var1");
 		return classes;
@@ -1003,7 +1010,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public SortedSet<OWLIndividual> getOWLIndividuals() {
-		ResultSet rs = executeSelectQuery(SPARQLQueryUtils.SELECT_INDIVIDUALS_QUERY);
+		ResultSet rs;
+		if (!laxMode) {
+			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_INDIVIDUALS_QUERY);
+		} else {
+			rs = executeSelectQuery(SPARQLQueryUtils.SELECT_INDIVIDUALS_QUERY_ALT);
+		}
 		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
 		individuals.addAll(asOWLEntities(EntityType.NAMED_INDIVIDUAL, rs, "var1"));
 		return individuals;
@@ -2345,6 +2357,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public void releaseKB() {
+	}
+
+	public boolean isLaxMode() {
+		return laxMode;
+	}
+
+	public void setLaxMode(boolean laxMode) {
+		this.laxMode = laxMode;
 	}
 
 }
