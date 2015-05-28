@@ -306,7 +306,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLClass ce) {
-		if(ce.equals(expr) || (ignoreGenericTypeStatements && !ce.isOWLThing())){
+		if(ce.equals(expr) || !ignoreGenericTypeStatements || !ce.isOWLThing()){
 			sparql += triple(variables.peek(), "a", render(ce));
 		}
 	}
@@ -381,18 +381,18 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 
 	@Override
 	public void visit(OWLObjectAllValuesFrom ce) {
-		if(!(ignoreGenericTypeStatements && ce.getFiller().isOWLThing())) {
-			String subject = variables.peek();
-			String objectVariable = mapping.newIndividualVariable();
-			OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-			OWLObjectProperty predicate = propertyExpression.getNamedProperty();
-			OWLClassExpression filler = ce.getFiller();
-			if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
-				sparql += triple(objectVariable, predicate, variables.peek());
-			} else {
-				sparql += triple(variables.peek(), predicate, objectVariable);
-			}
-			
+		String subject = variables.peek();
+		String objectVariable = mapping.newIndividualVariable();
+		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
+		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
+		OWLClassExpression filler = ce.getFiller();
+		if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
+			sparql += triple(objectVariable, predicate, variables.peek());
+		} else {
+			sparql += triple(variables.peek(), predicate, objectVariable);
+		}
+		if(!ignoreGenericTypeStatements || !ce.getFiller().isOWLThing()) {
+
 			String var = mapping.newIndividualVariable();
 			String cntVar1 = newCountVar();
 			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar1 + ") WHERE {";
@@ -401,13 +401,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 			filler.accept(this);
 			variables.pop();
 			sparql += "} GROUP BY " + subject + "}";
-			
+
 			var = mapping.newIndividualVariable();
 			String cntVar2 = newCountVar();
 			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar2 + ") WHERE {";
 			sparql += triple(subject, predicate, var);
 			sparql += "} GROUP BY " + subject + "}";
-			
+
 			sparql += "FILTER(" + cntVar1 + "=" + cntVar2 + ")";
 		}
 	}
@@ -815,5 +815,12 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 				);
 		query = converter.asQuery(rootVar, expr).toString();
 		System.out.println(expr + "\n" + query);
-	}
+		
+		expr = df.getOWLObjectAllValuesFrom(propR, df.getOWLThing());
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+
+		expr = df.getOWLObjectSomeValuesFrom(propR, df.getOWLThing());
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);}
 }
