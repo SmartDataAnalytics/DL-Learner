@@ -5,8 +5,9 @@
 
 	<artifactId>interfaces</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>Interfaces: GUI, CLI, Web Service</name>
+	<name>dllearner-interfaces</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
+	<description>Interfaces: GUI, CLI, Web Service</description>
 
 
 	<parent>
