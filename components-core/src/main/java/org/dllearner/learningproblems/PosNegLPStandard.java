@@ -533,7 +533,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			notCoveredNeg = Sets.difference(negativeExamples, individuals).size();
 			
 			// return 'too weak' if too many pos examples are not covered
-			if(notCoveredPos >= maxNotCovered) {
+			if(notCoveredPos != 0 && notCoveredPos >= maxNotCovered) {
 				return -1;
 			}
 		} else {

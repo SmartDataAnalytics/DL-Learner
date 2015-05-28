@@ -168,10 +168,43 @@ public class Infgen {
 
 		//String in = "DL-Learner/examples/family-benchmark/family-benchmark.owl";
 		String in = args.length > 0 ? args[0] : "DL-Learner/examples/carcinogenesis/carcinogenesis.owl";
-		loadThroughJena(in, in+".jena1");
-		reasonWithPellet(in+".jena1", in+".her");
+		if (args.length <= 1) {
+			loadThroughJena(in, in+".jena1");
+			reasonWithHermit(in, in+".her0");
+		}
+		else {
+			for (int i = 0; i < args[1].length(); ++i) {
+				String step = in;
+				String next = null;
+				switch (args[1].charAt(i)) {
+				case 'h':
+					next = in + "." + i + "." + "her"; 
+					reasonWithHermit(step, next);
+					break;
+				case 'j':
+					next = in + "." + i + "." + "jena";
+					loadThroughJena(step, next);
+					break;
+				case 'J':
+					next = in + "." + i + "." + "jena";
+					loadThroughJena2(step, next);
+					break;
+				case 'p':
+					next = in + "." + i + "." + "pel";
+					reasonWithPellet(step, next);
+					break;
+				default:
+					System.err.println("Unknown mode: " + args[1].charAt(i));
+				}
+				if (next != null) {
+					step = next;
+					next = null;
+				}
+			}
+		}
+		//reasonWithPellet(in+".jena1", in+".her");
 		//reasonWithPellet2(in, in+".wp2");
-		//reasonWithHermit(in, in+".her0");
+		
 		//loadThroughJena2(in, in+".jena2");
 		//loadThroughJena(in+".her0", in+".jena");
 		//reasonWithHermit(in+".jena", in+".her");

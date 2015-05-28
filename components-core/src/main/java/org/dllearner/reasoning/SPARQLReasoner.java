@@ -204,7 +204,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				} else {
 					OWLFile owl_file = (OWLFile) abstract_ks;
 					Model model = RDFDataMgr.loadModel(owl_file.getURL().getFile());
-					logger.debug(sparql_debug, "file reasoning: " + owl_file.getReasoning());
+					logger.debug(sparql_debug, "file reasoning: " + ((owl_file.getReasoning() == null || owl_file.getReasoning().getReasonerFactory() == null) ? "(none)" 
+							: owl_file.getReasoning().getReasonerFactory().getURI()));
 					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getReasoning());
 				}
 			}
