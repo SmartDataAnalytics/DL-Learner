@@ -246,7 +246,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 			} else if(strategy == RANDOM){//get some random examples
 				logger.info("Applying random strategy...");
 				SortedSet<OWLIndividual> randomNegativeExamples = new TreeSet<OWLIndividual>();
-				String query = "SELECT DISTINCT ?s WHERE {?s a ?type.";
+				String query = "SELECT DISTINCT ?s WHERE {?s a ?type. ?type a owl:Class .";
 				if(classToDescribe != null){
 					query += "FILTER NOT EXISTS{?s a <" + classToDescribe.toStringID() + "> }";
 				} else {
