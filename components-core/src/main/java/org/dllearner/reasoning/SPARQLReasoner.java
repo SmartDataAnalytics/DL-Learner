@@ -1192,7 +1192,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLClass> getSiblingClasses(OWLClass cls) {
 		String query = SPARQLQueryUtils.SELECT_SIBLING_CLASSES_QUERY.replace("%s", cls.toStringID());
 		ResultSet rs = executeSelectQuery(query);
-		Set<OWLClass> siblings = asOWLEntities(EntityType.CLASS, rs, "sub");
+		Set<OWLClass> siblings = asOWLEntities(EntityType.CLASS, rs, "var1");
 		return siblings;
 	}
 

@@ -89,7 +89,7 @@ public class SPARQLQueryUtils {
 	public static final String ASK_DISJOINT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{<%s> owl:disjointWith <%s> .} UNION {<%s> owl:disjointWith <%s> .}}";
 	public static final String SELECT_SIBLING_CLASSES_QUERY = PREFIXES
-			+ "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?sup . ?var1 rdfs:subClass ?sup. FILTER(!SAMETERM(?var1, <%s>))}";
+			+ "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?sup . ?var1 rdfs:subClassOf ?sup. FILTER(!SAMETERM(?var1, <%s>))}";
 
 	// property hierarchy
 	public static final String SELECT_SUBPROPERTY_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subPropertyOf <%s> .}";
