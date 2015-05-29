@@ -255,6 +255,20 @@ public class SparqlEndpoint {
 		//TODO defaultGraphURIs.add("http://geonames.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}	
+	
+	public static SparqlEndpoint getEndpointLinkedMDB() {
+		URL u = null;
+		try { 
+			u = new URL("http://www.linkedmdb.org/sparql");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		//TODO defaultGraphURIs.add("http://geonames.org");
+		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
+	}
+	
+	
 
 	public static SparqlEndpoint getEndpointLOCALGeonames() {
 		URL u = null;
