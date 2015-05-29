@@ -3,6 +3,7 @@ package org.dllearner.kb.sparql;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -42,6 +43,9 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	@Override
 	public void setRecursionDepth(int maxRecursionDepth) {
 		cbdGen.setRecursionDepth(maxRecursionDepth);
+	}
+	
+	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)

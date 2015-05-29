@@ -3,6 +3,7 @@ package org.dllearner.kb.sparql;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -202,7 +203,9 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	@Override
 	public void setRecursionDepth(int maxRecursionDepth) {
 		this.maxRecursionDepth = maxRecursionDepth;
-		
+	}
+	
+	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)

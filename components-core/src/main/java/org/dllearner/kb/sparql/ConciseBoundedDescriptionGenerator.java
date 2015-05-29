@@ -1,6 +1,7 @@
 package org.dllearner.kb.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -53,6 +54,8 @@ public interface ConciseBoundedDescriptionGenerator {
 	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
 	
 	public void setRestrictToNamespaces(List<String> namespaces);
+	
+	public void addPropertiesToIgnore(Set<String> properties);
 	
 	public void setRecursionDepth(int maxRecursionDepth);
 	

@@ -4,6 +4,7 @@
 package org.dllearner.kb.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 
@@ -81,6 +82,9 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		Model cbd = qe.execConstruct();
 		qe.close();
 		return cbd;
+	}
+	
+	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 
 	/* (non-Javadoc)
