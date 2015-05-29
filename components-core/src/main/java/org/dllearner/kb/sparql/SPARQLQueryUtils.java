@@ -20,6 +20,12 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_DATA_PROPERTIES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty .}";
 	public static final String SELECT_INDIVIDUALS_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:NamedIndividual .}";
 	
+	public static final String SELECT_CLASSES_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {[] a ?var1 .}";
+	public static final String SELECT_INDIVIDUALS_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {?var1 a [] . \n"
+			+ "OPTIONAL { ?s1 a ?var1. } \n"
+			+ "OPTIONAL { ?s2 ?var1 []. } \n"
+			+ "FILTER ( !BOUND(?s1) && !BOUND(?s2) ) }";
+	
 	// extended
 	public static final String SELECT_DATA_PROPERTIES_BY_RANGE_QUERY = PREFIXES
 			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";

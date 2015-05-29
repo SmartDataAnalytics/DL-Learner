@@ -173,8 +173,9 @@ public class Files {
 	 *            Content of the file.
 	 */
 	public static void createFile(File file, String content) {
+		File parentFile = file.getParentFile();
+		if (parentFile != null) { parentFile.mkdirs(); }
 		try {
-			file.getParentFile().mkdirs();
 			com.google.common.io.Files.write(content, file, Charsets.UTF_8);
 		} catch (IOException e) {
 			logger.error("Failed to write content to file " + file, e);
