@@ -100,7 +100,7 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
 	 * @return 
 	 */
 	public EvaluatedDescription evaluate(OWLClassExpression description){
-		return evaluate(description, 0.0);
+		return evaluate(description, 1.0);
 	}
 	
 	/**
