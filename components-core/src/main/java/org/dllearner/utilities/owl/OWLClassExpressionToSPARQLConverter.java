@@ -386,30 +386,35 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
 		OWLObjectProperty predicate = propertyExpression.getNamedProperty();
 		OWLClassExpression filler = ce.getFiller();
-		if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
-			sparql += triple(objectVariable, predicate, variables.peek());
+		
+		if(filler.isOWLThing()) {
+			sparql += triple(variables.peek(), mapping.newPropertyVariable(), objectVariable);
 		} else {
-			sparql += triple(variables.peek(), predicate, objectVariable);
+			if(propertyExpression.isAnonymous()){ //property expression is inverse of a property
+				sparql += triple(objectVariable, predicate, variables.peek());
+			} else {
+				sparql += triple(variables.peek(), predicate, objectVariable);
+			}
+			
+			// restrict filler
+				String var = mapping.newIndividualVariable();
+				String cntVar1 = newCountVar();
+				sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar1 + ") WHERE {";
+				sparql += triple(subject, predicate, var);
+				variables.push(var);
+				filler.accept(this);
+				variables.pop();
+				sparql += "} GROUP BY " + subject + "}";
+
+				var = mapping.newIndividualVariable();
+				String cntVar2 = newCountVar();
+				sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar2 + ") WHERE {";
+				sparql += triple(subject, predicate, var);
+				sparql += "} GROUP BY " + subject + "}";
+
+				sparql += "FILTER(" + cntVar1 + "=" + cntVar2 + ")";
 		}
-		if(!ignoreGenericTypeStatements || !ce.getFiller().isOWLThing()) {
-
-			String var = mapping.newIndividualVariable();
-			String cntVar1 = newCountVar();
-			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar1 + ") WHERE {";
-			sparql += triple(subject, predicate, var);
-			variables.push(var);
-			filler.accept(this);
-			variables.pop();
-			sparql += "} GROUP BY " + subject + "}";
-
-			var = mapping.newIndividualVariable();
-			String cntVar2 = newCountVar();
-			sparql += "{SELECT " + subject + " (COUNT(" + var + ") AS " + cntVar2 + ") WHERE {";
-			sparql += triple(subject, predicate, var);
-			sparql += "} GROUP BY " + subject + "}";
-
-			sparql += "FILTER(" + cntVar1 + "=" + cntVar2 + ")";
-		}
+		
 	}
 
 	@Override
@@ -711,6 +716,10 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		System.out.println(expr + "\n" + query);
 		
 		expr = df.getOWLObjectHasValue(propR, indA);
+		query = converter.asQuery(rootVar, expr).toString();
+		System.out.println(expr + "\n" + query);
+		
+		expr = df.getOWLObjectAllValuesFrom(propR, df.getOWLThing());
 		query = converter.asQuery(rootVar, expr).toString();
 		System.out.println(expr + "\n" + query);
 		
