@@ -2,7 +2,6 @@ package org.dllearner.kb.sparql;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -21,7 +20,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	private ExtractionDBCache cache;
 	private SparqlEndpoint endpoint;
 	
-	private List<String> namespaces;
+	private Set<String> namespaces;
 	private int maxRecursionDepth = 1;
 	
 	public SymmetricConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, ExtractionDBCache cache) {
@@ -45,7 +44,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	}
 	
 	@Override
-	public void setRestrictToNamespaces(List<String> namespaces) {
+	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
 		this.namespaces = namespaces;
 	}
 	
@@ -214,6 +213,13 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#addAllowedObjectNamespaces(java.util.Set)
+	 */
+	@Override
+	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 	}
 
 }

@@ -10,17 +10,17 @@ import com.hp.hpl.jena.rdf.model.Model;
 public class CachingConciseBoundedDescriptionGenerator implements ConciseBoundedDescriptionGenerator{
 	
 	private Map<String, Model> cache;
-	private ConciseBoundedDescriptionGenerator cbdGen;
+	private ConciseBoundedDescriptionGenerator delegatee;
 	
 	public CachingConciseBoundedDescriptionGenerator(ConciseBoundedDescriptionGenerator cbdGen) {
-		this.cbdGen = cbdGen;
+		this.delegatee = cbdGen;
 		cache = new HashMap<String, Model>();
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
-			cbd = cbdGen.getConciseBoundedDescription(resourceURI);
+			cbd = delegatee.getConciseBoundedDescription(resourceURI);
 			cache.put(resourceURI, cbd);
 		}
 		return cbd;
@@ -29,20 +29,28 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
-			cbd = cbdGen.getConciseBoundedDescription(resourceURI, depth);
+			cbd = delegatee.getConciseBoundedDescription(resourceURI, depth);
 			cache.put(resourceURI, cbd);
 		}
 		return cbd;
 	}
 
 	@Override
-	public void setRestrictToNamespaces(List<String> namespaces) {
-		cbdGen.setRestrictToNamespaces(namespaces);
+	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+		delegatee.addAllowedPropertyNamespaces(namespaces);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#addAllowedObjectNamespaces(java.util.Set)
+	 */
+	@Override
+	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+		delegatee.addAllowedObjectNamespaces(namespaces);
 	}
 	
 	@Override
 	public void setRecursionDepth(int maxRecursionDepth) {
-		cbdGen.setRecursionDepth(maxRecursionDepth);
+		delegatee.setRecursionDepth(maxRecursionDepth);
 	}
 	
 	public void addPropertiesToIgnore(Set<String> properties) {
@@ -55,10 +63,12 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs) {
 		Model cbd = cache.get(resourceURI);
 		if(cbd == null){
-			cbd = cbdGen.getConciseBoundedDescription(resourceURI, depth, withTypesForLeafs);
+			cbd = delegatee.getConciseBoundedDescription(resourceURI, depth, withTypesForLeafs);
 			cache.put(resourceURI, cbd);
 		}
 		return cbd;
 	}
+
+	
 
 }

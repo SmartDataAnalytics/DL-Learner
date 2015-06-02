@@ -847,7 +847,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		String prefixes = 
 				"PREFIX owl:<http://www.w3.org/2002/07/owl#> "
 				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> ";
-		//axioms according to owl:Class entities
+		
+		// axioms related to owl:Class entities
 		String query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:Class." +
@@ -861,7 +862,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				"OPTIONAL{?s owl:disjointWith ?disj.}" +
 				"}";
 		schema.add(loadIncrementally(query));
-		//axioms according to owl:ObjectProperty entities
+		
+		// axioms related to owl:ObjectProperty entities
 		query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:ObjectProperty." +
@@ -876,7 +878,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				"}";
 		schema.add(loadIncrementally(query));
 
-		//axioms according to owl:ObjectProperty entities
+		// axioms related to owl:DatatypeProperty entities
 		query = prefixes +
 				"CONSTRUCT {" +
 				"?s a owl:DatatypeProperty." +

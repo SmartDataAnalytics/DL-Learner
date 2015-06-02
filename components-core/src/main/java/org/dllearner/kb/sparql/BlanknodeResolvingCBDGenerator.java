@@ -3,7 +3,6 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.util.List;
 import java.util.Set;
 
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -91,7 +90,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#setRestrictToNamespaces(java.util.List)
 	 */
 	@Override
-	public void setRestrictToNamespaces(List<String> namespaces) {
+	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
 	}
 
 	/* (non-Javadoc)
@@ -99,6 +98,13 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 	 */
 	@Override
 	public void setRecursionDepth(int maxRecursionDepth) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator#addAllowedObjectNamespaces(java.util.Set)
+	 */
+	@Override
+	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 	}
 
 }

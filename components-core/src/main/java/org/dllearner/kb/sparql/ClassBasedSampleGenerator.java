@@ -44,7 +44,6 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 		super(qef);
 		
 		negExamplesFinder = new AutomaticNegativeExampleFinderSPARQL2(qef);
-		
 	}
 	
 	/**
@@ -61,6 +60,13 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 		Set<OWLIndividual> negExamples = computeNegExamples(cls, posExamples);
 		
 		return getSample(Sets.union(posExamples, negExamples));
+	}
+	
+	/**
+	 * @param useNegExamples whether to use negative examples or not
+	 */
+	public void setUseNegExamples(boolean useNegExamples) {
+		this.useNegExamples = useNegExamples;
 	}
 	
 	private Set<OWLIndividual> computePosExamples(OWLClass cls) {
@@ -89,5 +95,4 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 		
 		return negExamples;
 	}
-
 }
