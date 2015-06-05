@@ -506,34 +506,52 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression fillerConcept = ((OWLObjectSomeValuesFrom) description).getFiller();
 			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
-				return true;
-			}
-			
-			SortedSet<OWLIndividual> roleFillers = opPos.get(property.asOWLObjectProperty()).get(individual);	
-			
-			if(roleFillers == null){
+			if (property.isAnonymous()) { // \exists r^{-1}.C
+				
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+				
+				for (Entry<OWLIndividual, SortedSet<org.semanticweb.owlapi.model.OWLIndividual>> entry : mapping
+						.entrySet()) {
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					
+					// check if the individual is contained in the objects and 
+					// subject is of type C
+					if(objects.contains(individual)) {
+						if(hasTypeImpl(fillerConcept, subject)) {
+							return true;
+						}
+					}
+				}
+				
 				return false;
-			}
-			
-			for (OWLIndividual roleFiller : roleFillers) {
-				if (hasTypeImpl(fillerConcept, roleFiller)) {
+			} else {// \exists r.C
+				if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
 					return true;
 				}
+				
+				SortedSet<OWLIndividual> objects = opPos.get(property.asOWLObjectProperty()).get(individual);	
+				
+				// there is no object individual at all -> FALSE
+				if(objects == null){
+					return false;
+				}
+				
+				// check if there is at least one object individual of type C
+				for (OWLIndividual roleFiller : objects) {
+					if (hasTypeImpl(fillerConcept, roleFiller)) {
+						return true;
+					}
+				}
+				
+				return false;
 			}
-			
-			return false;
 		} else if (description instanceof OWLObjectAllValuesFrom) {
 			OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
 			OWLClassExpression fillerConcept = ((OWLObjectAllValuesFrom) description).getFiller();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			

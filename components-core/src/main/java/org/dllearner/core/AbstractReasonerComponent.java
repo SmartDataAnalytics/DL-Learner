@@ -335,7 +335,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected boolean isDisjointImpl(OWLClassExpression superConcept, OWLClassExpression subConcept)
+	protected boolean isDisjointImpl(OWLClass superConcept, OWLClass subConcept)
 			throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}

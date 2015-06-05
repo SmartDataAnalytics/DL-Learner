@@ -91,7 +91,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
@@ -238,6 +237,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(name = "useNegation", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useNegation = true;
+	
+	@ConfigOption(name = "useInverse", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	private boolean useInverse = false;
 
 	@ConfigOption(name = "useBooleanDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useBooleanDatatypes = true;
@@ -373,6 +375,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				frequentDataValues.put(dp, frequentInds);
 			}
 		}
+		
+		if(useInverse) {
+			
+		}
 
 		// we do not need the temporary set anymore and let the
 		// garbage collector take care of it
@@ -446,7 +452,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 			List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
 
-//		System.out.println("|- " + OWLClassExpression + " " + currDomain + " " + maxLength);
+//		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
 
 		// actions needing to be performed if this is the first time the
 		// current domain is used
@@ -571,10 +577,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
-			OWLClassExpression range = opRanges.get(role);
-
+			
+			OWLClassExpression domain = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+			
 			// rule 1: EXISTS r.D => EXISTS r.E
-			tmp = refine(filler, maxLength-2, null, range);
+			tmp = refine(filler, maxLength-2, null, domain);
 
 			for(OWLClassExpression c : tmp){
 				refinements.add(df.getOWLObjectSomeValuesFrom(role, c));
@@ -594,7 +601,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// rule 3: EXISTS r.D => >= 2 r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if(useCardinalityRestrictions) {
+			if(useCardinalityRestrictions && !role.isAnonymous()) {
 				if(maxLength > OWLClassExpressionUtils.getLength(description) && maxNrOfFillers.get(role)>1) {
 					OWLObjectMinCardinality min = df.getOWLObjectMinCardinality(2,role,filler);
 					refinements.add(min);
@@ -602,7 +609,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
-			if(useHasValueConstructor && filler.isOWLThing()) {
+			if(useHasValueConstructor && filler.isOWLThing() && !role.isAnonymous()) {
 				// watch out for frequent patterns
 				Set<OWLIndividual> frequentInds = frequentValues.get(role);
 				if(frequentInds != null) {
@@ -947,7 +954,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	private void computeTopRefinements(int maxLength, OWLClassExpression domain) {
 		long topComputationTimeStartNs = System.nanoTime();
-//		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);
+		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);
 
 		if(domain == null && m.size() == 0)
 			computeM();
@@ -1031,11 +1038,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 
 						// add computed refinements
-						if(domain == null)
+						if(domain == null) {
 							topRefinements.get(i).addAll(baseSet);
-						else
+						} else {
 							topARefinements.get(domain).get(i).addAll(baseSet);
-
+						}
 					}
 				}
 			}
@@ -1112,6 +1119,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(useExistsConstructor) {
 			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
+				
+				if(useInverse) {
+					m3.add(df.getOWLObjectSomeValuesFrom(r.getInverseProperty(), df.getOWLThing()));
+				}
 			}
 		}
 
@@ -1455,7 +1466,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
 			computeApp(domain);
-
+		
 		// initialise mgr, mgbd, mgdd, mgsd
 		mgr.put(domain, new TreeSet<OWLObjectProperty>());
 		mgbd.put(domain, new TreeSet<OWLDataProperty>());
@@ -1537,6 +1548,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 
 		}
+		
 		appOP.put(domain, applicableRoles);
 
 		// boolean datatype properties
@@ -1951,5 +1963,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
 		this.useNumericDatatypes = useNumericDatatypes;
+	}
+	
+	/**
+	 * @param useInverse whether to use inverse properties in property restrictions
+	 */
+	public void setUseInverse(boolean useInverse) {
+		this.useInverse = useInverse;
 	}
 }
