@@ -330,15 +330,27 @@ public class ConceptTransformation {
 			}
 		} else if(description instanceof OWLObjectSomeValuesFrom) {
 			// \exists r.\bot \equiv \bot
-			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
+			
+			OWLObjectPropertyExpression pe = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
-			if(filler.isOWLThing()) {
-				OWLClassExpression range = rs.getRange(property);
-				filler = range;
-			} else if(filler.isAnonymous()){
-				filler = replaceRange(filler, rs);
+			
+			if(pe.isAnonymous()) {
+				if(filler.isOWLThing()) {
+					OWLClassExpression domain = rs.getDomain(pe.getNamedProperty());
+					filler = domain;
+				} else if(filler.isAnonymous()){
+					filler = replaceRange(filler, rs);
+				}
+			} else {
+				if(filler.isOWLThing()) {
+					OWLClassExpression range = rs.getRange(pe.asOWLObjectProperty());
+					filler = range;
+				} else if(filler.isAnonymous()){
+					filler = replaceRange(filler, rs);
+				}
 			}
-			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(property, filler);
+			
+			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(pe, filler);
 		}
 		return rewrittenClassExpression;
 	}
@@ -456,7 +468,8 @@ public class ConceptTransformation {
 		// the context changes if we have a restriction
 		if(description instanceof OWLRestriction) {
 			if(((OWLRestriction) description).isObjectRestriction()){
-				OWLObjectProperty op = ((OWLObjectPropertyExpression)((OWLRestriction) description).getProperty()).asOWLObjectProperty();
+				OWLObjectPropertyExpression pe = (OWLObjectPropertyExpression)((OWLRestriction) description).getProperty();
+				OWLObjectProperty op = pe.isAnonymous() ? pe.getNamedProperty() : pe.asOWLObjectProperty();
 				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
 				// if we have an all-restriction, we return it; otherwise we call the child
 				// (if it exists)
