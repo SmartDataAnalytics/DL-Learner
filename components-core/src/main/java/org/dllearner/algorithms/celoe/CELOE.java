@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.collections15.SetUtils;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -71,6 +70,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,14 +219,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
 	private boolean expandAccuracy100Nodes = false;
+	private double currentHighestAccuracy;
 	
-//	public CELOEConfigurator getConfigurator() {
-//		return configurator;
-//	}
 	
-	public CELOE() {
-		
-	}
+	public CELOE() {}
 	
 	public CELOE(CELOE celoe){
 		setReasoner(celoe.reasoner);
@@ -466,54 +464,20 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
-		return ed == null ? null : ed.getDescription();
-	}
-
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return bestEvaluatedDescriptions.toDescriptionList();
-	}
-	
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return bestEvaluatedDescriptions.getBest();
-	}	
-	
-	@Override
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
-		return bestEvaluatedDescriptions.getSet();
-	}	
-	
-	public double getCurrentlyBestAccuracy() {
-		return bestEvaluatedDescriptions.getBest().getAccuracy();
-	}
-	
-	@Override
 	public void start() {
 		stop = false;
 		isRunning = true;
 		reset();
 		nanoStartTime = System.nanoTime();
 		
-		// highest accuracy so far
-		double highestAccuracy = 0.0;
+		currentHighestAccuracy = 0.0;
 		OENode nextNode;
 
 		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 		
 		while (!terminationCriteriaSatisfied()) {
-			
-			if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
-				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
-				expressionTestCountLastImprovement = expressionTests;
-				timeLastImprovement = System.nanoTime();
-				long durationInMillis = getCurrentRuntimeInMilliSeconds();
-				String durationStr = getDurationAsString(durationInMillis);
-				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
-			}
+			showIfBetterSolutionsFound();
 
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
@@ -536,6 +500,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					addNode(refinement, nextNode);
 				}
 			}
+			
+			showIfBetterSolutionsFound();
 			
 			// update the global min and max horizontal expansion values
 			updateMinMaxHorizExp(nextNode);
@@ -684,9 +650,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			}
 //			System.err.println(node);System.out.println(niceDescription);
 			
-//			if(!isDescriptionAllowed(niceDescription, node)) {
-//				return false;
-//			}
+			if(!isDescriptionAllowed(niceDescription, node)) {
+				return false;
+			}
 			
 			// another test: none of the other suggested descriptions should be 
 			// a subdescription of this one unless accuracy is different
@@ -728,6 +694,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(isEquivalenceProblem) {
 				// the class to learn must not appear on the outermost property level
 				if(occursOnFirstLevel(description, classToDescribe)) {
+					return false;
+				}
+				if(occursOnSecondLevel(description, classToDescribe)) {
 					return false;
 				}
 			} else {
@@ -805,6 +774,46 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
     }
 	
+	// determine whether a named class occurs on the outermost level, i.e. property depth 0
+		// (it can still be at higher depth, e.g. if intersections are nested in unions)
+		private boolean occursOnSecondLevel(OWLClassExpression description, OWLClassExpression cls) {
+			SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(cls);
+			if(description instanceof OWLObjectIntersectionOf) {
+				List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
+				
+				for (OWLClassExpression op : operands) {
+					if(superClasses.contains(op) || 
+							(op instanceof OWLObjectUnionOf && !Sets.intersection(((OWLObjectUnionOf)op).getOperands(),superClasses).isEmpty())) {
+						for (OWLClassExpression op2 : operands) {
+							if((op2 instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)op2).getOperands().contains(cls))) {
+								return true;
+							}
+						}
+					}
+				}
+				
+				for (OWLClassExpression op1 : operands) {
+					for (OWLClassExpression op2 : operands) {
+						if(!op1.isAnonymous() && op2 instanceof OWLObjectUnionOf) {
+							 for (OWLClassExpression op3 : ((OWLObjectUnionOf)op2).getOperands()) {
+								if(!op3.isAnonymous()) {// A AND B with Disj(A,B)
+									if(reasoner.isDisjoint(op1.asOWLClass(), op3.asOWLClass())) {
+										return true;
+									}
+								} else {// A AND NOT A
+									if(op3 instanceof OWLObjectComplementOf && ((OWLObjectComplementOf)op3).getOperand().equals(op1)) {
+										return true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			return false;
+	    }
+	
 	// check whether the node is a potential solution candidate
 	private OWLClassExpression rewriteNode(OENode node) {
 		OWLClassExpression description = node.getDescription();
@@ -815,7 +824,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			niceDescription = description;
 		}
-//		System.out.println(node + ":" + niceDescription);
+//		System.out.println(description + ":" + niceDescription);
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
 		return niceDescription;
@@ -866,6 +875,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 	}
 	
+	private void showIfBetterSolutionsFound() {
+		if(!singleSuggestionMode && bestEvaluatedDescriptions.getBestAccuracy() > currentHighestAccuracy) {
+			currentHighestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+			expressionTestCountLastImprovement = expressionTests;
+			timeLastImprovement = System.nanoTime();
+			long durationInMillis = getCurrentRuntimeInMilliSeconds();
+			String durationStr = getDurationAsString(durationInMillis);
+			logger.info("more accurate (" + dfPercent.format(currentHighestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+		}
+	}
+	
 	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
 		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
 		if (refinements.size() > 1) {
@@ -883,26 +903,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			Files.appendToFile(new File(searchTreeFile), treeString.toString());
 		}
 	}
-	
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}	
-	
-	@Override
-	public void stop() {
-		stop = true;
-	}
-
-	public OENode getSearchTreeRoot() {
-		return startNode;
-	}
-	
-	@SuppressWarnings("unused")
-	private String bestDescriptionToString() {
-		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
-		return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
-	}	
 	
 	private void updateMinMaxHorizExp(OENode node) {
 		int newHorizExp = node.getHorizontalExpansion();
@@ -936,6 +936,51 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //			System.out.println("minimum horizontal expansion is now " + minHorizExp);
 		}
 	}
+	
+	@Override
+	public OWLClassExpression getCurrentlyBestDescription() {
+		EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
+		return ed == null ? null : ed.getDescription();
+	}
+
+	@Override
+	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
+		return bestEvaluatedDescriptions.toDescriptionList();
+	}
+	
+	@Override
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return bestEvaluatedDescriptions.getBest();
+	}	
+	
+	@Override
+	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+		return bestEvaluatedDescriptions.getSet();
+	}	
+	
+	public double getCurrentlyBestAccuracy() {
+		return bestEvaluatedDescriptions.getBest().getAccuracy();
+	}
+	
+	@Override
+	public boolean isRunning() {
+		return isRunning;
+	}	
+	
+	@Override
+	public void stop() {
+		stop = true;
+	}
+
+	public OENode getSearchTreeRoot() {
+		return startNode;
+	}
+	
+	@SuppressWarnings("unused")
+	private String bestDescriptionToString() {
+		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
+		return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
+	}	
 	
 	public TreeSet<OENode> getNodes() {
 		return nodes;
