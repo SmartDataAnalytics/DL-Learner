@@ -635,7 +635,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 			// rule 4: EXISTS r.TOP => EXISTS r.{value}
-			if(useHasValueConstructor && filler.isOWLThing() && !role.isAnonymous()) {
+			if(useHasValueConstructor && filler.isOWLThing()){ // && !role.isAnonymous()) {
 				// watch out for frequent patterns
 				Set<OWLIndividual> frequentInds = frequentValues.get(role);
 				if(frequentInds != null) {
