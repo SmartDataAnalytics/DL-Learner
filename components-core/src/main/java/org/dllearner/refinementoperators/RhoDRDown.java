@@ -49,6 +49,7 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -94,7 +95,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -142,7 +146,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<OWLObjectProperty,OWLClassExpression>();
 
 	// maximum number of fillers for each role
-	private Map<OWLObjectProperty,Integer> maxNrOfFillers = new TreeMap<OWLObjectProperty,Integer>();
+	private Map<OWLObjectPropertyExpression, Integer> maxNrOfFillers = new TreeMap<OWLObjectPropertyExpression, Integer>();
 	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
 	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
 	// not want something like e.g. >= 204 hasAtom.NOT Carbon-87; which blows up the search space
@@ -412,6 +416,33 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}
 				}
 				maxNrOfFillers.put(op, maxFillers);
+				
+				// handle inverse properties
+				if(useInverse) {
+					maxFillers = 0;
+					
+					Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
+					
+					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : opMembers.entrySet()) {
+						OWLIndividual subject = entry.getKey();
+						SortedSet<OWLIndividual> objects = entry.getValue();
+						
+						for (OWLIndividual obj : objects) {
+							map.put(obj, subject);
+						}
+					}
+					
+					for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
+						Collection<OWLIndividual> inds = entry.getValue();
+						if (inds.size() > maxFillers)
+							maxFillers = inds.size();
+						if (maxFillers >= cardinalityLimit) {
+							maxFillers = cardinalityLimit;
+							break;
+						}
+					}
+					maxNrOfFillers.put(op.getInverseProperty(), maxFillers);
+				}
 			}
 		}
 
@@ -588,21 +619,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
-			// currently inverse roles are not supported
-			// remove reasoner calls
-			if(!role.isAnonymous()){
-				Set<OWLObjectProperty> moreSpecialRoles = reasoner.getSubProperties(role.asOWLObjectProperty());
-//				Set<OWLObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
-				for(OWLObjectProperty moreSpecialRole : moreSpecialRoles){
-					refinements.add(df.getOWLObjectSomeValuesFrom(moreSpecialRole, filler));
-				}
-			}
+			Set<OWLObjectProperty> moreSpecialRoles = reasoner.getSubProperties(role.getNamedProperty());
 
+			for (OWLObjectProperty moreSpecialRole : moreSpecialRoles) {
+				refinements.add(df.getOWLObjectSomeValuesFrom(moreSpecialRole, filler));
+			}
 
 			// rule 3: EXISTS r.D => >= 2 r.D
 			// (length increases by 1 so we have to check whether max length is sufficient)
-			if(useCardinalityRestrictions && !role.isAnonymous()) {
-				if(maxLength > OWLClassExpressionUtils.getLength(description) && maxNrOfFillers.get(role)>1) {
+			if(useCardinalityRestrictions) {// && !role.isAnonymous()) {
+				if(maxLength > OWLClassExpressionUtils.getLength(description) && maxNrOfFillers.get(role) > 1) {
 					OWLObjectMinCardinality min = df.getOWLObjectMinCardinality(2,role,filler);
 					refinements.add(min);
 				}
@@ -625,46 +651,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 		} else if (description instanceof OWLObjectAllValuesFrom) {
-			OWLObjectPropertyExpression role = ((OWLObjectAllValuesFrom) description).getProperty();
-			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
-			OWLClassExpression range = opRanges.get(role);
-
-			// rule 1: ALL r.D => ALL r.E
-			tmp = refine(filler, maxLength-2, null, range);
-
-			for(OWLClassExpression c : tmp) {
-				refinements.add(df.getOWLObjectAllValuesFrom(role, c));
-			}
-
-			// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
-			if(!filler.isOWLNothing() && !filler.isAnonymous() && tmp.size()==0) {
-				refinements.add(df.getOWLObjectAllValuesFrom(role, df.getOWLNothing()));
-			}
-
-			// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
-			// currently inverse roles are not supported
-			if(!role.isAnonymous()){
-				Set<OWLObjectProperty> subProperties = reasoner.getSubProperties(role.asOWLObjectProperty());
-//				Set<OWLObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(ar);
-				for(OWLObjectProperty subProperty : subProperties) {
-					refinements.add(df.getOWLObjectAllValuesFrom(subProperty, filler));
-				}
-			}
-
-
-			// rule 4: ALL r.D => <= (maxFillers-1) r.D
-			// (length increases by 1 so we have to check whether max length is sufficient)
-			// => commented out because this is actually not a downward refinement
-//			if(useCardinalityRestrictions) {
-//				if(maxLength > description.getLength() && maxNrOfFillers.get(ar)>1) {
-//					ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));
-//					refinements.add(max);
-//				}
-//			}
+			refine((OWLObjectAllValuesFrom) description, maxLength);
 		} else if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLObjectPropertyExpression role = ((OWLObjectCardinalityRestriction) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
-			OWLClassExpression range = opRanges.get(role);
+			OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
 			int cardinality = ((OWLObjectCardinalityRestriction) description).getCardinality();
 			if(description instanceof OWLObjectMaxCardinality) {
 				// rule 1: <= x r.C =>  <= x r.D
@@ -861,6 +852,46 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		}
 //		System.out.println("++++++++\nREFINING: " + description + "   maxLength:" + maxLength);
 //		System.out.println(refinements);
+		return refinements;
+	}
+	
+	private Set<OWLClassExpression> refine(OWLObjectAllValuesFrom ce, int maxLength) {
+		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
+		
+		OWLObjectPropertyExpression role = ce.getProperty();
+		OWLClassExpression filler = ce.getFiller();
+		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
+
+		// rule 1: ALL r.D => ALL r.E
+		Set<OWLClassExpression> tmp = refine(filler, maxLength-2, null, range);
+
+		for(OWLClassExpression c : tmp) {
+			refinements.add(df.getOWLObjectAllValuesFrom(role, c));
+		}
+
+		// rule 2: ALL r.D => ALL r.BOTTOM if D is a most specific atomic concept
+		if(!filler.isOWLNothing() && !filler.isAnonymous() && tmp.size()==0) {
+			refinements.add(df.getOWLObjectAllValuesFrom(role, df.getOWLNothing()));
+		}
+
+		// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
+		Set<OWLObjectProperty> subProperties = reasoner.getSubProperties(role.getNamedProperty());
+
+		for (OWLObjectProperty subProperty : subProperties) {
+			refinements.add(df.getOWLObjectAllValuesFrom(subProperty, filler));
+		}
+
+
+		// rule 4: ALL r.D => <= (maxFillers-1) r.D
+		// (length increases by 1 so we have to check whether max length is sufficient)
+		// => commented out because this is actually not a downward refinement
+//		if(useCardinalityRestrictions) {
+//			if(maxLength > ce.getLength() && maxNrOfFillers.get(ar)>1) {
+//				ObjectMaxCardinalityRestriction max = new ObjectMaxCardinalityRestriction(maxNrOfFillers.get(ar)-1,role,description.getChild(0));
+//				refinements.add(max);
+//			}
+//		}
+		
 		return refinements;
 	}
 
@@ -1132,6 +1163,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// M_A and M_A' where A'=ran(r)
 			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
 				m3.add(df.getOWLObjectAllValuesFrom(r, df.getOWLThing()));
+				
+				if(useInverse) {
+					m3.add(df.getOWLObjectAllValuesFrom(r.getInverseProperty(), df.getOWLThing()));
+				}
 			}
 		}
 

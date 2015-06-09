@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 public class MapUtils {
 
 	/**
@@ -38,4 +41,12 @@ public class MapUtils {
 		});
         return entries;
 	}
+	
+	public static <K, V> Multimap<K, V> createMultiMap(Map<K, ? extends Iterable<V>> input) {
+		  Multimap<K, V> multimap = ArrayListMultimap.create();
+		  for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
+		    multimap.putAll(entry.getKey(), entry.getValue());
+		  }
+		  return multimap;
+		}
 }

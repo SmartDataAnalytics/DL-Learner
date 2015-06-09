@@ -469,7 +469,7 @@ public class ConceptTransformation {
 		if(description instanceof OWLRestriction) {
 			if(((OWLRestriction) description).isObjectRestriction()){
 				OWLObjectPropertyExpression pe = (OWLObjectPropertyExpression)((OWLRestriction) description).getProperty();
-				OWLObjectProperty op = pe.isAnonymous() ? pe.getNamedProperty() : pe.asOWLObjectProperty();
+				OWLObjectProperty op = pe.getNamedProperty();
 				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
 				// if we have an all-restriction, we return it; otherwise we call the child
 				// (if it exists)

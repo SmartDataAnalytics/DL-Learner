@@ -777,39 +777,39 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 		// (it can still be at higher depth, e.g. if intersections are nested in unions)
 		private boolean occursOnSecondLevel(OWLClassExpression description, OWLClassExpression cls) {
-			SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(cls);
-			if(description instanceof OWLObjectIntersectionOf) {
-				List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
-				
-				for (OWLClassExpression op : operands) {
-					if(superClasses.contains(op) || 
-							(op instanceof OWLObjectUnionOf && !Sets.intersection(((OWLObjectUnionOf)op).getOperands(),superClasses).isEmpty())) {
-						for (OWLClassExpression op2 : operands) {
-							if((op2 instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)op2).getOperands().contains(cls))) {
-								return true;
-							}
-						}
-					}
-				}
-				
-				for (OWLClassExpression op1 : operands) {
-					for (OWLClassExpression op2 : operands) {
-						if(!op1.isAnonymous() && op2 instanceof OWLObjectUnionOf) {
-							 for (OWLClassExpression op3 : ((OWLObjectUnionOf)op2).getOperands()) {
-								if(!op3.isAnonymous()) {// A AND B with Disj(A,B)
-									if(reasoner.isDisjoint(op1.asOWLClass(), op3.asOWLClass())) {
-										return true;
-									}
-								} else {// A AND NOT A
-									if(op3 instanceof OWLObjectComplementOf && ((OWLObjectComplementOf)op3).getOperand().equals(op1)) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+//			SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(cls);
+//			if(description instanceof OWLObjectIntersectionOf) {
+//				List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
+//				
+//				for (OWLClassExpression op : operands) {
+//					if(superClasses.contains(op) || 
+//							(op instanceof OWLObjectUnionOf && !Sets.intersection(((OWLObjectUnionOf)op).getOperands(),superClasses).isEmpty())) {
+//						for (OWLClassExpression op2 : operands) {
+//							if((op2 instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)op2).getOperands().contains(cls))) {
+//								return true;
+//							}
+//						}
+//					}
+//				}
+//				
+//				for (OWLClassExpression op1 : operands) {
+//					for (OWLClassExpression op2 : operands) {
+//						if(!op1.isAnonymous() && op2 instanceof OWLObjectUnionOf) {
+//							 for (OWLClassExpression op3 : ((OWLObjectUnionOf)op2).getOperands()) {
+//								if(!op3.isAnonymous()) {// A AND B with Disj(A,B)
+//									if(reasoner.isDisjoint(op1.asOWLClass(), op3.asOWLClass())) {
+//										return true;
+//									}
+//								} else {// A AND NOT A
+//									if(op3 instanceof OWLObjectComplementOf && ((OWLObjectComplementOf)op3).getOperand().equals(op1)) {
+//										return true;
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
 			
 			return false;
 	    }
