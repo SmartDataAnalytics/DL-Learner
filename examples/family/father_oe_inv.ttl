@@ -28,6 +28,14 @@ father:isChildOf rdf:type owl:ObjectProperty ;
 
 
 
+###  http://example.com/father#isSonOf
+
+father:isSonOf rdf:type owl:ObjectProperty ;
+               
+               rdfs:subPropertyOf father:isChildOf .
+
+
+
 
 
 #################################################################
@@ -95,6 +103,15 @@ father:anna rdf:type father:female ,
 
 
 
+###  http://example.com/father#bob
+
+father:bob rdf:type father:male ,
+                    owl:NamedIndividual ;
+           
+           father:isChildOf father:stefan .
+
+
+
 ###  http://example.com/father#heinz
 
 father:heinz rdf:type father:male ,
@@ -111,8 +128,8 @@ father:markus rdf:type father:father ,
                        father:male ,
                        owl:NamedIndividual ;
               
-              father:isChildOf father:michelle ,
-                               father:stefan .
+              father:isSonOf father:michelle ,
+                             father:stefan .
 
 
 
