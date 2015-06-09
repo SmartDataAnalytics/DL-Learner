@@ -19,7 +19,6 @@ import javax.jms.TopicSubscriber;
 import org.apache.qpid.AMQException;
 import org.apache.qpid.client.AMQConnection;
 import org.apache.qpid.client.AMQQueue;
-import org.apache.qpid.client.AMQSession;
 import org.apache.qpid.client.AMQTopic;
 import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MessagingAgent;
@@ -270,7 +269,6 @@ public abstract class AbstractAMQPAgent extends AbstractCELA implements Messagin
     private void initQueues() throws JMSException {
         sendQueue = new AMQQueue((AMQConnection) connection, sendQueueIdentifier);
         sender = session.createProducer(sendQueue);
-        ((AMQSession<?, ?>) session).createProducer(sendQueue);
 
         receiveQueue = new AMQQueue((AMQConnection) connection, receiveQueueIdentifier);
         receiver = session.createConsumer(receiveQueue);

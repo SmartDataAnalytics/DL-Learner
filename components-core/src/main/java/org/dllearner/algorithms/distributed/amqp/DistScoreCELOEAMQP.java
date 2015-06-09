@@ -291,7 +291,6 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         setFilterDescriptionsFollowingFromKB(celoe.filterDescriptionsFollowingFromKB);
         setHeuristic(celoe.heuristic);
         setIgnoredConcepts(celoe.ignoredConcepts);
-        setLearningProblem(celoe.learningProblem);
         setMaxClassExpressionTests(celoe.maxClassExpressionTests);
         setMaxClassExpressionTestsAfterImprovement(celoe.maxClassExpressionTestsAfterImprovement);
         setMaxDepth(celoe.maxDepth);
