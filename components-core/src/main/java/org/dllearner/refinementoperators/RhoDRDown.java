@@ -49,7 +49,6 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -96,7 +95,6 @@ import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -209,9 +207,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
-	private Map<OWLObjectProperty, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<OWLObjectProperty, Map<OWLIndividual, Integer>>();
+	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>>();
 	// data structure with identified frequent values
-	private Map<OWLObjectProperty, Set<OWLIndividual>> frequentValues = new HashMap<OWLObjectProperty, Set<OWLIndividual>>();
+	private Map<OWLObjectPropertyExpression, Set<OWLIndividual>> frequentValues = new HashMap<OWLObjectPropertyExpression, Set<OWLIndividual>>();
 	// frequent data values
 	private Map<OWLDataProperty, Set<OWLLiteral>> frequentDataValues = new HashMap<OWLDataProperty, Set<OWLLiteral>>();
 	private Map<OWLDataProperty, Map<OWLLiteral, Integer>> dataValueFrequency = new HashMap<OWLDataProperty, Map<OWLLiteral, Integer>>();
@@ -324,7 +322,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				valueFrequency.put(op, opMap);
 
 				// sets ordered by corresponding individual (which we ignore)
-				Collection<SortedSet<OWLIndividual>> fillerSets = reasoner.getPropertyMembers(op).values();
+				Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers = reasoner.getPropertyMembers(op);
+				
+				Collection<SortedSet<OWLIndividual>> fillerSets = propertyMembers.values();
 				for (SortedSet<OWLIndividual> fillerSet : fillerSets) {
 					for (OWLIndividual i : fillerSet) {
 						Integer value = opMap.get(i);
@@ -336,7 +336,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-
+				
 				// keep only frequent patterns
 				Set<OWLIndividual> frequentInds = new TreeSet<OWLIndividual>();
 				for (OWLIndividual i : opMap.keySet()) {
@@ -346,6 +346,26 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}
 				}
 				frequentValues.put(op, frequentInds);
+				
+				if(useInverse) {
+					opMap = new TreeMap<OWLIndividual, Integer>();
+					valueFrequency.put(op.getInverseProperty(), opMap);
+					
+					frequentInds = new TreeSet<OWLIndividual>();
+					
+					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : propertyMembers
+							.entrySet()) {
+						OWLIndividual subject = entry.getKey();
+						SortedSet<OWLIndividual> values = entry.getValue();
+						
+						opMap.put(subject, values.size());
+						
+						if (values.size() >= frequencyThreshold) {
+							frequentInds.add(subject);
+						}
+					}
+					frequentValues.put(op.getInverseProperty(), frequentInds);
+				}
 			}
 		}
 		
@@ -619,7 +639,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 			// rule 2: EXISTS r.D => EXISTS s.D or EXISTS r^-1.D => EXISTS s^-1.D
-			Set<OWLObjectProperty> moreSpecialRoles = reasoner.getSubProperties(role.getNamedProperty());
+			Set<OWLObjectProperty> moreSpecialRoles = objectPropertyHierarchy.getMoreSpecialRoles(role.getNamedProperty());
 
 			for (OWLObjectProperty moreSpecialRole : moreSpecialRoles) {
 				refinements.add(df.getOWLObjectSomeValuesFrom(moreSpecialRole, filler));
@@ -754,8 +774,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression dp = ((OWLDataHasValue) description).getProperty();
 			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			
 			if(!dp.isAnonymous()){
-				Set<OWLDataProperty> subDPs = reasoner.getSubProperties(dp.asOWLDataProperty());
+				Set<OWLDataProperty> subDPs = dataPropertyHierarchy.getMoreSpecialRoles(dp.asOWLDataProperty());
 				for(OWLDataProperty subDP : subDPs) {
 					refinements.add(df.getOWLDataHasValue(subDP, value));
 				}
@@ -875,7 +896,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 
 		// rule 3: ALL r.D => ALL s.D or ALL r^-1.D => ALL s^-1.D
-		Set<OWLObjectProperty> subProperties = reasoner.getSubProperties(role.getNamedProperty());
+		Set<OWLObjectProperty> subProperties = objectPropertyHierarchy.getMoreSpecialRoles(role.getNamedProperty());
 
 		for (OWLObjectProperty subProperty : subProperties) {
 			refinements.add(df.getOWLObjectAllValuesFrom(subProperty, filler));
@@ -908,7 +929,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// rule 3: no double occurences of boolean datatypes
 		TreeSet<OWLDataProperty> occuredDP = new TreeSet<OWLDataProperty>();
 		// rule 4: no double occurences of hasValue restrictions
-		TreeSet<OWLObjectProperty> occuredVR = new TreeSet<OWLObjectProperty>();
+		TreeSet<OWLObjectPropertyExpression> occuredVR = new TreeSet<OWLObjectPropertyExpression>();
 		// rule 5: max. restrictions at most once
 				boolean maxIntOccurence = false;
 				// rule 6: min restrictions at most once
@@ -959,7 +980,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				if(!occuredDP.add(dp))
 					return false;
 			} else if(child instanceof OWLObjectHasValue) {
-				OWLObjectProperty op = ((OWLObjectHasValue) child).getProperty().asOWLObjectProperty();
+				OWLObjectPropertyExpression op = ((OWLObjectHasValue) child).getProperty();
 				if(!occuredVR.add(op))
 					return false;
 			}
@@ -985,7 +1006,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	private void computeTopRefinements(int maxLength, OWLClassExpression domain) {
 		long topComputationTimeStartNs = System.nanoTime();
-		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);
+//		System.out.println("computing top refinements for " + domain + " up to length " + maxLength);
 
 		if(domain == null && m.size() == 0)
 			computeM();
@@ -1148,7 +1169,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		SortedSet<OWLClassExpression> m3 = new TreeSet<OWLClassExpression>();
 		if(useExistsConstructor) {
-			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
+			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m3.add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
 				
 				if(useInverse) {
@@ -1161,7 +1182,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// we allow \forall r.\top here because otherwise the operator
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
-			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
+			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m3.add(df.getOWLObjectAllValuesFrom(r, df.getOWLThing()));
 				
 				if(useInverse) {
@@ -1200,7 +1221,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> m4 = new TreeSet<OWLClassExpression>();
 		if(useCardinalityRestrictions) {
 			logger.debug(sparql_debug, "most general properties:");
-			for(OWLObjectProperty r : reasoner.getMostGeneralProperties()) {
+			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				int maxFillers = maxNrOfFillers.get(r);
 				logger.debug(sparql_debug, "`"+r+"="+maxFillers);
 				// zero fillers: <= -1 r.C does not make sense
@@ -1508,9 +1529,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mgNumeric.put(domain, new TreeSet<OWLDataProperty>());
 		mgsd.put(domain, new TreeSet<OWLDataProperty>());
 
-		SortedSet<OWLObjectProperty> mostGeneral = reasoner.getMostGeneralProperties();
+		SortedSet<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
-		SortedSet<OWLDataProperty> mostGeneralDP = reasoner.getMostGeneralDatatypeProperties();
+		SortedSet<OWLDataProperty> mostGeneralDP = dataPropertyHierarchy.getMostGeneralRoles();
 		// we make the (reasonable) assumption here that all sub and super
 		// datatype properties have the same type (e.g. boolean, integer, double)
 		Set<OWLDataProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
@@ -1526,7 +1547,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(appOP.get(domain).contains(prop))
 				mgrTmp.add(prop);
 			else
-				computeMgrRecursive(domain, reasoner.getSubProperties(prop), mgrTmp);
+				computeMgrRecursive(domain, objectPropertyHierarchy.getMoreSpecialRoles(prop), mgrTmp);
 		}
 	}
 
@@ -1535,7 +1556,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(appBD.get(domain).contains(prop))
 				mgbdTmp.add(prop);
 			else
-				computeMgbdRecursive(domain, reasoner.getSubProperties(prop), mgbdTmp);
+				computeMgbdRecursive(domain, dataPropertyHierarchy.getMoreSpecialRoles(prop), mgbdTmp);
 		}
 	}
 
@@ -1545,7 +1566,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(appNumeric.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
-				computeMostGeneralNumericDPRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
+				computeMostGeneralNumericDPRecursive(domain, dataPropertyHierarchy.getMoreSpecialRoles(prop), mgddTmp);
 		}
 	}
 	private void computeMostGeneralStringDPRecursive(OWLClassExpression domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
@@ -1553,7 +1574,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(appSD.get(domain).contains(prop))
 				mgddTmp.add(prop);
 			else
-				computeMostGeneralStringDPRecursive(domain, reasoner.getSubProperties(prop), mgddTmp);
+				computeMostGeneralStringDPRecursive(domain, dataPropertyHierarchy.getMoreSpecialRoles(prop), mgddTmp);
 		}
 	}
 
@@ -1561,7 +1582,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private void computeApp(OWLClassExpression domain) {
 		SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
 		// object properties
-		Set<OWLObjectProperty> mostGeneral = reasoner.getObjectProperties();
+		Set<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
 		Set<OWLObjectProperty> applicableRoles = new TreeSet<OWLObjectProperty>();
 		for(OWLObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,

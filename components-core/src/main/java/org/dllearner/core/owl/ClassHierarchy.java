@@ -52,6 +52,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
     
     private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This
 	 * is used to build the subsumption hierarchy. 

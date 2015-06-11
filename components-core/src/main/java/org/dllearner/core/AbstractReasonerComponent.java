@@ -1211,7 +1211,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}	
 	
 	@Override
-	public final TreeSet<OWLObjectProperty> getMostGeneralProperties() {
+	public final SortedSet<OWLObjectProperty> getMostGeneralProperties() {
 		return getObjectPropertyHierarchy().getMostGeneralRoles();
 	}
 
@@ -1220,7 +1220,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 //	}	
 	
 	@Override
-	public final TreeSet<OWLObjectProperty> getMostSpecialProperties() {
+	public final SortedSet<OWLObjectProperty> getMostSpecialProperties() {
 		return getObjectPropertyHierarchy().getMostSpecialRoles();
 	}
 
@@ -1247,12 +1247,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}		
 	
 	@Override
-	public final TreeSet<OWLDataProperty> getMostGeneralDatatypeProperties() {
+	public final SortedSet<OWLDataProperty> getMostGeneralDatatypeProperties() {
 		return getDatatypePropertyHierarchy().getMostGeneralRoles();
 	}
 
 	@Override
-	public final TreeSet<OWLDataProperty> getMostSpecialDatatypeProperties() {
+	public final SortedSet<OWLDataProperty> getMostSpecialDatatypeProperties() {
 		return getDatatypePropertyHierarchy().getMostSpecialRoles();
 	}
 
@@ -1337,8 +1337,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			roleHierarchyUp.put(role, getSuperPropertiesImpl(role));
 		}
 
-		roleHierarchy = new ObjectPropertyHierarchy(atomicRoles, roleHierarchyUp,
-				roleHierarchyDown);
+		roleHierarchy = new ObjectPropertyHierarchy(roleHierarchyUp, roleHierarchyDown);
 		return roleHierarchy;		
 	}
 
@@ -1388,8 +1387,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			datatypePropertyHierarchyUp.put(role, getSuperPropertiesImpl(role));
 		}
 
-		return new DatatypePropertyHierarchy(datatypeProperties, datatypePropertyHierarchyUp,
-				datatypePropertyHierarchyDown);		
+		return new DatatypePropertyHierarchy(datatypePropertyHierarchyUp, datatypePropertyHierarchyDown);		
 	}
 
 	@Override

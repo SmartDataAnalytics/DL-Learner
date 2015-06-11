@@ -677,7 +677,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				}
 			}
 			logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-			roleHierarchy = new ObjectPropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+			roleHierarchy = new ObjectPropertyHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 //		} 
 		return roleHierarchy;
 	}
@@ -756,7 +756,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 
 		logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-		datatypePropertyHierarchy = new DatatypePropertyHierarchy(properties, subsumptionHierarchyUp, subsumptionHierarchyDown);
+		datatypePropertyHierarchy = new DatatypePropertyHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
 		return datatypePropertyHierarchy;
 	}
 

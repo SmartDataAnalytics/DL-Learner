@@ -173,14 +173,14 @@ public interface SchemaReasoner {
 	 * @see OWLObjectPropertyHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
-	public TreeSet<OWLObjectProperty> getMostGeneralProperties();
+	public SortedSet<OWLObjectProperty> getMostGeneralProperties();
 
 	/**
 	 * TODO Outdated in OWL, because the bottom role is the most specific.
 	 * @see OWLObjectPropertyHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
-	public TreeSet<OWLObjectProperty> getMostSpecialProperties();
+	public SortedSet<OWLObjectProperty> getMostSpecialProperties();
 
 	/**
 	 * Computes and returns the data property hierarchy of the knowledge base.
@@ -212,13 +212,13 @@ public interface SchemaReasoner {
 	 * @see OWLObjectPropertyHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
-	public TreeSet<OWLDataProperty> getMostGeneralDatatypeProperties();
+	public SortedSet<OWLDataProperty> getMostGeneralDatatypeProperties();
 
 	/**
 	 * @see OWLObjectPropertyHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
-	public TreeSet<OWLDataProperty> getMostSpecialDatatypeProperties();
+	public SortedSet<OWLDataProperty> getMostSpecialDatatypeProperties();
 
 	/**
 	 * @param role

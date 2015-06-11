@@ -39,6 +39,8 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
@@ -168,9 +170,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// important: do not initialise those with empty sets
 	// null = no settings for allowance / ignorance
 	// empty set = allow / ignore nothing (it is often not desired to allow no class!)
-	Set<OWLClass> allowedConcepts = null;
-	Set<OWLClass> ignoredConcepts = null;
-
 	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
 	private boolean writeSearchTree = false;
 
@@ -227,12 +226,19 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public CELOE(CELOE celoe){
 		setReasoner(celoe.reasoner);
 		setLearningProblem(celoe.learningProblem);
+		
 		setAllowedConcepts(celoe.getAllowedConcepts());
+		setAllowedObjectProperties(celoe.getAllowedObjectProperties());
+		setAllowedDataProperties(celoe.getAllowedDataProperties());
+		
+		setIgnoredConcepts(celoe.ignoredConcepts);
+		setIgnoredObjectProperties(celoe.getIgnoredObjectProperties());
+		setIgnoredDataProperties(celoe.getIgnoredDataProperties());
+		
 		setExpandAccuracy100Nodes(celoe.expandAccuracy100Nodes);
 		setFilterDescriptionsFollowingFromKB(celoe.filterDescriptionsFollowingFromKB);
 		setHeuristic(celoe.heuristic);
-		setIgnoredConcepts(celoe.ignoredConcepts);
-		setLearningProblem(celoe.learningProblem);
+		
 		setMaxClassExpressionTests(celoe.maxClassExpressionTests);
 		setMaxClassExpressionTestsAfterImprovement(celoe.maxClassExpressionTestsAfterImprovement);
 		setMaxDepth(celoe.maxDepth);
@@ -240,6 +246,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		setMaxExecutionTimeInSecondsAfterImprovement(celoe.maxExecutionTimeInSecondsAfterImprovement);
 		setMaxNrOfResults(celoe.maxNrOfResults);
 		setNoisePercentage(celoe.noisePercentage);
+		
 		RhoDRDown op = new RhoDRDown((RhoDRDown)celoe.operator);
 		try {
 			op.init();
@@ -247,14 +254,17 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			e.printStackTrace();
 		}
 		setOperator(op);
-		setReplaceSearchTree(celoe.replaceSearchTree);
+		
+		
 		setReuseExistingDescription(celoe.reuseExistingDescription);
 		setSingleSuggestionMode(celoe.singleSuggestionMode);
 		setStartClass(celoe.startClass);
 		setStopOnFirstDefinition(celoe.stopOnFirstDefinition);
 		setTerminateOnNoiseReached(celoe.terminateOnNoiseReached);
 		setUseMinimizer(celoe.useMinimizer);
+		
 		setWriteSearchTree(celoe.writeSearchTree);
+		setReplaceSearchTree(celoe.replaceSearchTree);
 	}
 	
 	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -283,24 +293,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
-		Set<OWLClass> usedConcepts;
-//		Set<OWLClass> allowedConcepts = configurator.getAllowedConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getAllowedConcepts());
-//		Set<OWLClass> ignoredConcepts = configurator.getIgnoredConcepts()==null ? null : CommonConfigMappings.getAtomicConceptSet(configurator.getIgnoredConcepts());
-		if(allowedConcepts != null) {
-			// sanity check to control if no non-existing concepts are in the list
-			Helper.checkConcepts(reasoner, allowedConcepts);
-			usedConcepts = allowedConcepts;
-		} else if(ignoredConcepts != null) {
-			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
-		} else {
-			usedConcepts = Helper.computeConcepts(reasoner);
-		}
+		
 		
 		// copy class hierarchy and modify it such that each class is only
 		// reachable via a single path
-//		ClassHierarchy classHierarchy = reasoner.getClassHierarchy().clone();
-		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
-//		classHierarchy.thinOutSubsumptionHierarchy();
+		ClassHierarchy classHierarchy = initClassHierarchy();
+		ObjectPropertyHierarchy objectPropertyHierarchy = initObjectPropertyHierarchy();
+		DatatypePropertyHierarchy datatypePropertyHierarchy = initDataPropertyHierarchy();
 
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
@@ -342,8 +341,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		if(operator instanceof CustomHierarchyRefinementOperator) {
 			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
 		
 //		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
@@ -1016,22 +1015,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 
 	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
-	}
-
-	public Set<OWLClass> getAllowedConcepts() {
-		return allowedConcepts;
-	}
-
-	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
-		this.allowedConcepts = allowedConcepts;
-	}
-
-	public Set<OWLClass> getIgnoredConcepts() {
-		return ignoredConcepts;
-	}
-
-	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
-		this.ignoredConcepts = ignoredConcepts;
 	}
 
 	public boolean isWriteSearchTree() {

@@ -21,6 +21,7 @@ package org.dllearner.core;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
@@ -38,9 +43,11 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -101,6 +108,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
+	
+	
+	protected Set<OWLClass> allowedConcepts = null;
+	protected Set<OWLClass> ignoredConcepts = null;
+	protected Set<OWLObjectProperty> allowedObjectProperties = null;
+	protected Set<OWLObjectProperty> ignoredObjectProperties = null;
+	protected Set<OWLDataProperty> allowedDataProperties = null;
+	protected Set<OWLDataProperty> ignoredDataProperties = null;
 
     /**
      * Default Constructor
@@ -347,6 +362,58 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return str;
 	}
 	
+	protected ClassHierarchy initClassHierarchy() {
+		Set<OWLClass> usedConcepts;
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(reasoner, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(reasoner);
+		}
+		
+		ClassHierarchy hierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
+//		hierarchy.thinOutSubsumptionHierarchy();
+		return hierarchy;
+	}
+	
+	protected ObjectPropertyHierarchy initObjectPropertyHierarchy() {
+		Set<OWLObjectProperty> usedProperties;
+		if(allowedObjectProperties != null) {
+			// sanity check to control if no non-existing object properties are in the list
+			Helper.checkRoles(reasoner, allowedObjectProperties);
+			usedProperties = allowedObjectProperties;
+		} else if(ignoredObjectProperties != null) {
+			usedProperties = Helper.computeEntitiesUsingIgnoreList(reasoner, EntityType.OBJECT_PROPERTY, ignoredObjectProperties);
+		} else {
+			usedProperties = Helper.computeEntities(reasoner, EntityType.OBJECT_PROPERTY);
+		}
+		
+		ObjectPropertyHierarchy hierarchy = (ObjectPropertyHierarchy) reasoner.getObjectPropertyHierarchy().cloneAndRestrict(usedProperties);
+//		hierarchy.thinOutSubsumptionHierarchy();
+		
+		return hierarchy;
+	}
+	
+	protected DatatypePropertyHierarchy initDataPropertyHierarchy() {
+		Set<OWLDataProperty> usedProperties;
+		if(allowedDataProperties != null) {
+			// sanity check to control if no non-existing data properties are in the list
+			Helper.checkEntities(reasoner, allowedDataProperties);
+			usedProperties = allowedDataProperties;
+		} else if(ignoredDataProperties != null) {
+			usedProperties = Helper.computeEntitiesUsingIgnoreList(reasoner, EntityType.DATA_PROPERTY, ignoredDataProperties);
+		} else {
+			usedProperties = Helper.computeEntities(reasoner, EntityType.DATA_PROPERTY);
+		}
+		
+		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
+//		hierarchy.thinOutSubsumptionHierarchy();
+		return hierarchy;
+	}
+	
 	protected long getCurrentRuntimeInMilliSeconds() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
 	}
@@ -404,6 +471,78 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public boolean isRunning() {
 		return isRunning;
 	}	
+	
+	public Set<OWLClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<OWLClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+	
+	/**
+	 * @param allowedObjectProperties the allowed object properties to set
+	 */
+	public void setAllowedObjectProperties(Set<OWLObjectProperty> allowedObjectProperties) {
+		this.allowedObjectProperties = allowedObjectProperties;
+	}
+	
+	/**
+	 * @return the allowed object properties
+	 */
+	public Set<OWLObjectProperty> getAllowedObjectProperties() {
+		return allowedObjectProperties;
+	}
+	
+	/**
+	 * @param ignoredObjectProperties the ignored object properties to set
+	 */
+	public void setIgnoredObjectProperties(Set<OWLObjectProperty> ignoredObjectProperties) {
+		this.ignoredObjectProperties = ignoredObjectProperties;
+	}
+	
+	/**
+	 * @return the ignored object properties
+	 */
+	public Set<OWLObjectProperty> getIgnoredObjectProperties() {
+		return ignoredObjectProperties;
+	}
+	
+	/**
+	 * @param allowedDataProperties the allowed data properties to set
+	 */
+	public void setAllowedDataProperties(Set<OWLDataProperty> allowedDataProperties) {
+		this.allowedDataProperties = allowedDataProperties;
+	}
+	
+	/**
+	 * @return the allowed data properties
+	 */
+	public Set<OWLDataProperty> getAllowedDataProperties() {
+		return allowedDataProperties;
+	}
+	
+	/**
+	 * @param ignoredDataProperties the ignored data properties to set
+	 */
+	public void setIgnoredDataProperties(Set<OWLDataProperty> ignoredDataProperties) {
+		this.ignoredDataProperties = ignoredDataProperties;
+	}
+	
+	/**
+	 * @return the ignored data properties
+	 */
+	public Set<OWLDataProperty> getIgnoredDataProperties() {
+		return ignoredDataProperties;
+	}
     
     /**
 	 * Replace role fillers with the range of the property, if exists.
