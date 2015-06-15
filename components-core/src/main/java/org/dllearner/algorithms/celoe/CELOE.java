@@ -21,7 +21,6 @@ package org.dllearner.algorithms.celoe;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,9 +71,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,9 +108,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
 	private LengthLimitedRefinementOperator operator;
-	private OWLClassExpressionMinimizer minimizer;
-	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
-	private boolean useMinimizer = true;
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
@@ -261,7 +254,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		setStartClass(celoe.startClass);
 		setStopOnFirstDefinition(celoe.stopOnFirstDefinition);
 		setTerminateOnNoiseReached(celoe.terminateOnNoiseReached);
-		setUseMinimizer(celoe.useMinimizer);
+		setUseMinimizer(celoe.isUseMinimizer());
 		
 		setWriteSearchTree(celoe.writeSearchTree);
 		setReplaceSearchTree(celoe.replaceSearchTree);
@@ -641,7 +634,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		if(isCandidate) {
-			OWLClassExpression niceDescription = rewriteNode(node);
+			OWLClassExpression niceDescription = rewrite(node.getExpression());
 			ConceptTransformation.transformToOrderedForm(niceDescription);
 			
 			if(niceDescription.equals(classToDescribe)) {
@@ -812,37 +805,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			
 			return false;
 	    }
-	
-	// check whether the node is a potential solution candidate
-	private OWLClassExpression rewriteNode(OENode node) {
-		OWLClassExpression description = node.getDescription();
-		// minimize OWLClassExpression (expensive!) - also performs some human friendly rewrites
-		OWLClassExpression niceDescription;
-		if(useMinimizer) {
-			niceDescription = minimizer.minimizeClone(description);
-		} else {
-			niceDescription = description;
-		}
-//		System.out.println(description + ":" + niceDescription);
-		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
-		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
-		return niceDescription;
-	}
-	
-	// check whether the node is a potential solution candidate
-		private OWLClassExpression rewriteNodeSimple(OENode node) {
-			OWLClassExpression description = node.getDescription();
-			// minimize OWLClassExpression (expensive!) - also performs some human friendly rewrites
-			OWLClassExpression niceDescription;
-			if(useMinimizer) {
-				niceDescription = minimizer.minimizeClone(description);
-			} else {
-				niceDescription = description;
-			}
-			// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
-			niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
-			return niceDescription;
-		}
 	
 	private boolean terminationCriteriaSatisfied() {
 		return 
@@ -1097,14 +1059,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.reuseExistingDescription = reuseExistingDescription;
 	}
 
-	public boolean isUseMinimizer() {
-		return useMinimizer;
-	}
-
-	public void setUseMinimizer(boolean useMinimizer) {
-		this.useMinimizer = useMinimizer;
-	}
-
 	public AbstractHeuristic getHeuristic() {
 		return heuristic;
 	}
@@ -1232,25 +1186,29 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		op.setUseAllConstructor(true);
 		op.init();
 		
+		
+		
 		//(male ⊓ (∀ hasChild.⊤)) ⊔ (∃ hasChild.(∃ hasChild.male))
 		OWLDataFactory df = new OWLDataFactoryImpl();
-		OWLClassExpression ce = df.getOWLObjectUnionOf(
-				df.getOWLObjectIntersectionOf(
-						df.getOWLClass(IRI.create("http://example.com/father#male")),
-						df.getOWLObjectAllValuesFrom(
-								df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
-								df.getOWLThing())),
-				df.getOWLObjectSomeValuesFrom(
-						df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")), 
-						df.getOWLObjectSomeValuesFrom(
-								df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
-								df.getOWLClass(IRI.create("http://example.com/father#male"))
-								)
-						)
+		OWLClass male = df.getOWLClass(IRI.create("http://example.com/father#male"));
+		OWLClassExpression ce = df.getOWLObjectIntersectionOf(
+									df.getOWLObjectUnionOf(
+											male,
+											df.getOWLObjectIntersectionOf(
+													male, male),
+											df.getOWLObjectSomeValuesFrom(
+												df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
+												df.getOWLThing())
+									),
+									df.getOWLObjectAllValuesFrom(
+											df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")), 
+											df.getOWLThing()
+											)
 				);
 		System.out.println(ce);
-		System.out.println(OWLClassExpressionUtils.getLength(ce));
-		System.out.println(lp.getAccuracyOrTooWeak(ce, 0));
+		OWLClassExpressionMinimizer min = new OWLClassExpressionMinimizer(df, rc);
+		ce = min.minimizeClone(ce);
+		System.out.println(ce);
 		
 		CELOE alg = new CELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);

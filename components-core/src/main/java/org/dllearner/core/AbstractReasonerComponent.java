@@ -50,16 +50,20 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -133,6 +137,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected boolean precomputeDataPropertyHierarchy = true;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	protected Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
+	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<OWLDataProperty, OWLDatatype>();
 
 	/**
 	 * The underlying knowledge sources.
@@ -1612,4 +1619,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+	
+	/**
+	 * @param dp
+	 * @return
+	 */
+	public abstract OWLDatatype getDatatype(OWLDataProperty dp);
 }
