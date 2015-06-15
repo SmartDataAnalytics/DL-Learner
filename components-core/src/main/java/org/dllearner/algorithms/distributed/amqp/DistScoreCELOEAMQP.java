@@ -724,6 +724,9 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
     }
 
     private void processRefinementScore(RefinementAndScoreContainer refScoreContainer) {
+        /* This may happen since the blocking receive in an AMQP setup as
+         * currently implemented just blocks until a timeout is reached and
+         * then goes on */
         if (refScoreContainer == null) return;
 
         OWLClassExpression description = refScoreContainer.getRefinement();
