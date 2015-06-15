@@ -190,6 +190,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 
 	// splits for double datatype properties in ascending order
@@ -248,6 +249,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(name = "useNumericDatatypes", description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
 	private boolean useNumericDatatypes = true;
+
+	@ConfigOption(name = "useTimeDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	private boolean useTimeDatatypes = true;
 
 	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean useStringDatatypes = false;
@@ -1337,6 +1341,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
 				}
 			}
+		}
+		
+		if(useTimeDatatypes) {
+			Set<OWLDataProperty> dtDPs = mgDT.get(nc);
 		}
 
 		if(useDataHasValueConstructor) {
