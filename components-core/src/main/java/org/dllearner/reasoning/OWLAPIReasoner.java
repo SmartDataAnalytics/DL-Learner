@@ -91,7 +91,6 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
@@ -138,15 +137,21 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     // references to OWL API ontologies
     private Set<OWLOntology> owlAPIOntologies = new HashSet<OWLOntology>();
-    private String owlLinkURL;
-
-    // default reasoner is Pellet
-    private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
+    
 
     private OWLClassExpressionMinimizer minimizer;
 
     private OWLReasoner fallbackReasoner;
+    
+ // default reasoner is Pellet
+    @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
+    private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
+    
+    @ConfigOption(name = "useFallbackReasoner", defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
     private boolean useFallbackReasoner = false;
+    
+    @ConfigOption(name = "owlLinkURL", defaultValue="null", description="specifies the URL of the remote OWLLink server")
+    private String owlLinkURL;
 
     public OWLAPIReasoner() {
 
@@ -417,7 +422,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     		return ReasonerType.OWLAPI_PELLET;
     	}
     	else if (reasoner instanceof uk.ac.manchester.cs.jfact.JFactReasoner) {
-    		return ReasonerType.OWLAPI_FACT;
+    		return ReasonerType.OWLAPI_JFACT;
     	}
     	else if (reasoner instanceof uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasoner) {
     		return ReasonerType.OWLAPI_FACT;
