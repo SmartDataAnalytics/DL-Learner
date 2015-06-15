@@ -1,11 +1,13 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 
 	<artifactId>interfaces</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>Interfaces: GUI, CLI, Web Service</name>
+	<name>dllearner-interfaces</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
+	<description>Interfaces: GUI, CLI, Web Service</description>
 
 
 	<parent>
@@ -324,8 +326,7 @@
 									<goal>jdeb</goal>
 								</goals>
 								<configuration>
-									<deb>${basedir}/target/dl-learner-${release.name}.deb</deb>
-									<version>${release.name}</version>
+									<deb>${basedir}/target/dl-learner_[[version]]_all.deb</deb>
 									<controlDir>${basedir}/src/debian</controlDir>
 									<dataSet>
 										<data>
@@ -592,6 +593,10 @@
 					<artifactId>stanford-corenlp</artifactId>
 					<groupId>edu.stanford.nlp</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>slf4j-ext</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!--dependency> <groupId>org.dllearner</groupId> <artifactId>components-ext</artifactId> 
@@ -599,10 +604,6 @@
 		<!-- Added the dependency of the core tests so that they will be accessible 
 			from the tests in this component -->
 
-                <dependency>
-                        <groupId>org.dllearner</groupId>
-                        <artifactId>components-core</artifactId>
-                </dependency>
 
 <!--
 		<dependency>

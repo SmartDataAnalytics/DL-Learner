@@ -148,7 +148,7 @@ public class ELDown3 extends RefinementOperatorAdapter {
 		List<ELDescriptionTree> refinementTrees = refine(tree);
 		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
-			refinements.add(refinementTree.transformToDescription());
+			refinements.add(refinementTree.transformToClassExpression());
 		}
 		return refinements;
 	}

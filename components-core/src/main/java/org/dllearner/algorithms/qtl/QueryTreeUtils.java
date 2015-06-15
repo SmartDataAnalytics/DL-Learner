@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
@@ -30,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -607,15 +609,15 @@ public class QueryTreeUtils {
 						OWLClassExpression filler = null;
 						if(child.isVarNode()) {
 							filler = buildOWLClassExpression(child, literalConversion);
+							classExpressions.add(df.getOWLObjectSomeValuesFrom(
+									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									filler));
 						} else if (child.isResourceNode()) {
-							filler = df.getOWLClass(IRI.create(child.getData().getURI()));
+							classExpressions.add(df.getOWLObjectHasValue(
+									df.getOWLObjectProperty(IRI.create(edge.getURI())), 
+									df.getOWLNamedIndividual(IRI.create(child.getData().getURI()))));
 						}
-						classExpressions.add(df.getOWLObjectSomeValuesFrom(
-								df.getOWLObjectProperty(IRI.create(edge.getURI())), 
-								filler));
 					}
-					
-					
 				}
 			}
 		}
@@ -731,7 +733,7 @@ public class QueryTreeUtils {
 							ExprNode filter = new E_Equals(
 									new E_Datatype(new ExprVar(object)), 
 									NodeValue.makeNode(NodeFactory.createURI(child.getDatatype().getURI())));
-							filters.add(filter);
+//							filters.add(filter);
 						}
 						
 					} 
@@ -770,17 +772,76 @@ public class QueryTreeUtils {
 		
 		// remove trivial statements
 		for(Node edge : new TreeSet<Node>(tree.getEdges())) {
-			if(edge.equals(RDF.type.asNode())) {
+			if(edge.equals(RDF.type.asNode())) { // check outgoing rdf:type edges
 				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
 				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
 					RDFResourceTree child = iterator.next();
 					if(!isNonTrivial(child, entailment)) {
-//						iterator.remove();
 						tree.removeChild(child, edge);
 					}
-					
+				}
+			} else {// recursively apply pruning on all subtrees
+				List<RDFResourceTree> children = tree.getChildren(edge);
+				
+				for (RDFResourceTree child : children) {
+					prune(child, reasoner, entailment);
 				}
 			}
+		}
+		
+		if(entailment == entailment.RDFS) {
+//			// 1. rdfs:domain:
+//			// remove rdf:type edges if this is implicitly given by the other outgoing edges
+//			// 2. rdfs:range:
+//			// remove rdf:type edges if this is implicitly given by the incoming edge
+//			if (!tree.isLeaf()) {
+//				SortedSet<Node> edges = tree.getEdges(NodeType.RESOURCE);
+//				
+//				List<RDFResourceTree> typeChildren = tree.getChildren(RDF.type.asNode());
+//				
+//				if(typeChildren != null && !typeChildren.isEmpty()) {
+//					// get domains
+//					Set<Node> domains = new HashSet<Node>();
+//					for (Node edge : edges) {
+//						OWLClassExpression domain = reasoner.getDomain(new OWLObjectPropertyImpl(IRI.create(edge.getURI())));
+//						if(!domain.isAnonymous()) {
+//							domains.add(NodeFactory.createURI(domain.asOWLClass().toStringID()));
+//						}
+//					}
+//					
+//					// get range of incoming edge
+//					Set<Node> ranges = new HashSet<Node>();
+//					
+//					if(!tree.isRoot()) {
+//						// get the incoming edge from parent node
+//						Node incomingEdge = tree.getParent().getEdgeToChild(tree);
+//						
+//						OWLClassExpression rangeExpression = reasoner.getRange(new OWLObjectPropertyImpl(IRI.create(incomingEdge.getURI())));
+//						if(rangeExpression.isAnonymous()) {
+//							// TODO we have to handle complex class expressions, e.g. split intersections
+//						} else {
+//							ranges.add(NodeFactory.createURI(rangeExpression.asOWLClass().toStringID()));
+//						}
+//					}
+//
+//					// remove rdf:type children if implicitly given by domain or range
+//					for (RDFResourceTree child : new ArrayList<>(typeChildren)) {
+//						if(domains.contains(child.getData()) || ranges.contains(child.getData())) {
+//							tree.removeChild(child, RDF.type.asNode());
+//						}
+//					}
+//				}
+//			}
+//			
+//			// apply recursively on children
+//			SortedSet<Node> edges = tree.getEdges();
+//			for (Node edge : edges) {
+//				if(!edge.equals(RDF.type.asNode())) {
+//					for (RDFResourceTree child : tree.getChildren(edge)) {
+//						prune(child, reasoner, entailment);
+//					}
+//				}
+//			}
 		}
 		
 		// we have to run the subsumption check one more time to prune the tree
@@ -835,6 +896,36 @@ public class QueryTreeUtils {
 //				
 //			}
 //		}
+	}
+	
+	/**
+	 * Recursively removes edges that lead to a leaf node which is a variable.
+	 * @param tree
+	 * @param entailment
+	 */
+	public static boolean removeVarLeafs(RDFResourceTree tree) {
+		SortedSet<Node> edges = new TreeSet<>(tree.getEdges());
+		
+		boolean modified = false;
+		for (Node edge : edges) {
+			List<RDFResourceTree> children = new ArrayList<>(tree.getChildren(edge));
+//			
+			for (RDFResourceTree child : children) {
+				if(child.isLeaf() && child.isVarNode()) {
+					tree.removeChild(child, edge);
+					modified = true;
+				} else {
+					modified = removeVarLeafs(child);
+					if(modified && child.isLeaf() && child.isVarNode()) {
+						tree.removeChild(child, edge);
+						modified = true;
+					}
+				}
+			}
+			
+			
+		}
+		return modified;
 	}
 	
 	public static boolean isNonTrivial(RDFResourceTree tree, Entailment entailment) {

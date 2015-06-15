@@ -19,6 +19,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
@@ -3181,7 +3182,7 @@ public class Reactome {
         
         logger.debug("initializing reasoner...");
         OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-        baseReasoner.setReasonerTypeString("elk");
+        baseReasoner.setReasonerImplementation(ReasonerImplementation.ELK);
         baseReasoner.setUseFallbackReasoner(true);
         baseReasoner.init();
         Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);

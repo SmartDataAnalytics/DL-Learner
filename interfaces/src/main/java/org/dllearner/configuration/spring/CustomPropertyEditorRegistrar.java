@@ -2,8 +2,12 @@ package org.dllearner.configuration.spring;
 
 import org.dllearner.core.config.ClassExpressionPropertyEditor;
 import org.dllearner.core.config.IndividualEditor;
+import org.dllearner.core.config.ObjectPropertyEditor;
+import org.dllearner.core.config.ReasonerImplementationEditor;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;
 
@@ -23,7 +27,9 @@ public class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
         //Register any custom editors here.
     	ClassExpressionPropertyEditor ce = new ClassExpressionPropertyEditor();
     	registry.registerCustomEditor(OWLClassExpression.class, ce);
+    	registry.registerCustomEditor(OWLObjectProperty.class, new ObjectPropertyEditor());
     	registry.registerCustomEditor(OWLIndividual.class, new IndividualEditor());
+    	registry.registerCustomEditor(ReasonerImplementation.class, new ReasonerImplementationEditor());
     	
     }
 }

@@ -21,6 +21,10 @@ package org.dllearner.algorithms.el;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+
 
 /**
  * A node in the search tree of an EL algorithm.
@@ -34,6 +38,7 @@ public class SearchTreeNode {
 	
 	private List<SearchTreeNode> children = new LinkedList<SearchTreeNode>();
 	
+	private int coveredPositives;
 	private int coveredNegatives;
 	private boolean tooWeak = false;
 	
@@ -56,6 +61,20 @@ public class SearchTreeNode {
 	 */
 	public void setTooWeak() {
 		tooWeak = true;
+	}
+	
+	/**
+	 * @param coveredPositives the coveredPositives to set
+	 */
+	public void setCoveredPositives(int coveredPositives) {
+		this.coveredPositives = coveredPositives;
+	}
+	
+	/**
+	 * @return the coveredPositives
+	 */
+	public int getCoveredPositives() {
+		return coveredPositives;
 	}
 
 	/**
@@ -93,7 +112,7 @@ public class SearchTreeNode {
 	
 	@Override		
 	public String toString() {
-		String ret = descriptionTree.toDescriptionString() + " [q:";
+		String ret = descriptionTree.transformToClassExpression().toString() + " [q:";
 		if(tooWeak)
 			ret += "tw";
 		else
@@ -103,19 +122,30 @@ public class SearchTreeNode {
 		return ret;
 	}
 	
-	public String getTreeString() {
-		return getTreeString(0).toString();
+	public String toString(OWLObjectRenderer renderer) {
+		String ret = renderer.render(descriptionTree.transformToClassExpression()) + " [q:";
+		if(tooWeak)
+			ret += "tw";
+		else
+			ret += coveredNegatives;
+		ret += ", children:" + children.size() + "]";
+		ret += " score: " + score;
+		return ret;
 	}
 	
-	private StringBuilder getTreeString(int depth) {
+	public String getTreeString(OWLObjectRenderer renderer) {
+		return getTreeString(0, renderer).toString();
+	}
+	
+	private StringBuilder getTreeString(int depth, OWLObjectRenderer renderer) {
 		StringBuilder treeString = new StringBuilder();
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(toString()+"\n");
+		treeString.append(toString(renderer)+"\n");
 		for(SearchTreeNode child : children) {
-			treeString.append(child.getTreeString(depth+1));
+			treeString.append(child.getTreeString(depth+1, renderer));
 		}
 		return treeString;
 	}

@@ -17,7 +17,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Lorenz Buehmann
  *
  */
-@ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
+@ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic_simple", version = 0.1)
 public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 	
 	/* (non-Javadoc)

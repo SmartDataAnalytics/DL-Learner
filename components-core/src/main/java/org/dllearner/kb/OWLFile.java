@@ -46,6 +46,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.hazelcast.config.UrlXmlConfig;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 
 /**
  * @author Jens Lehmann
@@ -67,8 +68,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     private List<String> defaultGraphURIs = new LinkedList<String>();
     private List<String> namedGraphURIs = new LinkedList<String>();
 
+    private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
+    private String reasoningString = "";
+
     public static String getName() {
-        return "OWL file";
+    	return "OWL file";
     }
 
     public OWLFile() {
@@ -108,6 +112,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
       */
     @Override
     public void init() throws ComponentInitException {
+    	setReasoning(getReasoningString());
         if (sparql != null) {
             StringBuilder sb = new StringBuilder();
 
@@ -230,4 +235,49 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void setNamedGraphURIs(List<String> namedGraphURIs) {
         this.namedGraphURIs = namedGraphURIs;
     }
+    
+    public void setReasoning(String reasoning) {
+    	switch (reasoning) {
+    	case "micro_rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_MICRO_RULE_INF;
+    		break;
+    	case "mini_rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_MINI_RULE_INF;
+    		break;
+    	case "true":
+    	case "rdfs":
+    		this.reasoning = OntModelSpec.OWL_MEM_RDFS_INF;
+    		break;
+    	case "rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_RULE_INF;
+    		break;
+    	case "false":
+    	case "":
+    		this.reasoning = OntModelSpec.OWL_MEM;
+    		break;
+    	default:
+    		logger.warn("Unknown reasoning type: " + reasoning + ", must be one of [micro_rule, mini_rule, rdfs, rule]");
+    		this.reasoning = OntModelSpec.OWL_MEM;
+    	}
+    }
+    
+    public void setReasoning(boolean reasoning) {
+		this.setReasoning(reasoning ? "rdfs" : "");
+	}
+    
+    public void setReasoning(OntModelSpec reasoning) {
+    	this.reasoning = reasoning;
+    }
+
+	public OntModelSpec getReasoning() {
+		return this.reasoning;
+	}
+
+	public String getReasoningString() {
+		return reasoningString;
+	}
+
+	public void setReasoningString(String reasoningString) {
+		this.reasoningString = reasoningString;
+	}
 }

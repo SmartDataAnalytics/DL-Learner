@@ -57,6 +57,8 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
 	private static final OWLClassExpressionChildrenCollector CHILDREN_COLLECTOR = new OWLClassExpressionChildrenCollector();
 	
+	
+	
 	/**
 	 * Returns the length of a given class expression. Note that the current implementation
 	 * is not thread-safe.
@@ -98,7 +100,16 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 		return duplicator.duplicateObject(ce);
 	}
 	
-	
+	/**
+	 * Determine whether a named class occurs on the outermost level, i.e. property depth 0
+	 * (it can still be at higher depth, e.g. if intersections are nested in unions)
+	 * @param description
+	 * @param cls
+	 * @return
+	 */
+	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
+		return description.containsConjunct(cls);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLClass)

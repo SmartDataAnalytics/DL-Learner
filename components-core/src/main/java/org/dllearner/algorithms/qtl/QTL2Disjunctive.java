@@ -4,6 +4,7 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.TimeLimitingCollector.TimeExceededException;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -152,6 +154,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private int maxTreeDepth = 2;
 	
+	private boolean useDisjunction = false;
+	
 	public QTL2Disjunctive() {}
 	
 	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
@@ -259,13 +263,15 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			for (OWLIndividual ind : lp.getPositiveExamples()) {
 				try {
 					Model cbd = cbdGen.getConciseBoundedDescription(ind.toStringID());
+//					cbd.write(new FileOutputStream("/tmp/dbpedia-" + ind.toStringID().substring(ind.toStringID().lastIndexOf('/') + 1) + ".ttl"), "TURTLE", null);
 					queryTree = treeFactory.getQueryTree(ind.toStringID(), cbd);
 					tree2Individual.put(queryTree, ind);
 					currentPosExampleTrees.add(queryTree);
 					currentPosExamples.add(ind);
-					System.out.println(queryTree.getStringRepresentation());
+					logger.debug(ind);
+					logger.debug(queryTree.getStringRepresentation());
 				} catch (Exception e) {
-					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					logger.error("Failed to generate tree for resource " + ind, e);
 					throw new RuntimeException();
 				}
 			}
@@ -280,8 +286,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					tree2Individual.put(queryTree, ind);
 					currentNegExampleTrees.add(queryTree);
 					currentNegExamples.add(ind);
+					logger.debug(ind);
+					logger.debug(queryTree.getStringRepresentation());
 				} catch (Exception e) {
-					logger.error("Failed to generate tree for resource " + ind.toStringID(), e);
+					logger.error("Failed to generate tree for resource " + ind, e);
 					throw new RuntimeException();
 				}
 			}
@@ -294,14 +302,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public void start() {
-		showSetup();
+		printSetup();
 		logger.info("Running...");
 		startTime = System.currentTimeMillis();
 		
 		reset();
 		
 		int i = 1;
-		while(!terminationCriteriaSatisfied()){
+		while(!terminationCriteriaSatisfied() && (useDisjunction || i == 1)){
 			logger.info(i++ + ". iteration...");
 			logger.info("#Remaining pos. examples:" + currentPosExampleTrees.size());
 			logger.info("#Remaining neg. examples:" + currentNegExampleTrees.size());
@@ -309,7 +317,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			// compute best (partial) solution computed so far
 			EvaluatedRDFResourceTree bestPartialSolution = computeBestPartialSolution();
 			
-			// add to partial solutions if criteria are satisfied
+			// add to set of partial solutions if criteria are satisfied
 			if(bestPartialSolution.getScore() >= minimumTreeScore){
 				
 				partialSolutions.add(bestPartialSolution);
@@ -331,14 +339,18 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					}
 				}
 				
-				// build the current combined solution from all partial solutions
+				// (re)build the current combined solution from all partial solutions
 				currentBestSolution = buildCombinedSolution();
 				
 				logger.info("combined accuracy: " + dFormat.format(currentBestSolution.getAccuracy()));
 			} else {
-				logger.info("no tree found, which satisfies the minimum criteria - the best was: "
-						+ currentBestSolution.getDescription()
-						+ " with score " + currentBestSolution.getScore());
+				String message = "No partial tree found which satisfies the minimal criteria.";
+				if(currentBestSolution != null) {
+					message += "- the best was: "
+							+ currentBestSolution.getDescription()
+							+ " with score " + currentBestSolution.getScore();
+				}
+				logger.info(message);
 			}
 			
 		};
@@ -350,10 +362,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		long endTime = System.currentTimeMillis();
 		logger.info("Finished in " + (endTime-startTime) + "ms.");
 		logger.info(expressionTests +" descriptions tested");
-		logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
-		
-		logger.info(currentBestSolution.getScore());
-		
+		if(currentBestSolution != null) {
+			logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
+			logger.info(currentBestSolution.getScore());
+		} else {
+			logger.info("Could not find a solution in the given time.");
+		}
 	}
 	
 	/**
@@ -414,17 +428,24 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
 			
 			// generate the LGG between the chosen tree and each uncovered positive example
-			Iterator<RDFResourceTree> it = currentElement.getFalseNegatives().iterator();
+			Collection<RDFResourceTree> falseNegatives = currentElement.getFalseNegatives();
+			
+			if(falseNegatives.isEmpty()) { // if the current solution covers already all pos examples
+				bestPartialSolutionTree = currentElement;
+				addToSolutions(bestPartialSolutionTree);
+			}
+			
+			Iterator<RDFResourceTree> it = falseNegatives.iterator();
 			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
 				RDFResourceTree uncoveredTree = it.next();
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
 				Set<RDFResourceTree> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
 				baseQueryTrees.add(uncoveredTree);
-				String s = "";
-				for (RDFResourceTree queryTree : baseQueryTrees) {
-					s += index.get(queryTree) + ",";
-				}
+//				String s = "";
+//				for (RDFResourceTree queryTree : baseQueryTrees) {
+//					s += index.get(queryTree) + ",";
+//				}
 //				System.err.println(s);
 				if(!processedCombinations.add(baseQueryTrees)) {
 //					System.err.println("skipping");
@@ -454,23 +475,24 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						}
 						// add to ToDo list, if not already contained in ToDo list or solution list
 						if(bestCurrentScore == 1.0 || mas > score){
-							todo(solution);
+//							todo(solution);
 						}
 					} else if(bestCurrentScore == 1.0 || mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
-						todo(solution);
+//						todo(solution);
 					} else {
 						logger.trace("Too weak:" + solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
-						todo(solution);
+//						todo(solution);
 					}
-					
+					todo(solution);
 					addToSolutions(solution);
 				}
 			}
 //			addToSolutions(currentElement);
 		}
+		
 		long endTime = System.currentTimeMillis();
 		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
 		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
@@ -533,7 +555,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		}
 		
 		// compute an initial score
-		for (RDFResourceTree queryTree : distinctTrees) {//System.out.println(queryTree.getStringRepresentation());
+		for (RDFResourceTree queryTree : distinctTrees) {
 			EvaluatedRDFResourceTree evaluatedQueryTree = evaluateSimple(queryTree, false);
 			evaluatedQueryTree.setBaseQueryTrees(Collections.singleton(queryTree));
 			todoList.add(evaluatedQueryTree);
@@ -647,8 +669,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			
 			// compute positive examples which are not covered by LGG
 			for (RDFResourceTree posTree : currentPosExampleTrees) {
+//				System.out.print(currentPosExampleTrees.indexOf(posTree) + ":");
 				if(!QueryTreeUtils.isSubsumedBy(posTree, tree, strategy)){
+//					System.out.println("FALSE");
 					uncoveredPositiveExampleTrees.add(posTree);
+				} else {
+//					System.out.println("TRUE");
 				}
 			}
 			// compute negative examples which are covered by LGG
@@ -996,11 +1022,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	/**
 	 * Shows the current setup of the algorithm.
 	 */
-	private void showSetup(){
+	private void printSetup(){
 		String setup = "Setup:";
 		setup += "\n#Pos. examples:" + currentPosExampleTrees.size();
-		setup += "\n#Neg. examples:" + currentPosExampleTrees.size();
+		setup += "\n#Neg. examples:" + currentNegExampleTrees.size();
 		setup += "\nHeuristic:" + heuristic.getHeuristicType().name();
+		setup += "\nNoise value=" + noise;
 		setup += "\nbeta=" + beta;
 		logger.info(setup);
 	}
@@ -1072,7 +1099,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	public List<EvaluatedRDFResourceTree> getSolutionsAsList(){
 		ArrayList<EvaluatedRDFResourceTree> list = new ArrayList<>(currentPartialSolutions);
-		Collections.sort(list, Collections.reverseOrder());
+//		Collections.sort(list, Collections.reverseOrder());
 		return list;
 	}
 	

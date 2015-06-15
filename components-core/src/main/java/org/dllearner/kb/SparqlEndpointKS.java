@@ -28,9 +28,11 @@ import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -79,7 +81,11 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
 	
+	protected int retryCount = 3;
+	
 	protected QueryExecutionFactory qef;
+
+	private long pageSize = 10000;
 
 	public SparqlEndpointKS() {}
 
@@ -131,23 +137,33 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	}
 	
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(),
+		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
+				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 		
+
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
 			// use in-memory cache
-			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+//			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
 		
 		// add some delay
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 		
+		if(retryCount > 0) {
+			qef = new QueryExecutionFactoryRetry(qef, 3, 1, TimeUnit.SECONDS);
+		}
+		
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-		qef = new QueryExecutionFactoryPaginated(qef, 10000);
+//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 		
 		return qef;
+	}
+	
+	public void setPageSize(long pageSize) {
+		this.pageSize = pageSize;
 	}
 
 	public SparqlEndpoint getEndpoint() {

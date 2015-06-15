@@ -14,6 +14,8 @@ import org.semanticweb.owlapi.model.OWLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -25,10 +27,25 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	private SortedMap<T, SortedSet<T>> hierarchyUp;
 	private SortedMap<T, SortedSet<T>> hierarchyDown;
 	
+	private SortedSet<T> rootEntities = new TreeSet<T>();
+	private SortedSet<T> leafEntities = new TreeSet<T>();
+	
 
 	public AbstractHierarchy(SortedMap<T, SortedSet<T>> hierarchyUp, SortedMap<T, SortedSet<T>> hierarchyDown) {
 		this.hierarchyUp = hierarchyUp;
 		this.hierarchyDown = hierarchyDown;
+		
+		// find most general and most special entities
+		for (T entity : Sets.union(hierarchyUp.keySet(), hierarchyDown.keySet())) {
+			SortedSet<T> moreGen = getParents(entity);
+			SortedSet<T> moreSpec = getChildren(entity);
+
+			if (moreGen.size() == 0 || (moreGen.size() == 1 && moreGen.first().isTopEntity()))
+				rootEntities.add(entity);
+
+			if (moreSpec.size() == 0 || (moreSpec.size() == 1 && moreSpec.first().isBottomEntity()))
+				leafEntities.add(entity);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -160,6 +177,20 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		return roots;
 	}
 	
+	/**
+	 * @return The most general entites.
+	 */
+	public SortedSet<T> getMostGeneralEntities() {
+		return rootEntities;
+	}
+
+	/**
+	 * @return The most special roles.
+	 */
+	public SortedSet<T> getMostSpecialEntities() {
+		return leafEntities;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.owl.Hierarchy#contains(org.semanticweb.owlapi.model.OWLObject)
 	 */
@@ -191,7 +222,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 			// look whether there are more general concepts
 			// (if yes, pick the first one)
 			SortedSet<T> moreGeneral = getParents(c);
-			if (moreGeneral != null && moreGeneral.size() != 0) {
+			if (moreGeneral != null && !moreGeneral.isEmpty()) {
 				T chosenParent = moreGeneral.first();
 				hierarchyDownNew.get(chosenParent).add(c);
 			}
@@ -199,7 +230,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 
 		for (T c : conceptsInSubsumptionHierarchy) {
 			SortedSet<T> moreSpecial = getChildren(c);
-			if (moreSpecial != null && moreSpecial.size() != 0) {
+			if (moreSpecial != null && !moreSpecial.isEmpty()) {
 				T chosenChild = moreSpecial.first();
 				hierarchyUpNew.get(chosenChild).add(c);
 			}
@@ -348,7 +379,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		}
 	}
 	
-	private String toString(SortedMap<T, SortedSet<T>> hierarchy, T concept, int depth) {
+	protected String toString(SortedMap<T, SortedSet<T>> hierarchy, T concept, int depth) {
 		String str = "";
 		for (int i = 0; i < depth; i++)
 			str += "  ";

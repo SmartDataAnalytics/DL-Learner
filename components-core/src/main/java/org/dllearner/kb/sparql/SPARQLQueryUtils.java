@@ -20,6 +20,12 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_DATA_PROPERTIES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty .}";
 	public static final String SELECT_INDIVIDUALS_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:NamedIndividual .}";
 	
+	public static final String SELECT_CLASSES_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {[] a ?var1 .}";
+	public static final String SELECT_INDIVIDUALS_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {?var1 a [] . \n"
+			+ "OPTIONAL { ?s1 a ?var1. } \n"
+			+ "OPTIONAL { ?s2 ?var1 []. } \n"
+			+ "FILTER ( !BOUND(?s1) && !BOUND(?s2) ) }";
+	
 	// extended
 	public static final String SELECT_DATA_PROPERTIES_BY_RANGE_QUERY = PREFIXES
 			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";
@@ -30,7 +36,7 @@ public class SPARQLQueryUtils {
 			"WHERE { ?var1 a owl:Class .\n" + 
 			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
 			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" + 
-			"FILTER ( ?super != owl:Thing && ?super != ?var1 ) } .\n" + 
+			"FILTER ( ?super != owl:Thing && ?super != ?var1 && ?super != rdfs:Resource) } .\n" + 
 			"FILTER ( !BOUND(?super) ) }";
 	
 	public static final String SELECT_LEAF_CLASSES_OWL = PREFIXES + 
@@ -89,7 +95,7 @@ public class SPARQLQueryUtils {
 	public static final String ASK_DISJOINT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{<%s> owl:disjointWith <%s> .} UNION {<%s> owl:disjointWith <%s> .}}";
 	public static final String SELECT_SIBLING_CLASSES_QUERY = PREFIXES
-			+ "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?sup . ?var1 rdfs:subClass ?sup. FILTER(!SAMETERM(?var1, <%s>))}";
+			+ "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?sup . ?var1 rdfs:subClassOf ?sup. FILTER(!SAMETERM(?var1, <%s>))}";
 
 	// property hierarchy
 	public static final String SELECT_SUBPROPERTY_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subPropertyOf <%s> .}";

@@ -21,10 +21,8 @@ package org.dllearner.algorithms.ocel;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Level;
@@ -41,6 +39,8 @@ import org.dllearner.core.options.DoubleConfigOption;
 import org.dllearner.core.options.IntegerConfigOption;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -53,10 +53,8 @@ import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -107,13 +105,7 @@ public class OCEL extends AbstractCELA {
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
 //	private String heuristicStr = "multi";
-	Set<OWLClass> allowedConcepts;
-	Set<OWLObjectProperty> allowedRoles;
-	Set<OWLClass> ignoredConcepts;
-	Set<OWLObjectProperty> ignoredRoles;
-	// these are computed as the result of the previous four settings
-	Set<OWLClass> usedConcepts;
-	Set<OWLObjectProperty> usedRoles;	
+	
 //	private boolean applyAllFilter = true;
 //	private boolean applyExistsFilter = true;	
 	private boolean useTooWeakList = true;
@@ -127,7 +119,6 @@ public class OCEL extends AbstractCELA {
 //	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
 //	private boolean useNegation = CommonConfigOptions.useNegationDefault;
 //	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
-//	private boolean useDoubleDatatypes = CommonConfigOptions.useDoubleDatatypesDefault;
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
 	private OWLClass startClass = null;
@@ -220,7 +211,6 @@ public class OCEL extends AbstractCELA {
 		options.add(CommonConfigOptions.cardinalityLimit());
 		options.add(CommonConfigOptions.useNegation());
 		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.useDoubleDatatypes());
 		options.add(CommonConfigOptions.useStringDatatypes());
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
 		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
@@ -318,36 +308,20 @@ public class OCEL extends AbstractCELA {
 		
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
-		if(allowedConcepts != null) {
-			// sanity check to control if no non-existing concepts are in the list
-			Helper.checkConcepts(reasoner, allowedConcepts);
-			usedConcepts = allowedConcepts;
-		} else if(ignoredConcepts != null) {
-			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
-		} else {
-			usedConcepts = Helper.computeConcepts(reasoner);
-		}
-		
-		if(allowedRoles != null) {
-			Helper.checkRoles(reasoner, allowedRoles);
-			usedRoles = allowedRoles;
-		} else if(ignoredRoles != null) {
-			Helper.checkRoles(reasoner, ignoredRoles);
-			usedRoles = Helper.difference(reasoner.getObjectProperties(), ignoredRoles);
-		} else {
-			usedRoles = reasoner.getObjectProperties();
-		}
 		
 		// prepare subsumption and role hierarchies, because they are needed
 		// during the run of the algorithm;
 		// in contrast to before, the learning algorithms have to maintain their
 		// own view on the class hierarchy
-		ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
-		if(improveSubsumptionHierarchy)
+		ClassHierarchy classHierarchy = initClassHierarchy();
+		ObjectPropertyHierarchy objectPropertyHierarchy = initObjectPropertyHierarchy();
+		DatatypePropertyHierarchy datatypePropertyHierarchy = initDataPropertyHierarchy();
+		if(improveSubsumptionHierarchy) {
 			classHierarchy.thinOutSubsumptionHierarchy();
+			objectPropertyHierarchy.thinOutSubsumptionHierarchy();
+			datatypePropertyHierarchy.thinOutSubsumptionHierarchy();
+		}
 		
-//		System.out.println(classHierarchy);
-//		System.exit(0);
 		
 //		reasoner.prepareRoleHierarchy(usedRoles);
 		// prepare datatype hierarchy only if necessary
@@ -370,8 +344,8 @@ public class OCEL extends AbstractCELA {
 		// TODO: find a better solution as this is quite difficult to debug
 		if(operator instanceof CustomHierarchyRefinementOperator) {
 			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
 		
 		// create an algorithm object and pass all configuration
@@ -503,54 +477,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setReplaceSearchTree(boolean replaceSearchTree) {
 		this.replaceSearchTree = replaceSearchTree;
-	}
-
-	public Set<OWLClass> getAllowedConcepts() {
-		return allowedConcepts;
-	}
-
-	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
-		this.allowedConcepts = allowedConcepts;
-	}
-
-	public Set<OWLObjectProperty> getAllowedRoles() {
-		return allowedRoles;
-	}
-
-	public void setAllowedRoles(Set<OWLObjectProperty> allowedRoles) {
-		this.allowedRoles = allowedRoles;
-	}
-
-	public Set<OWLClass> getIgnoredConcepts() {
-		return ignoredConcepts;
-	}
-
-	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
-		this.ignoredConcepts = ignoredConcepts;
-	}
-
-	public Set<OWLObjectProperty> getIgnoredRoles() {
-		return ignoredRoles;
-	}
-
-	public void setIgnoredRoles(Set<OWLObjectProperty> ignoredRoles) {
-		this.ignoredRoles = ignoredRoles;
-	}
-
-	public Set<OWLClass> getUsedConcepts() {
-		return usedConcepts;
-	}
-
-	public void setUsedConcepts(Set<OWLClass> usedConcepts) {
-		this.usedConcepts = usedConcepts;
-	}
-
-	public Set<OWLObjectProperty> getUsedRoles() {
-		return usedRoles;
-	}
-
-	public void setUsedRoles(Set<OWLObjectProperty> usedRoles) {
-		this.usedRoles = usedRoles;
 	}
 
 	public boolean isUseTooWeakList() {

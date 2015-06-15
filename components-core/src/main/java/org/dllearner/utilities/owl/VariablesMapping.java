@@ -29,6 +29,10 @@ public class VariablesMapping extends HashMap<OWLEntity, String>{
 		return "?s" + indCnt++;
 	}
 	
+	public String newPropertyVariable(){
+		return "?p" + propCnt++;
+	}
+	
 	public void reset(){
 		clear();
 		classCnt = 0;

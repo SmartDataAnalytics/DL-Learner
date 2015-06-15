@@ -12,6 +12,8 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
     protected V parent;
     protected List<V> children = new ArrayList<V>();
 
+    public GenericTree() {}
+    
     public GenericTree(T data) {
         setData(data);
     }
@@ -63,6 +65,12 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
     public void addChild(V child) {
         children.add(child);
         child.setParent((V) this);
+    }
+    
+    public void addChildren(List<V> children) {
+        for (V v : children) {
+			addChild(v);
+		}
     }
     
     public void removeChild(V child) {

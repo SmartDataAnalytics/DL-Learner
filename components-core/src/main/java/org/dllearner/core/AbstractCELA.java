@@ -21,23 +21,36 @@ package org.dllearner.core;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +78,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
 	
+	protected OWLObjectRenderer renderer = new DLSyntaxObjectRenderer();
+	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	protected String baseURI;
@@ -77,6 +92,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
+	protected boolean isRunning = false;
+	protected boolean stop = false;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -91,6 +108,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
+	
+	
+	protected Set<OWLClass> allowedConcepts = null;
+	protected Set<OWLClass> ignoredConcepts = null;
+	protected Set<OWLObjectProperty> allowedObjectProperties = null;
+	protected Set<OWLObjectProperty> ignoredObjectProperties = null;
+	protected Set<OWLDataProperty> allowedDataProperties = null;
+	protected Set<OWLDataProperty> ignoredDataProperties = null;
 
     /**
      * Default Constructor
@@ -157,20 +182,21 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 //	@Deprecated
 //	public abstract Score getSolutionScore();
 	
+
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
 	 * @return The best class OWLClassExpression found by the learning algorithm so far.
 	 */
-	public abstract OWLClassExpression getCurrentlyBestDescription();
+	public OWLClassExpression getCurrentlyBestDescription() {
+		return getCurrentlyBestEvaluatedDescription().getDescription();
+	}
 	
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		List<OWLClassExpression> ds = new LinkedList<OWLClassExpression>();
-		ds.add(getCurrentlyBestDescription());
-		return ds;
+		return bestEvaluatedDescriptions.toDescriptionList();
 	}
 	
 	/**
@@ -207,9 +233,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * Returns the best descriptions obtained so far.
-	 * @return Best class OWLClassExpression found so far.
+	 * @return Best class class expression found so far.
 	 */
-	public abstract EvaluatedDescription getCurrentlyBestEvaluatedDescription();
+	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+		return bestEvaluatedDescriptions.getSet().last();
+	}
 	
 	/**
 	 * Returns a sorted set of the best descriptions found so far. We
@@ -218,9 +246,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @return Best class descriptions found so far.
 	 */
 	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
-		TreeSet<EvaluatedDescription> ds = new TreeSet<EvaluatedDescription>();
-		ds.add(getCurrentlyBestEvaluatedDescription());
-		return ds;
+		return bestEvaluatedDescriptions.getSet();
 	}
 	
 	/**
@@ -336,6 +362,58 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return str;
 	}
 	
+	protected ClassHierarchy initClassHierarchy() {
+		Set<OWLClass> usedConcepts;
+		if(allowedConcepts != null) {
+			// sanity check to control if no non-existing concepts are in the list
+			Helper.checkConcepts(reasoner, allowedConcepts);
+			usedConcepts = allowedConcepts;
+		} else if(ignoredConcepts != null) {
+			usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
+		} else {
+			usedConcepts = Helper.computeConcepts(reasoner);
+		}
+		
+		ClassHierarchy hierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
+//		hierarchy.thinOutSubsumptionHierarchy();
+		return hierarchy;
+	}
+	
+	protected ObjectPropertyHierarchy initObjectPropertyHierarchy() {
+		Set<OWLObjectProperty> usedProperties;
+		if(allowedObjectProperties != null) {
+			// sanity check to control if no non-existing object properties are in the list
+			Helper.checkRoles(reasoner, allowedObjectProperties);
+			usedProperties = allowedObjectProperties;
+		} else if(ignoredObjectProperties != null) {
+			usedProperties = Helper.computeEntitiesUsingIgnoreList(reasoner, EntityType.OBJECT_PROPERTY, ignoredObjectProperties);
+		} else {
+			usedProperties = Helper.computeEntities(reasoner, EntityType.OBJECT_PROPERTY);
+		}
+		
+		ObjectPropertyHierarchy hierarchy = (ObjectPropertyHierarchy) reasoner.getObjectPropertyHierarchy().cloneAndRestrict(usedProperties);
+//		hierarchy.thinOutSubsumptionHierarchy();
+		
+		return hierarchy;
+	}
+	
+	protected DatatypePropertyHierarchy initDataPropertyHierarchy() {
+		Set<OWLDataProperty> usedProperties;
+		if(allowedDataProperties != null) {
+			// sanity check to control if no non-existing data properties are in the list
+			Helper.checkEntities(reasoner, allowedDataProperties);
+			usedProperties = allowedDataProperties;
+		} else if(ignoredDataProperties != null) {
+			usedProperties = Helper.computeEntitiesUsingIgnoreList(reasoner, EntityType.DATA_PROPERTY, ignoredDataProperties);
+		} else {
+			usedProperties = Helper.computeEntities(reasoner, EntityType.DATA_PROPERTY);
+		}
+		
+		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
+//		hierarchy.thinOutSubsumptionHierarchy();
+		return hierarchy;
+	}
+	
 	protected long getCurrentRuntimeInMilliSeconds() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
 	}
@@ -383,4 +461,114 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
         baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
     }
+    
+    @Override
+	public void stop() {
+		stop = true;
+	}
+	
+	@Override
+	public boolean isRunning() {
+		return isRunning;
+	}	
+	
+	public Set<OWLClass> getAllowedConcepts() {
+		return allowedConcepts;
+	}
+
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
+		this.allowedConcepts = allowedConcepts;
+	}
+
+	public Set<OWLClass> getIgnoredConcepts() {
+		return ignoredConcepts;
+	}
+
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
+		this.ignoredConcepts = ignoredConcepts;
+	}
+	
+	/**
+	 * @param allowedObjectProperties the allowed object properties to set
+	 */
+	public void setAllowedObjectProperties(Set<OWLObjectProperty> allowedObjectProperties) {
+		this.allowedObjectProperties = allowedObjectProperties;
+	}
+	
+	/**
+	 * @return the allowed object properties
+	 */
+	public Set<OWLObjectProperty> getAllowedObjectProperties() {
+		return allowedObjectProperties;
+	}
+	
+	/**
+	 * @param ignoredObjectProperties the ignored object properties to set
+	 */
+	public void setIgnoredObjectProperties(Set<OWLObjectProperty> ignoredObjectProperties) {
+		this.ignoredObjectProperties = ignoredObjectProperties;
+	}
+	
+	/**
+	 * @return the ignored object properties
+	 */
+	public Set<OWLObjectProperty> getIgnoredObjectProperties() {
+		return ignoredObjectProperties;
+	}
+	
+	/**
+	 * @param allowedDataProperties the allowed data properties to set
+	 */
+	public void setAllowedDataProperties(Set<OWLDataProperty> allowedDataProperties) {
+		this.allowedDataProperties = allowedDataProperties;
+	}
+	
+	/**
+	 * @return the allowed data properties
+	 */
+	public Set<OWLDataProperty> getAllowedDataProperties() {
+		return allowedDataProperties;
+	}
+	
+	/**
+	 * @param ignoredDataProperties the ignored data properties to set
+	 */
+	public void setIgnoredDataProperties(Set<OWLDataProperty> ignoredDataProperties) {
+		this.ignoredDataProperties = ignoredDataProperties;
+	}
+	
+	/**
+	 * @return the ignored data properties
+	 */
+	public Set<OWLDataProperty> getIgnoredDataProperties() {
+		return ignoredDataProperties;
+	}
+    
+    /**
+	 * Replace role fillers with the range of the property, if exists.
+	 * @param d
+	 * @return
+	 */
+	protected OWLClassExpression getNiceDescription(OWLClassExpression d){
+		OWLClassExpression rewrittenClassExpression = d;
+		if(d instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
+				newOperands.add(getNiceDescription(operand));
+			}
+			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
+		} else if(d instanceof OWLObjectSomeValuesFrom) {
+			// \exists r.\bot \equiv \bot
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			if(filler.isOWLThing()) {
+				OWLClassExpression range = reasoner.getRange(property);
+				filler = range;
+			} else if(filler.isAnonymous()){
+				filler = getNiceDescription(filler);
+			}
+			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
+		}
+		return rewrittenClassExpression;
+	}
 }

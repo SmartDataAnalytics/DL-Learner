@@ -71,7 +71,7 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 		if(ce instanceof OWLNaryBooleanClassExpression){
 			Set<OWLClassExpression> operands = ((OWLNaryBooleanClassExpression) ce).getOperands();
 			for (OWLClassExpression child : operands) {
-				if(child instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom) child).getProperty().asOWLObjectProperty() == OWLPunningDetector.punningProperty){
+				if(child instanceof OWLObjectSomeValuesFrom && ((OWLObjectSomeValuesFrom) child).getProperty() == OWLPunningDetector.punningProperty){
 					length += OWLClassExpressionUtils.getLength(((OWLObjectSomeValuesFrom)child).getFiller());
 				} else {
 					length += OWLClassExpressionUtils.getLength(child);

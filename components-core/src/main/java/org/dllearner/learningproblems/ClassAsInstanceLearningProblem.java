@@ -17,6 +17,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -46,7 +47,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
  * @author Lorenz Buehmann
  *
  */
-public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
+public class ClassAsInstanceLearningProblem extends AbstractLearningProblem<ScorePosNeg<OWLClass>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 
@@ -71,7 +72,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description) {
+	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description, double noise) {
 		SortedSet<OWLClass> posAsPos = new TreeSet<OWLClass>();
 		SortedSet<OWLClass> posAsNeg = new TreeSet<OWLClass>();
 		SortedSet<OWLClass> negAsPos = new TreeSet<OWLClass>();
@@ -114,8 +115,8 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracy(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public double getAccuracy(OWLClassExpression description) {
-		return getAccuracyOrTooWeak(description, 1.0);
+	public double getAccuracy(OWLClassExpression description, double noise) {
+		return getAccuracyOrTooWeak(description, noise);
 	}
 
 	/* (non-Javadoc)
@@ -248,7 +249,7 @@ public class ClassAsInstanceLearningProblem extends AbstractLearningProblem {
 		ks.init();
 		
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-		baseReasoner.setReasonerTypeString("hermit");
+		baseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
         baseReasoner.init();
 		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
 		rc.setReasonerComponent(baseReasoner);

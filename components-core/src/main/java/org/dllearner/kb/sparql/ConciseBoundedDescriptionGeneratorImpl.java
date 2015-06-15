@@ -1,7 +1,8 @@
 package org.dllearner.kb.sparql;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
@@ -13,8 +14,12 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.core.Var;
 //import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -27,12 +32,17 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConciseBoundedDescriptionGeneratorImpl.class);
 	
-	private Model baseModel;
+	private Set<String> allowedPropertyNamespaces = new TreeSet<>();
+	private Set<String> allowedObjectNamespaces = new TreeSet<>();
 	
-	private List<String> namespaces;
 	private static final int MAX_RECURSION_DEPTH_DEFAULT = 1;
+	
 	private int maxRecursionDepth = 1;
+	
+	private Model baseModel;
 	private QueryExecutionFactory qef;
+	
+	private Set<String> propertyBlacklist = new TreeSet<String>();
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
@@ -88,6 +98,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, depth, withTypesForLeafs);
+		System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close(); 
@@ -97,8 +108,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	}
 	
 	@Override
-	public void setRestrictToNamespaces(List<String> namespaces) {
-		this.namespaces = namespaces;
+	public void addAllowedPropertyNamespaces(Set<String> namespaces) {
+		this.allowedPropertyNamespaces.addAll(namespaces);
+	}
+	
+	public void addAllowedObjectNamespaces(Set<String> namespaces) {
+		this.allowedObjectNamespaces.addAll(namespaces);
 	}
 	
 	@Override
@@ -116,7 +131,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONSTRUCT {\n");
-		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
+		sb.append(String.format("<%s> ?p0 ?o0 .\n", resource));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
@@ -127,12 +142,16 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		sb.append("}\n");
 		sb.append("WHERE {\n");
 		sb.append("<").append(resource).append("> ").append("?p0 ").append("?o0").append(".\n");
-		sb.append(createNamespacesFilter("?p0"));
+		sb.append(createPropertyNamespacesFilter("?p0"));
+		sb.append(createPropertyFilter(Var.alloc("p0")));
+		sb.append(createObjectNamespacesFilter("?o0"));
 //		sb.append("?p0 a ?type0.\n");
 		for(int i = 1; i < depth; i++){
 			sb.append("OPTIONAL{\n");
 			sb.append("?o").append(i-1).append(" ").append("?p").append(i).append(" ").append("?o").append(i).append(".\n");
-			sb.append(createNamespacesFilter("?p" + i));
+			sb.append(createPropertyNamespacesFilter("?p" + i));
+			sb.append(createObjectNamespacesFilter("?o" + i));
+			sb.append(createPropertyFilter(Var.alloc("p" + i)));
 		}
 		if(withTypesForLeafs){
 			sb.append("OPTIONAL{?o").append(lastIndex).append(" a ?type.}\n");
@@ -144,20 +163,61 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return sb.toString();
 	}
 	
-	private String createNamespacesFilter(String targetVar){
+	private String createPropertyFilter(final Var var) {
 		String filter = "";
-		if(namespaces != null && !namespaces.isEmpty()){
+		
+		if(!propertyBlacklist.isEmpty()) {
 			filter += "FILTER(";
-			for(Iterator<String> iter = namespaces.iterator(); iter.hasNext();){
+					
+			filter += Joiner.on(" && ").join(
+						Iterables.transform(propertyBlacklist, 
+								new Function<String, String>() {
+									public String apply(String input) {
+										return var.toString() + " != <" + input + ">";
+									}
+								}
+						)
+					);
+			filter += ")\n";
+		}
+		
+		return filter;
+	}
+	
+	private String createPropertyNamespacesFilter(String targetVar){
+		String filter = "";
+		if(allowedPropertyNamespaces != null && !allowedPropertyNamespaces.isEmpty()){
+			filter += "FILTER(" + targetVar + " = rdf:type || ";
+			for(Iterator<String> iter = allowedPropertyNamespaces.iterator(); iter.hasNext();){
 				String ns = iter.next();
-				filter += "(REGEX(STR(" + targetVar + "),'" + ns + "'))";
+				filter += "(STRSTARTS(STR(" + targetVar + "),'" + ns + "'))";
 				if(iter.hasNext()){
 					filter += " || ";
 				}
 			}
-			filter += ")";
+			filter += ")\n";
 		}
 		return filter;
+	}
+	
+	private String createObjectNamespacesFilter(String targetVar){
+		String filter = "";
+		if(allowedObjectNamespaces != null && !allowedObjectNamespaces.isEmpty()){
+			filter += "FILTER(ISLITERAL(" + targetVar + ") || ";
+			for(Iterator<String> iter = allowedObjectNamespaces.iterator(); iter.hasNext();){
+				String ns = iter.next();
+				filter += "STRSTARTS(STR(" + targetVar + "),'" + ns + "')";
+				if(iter.hasNext()){
+					filter += " || ";
+				}
+			}
+			filter += ")\n";
+		}
+		return filter;
+	}
+	
+	public void addPropertiesToIgnore(Set<String> properties) {
+		propertyBlacklist.addAll(properties);
 	}
 	
 	public static void main(String[] args) {

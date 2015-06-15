@@ -44,7 +44,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.learn.UsedEntitiesDetection;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -71,7 +70,6 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +99,7 @@ import com.google.common.hash.Hashing;
  * @author Jens Lehmann
  * 
  */
-@ComponentAnn(name = "fast instance checker", shortName = "fic", version = 0.9)
+@ComponentAnn(name = "closed world reasoner", shortName = "cwr", version = 0.9)
 public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosedWorldReasoner.class);
@@ -147,7 +145,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
     		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",
     		defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
-    private ForallSemantics forallSemantics = ForallSemantics.Standard;
+    private ForallSemantics forallSemantics = ForallSemantics.SomeOnly;
 
     public enum ForallSemantics { 
     	Standard, // standard all quantor
@@ -321,6 +319,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	}
 	
 	private void materialize(){
+		logger.info("Materializing TBox...");
 		long dematStartTime = System.currentTimeMillis();
 
 		logger.debug("materialising concepts");
@@ -425,7 +424,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				}
 		
 		long dematDuration = System.currentTimeMillis() - dematStartTime;
-		logger.debug("TBox materialised in " + dematDuration + " ms");
+		logger.info("...TBox materialised in " + dematDuration + " ms.");
 	}
 	
 	private void fill(SortedSet<OWLIndividual> individuals, OWLClassExpression d){
@@ -482,7 +481,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				if(isDefaultNegation()) {
 					return !hasTypeImpl(operand, individual);
 				} else {
-					logger.debug("Converting OWLClassExpression to negation normal form in fast instance check (should be avoided if possible).");
+					logger.debug("Converting class expression to negation normal form in fast instance check (should be avoided if possible).");
 					return hasTypeImpl(description.getNNF(), individual);					
 				}
 			}
@@ -505,24 +504,36 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression fillerConcept = ((OWLObjectSomeValuesFrom) description).getFiller();
 			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
-				return true;
-			}
-			
-			SortedSet<OWLIndividual> values = opPos.get(property).get(individual);	
-			
-			if(values == null){
-				return false;
-			}
-			
-			for (OWLIndividual value : values) {
-				if (hasTypeImpl(fillerConcept, value)) {
+			if (property.isAnonymous()) {// \exists r^{-1}.C
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+				
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					
+					// check if the individual is contained in the objects and 
+					// subject is of type C
+					if(objects.contains(individual)) {
+						if(hasTypeImpl(fillerConcept, subject)) {
+							return true;
+						}
+					}
+				}
+			} else {// \exists r.C
+				if(handlePunning && property == OWLPunningDetector.punningProperty && fillerConcept.isOWLThing()){
 					return true;
+				}
+				
+				SortedSet<OWLIndividual> values = opPos.get(property).get(individual);	
+				
+				if(values == null){
+					return false;
+				}
+				
+				for (OWLIndividual value : values) {
+					if (hasTypeImpl(fillerConcept, value)) {
+						return true;
+					}
 				}
 			}
 			
@@ -531,36 +542,73 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
 			OWLClassExpression fillerConcept = ((OWLObjectAllValuesFrom) description).getFiller();
 			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			SortedSet<OWLIndividual> values = opPos.get(property).get(individual);
-			
-			// if there is no value, by standard semantics we have to return TRUE
-			if (values == null) {
-                return forallSemantics == ForallSemantics.Standard;
-			}
-			
-			
-			boolean hasCorrectFiller = false;
-			for (OWLIndividual value : values) {
-				if (hasTypeImpl(fillerConcept, value)) {
-					hasCorrectFiller = true;
-				} else {
-					return false;
-				}				
-			}
-			
-			if(forallSemantics == ForallSemantics.SomeOnly) {
-				return hasCorrectFiller;
-			} else {
+			// \forall r.\top \equiv \top -> TRUE
+			if(fillerConcept.isOWLThing()) {
 				return true;
 			}
+			
+			
+			if (property.isAnonymous()) {// \forall r^{-1}.C
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+				
+				Set<OWLIndividual> values = new HashSet<OWLIndividual>();
+				
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					
+					if(objects.contains(individual)) {
+						values.add(subject);
+					}
+				}
+				
+				// if there is no value, by standard semantics we have to return TRUE
+				if (values.isEmpty()) {
+	                return forallSemantics == ForallSemantics.Standard;
+				}
+				
+				boolean hasCorrectFiller = false;
+				for (OWLIndividual value : values) {
+					if (hasTypeImpl(fillerConcept, value)) {
+						hasCorrectFiller = true;
+					} else {
+						return false;
+					}				
+				}
+				
+				if(forallSemantics == ForallSemantics.SomeOnly) {
+					return hasCorrectFiller;
+				} else {
+					return true;
+				}
+				
+			} else {// \forall r.C
+				SortedSet<OWLIndividual> values = opPos.get(property).get(individual);
+				
+				// if there is no value, by standard semantics we have to return TRUE
+				if (values == null) {
+	                return forallSemantics == ForallSemantics.Standard;
+				}
+				
+				
+				boolean hasCorrectFiller = false;
+				for (OWLIndividual value : values) {
+					if (hasTypeImpl(fillerConcept, value)) {
+						hasCorrectFiller = true;
+					} else {
+						return false;
+					}				
+				}
+				
+				if(forallSemantics == ForallSemantics.SomeOnly) {
+					return hasCorrectFiller;
+				} else {
+					return true;
+				}
+			}
+			
+			
 		} else if (description instanceof OWLObjectMinCardinality) {
-			OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
-			OWLClassExpression fillerConcept = ((OWLObjectMinCardinality) description).getFiller();
 			int cardinality = ((OWLObjectMinCardinality) description).getCardinality();
 			
 			// special case: there are always at least zero fillers
@@ -568,40 +616,67 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				return true;
 			}
 			
+			OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
+			OWLClassExpression fillerConcept = ((OWLObjectMinCardinality) description).getFiller();
+			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
-
-			int nrOfFillers = 0;
-
-			SortedSet<OWLIndividual> values = mapping.get(individual);
-			
-			// return false if there are none or not enough role fillers
-			if (values == null || (values.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
-				return false;
-			}
-
-			int index = 0;
-			for (OWLIndividual roleFiller : values) {
-				index++;
-				if (hasTypeImpl(fillerConcept, roleFiller)) {
-					nrOfFillers++;
-					if (nrOfFillers == cardinality
-							|| (handlePunning && property == OWLPunningDetector.punningProperty)) {
-						return true;
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+				
+				int index = 0;
+				int nrOfFillers = 0;
+				int nrOfEntries = mapping.keySet().size();
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					
+					// count the number of subjects which are related to the individual such that 
+					// subject is of type C
+					if(objects.contains(individual)) {
+						if(hasTypeImpl(fillerConcept, subject)) {
+							nrOfFillers++;
+							
+							if (nrOfFillers == cardinality) {
+								return true;
+							}
+						} else {
+							if (nrOfEntries - index < cardinality) {
+								return false;
+							}
+						}
 					}
-					// early abort: e.g. >= 10 hasStructure.Methyl;
-					// if there are 11 fillers and 2 are not Methyl, the result
-					// is false
-				} else {
-					if (values.size() - index < cardinality) {
-						return false;
+				}
+			} else {
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+
+				int nrOfFillers = 0;
+
+				SortedSet<OWLIndividual> values = mapping.get(individual);
+				
+				// return false if there are none or not enough role fillers
+				if (values == null || (values.size() < cardinality && property != OWLPunningDetector.punningProperty)) {
+					return false;
+				}
+
+				int index = 0;
+				for (OWLIndividual roleFiller : values) {
+					index++;
+					if (hasTypeImpl(fillerConcept, roleFiller)) {
+						nrOfFillers++;
+						if (nrOfFillers == cardinality
+								|| (handlePunning && property == OWLPunningDetector.punningProperty)) {
+							return true;
+						}
+						// early abort: e.g. >= 10 hasStructure.Methyl;
+						// if there are 11 fillers and 2 are not Methyl, the result
+						// is false
+					} else {
+						if (values.size() - index < cardinality) {
+							return false;
+						}
 					}
 				}
 			}
+			
 			return false;
 		} else if (description instanceof OWLObjectMaxCardinality) {
 			OWLObjectPropertyExpression property = ((OWLObjectMaxCardinality) description).getProperty();
@@ -609,53 +684,92 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			int cardinality = ((OWLObjectMaxCardinality) description).getCardinality();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
 
-			int nrOfFillers = 0;
+				int nrOfFillers = 0;
+				int nrOfSubjects = mapping.keySet().size();
 
-			SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
-			
-			// return true if there are none or not enough role fillers
-			if (roleFillers == null || roleFillers.size() < cardinality) {
-				return true;
-			}
+				// return TRUE if there are none or not enough subjects
+				if(nrOfSubjects < cardinality) {
+					return true;
+				}
 
-			int index = 0;
-			for (OWLIndividual roleFiller : roleFillers) {
-				index++;
-				if (hasTypeImpl(fillerConcept, roleFiller)) {
-					nrOfFillers++;
-					if (nrOfFillers > cardinality) {
-						return false;
+				int index = 0;
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+					index++;
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					if (objects.contains(individual) && hasTypeImpl(fillerConcept, subject)) {
+						nrOfFillers++;
+						if (nrOfFillers > cardinality) {
+							return false;
+						}
+						// early abort: e.g. <= 5 hasStructure.Methyl;
+						// if there are 6 fillers and 2 are not Methyl, the result
+						// is true
+					} else {
+						if (nrOfSubjects - index <= cardinality) {
+							return true;
+						}
 					}
-					// early abort: e.g. <= 5 hasStructure.Methyl;
-					// if there are 6 fillers and 2 are not Methyl, the result
-					// is true
-				} else {
-					if (roleFillers.size() - index <= cardinality) {
-						return true;
+				}
+			} else {
+				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property);
+
+				int nrOfFillers = 0;
+
+				SortedSet<OWLIndividual> roleFillers = mapping.get(individual);
+				
+				// return true if there are none or not enough role fillers
+				if (roleFillers == null || roleFillers.size() < cardinality) {
+					return true;
+				}
+
+				int index = 0;
+				for (OWLIndividual roleFiller : roleFillers) {
+					index++;
+					if (hasTypeImpl(fillerConcept, roleFiller)) {
+						nrOfFillers++;
+						if (nrOfFillers > cardinality) {
+							return false;
+						}
+						// early abort: e.g. <= 5 hasStructure.Methyl;
+						// if there are 6 fillers and 2 are not Methyl, the result
+						// is true
+					} else {
+						if (roleFillers.size() - index <= cardinality) {
+							return true;
+						}
 					}
 				}
 			}
+			
+			
 			return true;
 		} else if (description instanceof OWLObjectHasValue) {
 			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
 			OWLIndividual value = ((OWLObjectHasValue)description).getFiller();
 			
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
+				
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping
+						.entrySet()) {
+					OWLIndividual subject = entry.getKey();
+					SortedSet<OWLIndividual> objects = entry.getValue();
+					
+					if(objects.contains(individual) && subject.equals(value)) {
+						return true;
+					}
+				}
+				return false;
+			} else {
+				
+				SortedSet<OWLIndividual> values = mapping.get(individual);
+				
+				return values != null && values.contains(value);
 			}
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-			
-			SortedSet<OWLIndividual> values = mapping.get(individual);
-			
-			return values != null && values.contains(value);
 		} 
 //		else if (OWLClassExpression instanceof BooleanValueRestriction) {
 //			DatatypeProperty dp = ((BooleanValueRestriction) description)
@@ -688,6 +802,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				
 				if(datatype.isDouble()){
 					SortedSet<Double> values = dd.get(property).get(individual);
+					
+					// no value exists
+					if(values == null) {
+						return false;
+					}
 					
 					double min = -Double.MAX_VALUE;
 					double max = Double.MAX_VALUE;
@@ -752,7 +871,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			return values != null && values.contains(value);
 		}
 
-		throw new ReasoningMethodUnsupportedException("Instance check for OWLClassExpression "
+		throw new ReasoningMethodUnsupportedException("Instance check for class expression "
 				+ description + " unsupported.");
 	}
 

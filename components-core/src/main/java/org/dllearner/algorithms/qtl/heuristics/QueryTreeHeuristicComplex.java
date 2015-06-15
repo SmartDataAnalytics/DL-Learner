@@ -17,7 +17,7 @@ import com.hp.hpl.jena.query.ResultSet;
  * @author Lorenz Buehmann
  *
  */
-@ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic", version = 0.1)
+@ComponentAnn(name = "QueryTreeHeuristic", shortName = "qtree_heuristic_complex", version = 0.1)
 public class QueryTreeHeuristicComplex extends QueryTreeHeuristic {
 	
 	

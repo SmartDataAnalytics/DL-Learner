@@ -3,6 +3,10 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +16,16 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
-import com.google.common.base.Objects;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Node_URI;
@@ -30,7 +39,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
 	
 	private final int id;
 	
@@ -44,7 +53,6 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
     private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
-    
     
     
     /**
@@ -129,6 +137,18 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.add(child);
+		
+		child2Edge.put(child, edge);
+	}
+	
+	public void addChildren(List<RDFResourceTree> children, Node edge) {
+		super.addChildren(children);
+		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
+		if(childrenForEdge == null) {
+			childrenForEdge = new ArrayList<RDFResourceTree>();
+			edge2Children.put(edge, childrenForEdge);
+		}
+		childrenForEdge.addAll(children);
 	}
 	
 	public void addChildAt(int index, RDFResourceTree child, Node_URI edge) throws IndexOutOfBoundsException {
@@ -148,6 +168,8 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 		if(childrenForEdge.isEmpty()) {
 			edge2Children.remove(edge);
 		}
+		
+		child2Edge.remove(child);
 	}
 	
 	public List<RDFResourceTree> getChildren() {
@@ -168,6 +190,27 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 	 */
 	public SortedSet<Node> getEdges() {
 		return edge2Children.navigableKeySet();
+	}
+	
+	/**
+	 * Returns all outgoing different edges.
+	 * @return
+	 */
+	public SortedSet<Node> getEdges(NodeType nodeType) {
+		SortedSet<Node> edges = new TreeSet<Node>(new NodeComparator());
+		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
+			Node edge = entry.getKey();
+			List<RDFResourceTree> children = entry.getValue();
+			
+			for (RDFResourceTree child : children) {
+				if ((nodeType == NodeType.LITERAL && child.isLiteralNode())
+						|| (nodeType == NodeType.RESOURCE && child.isResourceNode())) {
+					edges.add(edge);
+					break;
+				}
+			}
+		}
+		return edges;
 	}
 	
 	public boolean isResourceNode() {
@@ -268,5 +311,82 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree>{
 			return this.getData().equals(other.getData());
 		}
 		return this == other;
+	}
+	
+	/**
+	 * @param datatype the datatype to set
+	 */
+	public void setDatatype(RDFDatatype datatype) {
+		this.datatype = datatype;
+	}
+	
+	/**
+	 * Serialize this instance.
+	 * 
+	 * @param out Target to which this instance is written.
+	 * @throws IOException Thrown if exception occurs during serialization.
+	 */
+	private void writeObject(final ObjectOutputStream out) throws IOException {
+		// ID
+		out.writeInt(this.id);
+		
+		// datatype
+		out.writeObject(datatype == null ? "" : this.datatype.getURI());
+		
+		// data
+		out.writeObject(this.data.toString());
+		
+		// edge + children
+		SortedSet<Node> edges = getEdges();
+		if(edges.isEmpty()) {
+			out.writeObject(null);
+		}
+		for (Node edge : edges) {
+			List<RDFResourceTree> children = getChildren(edge);
+			out.writeObject(edge.toString());
+			out.writeObject(children);
+		}
+		out.writeObject(null);
+	}
+	
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+		child2Edge = new HashMap<>();
+	    edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+		
+	    // ID
+		int id = ois.readInt();
+		
+		// datatype
+		String datatypeURI = (String) ois.readObject();
+		if(datatypeURI != null) {
+			if(datatypeURI.equals(XSDDatatype.XSD)) {
+				setDatatype(new XSDDatatype(datatypeURI));
+			} else {
+				setDatatype(new BaseDatatype(datatypeURI));
+			}
+		}
+		
+		// data
+		String dataString = (String) ois.readObject();
+		Node data;
+		if(dataString.equals(RDFResourceTree.DEFAULT_VAR_NODE.toString())) {
+			data = RDFResourceTree.DEFAULT_VAR_NODE;
+		} else if(dataString.equals(RDFResourceTree.DEFAULT_LITERAL_NODE.toString())) {
+			data = RDFResourceTree.DEFAULT_LITERAL_NODE;
+		} else {
+			data = NodeFactory.createURI(dataString);
+		}
+		setData(data);
+		
+		// edge + children
+		Object edgeObject;
+		while((edgeObject = ois.readObject()) != null) {
+			Node edge = NodeFactory.createURI((String) edgeObject);
+			List<RDFResourceTree> children = (List<RDFResourceTree>) ois.readObject();
+			for (RDFResourceTree child : children) {
+				addChild(child, edge);
+			}
+		}
+		
 	}
 }

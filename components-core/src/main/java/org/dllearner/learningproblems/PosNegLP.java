@@ -32,6 +32,7 @@ import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -44,7 +45,7 @@ import com.google.common.collect.Sets.SetView;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends AbstractLearningProblem {
+public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
 	private static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
@@ -136,7 +137,8 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 		
-		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples)) {
+		// sanity check whether examples are contained in KB
+		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
             Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
             double percentage = (double) (missing.size()/allExamples.size());
             percentage = Math.round(percentage * 1000) / 1000;
@@ -193,6 +195,4 @@ public abstract class PosNegLP extends AbstractLearningProblem {
     public void setUseMultiInstanceChecks(UseMultiInstanceChecks useMultiInstanceChecks) {
         this.useMultiInstanceChecks = useMultiInstanceChecks;
     }
-
-
 }

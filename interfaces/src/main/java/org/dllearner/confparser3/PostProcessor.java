@@ -112,8 +112,8 @@ public class PostProcessor {
         Map<String, String> oldNewStringValues = new HashMap<String, String>();
         Iterator itr = valueObject.iterator();
         while (itr.hasNext()) {
+            Object nextObject = itr.next();
             for (String prefix : prefixes.keySet()) {
-                Object nextObject = itr.next();
                 if (nextObject instanceof String) {
                     String oldValue = (String) nextObject;
                     String newValue = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));

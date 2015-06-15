@@ -3,13 +3,17 @@
  */
 package org.dllearner.utilities;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 /**
@@ -17,6 +21,8 @@ import com.google.common.collect.Sets;
  *
  */
 public class OWLAPIUtils {
+	
+	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 	
 	private static final Set<IRI> intDatatypeIRIs = Sets.newHashSet(
 			OWL2Datatype.XSD_INTEGER.getIRI(),
@@ -59,6 +65,10 @@ public class OWLAPIUtils {
 	
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
 		return intDatatypeIRIs.contains(lit.getDatatype().getIRI());
+	}
+	
+	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
+		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
 	}
 
 }

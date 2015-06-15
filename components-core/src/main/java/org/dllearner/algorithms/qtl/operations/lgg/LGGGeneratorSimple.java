@@ -75,7 +75,6 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 
 			if (d1 != null && d1.equals(d2)) {
 				return new RDFResourceTree(d1);
-				// TODO collect literal values
 			}
 		}
 		

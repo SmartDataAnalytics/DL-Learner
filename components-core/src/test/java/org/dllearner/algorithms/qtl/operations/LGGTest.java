@@ -5,6 +5,8 @@ package org.dllearner.algorithms.qtl.operations;
 
 import java.io.ByteArrayInputStream;
 
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -91,6 +93,33 @@ private static final String baseIRI = "http://test.org/";
 		RDFResourceTree targetLGG = treeFactory.getQueryTree("http://test.org/lgg3_4", model);
 		System.out.println(targetLGG.getStringRepresentation());
 		assertTrue(QueryTreeUtils.sameTrees(lggRDFS, targetLGG));
+	}
+	
+	@Test
+	public void testPerformance() {
+		// http://dbpedia.org/resource/Awolnation
+		Model model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(
+				model,
+				this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/dbpedia-Awolnation.ttl"), 
+				Lang.TURTLE);
+		
+		RDFResourceTree tree1 = treeFactory.getQueryTree("http://dbpedia.org/resource/Awolnation", model);
+		
+		// http://dbpedia.org/resource/Big_Star
+		model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(
+				model,
+				this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/dbpedia-Big_Star.ttl"), 
+				Lang.TURTLE);
+		
+		RDFResourceTree tree2 = treeFactory.getQueryTree("http://dbpedia.org/resource/Big_Star", model);
+		long start = System.currentTimeMillis();
+		RDFResourceTree lggSimple = lggGenSimple.getLGG(tree1, tree2);
+		long end = System.currentTimeMillis();
+		System.out.println("Operation took " + (end - start) + "ms");
+		
+//		System.out.println(lggSimple.getStringRepresentation());
 	}
 
 }
