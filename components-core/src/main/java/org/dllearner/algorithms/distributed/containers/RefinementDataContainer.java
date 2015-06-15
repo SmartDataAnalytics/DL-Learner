@@ -40,7 +40,7 @@ public class RefinementDataContainer implements MessageContainer {
         int loopCntr = 0;
         for (OWLClassExpression refinement : refinements) {
             loopCntr++;
-            if (loopCntr >= maxLoops) break;
+            if (loopCntr > maxLoops) break;
 
             res += refinement.toString();
             res += ", ";
