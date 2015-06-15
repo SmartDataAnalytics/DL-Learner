@@ -87,8 +87,8 @@ public final class ComponentManager {
 //            "org.dllearner.algorithms.ocel.ROLearner2",
             "org.dllearner.algorithms.ocel.OCEL",
 //            "org.dllearner.algorithms.gp.GP",
-            "org.dllearner.algorithms.elcopy.ELLearningAlgorithm",
-            "org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive",
+            "org.dllearner.algorithms.el.ELLearningAlgorithm",
+            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
 //            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
