@@ -1525,5 +1525,13 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	public void setMaterializeExistentialRestrictions(boolean materializeExistentialRestrictions) {
 		this.materializeExistentialRestrictions = materializeExistentialRestrictions;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getDatatype(org.semanticweb.owlapi.model.OWLDataProperty)
+	 */
+	@Override
+	public OWLDatatype getDatatype(OWLDataProperty dp) {
+		return baseReasoner.getDatatype(dp);
+	}
 
 }

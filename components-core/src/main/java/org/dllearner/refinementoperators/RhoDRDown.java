@@ -19,6 +19,7 @@
 
 package org.dllearner.refinementoperators;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +50,7 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
@@ -711,61 +713,44 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		} else if (description instanceof OWLDataSomeValuesFrom) {
-			OWLDataPropertyExpression dp = ((OWLDataSomeValuesFrom) description).getProperty();
+			OWLDataProperty dp = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
 			OWLDataRange dr = ((OWLDataSomeValuesFrom) description).getFiller();
 			if(dr instanceof OWLDatatypeRestriction){
 				OWLDatatype datatype = ((OWLDatatypeRestriction) dr).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) dr).getFacetRestrictions();
+				
+				
 				OWLDatatypeRestriction newDatatypeRestriction = null;
-				if(datatype.isDouble()){
+				if(OWLAPIUtils.isNumericDatatype(datatype)){
 					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 						OWLFacet facet = facetRestriction.getFacet();
-						double value = facetRestriction.getFacetValue().parseDouble();
-						if(facet == OWLFacet.MAX_INCLUSIVE){
-							// find out which split value was used
-							int splitIndex = splits.get(dp).lastIndexOf(value);
-							if(splitIndex == -1)
-								throw new Error("split error");
-							int newSplitIndex = splitIndex - 1;
-							if(newSplitIndex >= 0) {
-								double newValue = splits.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMaxInclusiveRestriction(newValue);
-							}
-						} else if(facet == OWLFacet.MIN_INCLUSIVE){
-							// find out which split value was used
-							int splitIndex = splits.get(dp).lastIndexOf(value);
-							if(splitIndex == -1)
-								throw new Error("split error");
-							int newSplitIndex = splitIndex + 1;
-							if(newSplitIndex < splits.get(dp).size()) {
-								double newValue = splits.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMinInclusiveRestriction(newValue);
-							}
+						
+						Number value;
+						if(OWLAPIUtils.isIntegerDatatype(datatype)) {
+							value = Integer.parseInt(facetRestriction.getFacetValue().getLiteral());
+						} else {
+							value = Double.parseDouble(facetRestriction.getFacetValue().getLiteral());
 						}
-					}
-				} else if(datatype.isInteger()){
-					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
-						OWLFacet facet = facetRestriction.getFacet();
-						int value = facetRestriction.getFacetValue().parseInteger();
+						
 						if(facet == OWLFacet.MAX_INCLUSIVE){
 							// find out which split value was used
-							int splitIndex = splitsInt.get(dp).lastIndexOf(value);
+							int splitIndex = splitsNumber.get(dp).lastIndexOf(value);
 							if(splitIndex == -1)
 								throw new Error("split error");
 							int newSplitIndex = splitIndex - 1;
 							if(newSplitIndex >= 0) {
-								int newValue = splitsInt.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMaxInclusiveRestriction(newValue);
+								Number newValue = splitsNumber.get(dp).get(newSplitIndex);
+								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						} else if(facet == OWLFacet.MIN_INCLUSIVE){
 							// find out which split value was used
-							int splitIndex = splitsInt.get(dp).lastIndexOf(value);
+							int splitIndex = splitsNumber.get(dp).lastIndexOf(value);
 							if(splitIndex == -1)
 								throw new Error("split error");
 							int newSplitIndex = splitIndex + 1;
-							if(newSplitIndex < splitsInt.get(dp).size()) {
-								int newValue = splitsInt.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMinInclusiveRestriction(newValue);
+							if(newSplitIndex < splitsNumber.get(dp).size()) {
+								Number newValue = splitsNumber.get(dp).get(newSplitIndex);
+								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						}
 					}
@@ -1196,14 +1181,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 
 		if(useNumericDatatypes) {
-			Set<OWLDataProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
-			logger.debug(sparql_debug, "DOUBLE DPs:"+doubleDPs);
-			for(OWLDataProperty dp : doubleDPs) {
-				if(splits.get(dp).size() > 0) {
-					double min = splits.get(dp).get(0);
-					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
+			Set<OWLDataProperty> numericDPs = reasoner.getNumericDataProperties();
+			logger.debug(sparql_debug, "Numeric DPs:"+numericDPs);
+			for(OWLDataProperty dp : numericDPs) {
+				if(splitsNumber.get(dp).size() > 0) {
+					Number min = splitsNumber.get(dp).get(0);
+					Number max = splitsNumber.get(dp).get(splitsNumber.get(dp).size()-1);
+					
+						OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+						
+						restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
 				}
 			}
 		}
@@ -1240,6 +1229,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		logger.debug(sparql_debug, "m: " + m);
 
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
+	}
+	
+	private OWLDatatypeRestriction asDatatypeRestriction(OWLDataProperty dp, Number value, OWLFacet facet) {
+		OWLDatatype datatype = reasoner.getDatatype(dp);
+		
+		OWLDatatypeRestriction restriction = df.getOWLDatatypeRestriction(
+				datatype, 
+				Collections.singleton(df.getOWLFacetRestriction(
+						facet, 
+						df.getOWLLiteral(
+								value.toString(), 
+								datatype))));
+		return restriction;
 	}
 
 	// computation of the set M_A
@@ -1815,7 +1817,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// convert set to a list where values are sorted
 		List<T> values = new LinkedList<T>(valuesSet);
 		Collections.sort(values);
-
+		
 		int nrOfValues = values.size();
 
 		// create split set
@@ -1830,7 +1832,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			T number1 = values.get(index);
 			T number2 = values.get(index + 1);
 
-			T avg = avg(number1, number2);
+			T avg = avg(number1, number2);//System.out.println("AVG(" + number1 + ", " + number2 + ")=" + avg);
 
 			splitsDP.add(avg);
 		}
@@ -1838,29 +1840,29 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	private <T extends Number & Comparable<T>> T avg(T number1, T number2){
-		return number1;
-//		T avg = null;
-//		if((number1 instanceof Integer && number2 instanceof Integer) ||
-//			(number1 instanceof Long && number2 instanceof Long) ||
-//			(number1 instanceof Byte && number2 instanceof Byte)
-//				) {
-//			avg = number1;
-//		} else if(number1 instanceof Double && number2 instanceof Double) {
-//			avg = (T) Double.valueOf(
-//					BigDecimal.valueOf(number1.doubleValue()).
-//			add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//					BigDecimal.valueOf(0.5d))).doubleValue());
-//		} else if(number1 instanceof Float && number2 instanceof Float) {
-//			avg = (T) Float.valueOf(
-//					BigDecimal.valueOf(number1.floatValue()).
-//			add(BigDecimal.valueOf(number2.floatValue()).divide(
-//					BigDecimal.valueOf(0.5d))).floatValue());
-//		}
-//		return avg;
+		T avg = null;
+		if (number1 instanceof Integer && number2 instanceof Integer){
+			avg = (T) Integer.valueOf((number1.intValue() + number2.intValue()) / 2);
+		} else if (number1 instanceof Short && number2 instanceof Short){
+			avg = (T) Short.valueOf((short) ((number1.shortValue() + number2.shortValue()) / 2));
+		} else if (number1 instanceof Byte && number2 instanceof Byte){
+			avg = (T) Byte.valueOf((byte) ((number1.byteValue() + number2.byteValue()) / 2));
+		} else if (number1 instanceof Long && number2 instanceof Long){
+			avg = (T) Long.valueOf((long) ((number1.longValue() + number2.longValue()) / 2));
+		} else if (number1 instanceof Double && number2 instanceof Double) {
+			avg = (T) Double.valueOf((BigDecimal.valueOf(number1.doubleValue()).add(
+					BigDecimal.valueOf(number2.doubleValue())).divide(BigDecimal.valueOf(2))).doubleValue());
+		} else if(number1 instanceof Float && number2 instanceof Float) {
+			avg = (T) Float.valueOf(
+					(BigDecimal.valueOf(number1.floatValue()).
+			add(BigDecimal.valueOf(number2.floatValue())).divide(
+					BigDecimal.valueOf(2d))).floatValue());
+		}
+		return avg;
 
 //		return (T) BigDecimal.valueOf(number1.doubleValue()).
 //				add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//						BigDecimal.valueOf(0.5d)));
+//						BigDecimal.valueOf(2d)));
 	}
 
 

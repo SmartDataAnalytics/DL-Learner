@@ -3,13 +3,13 @@
  */
 package org.dllearner.utilities;
 
-import java.util.Collection;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
@@ -31,6 +31,20 @@ public class OWLAPIUtils {
 			OWL2Datatype.XSD_NON_POSITIVE_INTEGER.getIRI(),
 			OWL2Datatype.XSD_NEGATIVE_INTEGER.getIRI(),
 			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER.getIRI()
+			);
+	
+	private static final Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
+			OWL2Datatype.XSD_BYTE,
+			OWL2Datatype.XSD_SHORT,
+			OWL2Datatype.XSD_INT,
+			OWL2Datatype.XSD_INTEGER,
+			OWL2Datatype.XSD_POSITIVE_INTEGER,
+			OWL2Datatype.XSD_NEGATIVE_INTEGER,
+			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
+			OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
+			OWL2Datatype.XSD_LONG,
+			OWL2Datatype.XSD_DOUBLE,
+			OWL2Datatype.XSD_FLOAT
 			);
 
 	public static String getPrintName(EntityType entityType) {
@@ -66,6 +80,18 @@ public class OWLAPIUtils {
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
 		return intDatatypeIRIs.contains(lit.getDatatype().getIRI());
 	}
+	
+	public static boolean isIntegerDatatype(OWLDatatype datatype) {
+		return intDatatypeIRIs.contains(datatype.getIRI());
+	}
+	
+	public static boolean isNumericDatatype(OWLDatatype datatype){
+    	if(!datatype.isBuiltIn()){
+    		return false;
+    	}
+    	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
+		return numericDatatypes.contains(builtInDatatype);
+    }
 	
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
 		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));

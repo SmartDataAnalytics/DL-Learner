@@ -75,8 +75,7 @@ public final class LiteralLearningTest {
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		AbstractReasonerComponent rc = new FastInstanceChecker();
-		rc.setSources(ks);
+		AbstractReasonerComponent rc = new ClosedWorldReasoner(ks);
 		rc.init();
 		
 		PosNegLPStandard lp = new PosNegLPStandard();

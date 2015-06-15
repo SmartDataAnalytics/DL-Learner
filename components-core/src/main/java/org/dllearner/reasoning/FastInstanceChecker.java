@@ -272,6 +272,14 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 		materialize();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getDatatype(org.semanticweb.owlapi.model.OWLDataProperty)
+	 */
+	@Override
+	public OWLDatatype getDatatype(OWLDataProperty dp) {
+		return rc.getDatatype(dp);
+	}
+	
 	private void loadOrDematerialize(){
 		if(useCaching){
 			File cacheDir = new File("cache");
@@ -763,7 +771,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			OWLLiteral value = ((OWLDataHasValue) description).getValue();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
@@ -774,7 +782,7 @@ public class FastInstanceChecker extends AbstractReasonerComponent {
 			return values != null && values.contains(value);
 		}
 
-		throw new ReasoningMethodUnsupportedException("Instance check for OWLClassExpression "
+		throw new ReasoningMethodUnsupportedException("Instance check for class expression "
 				+ description + " unsupported.");
 	}
 
