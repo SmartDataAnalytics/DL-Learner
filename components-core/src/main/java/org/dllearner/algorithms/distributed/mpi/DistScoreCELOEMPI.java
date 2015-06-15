@@ -49,6 +49,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
 import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
@@ -1428,7 +1429,7 @@ public class DistScoreCELOEMPI extends AbstractMPIAgent implements Cloneable{
 		ks.init();
 
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(ks);
-		baseReasoner.setReasonerTypeString("hermit");
+        baseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
         baseReasoner.init();
 		ClosedWorldReasoner rc = new ClosedWorldReasoner(ks);
 		rc.setReasonerComponent(baseReasoner);
