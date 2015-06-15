@@ -3,6 +3,7 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -34,14 +32,7 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
-
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 /**
  * @author Lorenz Buehmann
@@ -92,7 +83,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			operands.set(i, operands.get(i).accept(this));
 		}
 		
-		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
@@ -116,7 +107,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		return df.getOWLObjectIntersectionOf(newOperands);
+		return df.getOWLObjectIntersectionOf(new HashSet<>(newOperands));
 	}
 
 	/**
@@ -138,7 +129,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
-		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		List<OWLClassExpression> newOperands = new ArrayList<OWLClassExpression>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
@@ -165,10 +156,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		
-		
-		
-		return df.getOWLObjectUnionOf(newOperands);
+		return df.getOWLObjectUnionOf(new HashSet<>(newOperands));
 	}
 
 	/* (non-Javadoc)
