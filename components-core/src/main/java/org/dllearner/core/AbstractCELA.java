@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -39,6 +40,7 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -94,6 +96,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected long nanoStartTime;
 	protected boolean isRunning = false;
 	protected boolean stop = false;
+	
+	protected OWLClassExpressionMinimizer minimizer;
+	
+	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
+	private boolean useMinimizer = true;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -430,6 +437,21 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		
 		return formatter.print(new Period(durationInMillis));
 	}
+	
+	protected OWLClassExpression rewrite(OWLClassExpression ce) {
+		// minimize class expression (expensive!) - also performs some human friendly rewrites
+		OWLClassExpression niceDescription;
+		if (useMinimizer) {
+			niceDescription = minimizer.minimizeClone(ce);
+		} else {
+			niceDescription = ce;
+		}
+
+		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
+		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
+		
+		return niceDescription;
+	}
 
     /**
      * The learning problem variable, which must be used by
@@ -542,6 +564,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	public Set<OWLDataProperty> getIgnoredDataProperties() {
 		return ignoredDataProperties;
+	}
+	
+	public boolean isUseMinimizer() {
+		return useMinimizer;
+	}
+
+	public void setUseMinimizer(boolean useMinimizer) {
+		this.useMinimizer = useMinimizer;
 	}
     
     /**

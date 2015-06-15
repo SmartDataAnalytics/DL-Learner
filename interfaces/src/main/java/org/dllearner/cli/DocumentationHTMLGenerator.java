@@ -112,7 +112,7 @@ public class DocumentationHTMLGenerator {
 		sb.append("#hor-minimalist-a td	{ color: #669;padding: 9px 8px 0px 8px;	}\n");
 		sb.append("#hor-minimalist-a tbody tr:hover td 	{ color: #009; }\n");
 		sb.append("</style>\n");
-		sb.append("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js\"></script>");
+		sb.append("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" language=\"javascript\">\n");
 		sb.append("//<![CDATA[\n"); 
 		sb.append("function showOnlyCat(className){\n");

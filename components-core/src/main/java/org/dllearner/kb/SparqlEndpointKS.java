@@ -63,13 +63,13 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private boolean isRemote = true;
 	private boolean initialized = false;
 
-	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
+	@ConfigOption(name = "url", description="URL of the SPARQL endpoint", required=true, propertyEditorClass = URLEditor.class)
 	private URL url;
 
-	@ConfigOption(name = "defaultGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "defaultGraphs", description="a list of default graph URIs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
 
-	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "namedGraphs", description="a list of named graph URIs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 
 	// some parameters for the query execution
@@ -77,10 +77,16 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private long queryDelay = 50;
 	
 	// caching options
+	@ConfigOption(name = "useCache", defaultValue = "true", description = "Use this setting to enable caching of SPARQL queries in a local database.", required = false)
 	private boolean useCache = true;
+	
+	@ConfigOption(name = "cacheDir", defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
+	
+	@ConfigOption(name = "cacheTTL", defaultValue = "1 day", description = "The time to live in milliseconds for cached SPARQL queries, if enabled.", required = false)
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
 	
+	@ConfigOption(name = "retryCount", defaultValue = "3", description = "The maximum number of retries for the execution of a particular SPARQL query.", required = false)
 	protected int retryCount = 3;
 	
 	protected QueryExecutionFactory qef;
