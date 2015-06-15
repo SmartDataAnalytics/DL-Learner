@@ -968,13 +968,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_STRING);
 	}
 
-    /* (non-Javadoc)
-      * @see org.dllearner.core.Reasoner#getBaseURI()
-      */
-    @Override
-    public String getBaseURI() {
-        return baseURI;
-    }
+	/* (non-Javadoc)
+	  * @see org.dllearner.core.Reasoner#getBaseURI()
+	  */
+	@Override
+	public String getBaseURI() {
+		return baseURI;
+	}
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getPrefixes()
@@ -1105,6 +1105,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return owlLinkURL;
     }
 
+    /**
+     * set the URL of the remote OWLLink server
+     * @param owlLinkURL the URL of the remote OWLLink server
+     */
     public void setOwlLinkURL(String owlLinkURL) {
         this.owlLinkURL = owlLinkURL;
     }
