@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY doubles "http://dl-learner.org/test/doubles#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/doubles#"
+     xml:base="http://dl-learner.org/test/doubles"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:doubles="http://dl-learner.org/test/doubles#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/doubles"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#value -->
+
+    <owl:DatatypeProperty rdf:about="&doubles;value">
+        <rdfs:domain rdf:resource="&doubles;Number"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#Number -->
+
+    <owl:Class rdf:about="&doubles;Number"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N1 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N1">
+        <value rdf:datatype="&xsd;double">1</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N10 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N10">
+        <value rdf:datatype="&xsd;double">10</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N100 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N100">
+        <value rdf:datatype="&xsd;double">100</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N102 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N102">
+        <value rdf:datatype="&xsd;double">102</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N104 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N104">
+        <value rdf:datatype="&xsd;double">104</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N107 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N107">
+        <value rdf:datatype="&xsd;double">107</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N109 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N109">
+        <value rdf:datatype="&xsd;double">109</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N110 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N110">
+        <value rdf:datatype="&xsd;double">110</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N2 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N2">
+        <value rdf:datatype="&xsd;double">2</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N3 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N3">
+        <value rdf:datatype="&xsd;double">3</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N4 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N4">
+        <value rdf:datatype="&xsd;double">4</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N5 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N5">
+        <value rdf:datatype="&xsd;double">5</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N6 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N6">
+        <value rdf:datatype="&xsd;double">6</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N7 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N7">
+        <value rdf:datatype="&xsd;double">7</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N8 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N8">
+        <value rdf:datatype="&xsd;double">8</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/doubles#N9 -->
+
+    <owl:NamedIndividual rdf:about="&doubles;N9">
+        <value rdf:datatype="&xsd;double">9</value>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

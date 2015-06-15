@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY numbers "http://dl-learner.org/test/numbers#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/numbers#"
+     xml:base="http://dl-learner.org/test/numbers"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:numbers="http://dl-learner.org/test/numbers#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/numbers"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#value -->
+
+    <owl:DatatypeProperty rdf:about="&numbers;value">
+        <rdfs:domain rdf:resource="&numbers;Number"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#Number -->
+
+    <owl:Class rdf:about="&numbers;Number"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N1 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N1">
+        <value rdf:datatype="&xsd;integer">1</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N10 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N10">
+        <value rdf:datatype="&xsd;integer">10</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N100 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N100">
+        <value rdf:datatype="&xsd;integer">100</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N102 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N102">
+        <value rdf:datatype="&xsd;integer">102</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N104 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N104">
+        <value rdf:datatype="&xsd;integer">104</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N107 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N107">
+        <value rdf:datatype="&xsd;integer">107</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N109 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N109">
+        <value rdf:datatype="&xsd;integer">109</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N110 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N110">
+        <value rdf:datatype="&xsd;integer">110</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N2 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N2">
+        <value rdf:datatype="&xsd;integer">2</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N3 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N3">
+        <value rdf:datatype="&xsd;integer">3</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N4 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N4">
+        <value rdf:datatype="&xsd;integer">4</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N5 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N5">
+        <value rdf:datatype="&xsd;integer">5</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N6 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N6">
+        <value rdf:datatype="&xsd;integer">6</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N7 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N7">
+        <value rdf:datatype="&xsd;integer">7</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N8 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N8">
+        <value rdf:datatype="&xsd;integer">8</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/numbers#N9 -->
+
+    <owl:NamedIndividual rdf:about="&numbers;N9">
+        <value rdf:datatype="&xsd;integer">9</value>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+
