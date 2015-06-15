@@ -3,6 +3,7 @@ package org.dllearner.algorithms.distributed.amqp;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import javax.jms.TopicSubscriber;
 
 import org.apache.qpid.AMQException;
 import org.apache.qpid.client.AMQConnection;
-import org.apache.qpid.client.AMQQueue;
 import org.apache.qpid.client.AMQTopic;
 import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MultiChannelMessagingAgent;
@@ -32,10 +32,10 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
+public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
         implements MultiChannelMessagingAgent{
 
-    private Logger logger = LoggerFactory.getLogger(AbstractMultiQueueAMQPAgent.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractMultiChannelAMQPAgent.class);
 
     // default AMPQ values
     private String user = "admin";
@@ -44,7 +44,7 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
     private String clientId = null;
     private String virtualHost = null;
     private int port = 5672;
-    private List<String> queueIdentifiers;
+    private List<String> topicIdentifiers;
 
     // misc
     protected int myID;
@@ -54,9 +54,6 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
     // connection, session, queue, consumers, ...
     private Connection connection;
     private Session session;
-    // for sending requests (master)/responses (worker)
-    private String sendQueueIdentifier;
-    private Map<String, AMQQueue> queues;
     private Map<String, MessageProducer> senders;
     private Map<String, MessageConsumer> receivers;
     // channel to send/receive terminate messages
@@ -71,11 +68,17 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
     private long maxBlockingWaitMilisecs = 5000;
 
 
-    public AbstractMultiQueueAMQPAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+    public AbstractMultiChannelAMQPAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
         super(problem, reasoner);
+        topicIdentifiers = new ArrayList<String>();
+        senders = new HashMap<String, MessageProducer>();
+        receivers = new HashMap<String, MessageConsumer>();
     }
 
-    public AbstractMultiQueueAMQPAgent() {
+    public AbstractMultiChannelAMQPAgent() {
+        topicIdentifiers = new ArrayList<String>();
+        senders = new HashMap<String, MessageProducer>();
+        receivers = new HashMap<String, MessageConsumer>();
     }
 
     @Override
@@ -92,7 +95,7 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
 
         senders = new HashMap<String, MessageProducer>();
         receivers = new HashMap<String, MessageConsumer>();
-        initQueues();
+        initTopics();
 
         termTopic = new AMQTopic((AMQConnection) connection, termRoutingKey);
         termMsgSubscriber = session.createDurableSubscriber(termTopic, Integer.toString(myID));
@@ -104,13 +107,19 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
 
     @Override
     public void finalizeMessaging() throws JMSException {
+        session.unsubscribe(Integer.toString(myID));
+
+        for (String topicID : topicIdentifiers) {
+            session.unsubscribe(topicID);
+        }
+
         session.close();
         connection.close();
     }
 
     @Override
     public void blockingSend(MessageContainer msgContainer, String queueID) throws JMSException {
-        logSend(msgContainer.toString(), true);
+        logSend(msgContainer.toString(), queueID, true);
         Message msg = ((org.apache.qpid.jms.Session) session).createObjectMessage(msgContainer);
         senders.get(queueID).send(msg);
 
@@ -119,7 +128,7 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
 
     @Override
     public void nonBlockingSend(MessageContainer msgContainer, String queueID) throws JMSException {
-        logSend(msgContainer.toString(), false);
+        logSend(msgContainer.toString(), queueID, false);
         Message msg = ((org.apache.qpid.jms.Session) session).createObjectMessage(msgContainer);
 //        CompletionListener completionListener = new DummyCompletionListener();
         /* FIXME: asynchronous sending is not implemented in the default message
@@ -141,22 +150,23 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
 
     @Override
     public MessageContainer blockingReceive(String queueID) throws JMSException {
-        logReceive(true);
+        logReceive(queueID, true);
         // FIXME: find a better solution than using a timeout
         ObjectMessage msg =
-                (ObjectMessage) receivers.get(queueID).receive(maxBlockingWaitMilisecs );
+                (ObjectMessage) receivers.get(queueID).receive(maxBlockingWaitMilisecs);
 
         if (msg == null) return null;
 
         MessageContainer msgContainer = (MessageContainer) msg.getObject();
         receivedMessagesCount++;
+        logReceived(msgContainer.toString(), queueID);
 
         return msgContainer;
     }
 
     @Override
     public MessageContainer nonBlockingReceive(String queueID) throws JMSException {
-        logReceive(false);
+        logReceive(queueID, false);
         ObjectMessage msg = (ObjectMessage) receivers.get(queueID).receiveNoWait();
 
         if (msg == null) {
@@ -166,6 +176,7 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
             MessageContainer msgContainer = (MessageContainer) msg.getObject();
             receivedMessagesCount++;
 
+            logReceived(msgContainer.toString(), queueID);
             return msgContainer;
         }
     }
@@ -230,8 +241,8 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
         return true;
     }
 
-    public void addQueue(String queueIdentifier) {
-        queueIdentifiers.add(queueIdentifier);
+    public void addTopic(String topicIdentifier) {
+        topicIdentifiers.add(topicIdentifier);
     }
 
     public boolean isTransactional() {
@@ -246,14 +257,18 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
         isMaster = true;
     }
 
-    private void initQueues() throws JMSException {
-        AMQQueue queue;
+    private void initTopics() throws JMSException {
+        AMQTopic topic;
+        TopicSubscriber subscriber;
+        MessageProducer publisher;
 
-        for (String queueIdentifier : queueIdentifiers) {
-            queue = new AMQQueue((AMQConnection) connection, sendQueueIdentifier);
-            queues.put(queueIdentifier, queue);
-            senders.put(queueIdentifier, session.createProducer(queue));
-            receivers.put(queueIdentifier, session.createConsumer(queue));
+        for (String topicID : topicIdentifiers) {
+            topic = new AMQTopic((AMQConnection) connection, topicID);
+            subscriber = session.createDurableSubscriber(topic, topicID);
+            publisher = session.createProducer(topic);
+
+            senders.put(topicID, publisher);
+            receivers.put(topicID, subscriber);
         }
     }
 
@@ -263,30 +278,48 @@ public abstract class AbstractMultiQueueAMQPAgent extends AbstractCELA
         else return "Worker " + myID;
     }
 
-    private void logSend(String what, boolean blocking) {
+    private void logSend(String what, String to, boolean blocking) {
         StringBuilder sb = new StringBuilder();
 
-        if (blocking) sb.append("|-->| ");
-        else sb.append("|>--| ");
+        sb.append(System.currentTimeMillis());
+        if (blocking) sb.append("|<--| ");
+        else sb.append("| < | ");
 
-        sb.append(this + " sending " + what);
+        sb.append(this + " sending " + what + " to " + to);
 
         logger.info(sb.toString());
     }
 
-    private void logReceive(boolean blocking) {
+    private void logReceive(String from, boolean blocking) {
         StringBuilder sb = new StringBuilder();
 
+        sb.append(System.currentTimeMillis());
         if (blocking) {
-            sb.append("|<--| ");
+            sb.append("|-->| ");
             sb.append(this);
-            sb.append(" wating for incoming messages");
+            sb.append(" wating for incoming messages from ");
+            sb.append(from);
         }
         else {
-            sb.append("|--<| ");
+            sb.append("| > | ");
             sb.append(this);
-            sb.append(" checking incoming messages");
+            sb.append(" checking incoming messages from ");
+            sb.append(from);
         }
+
+        logger.info(sb.toString());
+    }
+
+    private void logReceived(String what, String from) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(System.currentTimeMillis());
+        sb.append("|  >| ");
+        sb.append(this);
+        sb.append(" received ");
+        sb.append(what);
+        sb.append(" from ");
+        sb.append(from);
 
         logger.info(sb.toString());
     }
