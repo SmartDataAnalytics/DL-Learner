@@ -43,6 +43,7 @@ import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -150,9 +151,10 @@ public class CLI {
 		
 		rs = getMainReasonerComponent();
 		
-		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
 		
 			if (performCrossValidation) {
+				la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
+				
 				PosNegLP lp = context.getBean(PosNegLP.class);
 //				if(la instanceof QTL2){
 //					//new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);	
@@ -178,9 +180,15 @@ public class CLI {
 					new CrossValidation2(la,lp,rs,nrOfFolds,false);	
 				}
 			} else {
-				lp = context.getBean(AbstractClassExpressionLearningProblem.class);
+				if(context.getBean(AbstractLearningProblem.class) instanceof AbstractClassExpressionLearningProblem) {
+					lp = context.getBean(AbstractClassExpressionLearningProblem.class);
+				} else {
+					
+				}
+				
+				Map<String, LearningAlgorithm> learningAlgs = context.getBeansOfType(LearningAlgorithm.class);
 //				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
-				for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
+				for(Entry<String, LearningAlgorithm> entry : learningAlgs.entrySet()){
 					algorithm = entry.getValue();
 					logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
 					algorithm.start();

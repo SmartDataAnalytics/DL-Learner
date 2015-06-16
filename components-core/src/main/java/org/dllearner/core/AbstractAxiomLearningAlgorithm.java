@@ -304,7 +304,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		Query query = sampleQueryTemplate.asQuery();
 		query.setLimit(pageSize);
 		
-		
 		boolean isEmpty = false;
 		int i = 0;
 		while(!isTimeout() && !isEmpty){

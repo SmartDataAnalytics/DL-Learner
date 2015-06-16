@@ -22,7 +22,6 @@ package org.dllearner.algorithms.properties;
 import java.util.Set;
 
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
@@ -63,12 +62,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	
 	private boolean useSimpleScore = false;
 	
-	public ObjectPropertyDomainAxiomLearner(){}
-	
-	@Override
-	public void init() throws ComponentInitException {
-		super.init();
-		
+	public ObjectPropertyDomainAxiomLearner(){
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
 		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
 	
