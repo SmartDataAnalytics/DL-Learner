@@ -25,13 +25,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.dllearner.core.Component;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
+
+import com.google.common.collect.ObjectArrays;
 
 public class ConfigHelper {
 	
@@ -178,8 +182,28 @@ public class ConfigHelper {
 	 * @return
 	 */
 	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<? extends Component> component){
-		Map<ConfigOption,Class<?>> optionTypes = new HashMap<ConfigOption,Class<?>>();
+		return getConfigOptionTypes(component, true);
+	}
+	
+	/**
+	 * Returns all config options for the given component.
+	 * @param component
+	 * @return
+	 */
+	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<? extends Component> component, boolean useSuperTypes){
+		Map<ConfigOption,Class<?>> optionTypes = new TreeMap<ConfigOption,Class<?>>(new Comparator<ConfigOption>() {
+
+			@Override
+			public int compare(ConfigOption o1, ConfigOption o2) {
+				return o1.name().compareTo(o2.name());
+			}
+		});
 		Field[] fields = component.getDeclaredFields();
+		if(useSuperTypes) {
+			if(useSuperTypes) {
+				fields = ObjectArrays.concat(fields, component.getSuperclass().getDeclaredFields(), Field.class);
+			}
+		}
 		for(Field f : fields){
         	ConfigOption option = f.getAnnotation(ConfigOption.class);
         	if(option != null){
@@ -187,7 +211,7 @@ public class ConfigHelper {
         	}
         }
 		return optionTypes;
-	}	
+	}
 	
 	/*
 	 * returns the declared fields for the class and its superclass.
