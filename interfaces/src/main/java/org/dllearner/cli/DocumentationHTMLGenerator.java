@@ -104,6 +104,7 @@ public class DocumentationHTMLGenerator {
 	
 	private String getHeader() {
 		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml encoding=\"utf-8\" ?>\n");
 		sb.append("<html><head><title>DL-Learner components and configuration options</title>\n");
 		sb.append("<style type=\"text/css\">\n");
 		sb.append("body { line-height: 1.6em; font-size: 15px; font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", Sans-Serif;  }\n");
