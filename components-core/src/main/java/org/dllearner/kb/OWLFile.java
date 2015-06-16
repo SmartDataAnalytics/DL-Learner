@@ -34,8 +34,8 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.OntologyFormatUnsupportedException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.reasoning.OWLAPIDIGConverter;
@@ -60,15 +60,23 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     private static Logger logger = Logger.getLogger(OWLFile.class);
 
     // TODO: turn this into a config option
+    @ConfigOption(name = "url", description = "URL pointer to the KB file or Endpoint")
     private URL url;
+    @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
     private String fileName;
+    @ConfigOption(name = "baseDir",  description = "separately specify directory of KB file")
     private String baseDir;
 
+    @ConfigOption(name = "sparql",   description = "SPARQL CONSTRUCT expression to download from Endpoint")
     private String sparql = null;
+    @ConfigOption(name = "defaultGraphURIs", description = "a list of default graph URIs to query from the Endpoint")
     private List<String> defaultGraphURIs = new LinkedList<String>();
+    @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
     private List<String> namedGraphURIs = new LinkedList<String>();
 
     private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
+    @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
+    		+ " Available reasoners are: \"micro_rule\", \"mini_rule\", \"rdfs\", \"rule\"")
     private String reasoningString = "";
 
     public static String getName() {
@@ -89,22 +97,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static Collection<ConfigOption<?>> createConfigOptions() {
-        Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-        URLConfigOption urlOption = new URLConfigOption("url", "URL pointing to the OWL file", null, true, true);
-        urlOption.setRefersToFile(true);
-        options.add(urlOption);
-        return options;
-    }
-
-    /*
-      * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-      */
-    @Override
-    public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-
     }
 
     /* (non-Javadoc)
