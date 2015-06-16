@@ -14,7 +14,7 @@ import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinem
 import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
 import org.dllearner.algorithms.decisiontrees.utils.Split;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -137,7 +137,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 
 	
 	
-	public AbstractTDTClassifier(AbstractLearningProblem problem, AbstractReasonerComponent reasoner, RefinementOperator op) {
+	public AbstractTDTClassifier(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner, RefinementOperator op) {
 		super(problem, reasoner);
 		//		configurator = new CELOEConfigurator(this);
 	

@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 
 //import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -57,7 +57,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 	//	}
 	//
 
-	public TDTClassifier(AbstractLearningProblem problem, AbstractReasonerComponent reasoner, RefinementOperator op){
+	public TDTClassifier(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner, RefinementOperator op){
 		super(problem, reasoner,op);
 	}
 	

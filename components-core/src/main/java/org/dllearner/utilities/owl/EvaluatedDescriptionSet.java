@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -50,7 +50,7 @@ public class EvaluatedDescriptionSet {
 		this.maxSize = maxSize;
 	}
 	
-	public void add(OWLClassExpression description, double accuracy, AbstractLearningProblem problem) {
+	public void add(OWLClassExpression description, double accuracy, AbstractClassExpressionLearningProblem problem) {
 		// bug http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
 		// -> set should be filled up to max size before we compare acc. with the worst result
 		if(set.size()<maxSize || getWorst().getAccuracy() <= accuracy) {

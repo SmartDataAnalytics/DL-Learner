@@ -23,7 +23,7 @@ import java.io.File;
 
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentManager;
 
@@ -41,7 +41,7 @@ public class LearnOWLFileConfiguration extends LearnConfiguration {
 	}
 	
 	@Override
-	public void applyConfigEntries(ComponentManager cm, AbstractKnowledgeSource ks, AbstractLearningProblem lp, AbstractReasonerComponent rs, AbstractCELA la) {
+	public void applyConfigEntries(ComponentManager cm, AbstractKnowledgeSource ks, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs, AbstractCELA la) {
 		try {
 			super.applyConfigEntries(cm, ks, lp, rs, la);
 			// KNOWLEDGESOURCE

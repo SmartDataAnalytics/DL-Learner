@@ -33,7 +33,7 @@ import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.IndividualReasoner;
 import org.dllearner.learningproblems.Heuristics;
@@ -80,7 +80,7 @@ public class SPARQLCrossValidation {
 		
 	}
 	
-	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
+	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractClassExpressionLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
 		
 		DecimalFormat df = new DecimalFormat();	
 

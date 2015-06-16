@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -52,6 +52,7 @@ import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +66,12 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 public final class LiteralLearningTest {
 	static final String NUMBERS = "http://dl-learner.org/test/numbers#";
 	static final String DOUBLES = "http://dl-learner.org/test/doubles#";
+	static final String SHORTS = "http://dl-learner.org/test/shorts#";
+	static final String FLOATS = "http://dl-learner.org/test/floats#";
 	static final String NUMBERS_OWL = "../test/literals/numbers.owl";
 	static final String DOUBLES_OWL = "../test/literals/doubles.owl";
+	static final String SHORTS_OWL = "../test/literals/shorts.owl";
+	static final String FLOATS_OWL = "../test/literals/floats.owl";
 	
 	private void genericNumericTypeTest (String prefix, String owlfile, OWLDatatype restrictionType, String solution) throws OWLOntologyCreationException, ComponentInitException {
 		File file = new File(owlfile);
@@ -126,4 +131,15 @@ public final class LiteralLearningTest {
 	public void numericTypeTest () throws ComponentInitException, OWLOntologyCreationException {
 		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "9");
 	}
+
+	@Test
+	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9.5");
+	}
+	
+	@Test
+	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
+	}
+	
 }

@@ -9,8 +9,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.OWLAPIOntology;
@@ -18,23 +18,20 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
-import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
+import com.google.common.collect.Sets;
 
 /**
  * A learning problem in which positive and negative examples are classes, i.e.
@@ -47,7 +44,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
  * @author Lorenz Buehmann
  *
  */
-public class ClassAsInstanceLearningProblem extends AbstractLearningProblem<ScorePosNeg<OWLClass>> {
+public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLClass>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 

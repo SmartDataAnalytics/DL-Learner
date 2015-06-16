@@ -31,7 +31,7 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -258,14 +258,14 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		setReplaceSearchTree(celoe.replaceSearchTree);
 	}
 	
-	public CELOE(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public CELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 //		configurator = new CELOEConfigurator(this);
 	}
 
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
-		problems.add(AbstractLearningProblem.class);
+	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+		problems.add(AbstractClassExpressionLearningProblem.class);
 		return problems;
 	}
 	

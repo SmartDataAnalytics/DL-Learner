@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
@@ -36,6 +36,7 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.google.common.collect.Sets;
@@ -45,7 +46,7 @@ import com.google.common.collect.Sets.SetView;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
+public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	private static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();

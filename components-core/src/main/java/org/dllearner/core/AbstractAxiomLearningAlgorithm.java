@@ -727,6 +727,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 	}
 	
+	public void setKs(SparqlEndpointKS ks) {
+		this.ks = ks;
+	}
+	
 	class OWLFilter extends Filter<OntClass>{
 
 		@Override

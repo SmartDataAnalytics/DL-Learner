@@ -5,7 +5,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.learningproblems.PosNegUndLP;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.PosNegLP;
@@ -53,13 +53,13 @@ public class TreeInductionHeuristics {
 
 
 
-	public AbstractLearningProblem getProblem() {
+	public AbstractClassExpressionLearningProblem getProblem() {
 		return problem;
 	}
 
 
 
-	public void setProblem(AbstractLearningProblem problem) {
+	public void setProblem(AbstractClassExpressionLearningProblem problem) {
 		if (problem instanceof PosNegUndLP)
 			this.problem = (PosNegUndLP)problem;
 		

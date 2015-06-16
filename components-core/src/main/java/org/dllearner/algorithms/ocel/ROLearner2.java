@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
@@ -225,7 +225,7 @@ public class ROLearner2 {
 
 	public ROLearner2(
 //			OCELConfigurator configurator,
-			AbstractLearningProblem learningProblem,
+			AbstractClassExpressionLearningProblem learningProblem,
 			AbstractReasonerComponent rs,
 			RefinementOperator operator,
 			ExampleBasedHeuristic heuristic,

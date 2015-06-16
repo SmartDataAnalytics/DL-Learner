@@ -44,7 +44,7 @@ import org.dllearner.algorithms.decisiontrees.utils.Couple;
 import org.dllearner.algorithms.decisiontrees.utils.Npla;
 import org.dllearner.algorithms.decisiontrees.utils.Split;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -80,7 +80,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		super();
 	}
 
-	public DSTTDTClassifier(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public DSTTDTClassifier(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 		//		configurator = new CELOEConfigurator(this);
 	}

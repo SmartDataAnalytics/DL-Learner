@@ -21,18 +21,14 @@ package org.dllearner.cli;
 
 import java.io.File;
 
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.cli.ConfMapper;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.Component;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractComponent;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
 
@@ -81,8 +77,9 @@ public class DocumentationGenerator {
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
+
 		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractLearningProblem.class)) {
-			doc += getComponentConfigString(component, AbstractLearningProblem.class);
+			doc += getComponentConfigString(component, AbstractClassExpressionLearningProblem.class);
 		}
 		
 		doc += "***********************\n";

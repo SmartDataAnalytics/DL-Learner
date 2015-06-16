@@ -26,7 +26,7 @@ import java.util.Set;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -49,7 +49,7 @@ public class ComponentCombo {
 
 	private Set<AbstractKnowledgeSource> sources;
 	private AbstractReasonerComponent reasoner;
-	private AbstractLearningProblem problem;
+	private AbstractClassExpressionLearningProblem problem;
 	private AbstractCELA algorithm;
 	
 	/**
@@ -59,7 +59,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */
-	public ComponentCombo(AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, AbstractLearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, AbstractClassExpressionLearningProblem problem, AbstractCELA algorithm) {
 		this(getSourceSet(source), reasoner, problem, algorithm);
 	}	
 	
@@ -70,7 +70,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */	
-	public ComponentCombo(Set<AbstractKnowledgeSource> sources, AbstractReasonerComponent reasoner, AbstractLearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(Set<AbstractKnowledgeSource> sources, AbstractReasonerComponent reasoner, AbstractClassExpressionLearningProblem problem, AbstractCELA algorithm) {
 		this.sources = sources;
 		this.reasoner = reasoner;
 		this.problem = problem;
@@ -137,7 +137,7 @@ public class ComponentCombo {
 	/**
 	 * @return the problem
 	 */
-	public AbstractLearningProblem getProblem() {
+	public AbstractClassExpressionLearningProblem getProblem() {
 		return problem;
 	}
 

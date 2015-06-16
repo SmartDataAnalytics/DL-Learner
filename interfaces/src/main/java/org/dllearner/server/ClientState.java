@@ -29,7 +29,7 @@ import java.util.Set;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
@@ -52,7 +52,7 @@ public class ClientState {
 	
 	private Map<Integer, SparqlQuery> queryIDs = new HashMap<Integer, SparqlQuery>();
 	
-	private AbstractLearningProblem learningProblem;
+	private AbstractClassExpressionLearningProblem learningProblem;
 	
 	private AbstractReasonerComponent reasonerComponent;
 	
@@ -145,14 +145,14 @@ public class ClientState {
 	/**
 	 * @return the learningProblem
 	 */
-	public AbstractLearningProblem getLearningProblem() {
+	public AbstractClassExpressionLearningProblem getLearningProblem() {
 		return learningProblem;
 	}
 
 	/**
 	 * @param learningProblem the learningProblem to set
 	 */
-	public int setLearningProblem(AbstractLearningProblem learningProblem) {
+	public int setLearningProblem(AbstractClassExpressionLearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 		return generateComponentID(learningProblem);
 	}

@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -70,7 +70,7 @@ public class SworeTest {
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
-		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		AbstractClassExpressionLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
 		Set<String> positiveExamples = new TreeSet<String>();
 		positiveExamples.add("http://ns.softwiki.de/req/important");
 		positiveExamples.add("http://ns.softwiki.de/req/very_important");

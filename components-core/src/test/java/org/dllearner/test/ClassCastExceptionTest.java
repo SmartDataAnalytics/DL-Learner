@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -60,7 +60,7 @@ public class ClassCastExceptionTest {
 		
 		// create a learning problem and set positive and negative examples
 
-		AbstractLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
+		AbstractClassExpressionLearningProblem lp = cm.learningProblem(ClassLearningProblem.class, reasoner);
 		cm.applyConfigEntry(lp, "classToDescribe", "http://ns.softwiki.de/req/PerformanceRequirement");
 		cm.applyConfigEntry(lp, "type", "equivalence");
 		lp.init();

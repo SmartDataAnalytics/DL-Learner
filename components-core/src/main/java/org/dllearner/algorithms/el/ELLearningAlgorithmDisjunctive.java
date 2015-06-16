@@ -30,7 +30,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -132,7 +132,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 	public ELLearningAlgorithmDisjunctive() {}	
 	
-	public ELLearningAlgorithmDisjunctive(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public ELLearningAlgorithmDisjunctive(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
 	
@@ -140,8 +140,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		return "disjunctive EL learning algorithm";
 	}	
 	
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}

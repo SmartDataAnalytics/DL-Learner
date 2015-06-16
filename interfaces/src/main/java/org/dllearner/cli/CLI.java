@@ -42,7 +42,7 @@ import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser3.ConfParserConfiguration;
 import org.dllearner.confparser3.ParseException;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
@@ -88,7 +88,7 @@ public class CLI {
 	
 	private String logLevel = "INFO";
 
-	private AbstractLearningProblem lp;
+	private AbstractClassExpressionLearningProblem lp;
 
 	private AbstractReasonerComponent rs;
 
@@ -118,7 +118,7 @@ public class CLI {
             knowledgeSource = context.getBean(KnowledgeSource.class);
             rs = getMainReasonerComponent();
     		la = context.getBean(AbstractCELA.class);
-    		lp = context.getBean(AbstractLearningProblem.class);
+    		lp = context.getBean(AbstractClassExpressionLearningProblem.class);
     	}
 	}
 	
@@ -178,7 +178,7 @@ public class CLI {
 					new CrossValidation2(la,lp,rs,nrOfFolds,false);	
 				}
 			} else {
-				lp = context.getBean(AbstractLearningProblem.class);
+				lp = context.getBean(AbstractClassExpressionLearningProblem.class);
 //				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
 				for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
 					algorithm = entry.getValue();
@@ -221,7 +221,7 @@ public class CLI {
 	/**
 	 * @return the lp
 	 */
-	public AbstractLearningProblem getLearningProblem() {
+	public AbstractClassExpressionLearningProblem getLearningProblem() {
 		return lp;
 	}
 	
