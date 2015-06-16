@@ -6,8 +6,13 @@ import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import java.io.IOException;
 import java.util.*;
@@ -27,6 +32,26 @@ public class ConfParserConfiguration implements IConfiguration {
     private final String baseDir;
     private final String typeProperty = "type";
 
+    enum Rendering {
+    	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()), 
+    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImpl());
+    	
+    	String name;
+    	OWLObjectRenderer renderer;
+    	
+    	Rendering(String name, OWLObjectRenderer render) {
+    		this.name = name;
+    		this.renderer = render;
+    	}
+    	
+		public String getName() {
+			return name;
+		}
+    	
+    	public OWLObjectRenderer getRenderer() {
+    		return renderer;
+    	}
+    }
 
     public ConfParserConfiguration(Resource source) {
         try {
@@ -38,6 +63,19 @@ public class ConfParserConfiguration implements IConfiguration {
         	}
             parser = new ConfParser(source.getInputStream());
             parser.Start();
+            
+            // setup rendering TODO put it into CLI
+            ConfFileOption2 renderingOption = parser.getConfOptionsByProperty("rendering");
+            if(renderingOption != null) {
+            	String syntax = renderingOption.getPropertyValue();
+                Rendering rendering = Rendering.MANCHESTER_SYNTAX;
+                for (Rendering r : Rendering.values()) {
+    				if(syntax.equals(r.getName())) {
+    					rendering = r;
+    				}
+    			}
+                ToStringRenderer.getInstance().setRenderer(rendering.getRenderer());
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

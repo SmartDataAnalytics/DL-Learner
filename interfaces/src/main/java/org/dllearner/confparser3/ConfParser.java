@@ -19,52 +19,57 @@ import org.dllearner.parser.KBParser;
 
 public class ConfParser implements ConfParserConstants {
 
-        // special directives (those without a property name)
-        private Map<String,ConfFileOption2> specialOptions = new HashMap<String,ConfFileOption2>();
+	// special directives (those without a property name)
+	private Map<String, ConfFileOption2> specialOptions = new HashMap<String, ConfFileOption2>();
 
-        // conf file options
-        private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
-        private Map<String,ConfFileOption2> confOptionsByProperty = new HashMap<String,ConfFileOption2>();
-        private Map<String,List<ConfFileOption2>> confOptionsByBean = new HashMap<String,List<ConfFileOption2>>();
+	// conf file options
+	private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
+	private Map<String, ConfFileOption2> confOptionsByProperty = new HashMap<String, ConfFileOption2>();
+	private Map<String, List<ConfFileOption2>> confOptionsByBean = new HashMap<String, List<ConfFileOption2>>();
 
-        private void addConfOption(ConfFileOption2 confOption) {
-                confOptions.add(confOption);
-                confOptionsByProperty.put(confOption.getPropertyName(), confOption);
-                String beanName = confOption.getBeanName();
-                if(confOptionsByBean.containsKey(beanName))
-                        confOptionsByBean.get(beanName).add(confOption);
-                else {
-                        LinkedList<ConfFileOption2> optionList = new LinkedList<ConfFileOption2>();
-                        optionList.add(confOption);
-                        confOptionsByBean.put(beanName,optionList);
-                }
-        }
+	private void addConfOption(ConfFileOption2 confOption) {
+		confOptions.add(confOption);
+		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
+		String beanName = confOption.getBeanName();
+		if (confOptionsByBean.containsKey(beanName))
+			confOptionsByBean.get(beanName).add(confOption);
+		else {
+			LinkedList<ConfFileOption2> optionList = new LinkedList<ConfFileOption2>();
+			optionList.add(confOption);
+			confOptionsByBean.put(beanName, optionList);
+		}
+	}
 
-        public List<ConfFileOption2> getConfOptions() {
-                return confOptions;
-        }
+	public List<ConfFileOption2> getConfOptions() {
+		return confOptions;
+	}
 
-        public Map<String,ConfFileOption2> getConfOptionsByProperty() {
-                return confOptionsByProperty;
-        }
+	public Map<String, ConfFileOption2> getConfOptionsByProperty() {
+		return confOptionsByProperty;
+	}
 
-        public ConfFileOption2 getConfOptionsByProperty(String propertyName) {
-                return confOptionsByProperty.get(propertyName);
-        }
+	public ConfFileOption2 getConfOptionsByProperty(String propertyName) {
+		ConfFileOption2 confOption = confOptionsByProperty.get(propertyName);
+		if (confOption == null) {
+			confOption = specialOptions.get(propertyName);
+		}
+		return confOption;
+	}
 
-        public Map<String,List<ConfFileOption2>> getConfOptionsByBean() {
-                return confOptionsByBean;
-        }
+	public Map<String, List<ConfFileOption2>> getConfOptionsByBean() {
+		return confOptionsByBean;
+	}
 
-        public List<ConfFileOption2> getConfOptionsByBean(String beanName) {
-                return confOptionsByBean.get(beanName);
-        }
+	public List<ConfFileOption2> getConfOptionsByBean(String beanName) {
+		return confOptionsByBean.get(beanName);
+	}
 
-        public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException, UnsupportedEncodingException {
-                ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename),"UTF-8"));
-                parser.Start();
-                return parser;
-        }
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException,
+			UnsupportedEncodingException {
+		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
+		parser.Start();
+		return parser;
+	}
 
   final public void Start() throws ParseException {ConfFileOption2 confOption;
     label_1:

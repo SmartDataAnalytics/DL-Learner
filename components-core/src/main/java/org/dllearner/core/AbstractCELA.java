@@ -45,6 +45,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -347,7 +348,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	// central function for printing description
 	protected String descriptionToString(OWLClassExpression description) {
-		return OWLAPIRenderers.toManchesterOWLSyntax(description);
+		return description.toString();//OWLAPIRenderers.toManchesterOWLSyntax(description);
 	}
 		
 	
@@ -357,11 +358,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
+			String descriptionString = descriptionToString(description);
 			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionToString(description) + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")\n";
+				str += current + ": " + descriptionString + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")\n";
 			} else {
-				String descriptionToString = descriptionToString(description);
-				str += current + ": " + descriptionToString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+				str += current + ": " + descriptionString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
 			}
 			current++;

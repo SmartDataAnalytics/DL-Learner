@@ -27,12 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
@@ -55,20 +53,12 @@ import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 
 
@@ -103,7 +93,7 @@ public class CLI {
 	private AbstractReasonerComponent rs;
 
 	private AbstractCELA la;
-
+	
 
 	public CLI() {
 		
@@ -121,7 +111,7 @@ public class CLI {
     		Resource confFileR = new FileSystemResource(confFile);
     		List<Resource> springConfigResources = new ArrayList<Resource>();
             configuration = new ConfParserConfiguration(confFileR);
-
+            
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
             
