@@ -63,7 +63,6 @@ public class DocumentationGenerator {
 		doc += "BEGIN MANUAL PART\n";
 		doc += "END MANUAL PART\n\n";
 		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractKnowledgeSource.class)) {
-			if(component != SparqlKnowledgeSource.class){continue;}
 			doc += getComponentConfigString(component, AbstractKnowledgeSource.class);
 		}
 		
