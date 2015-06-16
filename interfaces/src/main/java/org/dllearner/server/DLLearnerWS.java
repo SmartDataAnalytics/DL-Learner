@@ -46,7 +46,7 @@ import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
@@ -301,11 +301,11 @@ public class DLLearnerWS {
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		logger.info("Setting learning problem " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
+		Class<? extends AbstractClassExpressionLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
 		
-		AbstractLearningProblem lp = null;
+		AbstractClassExpressionLearningProblem lp = null;
 		try {
 			lp = lpClass.getConstructor(AbstractReasonerComponent.class).newInstance(state.getReasonerComponent());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -336,7 +336,7 @@ public class DLLearnerWS {
 		
 		AbstractCELA la = null;
 		try {
-			la = laClass.getConstructor(AbstractLearningProblem.class, AbstractReasonerComponent.class)
+			la = laClass.getConstructor(AbstractClassExpressionLearningProblem.class, AbstractReasonerComponent.class)
 					.newInstance(state.getLearningProblem(), state.getReasonerComponent());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

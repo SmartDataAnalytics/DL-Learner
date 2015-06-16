@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -55,7 +55,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  *
  */
 @ComponentAnn(name = "ClassLearningProblem", shortName = "clp", version = 0.6)
-public class ClassLearningProblem extends AbstractLearningProblem<ClassScore> {
+public class ClassLearningProblem extends AbstractClassExpressionLearningProblem<ClassScore> {
 	
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;

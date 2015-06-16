@@ -107,7 +107,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected AbstractLearningProblem learningProblem;
+	protected AbstractClassExpressionLearningProblem learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by
@@ -138,7 +138,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param reasoningService The reasoner connecting to the
 	 * underlying knowledge base.
 	 */
-	public AbstractCELA(AbstractLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
+	public AbstractCELA(AbstractClassExpressionLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
 //		
@@ -155,7 +155,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * indeed changes the learning problem.
 	 * @param learningProblem The new learning problem.
 	 */
-	public void changeLearningProblem(AbstractLearningProblem learningProblem) {
+	public void changeLearningProblem(AbstractClassExpressionLearningProblem learningProblem) {
 		this.learningProblem = learningProblem;
 	}
 
@@ -342,8 +342,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * an algorithm is only suitable for positive only learning. 
 	 * @return All classes implementing learning problems, which are supported by this learning algorithm.
 	 */
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		return new LinkedList<Class<? extends AbstractLearningProblem>>();
+	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+		return new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
 	}
 	
 	// central function for printing description
@@ -459,14 +459,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
      * all learning algorithm implementations.
      */
 	@Override
-    public AbstractLearningProblem getLearningProblem() {
+    public AbstractClassExpressionLearningProblem getLearningProblem() {
         return learningProblem;
     }
 
     @Autowired
     @Override
     public void setLearningProblem(LearningProblem learningProblem) {
-        this.learningProblem = (AbstractLearningProblem) learningProblem;
+        this.learningProblem = (AbstractClassExpressionLearningProblem) learningProblem;
     }
 
     /**

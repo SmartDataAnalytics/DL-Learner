@@ -29,7 +29,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.options.CommonConfigMappings;
@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
  *
  */
 @ComponentAnn(name = "positive only learning problem", shortName = "posonlylp", version = 0.6)
-public class PosOnlyLP extends AbstractLearningProblem<ScorePosOnly> {
+public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOnly> {
 	
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;

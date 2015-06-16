@@ -17,7 +17,7 @@ import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
 import org.dllearner.cli.*;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.Heuristics;
@@ -56,7 +56,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	}
 
 
-	public CrossValidation2(AbstractCELA la, AbstractLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
+	public CrossValidation2(AbstractCELA la, AbstractClassExpressionLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
 		super();
 		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 		ToStringRenderer.getInstance().setRenderer(renderer);
@@ -159,7 +159,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-1);
 			for(int currFold=0; currFold<folds; currFold++) {
 				try {
-					final AbstractLearningProblem lpClone = (AbstractLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
+					final AbstractClassExpressionLearningProblem lpClone = (AbstractClassExpressionLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
 					final Set<OWLIndividual> trainPos = trainingSetsPos.get(currFold);
 					final Set<OWLIndividual> trainNeg = trainingSetsNeg.get(currFold);
 
@@ -255,7 +255,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	}
 
 
-	private void validate(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs,
+	private void validate(AbstractCELA la, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs,
 			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg,Set<OWLIndividual> trainUnd, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg, Set<OWLIndividual> testUnd){
 		//System.out.println("Validation starting");
 		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);

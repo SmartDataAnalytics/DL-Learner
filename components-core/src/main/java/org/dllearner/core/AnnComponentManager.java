@@ -87,6 +87,7 @@ public class AnnComponentManager {
 //            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
+            "org.dllearner.learningproblems.PropertyAxiomLearningProblem",
             "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.ClosedWorldReasoner",
             "org.dllearner.reasoning.OWLAPIReasoner",

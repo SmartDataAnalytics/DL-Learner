@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -36,7 +36,7 @@ public class NaiveALLearner extends AbstractCELA{
     public NaiveALLearner() {
     }
 
-    public NaiveALLearner(AbstractLearningProblem lp, AbstractReasonerComponent reasoner) {
+    public NaiveALLearner(AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent reasoner) {
         super(lp, reasoner);
     }
     @Override

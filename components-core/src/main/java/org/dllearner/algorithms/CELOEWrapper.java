@@ -11,7 +11,7 @@ import java.util.SortedSet;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
@@ -113,7 +113,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 			AbstractReasonerComponent rc = new FastInstanceChecker(new OWLAPIOntology(fragment));
 			rc.init();
 			
-			AbstractLearningProblem lp = new PosNegLPStandard(rc, posExamples, negExamples);
+			AbstractClassExpressionLearningProblem lp = new PosNegLPStandard(rc, posExamples, negExamples);
 			lp.init();
 			
 			CELOE la = new CELOE(lp, rc);

@@ -35,7 +35,7 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
@@ -64,7 +64,7 @@ public class ConfMapper {
 	// mappings between component classes and their names in conf files
 	private static Map<String,Class<? extends AbstractKnowledgeSource>> knowledgeSourceMapping = new TreeMap<String,Class<? extends AbstractKnowledgeSource>>();
 	private static Map<String,Class<? extends AbstractReasonerComponent>> reasonerMapping = new TreeMap<String,Class<? extends AbstractReasonerComponent>>();
-	private static Map<String,Class<? extends AbstractLearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends AbstractLearningProblem>>();
+	private static Map<String,Class<? extends AbstractClassExpressionLearningProblem>> learningProblemMapping = new TreeMap<String,Class<? extends AbstractClassExpressionLearningProblem>>();
 	private static Map<String,Class<? extends AbstractCELA>> learningAlgorithmMapping = new TreeMap<String,Class<? extends AbstractCELA>>();
 	private static TreeMap<String,Class<? extends AbstractComponent>> componentMapping = new TreeMap<String,Class<? extends AbstractComponent>>();		
 	private static HashMap<Class<? extends AbstractComponent>, String> inverseMapping = new HashMap<Class<? extends AbstractComponent>, String>();		
@@ -124,7 +124,7 @@ public class ConfMapper {
 		// edit this part manually
 		componentTypeMapping.put("import", AbstractKnowledgeSource.class);
 		componentTypeMapping.put("reasoner", AbstractReasonerComponent.class);
-		componentTypeMapping.put("problem", AbstractLearningProblem.class);
+		componentTypeMapping.put("problem", AbstractClassExpressionLearningProblem.class);
 		componentTypeMapping.put("algorithm", AbstractCELA.class);
 		
 		// you do not need to edit anything below
@@ -142,7 +142,7 @@ public class ConfMapper {
 		return reasonerMapping.get(confString);
 	}
 	
-	public Class<? extends AbstractLearningProblem> getLearningProblemClass(String confString) {
+	public Class<? extends AbstractClassExpressionLearningProblem> getLearningProblemClass(String confString) {
 		return learningProblemMapping.get(confString);
 	}
 	

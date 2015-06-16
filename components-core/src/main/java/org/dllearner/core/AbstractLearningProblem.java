@@ -19,21 +19,18 @@
 
 package org.dllearner.core;
 
-import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for all learning problems.
  * See also the wiki page for 
- * <a href="http://dl-learner.org/Projects/DLLearner/Architecture">DL-Learner-Architecture</a>.
- * Currently, we assume that all learning problems have the goal
- * of learning class descriptions. However, this may be extended
- * to other scenarios if desired. 
+ * <a href="http://dl-learner.org/Projects/DLLearner/Architecture">DL-Learner-Architecture</a>. 
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractLearningProblem<T extends Score>  extends AbstractComponent implements LearningProblem {
+public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject>  extends AbstractComponent implements LearningProblem {
 	
 	protected AbstractReasonerComponent reasoner;
 
@@ -67,51 +64,51 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
 	 * Computes the <code>Score</code> of a given class description
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
-	 * to measure how good the class expression fits the learning problem.
+	 * to measure how good the hypothesis fits the learning problem.
 	 * Score objects are used to store e.g. covered examples, accuracy etc.,
 	 * so often it is more efficient to only create score objects for
-	 * promising class descriptions.
-	 * @param description A class expression (as solution candidate for this learning problem).
+	 * promising hypotheses.
+	 * @param hypothesis A hypothesis (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
-	public T computeScore(OWLClassExpression description) {
-		return computeScore(description, 0.0);
+	public T computeScore(V hypothesis) {
+		return computeScore(hypothesis, 0.0);
 	}
 	
 	/**
 	 * Computes the <code>Score</code> of a given class description
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
-	 * to measure how good the class expression fits the learning problem.
+	 * to measure how good the hypothesis fits the learning problem.
 	 * Score objects are used to store e.g. covered examples, accuracy etc.,
 	 * so often it is more efficient to only create score objects for
-	 * promising class descriptions.
-	 * @param description A class expression (as solution candidate for this learning problem).
+	 * promising hypotheses.
+	 * @param hypothesis A hypothesis (as solution candidate for this learning problem).
 	 * @param noise the (approximated) value of noise within the examples
 	 * @return A <code>Score</code> object.
 	 */
-	public abstract T computeScore(OWLClassExpression concept, double noise);
+	public abstract T computeScore(V hypothesis, double noise);
 	
 	/**
-	 * Evaluates the class expression by computing the score and returning an
-	 * evaluated class expression of the correct type (ClassLearningProblem
+	 * Evaluates the hypothesis by computing the score and returning an
+	 * evaluated hypothesis of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
-	 * @param description Description to evaluate.
+	 * @param hypothesis Hypothesis to evaluate.
 	 * @return 
 	 */
-	public EvaluatedDescription evaluate(OWLClassExpression description){
-		return evaluate(description, 1.0);
+	public EvaluatedDescription evaluate(V hypothesis){
+		return evaluate(hypothesis, 1.0);
 	}
 	
 	/**
-	 * Evaluates the class expression by computing the score and returning an
-	 * evaluated class expression of the correct type (ClassLearningProblem
+	 * Evaluates the hypothesis by computing the score and returning an
+	 * evaluated hypothesis of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
-	 * @param description Description to evaluate.
+	 * @param hypothesis Hypothesis to evaluate.
 	 * @param noise the (approximated) value of noise within the examples
 	 * @return 
 	 */
-	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
+	public EvaluatedDescription evaluate(V hypothesis, double noise) {
 		return null;
 	}
 	
@@ -125,38 +122,38 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
 	 * 
 	 * @return A value between 0 and 1 indicating the quality (of a class description).
 	 */	
-	public double getAccuracy(OWLClassExpression description) {
-		return getAccuracy(description, 0.0);
+	public double getAccuracy(V object) {
+		return getAccuracy(object, 0.0);
 	}
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class expression solves a learning problem. There can be different
+	 * hypothesis solves a learning problem. There can be different
 	 * ways to compute accuracy depending on the type of learning problem
 	 * and other factors. However, all implementations are required to 
 	 * return a value between 0 and 1, where 1 stands for the highest
 	 * possible accuracy and 0 for the lowest possible accuracy.
 	 * 
-	 * @param description Description to evaluate.
+	 * @param hypothesis Hypothesis to evaluate.
 	 * @param noise the (approximated) value of noise within the examples
 	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis).
 	 */	
-	public abstract double getAccuracy(OWLClassExpression description, double noise);
+	public abstract double getAccuracy(V hypothesis, double noise);
 	
 	/**
-	 * This method computes the accuracy as {@link #getAccuracy(OWLClassExpression)},
+	 * This method computes the accuracy as {@link #getAccuracy(V)},
 	 * but returns -1 instead of the accuracy if 1.) the accuracy of the 
-	 * OWLClassExpression is below the given threshold and 2.) the accuracy of all
-	 * more special w.r.t. subsumption descriptions is below the given threshold.
+	 * hypothesis is below the given threshold and 2.) the accuracy of all
+	 * more special w.r.t. subsumption hypotheses is below the given threshold.
 	 * This is used for efficiency reasons, i.e. -1 can be returned instantly if
-	 * it is clear that the class expression and all its refinements are not 
+	 * it is clear that the hypothesis and all its refinements are not 
 	 * sufficiently accurate.
 	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description)
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis)
 	 * or -1 as described above.
 	 */	
-	public abstract double getAccuracyOrTooWeak(OWLClassExpression description, double noise);
+	public abstract double getAccuracyOrTooWeak(V hypothesis, double noise);
 
     /**
      * Implementations of learning problems can use this class
