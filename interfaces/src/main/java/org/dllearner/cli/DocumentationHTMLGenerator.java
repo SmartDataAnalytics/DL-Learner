@@ -11,6 +11,7 @@ import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
+import org.semanticweb.owlapi.model.OWLClass;
 
 /**
  * Script for generating documentation for all components, in particular
@@ -90,7 +91,11 @@ public class DocumentationHTMLGenerator {
 			sb.append("<table id=\"hor-minimalist-a\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
 			for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
 				ConfigOption option = entry.getKey();
-				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + entry.getValue().getSimpleName() + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
+				String type = entry.getValue().getSimpleName();
+				if(entry.getValue().equals(OWLClass.class)) {
+					type = "IRI";
+				}
+				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + type + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
 			}
 			sb.append("</tbody></table>\n");
 			}

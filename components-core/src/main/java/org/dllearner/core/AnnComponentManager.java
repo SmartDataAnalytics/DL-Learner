@@ -20,16 +20,20 @@
 package org.dllearner.core;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.refinementoperators.RefinementOperator;
+
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration
@@ -373,6 +377,25 @@ public class AnnComponentManager {
 	 */
 	public static String getDescription(Component component){
 		return getDescription(component.getClass());
+	}
+	
+	/**
+	 * Returns the OWLClassExpression of a DL-Learner component.
+	 * @param component
+	 * @return OWLClassExpression of the component.
+	 */
+	public static Set<ConfigOption> getConfigOptions(Class<? extends Component> component){
+		Set<ConfigOption> set = new HashSet<>();
+	    Class<?> c = component;
+	    while (c != null) {
+	        for (java.lang.reflect.Field field : c.getDeclaredFields()) {
+	            if (field.isAnnotationPresent(ConfigOption.class)) {
+	                set.add(field.getAnnotation(ConfigOption.class));
+	            }
+	        }
+	        c = c.getSuperclass();
+	    }
+	    return set;
 	}
 
 	/**

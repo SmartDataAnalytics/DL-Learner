@@ -23,11 +23,15 @@ import java.io.File;
 
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.cli.ConfMapper;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Files;
@@ -41,11 +45,7 @@ public class DocumentationGenerator {
 
 	private ConfMapper confMapper = new ConfMapper();	
 	
-	private ComponentManager cm;
-	
-	public DocumentationGenerator() {
-		cm = ComponentManager.getInstance();
-	}
+	private AnnComponentManager cm = AnnComponentManager.getInstance();
 	
 	/**
 	 * Writes documentation for all components available in this
@@ -66,7 +66,7 @@ public class DocumentationGenerator {
 		doc += "*********************\n\n";
 		doc += "BEGIN MANUAL PART\n";
 		doc += "END MANUAL PART\n\n";
-		for(Class<? extends AbstractComponent> component : cm.getKnowledgeSources()) {
+		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractKnowledgeSource.class)) {
 			if(component != SparqlKnowledgeSource.class){continue;}
 			doc += getComponentConfigString(component, AbstractKnowledgeSource.class);
 		}
@@ -74,33 +74,33 @@ public class DocumentationGenerator {
 		doc += "*************\n";
 		doc += "* Reasoners *\n";
 		doc += "*************\n\n";
-		for(Class<? extends AbstractComponent> component : cm.getReasonerComponents()) {
+		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractReasonerComponent.class)) {
 			doc += getComponentConfigString(component, AbstractReasonerComponent.class);
 		}
 		
 		doc += "*********************\n";
 		doc += "* Learning Problems *\n";
 		doc += "*********************\n\n";
-		for(Class<? extends AbstractComponent> component : cm.getLearningProblems()) {
+		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractLearningProblem.class)) {
 			doc += getComponentConfigString(component, AbstractLearningProblem.class);
 		}
 		
 		doc += "***********************\n";
 		doc += "* Learning Algorithms *\n";
 		doc += "***********************\n\n";
-		for(Class<? extends AbstractComponent> component : cm.getLearningAlgorithms()) {
+		for(Class<? extends Component> component : cm.getComponentsOfType(AbstractCELA.class)) {
 			doc += getComponentConfigString(component, AbstractCELA.class);
 		}
 		
 		Files.createFile(file, doc);
 	}	
 	
-	private String getComponentConfigString(Class<? extends AbstractComponent> component, Class<? extends AbstractComponent> componentType) {
+	private String getComponentConfigString(Class<? extends Component> component, Class<? extends AbstractComponent> componentType) {
 //		String componentDescription =  "component: " + invokeStaticMethod(component, "getName") + " (" + component.getName() + ")";
-		String componentDescription =  "component: " + cm.getComponentName(component);
+		String componentDescription =  "component: " + AnnComponentManager.getDescription(component);
 		String str = componentDescription + "\n";
 		String cli = confMapper.getComponentTypeString(componentType);
-		String usage = confMapper.getComponentString(component);
+		String usage = AnnComponentManager.getName(component);
 	
 		for(int i=0; i<componentDescription.length(); i++) {
 			str += "=";
@@ -112,11 +112,11 @@ public class DocumentationGenerator {
 			str += "conf file usage: "+cli+" = "+usage+";\n\n";
 		}
 		
-		for(ConfigOption<?> option : ComponentManager.getConfigOptions(component)) {
-			String val = (option.getDefaultValue()==null)?"":option.getDefaultValue()+"";
+		for(org.dllearner.core.config.ConfigOption option : AnnComponentManager.getConfigOptions(component)) {
+			String val = (option.defaultValue() == null) ? "" : option.defaultValue() + "";
 			str += option.toString() + 	
 				"conf file usage: "+usage+"."
-				+ option.getName()+" = "+val+";\n\n";
+				+ option.name()+" = "+val+";\n\n";
 		}		
 		return str+"\n";
 	}	
