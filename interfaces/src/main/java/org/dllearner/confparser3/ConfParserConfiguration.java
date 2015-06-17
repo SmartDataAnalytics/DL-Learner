@@ -1,5 +1,14 @@
 package org.dllearner.confparser3;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.apache.commons.collections15.BidiMap;
 import org.dllearner.cli.ConfFileOption2;
 import org.dllearner.configuration.IConfiguration;
@@ -7,16 +16,11 @@ import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,7 +38,7 @@ public class ConfParserConfiguration implements IConfiguration {
 
     enum Rendering {
     	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()), 
-    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImpl());
+    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, false));
     	
     	String name;
     	OWLObjectRenderer renderer;
@@ -65,17 +69,17 @@ public class ConfParserConfiguration implements IConfiguration {
             parser.Start();
             
             // setup rendering TODO put it into CLI
+            Rendering rendering = Rendering.MANCHESTER_SYNTAX;
             ConfFileOption2 renderingOption = parser.getConfOptionsByProperty("rendering");
             if(renderingOption != null) {
             	String syntax = renderingOption.getPropertyValue();
-                Rendering rendering = Rendering.MANCHESTER_SYNTAX;
                 for (Rendering r : Rendering.values()) {
     				if(syntax.equals(r.getName())) {
     					rendering = r;
     				}
     			}
-                ToStringRenderer.getInstance().setRenderer(rendering.getRenderer());
             }
+            ToStringRenderer.getInstance().setRenderer(rendering.getRenderer());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
