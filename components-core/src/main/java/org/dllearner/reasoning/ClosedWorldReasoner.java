@@ -70,6 +70,7 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -799,8 +800,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			} else if(filler instanceof OWLDatatypeRestriction){
 				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
-				
-				if(datatype.isDouble()){
+				//datatype
+				if(Arrays.asList(baseReasoner.floatDatatypes).contains(OWL2Datatype.getDatatype(datatype.getIRI()))) {
 					SortedSet<Double> values = dd.get(property).get(individual);
 					
 					// no value exists
@@ -829,7 +830,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 							return true;
 						}
 					}
-				} else if(datatype.isInteger()){
+				} else if(Arrays.asList(baseReasoner.intDatatypes).contains(OWL2Datatype.getDatatype(datatype.getIRI()))) {
 					SortedSet<Integer> values = id.get(property).get(individual);
 					
 					int min = Integer.MIN_VALUE;

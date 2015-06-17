@@ -1900,9 +1900,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		return avg;
 
-//		return (T) BigDecimal.valueOf(number1.doubleValue()).
-//				add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//						BigDecimal.valueOf(2d)));
 	}
 
 

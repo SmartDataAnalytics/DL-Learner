@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -101,8 +102,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.hp.hpl.jena.vocabulary.OWL2;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -142,7 +145,28 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private OWLClassExpressionMinimizer minimizer;
 
     private OWLReasoner fallbackReasoner;
-
+    
+    final static OWL2Datatype[] intDatatypes = {
+		OWL2Datatype.XSD_INT,
+		OWL2Datatype.XSD_INTEGER,
+		OWL2Datatype.XSD_POSITIVE_INTEGER,
+		OWL2Datatype.XSD_NEGATIVE_INTEGER,
+		OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
+		OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
+		OWL2Datatype.XSD_SHORT
+    };
+    final static OWL2Datatype[] floatDatatypes = {
+    	OWL2Datatype.XSD_FLOAT,
+    	OWL2Datatype.XSD_DOUBLE,
+    	OWL2Datatype.XSD_DECIMAL
+    };
+    final static OWL2Datatype[] fixedDatatypes = {
+    	OWL2Datatype.XSD_BOOLEAN
+    };
+    final static OWL2Datatype[] dtDatatypes = {
+    	OWL2Datatype.XSD_DATE_TIME
+    };
+    
  // default reasoner is Pellet
     @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
@@ -1173,18 +1197,23 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_DOUBLE);
+		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		
+		for (OWL2Datatype dt:floatDatatypes) {
+			properties.addAll(datatype2Properties.get(dt));
+		}
+
+		return properties;
 	}
 
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_INT));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_POSITIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NEGATIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NON_POSITIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NON_NEGATIVE_INTEGER));
+		
+		for (OWL2Datatype dt:intDatatypes) {
+			properties.addAll(datatype2Properties.get(dt));
+		}
+
 		return properties;
 	}
 

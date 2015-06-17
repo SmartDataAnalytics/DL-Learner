@@ -49,6 +49,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.FastInstanceChecker;
 import org.dllearner.refinementoperators.RefinementOperator;
@@ -82,11 +83,14 @@ public class CLI {
 	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
+	@ConfigOption(name = "writeSpringConfiguration", defaultValue = "false", description = "Write the Spring XML configuration to disk corresponding to the .conf file")
 	private boolean writeSpringConfiguration = false;
+	@ConfigOption(name = "performCrossValidation", defaultValue = "false", description = "Run in Cross-Validation mode")
 	private boolean performCrossValidation = false;
+	@ConfigOption(name = "nrOfFolds", defaultValue = "10", description = "Number of folds in Cross-Validation mode")
 	private int nrOfFolds = 10;
-	private int noOfRuns = 1;
-	
+	@ConfigOption(name = "logLevel", defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
+			+ "Note, to see results, at least \"INFO\" is required.")
 	private String logLevel = "INFO";
 
 	private AbstractClassExpressionLearningProblem lp;
@@ -385,13 +389,4 @@ public class CLI {
 		return knowledgeSource;
 	}
 	
-	
-	public int getNoOfRuns() {
-		return noOfRuns;
-	}
-
-	public void setNoOfRuns(int noOfRuns) {
-		this.noOfRuns = noOfRuns;
-	}
-
 }

@@ -21,6 +21,7 @@ package org.dllearner.core;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -283,6 +284,17 @@ public class AnnComponentManager {
 		}
 		return true;
 	}
+	
+	public final static Class[] coreComponentClasses = {
+		KnowledgeSource.class,
+		LearningAlgorithm.class,
+		AxiomLearningAlgorithm.class,
+		ClassExpressionLearningAlgorithm.class,
+		LearningProblem.class,
+		ReasonerComponent.class,
+		RefinementOperator.class,
+		Heuristic.class
+	};
 
 	/**
 	 * Convenience method to retrieve core types of a component. The main use case for this
@@ -293,26 +305,10 @@ public class AnnComponentManager {
 	 */
 	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
 		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
-		if(KnowledgeSource.class.isAssignableFrom(component)) {
-			types.add(KnowledgeSource.class);
-		}
-		if(LearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(LearningAlgorithm.class);
-		}
-		if(AxiomLearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(AxiomLearningAlgorithm.class);
-		}
-		if(ClassExpressionLearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(ClassExpressionLearningAlgorithm.class);
-		}
-		if(LearningProblem.class.isAssignableFrom(component)) {
-			types.add(LearningProblem.class);
-		}
-		if(ReasonerComponent.class.isAssignableFrom(component)) {
-			types.add(ReasonerComponent.class);
-		}
-		if(RefinementOperator.class.isAssignableFrom(component)) {
-			types.add(RefinementOperator.class);
+		for(Class c : coreComponentClasses) {
+			if(c.isAssignableFrom(component)) {
+				types.add(c);
+			}
 		}
 		return types;
 	}

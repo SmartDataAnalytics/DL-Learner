@@ -134,7 +134,7 @@ public final class LiteralLearningTest {
 
 	@Test
 	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9.5");
+		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9");
 	}
 	
 	@Test
