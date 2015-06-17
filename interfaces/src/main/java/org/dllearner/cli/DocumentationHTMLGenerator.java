@@ -126,7 +126,7 @@ public class DocumentationHTMLGenerator {
 		//sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		sb.append("<html><head><meta charset=\"UTF-8\"><title>DL-Learner components and configuration options</title>\n");
 		sb.append("<style type=\"text/css\">\n");
-		sb.append("@import url(\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css\");\n");
+		sb.append("@import url(\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css\");\n");
 		sb.append("body { line-height: 1.6em; font-size: 15px; font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", Sans-Serif;  }\n");
 		sb.append("h1, h2 { font-family: \"Droid Serif\", Serif; font-weight: 800; color: #c33; }\n");
 		sb.append(".hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } \n");
@@ -137,7 +137,7 @@ public class DocumentationHTMLGenerator {
 				+ ".table-responsive > .table > thead > tr > th, .table-responsive > .table > tbody > tr > th, .table-responsive > .table > tfoot > tr > th, "
 				+ ".table-responsive > .table > thead > tr > td, .table-responsive > .table > tbody > tr > td, .table-responsive > .table > tfoot > tr > td {  white-space: inherit;  } }\n");
 		sb.append("</style>\n");
-		sb.append("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
+		sb.append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" language=\"javascript\">\n");
 		sb.append("//<![CDATA[\n"); 
 		sb.append("function showOnlyCat(className){\n");

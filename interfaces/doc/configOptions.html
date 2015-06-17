@@ -1,6 +1,6 @@
 <html><head><meta charset="UTF-8"><title>DL-Learner components and configuration options</title>
 <style type="text/css">
-@import url("http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css");
+@import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css");
 body { line-height: 1.6em; font-size: 15px; font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;  }
 h1, h2 { font-family: "Droid Serif", Serif; font-weight: 800; color: #c33; }
 .hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } 
@@ -10,7 +10,7 @@ h1, h2 { font-family: "Droid Serif", Serif; font-weight: 800; color: #c33; }
 @media screen and (max-width: 767px) {
 .table-responsive > .table > thead > tr > th, .table-responsive > .table > tbody > tr > th, .table-responsive > .table > tfoot > tr > th, .table-responsive > .table > thead > tr > td, .table-responsive > .table > tbody > tr > td, .table-responsive > .table > tfoot > tr > td {  white-space: inherit;  } }
 </style>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script type="text/javascript" language="javascript">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script type="text/javascript" language="javascript">
 //<![CDATA[
 function showOnlyCat(className){
 	 $('div.type').show(); $('div.type').not('.'+className).hide(); }
@@ -297,6 +297,7 @@ function showAllCat(){
 <tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>someOnly</td><td>universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useAllConstructor</td><td>support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useBooleanDatatypes</td><td>support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
