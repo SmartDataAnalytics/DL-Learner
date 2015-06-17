@@ -45,8 +45,8 @@ public class DocumentationHTMLGenerator {
 		sb.append("<h1>DL-Learner Components</h1>\n");
 		
 		// filter interface
-		sb.append("<p>Filter components by implemented interfaces:</p>\n<ul>");
-		sb.append("<a href=\"#\" onClick=\"showAllCat()\">show all</a>");
+		sb.append("<p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>\n");
+		sb.append("<a href=\"#\" onClick=\"showAllCat()\">show all</a><ul class=\"list-unstyled\">");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('KnowledgeSource')\">KnowledgeSource</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ReasonerComponent')\">ReasonerComponent</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningProblem')\">LearningProblem</a></li>");
@@ -63,32 +63,32 @@ public class DocumentationHTMLGenerator {
 		// generate component overview
 		sb.append("<ul>\n");
 		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
-			sb.append("<div class=\"" + getCoreTypes(compEntry.getValue()) + "\"><li><a href=\"#" + compEntry.getValue().getName() + "\">"+compEntry.getKey()+"</a></li></div>\n");
+			sb.append("<div class=\"type menu " + getCoreTypes(compEntry.getValue()) + "\"><li><a href=\"#" + compEntry.getValue().getName() + "\">"+compEntry.getKey()+"</a></li></div>\n");
 		}
 		sb.append("</ul>\n");
 		
 		// generate actual documentation per component
 		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
 			Class<? extends Component> comp = compEntry.getValue();
-			sb.append("<div class=\"" + getCoreTypes(comp) + "\">");
+			sb.append("<div class=\"type " + getCoreTypes(comp) + "\">");
 			// heading + anchor
 			sb.append("<a name=\"" + comp.getName() + "\"><h2>"+compEntry.getKey()+"</h2></a>\n");
 			// some information about the component
-			sb.append("<p>short name: " + AnnComponentManager.getShortName(comp) + "<br />");
-			sb.append("version: " + AnnComponentManager.getVersion(comp) + "<br />");
-			sb.append("implements: " + getCoreTypes(comp).replace(" ", ", ") + "<br />");
+			sb.append("<dl class=\"dl-horizontal\"><dt>short name</dt><dd>" + AnnComponentManager.getShortName(comp) + "</dd>");
+			sb.append("<dt>version</dt><dd>" + AnnComponentManager.getVersion(comp) + "</dd>");
+			sb.append("<dt>implements</dt><dd><ul class=\"list-inline\"><li>" + getCoreTypes(comp).replace(" ", "</li><li>") + "</li></ul></dd>");
 			String description = AnnComponentManager.getDescription(comp);
 			if(description.length() > 0) {
-				sb.append("description: " + AnnComponentManager.getDescription(comp) + "<br />");
+				sb.append("<dt>description</dt><dd>" + AnnComponentManager.getDescription(comp) + "</dd>");
 			}
-			sb.append("</p>");
+			sb.append("</dl>");
 			
 			// generate table for configuration options
 			Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
 			if(options.isEmpty()) {
 				sb.append("This component does not have configuration options.");
 			} else {
-			sb.append("<table id=\"hor-minimalist-a\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
+			sb.append("<div class=\"table-responsive\"><table class=\"hor-minimalist-a table table-hover\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
 			for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
 				ConfigOption option = entry.getKey();
 				String type = entry.getValue().getSimpleName();
@@ -97,7 +97,7 @@ public class DocumentationHTMLGenerator {
 				}
 				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + type + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
 			}
-			sb.append("</tbody></table>\n");
+			sb.append("</tbody></table></div>\n");
 			}
 			sb.append("</div>\n");
 		}
@@ -109,30 +109,35 @@ public class DocumentationHTMLGenerator {
 	
 	private String getHeader() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<?xml encoding=\"utf-8\" ?>\n");
-		sb.append("<html><head><title>DL-Learner components and configuration options</title>\n");
+		//sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		sb.append("<html><head><meta charset=\"UTF-8\"><title>DL-Learner components and configuration options</title>\n");
 		sb.append("<style type=\"text/css\">\n");
+		sb.append("@import url(\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css\");\n");
 		sb.append("body { line-height: 1.6em; font-size: 15px; font-family: \"Lucida Sans Unicode\", \"Lucida Grande\", Sans-Serif;  }\n");
-		sb.append("#hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } \n");
-		sb.append("#hor-minimalist-a th { font-size: 15px;	font-weight: normal; color: #039; padding: 10px 8px; border-bottom: 2px solid #6678b1;	}\n");
-		sb.append("#hor-minimalist-a td	{ color: #669;padding: 9px 8px 0px 8px;	}\n");
-		sb.append("#hor-minimalist-a tbody tr:hover td 	{ color: #009; }\n");
+		sb.append("h1, h2 { font-family: \"Droid Serif\", Serif; font-weight: 800; color: #c33; }\n");
+		sb.append(".hor-minimalist-a 	{ font-size: 13px;	background: #fff; margin: 30px;	width: 90%;border-collapse: collapse; 	text-align: left; } \n");
+		sb.append(".hor-minimalist-a th { font-size: 15px;	font-weight: normal; color: #039; padding: 10px 8px; border-bottom: 2px solid #6678b1; white-space: nowrap;	}\n");
+		sb.append(".hor-minimalist-a td	{ color: #669;padding: 9px 8px 0px 8px;	}\n");
+		sb.append(".hor-minimalist-a tbody tr:hover td 	{ color: #009; }\n");
+		sb.append("@media screen and (max-width: 767px) {\n"
+				+ ".table-responsive > .table > thead > tr > th, .table-responsive > .table > tbody > tr > th, .table-responsive > .table > tfoot > tr > th, "
+				+ ".table-responsive > .table > thead > tr > td, .table-responsive > .table > tbody > tr > td, .table-responsive > .table > tfoot > tr > td {  white-space: inherit;  } }\n");
 		sb.append("</style>\n");
 		sb.append("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" language=\"javascript\">\n");
 		sb.append("//<![CDATA[\n"); 
 		sb.append("function showOnlyCat(className){\n");
-		sb.append("	 $('div').show(); $('div').not('.'+className).hide(); }\n");
+		sb.append("	 $('div.type').show(); $('div.type').not('.'+className).hide(); }\n");
 		sb.append("function showAllCat(){\n");
-		sb.append("  $('div').show() };\n");
+		sb.append("  $('div.type').show() };\n");
 		sb.append("//]]>\n");
 		sb.append("</script>\n"); 
-		sb.append("</head><body>\n");
+		sb.append("</head><body><div class=\"container-fluid\">\n");
 		return sb.toString();
 	}
 	
 	private String getFooter() {
-		return "</body></html>";
+		return "</div></body></html>";
 	}
 	
 	// this is a hack, because we just assume that every PropertyEditor is named 
