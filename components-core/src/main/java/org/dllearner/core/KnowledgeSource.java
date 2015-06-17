@@ -25,6 +25,7 @@ package org.dllearner.core;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Knowledge Sources", shortName = "ks", version = 0)
 public interface KnowledgeSource extends Component {
 
 }

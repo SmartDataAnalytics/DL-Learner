@@ -45,6 +45,7 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
@@ -71,6 +72,7 @@ import org.springframework.core.io.Resource;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
 public class CLI {
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
