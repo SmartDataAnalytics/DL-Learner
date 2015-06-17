@@ -790,7 +790,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			

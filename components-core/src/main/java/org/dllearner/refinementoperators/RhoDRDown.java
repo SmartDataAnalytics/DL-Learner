@@ -266,6 +266,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@ConfigOption(name = "dropDisjuncts", defaultValue="false", propertyEditorClass = BooleanEditor.class)
 	private boolean dropDisjuncts = false;
+	
+	@ConfigOption(name = "someOnly", 
+			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r", 
+			defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	private boolean someOnly = true;
 
 	// caches for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
@@ -567,20 +572,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
-					newChildren.add(c);
-					newChildren.remove(child);
-					Collections.sort(newChildren);
-					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
-
-					// clean concept and transform it to ordered negation normal form
-					// (non-recursive variant because only depth 1 was modified)
-					mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
-
-					// check whether the intersection is OK (sanity checks), then add it
-					if(checkIntersection((OWLObjectIntersectionOf) mc))
-						refinements.add(mc);
+					if((someOnly && isCombinable(description, c)) || !someOnly) {
+						List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
+						newChildren.add(c);
+						newChildren.remove(child);
+						Collections.sort(newChildren);
+						OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
+	
+						// clean concept and transform it to ordered negation normal form
+						// (non-recursive variant because only depth 1 was modified)
+						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
+						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+	
+						// check whether the intersection is OK (sanity checks), then add it
+						if(checkIntersection((OWLObjectIntersectionOf) mc))
+							refinements.add(mc);
+					}
 				}
 
 			}
@@ -677,7 +684,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 		} else if (description instanceof OWLObjectAllValuesFrom) {
-			refine((OWLObjectAllValuesFrom) description, maxLength);
+			refinements.addAll(refine((OWLObjectAllValuesFrom) description, maxLength));
 		} else if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLObjectPropertyExpression role = ((OWLObjectCardinalityRestriction) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
@@ -815,6 +822,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							}
 						}
 					}
+					
+					// we only add \forall r.C to an intersection if there is 
+					// already some existential restriction \exists r.C
+					if(someOnly) {
+						skip = !isCombinable(description, c);
+					}
 
 					// check for double datatype properties
 					/*
@@ -863,6 +876,33 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.out.println("++++++++\nREFINING: " + description + "   maxLength:" + maxLength);
 //		System.out.println(refinements);
 		return refinements;
+	}
+	
+	private boolean isCombinable(OWLClassExpression ce, OWLClassExpression child) {
+		boolean combinable = true;
+		
+		if(child instanceof OWLObjectAllValuesFrom) {
+			boolean tmp = false;
+			OWLObjectPropertyExpression r1 = ((OWLObjectAllValuesFrom) child).getProperty();
+			if(ce instanceof OWLObjectIntersectionOf){
+				for(OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
+					if(child instanceof OWLObjectSomeValuesFrom) {
+						OWLObjectPropertyExpression r2 = ((OWLObjectSomeValuesFrom) operand).getProperty();
+						if(r1.equals(r2)){
+							tmp = true;
+							break;
+						}
+					}
+				}
+			} else if(ce instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectPropertyExpression r2 = ((OWLObjectSomeValuesFrom) ce).getProperty();
+				if(r1.equals(r2)){
+					tmp = true;
+				}
+			}
+			combinable = tmp;
+		}
+		return combinable;
 	}
 	
 	private Set<OWLClassExpression> refine(OWLObjectAllValuesFrom ce, int maxLength) {
