@@ -181,7 +181,7 @@ public class ConfigHelper {
 	 * @param component
 	 * @return
 	 */
-	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<? extends Component> component){
+	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<?> component){
 		return getConfigOptionTypes(component, true);
 	}
 	
@@ -190,7 +190,7 @@ public class ConfigHelper {
 	 * @param component
 	 * @return
 	 */
-	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<? extends Component> component, boolean useSuperTypes){
+	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<?> component, boolean useSuperTypes){
 		Map<ConfigOption,Class<?>> optionTypes = new TreeMap<ConfigOption,Class<?>>(new Comparator<ConfigOption>() {
 
 			@Override

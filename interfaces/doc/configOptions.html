@@ -21,16 +21,17 @@ function showAllCat(){
 </head><body><div class="container-fluid">
 <h1>DL-Learner Components</h1>
 <p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>
-<a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
+<a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassLearningProblem">ClassLearningProblem</a></li></div>
+<div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.LocalModelBasedSparqlEndpointKS">Local Endpoint</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.MPSemKernelWorkflow">Mammalian Phenotype SemKernel Workflow</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.NaiveALLearner">Naive AL Learner</a></li></div>
-<div class="type menu OtherComponent"><li><a href="#org.dllearner.algorithms.celoe.OEHeuristicRuntime">OEHeuristicRuntime</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.celoe.OEHeuristicRuntime">OEHeuristicRuntime</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.OWLAPIReasoner">OWL API Reasoner</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.ocel.OCEL">OWL Class Expression Learner</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.OWLFile">OWL File</a></li></div>
@@ -97,6 +98,14 @@ function showAllCat(){
 <tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
+<div class="type Class"><a name="org.dllearner.cli.CLI"><h2>Command Line Interface</h2></a>
+<div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>logLevel</td><td>Configure logger log level from conf file. Available levels: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE". Note, to see results, at least "INFO" is required.</td><td> String</td><td>INFO</td><td> false</td></tr>
+<tr><td>nrOfFolds</td><td>Number of folds in Cross-Validation mode</td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>performCrossValidation</td><td>Run in Cross-Validation mode</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>writeSpringConfiguration</td><td>Write the Spring XML configuration to disk corresponding to the .conf file</td><td> boolean</td><td>false</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive"><h2>Disjunctive ELTL</h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>deltl</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
@@ -144,8 +153,8 @@ function showAllCat(){
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type OtherComponent"><a name="org.dllearner.algorithms.celoe.OEHeuristicRuntime"><h2>OEHeuristicRuntime</h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>celoe_heuristic</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.celoe.OEHeuristicRuntime"><h2>OEHeuristicRuntime</h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>celoe_heuristic</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>startNodeBonus</td><td>no description available</td><td> double</td><td>0.1</td><td> false</td></tr>
 </tbody></table></div>
 </div>

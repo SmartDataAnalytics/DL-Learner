@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.collections15.BidiMap;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigHelper;
@@ -30,11 +32,14 @@ public class DocumentationHTMLGenerator {
 	}
 
 	public void writeConfigDocumentation(File file) {
-		Map<Class<? extends Component>, String> componentNames = cm.getComponentsNamed();
-		TreeMap<String, Class<? extends Component>> componentNamesInv = new TreeMap<String, Class<? extends Component>>();
+		
+		Map<Class<?>, String> componentNames = new DualHashBidiMap();
+		componentNames.putAll(cm.getComponentsNamed());
+		componentNames.put(CLI.class, "Command Line Interface");
+		TreeMap<String, Class<?>> componentNamesInv = new TreeMap<String, Class<?>>();
 		
 		// create inverse, ordered map for displaying labels
-		for(Entry<Class<? extends Component>, String> entry : componentNames.entrySet()) {
+		for(Entry<Class<?>, String> entry : componentNames.entrySet()) {
 			componentNamesInv.put(entry.getValue(), entry.getKey());
 		}
 		
@@ -47,6 +52,7 @@ public class DocumentationHTMLGenerator {
 		// filter interface
 		sb.append("<p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>\n");
 		sb.append("<a href=\"#\" onClick=\"showAllCat()\">show all</a><ul class=\"list-unstyled\">");
+		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Class')\">Non-component Class</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('KnowledgeSource')\">KnowledgeSource</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ReasonerComponent')\">ReasonerComponent</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningProblem')\">LearningProblem</a></li>");
@@ -54,6 +60,7 @@ public class DocumentationHTMLGenerator {
 		sb.append("<ul><li><a href=\"#\" onClick=\"showOnlyCat('AxiomLearningAlgorithm')\">AxiomLearningAlgorithm</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ClassExpressionLearningAlgorithm')\">ClassExpressionLearningAlgorithm</a></li></ul></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('RefinementOperator')\">RefinementOperator</a></li>");
+		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Heuristic')\">Heuristic</a></li>");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('OtherComponent')\">other</a></li>");
 		sb.append("</ul>");
 		
@@ -62,49 +69,56 @@ public class DocumentationHTMLGenerator {
 		
 		// generate component overview
 		sb.append("<ul>\n");
-		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
+		for(Entry<String, Class<?>> compEntry : componentNamesInv.entrySet()) {
 			sb.append("<div class=\"type menu " + getCoreTypes(compEntry.getValue()) + "\"><li><a href=\"#" + compEntry.getValue().getName() + "\">"+compEntry.getKey()+"</a></li></div>\n");
 		}
 		sb.append("</ul>\n");
 		
 		// generate actual documentation per component
-		for(Entry<String, Class<? extends Component>> compEntry : componentNamesInv.entrySet()) {
-			Class<? extends Component> comp = compEntry.getValue();
+		for(Entry<String, Class<?>> compEntry : componentNamesInv.entrySet()) {
+			Class<?> comp = compEntry.getValue();
 			sb.append("<div class=\"type " + getCoreTypes(comp) + "\">");
 			// heading + anchor
 			sb.append("<a name=\"" + comp.getName() + "\"><h2>"+compEntry.getKey()+"</h2></a>\n");
 			// some information about the component
-			sb.append("<dl class=\"dl-horizontal\"><dt>short name</dt><dd>" + AnnComponentManager.getShortName(comp) + "</dd>");
-			sb.append("<dt>version</dt><dd>" + AnnComponentManager.getVersion(comp) + "</dd>");
-			sb.append("<dt>implements</dt><dd><ul class=\"list-inline\"><li>" + getCoreTypes(comp).replace(" ", "</li><li>") + "</li></ul></dd>");
-			String description = AnnComponentManager.getDescription(comp);
-			if(description.length() > 0) {
-				sb.append("<dt>description</dt><dd>" + AnnComponentManager.getDescription(comp) + "</dd>");
-			}
-			sb.append("</dl>");
+			if (Component.class.isAssignableFrom(comp)) {
+				Class<? extends Component> ccomp = (Class<? extends Component>) comp;
 			
-			// generate table for configuration options
-			Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
-			if(options.isEmpty()) {
-				sb.append("This component does not have configuration options.");
-			} else {
-			sb.append("<div class=\"table-responsive\"><table class=\"hor-minimalist-a table table-hover\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
-			for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
-				ConfigOption option = entry.getKey();
-				String type = entry.getValue().getSimpleName();
-				if(entry.getValue().equals(OWLClass.class)) {
-					type = "IRI";
+				sb.append("<dl class=\"dl-horizontal\"><dt>short name</dt><dd>" + AnnComponentManager.getShortName(ccomp) + "</dd>");
+				sb.append("<dt>version</dt><dd>" + AnnComponentManager.getVersion(ccomp) + "</dd>");
+				sb.append("<dt>implements</dt><dd><ul class=\"list-inline\"><li>" + getCoreTypes(comp).replace(" ", "</li><li>") + "</li></ul></dd>");
+				String description = AnnComponentManager.getDescription(ccomp);
+				if(description.length() > 0) {
+					sb.append("<dt>description</dt><dd>" + AnnComponentManager.getDescription(ccomp) + "</dd>");
 				}
-				sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + type + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
+				sb.append("</dl>");
 			}
-			sb.append("</tbody></table></div>\n");
-			}
+			optionsTable(sb, comp);
 			sb.append("</div>\n");
 		}
 		
 		sb.append(getFooter());
 		
 		Files.createFile(file, sb.toString());
+	}
+
+	private void optionsTable(StringBuffer sb, Class<?> comp) {
+		// generate table for configuration options
+		Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
+		if(options.isEmpty()) {
+			sb.append("This component does not have configuration options.");
+		} else {
+		sb.append("<div class=\"table-responsive\"><table class=\"hor-minimalist-a table table-hover\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
+		for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
+			ConfigOption option = entry.getKey();
+			String type = entry.getValue().getSimpleName();
+			if(entry.getValue().equals(OWLClass.class)) {
+				type = "IRI";
+			}
+			sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + type + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
+		}
+		sb.append("</tbody></table></div>\n");
+		}
 	}		
 	
 	private String getHeader() {
@@ -147,8 +161,9 @@ public class DocumentationHTMLGenerator {
 //		return name.substring(0, name.length()-6);
 //	}	
 	
-	private static String getCoreTypes(Class<? extends Component> comp) {
-		List<Class<? extends Component>> types = AnnComponentManager.getCoreComponentTypes(comp);
+	private static String getCoreTypes(Class<?> comp) {
+		if (Component.class.isAssignableFrom(comp)) {
+		List<Class<? extends Component>> types = AnnComponentManager.getCoreComponentTypes((Class<? extends Component>) comp);
 		String str = "";
 		for(Class<?extends Component> type : types) {
 			str += " " + type.getSimpleName();
@@ -158,6 +173,9 @@ public class DocumentationHTMLGenerator {
 			return "OtherComponent";
 		} else {
 			return str.substring(1);
+		}
+		} else {
+			return "Class";
 		}
 	}
 		
