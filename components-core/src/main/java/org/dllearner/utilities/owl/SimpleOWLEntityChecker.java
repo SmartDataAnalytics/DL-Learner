@@ -3,6 +3,7 @@
  */
 package org.dllearner.utilities.owl;
 
+import org.dllearner.core.AbstractReasonerComponent;
 import org.semanticweb.owlapi.expression.OWLEntityChecker;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -25,12 +26,12 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-	private OWLOntology ontology;
+	private AbstractReasonerComponent rc;
 	
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 
-	public SimpleOWLEntityChecker(OWLOntology ontology) {
-		this.ontology = ontology;
+	public SimpleOWLEntityChecker(AbstractReasonerComponent rc) {
+		this.rc = rc;
 	}
 
 	/* (non-Javadoc)
@@ -42,7 +43,7 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 //		if(ontology.getClassesInSignature(true).contains(cls)) {
 //			return cls;
 //		}
-		for (OWLClass cls : ontology.getClassesInSignature(true)) {
+		for (OWLClass cls : rc.getClasses()) {
 			if(sfp.getShortForm(cls.getIRI()).equals(name) || cls.getIRI().toQuotedString().equals(name)) {
 				return cls;
 			}
@@ -57,7 +58,7 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	@Override
 	public OWLObjectProperty getOWLObjectProperty(String name) {
 		OWLObjectProperty p = df.getOWLObjectProperty(IRI.create(name));
-		if(ontology.getObjectPropertiesInSignature(true).contains(p)) {
+		if(rc.getObjectProperties().contains(p)) {
 			return p;
 		}
 		return null;
@@ -69,7 +70,8 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	@Override
 	public OWLDataProperty getOWLDataProperty(String name) {
 		OWLDataProperty p = df.getOWLDataProperty(IRI.create(name));
-		if(ontology.getDataPropertiesInSignature(true).contains(p)) {
+		
+		if(rc.getDatatypeProperties().contains(p)) {
 			return p;
 		}
 		return null;
@@ -81,7 +83,8 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	@Override
 	public OWLNamedIndividual getOWLIndividual(String name) {
 		OWLNamedIndividual ind = df.getOWLNamedIndividual(IRI.create(name));
-		if(ontology.getIndividualsInSignature(true).contains(ind)) {
+		
+		if(rc.getIndividuals().contains(ind)) {
 			return ind;
 		}
 		return null;

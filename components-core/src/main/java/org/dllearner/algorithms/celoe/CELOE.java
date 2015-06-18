@@ -982,7 +982,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(dummy.length());
 				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(((ClosedWorldReasoner)reasoner).getReasonerComponent().getOntology()));
+				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
 				this.startClass = parser.parseClassExpression();
 			} catch (ParserException e) {
 				logger.error("Start class parsing failed.", e);
