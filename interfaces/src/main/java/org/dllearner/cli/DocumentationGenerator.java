@@ -46,6 +46,10 @@ import org.semanticweb.owlapi.model.OWLClass;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * 
@@ -199,11 +203,24 @@ public class DocumentationGenerator {
 			if(entry.getValue().equals(OWLClass.class)) {
 				type = "IRI";
 			}
+			String exampleValue = !option.exampleValue().isEmpty() ? option.exampleValue() : option.defaultValue();
+			Set<Class> noQuoteClasses = Sets.<Class>newHashSet(boolean.class, int.class, long.class, float.class, double.class, short.class, List.class, Set.class);
+			Set<Class> collectionClasses = Sets.<Class>newHashSet(List.class, Set.class);
+			
+			boolean needsQuotes = !noQuoteClasses.contains(entry.getValue());
+			boolean isCollection = collectionClasses.contains(entry.getValue());
+			
+			if(needsQuotes) {
+				exampleValue = "\"" + exampleValue + "\"";
+			} else if(isCollection){
+				exampleValue = "{" + exampleValue + "}";
+			}
+			
 			sb.append("option name: " + option.name() + "\n"
 					+ "description: " + option.description() + "\n"
 					+ "type: " + type + "\n"
 					+ "default value: " + option.defaultValue() + "\n"
-					+ "conf file usage: " + catString + "." + option.name() + " = ...\n"); // TODO
+					+ "conf file usage: " + catString + "." + option.name() + " = " + exampleValue +"\n");
 			
 			sb.append("\n");
 		}
