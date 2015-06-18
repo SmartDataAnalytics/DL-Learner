@@ -13,6 +13,7 @@ import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
@@ -48,7 +49,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 
 	private static final Logger logger = LoggerFactory.getLogger(ClassAsInstanceLearningProblem.class);
 
-	@org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
+	@ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
 	private double percentPerLengthUnit = 0.05;
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;

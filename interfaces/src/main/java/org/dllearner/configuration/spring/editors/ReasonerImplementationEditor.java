@@ -17,41 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.config;
+package org.dllearner.configuration.spring.editors;
 
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import org.dllearner.reasoning.ReasonerImplementation;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Chris
- * Date: 7/26/11
- * Time: 9:42 PM
- * <p/>
- * Basic Property Editor for OWL class.  Doesn't have GUI support yet but we could add that later if we wanted.
+ * Basic Property Editor for reasoner implementation.  Doesn't have GUI support yet but we could add that later if we wanted.
  */
-public class NamedClassEditor extends AbstractPropertyEditor<OWLClass> {
+public class ReasonerImplementationEditor extends AbstractPropertyEditor<ReasonerImplementation> {
 
-	private OWLDataFactory df = new OWLDataFactoryImpl();
-    private OWLClass value;
 
     @Override
     public String getJavaInitializationString() {
         /** This returns the value needed to reconstitute the object from a string */
-        return value.toStringID();
+        return value.toString();
     }
 
     @Override
     public String getAsText() {
         /** Get the text value of this object - for displaying in GUIS, etc */
-        return value.toStringID();
+        return value.name();
     }
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        value = df.getOWLClass(IRI.create(text));
+        value = ReasonerImplementation.valueOf(text.toUpperCase());
     }
 }

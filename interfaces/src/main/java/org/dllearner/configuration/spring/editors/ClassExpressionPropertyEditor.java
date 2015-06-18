@@ -1,4 +1,4 @@
-package org.dllearner.core.config;
+package org.dllearner.configuration.spring.editors;
 
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.IRI;

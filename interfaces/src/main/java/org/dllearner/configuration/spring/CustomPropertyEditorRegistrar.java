@@ -1,9 +1,9 @@
 package org.dllearner.configuration.spring;
 
-import org.dllearner.core.config.ClassExpressionPropertyEditor;
-import org.dllearner.core.config.IndividualEditor;
-import org.dllearner.core.config.ObjectPropertyEditor;
-import org.dllearner.core.config.ReasonerImplementationEditor;
+import org.dllearner.configuration.spring.editors.ClassExpressionPropertyEditor;
+import org.dllearner.configuration.spring.editors.IndividualEditor;
+import org.dllearner.configuration.spring.editors.ObjectPropertyEditor;
+import org.dllearner.configuration.spring.editors.ReasonerImplementationEditor;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;

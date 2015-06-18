@@ -37,7 +37,6 @@ import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;

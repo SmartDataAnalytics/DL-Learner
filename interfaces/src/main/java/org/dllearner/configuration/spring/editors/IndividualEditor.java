@@ -17,11 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.config;
+package org.dllearner.configuration.spring.editors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -31,11 +31,11 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * Date: 7/26/11
  * Time: 9:42 PM
  * <p/>
- * Basic Property Editor for the Object Property DL-Learner class.  Doesn't have GUI support yet but we could add that later if we wanted.
+ * Basic Property Editor for OWL individuals.  Doesn't have GUI support yet but we could add that later if we wanted.
  */
-public class DataPropertyEditor extends AbstractPropertyEditor<OWLDataProperty> {
+public class IndividualEditor extends AbstractPropertyEditor<OWLIndividual> {
 
-	private OWLDataFactory df = new OWLDataFactoryImpl();
+	private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
 
     @Override
     public String getJavaInitializationString() {
@@ -51,7 +51,6 @@ public class DataPropertyEditor extends AbstractPropertyEditor<OWLDataProperty> 
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        value = df.getOWLDataProperty(IRI.create(text));
+        value = df.getOWLNamedIndividual(IRI.create(text));
     }
-
 }

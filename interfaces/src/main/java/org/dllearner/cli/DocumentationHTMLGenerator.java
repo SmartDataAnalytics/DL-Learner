@@ -8,9 +8,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections15.BidiMap;
+import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
-import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;

@@ -1,4 +1,4 @@
-package org.dllearner.core.config;
+package org.dllearner.configuration.spring.editors;
 
 import java.awt.Component;
 import java.awt.Graphics;

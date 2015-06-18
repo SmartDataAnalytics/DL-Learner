@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
@@ -38,7 +39,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
-import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.ref.RefinementOperator;
 import org.dllearner.utilities.Files;

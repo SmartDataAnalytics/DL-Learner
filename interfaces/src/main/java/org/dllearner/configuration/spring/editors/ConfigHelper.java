@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.core.config;
+package org.dllearner.configuration.spring.editors;
 
 import java.beans.PropertyEditor;
 import java.lang.reflect.Field;
@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.dllearner.core.Component;
+import org.dllearner.core.config.ConfigOption;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
