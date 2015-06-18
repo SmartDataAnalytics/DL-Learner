@@ -50,18 +50,6 @@ public @interface ConfigOption {
     String description() default "no description available";
 
     /**
-     * An implementation of the Property Editor to use.
-     * 
-     * @deprecated We currently do not encourage specifying the
-     * property editor, because they might not be needed if we find a way
-     * of auto-detecting appropriate editors.
-     * 
-     * @return
-     */
-    @Deprecated
-    Class<? extends PropertyEditor> propertyEditorClass() default PropertyEditor.class;
-    
-    /**
      * Returns whether this option is required for initializing the component.
      * 
      * Maybe soon deprecated: Please put @Required in the corresponding set method in addition.
@@ -79,4 +67,10 @@ public @interface ConfigOption {
      * @return The default value of this option.
      */
     String defaultValue() default "";
+    
+    /**
+     * An example value for this option that can be displayed in the configuration options documentation.
+     * @return A valid example value for this option.
+     */
+    String exampleValue() default "";
 }
