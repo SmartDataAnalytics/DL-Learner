@@ -25,7 +25,7 @@ public class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
     @Override
     public void registerCustomEditors(PropertyEditorRegistry registry) {
         //Register any custom editors here.
-//    	registry.registerCustomEditor(OWLClassExpression.class, new ClassExpressionPropertyEditor());
+    	registry.registerCustomEditor(OWLClassExpression.class, new ClassExpressionPropertyEditor());
     	registry.registerCustomEditor(OWLObjectProperty.class, new ObjectPropertyEditor());
     	registry.registerCustomEditor(OWLIndividual.class, new IndividualEditor());
     	registry.registerCustomEditor(ReasonerImplementation.class, new ReasonerImplementationEditor());

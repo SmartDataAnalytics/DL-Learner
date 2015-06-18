@@ -977,20 +977,21 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
-	}
-	
-	public void setStartClassString(String startClassString) {
-		// parse class expression
-		try {
-			ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, startClassString);
-			parser.setOWLEntityChecker(new SimpleOWLEntityChecker(((ClosedWorldReasoner)reasoner).getReasonerComponent().getOntology()));
-			startClass = parser.parseClassExpression();
-		} catch (ParserException e) {
-			logger.error("Start class parsing failed.", e);
+		String dummy = "http://dllearner.org/dummy/";
+		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(dummy)) {
+			try {
+				String s = startClass.asOWLClass().getIRI().toString().substring(dummy.length());
+				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
+				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(((ClosedWorldReasoner)reasoner).getReasonerComponent().getOntology()));
+				this.startClass = parser.parseClassExpression();
+			} catch (ParserException e) {
+				logger.error("Start class parsing failed.", e);
+			}
+		} else {
+			this.startClass = startClass;
 		}
 	}
-
+	
 	public boolean isWriteSearchTree() {
 		return writeSearchTree;
 	}

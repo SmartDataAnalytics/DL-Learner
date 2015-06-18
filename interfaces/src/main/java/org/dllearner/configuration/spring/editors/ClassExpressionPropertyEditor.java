@@ -22,6 +22,8 @@ public class ClassExpressionPropertyEditor extends AbstractPropertyEditor<OWLCla
 	@Override
 	public void setAsText(String s) throws IllegalArgumentException {
 		value = new OWLClassImpl(IRI.create(s));
+		IRI iri = IRI.create("http://dllearner.org/dummy/", s);
+		value = new OWLClassImpl(iri);
 		
 		// TODO seems like the parser needs the ontology to parse class expressions
 		// because there is no lookahead, thus, it has to be known in advance
