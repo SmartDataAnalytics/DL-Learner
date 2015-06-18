@@ -13,7 +13,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
  *
  */
 public class ClassExpressionPropertyEditor extends AbstractPropertyEditor<OWLClassExpression>{
-
+	
 	@Override
 	public String getAsText() {
 		return OWLAPIRenderers.toManchesterOWLSyntax(value);
