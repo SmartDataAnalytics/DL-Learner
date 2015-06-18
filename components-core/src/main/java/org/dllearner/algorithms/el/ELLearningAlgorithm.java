@@ -42,9 +42,11 @@ import org.dllearner.learningproblems.ScorePosNeg;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -422,7 +424,12 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 * @param startClass the startClass to set
 	 */
 	public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
+		//this.startClass = startClass;
+		try {
+			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+		} catch (ParserException e) {
+			logger.info("Error parsing startClass: " + e.getMessage());
+		}
 	}
 	
 	/**

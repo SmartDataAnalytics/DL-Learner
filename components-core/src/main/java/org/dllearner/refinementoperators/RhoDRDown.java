@@ -55,6 +55,7 @@ import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -2012,8 +2013,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	@Override
-    public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
+	public void setStartClass(OWLClassExpression startClass) {
+		//this.startClass = startClass;
+		try {
+			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
+		} catch (ParserException e) {
+			logger.info("Error parsing startClass: " + e.getMessage());
+		}
 	}
 
 	public int getCardinalityLimit() {

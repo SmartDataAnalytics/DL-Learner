@@ -38,8 +38,10 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -428,7 +430,12 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
+		//this.startClass = startClass;
+		try {
+			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+		} catch (ParserException e) {
+			logger.info("Error parsing startClass: " + e.getMessage());
+		}
 	}
 
 	public boolean isInstanceBasedDisjoints() {
