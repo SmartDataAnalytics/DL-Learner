@@ -59,6 +59,7 @@ import org.semanticweb.owlapi.model.OWLProperty;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -173,10 +174,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return sources;
 	}
 
+	@Autowired
     public void setSources(Set<KnowledgeSource> sources){
         this.sources = sources;
     }
     
+	@Autowired
     public void setSources(KnowledgeSource... sources) {
     	this.sources = new HashSet<KnowledgeSource>(Arrays.asList(sources));
     }

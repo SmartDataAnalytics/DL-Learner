@@ -282,7 +282,7 @@ public class ConceptTransformation {
 	}	
 	
 	/**
-	 * Method to determine, whether a class OWLClassExpression is minimal,
+	 * Method to determine, whether a class expression is minimal,
 	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
 	 * minimal.	This method performs heuristic sanity checks (it will
 	 * not try to find semantically equivalent shorter descriptions).

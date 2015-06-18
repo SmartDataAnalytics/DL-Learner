@@ -19,41 +19,13 @@
 
 package org.dllearner.core.config;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyEditor;
-
 import org.dllearner.reasoning.ReasonerImplementation;
 
 /**
  * Basic Property Editor for reasoner implementation.  Doesn't have GUI support yet but we could add that later if we wanted.
  */
-public class ReasonerImplementationEditor implements PropertyEditor {
+public class ReasonerImplementationEditor extends AbstractPropertyEditor<ReasonerImplementation> {
 
-    private ReasonerImplementation value;
-
-    @Override
-    public void setValue(Object value) {
-        this.value = (ReasonerImplementation) value;
-    }
-
-    @Override
-    public Object getValue() {
-        return value;
-    }
-
-    @Override
-    public boolean isPaintable() {
-        /** Not right now, we're doing non gui work */
-        return false;
-    }
-
-    @Override
-    public void paintValue(Graphics gfx, Rectangle box) {
-
-    }
 
     @Override
     public String getJavaInitializationString() {
@@ -70,34 +42,5 @@ public class ReasonerImplementationEditor implements PropertyEditor {
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         value = ReasonerImplementation.valueOf(text.toUpperCase());
-    }
-
-    @Override
-    public String[] getTags() {
-        /** If there was a known set of values it had to have, we could add that list here */
-        return new String[0];
-    }
-
-    @Override
-    public Component getCustomEditor() {
-        /** GUI stuff, if you wanted to edit it a custom way */
-        return null;
-    }
-
-    @Override
-    public boolean supportsCustomEditor() {
-        /** We don't support this right now, but maybe later */
-        return false;
-
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        /** More gui stuff, we don't need this for our basic example */
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        /** More gui stuff, we don't need this for our basic example */
     }
 }
