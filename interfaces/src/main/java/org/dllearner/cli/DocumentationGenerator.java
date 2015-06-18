@@ -21,41 +21,31 @@ package org.dllearner.cli;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Locale.Category;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.LearningAlgorithm;
+import org.dllearner.core.LearningProblem;
 import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.core.ref.RefinementOperator;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.hazelcast.util.StringUtil;
-import com.mysql.fabric.xmlrpc.base.Array;
 
 /**
  * 
@@ -67,6 +57,17 @@ public class DocumentationGenerator {
 	private ConfMapper confMapper = new ConfMapper();	
 	
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
+	
+	private static final Map<Class, String> varNameMapping = new HashMap<Class, String>();
+	
+	static {
+		varNameMapping.put(LearningAlgorithm.class, "la");
+		varNameMapping.put(LearningProblem.class, "lp");
+		varNameMapping.put(KnowledgeSource.class, "ks");
+		varNameMapping.put(AbstractReasonerComponent.class, "reasoner");
+		varNameMapping.put(org.dllearner.core.Heuristic.class, "h");
+		varNameMapping.put(org.dllearner.refinementoperators.RefinementOperator.class, "op");
+	}
 	
 	/**
 	 * Writes documentation for all components available in this
@@ -157,6 +158,14 @@ public class DocumentationGenerator {
 			if (catAnn != null) {
 				catString = catAnn.shortName();
 			}
+			
+			for (Entry<Class, String> entry : varNameMapping.entrySet()) {
+				Class cls = entry.getKey();
+				if(cls.isAssignableFrom(component)) {
+					catString = entry.getValue();
+				}
+			}
+			
 			
 			usage = "conf file usage: " + catString + ".type = \"" + AnnComponentManager.getShortName(ccomp) + "\"\n";
 			
