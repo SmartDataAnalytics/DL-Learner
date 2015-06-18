@@ -58,6 +58,7 @@ import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -977,18 +978,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		String dummy = "http://dllearner.org/dummy/";
-		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(dummy)) {
-			try {
-				String s = startClass.asOWLClass().getIRI().toString().substring(dummy.length());
-				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
-				this.startClass = parser.parseClassExpression();
-			} catch (ParserException e) {
-				logger.error("Start class parsing failed.", e);
-			}
-		} else {
-			this.startClass = startClass;
+		//this.startClass = startClass;
+		try {
+			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+		} catch (ParserException e) {
+			logger.info("Error parsing startClass: " + e.getMessage());
 		}
 	}
 	

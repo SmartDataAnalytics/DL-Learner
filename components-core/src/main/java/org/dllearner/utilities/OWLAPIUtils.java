@@ -5,10 +5,15 @@ package org.dllearner.utilities;
 
 import java.util.Set;
 
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
@@ -97,4 +102,16 @@ public class OWLAPIUtils {
 		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
 	}
 
+	public static final String UNPARSED_OCE = "dllearner+unparsed:";
+	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
+			String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
+			ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
+			parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
+			return parser.parseClassExpression();
+		} else {
+			return startClass;
+		}
+
+	}
 }
