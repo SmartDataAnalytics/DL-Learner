@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
@@ -85,6 +86,13 @@ public class FlexibleHeuristic implements ExampleBasedHeuristic {
 	@Override		
 	public boolean equals(Object o) {
 		return (o instanceof FlexibleHeuristic);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
 	}
 	
 }
