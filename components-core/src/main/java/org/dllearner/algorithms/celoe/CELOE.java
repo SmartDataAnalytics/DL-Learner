@@ -28,6 +28,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
+import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxParser;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -63,7 +65,10 @@ import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.expression.ShortFormEntityChecker;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -71,6 +76,10 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.UnloadableImportException;
+import org.semanticweb.owlapi.util.BidirectionalShortFormProviderAdapter;
+import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -249,7 +258,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		setReuseExistingDescription(celoe.reuseExistingDescription);
 		setSingleSuggestionMode(celoe.singleSuggestionMode);
-		setStartClass(celoe.startClass);
+//		setStartClass(celoe.startClass);
 		setStopOnFirstDefinition(celoe.stopOnFirstDefinition);
 		setTerminateOnNoiseReached(celoe.terminateOnNoiseReached);
 		setUseMinimizer(celoe.isUseMinimizer());
@@ -973,8 +982,19 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return startClass;
 	}
 
-	public void setStartClass(OWLClassExpression startClass) {
-		this.startClass = startClass;
+//	public void setStartClass(OWLClassExpression startClass) {
+//		this.startClass = startClass;
+//	}
+	
+	public void setStartClass(String startClassString) {
+		// parse class expression
+		try {
+			ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, startClassString);
+			parser.setOWLEntityChecker(new SimpleOWLEntityChecker(((ClosedWorldReasoner)reasoner).getReasonerComponent().getOntology()));
+			startClass = parser.parseClassExpression();
+		} catch (ParserException e) {
+			logger.error("Start class parsing failed.", e);
+		}
 	}
 
 	public boolean isWriteSearchTree() {

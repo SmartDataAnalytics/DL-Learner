@@ -36,7 +36,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class NamedClassEditor extends AbstractPropertyEditor<OWLClass> {
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-    private OWLClass value;
 
     @Override
     public String getJavaInitializationString() {
