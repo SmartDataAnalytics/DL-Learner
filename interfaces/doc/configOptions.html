@@ -55,7 +55,7 @@ function showAllCat(){
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner">functional data property axiom learner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner">functional object property axiom learner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner">inverse functional object property axiom learner</a></li></div>
-<div class="type menu OtherComponent"><li><a href="#org.dllearner.algorithms.ocel.MultiHeuristic">multiple criteria heuristic</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.ocel.MultiHeuristic">multiple criteria heuristic</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner">object property domain axiom learner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner">object property range learner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner">object subproperty axiom learner</a></li></div>
@@ -138,8 +138,8 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>local_sparql</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>cacheDir</td><td>The base directory of the SPARQL query cache.</td><td> String</td><td>tmp folder of the system</td><td> false</td></tr>
 <tr><td>cacheTTL</td><td>The time to live in milliseconds for cached SPARQL queries, if enabled.</td><td> long</td><td>1 day</td><td> false</td></tr>
-<tr><td>defaultGraphs</td><td>a list of default graph URIs</td><td> List</td><td>[]</td><td> false</td></tr>
-<tr><td>namedGraphs</td><td>a list of named graph URIs</td><td> List</td><td>[]</td><td> false</td></tr>
+<tr><td>defaultGraphURIs</td><td>a list of default graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
+<tr><td>namedGraphURIs</td><td>a list of named graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
 <tr><td>queryDelay</td><td>Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.</td><td> long</td><td>50</td><td> false</td></tr>
 <tr><td>retryCount</td><td>The maximum number of retries for the execution of a particular SPARQL query.</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>url</td><td>URL of the SPARQL endpoint</td><td> URL</td><td></td><td> true</td></tr>
@@ -202,8 +202,8 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>sparql</dd><dt>version</dt><dd>0.2</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>cacheDir</td><td>The base directory of the SPARQL query cache.</td><td> String</td><td>tmp folder of the system</td><td> false</td></tr>
 <tr><td>cacheTTL</td><td>The time to live in milliseconds for cached SPARQL queries, if enabled.</td><td> long</td><td>1 day</td><td> false</td></tr>
-<tr><td>defaultGraphs</td><td>a list of default graph URIs</td><td> List</td><td>[]</td><td> false</td></tr>
-<tr><td>namedGraphs</td><td>a list of named graph URIs</td><td> List</td><td>[]</td><td> false</td></tr>
+<tr><td>defaultGraphURIs</td><td>a list of default graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
+<tr><td>namedGraphURIs</td><td>a list of named graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
 <tr><td>queryDelay</td><td>Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.</td><td> long</td><td>50</td><td> false</td></tr>
 <tr><td>retryCount</td><td>The maximum number of retries for the execution of a particular SPARQL query.</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>url</td><td>URL of the SPARQL endpoint</td><td> URL</td><td></td><td> true</td></tr>
@@ -265,8 +265,8 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplfunc</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for functional object property axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner"><h2>inverse functional object property axiom learner</h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplinvfunc</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for inverse functional object property axioms.</dd></dl>This component does not have configuration options.</div>
-<div class="type OtherComponent"><a name="org.dllearner.algorithms.ocel.MultiHeuristic"><h2>multiple criteria heuristic</h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>multiheuristic</dd><dt>version</dt><dd>0.7</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.MultiHeuristic"><h2>multiple criteria heuristic</h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>multiheuristic</dd><dt>version</dt><dd>0.7</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>expansionPenaltyFactor</td><td>no description available</td><td> double</td><td>0.02</td><td> false</td></tr>
 <tr><td>gainBonusFactor</td><td>no description available</td><td> double</td><td>0.5</td><td> false</td></tr>
 <tr><td>negationPenalty</td><td>no description available</td><td> int</td><td>0</td><td> false</td></tr>

@@ -212,13 +212,14 @@ public class DocumentationGenerator {
 			
 			if(needsQuotes) {
 				exampleValue = "\"" + exampleValue + "\"";
-			} else if(isCollection){
+			} else if(isCollection && exampleValue.isEmpty()){
 				exampleValue = "{" + exampleValue + "}";
 			}
 			
 			sb.append("option name: " + option.name() + "\n"
 					+ "description: " + option.description() + "\n"
 					+ "type: " + type + "\n"
+					+ "required: " + option.required() + "\n"
 					+ "default value: " + option.defaultValue() + "\n"
 					+ "conf file usage: " + catString + "." + option.name() + " = " + exampleValue +"\n");
 			

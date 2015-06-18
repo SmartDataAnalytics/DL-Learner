@@ -12,136 +12,35 @@ conf file usage: cli.type = "org.dllearner.cli.CLI"
 option name: logLevel
 description: Configure logger log level from conf file. Available levels: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE". Note, to see results, at least "INFO" is required.
 type: String
+required: false
 default value: INFO
-conf file usage: cli.logLevel = ...
+conf file usage: cli.logLevel = "INFO"
 
 option name: nrOfFolds
 description: Number of folds in Cross-Validation mode
 type: int
+required: false
 default value: 10
-conf file usage: cli.nrOfFolds = ...
+conf file usage: cli.nrOfFolds = 10
 
 option name: performCrossValidation
 description: Run in Cross-Validation mode
 type: boolean
+required: false
 default value: false
-conf file usage: cli.performCrossValidation = ...
+conf file usage: cli.performCrossValidation = false
 
 option name: writeSpringConfiguration
 description: Write the Spring XML configuration to disk corresponding to the .conf file
 type: boolean
+required: false
 default value: false
-conf file usage: cli.writeSpringConfiguration = ...
+conf file usage: cli.writeSpringConfiguration = false
 
 
 *********************
 * Knowledge Sources *
 *********************
-
-component: efficient SPARQL fragment extractor (org.dllearner.kb.sparql.simple.SparqlSimpleExtractor) v0.1
-==========================================================================================================
-
-conf file usage: ks.type = "sparqls"
-
-option name: aboxfilter
-description: Filter for the tbox, can use variable ?s, ?p amd ?o
-type: String
-default value: 
-conf file usage: ks.aboxfilter = ...
-
-option name: defaultGraphURI
-description: default graph URI
-type: String
-default value: 
-conf file usage: ks.defaultGraphURI = ...
-
-option name: endpointURL
-description: URL of the SPARQL endpoint
-type: String
-default value: 
-conf file usage: ks.endpointURL = ...
-
-option name: instances
-description: List of the instances to use
-type: List
-default value: 
-conf file usage: ks.instances = ...
-
-option name: ontologySchemaUrls
-description: List of Ontology Schema URLs
-type: List
-default value: 
-conf file usage: ks.ontologySchemaUrls = ...
-
-option name: recursionDepth
-description: recursion depth
-type: int
-default value: 
-conf file usage: ks.recursionDepth = ...
-
-option name: sparqlQuery
-description: Sparql Query
-type: String
-default value: 
-conf file usage: ks.sparqlQuery = ...
-
-option name: tboxfilter
-description: Filter for the tbox, can use variable ?example and ?class
-type: String
-default value: 
-conf file usage: ks.tboxfilter = ...
-
-component: SPARQL endpoint fragment (org.dllearner.kb.sparql.SparqlKnowledgeSource) v0.5
-========================================================================================
-
-conf file usage: ks.type = "sparqlfrag"
-
-component: OWL File (org.dllearner.kb.OWLFile) v0.9
-===================================================
-
-conf file usage: ks.type = "owlfile"
-
-option name: baseDir
-description: separately specify directory of KB file
-type: String
-default value: 
-conf file usage: ks.baseDir = ...
-
-option name: defaultGraphURIs
-description: a list of default graph URIs to query from the Endpoint
-type: List
-default value: 
-conf file usage: ks.defaultGraphURIs = ...
-
-option name: fileName
-description: relative or absolute path to KB file
-type: String
-default value: 
-conf file usage: ks.fileName = ...
-
-option name: namedGraphURIs
-description: a list of named graph URIs to query from the Endpoint
-type: List
-default value: 
-conf file usage: ks.namedGraphURIs = ...
-
-option name: reasoningString
-description: Enable JENA reasoning on the Ontology Model. Available reasoners are: "micro_rule", "mini_rule", "rdfs", "rule"
-type: String
-default value: false
-conf file usage: ks.reasoningString = ...
-
-option name: sparql
-description: SPARQL CONSTRUCT expression to download from Endpoint
-type: String
-default value: 
-conf file usage: ks.sparql = ...
-
-option name: url
-description: URL pointer to the KB file or Endpoint
-type: URL
-default value: 
-conf file usage: ks.url = ...
 
 component: SPARQL endpoint (org.dllearner.kb.SparqlEndpointKS) v0.2
 ===================================================================
@@ -151,50 +50,63 @@ conf file usage: ks.type = "sparql"
 option name: cacheDir
 description: The base directory of the SPARQL query cache.
 type: String
+required: false
 default value: tmp folder of the system
-conf file usage: ks.cacheDir = ...
+conf file usage: ks.cacheDir = "tmp folder of the system"
 
 option name: cacheTTL
 description: The time to live in milliseconds for cached SPARQL queries, if enabled.
 type: long
+required: false
 default value: 1 day
-conf file usage: ks.cacheTTL = ...
+conf file usage: ks.cacheTTL = 1 day
 
-option name: defaultGraphs
+option name: defaultGraphURIs
 description: a list of default graph URIs
 type: List
-default value: []
-conf file usage: ks.defaultGraphs = ...
+required: false
+default value: {}
+conf file usage: ks.defaultGraphURIs = {}
 
-option name: namedGraphs
+option name: namedGraphURIs
 description: a list of named graph URIs
 type: List
-default value: []
-conf file usage: ks.namedGraphs = ...
+required: false
+default value: {}
+conf file usage: ks.namedGraphURIs = {}
 
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
 type: long
+required: false
 default value: 50
-conf file usage: ks.queryDelay = ...
+conf file usage: ks.queryDelay = 50
 
 option name: retryCount
 description: The maximum number of retries for the execution of a particular SPARQL query.
 type: int
+required: false
 default value: 3
-conf file usage: ks.retryCount = ...
+conf file usage: ks.retryCount = 3
 
 option name: url
 description: URL of the SPARQL endpoint
 type: URL
+required: true
 default value: 
-conf file usage: ks.url = ...
+conf file usage: ks.url = ""
 
 option name: useCache
 description: Use this setting to enable caching of SPARQL queries in a local database.
 type: boolean
+required: false
 default value: true
-conf file usage: ks.useCache = ...
+conf file usage: ks.useCache = true
+
+component: SPARQL endpoint fragment (org.dllearner.kb.sparql.SparqlKnowledgeSource) v0.5
+========================================================================================
+
+conf file usage: ks.type = "sparqlfrag"
 
 component: Local Endpoint (org.dllearner.kb.LocalModelBasedSparqlEndpointKS) v0.9
 =================================================================================
@@ -204,50 +116,173 @@ conf file usage: ks.type = "local_sparql"
 option name: cacheDir
 description: The base directory of the SPARQL query cache.
 type: String
+required: false
 default value: tmp folder of the system
-conf file usage: ks.cacheDir = ...
+conf file usage: ks.cacheDir = "tmp folder of the system"
 
 option name: cacheTTL
 description: The time to live in milliseconds for cached SPARQL queries, if enabled.
 type: long
+required: false
 default value: 1 day
-conf file usage: ks.cacheTTL = ...
+conf file usage: ks.cacheTTL = 1 day
 
-option name: defaultGraphs
+option name: defaultGraphURIs
 description: a list of default graph URIs
 type: List
-default value: []
-conf file usage: ks.defaultGraphs = ...
+required: false
+default value: {}
+conf file usage: ks.defaultGraphURIs = {}
 
-option name: namedGraphs
+option name: namedGraphURIs
 description: a list of named graph URIs
 type: List
-default value: []
-conf file usage: ks.namedGraphs = ...
+required: false
+default value: {}
+conf file usage: ks.namedGraphURIs = {}
 
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
 type: long
+required: false
 default value: 50
-conf file usage: ks.queryDelay = ...
+conf file usage: ks.queryDelay = 50
 
 option name: retryCount
 description: The maximum number of retries for the execution of a particular SPARQL query.
 type: int
+required: false
 default value: 3
-conf file usage: ks.retryCount = ...
+conf file usage: ks.retryCount = 3
 
 option name: url
 description: URL of the SPARQL endpoint
 type: URL
+required: true
 default value: 
-conf file usage: ks.url = ...
+conf file usage: ks.url = ""
 
 option name: useCache
 description: Use this setting to enable caching of SPARQL queries in a local database.
 type: boolean
+required: false
 default value: true
-conf file usage: ks.useCache = ...
+conf file usage: ks.useCache = true
+
+component: OWL File (org.dllearner.kb.OWLFile) v0.9
+===================================================
+
+conf file usage: ks.type = "owlfile"
+
+option name: baseDir
+description: separately specify directory of KB file
+type: String
+required: false
+default value: 
+conf file usage: ks.baseDir = ""
+
+option name: defaultGraphURIs
+description: a list of default graph URIs to query from the Endpoint
+type: List
+required: false
+default value: 
+conf file usage: ks.defaultGraphURIs = {}
+
+option name: fileName
+description: relative or absolute path to KB file
+type: String
+required: false
+default value: 
+conf file usage: ks.fileName = ""
+
+option name: namedGraphURIs
+description: a list of named graph URIs to query from the Endpoint
+type: List
+required: false
+default value: 
+conf file usage: ks.namedGraphURIs = {}
+
+option name: reasoningString
+description: Enable JENA reasoning on the Ontology Model. Available reasoners are: "micro_rule", "mini_rule", "rdfs", "rule"
+type: String
+required: false
+default value: false
+conf file usage: ks.reasoningString = "false"
+
+option name: sparql
+description: SPARQL CONSTRUCT expression to download from Endpoint
+type: String
+required: false
+default value: 
+conf file usage: ks.sparql = ""
+
+option name: url
+description: URL pointer to the KB file or Endpoint
+type: URL
+required: false
+default value: 
+conf file usage: ks.url = ""
+
+component: efficient SPARQL fragment extractor (org.dllearner.kb.sparql.simple.SparqlSimpleExtractor) v0.1
+==========================================================================================================
+
+conf file usage: ks.type = "sparqls"
+
+option name: aboxfilter
+description: Filter for the tbox, can use variable ?s, ?p amd ?o
+type: String
+required: false
+default value: 
+conf file usage: ks.aboxfilter = ""
+
+option name: defaultGraphURI
+description: default graph URI
+type: String
+required: true
+default value: 
+conf file usage: ks.defaultGraphURI = ""
+
+option name: endpointURL
+description: URL of the SPARQL endpoint
+type: String
+required: true
+default value: 
+conf file usage: ks.endpointURL = ""
+
+option name: instances
+description: List of the instances to use
+type: List
+required: true
+default value: 
+conf file usage: ks.instances = {}
+
+option name: ontologySchemaUrls
+description: List of Ontology Schema URLs
+type: List
+required: true
+default value: 
+conf file usage: ks.ontologySchemaUrls = {}
+
+option name: recursionDepth
+description: recursion depth
+type: int
+required: true
+default value: 
+conf file usage: ks.recursionDepth = 
+
+option name: sparqlQuery
+description: Sparql Query
+type: String
+required: false
+default value: 
+conf file usage: ks.sparqlQuery = ""
+
+option name: tboxfilter
+description: Filter for the tbox, can use variable ?example and ?class
+type: String
+required: false
+default value: 
+conf file usage: ks.tboxfilter = ""
 
 component: KB File (org.dllearner.kb.KBFile) v0.8
 =================================================
@@ -257,14 +292,16 @@ conf file usage: ks.type = "kbfile"
 option name: fileName
 description: relative or absolute path to KB file
 type: String
+required: false
 default value: 
-conf file usage: ks.fileName = ...
+conf file usage: ks.fileName = ""
 
 option name: url
 description: URL pointer to the KB file
 type: String
+required: false
 default value: 
-conf file usage: ks.url = ...
+conf file usage: ks.url = ""
 
 
 
@@ -278,95 +315,95 @@ conf file usage: ks.url = ...
 * AxiomLearningAlgorithm *
 **************************
 
-component: disjoint data properties axiom learner (org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner) v0.1
-=============================================================================================================================
-A learning algorithm for disjoint data properties axioms.
-
-conf file usage: axiomLearningAlgorithm.type = "dpldisjoint"
-
-component: data property domain axiom learner (org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner) v0.1
-=======================================================================================================================
-A learning algorithm for data property domain axioms.
-
-conf file usage: axiomLearningAlgorithm.type = "dpldomain"
-
-component: object property range learner (org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner) v0.1
-===================================================================================================================
-A learning algorithm for object property range axioms.
-
-conf file usage: axiomLearningAlgorithm.type = "oplrange"
-
-component: equivalent data properties axiom learner (org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner) v0.1
+component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
-A learning algorithm for equivalent data properties axioms.
+A learning algorithm for symmetric object property axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "dplequiv"
-
-component: functional object property axiom learner (org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner) v0.1
-===================================================================================================================================
-A learning algorithm for functional object property axioms.
-
-conf file usage: axiomLearningAlgorithm.type = "oplfunc"
-
-component: data property range learner (org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner) v0.1
-===============================================================================================================
-A learning algorithm for reflexive data property range axioms.
-
-conf file usage: axiomLearningAlgorithm.type = "dblrange"
+conf file usage: la.type = "oplsymm"
 
 component: transitive object property axiom learner (org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner) v0.1
 ===================================================================================================================================
 A learning algorithm for transitive object property axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "opltrans"
+conf file usage: la.type = "opltrans"
 
-component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
-===============================================================================================================================
-A learning algorithm for functional data property axioms.
+component: disjoint data properties axiom learner (org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner) v0.1
+=============================================================================================================================
+A learning algorithm for disjoint data properties axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "dplfunc"
+conf file usage: la.type = "dpldisjoint"
 
-component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
-=================================================================================================================================
-A learning algorithm for symmetric object property axioms.
+component: functional object property axiom learner (org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner) v0.1
+===================================================================================================================================
+A learning algorithm for functional object property axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "oplsymm"
+conf file usage: la.type = "oplfunc"
 
 component: inverse functional object property axiom learner (org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner) v0.1
 ==================================================================================================================================================
 A learning algorithm for inverse functional object property axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "oplinvfunc"
+conf file usage: la.type = "oplinvfunc"
 
-component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
-=================================================================================================================================
-A learning algorithm for disjoint object properties axioms.
+component: object property range learner (org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner) v0.1
+===================================================================================================================
+A learning algorithm for object property range axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "opldisjoint"
+conf file usage: la.type = "oplrange"
 
-component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
-======================================================================================================================
-A learning algorithm object subproperty axioms.
+component: data property domain axiom learner (org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner) v0.1
+=======================================================================================================================
+A learning algorithm for data property domain axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "oplsubprop"
+conf file usage: la.type = "dpldomain"
 
-component: object property domain axiom learner (org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner) v0.1
-===========================================================================================================================
-A learning algorithm for object property domain axioms.
+component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
+===============================================================================================================================
+A learning algorithm for functional data property axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "opldomain"
+conf file usage: la.type = "dplfunc"
 
 component: data subproperty axiom learner (org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner) v0.1
 ==================================================================================================================
 A learning algorithm data subproperty axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "dplsubprop"
+conf file usage: la.type = "dplsubprop"
+
+component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
+=================================================================================================================================
+A learning algorithm for disjoint object properties axioms.
+
+conf file usage: la.type = "opldisjoint"
+
+component: equivalent data properties axiom learner (org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner) v0.1
+=================================================================================================================================
+A learning algorithm for equivalent data properties axioms.
+
+conf file usage: la.type = "dplequiv"
+
+component: data property range learner (org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner) v0.1
+===============================================================================================================
+A learning algorithm for reflexive data property range axioms.
+
+conf file usage: la.type = "dblrange"
 
 component: equivalent object properties axiom learner (org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner) v0.1
 =====================================================================================================================================
 A learning algorithm for equivalent object properties axioms.
 
-conf file usage: axiomLearningAlgorithm.type = "oplequiv"
+conf file usage: la.type = "oplequiv"
+
+component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
+======================================================================================================================
+A learning algorithm object subproperty axioms.
+
+conf file usage: la.type = "oplsubprop"
+
+component: object property domain axiom learner (org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner) v0.1
+===========================================================================================================================
+A learning algorithm for object property domain axioms.
+
+conf file usage: la.type = "opldomain"
 
 
 
@@ -374,300 +411,342 @@ conf file usage: axiomLearningAlgorithm.type = "oplequiv"
 * ClassExpressionLearningAlgorithm *
 ************************************
 
-component: ELTL (org.dllearner.algorithms.el.ELLearningAlgorithm) v0.5
-======================================================================
-ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.
-
-conf file usage: classExpressionLearningAlgorithm.type = "eltl"
-
-option name: instanceBasedDisjoints
-description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
-type: boolean
-default value: true
-conf file usage: classExpressionLearningAlgorithm.instanceBasedDisjoints = ...
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: classExpressionLearningAlgorithm.noisePercentage = ...
-
-option name: replaceSearchTree
-description: specifies whether to replace the search tree in the log file after each run or append the new search tree
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.replaceSearchTree = ...
-
-option name: searchTreeFile
-description: file to use for the search tree
-type: String
-default value: log/searchTree.txt
-conf file usage: classExpressionLearningAlgorithm.searchTreeFile = ...
-
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
-default value: owl:Thing
-conf file usage: classExpressionLearningAlgorithm.startClass = ...
-
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.stopOnFirstDefinition = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
-
-option name: writeSearchTree
-description: specifies whether to write a search tree
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.writeSearchTree = ...
-
-component: disjoint classes learner (org.dllearner.algorithms.DisjointClassesLearner) v0.1
-==========================================================================================
-
-conf file usage: classExpressionLearningAlgorithm.type = "cldisjoint"
-
-option name: maxExecutionTimeInSeconds
-description: 
-type: int
-default value: 10
-conf file usage: classExpressionLearningAlgorithm.maxExecutionTimeInSeconds = ...
-
-option name: maxFetchedRows
-description: The maximum number of rows fetched from the endpoint to approximate the result.
-type: int
-default value: 
-conf file usage: classExpressionLearningAlgorithm.maxFetchedRows = ...
-
-option name: returnOnlyNewAxioms
-description: 
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.returnOnlyNewAxioms = ...
-
 component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
 ==========================================================================================================
 
-conf file usage: classExpressionLearningAlgorithm.type = "qtl2dis"
+conf file usage: la.type = "qtl2dis"
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
 type: int
+required: false
 default value: 10
-conf file usage: classExpressionLearningAlgorithm.maxExecutionTimeInSeconds = ...
+conf file usage: la.maxExecutionTimeInSeconds = 10
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 type: double
+required: false
 default value: 0.0
-conf file usage: classExpressionLearningAlgorithm.noisePercentage = ...
+conf file usage: la.noisePercentage = 0.0
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
+required: false
 default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
-
-component: CELOE (org.dllearner.algorithms.celoe.CELOE) v1.0
-============================================================
-CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.
-
-conf file usage: classExpressionLearningAlgorithm.type = "celoe"
-
-option name: filterDescriptionsFollowingFromKB
-description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.filterDescriptionsFollowingFromKB = ...
-
-option name: maxClassExpressionTests
-description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
-type: int
-default value: 0
-conf file usage: classExpressionLearningAlgorithm.maxClassExpressionTests = ...
-
-option name: maxClassExpressionTestsAfterImprovement
-description: The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
-type: int
-default value: 0
-conf file usage: classExpressionLearningAlgorithm.maxClassExpressionTestsAfterImprovement = ...
-
-option name: maxDepth
-description: maximum depth of description
-type: double
-default value: 7
-conf file usage: classExpressionLearningAlgorithm.maxDepth = ...
-
-option name: maxExecutionTimeInSeconds
-description: maximum execution of the algorithm in seconds
-type: int
-default value: 10
-conf file usage: classExpressionLearningAlgorithm.maxExecutionTimeInSeconds = ...
-
-option name: maxExecutionTimeInSecondsAfterImprovement
-description: maximum execution of the algorithm in seconds
-type: int
-default value: 0
-conf file usage: classExpressionLearningAlgorithm.maxExecutionTimeInSecondsAfterImprovement = ...
-
-option name: maxNrOfResults
-description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
-type: int
-default value: 10
-conf file usage: classExpressionLearningAlgorithm.maxNrOfResults = ...
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: classExpressionLearningAlgorithm.noisePercentage = ...
-
-option name: replaceSearchTree
-description: specifies whether to replace the search tree in the log file after each run or append the new search tree
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.replaceSearchTree = ...
-
-option name: reuseExistingDescription
-description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.reuseExistingDescription = ...
-
-option name: searchTreeFile
-description: file to use for the search tree
-type: String
-default value: log/searchTree.txt
-conf file usage: classExpressionLearningAlgorithm.searchTreeFile = ...
-
-option name: singleSuggestionMode
-description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.singleSuggestionMode = ...
-
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
-default value: owl:Thing
-conf file usage: classExpressionLearningAlgorithm.startClass = ...
-
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.stopOnFirstDefinition = ...
-
-option name: terminateOnNoiseReached
-description: specifies whether to terminate when noise criterion is met
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.terminateOnNoiseReached = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
-
-option name: writeSearchTree
-description: specifies whether to write a search tree
-type: boolean
-default value: false
-conf file usage: classExpressionLearningAlgorithm.writeSearchTree = ...
-
-component: OWL Class Expression Learner (org.dllearner.algorithms.ocel.OCEL) v1.2
-=================================================================================
-
-conf file usage: classExpressionLearningAlgorithm.type = "ocel"
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
+conf file usage: la.useMinimizer = true
 
 component: Disjunctive ELTL (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive) v0.5
 =============================================================================================
 Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.
 
-conf file usage: classExpressionLearningAlgorithm.type = "deltl"
+conf file usage: la.type = "deltl"
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 type: double
+required: false
 default value: 0.0
-conf file usage: classExpressionLearningAlgorithm.noisePercentage = ...
+conf file usage: la.noisePercentage = 0.0
 
 option name: startClass
 description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
 type: OWLClassExpression
+required: false
 default value: owl:Thing
-conf file usage: classExpressionLearningAlgorithm.startClass = ...
+conf file usage: la.startClass = "owl:Thing"
 
 option name: stopOnFirstDefinition
 description: algorithm will terminate immediately when a correct definition is found
 type: boolean
+required: false
 default value: false
-conf file usage: classExpressionLearningAlgorithm.stopOnFirstDefinition = ...
+conf file usage: la.stopOnFirstDefinition = false
 
 option name: treeSearchTimeSeconds
 description: Specifies how long the algorithm should search for a partial solution (a tree).
 type: double
+required: false
 default value: 1.0
-conf file usage: classExpressionLearningAlgorithm.treeSearchTimeSeconds = ...
+conf file usage: la.treeSearchTimeSeconds = 1.0
 
 option name: tryFullCoverage
 description: If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.
 type: boolean
+required: false
 default value: false
-conf file usage: classExpressionLearningAlgorithm.tryFullCoverage = ...
+conf file usage: la.tryFullCoverage = false
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
+required: false
 default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
+conf file usage: la.useMinimizer = true
 
-component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
-==========================================================================
+component: CELOE (org.dllearner.algorithms.celoe.CELOE) v1.0
+============================================================
+CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.
 
-conf file usage: classExpressionLearningAlgorithm.type = "naiveALLearner"
+conf file usage: la.type = "celoe"
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+type: boolean
+required: false
+default value: false
+conf file usage: la.filterDescriptionsFollowingFromKB = false
+
+option name: maxClassExpressionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassExpressionTests = 0
+
+option name: maxClassExpressionTestsAfterImprovement
+description: The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassExpressionTestsAfterImprovement = 0
+
+option name: maxDepth
+description: maximum depth of description
+type: double
+required: false
+default value: 7
+conf file usage: la.maxDepth = 7
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxExecutionTimeInSecondsAfterImprovement
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 0
+conf file usage: la.maxExecutionTimeInSecondsAfterImprovement = 0
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+type: int
+required: false
+default value: 10
+conf file usage: la.maxNrOfResults = 10
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.replaceSearchTree = false
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+type: boolean
+required: false
+default value: false
+conf file usage: la.reuseExistingDescription = false
+
+option name: searchTreeFile
+description: file to use for the search tree
+type: String
+required: false
+default value: log/searchTree.txt
+conf file usage: la.searchTreeFile = "log/searchTree.txt"
+
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+type: boolean
+required: false
+default value: false
+conf file usage: la.singleSuggestionMode = false
+
+option name: startClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: la.startClass = "owl:Thing"
+
+option name: stopOnFirstDefinition
+description: algorithm will terminate immediately when a correct definition is found
+type: boolean
+required: false
+default value: false
+conf file usage: la.stopOnFirstDefinition = false
+
+option name: terminateOnNoiseReached
+description: specifies whether to terminate when noise criterion is met
+type: boolean
+required: false
+default value: false
+conf file usage: la.terminateOnNoiseReached = false
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
+required: false
 default value: true
-conf file usage: classExpressionLearningAlgorithm.useMinimizer = ...
+conf file usage: la.useMinimizer = true
 
-component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearner) v0.1
-========================================================================================
+option name: writeSearchTree
+description: specifies whether to write a search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.writeSearchTree = false
 
-conf file usage: classExpressionLearningAlgorithm.type = "clsub"
+component: ELTL (org.dllearner.algorithms.el.ELLearningAlgorithm) v0.5
+======================================================================
+ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.
+
+conf file usage: la.type = "eltl"
+
+option name: instanceBasedDisjoints
+description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
+type: boolean
+required: false
+default value: true
+conf file usage: la.instanceBasedDisjoints = true
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.replaceSearchTree = false
+
+option name: searchTreeFile
+description: file to use for the search tree
+type: String
+required: false
+default value: log/searchTree.txt
+conf file usage: la.searchTreeFile = "log/searchTree.txt"
+
+option name: startClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: la.startClass = "owl:Thing"
+
+option name: stopOnFirstDefinition
+description: algorithm will terminate immediately when a correct definition is found
+type: boolean
+required: false
+default value: false
+conf file usage: la.stopOnFirstDefinition = false
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.writeSearchTree = false
+
+component: disjoint classes learner (org.dllearner.algorithms.DisjointClassesLearner) v0.1
+==========================================================================================
+
+conf file usage: la.type = "cldisjoint"
 
 option name: maxExecutionTimeInSeconds
 description: 
 type: int
+required: false
 default value: 10
-conf file usage: classExpressionLearningAlgorithm.maxExecutionTimeInSeconds = ...
+conf file usage: la.maxExecutionTimeInSeconds = 10
 
 option name: maxFetchedRows
 description: The maximum number of rows fetched from the endpoint to approximate the result.
 type: int
+required: false
 default value: 
-conf file usage: classExpressionLearningAlgorithm.maxFetchedRows = ...
+conf file usage: la.maxFetchedRows = 
 
 option name: returnOnlyNewAxioms
 description: 
 type: boolean
+required: false
 default value: false
-conf file usage: classExpressionLearningAlgorithm.returnOnlyNewAxioms = ...
+conf file usage: la.returnOnlyNewAxioms = false
+
+component: OWL Class Expression Learner (org.dllearner.algorithms.ocel.OCEL) v1.2
+=================================================================================
+
+conf file usage: la.type = "ocel"
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearner) v0.1
+========================================================================================
+
+conf file usage: la.type = "clsub"
+
+option name: maxExecutionTimeInSeconds
+description: 
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxFetchedRows
+description: The maximum number of rows fetched from the endpoint to approximate the result.
+type: int
+required: false
+default value: 
+conf file usage: la.maxFetchedRows = 
+
+option name: returnOnlyNewAxioms
+description: 
+type: boolean
+required: false
+default value: false
+conf file usage: la.returnOnlyNewAxioms = false
+
+component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
+==========================================================================
+
+conf file usage: la.type = "naiveALLearner"
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
 
 
 
@@ -678,100 +757,113 @@ conf file usage: classExpressionLearningAlgorithm.returnOnlyNewAxioms = ...
 component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
 ==================================================================================
 
-conf file usage: learningProblem.type = "posNegStandard"
+conf file usage: lp.type = "posNegStandard"
 
 option name: accuracyMethod
 description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
 type: String
+required: false
 default value: predacc
-conf file usage: learningProblem.accuracyMethod = ...
+conf file usage: lp.accuracyMethod = "predacc"
 
 option name: approxDelta
 description: The Approximate Delta
 type: double
+required: false
 default value: 0.05
-conf file usage: learningProblem.approxDelta = ...
+conf file usage: lp.approxDelta = 0.05
 
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
 type: double
+required: false
 default value: 0.05
-conf file usage: learningProblem.percentPerLengthUnit = ...
+conf file usage: lp.percentPerLengthUnit = 0.05
 
 option name: useApproximations
 description: Use Approximations
 type: boolean
+required: false
 default value: false
-conf file usage: learningProblem.useApproximations = ...
+conf file usage: lp.useApproximations = false
 
 option name: useMultiInstanceChecks
 description: Use The Multi Instance Checks
 type: UseMultiInstanceChecks
+required: false
 default value: UseMultiInstanceChecks.TWOCHECKS
-conf file usage: learningProblem.useMultiInstanceChecks = ...
+conf file usage: lp.useMultiInstanceChecks = "UseMultiInstanceChecks.TWOCHECKS"
 
 option name: useRetrievalForClassification
 description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
 type: boolean
+required: false
 default value: false
-conf file usage: learningProblem.useRetrievalForClassification = ...
-
-component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
-=========================================================================================
-
-conf file usage: learningProblem.type = "posonlylp"
+conf file usage: lp.useRetrievalForClassification = false
 
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
 
-conf file usage: learningProblem.type = "clp"
+conf file usage: lp.type = "clp"
 
 option name: accuracyMethod
 description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
 type: String
+required: false
 default value: pred_acc
-conf file usage: learningProblem.accuracyMethod = ...
+conf file usage: lp.accuracyMethod = "pred_acc"
 
 option name: approxDelta
 description: The Approximate Delta
 type: double
+required: false
 default value: 0.05
-conf file usage: learningProblem.approxDelta = ...
+conf file usage: lp.approxDelta = 0.05
 
 option name: betaEq
 description: beta index for F-measure in definition learning
 type: double
+required: false
 default value: 1.0
-conf file usage: learningProblem.betaEq = ...
+conf file usage: lp.betaEq = 1.0
 
 option name: betaSC
 description: beta index for F-measure in super class learning
 type: double
+required: false
 default value: 3.0
-conf file usage: learningProblem.betaSC = ...
+conf file usage: lp.betaSC = 3.0
 
 option name: checkConsistency
 description: whether to check for consistency of suggestions (when added to ontology)
 type: boolean
+required: false
 default value: true
-conf file usage: learningProblem.checkConsistency = ...
+conf file usage: lp.checkConsistency = true
 
 option name: classToDescribe
 description: class of which an OWL class expression should be learned
 type: IRI
+required: true
 default value: 
-conf file usage: learningProblem.classToDescribe = ...
+conf file usage: lp.classToDescribe = ""
 
 option name: useApproximations
 description: Use Approximations
 type: boolean
+required: false
 default value: false
-conf file usage: learningProblem.useApproximations = ...
+conf file usage: lp.useApproximations = false
+
+component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
+=========================================================================================
+
+conf file usage: lp.type = "posonlylp"
 
 component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.PropertyAxiomLearningProblem) v0.6
 ==========================================================================================================
 
-conf file usage: learningProblem.type = "palp"
+conf file usage: lp.type = "palp"
 
 
 
@@ -782,70 +874,78 @@ conf file usage: learningProblem.type = "palp"
 component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker) v0.9
 ===================================================================================
 
-conf file usage: reasonerComponent.type = "fic"
+conf file usage: reasoner.type = "fic"
 
 option name: defaultNegation
 description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
 type: boolean
+required: false
 default value: true
-conf file usage: reasonerComponent.defaultNegation = ...
+conf file usage: reasoner.defaultNegation = true
 
 option name: forAllRetrievalSemantics
 description: This option controls how to interpret the all quantifier in forall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.
 type: ForallSemantics
+required: false
 default value: standard
-conf file usage: reasonerComponent.forAllRetrievalSemantics = ...
-
-component: closed world reasoner (org.dllearner.reasoning.ClosedWorldReasoner) v0.9
-===================================================================================
-
-conf file usage: reasonerComponent.type = "cwr"
-
-option name: defaultNegation
-description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
-type: boolean
-default value: true
-conf file usage: reasonerComponent.defaultNegation = ...
-
-option name: forAllRetrievalSemantics
-description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
-type: ForallSemantics
-default value: standard
-conf file usage: reasonerComponent.forAllRetrievalSemantics = ...
+conf file usage: reasoner.forAllRetrievalSemantics = "standard"
 
 component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
 ========================================================================
 
-conf file usage: reasonerComponent.type = "spr"
+conf file usage: reasoner.type = "spr"
 
 option name: useCache
 description: Whether to use a file-based cache
 type: boolean
+required: false
 default value: true
-conf file usage: reasonerComponent.useCache = ...
+conf file usage: reasoner.useCache = true
+
+component: closed world reasoner (org.dllearner.reasoning.ClosedWorldReasoner) v0.9
+===================================================================================
+
+conf file usage: reasoner.type = "cwr"
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.defaultNegation = true
+
+option name: forAllRetrievalSemantics
+description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
+type: ForallSemantics
+required: false
+default value: standard
+conf file usage: reasoner.forAllRetrievalSemantics = "standard"
 
 component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
 =========================================================================
 
-conf file usage: reasonerComponent.type = "oar"
+conf file usage: reasoner.type = "oar"
 
 option name: owlLinkURL
 description: specifies the URL of the remote OWLLink server
 type: String
+required: false
 default value: null
-conf file usage: reasonerComponent.owlLinkURL = ...
+conf file usage: reasoner.owlLinkURL = "null"
 
 option name: reasonerImplementation
 description: specifies the used OWL API reasoner implementation
 type: ReasonerImplementation
+required: false
 default value: pellet
-conf file usage: reasonerComponent.reasonerImplementation = ...
+conf file usage: reasoner.reasonerImplementation = "pellet"
 
 option name: useFallbackReasoner
 description: specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level
 type: boolean
+required: false
 default value: false
-conf file usage: reasonerComponent.useFallbackReasoner = ...
+conf file usage: reasoner.useFallbackReasoner = false
 
 
 
@@ -856,97 +956,119 @@ conf file usage: reasonerComponent.useFallbackReasoner = ...
 component: rho refinement operator (org.dllearner.refinementoperators.RhoDRDown) v0.8
 =====================================================================================
 
-conf file usage: refinementOperator.type = "rho"
+conf file usage: op.type = "rho"
 
 option name: applyAllFilter
 description: no description available
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.applyAllFilter = ...
+conf file usage: op.applyAllFilter = true
 
 option name: applyExistsFilter
 description: no description available
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.applyExistsFilter = ...
+conf file usage: op.applyExistsFilter = true
 
 option name: disjointChecks
 description: no description available
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.disjointChecks = ...
+conf file usage: op.disjointChecks = true
 
 option name: dropDisjuncts
 description: no description available
 type: boolean
+required: false
 default value: false
-conf file usage: refinementOperator.dropDisjuncts = ...
+conf file usage: op.dropDisjuncts = false
 
 option name: instanceBasedDisjoints
 description: no description available
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.instanceBasedDisjoints = ...
+conf file usage: op.instanceBasedDisjoints = true
+
+option name: someOnly
+description: universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r
+type: boolean
+required: false
+default value: true
+conf file usage: op.someOnly = true
 
 option name: useAllConstructor
 description: support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useAllConstructor = ...
+conf file usage: op.useAllConstructor = true
 
 option name: useBooleanDatatypes
 description: support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useBooleanDatatypes = ...
+conf file usage: op.useBooleanDatatypes = true
 
 option name: useCardinalityRestrictions
 description: support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useCardinalityRestrictions = ...
+conf file usage: op.useCardinalityRestrictions = true
 
 option name: useExistsConstructor
 description: support of existential restrictions (owl:someValuesFrom), e.g. ∃ r.C 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useExistsConstructor = ...
+conf file usage: op.useExistsConstructor = true
 
 option name: useHasValueConstructor
 description: support of has value constructor (owl:hasValue), e.g. ∃ r.{a} 
 type: boolean
+required: false
 default value: false
-conf file usage: refinementOperator.useHasValueConstructor = ...
+conf file usage: op.useHasValueConstructor = false
 
 option name: useInverse
 description: support of inverse object properties (owl:inverseOf), e.g. r⁻.C 
 type: boolean
+required: false
 default value: false
-conf file usage: refinementOperator.useInverse = ...
+conf file usage: op.useInverse = false
 
 option name: useNegation
 description: support of negation (owl:complementOf), e.g. ¬ C 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useNegation = ...
+conf file usage: op.useNegation = true
 
 option name: useNumericDatatypes
 description: support of numeric datatypes (xsd:int, xsd:double, ...), e.g. ∃ r.{true} 
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useNumericDatatypes = ...
+conf file usage: op.useNumericDatatypes = true
 
 option name: useStringDatatypes
 description: support of string datatypes (xsd:string), e.g. ∃ r.{"SOME_STRING"} 
 type: boolean
+required: false
 default value: false
-conf file usage: refinementOperator.useStringDatatypes = ...
+conf file usage: op.useStringDatatypes = false
 
 option name: useTimeDatatypes
 description: no description available
 type: boolean
+required: false
 default value: true
-conf file usage: refinementOperator.useTimeDatatypes = ...
+conf file usage: op.useTimeDatatypes = true
 
 
 
@@ -954,62 +1076,64 @@ conf file usage: refinementOperator.useTimeDatatypes = ...
 * Heuristic *
 *************
 
-component: OEHeuristicRuntime (org.dllearner.algorithms.celoe.OEHeuristicRuntime) v0.5
-======================================================================================
-
-conf file usage: heuristic.type = "celoe_heuristic"
-
-option name: startNodeBonus
-description: no description available
-type: double
-default value: 0.1
-conf file usage: heuristic.startNodeBonus = ...
-
-
-********************
-* Other Components *
-********************
-
 component: multiple criteria heuristic (org.dllearner.algorithms.ocel.MultiHeuristic) v0.7
 ==========================================================================================
 
-conf file usage: component.type = "multiheuristic"
+conf file usage: h.type = "multiheuristic"
 
 option name: expansionPenaltyFactor
 description: no description available
 type: double
+required: false
 default value: 0.02
-conf file usage: component.expansionPenaltyFactor = ...
+conf file usage: h.expansionPenaltyFactor = 0.02
 
 option name: gainBonusFactor
 description: no description available
 type: double
+required: false
 default value: 0.5
-conf file usage: component.gainBonusFactor = ...
+conf file usage: h.gainBonusFactor = 0.5
 
 option name: negationPenalty
 description: no description available
 type: int
+required: false
 default value: 0
-conf file usage: component.negationPenalty = ...
+conf file usage: h.negationPenalty = 0
 
 option name: negativeWeight
 description: no description available
 type: double
+required: false
 default value: 1.0
-conf file usage: component.negativeWeight = ...
+conf file usage: h.negativeWeight = 1.0
 
 option name: nodeChildPenalty
 description: no description available
 type: double
+required: false
 default value: 0.0001
-conf file usage: component.nodeChildPenalty = ...
+conf file usage: h.nodeChildPenalty = 0.0001
 
 option name: startNodeBonus
 description: no description available
 type: double
+required: false
 default value: 0.1
-conf file usage: component.startNodeBonus = ...
+conf file usage: h.startNodeBonus = 0.1
+
+component: OEHeuristicRuntime (org.dllearner.algorithms.celoe.OEHeuristicRuntime) v0.5
+======================================================================================
+
+conf file usage: h.type = "celoe_heuristic"
+
+option name: startNodeBonus
+description: no description available
+type: double
+required: false
+default value: 0.1
+conf file usage: h.startNodeBonus = 0.1
 
 
 ********************
@@ -1030,664 +1154,4 @@ component: SemKernel Workflow (org.dllearner.utilities.semkernel.SemKernelWorkfl
 ========================================================================================
 
 conf file usage: component.type = "skw"
-
-THE END
-*********************
-* Knowledge Sources *
-*********************
-
-component: efficient SPARQL fragment extractor (org.dllearner.kb.sparql.simple.SparqlSimpleExtractor) v0.1
-==========================================================================================================
-
-conf file usage: abstractKnowledgeSource.type = "sparqls"
-
-option name: aboxfilter
-description: Filter for the tbox, can use variable ?s, ?p amd ?o
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.aboxfilter = ...
-
-option name: defaultGraphURI
-description: default graph URI
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.defaultGraphURI = ...
-
-option name: endpointURL
-description: URL of the SPARQL endpoint
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.endpointURL = ...
-
-option name: instances
-description: List of the instances to use
-type: List
-default value: 
-conf file usage: abstractKnowledgeSource.instances = ...
-
-option name: ontologySchemaUrls
-description: List of Ontology Schema URLs
-type: List
-default value: 
-conf file usage: abstractKnowledgeSource.ontologySchemaUrls = ...
-
-option name: recursionDepth
-description: recursion depth
-type: int
-default value: 
-conf file usage: abstractKnowledgeSource.recursionDepth = ...
-
-option name: sparqlQuery
-description: Sparql Query
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.sparqlQuery = ...
-
-option name: tboxfilter
-description: Filter for the tbox, can use variable ?example and ?class
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.tboxfilter = ...
-
-component: SPARQL endpoint fragment (org.dllearner.kb.sparql.SparqlKnowledgeSource) v0.5
-========================================================================================
-
-conf file usage: abstractKnowledgeSource.type = "sparqlfrag"
-
-component: OWL File (org.dllearner.kb.OWLFile) v0.9
-===================================================
-
-conf file usage: abstractKnowledgeSource.type = "owlfile"
-
-option name: baseDir
-description: separately specify directory of KB file
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.baseDir = ...
-
-option name: defaultGraphURIs
-description: a list of default graph URIs to query from the Endpoint
-type: List
-default value: 
-conf file usage: abstractKnowledgeSource.defaultGraphURIs = ...
-
-option name: fileName
-description: relative or absolute path to KB file
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.fileName = ...
-
-option name: namedGraphURIs
-description: a list of named graph URIs to query from the Endpoint
-type: List
-default value: 
-conf file usage: abstractKnowledgeSource.namedGraphURIs = ...
-
-option name: reasoningString
-description: Enable JENA reasoning on the Ontology Model. Available reasoners are: "micro_rule", "mini_rule", "rdfs", "rule"
-type: String
-default value: false
-conf file usage: abstractKnowledgeSource.reasoningString = ...
-
-option name: sparql
-description: SPARQL CONSTRUCT expression to download from Endpoint
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.sparql = ...
-
-option name: url
-description: URL pointer to the KB file or Endpoint
-type: URL
-default value: 
-conf file usage: abstractKnowledgeSource.url = ...
-
-component: SPARQL endpoint (org.dllearner.kb.SparqlEndpointKS) v0.2
-===================================================================
-
-conf file usage: abstractKnowledgeSource.type = "sparql"
-
-option name: cacheDir
-description: The base directory of the SPARQL query cache.
-type: String
-default value: tmp folder of the system
-conf file usage: abstractKnowledgeSource.cacheDir = ...
-
-option name: cacheTTL
-description: The time to live in milliseconds for cached SPARQL queries, if enabled.
-type: long
-default value: 1 day
-conf file usage: abstractKnowledgeSource.cacheTTL = ...
-
-option name: defaultGraphs
-description: a list of default graph URIs
-type: List
-default value: []
-conf file usage: abstractKnowledgeSource.defaultGraphs = ...
-
-option name: namedGraphs
-description: a list of named graph URIs
-type: List
-default value: []
-conf file usage: abstractKnowledgeSource.namedGraphs = ...
-
-option name: queryDelay
-description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
-type: long
-default value: 50
-conf file usage: abstractKnowledgeSource.queryDelay = ...
-
-option name: retryCount
-description: The maximum number of retries for the execution of a particular SPARQL query.
-type: int
-default value: 3
-conf file usage: abstractKnowledgeSource.retryCount = ...
-
-option name: url
-description: URL of the SPARQL endpoint
-type: URL
-default value: 
-conf file usage: abstractKnowledgeSource.url = ...
-
-option name: useCache
-description: Use this setting to enable caching of SPARQL queries in a local database.
-type: boolean
-default value: true
-conf file usage: abstractKnowledgeSource.useCache = ...
-
-component: Local Endpoint (org.dllearner.kb.LocalModelBasedSparqlEndpointKS) v0.9
-=================================================================================
-
-conf file usage: abstractKnowledgeSource.type = "local_sparql"
-
-option name: cacheDir
-description: The base directory of the SPARQL query cache.
-type: String
-default value: tmp folder of the system
-conf file usage: abstractKnowledgeSource.cacheDir = ...
-
-option name: cacheTTL
-description: The time to live in milliseconds for cached SPARQL queries, if enabled.
-type: long
-default value: 1 day
-conf file usage: abstractKnowledgeSource.cacheTTL = ...
-
-option name: defaultGraphs
-description: a list of default graph URIs
-type: List
-default value: []
-conf file usage: abstractKnowledgeSource.defaultGraphs = ...
-
-option name: namedGraphs
-description: a list of named graph URIs
-type: List
-default value: []
-conf file usage: abstractKnowledgeSource.namedGraphs = ...
-
-option name: queryDelay
-description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
-type: long
-default value: 50
-conf file usage: abstractKnowledgeSource.queryDelay = ...
-
-option name: retryCount
-description: The maximum number of retries for the execution of a particular SPARQL query.
-type: int
-default value: 3
-conf file usage: abstractKnowledgeSource.retryCount = ...
-
-option name: url
-description: URL of the SPARQL endpoint
-type: URL
-default value: 
-conf file usage: abstractKnowledgeSource.url = ...
-
-option name: useCache
-description: Use this setting to enable caching of SPARQL queries in a local database.
-type: boolean
-default value: true
-conf file usage: abstractKnowledgeSource.useCache = ...
-
-component: KB File (org.dllearner.kb.KBFile) v0.8
-=================================================
-
-conf file usage: abstractKnowledgeSource.type = "kbfile"
-
-option name: fileName
-description: relative or absolute path to KB file
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.fileName = ...
-
-option name: url
-description: URL pointer to the KB file
-type: String
-default value: 
-conf file usage: abstractKnowledgeSource.url = ...
-
-*************
-* Reasoners *
-*************
-
-component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker) v0.9
-===================================================================================
-
-conf file usage: abstractReasonerComponent.type = "fic"
-
-option name: defaultNegation
-description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
-type: boolean
-default value: true
-conf file usage: abstractReasonerComponent.defaultNegation = ...
-
-option name: forAllRetrievalSemantics
-description: This option controls how to interpret the all quantifier in forall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.
-type: ForallSemantics
-default value: standard
-conf file usage: abstractReasonerComponent.forAllRetrievalSemantics = ...
-
-component: closed world reasoner (org.dllearner.reasoning.ClosedWorldReasoner) v0.9
-===================================================================================
-
-conf file usage: abstractReasonerComponent.type = "cwr"
-
-option name: defaultNegation
-description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
-type: boolean
-default value: true
-conf file usage: abstractReasonerComponent.defaultNegation = ...
-
-option name: forAllRetrievalSemantics
-description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
-type: ForallSemantics
-default value: standard
-conf file usage: abstractReasonerComponent.forAllRetrievalSemantics = ...
-
-component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
-========================================================================
-
-conf file usage: abstractReasonerComponent.type = "spr"
-
-option name: useCache
-description: Whether to use a file-based cache
-type: boolean
-default value: true
-conf file usage: abstractReasonerComponent.useCache = ...
-
-component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
-=========================================================================
-
-conf file usage: abstractReasonerComponent.type = "oar"
-
-option name: owlLinkURL
-description: specifies the URL of the remote OWLLink server
-type: String
-default value: null
-conf file usage: abstractReasonerComponent.owlLinkURL = ...
-
-option name: reasonerImplementation
-description: specifies the used OWL API reasoner implementation
-type: ReasonerImplementation
-default value: pellet
-conf file usage: abstractReasonerComponent.reasonerImplementation = ...
-
-option name: useFallbackReasoner
-description: specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level
-type: boolean
-default value: false
-conf file usage: abstractReasonerComponent.useFallbackReasoner = ...
-
-*********************
-* Learning Problems *
-*********************
-
-component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
-==================================================================================
-
-conf file usage: abstractClassExpressionLearningProblem.type = "posNegStandard"
-
-option name: accuracyMethod
-description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
-default value: predacc
-conf file usage: abstractClassExpressionLearningProblem.accuracyMethod = ...
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-default value: 0.05
-conf file usage: abstractClassExpressionLearningProblem.approxDelta = ...
-
-option name: percentPerLengthUnit
-description: Percent Per Length Unit
-type: double
-default value: 0.05
-conf file usage: abstractClassExpressionLearningProblem.percentPerLengthUnit = ...
-
-option name: useApproximations
-description: Use Approximations
-type: boolean
-default value: false
-conf file usage: abstractClassExpressionLearningProblem.useApproximations = ...
-
-option name: useMultiInstanceChecks
-description: Use The Multi Instance Checks
-type: UseMultiInstanceChecks
-default value: UseMultiInstanceChecks.TWOCHECKS
-conf file usage: abstractClassExpressionLearningProblem.useMultiInstanceChecks = ...
-
-option name: useRetrievalForClassification
-description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
-type: boolean
-default value: false
-conf file usage: abstractClassExpressionLearningProblem.useRetrievalForClassification = ...
-
-component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
-=========================================================================================
-
-conf file usage: abstractClassExpressionLearningProblem.type = "posonlylp"
-
-component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
-==========================================================================================
-
-conf file usage: abstractClassExpressionLearningProblem.type = "clp"
-
-option name: accuracyMethod
-description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
-default value: pred_acc
-conf file usage: abstractClassExpressionLearningProblem.accuracyMethod = ...
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-default value: 0.05
-conf file usage: abstractClassExpressionLearningProblem.approxDelta = ...
-
-option name: betaEq
-description: beta index for F-measure in definition learning
-type: double
-default value: 1.0
-conf file usage: abstractClassExpressionLearningProblem.betaEq = ...
-
-option name: betaSC
-description: beta index for F-measure in super class learning
-type: double
-default value: 3.0
-conf file usage: abstractClassExpressionLearningProblem.betaSC = ...
-
-option name: checkConsistency
-description: whether to check for consistency of suggestions (when added to ontology)
-type: boolean
-default value: true
-conf file usage: abstractClassExpressionLearningProblem.checkConsistency = ...
-
-option name: classToDescribe
-description: class of which an OWL class expression should be learned
-type: IRI
-default value: 
-conf file usage: abstractClassExpressionLearningProblem.classToDescribe = ...
-
-option name: useApproximations
-description: Use Approximations
-type: boolean
-default value: false
-conf file usage: abstractClassExpressionLearningProblem.useApproximations = ...
-
-component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.PropertyAxiomLearningProblem) v0.6
-==========================================================================================================
-
-conf file usage: abstractClassExpressionLearningProblem.type = "palp"
-
-***********************
-* Learning Algorithms *
-***********************
-
-component: ELTL (org.dllearner.algorithms.el.ELLearningAlgorithm) v0.5
-======================================================================
-ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.
-
-conf file usage: abstractCELA.type = "eltl"
-
-option name: instanceBasedDisjoints
-description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
-type: boolean
-default value: true
-conf file usage: abstractCELA.instanceBasedDisjoints = ...
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: abstractCELA.noisePercentage = ...
-
-option name: replaceSearchTree
-description: specifies whether to replace the search tree in the log file after each run or append the new search tree
-type: boolean
-default value: false
-conf file usage: abstractCELA.replaceSearchTree = ...
-
-option name: searchTreeFile
-description: file to use for the search tree
-type: String
-default value: log/searchTree.txt
-conf file usage: abstractCELA.searchTreeFile = ...
-
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
-default value: owl:Thing
-conf file usage: abstractCELA.startClass = ...
-
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
-type: boolean
-default value: false
-conf file usage: abstractCELA.stopOnFirstDefinition = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
-
-option name: writeSearchTree
-description: specifies whether to write a search tree
-type: boolean
-default value: false
-conf file usage: abstractCELA.writeSearchTree = ...
-
-component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
-==========================================================================================================
-
-conf file usage: abstractCELA.type = "qtl2dis"
-
-option name: maxExecutionTimeInSeconds
-description: maximum execution of the algorithm in seconds
-type: int
-default value: 10
-conf file usage: abstractCELA.maxExecutionTimeInSeconds = ...
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: abstractCELA.noisePercentage = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
-
-component: CELOE (org.dllearner.algorithms.celoe.CELOE) v1.0
-============================================================
-CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.
-
-conf file usage: abstractCELA.type = "celoe"
-
-option name: filterDescriptionsFollowingFromKB
-description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
-type: boolean
-default value: false
-conf file usage: abstractCELA.filterDescriptionsFollowingFromKB = ...
-
-option name: maxClassExpressionTests
-description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
-type: int
-default value: 0
-conf file usage: abstractCELA.maxClassExpressionTests = ...
-
-option name: maxClassExpressionTestsAfterImprovement
-description: The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
-type: int
-default value: 0
-conf file usage: abstractCELA.maxClassExpressionTestsAfterImprovement = ...
-
-option name: maxDepth
-description: maximum depth of description
-type: double
-default value: 7
-conf file usage: abstractCELA.maxDepth = ...
-
-option name: maxExecutionTimeInSeconds
-description: maximum execution of the algorithm in seconds
-type: int
-default value: 10
-conf file usage: abstractCELA.maxExecutionTimeInSeconds = ...
-
-option name: maxExecutionTimeInSecondsAfterImprovement
-description: maximum execution of the algorithm in seconds
-type: int
-default value: 0
-conf file usage: abstractCELA.maxExecutionTimeInSecondsAfterImprovement = ...
-
-option name: maxNrOfResults
-description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
-type: int
-default value: 10
-conf file usage: abstractCELA.maxNrOfResults = ...
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: abstractCELA.noisePercentage = ...
-
-option name: replaceSearchTree
-description: specifies whether to replace the search tree in the log file after each run or append the new search tree
-type: boolean
-default value: false
-conf file usage: abstractCELA.replaceSearchTree = ...
-
-option name: reuseExistingDescription
-description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
-type: boolean
-default value: false
-conf file usage: abstractCELA.reuseExistingDescription = ...
-
-option name: searchTreeFile
-description: file to use for the search tree
-type: String
-default value: log/searchTree.txt
-conf file usage: abstractCELA.searchTreeFile = ...
-
-option name: singleSuggestionMode
-description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
-type: boolean
-default value: false
-conf file usage: abstractCELA.singleSuggestionMode = ...
-
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
-default value: owl:Thing
-conf file usage: abstractCELA.startClass = ...
-
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
-type: boolean
-default value: false
-conf file usage: abstractCELA.stopOnFirstDefinition = ...
-
-option name: terminateOnNoiseReached
-description: specifies whether to terminate when noise criterion is met
-type: boolean
-default value: false
-conf file usage: abstractCELA.terminateOnNoiseReached = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
-
-option name: writeSearchTree
-description: specifies whether to write a search tree
-type: boolean
-default value: false
-conf file usage: abstractCELA.writeSearchTree = ...
-
-component: OWL Class Expression Learner (org.dllearner.algorithms.ocel.OCEL) v1.2
-=================================================================================
-
-conf file usage: abstractCELA.type = "ocel"
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
-
-component: Disjunctive ELTL (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive) v0.5
-=============================================================================================
-Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.
-
-conf file usage: abstractCELA.type = "deltl"
-
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
-default value: 0.0
-conf file usage: abstractCELA.noisePercentage = ...
-
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
-default value: owl:Thing
-conf file usage: abstractCELA.startClass = ...
-
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
-type: boolean
-default value: false
-conf file usage: abstractCELA.stopOnFirstDefinition = ...
-
-option name: treeSearchTimeSeconds
-description: Specifies how long the algorithm should search for a partial solution (a tree).
-type: double
-default value: 1.0
-conf file usage: abstractCELA.treeSearchTimeSeconds = ...
-
-option name: tryFullCoverage
-description: If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.
-type: boolean
-default value: false
-conf file usage: abstractCELA.tryFullCoverage = ...
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
-
-component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
-==========================================================================
-
-conf file usage: abstractCELA.type = "naiveALLearner"
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-default value: true
-conf file usage: abstractCELA.useMinimizer = ...
 

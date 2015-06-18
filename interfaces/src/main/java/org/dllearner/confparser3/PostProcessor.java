@@ -134,6 +134,9 @@ public class PostProcessor {
                     String oldValue = (String) nextObject;
                     String newValue = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
                     oldNewStringValues.put(oldValue, newValue);
+                    if(!oldValue.equals(newValue)) {
+                    	break;
+                    }
                 }
             }
         }
