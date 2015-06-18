@@ -222,54 +222,54 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
 
-	@ConfigOption(name = "applyAllFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "applyAllFilter", defaultValue="true")
 	private boolean applyAllFilter = true;
 
-	@ConfigOption(name = "applyExistsFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "applyExistsFilter", defaultValue="true")
 	private boolean applyExistsFilter = true;
 
-	@ConfigOption(name = "useAllConstructor", description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useAllConstructor", description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
 	private boolean useAllConstructor = true;
 
-	@ConfigOption(name = "useExistsConstructor", description="support of existential restrictions (owl:someValuesFrom), e.g. \u2203 r.C ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useExistsConstructor", description="support of existential restrictions (owl:someValuesFrom), e.g. \u2203 r.C ", defaultValue="true")
 	private boolean useExistsConstructor = true;
 
-	@ConfigOption(name = "useHasValueConstructor", description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useHasValueConstructor", description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false")
 	private boolean useHasValueConstructor = false;
 
-	@ConfigOption(name = "useCardinalityRestrictions", description="support of qualified cardinality restrictions (owl:minCardinality), e.g. \u2265 3 r.C ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useCardinalityRestrictions", description="support of qualified cardinality restrictions (owl:minCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
 	private boolean useCardinalityRestrictions = true;
 
-	@ConfigOption(name = "useNegation", description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useNegation", description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
 	
-	@ConfigOption(name = "useInverse", description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useInverse", description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
-	@ConfigOption(name = "useBooleanDatatypes", description="support of boolean datatypes (xsd:boolean), e.g. \u2203 r.{true} ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useBooleanDatatypes", description="support of boolean datatypes (xsd:boolean), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useBooleanDatatypes = true;
 
-	@ConfigOption(name = "useNumericDatatypes", description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useNumericDatatypes", description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useNumericDatatypes = true;
 
-	@ConfigOption(name = "useTimeDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useTimeDatatypes", defaultValue="true")
 	private boolean useTimeDatatypes = true;
 
-	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false")
 	private boolean useStringDatatypes = false;
 
-	@ConfigOption(name = "disjointChecks", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "disjointChecks", defaultValue="true")
 	private boolean disjointChecks = true;
 
-	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true")
 	private boolean instanceBasedDisjoints = true;
 
-	@ConfigOption(name = "dropDisjuncts", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "dropDisjuncts", defaultValue="false")
 	private boolean dropDisjuncts = false;
 	
 	@ConfigOption(name = "someOnly", 
 			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r", 
-			defaultValue="true", propertyEditorClass = BooleanEditor.class)
+			defaultValue="true")
 	private boolean someOnly = true;
 
 	// caches for reasoner queries

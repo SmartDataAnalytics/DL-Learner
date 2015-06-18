@@ -132,14 +132,14 @@ public final class LiteralLearningTest {
 		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "9");
 	}
 
-	@Test
-	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9");
-	}
-	
-	@Test
-	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
-	}
+//	@Test
+//	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+//		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9");
+//	}
+//	
+//	@Test
+//	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+//		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
+//	}
 	
 }

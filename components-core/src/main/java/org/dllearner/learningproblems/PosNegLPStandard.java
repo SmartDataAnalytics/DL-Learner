@@ -70,7 +70,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
     @ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
 	private boolean useApproximations;
     
-    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "predacc", propertyEditorClass = StringTrimmerEditor.class)
+    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "predacc")
     private String accuracyMethod = "pred_acc";
     
 //	private boolean useFMeasure;	

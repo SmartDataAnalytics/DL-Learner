@@ -58,6 +58,7 @@ public class ConfigHelper {
 	 * @param configName the name of the config option
 	 * @param configValue the value of the config option
 	 */
+	@Deprecated
 	public static <T> void configure(Component component, String configName, T configValue){
 		List<Field> fields = getAllFields(component);
         for(Field f : fields){
@@ -65,7 +66,7 @@ public class ConfigHelper {
         	if(option != null){
         		if(option.name().equals(configName)){
         			try {
-						PropertyEditor editor = (PropertyEditor) option.propertyEditorClass().newInstance();
+						PropertyEditor editor = PropertyEditor.class.newInstance();
 						editor.setAsText(configValue.toString());
 						Method method = component.getClass().getMethod("set" + Character.toUpperCase(f.getName().charAt(0)) + f.getName().substring(1), getClassForObject(editor.getValue()));
 						method.invoke(component, editor.getValue());
@@ -97,36 +98,7 @@ public class ConfigHelper {
 		return getConfigOptions(component.getClass());
 	}
 	
-	/**
-	 * 
-	 * @param component The component to analyse.
-	 * @return All config options of the component with their respective value.
-	 */
-	@Deprecated
-	public static Map<ConfigOption,String> getConfigOptionValuesString(Component component) {
-		Map<ConfigOption,String> optionValues = new HashMap<ConfigOption,String>();
-		List<Field> fields = getAllFields(component);//getConfigOptions(component).getClass().getDeclaredFields();
-		for(Field field : fields) {
-			ConfigOption option = field.getAnnotation(ConfigOption.class);
-			if(option != null) {
-				Class<? extends PropertyEditor> editorClass = option.propertyEditorClass();
-				PropertyEditor editor = null;
-				try {
-					editor = editorClass.newInstance();
-					Object object = field.get(component);
-					editor.setValue(object);
-					String value = editor.getAsText();
-					optionValues.put(option, value);
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return optionValues;
-	}	
-	
+
 	/**
 	 * 
 	 * @param component The component to analyse.

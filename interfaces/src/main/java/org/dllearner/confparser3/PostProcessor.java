@@ -24,8 +24,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
+import org.apache.jena.riot.thrift.wire.RDF_StreamRow;
 import org.dllearner.cli.ConfFileOption2;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.util.NamespaceUtil;
+import org.semanticweb.owlapi.vocab.OWLXMLVocabulary;
+
+import com.hp.hpl.jena.ontology.Ontology;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Performs post processing of conf files based on special parsing directives.
@@ -49,32 +59,38 @@ public class PostProcessor {
 	public void applyAll() {
 		// apply prefix directive
 		ConfFileOption2 prefixOption = directives.get("prefixes");
+		Map<String,String> prefixes = new TreeMap<>();
+		
+		prefixes.put("owl", OWL.NS);
+		prefixes.put("rdfs", RDFS.getURI());
+		prefixes.put("rdf", RDF.getURI());
+		
 		if(prefixOption != null) {
-			Map<String,String> prefixes = (Map<String,String>) prefixOption.getValueObject();
-			
-			// loop through all options and replaces prefixes
-			for(ConfFileOption2 option : confOptions) {
-                Object valueObject = option.getValue();
+			prefixes.putAll((Map<String,String>) prefixOption.getValueObject());
+		}
+			 
+		// loop through all options and replaces prefixes
+		for(ConfFileOption2 option : confOptions) {
+			Object valueObject = option.getValue();
 
-                if(valueObject instanceof String){
-                    for (String prefix : prefixes.keySet()) {
-                        // we only replace the prefix if it occurs directly after a quote
-                        valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
-                    }
+			if(valueObject instanceof String){
+				for (String prefix : prefixes.keySet()) {
+					// we only replace the prefix if it occurs directly after a quote
+					valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
+				}
 
-                } else if(valueObject instanceof Map) {
-                	valueObject = processStringMap(prefixes, (Map)valueObject);
-                } else if(valueObject instanceof Collection){
-                    processStringCollection(prefixes, (Collection<?>) valueObject);
-                } else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
-                	// nothing needs to be done for booleans
-                } else {
-                	throw new Error("Unknown conf option type " + valueObject.getClass());
-                }
-
-				option.setValueObject(valueObject);
+			} else if(valueObject instanceof Map) {
+				valueObject = processStringMap(prefixes, (Map)valueObject);
+			} else if(valueObject instanceof Collection){
+				processStringCollection(prefixes, (Collection<?>) valueObject);
+			} else if(valueObject instanceof Boolean || valueObject instanceof Integer || valueObject instanceof Double) {
+				// nothing needs to be done for booleans
+			} else {
+				throw new Error("Unknown conf option type " + valueObject.getClass());
 			}
-        }
+
+			option.setValueObject(valueObject);
+		}
     }
 
 

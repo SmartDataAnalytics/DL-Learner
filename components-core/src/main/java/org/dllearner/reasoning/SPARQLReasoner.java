@@ -137,7 +137,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			"SELECT (COUNT(*) AS ?cnt) WHERE {?entity ?p ?o .}");
 
 
-	@ConfigOption(name = "useCache", description = "Whether to use a file-based cache", defaultValue = "true", required = false, propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useCache", description = "Whether to use a file-based cache", defaultValue = "true", required = false)
 	private boolean useCache = true;
 	
 	private boolean laxMode = false;

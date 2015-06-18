@@ -96,11 +96,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
+	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="")
 	protected int maxExecutionTimeInSeconds = 10;
-	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="", propertyEditorClass=BooleanEditor.class)
+	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="")
 	protected boolean returnOnlyNewAxioms;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
+	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
 	

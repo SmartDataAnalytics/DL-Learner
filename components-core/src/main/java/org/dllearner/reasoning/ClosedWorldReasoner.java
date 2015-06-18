@@ -145,7 +145,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     		"The standard option is to return all those which do not have an r-filler not in C. " +
     		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
     		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",
-    		defaultValue = "standard",propertyEditorClass = StringTrimmerEditor.class)
+    		defaultValue = "standard")
     private ForallSemantics forallSemantics = ForallSemantics.SomeOnly;
 
     public enum ForallSemantics { 

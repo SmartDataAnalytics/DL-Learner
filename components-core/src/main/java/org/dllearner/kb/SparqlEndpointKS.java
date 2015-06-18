@@ -63,13 +63,13 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private boolean isRemote = true;
 	private boolean initialized = false;
 
-	@ConfigOption(name = "url", description="URL of the SPARQL endpoint", required=true, propertyEditorClass = URLEditor.class)
+	@ConfigOption(name = "url", description="URL of the SPARQL endpoint", required=true)
 	private URL url;
 
-	@ConfigOption(name = "defaultGraphs", description="a list of default graph URIs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "defaultGraphs", description="a list of default graph URIs", defaultValue="[]", required=false)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
 
-	@ConfigOption(name = "namedGraphs", description="a list of named graph URIs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "namedGraphs", description="a list of named graph URIs", defaultValue="[]", required=false)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 
 	// some parameters for the query execution

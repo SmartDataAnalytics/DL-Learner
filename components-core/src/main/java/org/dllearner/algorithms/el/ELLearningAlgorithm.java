@@ -73,7 +73,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	private double treeSearchTimeSeconds = 10.0;
 	private long treeStartTime;
 	
-	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", propertyEditorClass=BooleanEditor.class)
+	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.")
 	private boolean instanceBasedDisjoints = true;
 	
 	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")

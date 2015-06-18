@@ -77,24 +77,24 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	
 	// heuristic parameters
 	
-	@ConfigOption(name = "expansionPenaltyFactor", defaultValue="0.02", propertyEditorClass = DoubleEditor.class)
+	@ConfigOption(name = "expansionPenaltyFactor", defaultValue="0.02")
 	private double expansionPenaltyFactor = 0.02;
 	
-	@ConfigOption(name = "gainBonusFactor", defaultValue="0.5", propertyEditorClass = DoubleEditor.class)
+	@ConfigOption(name = "gainBonusFactor", defaultValue="0.5")
 	private double gainBonusFactor = 0.5;
 	
-	@ConfigOption(name = "nodeChildPenalty", defaultValue="0.0001", propertyEditorClass = DoubleEditor.class)
+	@ConfigOption(name = "nodeChildPenalty", defaultValue="0.0001")
 	private double nodeChildPenalty = 0.0001; // (use higher values than 0.0001 for simple learning problems);
 	
-	@ConfigOption(name = "startNodeBonus", defaultValue="0.1", propertyEditorClass = DoubleEditor.class)
+	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
 	private double startNodeBonus = 0.1; //was 2.0
 	
 	// penalise errors on positive examples harder than on negative examples
 	// (positive weight = 1)
-	@ConfigOption(name = "negativeWeight", defaultValue="1.0", propertyEditorClass = DoubleEditor.class)
+	@ConfigOption(name = "negativeWeight", defaultValue="1.0")
 	private double negativeWeight = 1.0; // was 0.8;
 	
-	@ConfigOption(name = "negationPenalty", defaultValue="0", propertyEditorClass = IntegerEditor.class)
+	@ConfigOption(name = "negationPenalty", defaultValue="0")
 	private int negationPenalty = 0;
 	
 	// examples
