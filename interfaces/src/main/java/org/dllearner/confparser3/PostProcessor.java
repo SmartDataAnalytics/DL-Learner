@@ -19,19 +19,31 @@
  */
 package org.dllearner.confparser3;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import joptsimple.internal.Strings;
+
+import org.apache.commons.collections15.CollectionUtils;
+import org.apache.commons.collections15.Transformer;
 import org.apache.jena.riot.thrift.wire.RDF_StreamRow;
 import org.dllearner.cli.ConfFileOption2;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.util.NamespaceUtil;
 import org.semanticweb.owlapi.vocab.OWLXMLVocabulary;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.hp.hpl.jena.ontology.Ontology;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -52,6 +64,36 @@ public class PostProcessor {
 		this.confOptions = confOptions;
 		this.directives = directives;
 	}
+	
+	private static String replaceAllMap (String pre, Map<String,String> repMap, String post, String in) {
+		List<String> keys = new ArrayList<>(repMap.keySet());
+		Collections.sort(keys, new Comparator<String>() {
+
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.length() - o2.length();
+			}
+			
+		});
+		CollectionUtils.transform(keys, new Transformer<String,String>(){
+
+			@Override
+			public String transform(String input) {
+				return Pattern.quote(input);
+			}
+
+		});
+		Matcher m = Pattern.compile(pre + "(" + Strings.join(keys, "|") + ")" + post).matcher(in);
+		m.reset();
+		if (m.find()) {
+			StringBuffer sb = new StringBuffer();
+			do {
+				m.appendReplacement(sb, repMap.get(m.group(1)));
+			} while (m.find());
+			return m.appendTail(sb).toString();
+		}
+		return in;
+		}
 	
 	/**
 	 * Applies all special directives by modifying the conf options.
@@ -74,12 +116,7 @@ public class PostProcessor {
 			Object valueObject = option.getValue();
 
 			if(valueObject instanceof String){
-                String oldValue = (String) valueObject;
-				for (String prefix : prefixes.keySet()) {
-					// we only replace the prefix if it occurs directly after a quote
-	                valueObject = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
-                    if(!oldValue.equals(valueObject)) break;  // found prefix, exit loop now
-				}
+				valueObject = replaceAllMap("", prefixes, ":", (String) valueObject);
 			} else if(valueObject instanceof Map) {
 				valueObject = processStringMap(prefixes, (Map)valueObject);
 			} else if(valueObject instanceof Collection){
@@ -105,19 +142,11 @@ public class PostProcessor {
             Object value = inputMap.get(key);
 
             if (keyObject instanceof String) {
-                String keyString = (String) keyObject;
                 // replace prefixes in the key
-                for (String prefix : prefixes.keySet()) {
-                	key = keyString.replaceAll(prefix + ":", prefixes.get(prefix));
-                	if (!key.equals(keyString)) break; // found prefix, exit loop now
-                }
+            	key = replaceAllMap("", prefixes, ":", (String) keyObject);
                 // if the value is a string, we also replace prefixes there
                 if (value instanceof String) {
-                    String valueString = (String) value;
-                    for (String prefix : prefixes.keySet()) {
-                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));
-                        if (!value.equals(valueString)) break;  // found prefix, exit loop now
-                    }
+                	value = replaceAllMap("", prefixes, ":", (String) value);
                 }
             }
             newMap.put(key, value);
@@ -127,26 +156,18 @@ public class PostProcessor {
 
     }
 
-    private void processStringCollection(Map<String, String> prefixes, Collection valueObject) {
-        Map<String, String> oldNewStringValues = new HashMap<String, String>();
-        Iterator itr = valueObject.iterator();
-        while (itr.hasNext()) {
-            Object nextObject = itr.next();
-            for (String prefix : prefixes.keySet()) {
-                if (nextObject instanceof String) {
-                    String oldValue = (String) nextObject;
-                    String newValue = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
-                    oldNewStringValues.put(oldValue, newValue);
-                    if(!oldValue.equals(newValue)) {
-                    	break;  // found prefix, exit loop now
-                    }
-                }
-            }
-        }
+    @SuppressWarnings("unchecked")
+	private void processStringCollection(final Map<String, String> prefixes, Collection valueObject) {
+        CollectionUtils.transform(valueObject, new Transformer<Object,Object>(){
 
-        Collection<String> oldValues = oldNewStringValues.keySet();
-        Collection<String> newValues = oldNewStringValues.values();
-        valueObject.removeAll(oldValues);
-        valueObject.addAll(newValues);
+			@Override
+			public Object transform(Object input) {
+				if (input instanceof String) {
+					return replaceAllMap("", prefixes, ":", (String) input);
+				}
+				return input;
+			}
+        	
+        });
     }
 }
