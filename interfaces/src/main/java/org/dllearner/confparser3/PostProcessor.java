@@ -74,11 +74,12 @@ public class PostProcessor {
 			Object valueObject = option.getValue();
 
 			if(valueObject instanceof String){
+                String oldValue = (String) valueObject;
 				for (String prefix : prefixes.keySet()) {
 					// we only replace the prefix if it occurs directly after a quote
-					valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
+	                valueObject = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
+                    if(!oldValue.equals(valueObject)) break;  // found prefix, exit loop now
 				}
-
 			} else if(valueObject instanceof Map) {
 				valueObject = processStringMap(prefixes, (Map)valueObject);
 			} else if(valueObject instanceof Collection){
@@ -108,12 +109,14 @@ public class PostProcessor {
                 // replace prefixes in the key
                 for (String prefix : prefixes.keySet()) {
                 	key = keyString.replaceAll(prefix + ":", prefixes.get(prefix));
+                	if (!key.equals(keyString)) break; // found prefix, exit loop now
                 }
                 // if the value is a string, we also replace prefixes there
                 if (value instanceof String) {
                     String valueString = (String) value;
                     for (String prefix : prefixes.keySet()) {
-                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));    
+                        value = valueString.replaceAll(prefix + ":", prefixes.get(prefix));
+                        if (!value.equals(valueString)) break;  // found prefix, exit loop now
                     }
                 }
             }
@@ -135,7 +138,7 @@ public class PostProcessor {
                     String newValue = oldValue.replaceAll(prefix + ":", prefixes.get(prefix));
                     oldNewStringValues.put(oldValue, newValue);
                     if(!oldValue.equals(newValue)) {
-                    	break;
+                    	break;  // found prefix, exit loop now
                     }
                 }
             }
