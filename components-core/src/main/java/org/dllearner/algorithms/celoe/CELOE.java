@@ -117,7 +117,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
-	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax.", exampleValue = "ex:Male or ex:Female")
 	private OWLClassExpression startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)

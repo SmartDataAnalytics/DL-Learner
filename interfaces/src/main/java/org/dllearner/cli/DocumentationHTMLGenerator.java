@@ -115,7 +115,11 @@ public class DocumentationHTMLGenerator {
 			if(entry.getValue().equals(OWLClass.class)) {
 				type = "IRI";
 			}
-			sb.append("<tr><td>" + option.name() + "</td><td>" + option.description() + "</td><td> " + type + "</td><td>" + option.defaultValue() + "</td><td> " + option.required() + "</td></tr>\n");
+			sb.append("<tr><td>" + option.name() + "</td><td>" + option.description()
+					+ (option.exampleValue().length() > 0 ? (" <strong>Example:</strong> " + option.exampleValue()) : "")
+					+ "</td><td> " + type + "</td><td>"
+					+ option.defaultValue() + "</td><td> "
+					+ option.required() + "</td></tr>\n");
 		}
 		sb.append("</tbody></table></div>\n");
 		}
