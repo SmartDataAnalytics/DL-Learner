@@ -306,6 +306,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// start at owl:Thing by default
 		if(startClass == null) {
 			startClass = dataFactory.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = dataFactory.getOWLThing();
+			}			
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
@@ -978,12 +985,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		//this.startClass = startClass;
-		try {
-			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
-		} catch (ParserException e) {
-			logger.info("Error parsing startClass: " + e.getMessage());
-		}
+		this.startClass = startClass;
 	}
 	
 	public boolean isWriteSearchTree() {

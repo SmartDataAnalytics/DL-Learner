@@ -179,7 +179,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		// create start node
 		if(startClass == null){
 			startClass = dataFactory.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = dataFactory.getOWLThing();
+			}
 		}
+
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
 		
@@ -424,12 +432,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 * @param startClass the startClass to set
 	 */
 	public void setStartClass(OWLClassExpression startClass) {
-		//this.startClass = startClass;
-		try {
-			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
-		} catch (ParserException e) {
-			logger.info("Error parsing startClass: " + e.getMessage());
-		}
+		this.startClass = startClass;
 	}
 	
 	/**

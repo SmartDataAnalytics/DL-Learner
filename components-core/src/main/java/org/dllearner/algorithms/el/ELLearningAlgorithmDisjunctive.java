@@ -156,6 +156,13 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 		if(startClass == null) {
 			startClass = dataFactory.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = dataFactory.getOWLThing();
+			}
 		}
 		operator = new ELDown3(reasoner, instanceBasedDisjoints);
 		
@@ -430,12 +437,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		//this.startClass = startClass;
-		try {
-			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
-		} catch (ParserException e) {
-			logger.info("Error parsing startClass: " + e.getMessage());
-		}
+		this.startClass = startClass;
 	}
 
 	public boolean isInstanceBasedDisjoints() {

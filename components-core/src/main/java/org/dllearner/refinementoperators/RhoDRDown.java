@@ -479,6 +479,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(startClass == null) {
 			startClass = df.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = df.getOWLThing();
+			}
 		}
 
 		isInitialised = true;
@@ -2014,12 +2021,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	@Override
 	public void setStartClass(OWLClassExpression startClass) {
-		//this.startClass = startClass;
-		try {
-			this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
-		} catch (ParserException e) {
-			logger.info("Error parsing startClass: " + e.getMessage());
-		}
+		this.startClass = startClass;
 	}
 
 	public int getCardinalityLimit() {
