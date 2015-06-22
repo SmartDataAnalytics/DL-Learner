@@ -25,7 +25,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,7 +42,6 @@ import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
 import org.dllearner.Info;
-import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
@@ -53,11 +51,9 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.options.ConfigOption;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -101,7 +97,6 @@ public class DLLearnerWS {
 	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
-	private static ConfMapper confMapper = new ConfMapper();
 	
 	/**
 	 * Returns the DL-Learner version this web service is based on.
@@ -150,7 +145,7 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public String[] getComponents() {
-		Set<String> components = confMapper.getComponents();
+		Set<String> components = cm.getComponentStrings();
 		return components.toArray(new String[components.size()]);
 	}
 	
@@ -160,7 +155,7 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public String[] getKnowledgeSources() {
-		Set<String> knowledgeSources = cm.getComponentsStringsOfType(KnowledgeSource.class);
+		Set<String> knowledgeSources = cm.getComponentStringsOfType(KnowledgeSource.class);
 		return knowledgeSources.toArray(new String[knowledgeSources.size()]);
 	}
 	
@@ -170,7 +165,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getReasoners() {
-		Set<String> reasoners = cm.getComponentsStringsOfType(AbstractReasonerComponent.class);
+		Set<String> reasoners = cm.getComponentStringsOfType(AbstractReasonerComponent.class);
 		return reasoners.toArray(new String[reasoners.size()]);		
 	}
 	
@@ -180,7 +175,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getLearningProblems() {
-		Set<String> learningProblems = cm.getComponentsStringsOfType(AbstractLearningProblem.class);
+		Set<String> learningProblems = cm.getComponentStringsOfType(AbstractLearningProblem.class);
 		return learningProblems.toArray(new String[learningProblems.size()]);		
 	}
 	
@@ -190,7 +185,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getLearningAlgorithms() {
-		Set<String> learningAlgorithms = cm.getComponentsStringsOfType(AbstractCELA.class);
+		Set<String> learningAlgorithms = cm.getComponentStringsOfType(AbstractCELA.class);
 		return learningAlgorithms.toArray(new String[learningAlgorithms.size()]);		
 	}	
 	
@@ -198,23 +193,25 @@ public class DLLearnerWS {
 	 * Gets the configuration options supported by the component. This allows e.g. to
 	 * automatically build user interfaces for configuring components.
 	 * @param component Name of the component.
-	 * @param allInfo Whether or not complete information is desired (including option description, allowed values, default value).
+	 * @param allInfo Whether or not complete information is desired (including option description, required, default value, example value).
 	 * @return A list of configuration options supported by the component.
 	 * @throws UnknownComponentException Thrown if component is not known (see {@link #getComponents()}).
 	 */
 	@WebMethod
 	public String[] getConfigOptions(String component, boolean allInfo) throws UnknownComponentException {
-		Class<? extends AbstractComponent> componentClass = confMapper.getComponentClass(component);
-		List<ConfigOption<?>> options = ComponentManager.getConfigOptions(componentClass);
+		Class<? extends Component> componentClass = cm.getComponentClass(component);
+		Set<org.dllearner.core.config.ConfigOption> options = AnnComponentManager.getConfigOptions(componentClass);
 		String[] optionsString = new String[options.size()];
-		for(int i=0; i<options.size(); i++) {
-			ConfigOption<?> option = options.get(i);
-			optionsString[i] = option.getName();
+		int i = 0;
+		for(org.dllearner.core.config.ConfigOption option : options) {
+			optionsString[i] = option.name();
 			if(allInfo) {
-				optionsString[i] += "#" + option.getDescription();
-				optionsString[i] += "#" + option.getAllowedValuesDescription();
-				optionsString[i] += "#" + option.getDefaultValue();				
+				optionsString[i] += "#" + option.description();
+				optionsString[i] += "#" + option.required();
+				optionsString[i] += "#" + option.defaultValue();	
+				optionsString[i] += "#" + option.exampleValue();
 			}	
+			i++;
 		}
 		return optionsString;
 	}
@@ -234,7 +231,7 @@ public class DLLearnerWS {
 	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
 		logger.info("Adding knowledge source " + component + " with URL parameter " + url + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractKnowledgeSource> ksClass = confMapper.getKnowledgeSourceClass(component);
+		Class<? extends AbstractKnowledgeSource> ksClass = (Class<? extends AbstractKnowledgeSource>) cm.getComponentClass(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
 		AbstractKnowledgeSource ks = null;
@@ -276,7 +273,7 @@ public class DLLearnerWS {
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		logger.info("Setting reasoner " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractReasonerComponent> rcClass = confMapper.getReasonerComponentClass(component);
+		Class<? extends AbstractReasonerComponent> rcClass = (Class<? extends AbstractReasonerComponent>) cm.getComponentClass(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
 		
@@ -304,7 +301,7 @@ public class DLLearnerWS {
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		logger.info("Setting learning problem " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractClassExpressionLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
+		Class<? extends AbstractClassExpressionLearningProblem> lpClass = (Class<? extends AbstractClassExpressionLearningProblem>) cm.getComponentClass(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
 		
@@ -333,7 +330,7 @@ public class DLLearnerWS {
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
 		logger.info("Setting learning algorithm " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractCELA> laClass = confMapper.getLearningAlgorithmClass(component);
+		Class<? extends AbstractCELA> laClass = (Class<? extends AbstractCELA>) cm.getComponentClass(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
 		

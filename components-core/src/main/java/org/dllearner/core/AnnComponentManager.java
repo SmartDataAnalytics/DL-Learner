@@ -169,6 +169,20 @@ public class AnnComponentManager {
 	public Collection<Class<? extends Component>> getComponents() {
 		return components;
 	}
+	
+	/**
+	 * Returns a list of all available components in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of component classes available in this
+	 * instance of <code>ComponentManager</code>.
+	 */
+	public SortedSet<String> getComponentStrings() {
+		SortedSet<String> result = new TreeSet<>();
+        for (Class<? extends Component> component : getComponents()) {
+        	result.add(getShortName(component));
+        }
+		return result;
+	}
 
     /**
      * Get registered components which are of the specified type.
@@ -176,7 +190,7 @@ public class AnnComponentManager {
      * @param type The super type.
      * @return All sub classes of type.
      */
-    public SortedSet<String> getComponentsStringsOfType(Class type) {
+    public SortedSet<String> getComponentStringsOfType(Class type) {
 
     	SortedSet<String> result = new TreeSet<>();
         for (Class<? extends Component> component : getComponentsOfType(type)) {
@@ -184,6 +198,24 @@ public class AnnComponentManager {
         }
 
         return result;
+    }
+    
+    /**
+     * Get the corresponding component class given the long or short name.
+     *
+     * @param componentName The long or short name of the component.
+     * @return The class of the component.
+     */
+    public Class<? extends Component> getComponentClass(String componentName) {
+    	// lookup by long name
+    	Class<? extends Component> componentClass = componentNames.getKey(componentName);
+    	
+    	// lookup by short name
+    	if(componentClass == null) {
+    		componentClass = componentNamesShort.getKey(componentName);
+    	}
+
+        return componentClass;
     }
     
     /**
