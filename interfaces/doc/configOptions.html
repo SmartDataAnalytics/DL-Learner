@@ -80,7 +80,7 @@ function showAllCat(){
 <tr><td>reuseExistingDescription</td><td>If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> String</td><td>log/searchTree.txt</td><td> false</td></tr>
 <tr><td>singleSuggestionMode</td><td>Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.</td><td> boolean</td><td>false</td><td> false</td></tr>
-<tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
+<tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax. <strong>Example:</strong> ex:Male or ex:Female</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>stopOnFirstDefinition</td><td>algorithm will terminate immediately when a correct definition is found</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>terminateOnNoiseReached</td><td>specifies whether to terminate when noise criterion is met</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>

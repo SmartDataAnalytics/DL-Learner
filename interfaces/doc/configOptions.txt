@@ -42,71 +42,24 @@ conf file usage: cli.writeSpringConfiguration = false
 * Knowledge Sources *
 *********************
 
-component: SPARQL endpoint (org.dllearner.kb.SparqlEndpointKS) v0.2
-===================================================================
+component: KB File (org.dllearner.kb.KBFile) v0.8
+=================================================
 
-conf file usage: ks.type = "sparql"
+conf file usage: ks.type = "kbfile"
 
-option name: cacheDir
-description: The base directory of the SPARQL query cache.
+option name: fileName
+description: relative or absolute path to KB file
 type: String
 required: false
-default value: tmp folder of the system
-conf file usage: ks.cacheDir = "tmp folder of the system"
-
-option name: cacheTTL
-description: The time to live in milliseconds for cached SPARQL queries, if enabled.
-type: long
-required: false
-default value: 1 day
-conf file usage: ks.cacheTTL = 1 day
-
-option name: defaultGraphURIs
-description: a list of default graph URIs
-type: List
-required: false
-default value: {}
-conf file usage: ks.defaultGraphURIs = {}
-
-option name: namedGraphURIs
-description: a list of named graph URIs
-type: List
-required: false
-default value: {}
-conf file usage: ks.namedGraphURIs = {}
-
-option name: queryDelay
-description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
-type: long
-required: false
-default value: 50
-conf file usage: ks.queryDelay = 50
-
-option name: retryCount
-description: The maximum number of retries for the execution of a particular SPARQL query.
-type: int
-required: false
-default value: 3
-conf file usage: ks.retryCount = 3
+default value: 
+conf file usage: ks.fileName = ""
 
 option name: url
-description: URL of the SPARQL endpoint
-type: URL
-required: true
+description: URL pointer to the KB file
+type: String
+required: false
 default value: 
 conf file usage: ks.url = ""
-
-option name: useCache
-description: Use this setting to enable caching of SPARQL queries in a local database.
-type: boolean
-required: false
-default value: true
-conf file usage: ks.useCache = true
-
-component: SPARQL endpoint fragment (org.dllearner.kb.sparql.SparqlKnowledgeSource) v0.5
-========================================================================================
-
-conf file usage: ks.type = "sparqlfrag"
 
 component: Local Endpoint (org.dllearner.kb.LocalModelBasedSparqlEndpointKS) v0.9
 =================================================================================
@@ -223,6 +176,72 @@ required: false
 default value: 
 conf file usage: ks.url = ""
 
+component: SPARQL endpoint (org.dllearner.kb.SparqlEndpointKS) v0.2
+===================================================================
+
+conf file usage: ks.type = "sparql"
+
+option name: cacheDir
+description: The base directory of the SPARQL query cache.
+type: String
+required: false
+default value: tmp folder of the system
+conf file usage: ks.cacheDir = "tmp folder of the system"
+
+option name: cacheTTL
+description: The time to live in milliseconds for cached SPARQL queries, if enabled.
+type: long
+required: false
+default value: 1 day
+conf file usage: ks.cacheTTL = 1 day
+
+option name: defaultGraphURIs
+description: a list of default graph URIs
+type: List
+required: false
+default value: {}
+conf file usage: ks.defaultGraphURIs = {}
+
+option name: namedGraphURIs
+description: a list of named graph URIs
+type: List
+required: false
+default value: {}
+conf file usage: ks.namedGraphURIs = {}
+
+option name: queryDelay
+description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
+type: long
+required: false
+default value: 50
+conf file usage: ks.queryDelay = 50
+
+option name: retryCount
+description: The maximum number of retries for the execution of a particular SPARQL query.
+type: int
+required: false
+default value: 3
+conf file usage: ks.retryCount = 3
+
+option name: url
+description: URL of the SPARQL endpoint
+type: URL
+required: true
+default value: 
+conf file usage: ks.url = ""
+
+option name: useCache
+description: Use this setting to enable caching of SPARQL queries in a local database.
+type: boolean
+required: false
+default value: true
+conf file usage: ks.useCache = true
+
+component: SPARQL endpoint fragment (org.dllearner.kb.sparql.SparqlKnowledgeSource) v0.5
+========================================================================================
+
+conf file usage: ks.type = "sparqlfrag"
+
 component: efficient SPARQL fragment extractor (org.dllearner.kb.sparql.simple.SparqlSimpleExtractor) v0.1
 ==========================================================================================================
 
@@ -284,25 +303,6 @@ required: false
 default value: 
 conf file usage: ks.tboxfilter = ""
 
-component: KB File (org.dllearner.kb.KBFile) v0.8
-=================================================
-
-conf file usage: ks.type = "kbfile"
-
-option name: fileName
-description: relative or absolute path to KB file
-type: String
-required: false
-default value: 
-conf file usage: ks.fileName = ""
-
-option name: url
-description: URL pointer to the KB file
-type: String
-required: false
-default value: 
-conf file usage: ks.url = ""
-
 
 
 *********************
@@ -315,59 +315,23 @@ conf file usage: ks.url = ""
 * AxiomLearningAlgorithm *
 **************************
 
-component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
-=================================================================================================================================
-A learning algorithm for symmetric object property axioms.
-
-conf file usage: la.type = "oplsymm"
-
-component: transitive object property axiom learner (org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner) v0.1
-===================================================================================================================================
-A learning algorithm for transitive object property axioms.
-
-conf file usage: la.type = "opltrans"
-
-component: disjoint data properties axiom learner (org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner) v0.1
-=============================================================================================================================
-A learning algorithm for disjoint data properties axioms.
-
-conf file usage: la.type = "dpldisjoint"
-
-component: functional object property axiom learner (org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner) v0.1
-===================================================================================================================================
-A learning algorithm for functional object property axioms.
-
-conf file usage: la.type = "oplfunc"
-
-component: inverse functional object property axiom learner (org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner) v0.1
-==================================================================================================================================================
-A learning algorithm for inverse functional object property axioms.
-
-conf file usage: la.type = "oplinvfunc"
-
-component: object property range learner (org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner) v0.1
-===================================================================================================================
-A learning algorithm for object property range axioms.
-
-conf file usage: la.type = "oplrange"
-
 component: data property domain axiom learner (org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner) v0.1
 =======================================================================================================================
 A learning algorithm for data property domain axioms.
 
 conf file usage: la.type = "dpldomain"
 
-component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
-===============================================================================================================================
-A learning algorithm for functional data property axioms.
+component: data property range learner (org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner) v0.1
+===============================================================================================================
+A learning algorithm for reflexive data property range axioms.
 
-conf file usage: la.type = "dplfunc"
+conf file usage: la.type = "dblrange"
 
-component: data subproperty axiom learner (org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner) v0.1
-==================================================================================================================
-A learning algorithm data subproperty axioms.
+component: disjoint data properties axiom learner (org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner) v0.1
+=============================================================================================================================
+A learning algorithm for disjoint data properties axioms.
 
-conf file usage: la.type = "dplsubprop"
+conf file usage: la.type = "dpldisjoint"
 
 component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -381,23 +345,29 @@ A learning algorithm for equivalent data properties axioms.
 
 conf file usage: la.type = "dplequiv"
 
-component: data property range learner (org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner) v0.1
-===============================================================================================================
-A learning algorithm for reflexive data property range axioms.
-
-conf file usage: la.type = "dblrange"
-
 component: equivalent object properties axiom learner (org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner) v0.1
 =====================================================================================================================================
 A learning algorithm for equivalent object properties axioms.
 
 conf file usage: la.type = "oplequiv"
 
-component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
-======================================================================================================================
-A learning algorithm object subproperty axioms.
+component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
+===============================================================================================================================
+A learning algorithm for functional data property axioms.
 
-conf file usage: la.type = "oplsubprop"
+conf file usage: la.type = "dplfunc"
+
+component: functional object property axiom learner (org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner) v0.1
+===================================================================================================================================
+A learning algorithm for functional object property axioms.
+
+conf file usage: la.type = "oplfunc"
+
+component: inverse functional object property axiom learner (org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner) v0.1
+==================================================================================================================================================
+A learning algorithm for inverse functional object property axioms.
+
+conf file usage: la.type = "oplinvfunc"
 
 component: object property domain axiom learner (org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner) v0.1
 ===========================================================================================================================
@@ -405,30 +375,72 @@ A learning algorithm for object property domain axioms.
 
 conf file usage: la.type = "opldomain"
 
+component: object property range learner (org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner) v0.1
+===================================================================================================================
+A learning algorithm for object property range axioms.
+
+conf file usage: la.type = "oplrange"
+
+component: data subproperty axiom learner (org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner) v0.1
+==================================================================================================================
+A learning algorithm data subproperty axioms.
+
+conf file usage: la.type = "dplsubprop"
+
+component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
+======================================================================================================================
+A learning algorithm object subproperty axioms.
+
+conf file usage: la.type = "oplsubprop"
+
+component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
+=================================================================================================================================
+A learning algorithm for symmetric object property axioms.
+
+conf file usage: la.type = "oplsymm"
+
+component: transitive object property axiom learner (org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner) v0.1
+===================================================================================================================================
+A learning algorithm for transitive object property axioms.
+
+conf file usage: la.type = "opltrans"
+
 
 
 ************************************
 * ClassExpressionLearningAlgorithm *
 ************************************
 
-component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
-==========================================================================================================
+component: disjoint classes learner (org.dllearner.algorithms.DisjointClassesLearner) v0.1
+==========================================================================================
 
-conf file usage: la.type = "qtl2dis"
+conf file usage: la.type = "cldisjoint"
 
 option name: maxExecutionTimeInSeconds
-description: maximum execution of the algorithm in seconds
+description: 
 type: int
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
 
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
+option name: maxFetchedRows
+description: The maximum number of rows fetched from the endpoint to approximate the result.
+type: int
 required: false
-default value: 0.0
-conf file usage: la.noisePercentage = 0.0
+default value: 
+conf file usage: la.maxFetchedRows = 
+
+option name: returnOnlyNewAxioms
+description: 
+type: boolean
+required: false
+default value: false
+conf file usage: la.returnOnlyNewAxioms = false
+
+component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
+==========================================================================
+
+conf file usage: la.type = "naiveALLearner"
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
@@ -437,53 +449,31 @@ required: false
 default value: true
 conf file usage: la.useMinimizer = true
 
-component: Disjunctive ELTL (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive) v0.5
-=============================================================================================
-Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.
+component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearner) v0.1
+========================================================================================
 
-conf file usage: la.type = "deltl"
+conf file usage: la.type = "clsub"
 
-option name: noisePercentage
-description: the (approximated) percentage of noise within the examples
-type: double
+option name: maxExecutionTimeInSeconds
+description: 
+type: int
 required: false
-default value: 0.0
-conf file usage: la.noisePercentage = 0.0
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
 
-option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
-type: OWLClassExpression
+option name: maxFetchedRows
+description: The maximum number of rows fetched from the endpoint to approximate the result.
+type: int
 required: false
-default value: owl:Thing
-conf file usage: la.startClass = "owl:Thing"
+default value: 
+conf file usage: la.maxFetchedRows = 
 
-option name: stopOnFirstDefinition
-description: algorithm will terminate immediately when a correct definition is found
+option name: returnOnlyNewAxioms
+description: 
 type: boolean
 required: false
 default value: false
-conf file usage: la.stopOnFirstDefinition = false
-
-option name: treeSearchTimeSeconds
-description: Specifies how long the algorithm should search for a partial solution (a tree).
-type: double
-required: false
-default value: 1.0
-conf file usage: la.treeSearchTimeSeconds = 1.0
-
-option name: tryFullCoverage
-description: If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.
-type: boolean
-required: false
-default value: false
-conf file usage: la.tryFullCoverage = false
-
-option name: useMinimizer
-description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
-type: boolean
-required: false
-default value: true
-conf file usage: la.useMinimizer = true
+conf file usage: la.returnOnlyNewAxioms = false
 
 component: CELOE (org.dllearner.algorithms.celoe.CELOE) v1.0
 ============================================================
@@ -576,11 +566,11 @@ default value: false
 conf file usage: la.singleSuggestionMode = false
 
 option name: startClass
-description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax.
 type: OWLClassExpression
 required: false
 default value: owl:Thing
-conf file usage: la.startClass = "owl:Thing"
+conf file usage: la.startClass = "ex:Male or ex:Female"
 
 option name: stopOnFirstDefinition
 description: algorithm will terminate immediately when a correct definition is found
@@ -672,31 +662,53 @@ required: false
 default value: false
 conf file usage: la.writeSearchTree = false
 
-component: disjoint classes learner (org.dllearner.algorithms.DisjointClassesLearner) v0.1
-==========================================================================================
+component: Disjunctive ELTL (org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive) v0.5
+=============================================================================================
+Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.
 
-conf file usage: la.type = "cldisjoint"
+conf file usage: la.type = "deltl"
 
-option name: maxExecutionTimeInSeconds
-description: 
-type: int
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
 required: false
-default value: 10
-conf file usage: la.maxExecutionTimeInSeconds = 10
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
 
-option name: maxFetchedRows
-description: The maximum number of rows fetched from the endpoint to approximate the result.
-type: int
+option name: startClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: OWLClassExpression
 required: false
-default value: 
-conf file usage: la.maxFetchedRows = 
+default value: owl:Thing
+conf file usage: la.startClass = "owl:Thing"
 
-option name: returnOnlyNewAxioms
-description: 
+option name: stopOnFirstDefinition
+description: algorithm will terminate immediately when a correct definition is found
 type: boolean
 required: false
 default value: false
-conf file usage: la.returnOnlyNewAxioms = false
+conf file usage: la.stopOnFirstDefinition = false
+
+option name: treeSearchTimeSeconds
+description: Specifies how long the algorithm should search for a partial solution (a tree).
+type: double
+required: false
+default value: 1.0
+conf file usage: la.treeSearchTimeSeconds = 1.0
+
+option name: tryFullCoverage
+description: If yes, then the algorithm tries to cover all positive examples. Note that while this improves accuracy on the testing set, it may lead to overfitting.
+type: boolean
+required: false
+default value: false
+conf file usage: la.tryFullCoverage = false
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
 
 component: OWL Class Expression Learner (org.dllearner.algorithms.ocel.OCEL) v1.2
 =================================================================================
@@ -710,36 +722,24 @@ required: false
 default value: true
 conf file usage: la.useMinimizer = true
 
-component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearner) v0.1
-========================================================================================
+component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
+==========================================================================================================
 
-conf file usage: la.type = "clsub"
+conf file usage: la.type = "qtl2dis"
 
 option name: maxExecutionTimeInSeconds
-description: 
+description: maximum execution of the algorithm in seconds
 type: int
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
 
-option name: maxFetchedRows
-description: The maximum number of rows fetched from the endpoint to approximate the result.
-type: int
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
 required: false
-default value: 
-conf file usage: la.maxFetchedRows = 
-
-option name: returnOnlyNewAxioms
-description: 
-type: boolean
-required: false
-default value: false
-conf file usage: la.returnOnlyNewAxioms = false
-
-component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
-==========================================================================
-
-conf file usage: la.type = "naiveALLearner"
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
@@ -753,53 +753,6 @@ conf file usage: la.useMinimizer = true
 *******************
 * LearningProblem *
 *******************
-
-component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
-==================================================================================
-
-conf file usage: lp.type = "posNegStandard"
-
-option name: accuracyMethod
-description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
-required: false
-default value: predacc
-conf file usage: lp.accuracyMethod = "predacc"
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-required: false
-default value: 0.05
-conf file usage: lp.approxDelta = 0.05
-
-option name: percentPerLengthUnit
-description: Percent Per Length Unit
-type: double
-required: false
-default value: 0.05
-conf file usage: lp.percentPerLengthUnit = 0.05
-
-option name: useApproximations
-description: Use Approximations
-type: boolean
-required: false
-default value: false
-conf file usage: lp.useApproximations = false
-
-option name: useMultiInstanceChecks
-description: Use The Multi Instance Checks
-type: UseMultiInstanceChecks
-required: false
-default value: UseMultiInstanceChecks.TWOCHECKS
-conf file usage: lp.useMultiInstanceChecks = "UseMultiInstanceChecks.TWOCHECKS"
-
-option name: useRetrievalForClassification
-description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
-type: boolean
-required: false
-default value: false
-conf file usage: lp.useRetrievalForClassification = false
 
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
@@ -855,6 +808,53 @@ required: false
 default value: false
 conf file usage: lp.useApproximations = false
 
+component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
+==================================================================================
+
+conf file usage: lp.type = "posNegStandard"
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
+type: String
+required: false
+default value: predacc
+conf file usage: lp.accuracyMethod = "predacc"
+
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: lp.approxDelta = 0.05
+
+option name: percentPerLengthUnit
+description: Percent Per Length Unit
+type: double
+required: false
+default value: 0.05
+conf file usage: lp.percentPerLengthUnit = 0.05
+
+option name: useApproximations
+description: Use Approximations
+type: boolean
+required: false
+default value: false
+conf file usage: lp.useApproximations = false
+
+option name: useMultiInstanceChecks
+description: Use The Multi Instance Checks
+type: UseMultiInstanceChecks
+required: false
+default value: UseMultiInstanceChecks.TWOCHECKS
+conf file usage: lp.useMultiInstanceChecks = "UseMultiInstanceChecks.TWOCHECKS"
+
+option name: useRetrievalForClassification
+description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
+type: boolean
+required: false
+default value: false
+conf file usage: lp.useRetrievalForClassification = false
+
 component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
 =========================================================================================
 
@@ -871,37 +871,6 @@ conf file usage: lp.type = "palp"
 * ReasonerComponent *
 *********************
 
-component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker) v0.9
-===================================================================================
-
-conf file usage: reasoner.type = "fic"
-
-option name: defaultNegation
-description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
-type: boolean
-required: false
-default value: true
-conf file usage: reasoner.defaultNegation = true
-
-option name: forAllRetrievalSemantics
-description: This option controls how to interpret the all quantifier in forall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.
-type: ForallSemantics
-required: false
-default value: standard
-conf file usage: reasoner.forAllRetrievalSemantics = "standard"
-
-component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
-========================================================================
-
-conf file usage: reasoner.type = "spr"
-
-option name: useCache
-description: Whether to use a file-based cache
-type: boolean
-required: false
-default value: true
-conf file usage: reasoner.useCache = true
-
 component: closed world reasoner (org.dllearner.reasoning.ClosedWorldReasoner) v0.9
 ===================================================================================
 
@@ -916,6 +885,25 @@ conf file usage: reasoner.defaultNegation = true
 
 option name: forAllRetrievalSemantics
 description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
+type: ForallSemantics
+required: false
+default value: standard
+conf file usage: reasoner.forAllRetrievalSemantics = "standard"
+
+component: fast instance checker (org.dllearner.reasoning.FastInstanceChecker) v0.9
+===================================================================================
+
+conf file usage: reasoner.type = "fic"
+
+option name: defaultNegation
+description: Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.defaultNegation = true
+
+option name: forAllRetrievalSemantics
+description: This option controls how to interpret the all quantifier in forall r.C. The standard option isto return all those which do not have an r-filler not in C. The domain semantics is to use thosewhich are in the domain of r and do not have an r-filler not in C. The forallExists semantics is touse those which have at least one r-filler and do not have an r-filler not in C.
 type: ForallSemantics
 required: false
 default value: standard
@@ -946,6 +934,18 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useFallbackReasoner = false
+
+component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
+========================================================================
+
+conf file usage: reasoner.type = "spr"
+
+option name: useCache
+description: Whether to use a file-based cache
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.useCache = true
 
 
 
@@ -1076,6 +1076,18 @@ conf file usage: op.useTimeDatatypes = true
 * Heuristic *
 *************
 
+component: OEHeuristicRuntime (org.dllearner.algorithms.celoe.OEHeuristicRuntime) v0.5
+======================================================================================
+
+conf file usage: h.type = "celoe_heuristic"
+
+option name: startNodeBonus
+description: no description available
+type: double
+required: false
+default value: 0.1
+conf file usage: h.startNodeBonus = 0.1
+
 component: multiple criteria heuristic (org.dllearner.algorithms.ocel.MultiHeuristic) v0.7
 ==========================================================================================
 
@@ -1115,18 +1127,6 @@ type: double
 required: false
 default value: 0.0001
 conf file usage: h.nodeChildPenalty = 0.0001
-
-option name: startNodeBonus
-description: no description available
-type: double
-required: false
-default value: 0.1
-conf file usage: h.startNodeBonus = 0.1
-
-component: OEHeuristicRuntime (org.dllearner.algorithms.celoe.OEHeuristicRuntime) v0.5
-======================================================================================
-
-conf file usage: h.type = "celoe_heuristic"
 
 option name: startNodeBonus
 description: no description available

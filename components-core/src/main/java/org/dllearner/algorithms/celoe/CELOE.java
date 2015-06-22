@@ -58,6 +58,7 @@ import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -116,7 +117,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
-	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
+	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax.", exampleValue = "ex:Male or ex:Female")
 	private OWLClassExpression startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
@@ -305,6 +306,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// start at owl:Thing by default
 		if(startClass == null) {
 			startClass = dataFactory.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = dataFactory.getOWLThing();
+			}			
 		}
 		
 //		singleSuggestionMode = configurator.getSingleSuggestionMode();
@@ -977,19 +985,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public void setStartClass(OWLClassExpression startClass) {
-		String dummy = "http://dllearner.org/dummy/";
-		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(dummy)) {
-			try {
-				String s = startClass.asOWLClass().getIRI().toString().substring(dummy.length());
-				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(((ClosedWorldReasoner)reasoner).getReasonerComponent().getOntology()));
-				this.startClass = parser.parseClassExpression();
-			} catch (ParserException e) {
-				logger.error("Start class parsing failed.", e);
-			}
-		} else {
-			this.startClass = startClass;
-		}
+		this.startClass = startClass;
 	}
 	
 	public boolean isWriteSearchTree() {

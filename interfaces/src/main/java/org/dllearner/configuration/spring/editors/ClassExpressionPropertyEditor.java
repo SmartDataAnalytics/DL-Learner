@@ -1,5 +1,9 @@
 package org.dllearner.configuration.spring.editors;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -18,26 +22,19 @@ public class ClassExpressionPropertyEditor extends AbstractPropertyEditor<OWLCla
 	public String getAsText() {
 		return OWLAPIRenderers.toManchesterOWLSyntax(value);
 	}
+	
 
+	final static Pattern whitespace = Pattern.compile("\\s");
 	@Override
 	public void setAsText(String s) throws IllegalArgumentException {
-		value = new OWLClassImpl(IRI.create(s));
-		IRI iri = IRI.create("http://dllearner.org/dummy/", s);
-		value = new OWLClassImpl(iri);
-		
-		// TODO seems like the parser needs the ontology to parse class expressions
-		// because there is no lookahead, thus, it has to be known in advance
-		// which type of entity a token belongs to
-		
-		/*
-		// we assume that the start class string is given in Manchester syntax
-		ManchesterOWLSyntaxParser parser = OWLManager.createManchesterParser();
-		parser.setStringToParse(s);
-		try {
-			description = parser.parseClassExpression();
-		} catch (Exception e) {
-			throw new IllegalArgumentException(e);
+		if (!whitespace.matcher(s).find()) {
+			value = new OWLClassImpl(IRI.create(s));
+		} else {
+			// quote IRIs
+			s = s.replaceAll("(?<=^|\\s|\\()((?:([^:/?#\\s]*):)(?://([^/?#]*?))?([^?#]*?)(?:\\?([^#]*?))?(?:#(.*?))?)(?=\\)|\\s|$)", "<$1>");
+			// Bad hack to allow unparsed Manchester expressions. You need to decode this IRI and use the Manchester Parser once you have the Ontology
+			IRI iri = IRI.create(OWLAPIUtils.UNPARSED_OCE + s);
+			value = new OWLClassImpl(iri);
 		}
-		*/
 	}
 }

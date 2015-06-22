@@ -25,10 +25,12 @@ import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
@@ -116,7 +118,14 @@ public class AnnComponentManager {
 
 	private AnnComponentManager() {
 		// conversion of class strings to objects
-		components = new HashSet<Class<? extends Component>>();
+		components = new TreeSet<Class<? extends Component>>(new Comparator<Class<? extends Component>>() {
+
+			@Override
+			public int compare(Class<? extends Component> o1,
+					Class<? extends Component> o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 		componentNames = new DualHashBidiMap<Class<? extends Component>, String>();
 		componentNamesShort = new DualHashBidiMap<Class<? extends Component>, String>();
 		for (String componentClassName : componentClassNames) {
