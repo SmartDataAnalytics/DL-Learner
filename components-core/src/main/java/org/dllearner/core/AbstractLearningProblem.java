@@ -61,7 +61,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	}
 		
 	/**
-	 * Computes the <code>Score</code> of a given class description
+	 * Computes the <code>Score</code> of a given hypothesis
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
 	 * to measure how good the hypothesis fits the learning problem.
@@ -76,7 +76,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	}
 	
 	/**
-	 * Computes the <code>Score</code> of a given class description
+	 * Computes the <code>Score</code> of a given hypothesis
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
 	 * to measure how good the hypothesis fits the learning problem.

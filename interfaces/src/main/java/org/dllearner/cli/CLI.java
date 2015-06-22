@@ -52,7 +52,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -212,7 +212,7 @@ public class CLI {
 				String key = entry.getKey();
 				AbstractReasonerComponent value = entry.getValue();
 
-				if (value instanceof FastInstanceChecker) {
+				if (value instanceof ClosedWorldReasoner) {
 					rc = value;
 				}
 

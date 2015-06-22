@@ -33,9 +33,9 @@ import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.KBFile;
 import org.dllearner.kb.OWLFile;
@@ -44,7 +44,7 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 
 /**
@@ -88,7 +88,7 @@ public class ConfMapper {
 		knowledgeSourceMapping.put("kbfile", KBFile.class);
 		
 		reasonerMapping.put("owlAPIReasoner", OWLAPIReasoner.class);
-		reasonerMapping.put("fastInstanceChecker", FastInstanceChecker.class);
+		reasonerMapping.put("closedWorldReasoner", ClosedWorldReasoner.class);
 		
 		learningProblemMapping.put("posNegLPStandard", PosNegLPStandard.class);
 		learningProblemMapping.put("classLearning", ClassLearningProblem.class);

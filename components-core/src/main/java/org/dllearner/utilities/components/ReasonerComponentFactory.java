@@ -27,7 +27,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.ReasonerType;
@@ -60,8 +60,8 @@ public class ReasonerComponentFactory {
 
 			// reasoner component
 			switch (type) {
-			case FAST_INSTANCE_CHECKER:
-				rc = cm.reasoner(FastInstanceChecker.class, ks);
+			case CLOSED_WORLD_REASONER:
+				rc = cm.reasoner(ClosedWorldReasoner.class, ks);
 				break;
 			case OWLAPI_FACT:
 				rc = cm.reasoner(OWLAPIReasoner.class, ks);
@@ -80,7 +80,7 @@ public class ReasonerComponentFactory {
 				break;
 			//case SPARQL_NATIVE:
 			default:
-				rc = cm.reasoner(FastInstanceChecker.class, ks);
+				rc = cm.reasoner(ClosedWorldReasoner.class, ks);
 				break;
 			}
 			rc.init();

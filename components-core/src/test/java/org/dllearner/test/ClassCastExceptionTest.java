@@ -24,8 +24,8 @@ import java.net.MalformedURLException;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
@@ -34,7 +34,7 @@ import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 
 public class ClassCastExceptionTest {
 
@@ -55,7 +55,7 @@ public class ClassCastExceptionTest {
 		source.init();
 		
 		// create OWL API reasoning service with standard settings
-		AbstractReasonerComponent reasoner = cm.reasoner(FastInstanceChecker.class, source);
+		AbstractReasonerComponent reasoner = cm.reasoner(ClosedWorldReasoner.class, source);
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples

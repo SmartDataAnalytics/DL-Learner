@@ -8,7 +8,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -26,7 +26,7 @@ public class MILESTest {
 	@Test
 	public void testStart() throws Exception{
 		KnowledgeSource ks = new OWLFile("../examples/swore/swore.rdf");
-		AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+		AbstractReasonerComponent rc = new ClosedWorldReasoner(ks);
 		rc.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);

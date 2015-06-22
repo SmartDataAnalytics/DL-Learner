@@ -26,17 +26,15 @@ import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.HermiT.examples.MaterialiseInferences;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 
 /**
  * Test for learning on SWORE ontology.
@@ -66,7 +64,7 @@ public class SworeTest {
 //		reasoner.init();
 		
 		// set up a closed-world reasoner
-		AbstractReasonerComponent reasoner = new FastInstanceChecker(source);
+		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(source);
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples

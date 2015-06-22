@@ -75,7 +75,6 @@ import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
@@ -141,7 +140,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
 
-    @ConfigOption(name = "forAllRetrievalSemantics", description = "This option controls how to interpret the all quantifier in forall r.C. " +
+    @ConfigOption(
+    		name = "forAllRetrievalSemantics", 
+    		description = "This option controls how to interpret the all quantifier in forall r.C. " +
     		"The standard option is to return all those which do not have an r-filler not in C. " +
     		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
     		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",
@@ -1308,7 +1309,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public ReasonerType getReasonerType() {
-		return ReasonerType.FAST_INSTANCE_CHECKER;
+		return ReasonerType.CLOSED_WORLD_REASONER;
 	}
 
 	@Override

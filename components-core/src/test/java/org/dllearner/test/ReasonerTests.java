@@ -11,7 +11,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -59,7 +59,7 @@ public class ReasonerTests {
 				reasoner.init();
 				Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
 				
-				FastInstanceChecker closedWorldReasoner = new FastInstanceChecker(ks);
+				ClosedWorldReasoner closedWorldReasoner = new ClosedWorldReasoner(ks);
 				closedWorldReasoner.setReasonerComponent(reasoner);
 				closedWorldReasoner.init();
 				
