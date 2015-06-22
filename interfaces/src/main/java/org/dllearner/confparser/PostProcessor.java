@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.dllearner.confparser3;
+package org.dllearner.confparser;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.jena.riot.thrift.wire.RDF_StreamRow;
-import org.dllearner.cli.ConfFileOption2;
+import org.dllearner.cli.ConfFileOption;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.util.NamespaceUtil;
 import org.semanticweb.owlapi.vocab.OWLXMLVocabulary;
@@ -45,10 +45,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class PostProcessor {
 
-	List<ConfFileOption2> confOptions;
-	Map<String, ConfFileOption2> directives;
+	List<ConfFileOption> confOptions;
+	Map<String, ConfFileOption> directives;
 	
-	public PostProcessor(List<ConfFileOption2> confOptions, Map<String, ConfFileOption2> directives) {
+	public PostProcessor(List<ConfFileOption> confOptions, Map<String, ConfFileOption> directives) {
 		this.confOptions = confOptions;
 		this.directives = directives;
 	}
@@ -57,8 +57,11 @@ public class PostProcessor {
 	 * Applies all special directives by modifying the conf options.
 	 */
 	public void applyAll() {
+		//apply base URI directive
+		
+		
 		// apply prefix directive
-		ConfFileOption2 prefixOption = directives.get("prefixes");
+		ConfFileOption prefixOption = directives.get("prefixes");
 		Map<String,String> prefixes = new TreeMap<>();
 		
 		prefixes.put("owl", OWL.NS);
@@ -70,13 +73,14 @@ public class PostProcessor {
 		}
 			 
 		// loop through all options and replaces prefixes
-		for(ConfFileOption2 option : confOptions) {
+		for(ConfFileOption option : confOptions) {
 			Object valueObject = option.getValue();
 
 			if(valueObject instanceof String){
 				for (String prefix : prefixes.keySet()) {
 					// we only replace the prefix if it occurs directly after a quote
 					valueObject = ((String) valueObject).replaceAll(prefix + ":", prefixes.get(prefix));
+					System.out.println(valueObject);
 				}
 
 			} else if(valueObject instanceof Map) {

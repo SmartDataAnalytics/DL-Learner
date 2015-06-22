@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007, Jens Lehmann
+ * Copyright (C) 2007-2011, Jens Lehmann
  *
  * This file is part of DL-Learner.
  * 
@@ -19,215 +19,84 @@
  */
 
 /**
- * Conf file parser. 
+ * New version of conf file parser, which prepares a conf file for
+ * conversion into a Spring configuration. 
  */
 
 options {
-  JDK_VERSION = "1.5";
+  JDK_VERSION = "1.6";
   STATIC = false; 
+  UNICODE_INPUT=true;
 }
 
 PARSER_BEGIN(ConfParser)
-package org.dllearner.confparser; 
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.SortedSet;
-import java.util.TreeSet;
+package org.dllearner.confparser3; 
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.dllearner.Info;
-
-import org.dllearner.cli.*;
+import org.dllearner.cli.ConfFileOption2;
 import org.dllearner.parser.KBParser;
-import org.dllearner.utilities.datastructures.*;
+import org.dllearner.utilities.datastructures.StringTuple;
 
 public class ConfParser {
 	
-	// examples
-	private SortedSet<String> positiveExamples = new TreeSet<String>();
-	private SortedSet<String> negativeExamples = new TreeSet<String>();
+	// special directives (those without a property name)
+	private Map<String,ConfFileOption2> specialOptions = new HashMap<String,ConfFileOption2>();
 	
 	// conf file options
-	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
-	private Map<String,ConfFileOption> confOptionsByName = new HashMap<String,ConfFileOption>();
-	private Map<String,List<ConfFileOption>> confOptionsByPrefix = new HashMap<String,List<ConfFileOption>>();
+	private List<ConfFileOption2> confOptions = new LinkedList<ConfFileOption2>();
+	private Map<String,ConfFileOption2> confOptionsByProperty = new HashMap<String,ConfFileOption2>();
+	private Map<String,List<ConfFileOption2>> confOptionsByBean = new HashMap<String,List<ConfFileOption2>>();
 	
-	// Funktionsaufrufe (die gleiche Funktion darf mehrmals mit unterschiedlichen
-	// Argumenten aufgerufen werden)
-	// private static Map<String,Set<String>> functionCallsAlt = new TreeMap<String,Set<String>>();
-	// jeder Funktionsaufruf hat eine Liste von n Argumenten; alle Funktionsaufrufe
-	// werden in einer Liste gespeichert
-	// private List<List<String>> functionCalls = new LinkedList<List<String>>();
-	// => irgendwie Funktionsname + Argumente speichern
-	// => d.h. man bräuchte für jede Funktion so eine Liste oder das erste Element
-	// der Liste ist der Funktionsname <= ist noch die praktikabelste Variante
-	
-	private Map<String,List<List<String>>> functionCalls = new HashMap<String,List<List<String>>>();
-	
-	private void addFunctionCall(String name, List<String> arguments) {
-		if(functionCalls.containsKey(name))
-			functionCalls.get(name).add(arguments);
-		else {
-			List<List<String>> calls = new LinkedList<List<String>>();
-			calls.add(arguments);
-			functionCalls.put(name,calls);
-		}
-	}
-	
-	private void addConfOption(ConfFileOption confOption) {
+	private void addConfOption(ConfFileOption2 confOption) {
 		confOptions.add(confOption);
-		confOptionsByName.put(confOption.getFullName(), confOption);
-		String prefix = confOption.getOption();
-		if(confOptionsByPrefix.containsKey(prefix))
-			confOptionsByPrefix.get(prefix).add(confOption);
+		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
+		String beanName = confOption.getBeanName();
+		if(confOptionsByBean.containsKey(beanName))
+			confOptionsByBean.get(beanName).add(confOption);
 		else {
-			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+			LinkedList<ConfFileOption2> optionList = new LinkedList<ConfFileOption2>();
 			optionList.add(confOption);
-			confOptionsByPrefix.put(prefix,optionList);
+			confOptionsByBean.put(beanName,optionList);
 		}
 	}
 	
-	public SortedSet<String> getPositiveExamples() {
-		return positiveExamples;
-	}
-	
-	public SortedSet<String> getNegativeExamples() {
-		return negativeExamples;
-	} 
-	
-	public List<ConfFileOption> getConfOptions() {
+	public List<ConfFileOption2> getConfOptions() {
 		return confOptions;
 	}
 	
-	public Map<String,ConfFileOption> getConfOptionsByName() {
-		return confOptionsByName;
+	public Map<String,ConfFileOption2> getConfOptionsByProperty() {
+		return confOptionsByProperty;
 	}
 
-	public ConfFileOption getConfOptionsByName(String name) {
-		return confOptionsByName.get(name);
-	}
-	
-	public Map<String,List<ConfFileOption>> getConfOptionsByPrefix() {
-		return confOptionsByPrefix;
+	public ConfFileOption2 getConfOptionsByProperty(String propertyName) {
+		return confOptionsByProperty.get(propertyName);
 	}
 	
-	public List<ConfFileOption> getConfOptionsByPrefix(String prefix) {
-		return confOptionsByPrefix.get(prefix);
+	public Map<String,List<ConfFileOption2>> getConfOptionsByBean() {
+		return confOptionsByBean;
 	}
 	
-	public Map<String,List<List<String>>> getFunctionCalls() {
-		return functionCalls;
+	public List<ConfFileOption2> getConfOptionsByBean(String beanName) {
+		return confOptionsByBean.get(beanName);
 	}
 	
-	/*
-	private static void addFunctionCall(String functionName, String argument) {
-		if(functionCalls.containsKey(functionName)) {
-			functionCalls.get(functionName).add(argument);
-		} else {
-			Set<String> newFunction = new TreeSet<String>();
-			newFunction.add(argument);
-			functionCalls.put(functionName,newFunction);
-		}		
-	}
-	*/	
-	
-
-	/*
-	public static SimpleNode parseString(String str) throws ParseException {
-		StringReader sr = new StringReader(str);
-		DLLearner learner = new DLLearner(sr);
-		SimpleNode n = learner.Start();
-		return n;
-	}
-	*/
-	
-	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException {
-		ConfParser learner = null;
-//		try {
-			learner = new ConfParser(new FileInputStream(filename));
-			learner.Start();
-//		} catch(FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch(ParseException e) {
-//			e.printStackTrace();
-//		}
-		return learner;
+	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException, UnsupportedEncodingException {
+		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename),"UTF-8"));
+		parser.Start();
+		return parser;
 	}
 	
-  public static void main(String args[]) {
-
-    if(args.length==0) {
-        System.out.println("Please specify an input file.");
-        System.exit(0);
-    }
-
-    System.out.println("Starting DL-Learner (Build " + Info.build + ")");
-	// System.out.println(args);
- 
-	// System.out.println(args[0]);
-	// System.out.println(args[1]);
-	// System.out.println(args.length);
-
-    File f = new File(args[args.length-1]);
-//    String baseDir = "";
-
-	System.out.print("Parsing " + f.getName() + " ... ");
-    long parseStartTime = System.currentTimeMillis();
-
-    // SimpleNode n = null;
-    ConfParser learner = null;
-    try {
-        learner = new ConfParser(new FileInputStream(args[args.length-1]));
-//        baseDir = f.getParentFile().getPath();    	
-    } catch(IOException e) {
-        System.err.println(e);
-        System.exit(0);
-    }
-    try {
-      learner.Start();  
-      // n.dump("");
-      // System.out.println("Thank you.");
-    } catch (Exception e) {
-      System.out.println("\nParse exception occurred. Please follow the advise given below.");
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-      System.exit(0);
-    }
-
-    long parseDuration = System.currentTimeMillis() - parseStartTime;
-    System.out.println("OK (" + parseDuration + " ms)");
-
-//    boolean queryMode = false;
-    // solution test mode wird nicht unbedingt gebraucht, da man die covers
-    // gleich standardmäßig beim query mit anzeigen kann
-    // boolean solutionTestMode = false;
-    
-//    if(args.length>1 && args[0].equals("-q"))
-//    	queryMode = true;
-    
-    //if(args.length>1 && args[0].equals("-qt")) {
-    //	queryMode = true;
-    //	solutionTestMode = true;
-    //}
-    
-    // new Main(n, baseDir, queryMode);
-    // Parser erstmal Standalone testen
-    // n.dump("");
-    
-    // neuer Aufruf des Hauptprogramms
-    // TODO: remove (in the future, the parser will be called from whatever method
-    // needs it, instead of starting the learning process itself)
-    // new Main(kb,positiveExamples,negativeExamples,confOptions,functionCalls,baseDir,queryMode);
-  }
 }
 PARSER_END(ConfParser)
 
@@ -245,126 +114,109 @@ SKIP :
 TOKEN :
 {
     < COMMAND_END: "." >
-  | < CONF_END: ";" >
-  | < POS_EX: "+" >
-  | < NEG_EX: "-" >
   | < ID: ["a"-"z"] (["_","a"-"z","A"-"Z","0"-"9"])* >
   | < NUMBER: (["1"-"9"] (["0"-"9"])* | "0") >
   | < DOUBLE: (["1"-"9"] (["0"-"9"])* | "0") "." (["0"-"9"])* >
-  | <TOP: "TOP" >
-  | <BOTTOM: "BOTTOM" >
-  | <AND: "AND" >
-  | <OR: "OR" >
-  | <EXISTS: "EXISTS" | "SOME" >
-  | <ALL: "ALL" | "FORALL" >
-  | <NOT: "NEG" | "NOT" >
-  | <GE: ">=" >
-  | <LE: "<=" >
-  | <STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
+  | < STRING: "\"" (~["\"","\\"])* "\"">
+//  | < STRING: "\"" (~["\"","\\","\n","\r"])* "\"">
 }
 
 void Start() : 
 {
-	ConfFileOption confOption;
+	ConfFileOption2 confOption;
 }
 {
-  (		// bei Konfigurationsoption geht der Parser bis zum Semikolon durch, da das das einzige
-  		// sichere Unterscheidungsmerkmal ist
-  		// LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
-  		//  | "{" "}" | "{" ( ( String() | Id() ) "," )* (String() | Id()) "}" | "[" ) <CONF_END>)  confOption=ConfOption()
-  		LOOKAHEAD(Id() [ "." Id() ] "="  ( Id() | Integer() | Double() | String() 
-  		  | "{" | "[" ))  confOption=ConfOption()  		  
-  		  { addConfOption(confOption); }
-  	|	LOOKAHEAD(Id() "(" String() ("," String())* ")" <CONF_END>) FunctionCall()
-  		// positive bzw. negative Beispiele sind an "+" bzw. "-" erkennbar
-  	|	LOOKAHEAD(<POS_EX>) PosExample()
-  	|	LOOKAHEAD(<NEG_EX>) NegExample()
+  (		confOption = ConfOption()  		  
+  	   { if(confOption.getPropertyName() == null) {
+  	   		specialOptions.put(confOption.getBeanName(),confOption);
+  	     } else { 
+  	     	addConfOption(confOption); 
+  	     } 
+  	   }
   )*
   <EOF>
+  { PostProcessor pp = new PostProcessor(confOptions, specialOptions);
+    pp.applyAll(); }
 }
 
-ConfFileOption ConfOption() : 
+ConfFileOption2 ConfOption() : 
 {
-	boolean containsSubOption=false, isNumeric=false, isDouble=false, isSet=false, isList=false;
-	String option="", subOption="", value="", tmp="", tmp2=""; 
-	int number = 0;
-	double numberDouble = 0;
-	ConfFileOption confOption;
+	boolean containsSubOption=false;
+	String value="", value1="", value2="", tmp="", tmp2=""; 
 	Set<String> values = new HashSet<String>();
-	List<StringTuple> tuples = new LinkedList<StringTuple>();
+	Map<String,String> tuples = new HashMap<String,String>();
+	Map<String,Double> tuplesD = new HashMap<String,Double>();
+	
+	ConfFileOption2 option = new ConfFileOption2();
+	boolean isBeanRef = false;
+	boolean isBeanCollection = false;
+	String beanName;
+	String propertyName = "";
+	String propertyValue = "";
+	Class<?> propertyType;
+	Object val = null;
+	Double d;
 }
 {
-  option=Id() [ "." subOption=Id() {containsSubOption=true;} ] 
-  "="  (   value=Id() 
-         | value=String()
-         | number=Integer() {isNumeric=true;} 
-         | numberDouble=Double() {isNumeric=true; isDouble=true;} 
-         | LOOKAHEAD("{" "}") "{" "}" {isSet=true;} // leere Menge 
-         | "{" ( LOOKAHEAD(2) ( tmp=String() | tmp=Id() ) {values.add(tmp);} "," )* 
-           (tmp=String() | tmp=Id()) {values.add(tmp);} "}" {isSet=true;}
-           // eine Liste von ein oder mehr Elementen in Mengenschreibweise
-         | LOOKAHEAD("[" "]") "[" "]" {isList=true;} // empty list
+  beanName=Id() [ "." propertyName = Id() {containsSubOption=true;} ] 
+  "="  (  // two strings separated by a double colon
+         // LOOKAHEAD(2) value1=Id() ":" value2=Id() { useColon = true; }
+         // simple string
+         	propertyValue = Id() {
+         	if(propertyValue.equals("true") || propertyValue.equals("false")) {
+         	   val = Boolean.valueOf(propertyValue); propertyType = Boolean.class;
+         	} else {
+         		val = propertyValue; propertyType = String.class; isBeanRef =  true;
+         	} }
+  		 // simple string enclosed in quotes
+         | propertyValue = String() { val = propertyValue; propertyType = String.class; }
+         | val = Integer() { propertyValue = val.toString(); propertyType = Integer.class;} 
+         | val = Double() { propertyValue = val.toString(); propertyType = Double.class; }
+         // empty set
+         | LOOKAHEAD("{" "}") "{" "}" { val = new HashSet(); propertyType = Set.class; propertyValue = "{}"; }
+         // set with several elements which are quoted
+         | LOOKAHEAD(4) "{" (  LOOKAHEAD(2) tmp=String() { values.add(tmp); propertyValue += "\"" + tmp + "\", ";} "," )* 
+           tmp=String() {values.add(tmp); propertyValue += "\"" + tmp + "\"";} "}" 
+           { propertyType = Set.class; propertyValue = "{"+ propertyValue + "}";; val = values; }
+         // empty bean set
+         | "-" { val = new HashSet(); propertyType = Set.class; propertyValue = "-"; isBeanCollection = true;}
+         // set with several elements which are not quoted
+         | "{" ( LOOKAHEAD(4) tmp=Id() { values.add(tmp); propertyValue += tmp + ", "; } "," )* 
+           ( tmp=Id()) {values.add(tmp); propertyValue += tmp;} "}" 
+           { val = values; propertyType = Set.class; propertyValue = "{"+ propertyValue + "}"; isBeanCollection = true;}
+         // empty list
+         | LOOKAHEAD("[" "]") "[" "]" { val = new LinkedList(); propertyType = List.class; propertyValue = "[]";}
+         // a list with several elements with tuples
+         // e.g. [("a","b"),("c","d")]
+         | LOOKAHEAD( "[" "(" String() "," String())
+           "[" 
+           ( LOOKAHEAD(6) "(" tmp=String() "," tmp2=String()  ")"
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\"), "; } "," )*
+           "(" tmp=String() "," tmp2=String() ")"
+           { tuples.put(tmp,tmp2); propertyValue += "(\""+ tmp + "\",\"" + tmp2 + "\")";}
+           "]" { val = tuples; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}  
+         // a list with several elements with doubles
+         // e.g. [("a",1.0),("c",0.7)]
          | "[" 
-           ( LOOKAHEAD(6) "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
-           {tuples.add(new StringTuple(tmp,tmp2));} "," )*
-           "(" (tmp=String() | tmp=Id()) "," (tmp2=String() | tmp2=Id()) ")"
-           {tuples.add(new StringTuple(tmp,tmp2));} 
-           "]" {isList=true;}         
-         ) <CONF_END>
+           ( LOOKAHEAD(6) "(" tmp=String() "," d=Double()  ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\"), "; } "," )*
+           "(" tmp=String() "," d=Double() ")"
+           { tuplesD.put(tmp,d); propertyValue += "(\""+ tmp + "\",\"" + d.toString() + "\")";}
+           "]" { val = tuplesD; propertyType = List.class; propertyValue = "["+ propertyValue + "]";}         
+            )    
+         // <CONF_END>
   {
-  	if(containsSubOption) {
-  		if(isNumeric)
-  			if(isDouble)
-	  			confOption = new ConfFileOption(option,subOption,numberDouble);
-	  		else
-		  		confOption = new ConfFileOption(option,subOption,number);
-  		else
-  			if(isSet)
-  				confOption = new ConfFileOption(option,subOption,values);
-  			else if(isList)
-  				confOption = new ConfFileOption(option,subOption,tuples);
-  			else
-  				confOption = new ConfFileOption(option,subOption,value);
-  	} else {
-  		if(isNumeric)
-  			if(isDouble)
-	  			confOption = new ConfFileOption(option,numberDouble);
-	  		else
-	  			confOption = new ConfFileOption(option,number);
-  		else
-  			if(isSet)
-	  			confOption = new ConfFileOption(option,values);
-  			else if(isList)
-  				confOption = new ConfFileOption(option,tuples);	  			
-	  		else
-	  			confOption = new ConfFileOption(option,value);
+  	option.setBeanRef(isBeanRef);
+  	option.setBeanReferenceCollection(isBeanCollection);
+  	option.setBeanName(beanName);
+ 	if(containsSubOption) {
+  		option.setPropertyName(propertyName);
   	}
-  	return confOption;
-  	// confOptions.add(confOption);
+  	option.setPropertyType(propertyType);
+  	option.setPropertyValue(propertyValue);  
+  	option.setValueObject(val);	
+  	return option;
   }
-}
-
-void FunctionCall() : 
-{
-	String s, s1, s2;
-	List<String> list = new LinkedList<String>();
-}
-{
-  	s1=Id() "(" s2=String() { list.add(s2); }
-  	("," s=String() { list.add(s); } )* ")" <CONF_END>
-  	{ addFunctionCall(s1,list); }
-}
-
-void PosExample() : { String i; }
-{
-  	<POS_EX> i=Individual()
-  	{ positiveExamples.add(i); }
-}
-
-void NegExample() : { String i; }
-{
-  	<NEG_EX> i=Individual()
-  	{ negativeExamples.add(i); }
 }
 
 String Individual() :
@@ -378,6 +230,16 @@ String Individual() :
 	}
 }
 
+String ComplexId() :
+{
+  Token t1,t2;
+}
+{
+  LOOKAHEAD(2) t1=<ID> ":" t2=<ID> { return t1.image + ":" + t2.image; }  
+ |t1=<ID> { return t1.image; }
+}
+ 
+
 String Id() : 
 {
   Token t;
@@ -389,7 +251,7 @@ String Id() :
   }
 }
 
-double Double() : 
+Double Double() : 
 {
   Token t;
 }
@@ -400,7 +262,7 @@ double Double() :
   }
 }
 
-int Integer() : 
+Integer Integer() : 
 {
   Token t;
 }

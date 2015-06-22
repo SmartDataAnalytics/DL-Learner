@@ -21,7 +21,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
-import org.dllearner.confparser3.ConfParserConfiguration;
+import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;

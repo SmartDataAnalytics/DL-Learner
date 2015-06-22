@@ -1,4 +1,4 @@
-package org.dllearner.confparser3;
+package org.dllearner.confparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections15.BidiMap;
-import org.dllearner.cli.ConfFileOption2;
+import org.dllearner.cli.ConfFileOption;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
@@ -70,7 +70,7 @@ public class ConfParserConfiguration implements IConfiguration {
             
             // setup rendering TODO put it into CLI
             Rendering rendering = Rendering.MANCHESTER_SYNTAX;
-            ConfFileOption2 renderingOption = parser.getConfOptionsByProperty("rendering");
+            ConfFileOption renderingOption = parser.getConfOptionsByProperty("rendering");
             if(renderingOption != null) {
             	String syntax = renderingOption.getPropertyValue();
                 for (Rendering r : Rendering.values()) {
@@ -90,7 +90,7 @@ public class ConfParserConfiguration implements IConfiguration {
     @Override
     public Collection<String> getBeanNames() {
         Set<String> result = new HashSet<String>();
-        Map<String,List<ConfFileOption2>> beans = parser.getConfOptionsByBean();
+        Map<String,List<ConfFileOption>> beans = parser.getConfOptionsByBean();
         result.addAll(beans.keySet());
         return result;
     }
@@ -98,10 +98,10 @@ public class ConfParserConfiguration implements IConfiguration {
     @Override
     public Class getClass(String beanName) {
 
-        List<ConfFileOption2> confOptions = parser.getConfOptionsByBean(beanName);
+        List<ConfFileOption> confOptions = parser.getConfOptionsByBean(beanName);
 
-        ConfFileOption2 option = null;
-        for (ConfFileOption2 confOption : confOptions) {
+        ConfFileOption option = null;
+        for (ConfFileOption confOption : confOptions) {
             if(typeProperty.equalsIgnoreCase(confOption.getPropertyName())){
                 option = confOption;
             }
@@ -146,10 +146,10 @@ public class ConfParserConfiguration implements IConfiguration {
 
     @Override
     public Collection<IConfigurationProperty> getConfigurationProperties(String beanName) {
-        List<ConfFileOption2> confFileOptions = parser.getConfOptionsByBean(beanName);
+        List<ConfFileOption> confFileOptions = parser.getConfOptionsByBean(beanName);
         Collection<IConfigurationProperty> result = new ArrayList<IConfigurationProperty>();
 
-        for (ConfFileOption2 confFileOption : confFileOptions) {
+        for (ConfFileOption confFileOption : confFileOptions) {
 
             if (!typeProperty.equalsIgnoreCase(confFileOption.getPropertyName())) {
                 result.add(confFileOption);

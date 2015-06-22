@@ -1,8 +1,9 @@
 package org.dllearner.configuration.spring;
 
 import junit.framework.Assert;
+
 import org.dllearner.configuration.IConfiguration;
-import org.dllearner.confparser3.ConfParserConfiguration;
+import org.dllearner.confparser.ConfParserConfiguration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

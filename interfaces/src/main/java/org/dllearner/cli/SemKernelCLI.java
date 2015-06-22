@@ -15,7 +15,7 @@ import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
-import org.dllearner.confparser3.ConfParserConfiguration;
+import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.semkernel.SemKernelWorkflow;

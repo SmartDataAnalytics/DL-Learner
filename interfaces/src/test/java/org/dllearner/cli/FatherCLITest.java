@@ -1,6 +1,7 @@
 package org.dllearner.cli;
 
 import junit.framework.Assert;
+
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.configuration.IConfiguration;
@@ -8,7 +9,7 @@ import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.ConfigurationXMLBeanConverter;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
-import org.dllearner.confparser3.ConfParserConfiguration;
+import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
