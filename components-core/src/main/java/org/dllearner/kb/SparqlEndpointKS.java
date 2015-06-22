@@ -78,7 +78,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@ConfigOption(name = "cacheDir", defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
 	
-	@ConfigOption(name = "cacheTTL", defaultValue = "1 day", description = "The time to live in milliseconds for cached SPARQL queries, if enabled.", required = false)
+	@ConfigOption(name = "cacheTTL", defaultValue = "86400", description = "The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).", required = false)
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
 	
 	@ConfigOption(name = "retryCount", defaultValue = "3", description = "The maximum number of retries for the execution of a particular SPARQL query.", required = false)

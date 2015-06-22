@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractHeuristic;
@@ -65,7 +64,6 @@ import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
-import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.IRI;
@@ -101,7 +99,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 
 	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
 	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
-//	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -117,7 +114,11 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// root of search tree
 	private OENode startNode;
 	// the class with which we start the refinement process
-	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax.", exampleValue = "ex:Male or ex:Female")
+	@ConfigOption(
+			name = "startClass",
+			defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with prefixed URIs or URIs encapsulated in angle brackets.",
+			exampleValue = "ex:Male or <http://example.org/ontology/Female>")
 	private OWLClassExpression startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)
@@ -253,7 +254,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		setReuseExistingDescription(celoe.reuseExistingDescription);
 		setSingleSuggestionMode(celoe.singleSuggestionMode);
-//		setStartClass(celoe.startClass);
+		setStartClass(celoe.startClass);
 		setStopOnFirstDefinition(celoe.stopOnFirstDefinition);
 		setTerminateOnNoiseReached(celoe.terminateOnNoiseReached);
 		setUseMinimizer(celoe.isUseMinimizer());
@@ -264,7 +265,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	public CELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-//		configurator = new CELOEConfigurator(this);
 	}
 
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
@@ -309,25 +309,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else {
 			try {
 				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
-			} catch (ParserException e) {
-				logger.info("Error parsing startClass: " + e.getMessage());
+			} catch (Exception e) {
+				logger.warn("Error parsing start class.", e);
+				logger.warn("Using owl:Thing instead.");
 				this.startClass = dataFactory.getOWLThing();
 			}			
 		}
 		
-//		singleSuggestionMode = configurator.getSingleSuggestionMode();
-		/*
-		// create refinement operator
-		if(operator == null) {
-			operator = new RhoDRDown();
-			((RhoDRDown)operator).setStartClass(startClass);
-			((RhoDRDown)operator).setReasoner(reasoner);
-		}
-		((RhoDRDown)operator).setSubHierarchy(classHierarchy);
-		((RhoDRDown)operator).setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		((RhoDRDown)operator).setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		((RhoDRDown)operator).init();		
-		*/
 		// create a refinement operator and pass all configuration
 		// variables to it
 		if(operator == null) {
@@ -347,8 +335,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
 		
-//		operator = new RhoDRDown(reasoner, classHierarchy, startClass, configurator);
-			
 		if(writeSearchTree) {
 			File f = new File(searchTreeFile );
 			if(f.getParentFile() != null){
@@ -945,12 +931,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public OENode getSearchTreeRoot() {
 		return startNode;
 	}
-	
-	@SuppressWarnings("unused")
-	private String bestDescriptionToString() {
-		EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
-		return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
-	}	
 	
 	public TreeSet<OENode> getNodes() {
 		return nodes;

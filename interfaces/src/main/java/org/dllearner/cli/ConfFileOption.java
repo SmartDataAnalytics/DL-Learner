@@ -123,5 +123,12 @@ public class ConfFileOption implements IConfigurationProperty{
     public void setBeanReferenceCollection(boolean beanReferenceCollection) {
         isBeanReferenceCollection = beanReferenceCollection;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return beanName + "." + propertyName + ";type:" + propertyType.getSimpleName() + ";value:" + propertyValue;
+    }
 }

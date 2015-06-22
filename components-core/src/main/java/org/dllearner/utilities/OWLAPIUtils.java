@@ -103,12 +103,18 @@ public class OWLAPIUtils {
 	}
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
+	
 	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
-			String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-			ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-			parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
-			return parser.parseClassExpression();
+			try {
+				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
+				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
+				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
+				return parser.parseClassExpression();
+			} catch (ParserException e) {
+				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
+						+ "remember to use either prefixed IRIs or IRIs encapsulated by angle brackets.", e);
+			}
 		} else {
 			return startClass;
 		}

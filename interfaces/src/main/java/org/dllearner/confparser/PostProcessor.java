@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,7 @@ import org.apache.commons.collections15.CollectionUtils;
 import org.apache.commons.collections15.Transformer;
 import org.dllearner.cli.ConfFileOption;
 
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -50,6 +52,16 @@ public class PostProcessor {
 
 	List<ConfFileOption> confOptions;
 	Map<String, ConfFileOption> directives;
+	
+	// a set of properties which contain URIs
+	static final Set<String> uriProperties = Sets.newHashSet(
+			"positiveExamples", 
+			"negativeExamples", 
+			"startClass", 
+			"classToDescribe",
+			"entityToDescribe",
+			"propertyToDescribe"
+			);
 	
 	public PostProcessor(List<ConfFileOption> confOptions, Map<String, ConfFileOption> directives) {
 		this.confOptions = confOptions;
@@ -108,6 +120,10 @@ public class PostProcessor {
 		// loop through all options and replaces prefixes
 		for(ConfFileOption option : confOptions) {
 			Object valueObject = option.getValue();
+//			if(uriProperties.contains(option.getPropertyName())){
+//				System.out.println(option);
+//			}
+			
 
 			if(valueObject instanceof String){
 				valueObject = replaceAllMap("", prefixes, ":", (String) valueObject);

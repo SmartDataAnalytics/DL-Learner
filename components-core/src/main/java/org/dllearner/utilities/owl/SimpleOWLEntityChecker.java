@@ -36,6 +36,8 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	private AbstractReasonerComponent rc;
 	
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
+	
+	private boolean allowShortForm = false;
 
 	public SimpleOWLEntityChecker(AbstractReasonerComponent rc) {
 		this.rc = rc;
@@ -50,7 +52,9 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 			return df.getOWLThing();
 		}
 		for (OWLClass cls : rc.getClasses()) {
-			if(sfp.getShortForm(cls.getIRI()).equals(name) || cls.getIRI().toQuotedString().equals(name)) {
+			if(allowShortForm && sfp.getShortForm(cls.getIRI()).equals(name) || 
+					cls.getIRI().toString().equals(name) ||
+					cls.getIRI().toQuotedString().equals(name)) {
 				return cls;
 			}
 		}
@@ -110,6 +114,13 @@ public class SimpleOWLEntityChecker implements OWLEntityChecker{
 	@Override
 	public OWLAnnotationProperty getOWLAnnotationProperty(String name) {
 		return null;
+	}
+	
+	/**
+	 * @param allowShortForm the allowShortForm to set
+	 */
+	public void setAllowShortForm(boolean allowShortForm) {
+		this.allowShortForm = allowShortForm;
 	}
 
 }
