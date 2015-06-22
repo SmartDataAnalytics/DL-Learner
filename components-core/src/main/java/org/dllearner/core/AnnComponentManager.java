@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.collections15.BidiMap;
@@ -95,7 +96,6 @@ public class AnnComponentManager {
             "org.dllearner.learningproblems.PosOnlyLP",
             "org.dllearner.learningproblems.ClassLearningProblem",
             "org.dllearner.learningproblems.PropertyAxiomLearningProblem",
-            "org.dllearner.reasoning.FastInstanceChecker",
             "org.dllearner.reasoning.ClosedWorldReasoner",
             "org.dllearner.reasoning.OWLAPIReasoner",
             "org.dllearner.reasoning.SPARQLReasoner",
@@ -170,6 +170,22 @@ public class AnnComponentManager {
 		return components;
 	}
 
+    /**
+     * Get registered components which are of the specified type.
+     *
+     * @param type The super type.
+     * @return All sub classes of type.
+     */
+    public SortedSet<String> getComponentsStringsOfType(Class type) {
+
+    	SortedSet<String> result = new TreeSet<>();
+        for (Class<? extends Component> component : getComponentsOfType(type)) {
+        	result.add(getShortName(component));
+        }
+
+        return result;
+    }
+    
     /**
      * Get registered components which are of the specified type.
      *

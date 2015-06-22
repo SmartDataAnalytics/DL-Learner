@@ -117,8 +117,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(
 			name = "startClass",
 			defaultValue = "owl:Thing",
-			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with prefixed URIs or URIs encapsulated in angle brackets.",
-			exampleValue = "ex:Male or <http://example.org/ontology/Female>")
+			description = "You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax either with full IRIs or prefixed IRIs.",
+			exampleValue = "ex:Male or http://example.org/ontology/Female")
 	private OWLClassExpression startClass;
 	
 	// all descriptions in the search tree plus those which were too weak (for fast redundancy check)

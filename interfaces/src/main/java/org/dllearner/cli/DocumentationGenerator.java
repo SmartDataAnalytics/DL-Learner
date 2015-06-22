@@ -40,16 +40,12 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.ref.RefinementOperator;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 
 /**
  * 
@@ -58,8 +54,6 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class DocumentationGenerator {
 
-	private ConfMapper confMapper = new ConfMapper();	
-	
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
 	
 	private static final Map<Class, String> varNameMapping = new HashMap<Class, String>();

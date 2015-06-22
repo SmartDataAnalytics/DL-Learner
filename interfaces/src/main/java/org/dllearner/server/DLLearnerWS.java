@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -44,11 +45,13 @@ import org.apache.log4j.Logger;
 import org.dllearner.Info;
 import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
+import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
@@ -157,7 +160,7 @@ public class DLLearnerWS {
 	 */
 	@WebMethod
 	public String[] getKnowledgeSources() {
-		Set<String> knowledgeSources = confMapper.getKnowledgeSources();
+		Set<String> knowledgeSources = cm.getComponentsStringsOfType(KnowledgeSource.class);
 		return knowledgeSources.toArray(new String[knowledgeSources.size()]);
 	}
 	
@@ -167,7 +170,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getReasoners() {
-		Set<String> reasoners = confMapper.getReasoners();
+		Set<String> reasoners = cm.getComponentsStringsOfType(AbstractReasonerComponent.class);
 		return reasoners.toArray(new String[reasoners.size()]);		
 	}
 	
@@ -177,7 +180,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getLearningProblems() {
-		Set<String> learningProblems = confMapper.getLearningProblems();
+		Set<String> learningProblems = cm.getComponentsStringsOfType(AbstractLearningProblem.class);
 		return learningProblems.toArray(new String[learningProblems.size()]);		
 	}
 	
@@ -187,7 +190,7 @@ public class DLLearnerWS {
 	 */	
 	@WebMethod
 	public String[] getLearningAlgorithms() {
-		Set<String> learningAlgorithms = confMapper.getLearningAlgorithms();
+		Set<String> learningAlgorithms = cm.getComponentsStringsOfType(AbstractCELA.class);
 		return learningAlgorithms.toArray(new String[learningAlgorithms.size()]);		
 	}	
 	
