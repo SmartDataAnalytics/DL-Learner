@@ -68,7 +68,7 @@ $negExamples = array(
 	'http://localhost/foo#mandy',
 	'http://localhost/foo#miriam',
 	'http://localhost/foo#hanna');
-$client->setLearningProblem($id, "posNegLPStandard");
+$client->setLearningProblem($id, "posNegStandard");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
