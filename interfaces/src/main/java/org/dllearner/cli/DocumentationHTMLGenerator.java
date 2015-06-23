@@ -79,7 +79,7 @@ public class DocumentationHTMLGenerator {
 			Class<?> comp = compEntry.getValue();
 			sb.append("<div class=\"type " + getCoreTypes(comp) + "\">");
 			// heading + anchor
-			sb.append("<a name=\"" + comp.getName() + "\"><h2>"+compEntry.getKey()+"</h2></a>\n");
+			sb.append("<a name=\"" + comp.getName() + "\"><h2>"+compEntry.getKey()+" <small class=\"default-hidden\">" + comp.getName() + "</small></h2></a>\n");
 			// some information about the component
 			if (Component.class.isAssignableFrom(comp)) {
 				Class<? extends Component> ccomp = (Class<? extends Component>) comp;
@@ -140,6 +140,8 @@ public class DocumentationHTMLGenerator {
 		sb.append("@media screen and (max-width: 767px) {\n"
 				+ ".table-responsive > .table > thead > tr > th, .table-responsive > .table > tbody > tr > th, .table-responsive > .table > tfoot > tr > th, "
 				+ ".table-responsive > .table > thead > tr > td, .table-responsive > .table > tbody > tr > td, .table-responsive > .table > tfoot > tr > td {  white-space: inherit;  } }\n");
+		sb.append("h2 small.default-hidden { visibility: hidden; }\n");
+		sb.append("a:hover h2 small.default-hidden, a:active h2 small.default-hidden { visibility: visible; }\n");
 		sb.append("</style>\n");
 		sb.append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" language=\"javascript\">\n");
