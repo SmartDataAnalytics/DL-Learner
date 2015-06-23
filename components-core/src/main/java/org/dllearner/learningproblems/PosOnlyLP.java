@@ -39,6 +39,7 @@ import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.core.options.StringSetConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import com.google.common.collect.Sets;
 
@@ -49,7 +50,7 @@ import com.google.common.collect.Sets;
  *
  */
 @ComponentAnn(name = "positive only learning problem", shortName = "posonlylp", version = 0.6)
-public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOnly> {
+public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOnly<OWLNamedIndividual>> {
 	
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;
@@ -68,9 +69,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	// factor for higher weight on recall (needed for subclass learning)
 	private double coverageFactor;
 	
-	public PosOnlyLP() {
-		super(null);
-	}
+	public PosOnlyLP() {}
 	
 	public PosOnlyLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
