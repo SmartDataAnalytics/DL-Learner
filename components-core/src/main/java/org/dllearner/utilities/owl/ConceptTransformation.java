@@ -20,6 +20,7 @@
 package org.dllearner.utilities.owl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import com.google.common.collect.Sets;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -75,6 +78,34 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in Negationsnormalform um
 	public static OWLClassExpression transformToNegationNormalForm(OWLClassExpression concept) {
 		return concept.getNNF();
+	}
+	
+	/**
+	 * Expand the class expression by adding \exists r.\top for all properties r
+	 * that are involved in some \forall r.C on the same modal depth. 
+	 * @param ce
+	 * @return
+	 */
+	public static OWLClassExpression appendSomeValuesFrom(OWLClassExpression ce) {
+		// if forall semantics is someonly
+		if (ce instanceof OWLObjectIntersectionOf) {
+			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+			Set<OWLObjectPropertyExpression> universallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			Set<OWLObjectPropertyExpression> existentiallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
+				newOperands.add(appendSomeValuesFrom(operand));
+				if(operand instanceof OWLObjectAllValuesFrom) {
+					universallyQuantifiedProperties.add(((OWLObjectAllValuesFrom) operand).getProperty());
+				} else if(operand instanceof OWLObjectSomeValuesFrom) {
+					existentiallyQuantifiedProperties.add(((OWLObjectSomeValuesFrom) operand).getProperty());
+				}
+			}
+			for (OWLObjectPropertyExpression ope : Sets.difference(universallyQuantifiedProperties, existentiallyQuantifiedProperties)) {
+				newOperands.add(df.getOWLObjectSomeValuesFrom(ope, df.getOWLThing()));
+			}
+			return df.getOWLObjectIntersectionOf(newOperands);
+		} 
+		return ce.getNNF();
 	}
 	
 	// nimmt Konzept in Negationsnormalform und wendet äquivalenzerhaltende
