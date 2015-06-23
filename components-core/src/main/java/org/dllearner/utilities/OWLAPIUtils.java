@@ -113,7 +113,7 @@ public class OWLAPIUtils {
 				return parser.parseClassExpression();
 			} catch (ParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
-						+ "remember to use either prefixed IRIs or IRIs encapsulated by angle brackets.", e);
+						+ "remember to use either full IRIs or prefixed IRIs.", e);
 			}
 		} else {
 			return startClass;

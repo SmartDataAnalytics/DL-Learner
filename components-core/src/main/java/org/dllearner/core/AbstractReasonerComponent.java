@@ -764,9 +764,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 					numericValues.add((T) Integer.valueOf(lit.parseInteger()));
 				} else {
 					try {
-						Number number = numberFormat.parse(lit.getLiteral());
-						if(number instanceof Long) {
-							number = Double.valueOf(number.toString());
+						Number number;
+						String litStr = lit.getLiteral();
+						if(litStr.equalsIgnoreCase("NAN")) {
+							number = Double.NaN;
+						} else {
+							number = numberFormat.parse(litStr);
+							if(number instanceof Long) {
+								number = Double.valueOf(number.toString());
+							}
 						}
 						numericValues.add((T) (number) );
 					} catch (ParseException e) {
