@@ -270,7 +270,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "someOnly", 
 			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r", 
 			defaultValue="true")
-	private boolean someOnly = true;
+	private boolean useSomeOnly = true;
 
 	// caches for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
@@ -579,7 +579,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					if((someOnly && isCombinable(description, c)) || !someOnly) {
+					if((useSomeOnly && isCombinable(description, c)) || !useSomeOnly) {
 						List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
 						newChildren.add(c);
 						newChildren.remove(child);
@@ -832,7 +832,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					
 					// we only add \forall r.C to an intersection if there is 
 					// already some existential restriction \exists r.C
-					if(someOnly) {
+					if(useSomeOnly) {
 						skip = !isCombinable(description, c);
 					}
 
@@ -2081,4 +2081,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public void setUseInverse(boolean useInverse) {
 		this.useInverse = useInverse;
 	}
+	
+	/**
+	 * @param useSomeOnly whether to allow universal restrictions on a property r only if there exists already
+	 * a existential restriction on the same property in an intersection
+	 */
+	public void setUseSomeOnly(boolean useSomeOnly) {
+		this.useSomeOnly = useSomeOnly;
+	}
+	
+	/**
+	 * @param useTimeDatatypes whether to use data/time literal restrictions
+	 */
+	public void setUseTimeDatatypes(boolean useTimeDatatypes) {
+		this.useTimeDatatypes = useTimeDatatypes;
+	}
+	
 }
