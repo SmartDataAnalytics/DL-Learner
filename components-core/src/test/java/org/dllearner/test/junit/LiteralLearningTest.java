@@ -13,6 +13,8 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -47,9 +49,16 @@ public final class LiteralLearningTest {
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
 		
-		AbstractReasonerComponent rc = new ClosedWorldReasoner(ks);
-		rc.init();
+		ClosedWorldReasoner cwr = new ClosedWorldReasoner(ks);
+		cwr.init();
 		
+		OWLAPIReasoner oar = new OWLAPIReasoner(ks);
+		oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
+		oar.init();
+		
+		AbstractReasonerComponent rcs[] = { cwr, oar };
+
+		for(AbstractReasonerComponent rc : rcs) {
 		PosNegLPStandard lp = new PosNegLPStandard();
 		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
 		positiveExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N1")));
@@ -86,7 +95,7 @@ public final class LiteralLearningTest {
 										OWLFacet.MAX_INCLUSIVE,
 										df.getOWLLiteral(solution, restrictionType))))));
 		
-		
+		}
 	}
 
 	@Test
