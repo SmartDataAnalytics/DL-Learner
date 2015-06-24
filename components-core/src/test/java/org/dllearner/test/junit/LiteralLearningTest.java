@@ -25,6 +25,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
+import com.clarkparsia.owlapiv3.XSD;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
@@ -97,14 +99,14 @@ public final class LiteralLearningTest {
 		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "9");
 	}
 
-//	@Test
-//	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-//		genericNumericTypeTest(SHORTS, SHORTS_OWL, OWL2Datatype.XSD_SHORT.getDatatype(new OWLDataFactoryImpl()), "9");
-//	}
-//	
-//	@Test
-//	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-//		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
-//	}
+	@Test
+	public void shortTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		genericNumericTypeTest(SHORTS, SHORTS_OWL, XSD.SHORT, "9");
+	}
+	
+	@Test
+	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
+	}
 	
 }

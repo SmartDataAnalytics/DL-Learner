@@ -44,6 +44,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -80,6 +81,7 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -802,7 +804,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 				//datatype
-				if(Arrays.asList(baseReasoner.floatDatatypes).contains(OWL2Datatype.getDatatype(datatype.getIRI()))) {
+				if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
 					SortedSet<Double> values = dd.get(property).get(individual);
 					
 					// no value exists
@@ -810,13 +812,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						return false;
 					}
 					
+					XSDDatatype abc = XSDDatatype.XSDint;
 					double min = -Double.MAX_VALUE;
 					double max = Double.MAX_VALUE;
 					for (OWLFacetRestriction facet : facetRestrictions) {
 						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
-							min = facet.getFacetValue().parseDouble();
+							min = Double.parseDouble(facet.getFacetValue().getLiteral());
 						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
-							max = facet.getFacetValue().parseDouble();
+							max = Double.parseDouble(facet.getFacetValue().getLiteral());
 						} 
 					}
 					
@@ -831,7 +834,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 							return true;
 						}
 					}
-				} else if(Arrays.asList(baseReasoner.intDatatypes).contains(OWL2Datatype.getDatatype(datatype.getIRI()))) {
+				} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
 					SortedSet<Integer> values = id.get(property).get(individual);
 					
 					int min = Integer.MIN_VALUE;

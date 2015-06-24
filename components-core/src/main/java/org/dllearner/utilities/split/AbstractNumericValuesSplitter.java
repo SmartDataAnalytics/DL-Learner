@@ -34,7 +34,7 @@ public abstract class AbstractNumericValuesSplitter extends AbstractValuesSplitt
 	 */
 	@Override
 	public Set<OWLDatatype> getDatatypes() {
-		return OWLAPIUtils.NUMERIC_DATATYPES;
+		return OWLAPIUtils.numericDatatypes;
 	}
 
 }

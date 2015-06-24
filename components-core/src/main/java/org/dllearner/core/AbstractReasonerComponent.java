@@ -701,8 +701,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Double> valuesDouble = new TreeSet<Double>();
 			for (OWLLiteral lit : values) {
-				if(lit.isDouble()){
-					valuesDouble.add(lit.parseDouble());
+				if(OWLAPIUtils.floatDatatypes.contains(lit.getDatatype())){
+					valuesDouble.add(Double.parseDouble(lit.getLiteral()));
 				}
 			}
 			ret.put(e.getKey(), valuesDouble);
@@ -805,7 +805,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
 			for (OWLLiteral lit : values) {
-				if(lit.isInteger()){
+				if(OWLAPIUtils.isIntegerDatatype(lit)){
 					valuesInt.add(lit.parseInteger());
 				}
 			}

@@ -98,6 +98,7 @@ import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
@@ -144,27 +145,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     private OWLReasoner fallbackReasoner;
     
-    final static OWLDatatype[] intDatatypes = {
-		XSD.INT,
-		XSD.INTEGER,
-		XSD.POSITIVE_INTEGER,
-		XSD.NEGATIVE_INTEGER,
-		XSD.NON_POSITIVE_INTEGER,
-		XSD.NON_NEGATIVE_INTEGER,
-		XSD.SHORT
-    };
-    final static OWLDatatype[] floatDatatypes = {
-    	XSD.FLOAT,
-    	XSD.DOUBLE,
-    	new OWLDatatypeImpl(XSDVocabulary.DECIMAL.getIRI())
-    };
-    final static OWLDatatype[] fixedDatatypes = {
-    	XSD.BOOLEAN
-    };
-    final static OWLDatatype[] dtDatatypes = {
-    	XSD.DATE_TIME,
-    	XSD.G_DAY
-    };
     
  // default reasoner is Pellet
     @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
@@ -1198,7 +1178,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
 		
-		for (OWLDatatype dt:floatDatatypes) {
+		for (OWLDatatype dt:OWLAPIUtils.floatDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
 
@@ -1209,7 +1189,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
 		
-		for (OWLDatatype dt:intDatatypes) {
+		for (OWLDatatype dt:OWLAPIUtils.intDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
 

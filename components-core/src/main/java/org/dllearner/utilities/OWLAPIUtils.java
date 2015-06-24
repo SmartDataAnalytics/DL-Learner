@@ -3,7 +3,11 @@
  */
 package org.dllearner.utilities;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -32,27 +36,50 @@ public class OWLAPIUtils {
 	
 	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 	
-	private static final Set<IRI> intDatatypeIRIs = Sets.newHashSet(
-			OWL2Datatype.XSD_INTEGER.getIRI(),
-			OWL2Datatype.XSD_INT.getIRI(),
-			OWL2Datatype.XSD_POSITIVE_INTEGER.getIRI(),
-			OWL2Datatype.XSD_NON_POSITIVE_INTEGER.getIRI(),
-			OWL2Datatype.XSD_NEGATIVE_INTEGER.getIRI(),
-			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER.getIRI()
-			);
+    public final static Set<OWLDatatype> intDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
+		XSD.INT,
+		XSD.INTEGER,
+		XSD.POSITIVE_INTEGER,
+		XSD.NEGATIVE_INTEGER,
+		XSD.NON_POSITIVE_INTEGER,
+		XSD.NON_NEGATIVE_INTEGER,
+		XSD.SHORT
+    ));
+    public final static Set<OWLDatatype> floatDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
+    	XSD.FLOAT,
+    	XSD.DOUBLE,
+    	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
+    ));
+    public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
+    	XSD.BOOLEAN
+    ));
+    public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
+    	XSD.DATE_TIME,
+    	XSD.G_DAY
+    ));
 	
-	public static final Set<OWLDatatype> NUMERIC_DATATYPES = Sets.newHashSet(
-			XSD.BYTE,
-			XSD.SHORT,
-			XSD.INT,
-			XSD.INTEGER,
-			XSD.POSITIVE_INTEGER,
-			XSD.NON_POSITIVE_INTEGER,
-			XSD.NEGATIVE_INTEGER,
-			XSD.NON_NEGATIVE_INTEGER,XSD.LONG,
-			XSD.FLOAT,
-			XSD.DOUBLE
-			);
+	public static final Set<OWLDatatype> numericDatatypes = Sets.union(intDatatypes, floatDatatypes);
+	
+	private static final Map<OWLDatatype, Class<?>> javaTypeMap;
+	static {
+		javaTypeMap = new TreeMap<OWLDatatype, Class<?>>();
+		javaTypeMap.put(XSD.BYTE, Byte.class);
+		javaTypeMap.put(XSD.SHORT, Short.class);
+		javaTypeMap.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL), Double.class);
+		javaTypeMap.put(XSD.INT, Integer.class);
+		javaTypeMap.put(XSD.INTEGER, Integer.class);
+		javaTypeMap.put(XSD.POSITIVE_INTEGER, Integer.class);
+		javaTypeMap.put(XSD.NEGATIVE_INTEGER, Integer.class);
+		javaTypeMap.put(XSD.NON_NEGATIVE_INTEGER, Integer.class);
+		javaTypeMap.put(XSD.NON_POSITIVE_INTEGER, Integer.class);
+		javaTypeMap.put(XSD.LONG, Long.class);
+		javaTypeMap.put(XSD.DOUBLE, Double.class);
+		javaTypeMap.put(XSD.FLOAT, Float.class);
+		javaTypeMap.put(XSD.BOOLEAN	, Boolean.class);
+		//javaTypeMap.put(OWL2Datatype.XSD_STRING, String.class);
+		//javaTypeMap.put(OWL2Datatype.XSD_, .class);
+	}
+	
 	
 	public static String getPrintName(EntityType entityType) {
 		String str = entityType.getName();
@@ -85,19 +112,15 @@ public class OWLAPIUtils {
 	}
 	
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
-		return intDatatypeIRIs.contains(lit.getDatatype().getIRI());
+		return intDatatypes.contains(lit.getDatatype());
 	}
 	
 	public static boolean isIntegerDatatype(OWLDatatype datatype) {
-		return intDatatypeIRIs.contains(datatype.getIRI());
+		return intDatatypes.contains(datatype);
 	}
 	
 	public static boolean isNumericDatatype(OWLDatatype datatype){
-    	if(!datatype.isBuiltIn()){
-    		return false;
-    	}
-    	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
-		return NUMERIC_DATATYPES.contains(builtInDatatype);
+		return numericDatatypes.contains(datatype);
     }
 	
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
