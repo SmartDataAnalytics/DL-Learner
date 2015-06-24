@@ -94,12 +94,15 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
@@ -141,25 +144,26 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     private OWLReasoner fallbackReasoner;
     
-    final static OWL2Datatype[] intDatatypes = {
-		OWL2Datatype.XSD_INT,
-		OWL2Datatype.XSD_INTEGER,
-		OWL2Datatype.XSD_POSITIVE_INTEGER,
-		OWL2Datatype.XSD_NEGATIVE_INTEGER,
-		OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
-		OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
-		OWL2Datatype.XSD_SHORT
+    final static OWLDatatype[] intDatatypes = {
+		XSD.INT,
+		XSD.INTEGER,
+		XSD.POSITIVE_INTEGER,
+		XSD.NEGATIVE_INTEGER,
+		XSD.NON_POSITIVE_INTEGER,
+		XSD.NON_NEGATIVE_INTEGER,
+		XSD.SHORT
     };
-    final static OWL2Datatype[] floatDatatypes = {
-    	OWL2Datatype.XSD_FLOAT,
-    	OWL2Datatype.XSD_DOUBLE,
-    	OWL2Datatype.XSD_DECIMAL
+    final static OWLDatatype[] floatDatatypes = {
+    	XSD.FLOAT,
+    	XSD.DOUBLE,
+    	new OWLDatatypeImpl(XSDVocabulary.DECIMAL.getIRI())
     };
-    final static OWL2Datatype[] fixedDatatypes = {
-    	OWL2Datatype.XSD_BOOLEAN
+    final static OWLDatatype[] fixedDatatypes = {
+    	XSD.BOOLEAN
     };
-    final static OWL2Datatype[] dtDatatypes = {
-    	OWL2Datatype.XSD_DATE_TIME
+    final static OWLDatatype[] dtDatatypes = {
+    	XSD.DATE_TIME,
+    	XSD.G_DAY
     };
     
  // default reasoner is Pellet
@@ -300,7 +304,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			if (it.hasNext()) {
 				OWLDataRange range = it.next();
 				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
-					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
+					datatype2Properties.put(range.asOWLDatatype(), dataProperty);
 
 					dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
 					
@@ -309,8 +313,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 					}
 				}
 			} else {
-				datatype2Properties.put(OWL2Datatype.XSD_STRING, dataProperty);
-				dataproperty2datatype.put(dataProperty, OWL2Datatype.XSD_STRING.getDatatype(df));
+				datatype2Properties.put(XSD.STRING, dataProperty);
+				dataproperty2datatype.put(dataProperty, XSD.STRING);
 			}
         }
     }
@@ -1187,14 +1191,14 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
 	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_BOOLEAN);
+		return (Set<OWLDataProperty>) datatype2Properties.get(XSD.BOOLEAN);
 	}
 
 	@Override
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
 		
-		for (OWL2Datatype dt:floatDatatypes) {
+		for (OWLDatatype dt:floatDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
 
@@ -1205,7 +1209,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
 		
-		for (OWL2Datatype dt:intDatatypes) {
+		for (OWLDatatype dt:intDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
 
@@ -1214,7 +1218,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_STRING);
+		return (Set<OWLDataProperty>) datatype2Properties.get(XSD.STRING);
 	}
 
 	/* (non-Javadoc)
