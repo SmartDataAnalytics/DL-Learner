@@ -3,29 +3,30 @@
  */
 package org.dllearner.utilities.split;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLLiteral;
 
 /**
+ * Abstract class for values splitting implementation.
  * @author Lorenz Buehmann
  *
  */
-public abstract class AbstractValuesSplitter extends AbstractComponent implements ValuesSplitter {
+public abstract class AbstractValuesSplitter implements ValuesSplitter{
 	
 	protected AbstractReasonerComponent reasoner;
+	protected OWLDataFactory dataFactory;
 	
-	protected Set<OWLDataProperty> numericDataProperties;
-
-	public AbstractValuesSplitter(AbstractReasonerComponent reasoner) {
+	public AbstractValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
 		this.reasoner = reasoner;
+		this.dataFactory = dataFactory;
 	}
 	
 	/* (non-Javadoc)
@@ -33,44 +34,25 @@ public abstract class AbstractValuesSplitter extends AbstractComponent implement
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-		numericDataProperties = reasoner.getNumericDataProperties();
 	}
 	
-	@Override
-	public <T extends Number & Comparable<T>> Map<OWLDataProperty, List<T>> computeSplits() {
-		Map<OWLDataProperty, List<T>> result = new HashMap<OWLDataProperty, List<T>>();
+	/**
+	 * Computes a sorted list of split values for each appropriate data property. 
+	 * @return a map of data properties and its sorted list of split values
+	 */
+	public Map<OWLDataProperty, List<OWLLiteral>> computeSplits() {
+		Map<OWLDataProperty, List<OWLLiteral>> result = new HashMap<>();
 		
-		for (OWLDataProperty dp : numericDataProperties) {
-			List<T> splitValues = computeSplits(dp);
+		for (OWLDataProperty dp : getDataProperties()) {
+			List<OWLLiteral> splitValues = computeSplits(dp);
 			result.put(dp, splitValues);
 		}
 		
 		return result;
 	}
 	
-	protected <T extends Number & Comparable<T>> T computeSplitValue(T number1, T number2){
-//		return number1;
-		T avg = null;
-		if((number1 instanceof Integer && number2 instanceof Integer) ||
-			(number1 instanceof Long && number2 instanceof Long) ||
-			(number1 instanceof Byte && number2 instanceof Byte)
-				) {
-			avg = number1;
-		} else if(number1 instanceof Double && number2 instanceof Double) {
-			avg = (T) Double.valueOf(
-					BigDecimal.valueOf(number1.doubleValue()).
-			add(BigDecimal.valueOf(number2.doubleValue()).divide(
-					BigDecimal.valueOf(0.5d))).doubleValue());
-		} else if(number1 instanceof Float && number2 instanceof Float) {
-			avg = (T) Float.valueOf(
-					BigDecimal.valueOf(number1.floatValue()).
-			add(BigDecimal.valueOf(number2.floatValue()).divide(
-					BigDecimal.valueOf(0.5d))).floatValue());
-		}
-		return avg;
-
-//		return (T) BigDecimal.valueOf(number1.doubleValue()).
-//				add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//						BigDecimal.valueOf(0.5d)));
-	}
+	/**
+	 * @return all applicable data properties.
+	 */
+	protected abstract Set<OWLDataProperty> getDataProperties();
 }

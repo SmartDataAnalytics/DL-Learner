@@ -93,6 +93,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
@@ -197,13 +198,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<Double>> splits = new TreeMap<OWLDataProperty,List<Double>>();
-
-	private Map<OWLDataProperty,List<Byte>> splitsByte = new TreeMap<OWLDataProperty,List<Byte>>();
-	private Map<OWLDataProperty,List<Short>> splitsShort = new TreeMap<OWLDataProperty,List<Short>>();
-	private Map<OWLDataProperty,List<Integer>> splitsInt = new TreeMap<OWLDataProperty,List<Integer>>();
-	private Map<OWLDataProperty,List<Long>> splitsLong = new TreeMap<OWLDataProperty,List<Long>>();
-	private Map<OWLDataProperty,List<Float>> splitsFloat = new TreeMap<OWLDataProperty,List<Float>>();
-	private Map<OWLDataProperty,List<Double>> splitsDouble = new TreeMap<OWLDataProperty,List<Double>>();
+	
+	private Map<OWLDataProperty,List<OWLLiteral>> splitLiterals = new TreeMap<>();
 
 	private Map<OWLDataProperty,List<? extends Number>> splitsNumber = new TreeMap<OWLDataProperty,List<? extends Number>>();
 	private int maxNrOfSplits = 10;

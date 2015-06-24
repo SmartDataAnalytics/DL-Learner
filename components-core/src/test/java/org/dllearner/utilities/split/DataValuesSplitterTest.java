@@ -30,6 +30,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 /**
  * @author Lorenz Buehmann
  *
@@ -38,6 +40,7 @@ public class DataValuesSplitterTest {
 	
 	private static AbstractReasonerComponent reasoner;
 	private static PosNegLP lp;
+	private static OWLDataFactory df = new OWLDataFactoryImpl();
 
 	@BeforeClass
 	public static void init() throws Exception {
@@ -132,12 +135,12 @@ public class DataValuesSplitterTest {
 	}
 
 	/**
-	 * Test method for {@link org.dllearner.utilities.split.DefaultValuesSplitter#computeSplits()}.
+	 * Test method for {@link org.dllearner.utilities.split.DefaultNumericValuesSplitter#computeSplits()}.
 	 * @throws ComponentInitException 
 	 */
 	@Test
 	public void testComputeSplitsDefault() throws Exception {
-		ValuesSplitter splitter = new DefaultValuesSplitter(reasoner);
+		ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
 		splitter.init();
 		System.out.println(splitter.computeSplits());
 	}
@@ -149,7 +152,7 @@ public class DataValuesSplitterTest {
 	@Test
 	public void testComputeSplitsOptimized() throws Exception {
 		createOptimizedTestKB();
-		ValuesSplitter splitter = new OptimizedValuesSplitter(reasoner, lp);
+		ValuesSplitter splitter = new OptimizedValuesSplitter(reasoner, df, lp);
 		splitter.init();
 		System.out.println(splitter.computeSplits());
 	}

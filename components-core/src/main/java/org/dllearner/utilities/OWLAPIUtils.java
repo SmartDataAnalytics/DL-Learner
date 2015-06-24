@@ -18,6 +18,9 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
+import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
+
+import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
@@ -38,20 +41,19 @@ public class OWLAPIUtils {
 			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER.getIRI()
 			);
 	
-	private static final Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
-			OWL2Datatype.XSD_BYTE,
-			OWL2Datatype.XSD_SHORT,
-			OWL2Datatype.XSD_INT,
-			OWL2Datatype.XSD_INTEGER,
-			OWL2Datatype.XSD_POSITIVE_INTEGER,
-			OWL2Datatype.XSD_NEGATIVE_INTEGER,
-			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
-			OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
-			OWL2Datatype.XSD_LONG,
-			OWL2Datatype.XSD_DOUBLE,
-			OWL2Datatype.XSD_FLOAT
+	public static final Set<OWLDatatype> NUMERIC_DATATYPES = Sets.newHashSet(
+			XSD.BYTE,
+			XSD.SHORT,
+			XSD.INT,
+			XSD.INTEGER,
+			XSD.POSITIVE_INTEGER,
+			XSD.NON_POSITIVE_INTEGER,
+			XSD.NEGATIVE_INTEGER,
+			XSD.NON_NEGATIVE_INTEGER,XSD.LONG,
+			XSD.FLOAT,
+			XSD.DOUBLE
 			);
-
+	
 	public static String getPrintName(EntityType entityType) {
 		String str = entityType.getName();
 		
@@ -95,7 +97,7 @@ public class OWLAPIUtils {
     		return false;
     	}
     	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
-		return numericDatatypes.contains(builtInDatatype);
+		return NUMERIC_DATATYPES.contains(builtInDatatype);
     }
 	
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {

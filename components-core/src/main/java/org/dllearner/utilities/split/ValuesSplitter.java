@@ -5,9 +5,12 @@ package org.dllearner.utilities.split;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.dllearner.core.Component;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLLiteral;
 
 /**
  * @author Lorenz Buehmann
@@ -16,18 +19,23 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 public interface ValuesSplitter extends Component{
 	
 	/**
-     * Compute splits for all comparable numeric data properties in the ontology
+     * Computes split literals for all applicable data properties in the ontology
      * 
      * @return a map of data properties and their splitting values
      */
-	<T extends Number & Comparable<T>> Map<OWLDataProperty, List<T>> computeSplits();
+	Map<OWLDataProperty, List<OWLLiteral>> computeSplits();
 
 	/**
-	 * Compute splits values for the given data property
+	 * Computes split literals for the given data property
 	 * 
 	 * @param dp the data property
-	 * @return a list of split values
+	 * @return a list of split literals
 	 */
-	<T extends Number & Comparable<T>> List<T> computeSplits(OWLDataProperty dp);
+	List<OWLLiteral> computeSplits(OWLDataProperty dp);
+	
+	/**
+	 * @return the supported datatypes
+	 */
+	Set<OWLDatatype> getDatatypes();
 
 }
