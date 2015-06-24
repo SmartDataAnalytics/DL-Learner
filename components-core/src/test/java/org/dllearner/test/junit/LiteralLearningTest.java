@@ -57,7 +57,7 @@ public final class LiteralLearningTest {
 		cwr.init();
 		
 		OWLAPIReasoner oar = new OWLAPIReasoner(ks);
-		oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
+		//oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
 		oar.init();
 		
 		AbstractReasonerComponent rcs[] = {
