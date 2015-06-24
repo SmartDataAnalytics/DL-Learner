@@ -139,7 +139,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 	
-	protected Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
+	protected Multimap<OWLDatatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
 	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<OWLDataProperty, OWLDatatype>();
 
 	/**
