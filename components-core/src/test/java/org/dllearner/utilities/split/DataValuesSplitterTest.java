@@ -146,13 +146,13 @@ public class DataValuesSplitterTest {
 	}
 	
 	/**
-	 * Test method for {@link org.dllearner.utilities.split.OptimizedValuesSplitter#computeSplits()}.
+	 * Test method for {@link org.dllearner.utilities.split.OptimizedNumericValuesSplitter#computeSplits()}.
 	 * @throws ComponentInitException 
 	 */
 	@Test
 	public void testComputeSplitsOptimized() throws Exception {
 		createOptimizedTestKB();
-		ValuesSplitter splitter = new OptimizedValuesSplitter(reasoner, df, lp);
+		ValuesSplitter splitter = new OptimizedNumericValuesSplitter(reasoner, df, lp);
 		splitter.init();
 		System.out.println(splitter.computeSplits());
 	}

@@ -26,7 +26,7 @@ import com.google.common.collect.Sets;
  * @author Lorenz Buehmann
  *
  */
-public class OptimizedValuesSplitter extends AbstractNumericValuesSplitter{
+public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitter{
 
 	private PosNegLP lp;
 //	private Class<T> clazz;
@@ -34,7 +34,7 @@ public class OptimizedValuesSplitter extends AbstractNumericValuesSplitter{
 	/**
 	 * @param reasoner
 	 */
-	public OptimizedValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, PosNegLP lp) {
+	public OptimizedNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, PosNegLP lp) {
 		super(reasoner, dataFactory);
 		this.lp = lp;
 		

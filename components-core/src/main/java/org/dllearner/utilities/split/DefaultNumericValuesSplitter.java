@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
 
 /**
+ * A splitter for numeric values which simply returns a fixed number of split values.
  * @author Lorenz Buehmann
  *
  */
