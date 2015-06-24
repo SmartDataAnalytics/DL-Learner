@@ -418,7 +418,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
 			ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
-			splitter.computeSplits();
+			splits = splitter.computeSplits();
 		}
 
 		// determine the maximum number of fillers for each role
@@ -728,12 +728,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 						OWLFacet facet = facetRestriction.getFacet();
 						
-						Number value;
-						if(OWLAPIUtils.isIntegerDatatype(datatype)) {
-							value = Integer.parseInt(facetRestriction.getFacetValue().getLiteral());
-						} else {
-							value = Double.parseDouble(facetRestriction.getFacetValue().getLiteral());
-						}
+						OWLLiteral value =  facetRestriction.getFacetValue();
 						
 						if(facet == OWLFacet.MAX_INCLUSIVE){
 							// find out which split value was used
@@ -1381,6 +1376,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		
 		if(useTimeDatatypes) {
 			Set<OWLDataProperty> dtDPs = mgDT.get(nc);
+
+//			for(OWLDataProperty dp : dtDPs) {
+//				if(splits.get(dp).size() > 0) {
+//					OWLLiteral min = splits.get(dp).get(0);
+//					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
+//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
+//				}
+//			}
 		}
 
 		if(useDataHasValueConstructor) {

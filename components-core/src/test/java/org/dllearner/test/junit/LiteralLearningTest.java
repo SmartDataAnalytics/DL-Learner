@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.Level;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -43,6 +44,9 @@ public final class LiteralLearningTest {
 	static final String FLOATS_OWL = "../test/literals/floats.owl";
 	
 	private void genericNumericTypeTest (String prefix, String owlfile, OWLDatatype restrictionType, String solution) throws OWLOntologyCreationException, ComponentInitException {
+		org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getLogger(CELOE.class.toString()).setLevel(Level.DEBUG);
+
 		File file = new File(owlfile);
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 		
@@ -56,7 +60,10 @@ public final class LiteralLearningTest {
 		oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
 		oar.init();
 		
-		AbstractReasonerComponent rcs[] = { cwr, oar };
+		AbstractReasonerComponent rcs[] = {
+				cwr, 
+				 oar
+				};
 
 		for(AbstractReasonerComponent rc : rcs) {
 		PosNegLPStandard lp = new PosNegLPStandard();
@@ -78,7 +85,7 @@ public final class LiteralLearningTest {
 		op.init();
 		
 		CELOE alg = new CELOE(lp, rc);
-		alg.setMaxClassDescriptionTests(9);
+		alg.setMaxClassDescriptionTests(20);
 		alg.setOperator(op);
 		alg.init();
 		
