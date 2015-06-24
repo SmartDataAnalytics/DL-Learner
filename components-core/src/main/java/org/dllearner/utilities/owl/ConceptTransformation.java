@@ -105,6 +105,20 @@ public class ConceptTransformation {
 			}
 			return df.getOWLObjectIntersectionOf(newOperands);
 		} 
+//		else if(ce instanceof OWLObjectUnionOf) {
+//			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+//			
+//			for (OWLClassExpression operand : ((OWLObjectUnionOf) ce).getOperands()) {
+//				OWLClassExpression newOperand = appendSomeValuesFrom(operand);
+//				if(newOperand instanceof OWLObjectAllValuesFrom) {
+//					newOperand = df.getOWLObjectIntersectionOf(ce,
+//							df.getOWLObjectSomeValuesFrom(((OWLObjectAllValuesFrom) newOperand).getProperty(), df.getOWLThing()));
+//				} 
+//				newOperands.add(newOperand);
+//			}
+//			
+//			return df.getOWLObjectUnionOf(newOperands);
+//		}
 		return ce.getNNF();
 	}
 	

@@ -15,23 +15,27 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
-import com.google.common.collect.Sets;
-
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
-
 /**
- * A splitter for numeric values which simply returns a fixed number of split values.
+ * A splitter for numeric values which simply returns a fixed number of split
+ * values.
+ * Given k is the maximal number of values
+ * used for the refinement of a data property, the assertion
+ * values of the data property are split into k equal parts and
+ * the middle values of split parts are used for refinement (they
+ * are rounded for the integer datatype).
+ * Supposed we have a set of integer values
+ * {1, 2, 3, 4, 5, 6, 10, 12, 16, 20, 28, 30} and use 4 splits, then
+ * we would get 5 split values [1, 3, 8, 18, 30].
+ * 
  * @author Lorenz Buehmann
  *
  */
-public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter{
+public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter {
 
 	private int maxNrOfSplits = 10;
 
@@ -78,7 +82,7 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter{
 		Collections.sort(values);
 
 		int nrOfValues = values.size();
-
+		
 		// create split set
 		List<T> splitsDP = new LinkedList<T>();
 		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
@@ -88,13 +92,21 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter{
 			} else {
 				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
 			}
+			index = Math.max(0, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
+			
 			T number1 = values.get(index);
 			T number2 = values.get(index + 1);
+			
+			System.out.println("Index:" + index + " v1=" + number1 + " v2=" + number2);
 
 			T avg = avg(number1, number2);
 
 			splitsDP.add(avg);
 		}
+		
+		// add the last element
+		splitsDP.add(values.get(nrOfValues - 1));
+		
 		return splitsDP;
 	}
 	

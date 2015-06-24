@@ -19,7 +19,6 @@
 
 package org.dllearner.refinementoperators;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +54,8 @@ import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
+import org.dllearner.utilities.split.ValuesSplitter;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -93,7 +94,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.base.Functions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
@@ -197,11 +197,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 
 	// splits for double datatype properties in ascending order
-	private Map<OWLDataProperty,List<Double>> splits = new TreeMap<OWLDataProperty,List<Double>>();
+	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
 	
-	private Map<OWLDataProperty,List<OWLLiteral>> splitLiterals = new TreeMap<>();
-
-	private Map<OWLDataProperty,List<? extends Number>> splitsNumber = new TreeMap<OWLDataProperty,List<? extends Number>>();
 	private int maxNrOfSplits = 10;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -419,13 +416,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.out.println("freqDataValues: " + frequentDataValues);
 
 		// compute splits for numeric data properties
-		for (OWLDataProperty dp : reasoner.getNumericDataProperties()) {
-			computeSplits2(dp);
-		}
-
-		// compute splits for double datatype properties
-		for(OWLDataProperty dp : reasoner.getDoubleDatatypeProperties()) {
-			computeSplits(dp);
+		if(useNumericDatatypes) {
+			ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
+			splitter.computeSplits();
 		}
 
 		// determine the maximum number of fillers for each role
@@ -744,22 +737,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						
 						if(facet == OWLFacet.MAX_INCLUSIVE){
 							// find out which split value was used
-							int splitIndex = splitsNumber.get(dp).lastIndexOf(value);
+							int splitIndex = splits.get(dp).lastIndexOf(value);
 							if(splitIndex == -1)
 								throw new Error("split error");
 							int newSplitIndex = splitIndex - 1;
 							if(newSplitIndex >= 0) {
-								Number newValue = splitsNumber.get(dp).get(newSplitIndex);
+								OWLLiteral newValue = splits.get(dp).get(newSplitIndex);
 								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						} else if(facet == OWLFacet.MIN_INCLUSIVE){
 							// find out which split value was used
-							int splitIndex = splitsNumber.get(dp).lastIndexOf(value);
+							int splitIndex = splits.get(dp).lastIndexOf(value);
 							if(splitIndex == -1)
 								throw new Error("split error");
 							int newSplitIndex = splitIndex + 1;
-							if(newSplitIndex < splitsNumber.get(dp).size()) {
-								Number newValue = splitsNumber.get(dp).get(newSplitIndex);
+							if(newSplitIndex < splits.get(dp).size()) {
+								OWLLiteral newValue = splits.get(dp).get(newSplitIndex);
 								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						}
@@ -1227,9 +1220,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLDataProperty> numericDPs = reasoner.getNumericDataProperties();
 			logger.debug(sparql_debug, "Numeric DPs:"+numericDPs);
 			for(OWLDataProperty dp : numericDPs) {
-				if(splitsNumber.get(dp).size() > 0) {
-					Number min = splitsNumber.get(dp).get(0);
-					Number max = splitsNumber.get(dp).get(splitsNumber.get(dp).size()-1);
+				if(splits.get(dp).size() > 0) {
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
 					
 						OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
 						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
@@ -1274,16 +1267,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
 	}
 	
-	private OWLDatatypeRestriction asDatatypeRestriction(OWLDataProperty dp, Number value, OWLFacet facet) {
+	private OWLDatatypeRestriction asDatatypeRestriction(OWLDataProperty dp, OWLLiteral value, OWLFacet facet) {
 		OWLDatatype datatype = reasoner.getDatatype(dp);
 		
 		OWLDatatypeRestriction restriction = df.getOWLDatatypeRestriction(
 				datatype, 
 				Collections.singleton(df.getOWLFacetRestriction(
 						facet, 
-						df.getOWLLiteral(
-								value.toString(), 
-								datatype))));
+						value)));
 		return restriction;
 	}
 
@@ -1380,10 +1371,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			for(OWLDataProperty dp : numericDPs) {
 				if(splits.get(dp).size() > 0) {
-					double min = splits.get(dp).get(0);
-					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
 				}
 			}
 		}
@@ -1813,98 +1804,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
 		return !reasoner.isSuperClassOf(d, b);
 	}
-
-	private void computeSplits(OWLDataProperty dp) {
-		Set<Double> valuesSet = new TreeSet<Double>();
-//		Set<OWLIndividual> individuals = rs.getIndividuals();
-		Map<OWLIndividual,SortedSet<Double>> valueMap = reasoner.getDoubleDatatypeMembers(dp);
-		// add all values to the set (duplicates will be remove automatically)
-		for(Entry<OWLIndividual,SortedSet<Double>> e : valueMap.entrySet())
-			valuesSet.addAll(e.getValue());
-		// convert set to a list where values are sorted
-		List<Double> values = new LinkedList<Double>(valuesSet);
-		Collections.sort(values);
-
-		int nrOfValues = values.size();
-		// create split set
-		List<Double> splitsDP = new LinkedList<Double>();
-		for(int splitNr=0; splitNr < Math.min(maxNrOfSplits,nrOfValues-1); splitNr++) {
-			int index;
-			if(nrOfValues<=maxNrOfSplits)
-				index = splitNr;
-			else
-				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
-
-			double value = 0.5*(values.get(index)+values.get(index+1));
-			splitsDP.add(value);
-		}
-		splits.put(dp, splitsDP);
-
-//		System.out.println(values);
-//		System.out.println(splits);
-//		System.exit(0);
-	}
-
-	//TODO implement numerical splitting
-
-	private <T extends Number & Comparable<T>> void computeSplits2(OWLDataProperty dp) {
-		Set<T> valuesSet = new TreeSet<T>();
-//		Set<OWLIndividual> individuals = rs.getIndividuals();
-		Map<OWLIndividual, SortedSet<T>> valueMap = reasoner.getNumericDatatypeMembers(dp);
-
-		// add all values to the set (duplicates will be remove automatically)
-		for(Entry<OWLIndividual, SortedSet<T>> e : valueMap.entrySet()){
-			valuesSet.addAll(e.getValue());
-		}
-
-		// convert set to a list where values are sorted
-		List<T> values = new LinkedList<T>(valuesSet);
-		Collections.sort(values);
-		
-		int nrOfValues = values.size();
-
-		// create split set
-		List<T> splitsDP = new LinkedList<T>();
-		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
-			int index;
-			if (nrOfValues <= maxNrOfSplits) {
-				index = splitNr;
-			} else {
-				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
-			}
-			T number1 = values.get(index);
-			T number2 = values.get(index + 1);
-
-			T avg = avg(number1, number2);//System.out.println("AVG(" + number1 + ", " + number2 + ")=" + avg);
-
-			splitsDP.add(avg);
-		}
-		splitsNumber.put(dp, splitsDP);
-	}
-
-	private <T extends Number & Comparable<T>> T avg(T number1, T number2){
-		T avg = null;
-		if (number1 instanceof Integer && number2 instanceof Integer){
-			avg = (T) Integer.valueOf((number1.intValue() + number2.intValue()) / 2);
-		} else if (number1 instanceof Short && number2 instanceof Short){
-			avg = (T) Short.valueOf((short) ((number1.shortValue() + number2.shortValue()) / 2));
-		} else if (number1 instanceof Byte && number2 instanceof Byte){
-			avg = (T) Byte.valueOf((byte) ((number1.byteValue() + number2.byteValue()) / 2));
-		} else if (number1 instanceof Long && number2 instanceof Long){
-			avg = (T) Long.valueOf((long) ((number1.longValue() + number2.longValue()) / 2));
-		} else if (number1 instanceof Double && number2 instanceof Double) {
-			avg = (T) Double.valueOf((BigDecimal.valueOf(number1.doubleValue()).add(
-					BigDecimal.valueOf(number2.doubleValue())).divide(BigDecimal.valueOf(2))).doubleValue());
-		} else if(number1 instanceof Float && number2 instanceof Float) {
-			avg = (T) Float.valueOf(
-					(BigDecimal.valueOf(number1.floatValue()).
-			add(BigDecimal.valueOf(number2.floatValue())).divide(
-					BigDecimal.valueOf(2d))).floatValue());
-		}
-		return avg;
-
-	}
-
 
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;

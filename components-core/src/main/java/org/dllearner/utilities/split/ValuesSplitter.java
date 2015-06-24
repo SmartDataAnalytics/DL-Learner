@@ -13,16 +13,23 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLLiteral;
 
 /**
+ * A values splitter is supposed to return a sorted list of split literals
+ * for a data property <code>p</code>, such that those split values can be used
+ * in a refinement
+ * operator to generate facet restrictions on the value space of <code>p</code>,
+ * e.g. <code> p some int[>=100] </code>
+ * 
  * @author Lorenz Buehmann
  *
  */
-public interface ValuesSplitter extends Component{
-	
+public interface ValuesSplitter extends Component {
+
 	/**
-     * Computes split literals for all applicable data properties in the ontology
-     * 
-     * @return a map of data properties and their splitting values
-     */
+	 * Computes split literals for all applicable data properties in the
+	 * ontology
+	 * 
+	 * @return a map of data properties and their splitting values
+	 */
 	Map<OWLDataProperty, List<OWLLiteral>> computeSplits();
 
 	/**
@@ -32,7 +39,7 @@ public interface ValuesSplitter extends Component{
 	 * @return a list of split literals
 	 */
 	List<OWLLiteral> computeSplits(OWLDataProperty dp);
-	
+
 	/**
 	 * @return the supported datatypes
 	 */
