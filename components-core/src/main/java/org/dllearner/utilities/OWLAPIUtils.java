@@ -13,11 +13,11 @@ import java.util.TreeSet;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -70,7 +70,8 @@ public class OWLAPIUtils {
     public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
     	XSD.DATE,
     	XSD.DATE_TIME,
-    	XSD.G_DAY
+    	XSD.G_DAY,
+    	XSD.G_YEAR
     ));
 	
 	public static final Set<OWLDatatype> numericDatatypes = Sets.union(intDatatypes, floatDatatypes);
@@ -97,8 +98,14 @@ public class OWLAPIUtils {
 	
 	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeFormatters = new HashMap<>();
 	static {
+		dateTimeFormatters.put(XSD.G_YEAR, ISODateTimeFormat.year());
+		dateTimeFormatters.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
+		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MMZ").withOffsetParsed());
+		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
+		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateTimeNoMillis());
+		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 	
 	
