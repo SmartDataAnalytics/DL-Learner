@@ -283,19 +283,29 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			Iterator<OWLDataRange> it = ranges.iterator();
 			if (it.hasNext()) {
 				OWLDataRange range = it.next();
-				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
-					datatype2Properties.put(range.asOWLDatatype(), dataProperty);
-
-					dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+				if (range.isDatatype()) {
+					OWLDatatype datatype = range.asOWLDatatype();
 					
-					if(OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
-						numericDataProperties.add(dataProperty);
+					if(datatype.isBuiltIn()) { // OWL 2 DL compliant datatypes
+						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+
+						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+						
+						if(OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
+							numericDataProperties.add(dataProperty);
+						}
+					} else if(OWLAPIUtils.dtDatatypes.contains(datatype)) { // support for other XSD datatypes, e.g. xsd:date
+						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+
+						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+					} else {
+						datatype2Properties.put(XSD.STRING, dataProperty);
+						dataproperty2datatype.put(dataProperty, XSD.STRING);
 					}
+				} else { // TODO handle complex data property ranges
+					
 				}
-			} else {
-				datatype2Properties.put(XSD.STRING, dataProperty);
-				dataproperty2datatype.put(dataProperty, XSD.STRING);
-			}
+			} 
         }
     }
 

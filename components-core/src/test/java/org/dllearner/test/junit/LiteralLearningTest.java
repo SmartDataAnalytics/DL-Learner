@@ -19,6 +19,7 @@ import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -26,29 +27,39 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import com.clarkparsia.owlapiv3.XSD;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplInteger;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxRenderer;
 
 public final class LiteralLearningTest {
 	static final String NUMBERS = "http://dl-learner.org/test/numbers#";
 	static final String DOUBLES = "http://dl-learner.org/test/doubles#";
 	static final String SHORTS = "http://dl-learner.org/test/shorts#";
 	static final String FLOATS = "http://dl-learner.org/test/floats#";
+	static final String DATE = "http://dl-learner.org/test/dates#";
 	static final String NUMBERS_OWL = "../test/literals/numbers.owl";
 	static final String DOUBLES_OWL = "../test/literals/doubles.owl";
 	static final String SHORTS_OWL = "../test/literals/shorts.owl";
 	static final String FLOATS_OWL = "../test/literals/floats.owl";
+	static final String DATES_OWL = "../test/literals/dates.owl";
 	
 	private void genericNumericTypeTest (String prefix, String owlfile, OWLDatatype restrictionType, String solution) throws OWLOntologyCreationException, ComponentInitException {
 		org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
 		org.apache.log4j.Logger.getLogger(CELOE.class.toString()).setLevel(Level.DEBUG);
 
+		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
 		File file = new File(owlfile);
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
+		OWLDataFactory df = new OWLDataFactoryImpl();
+		PrefixManager pm = new DefaultPrefixManager(prefix);
 		
 		AbstractKnowledgeSource ks = new OWLAPIOntology(ontology);
 		ks.init();
@@ -64,44 +75,47 @@ public final class LiteralLearningTest {
 				cwr, 
 				 oar
 				};
+		
+		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+		positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
+		positiveExamples.add(df.getOWLNamedIndividual("N2", pm));
+		positiveExamples.add(df.getOWLNamedIndividual("N3", pm));
+		
+		Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+		negativeExamples.add(df.getOWLNamedIndividual("N100", pm));
+		negativeExamples.add(df.getOWLNamedIndividual("N102", pm));
+		negativeExamples.add(df.getOWLNamedIndividual("N104", pm));
+		
+		OWLClassExpression target = df.getOWLDataSomeValuesFrom(
+				df.getOWLDataProperty(IRI.create(prefix + "value")),
+				df.getOWLDatatypeRestriction(
+						restrictionType,
+						df.getOWLFacetRestriction(
+								OWLFacet.MAX_INCLUSIVE,
+								df.getOWLLiteral(solution, restrictionType))));
 
 		for(AbstractReasonerComponent rc : rcs) {
-		PosNegLPStandard lp = new PosNegLPStandard();
-		Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
-		positiveExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N1")));
-		positiveExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N2")));
-		positiveExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N3")));
-		Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
-		negativeExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N100")));
-		negativeExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N102")));
-		negativeExamples.add(new OWLNamedIndividualImpl(IRI.create(prefix + "N104")));
-		lp.setPositiveExamples(positiveExamples);
-		lp.setNegativeExamples(negativeExamples);
-		lp.setReasoner(rc);
-		lp.init();
-		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(rc);
-		op.init();
-		
-		CELOE alg = new CELOE(lp, rc);
-		alg.setMaxClassDescriptionTests(20);
-		alg.setOperator(op);
-		alg.init();
-		
-		alg.start();
-		OWLClassExpression soln = alg.getCurrentlyBestDescription();
-		//System.err.println(soln);
-		OWLDataFactory df = new OWLDataFactoryImpl();
-		assertTrue(soln.getNNF().equals(
-				df.getOWLDataSomeValuesFrom(
-						df.getOWLDataProperty(IRI.create(prefix + "value")),
-						df.getOWLDatatypeRestriction(
-								restrictionType,
-								df.getOWLFacetRestriction(
-										OWLFacet.MAX_INCLUSIVE,
-										df.getOWLLiteral(solution, restrictionType))))));
-		
+			PosNegLPStandard lp = new PosNegLPStandard(rc);
+			lp.setPositiveExamples(positiveExamples);
+			lp.setNegativeExamples(negativeExamples);
+			lp.init();
+			
+			RhoDRDown op = new RhoDRDown();
+			op.setUseTimeDatatypes(true);
+			op.setUseNumericDatatypes(true);
+			op.setReasoner(rc);
+			op.init();
+			
+			CELOE alg = new CELOE(lp, rc);
+			alg.setMaxClassDescriptionTests(1000);
+			alg.setOperator(op);
+			alg.init();
+			
+			alg.start();
+			OWLClassExpression soln = alg.getCurrentlyBestDescription();
+			//System.err.println(soln);
+			assertTrue(soln.getNNF().equals(target));
+			
 		}
 	}
 
@@ -124,5 +138,28 @@ public final class LiteralLearningTest {
 	public void floatTypeTest () throws ComponentInitException, OWLOntologyCreationException {
 		genericNumericTypeTest(FLOATS, FLOATS_OWL, (new OWLDataFactoryImpl()).getFloatOWLDatatype(), "9.5");
 	}
+	
+	@Test
+	public void dateTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		// E+: 1970-10-22, 1970-11-27, 1971-09-24 
+		// E-: 1970-01-05, 2002-03-24, 2002-09-27
+		// T : 1970-10-22 <= x <= 1971-09-24
+		genericNumericTypeTest(DATE, DATES_OWL, XSD.DATE, "1971-09-24");
+	}
+	@Test
+	public void literalComparisonTest () {
+		OWLLiteralImplInteger lit1 = new OWLLiteralImplInteger(50, XSD.INTEGER);
+		OWLLiteralImplInteger lit2 = new OWLLiteralImplInteger(100, XSD.INTEGER);
+		
+		int diffImpl = lit1.compareTo(lit2);
+		System.out.println(diffImpl);
+		
+		int diffValue = Integer.compare(lit1.parseInteger(), lit2.parseInteger());
+		System.out.println(diffValue);
+		
+		System.out.println("Same sorting:" + (Math.signum(diffImpl) == Math.signum(diffValue)));
+		
+	}
+	
 	
 }

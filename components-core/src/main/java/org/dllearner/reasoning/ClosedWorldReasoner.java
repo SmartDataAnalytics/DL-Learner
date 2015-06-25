@@ -45,6 +45,8 @@ import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -798,67 +800,124 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
-			if(filler.isDatatype()){
+			if(filler.isDatatype()){ // filler is a datatype
 				 return dpPos.get(property).containsKey(individual);
 			} else if(filler instanceof OWLDatatypeRestriction){
-				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
-				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
-				//datatype
-				if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
-					SortedSet<Double> values = dd.get(property).get(individual);
+					OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
+					Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 					
-					// no value exists
-					if(values == null) {
-						return false;
-					}
-					
-					XSDDatatype abc = XSDDatatype.XSDint;
-					double min = -Double.MAX_VALUE;
-					double max = Double.MAX_VALUE;
-					for (OWLFacetRestriction facet : facetRestrictions) {
-						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
-							min = Double.parseDouble(facet.getFacetValue().getLiteral());
-						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
-							max = Double.parseDouble(facet.getFacetValue().getLiteral());
-						} 
-					}
-					
-					//we can return false if largest number is below minimum or lowest number is above maximum
-					if(values.last() < min || values.first() > max) {
-						return false;
-					}
-					
-					//search a value which is in the interval
-					for (Double value : values) {
-						if(value >= min && value <= max){
-							return true;
+					if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
+						SortedSet<Double> values = dd.get(property).get(individual);
+						
+						// no value exists
+						if(values == null) {
+							return false;
 						}
-					}
-				} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
-					SortedSet<Integer> values = id.get(property).get(individual);
-					
-					int min = Integer.MIN_VALUE;
-					int max = Integer.MAX_VALUE;
-					for (OWLFacetRestriction facet : facetRestrictions) {
-						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
-							min = facet.getFacetValue().parseInteger();
-						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
-							max = facet.getFacetValue().parseInteger();
-						} 
-					}
-					
-					//we can return false if largest number is below minimum or lowest number is above maximum
-					if(values.last() < min || values.first() > max) {
+						
+						double min = -Double.MAX_VALUE;
+						double max = Double.MAX_VALUE;
+						for (OWLFacetRestriction facet : facetRestrictions) {
+							if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+								min = Double.parseDouble(facet.getFacetValue().getLiteral());
+							} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+								max = Double.parseDouble(facet.getFacetValue().getLiteral());
+							} 
+						}
+						
+						//we can return false if largest number is below minimum or lowest number is above maximum
+						if(values.last() < min || values.first() > max) {
+							return false;
+						}
+						
+						//search a value which is in the interval
+						for (Double value : values) {
+							if(value >= min && value <= max){
+								return true;
+							}
+						}
+					} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
+						SortedSet<Integer> values = id.get(property).get(individual);
+						
+						// no value exists
+						if(values == null) {
+							return false;
+						}
+						
+						int min = Integer.MIN_VALUE;
+						int max = Integer.MAX_VALUE;
+						for (OWLFacetRestriction facet : facetRestrictions) {
+							if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+								min = facet.getFacetValue().parseInteger();
+							} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+								max = facet.getFacetValue().parseInteger();
+							} 
+						}
+						
+						//we can return false if largest number is below minimum or lowest number is above maximum
+						if(values.last() < min || values.first() > max) {
+							return false;
+						}
+						
+						//search a value which is in the interval
+						for (Integer value : values) {
+							if(value >= min && value <= max){
+								return true;
+							}
+						}
+					} else if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
+						SortedSet<OWLLiteral> values = dpPos.get(property).get(individual);
+						
+						// TODO we cannot ensure the sorting, because OWL API does only String comparison
+						// on the lexical String value
+						
+						// no value exists
+						if(values == null) {
+							return false;
+						}
+						
+						OWLLiteral min = null;
+						OWLLiteral max = null;
+						for (OWLFacetRestriction facet : facetRestrictions) {
+							if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+								min = facet.getFacetValue();
+							} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+								max = facet.getFacetValue();
+							} 
+						}
+						
+						// we can return false if largest number is below minimum or lowest number is above maximum
+						DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
+						DateTime minDateTime = null;
+						if(min != null) {
+							minDateTime = formatter.parseDateTime(min.getLiteral());
+						}
+						DateTime maxDateTime = null;
+						if(max != null) {
+							maxDateTime = formatter.parseDateTime(max.getLiteral());
+						}
+						
+						if(
+								(minDateTime != null && formatter.parseDateTime(values.last().getLiteral()).isBefore(minDateTime))
+								|| 
+								(maxDateTime != null && formatter.parseDateTime(values.first().getLiteral()).isAfter(maxDateTime))
+								){
+							return false;
+						}
+						
+						//search a value which is in the interval
+						for (OWLLiteral value : values) {
+							DateTime dateTime = formatter.parseDateTime(value.getLiteral());
+							if(
+									(minDateTime == null || (dateTime.isEqual(minDateTime) ||  dateTime.isAfter(minDateTime)))
+									&& 
+									(maxDateTime == null || (dateTime.isEqual(maxDateTime) ||  dateTime.isBefore(maxDateTime)))
+									)
+									{
+								return true;
+							}
+						}
 						return false;
 					}
-					
-					//search a value which is in the interval
-					for (Integer value : values) {
-						if(value >= min && value <= max){
-							return true;
-						}
-					}
-				}
 			}
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();

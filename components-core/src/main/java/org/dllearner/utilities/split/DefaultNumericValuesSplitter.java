@@ -97,7 +97,7 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 			T number1 = values.get(index);
 			T number2 = values.get(index + 1);
 			
-			System.out.println("Index:" + index + " v1=" + number1 + " v2=" + number2);
+//			System.out.println("Index:" + index + " v1=" + number1 + " v2=" + number2);
 
 			T avg = avg(number1, number2);
 

@@ -54,6 +54,7 @@ import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
 import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
 import org.dllearner.utilities.split.ValuesSplitter;
 import org.semanticweb.owlapi.expression.ParserException;
@@ -413,11 +414,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		valueFrequency = null;
 		dataValueFrequency.clear();// = null;
 
-//		System.out.println("freqDataValues: " + frequentDataValues);
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
 			ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
+			splits = splitter.computeSplits();
+		}
+		
+		// compute splits for time data properties
+		if (useTimeDatatypes) {
+			ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df);
 			splits = splitter.computeSplits();
 		}
 
@@ -724,7 +730,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				
 				
 				OWLDatatypeRestriction newDatatypeRestriction = null;
-				if(OWLAPIUtils.isNumericDatatype(datatype)){
+				if(OWLAPIUtils.isNumericDatatype(datatype) || OWLAPIUtils.dtDatatypes.contains(datatype)){
 					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 						OWLFacet facet = facetRestriction.getFacet();
 						
@@ -752,7 +758,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							}
 						}
 					}
-				}
+				} 
 				if(newDatatypeRestriction != null){
 					refinements.add(df.getOWLDataSomeValuesFrom(dp, newDatatypeRestriction));
 				}
@@ -1215,6 +1221,28 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLDataProperty> numericDPs = reasoner.getNumericDataProperties();
 			logger.debug(sparql_debug, "Numeric DPs:"+numericDPs);
 			for(OWLDataProperty dp : numericDPs) {
+				if(splits.get(dp).size() > 0) {
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+					
+						OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+						
+						restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+				}
+			}
+		}
+		
+		if(useTimeDatatypes) {
+			Set<OWLDataProperty> dataProperties = new HashSet<OWLDataProperty>();
+			for (OWLDataProperty dp : reasoner.getDatatypeProperties()) {
+				OWLDatatype datatype = reasoner.getDatatype(dp);
+				if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
+					dataProperties.add(dp);
+				}
+			}
+			for(OWLDataProperty dp : dataProperties) {
 				if(splits.get(dp).size() > 0) {
 					OWLLiteral min = splits.get(dp).get(0);
 					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);

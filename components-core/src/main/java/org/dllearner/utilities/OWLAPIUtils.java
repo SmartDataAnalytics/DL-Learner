@@ -4,6 +4,7 @@
 package org.dllearner.utilities;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -12,6 +13,8 @@ import java.util.TreeSet;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
@@ -43,7 +46,8 @@ public class OWLAPIUtils {
 		XSD.NEGATIVE_INTEGER,
 		XSD.NON_POSITIVE_INTEGER,
 		XSD.NON_NEGATIVE_INTEGER,
-		XSD.SHORT
+		XSD.SHORT,
+		XSD.BYTE
     ));
     public final static Set<OWLDatatype> floatDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
     	XSD.FLOAT,
@@ -53,7 +57,18 @@ public class OWLAPIUtils {
     public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
     	XSD.BOOLEAN
     ));
+    
+	/**
+	 * The OWL 2 datatypes for the representation of time instants with and
+	 * without time zone offsets.
+	 */
+    public final static Set<OWLDatatype> owl2TimeDatatypes = Sets.newTreeSet(Arrays.asList(
+    		OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME),
+        	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP)
+        ));
+    
     public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
+    	XSD.DATE,
     	XSD.DATE_TIME,
     	XSD.G_DAY
     ));
@@ -78,6 +93,12 @@ public class OWLAPIUtils {
 		javaTypeMap.put(XSD.BOOLEAN	, Boolean.class);
 		//javaTypeMap.put(OWL2Datatype.XSD_STRING, String.class);
 		//javaTypeMap.put(OWL2Datatype.XSD_, .class);
+	}
+	
+	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeFormatters = new HashMap<>();
+	static {
+		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
+		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateTimeNoMillis());
 	}
 	
 	
