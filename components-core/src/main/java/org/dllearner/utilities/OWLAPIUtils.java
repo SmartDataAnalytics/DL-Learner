@@ -104,7 +104,7 @@ public class OWLAPIUtils {
 		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
-		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateTimeNoMillis());
+		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
 		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 	

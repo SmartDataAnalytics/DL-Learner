@@ -3,8 +3,8 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY dates "http://dl-learner.org/test/dates#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
@@ -14,10 +14,27 @@
      xml:base="http://dl-learner.org/test/dates"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:dates="http://dl-learner.org/test/dates#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dates="http://dl-learner.org/test/dates#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
     <owl:Ontology rdf:about="http://dl-learner.org/test/dates"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="&xsd;date"/>
     
 
 
@@ -69,6 +86,12 @@
     
 
 
+    <!-- http://dl-learner.org/test/dates#N1 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N1">
+        <value rdf:datatype="&xsd;date">1971-09-24</value>
+    </owl:NamedIndividual>
+    
 
 
     <!-- http://dl-learner.org/test/dates#N10 -->
@@ -82,7 +105,7 @@
     <!-- http://dl-learner.org/test/dates#N100 -->
 
     <owl:NamedIndividual rdf:about="&dates;N100">
-        <value rdf:datatype="&xsd;date">2002-03-24</value>
+        <value rdf:datatype="&xsd;date">1972-03-24</value>
     </owl:NamedIndividual>
     
 
@@ -125,14 +148,6 @@
         <value rdf:datatype="&xsd;date">1970-01-22</value>
     </owl:NamedIndividual>
     
-    
-    
-	 <!-- http://dl-learner.org/test/dates#N1 -->
-
-    <owl:NamedIndividual rdf:about="&dates;N1">
-        <value rdf:datatype="&xsd;date">1971-09-24</value>
-    </owl:NamedIndividual>
-
 
 
     <!-- http://dl-learner.org/test/dates#N2 -->

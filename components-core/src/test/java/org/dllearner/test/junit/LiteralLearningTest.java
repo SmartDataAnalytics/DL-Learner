@@ -17,6 +17,7 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -45,17 +46,21 @@ public final class LiteralLearningTest {
 	static final String SHORTS = "http://dl-learner.org/test/shorts#";
 	static final String FLOATS = "http://dl-learner.org/test/floats#";
 	static final String DATE = "http://dl-learner.org/test/dates#";
+	static final String DATETIMES = "http://dl-learner.org/test/datetimes#";
 	static final String NUMBERS_OWL = "../test/literals/numbers.owl";
 	static final String DOUBLES_OWL = "../test/literals/doubles.owl";
 	static final String SHORTS_OWL = "../test/literals/shorts.owl";
 	static final String FLOATS_OWL = "../test/literals/floats.owl";
 	static final String DATES_OWL = "../test/literals/dates.owl";
+	static final String DATETIMES_OWL = "../test/literals/datetimes.owl";
 	
 	private void genericNumericTypeTest (String prefix, String owlfile, OWLDatatype restrictionType, String solution) throws OWLOntologyCreationException, ComponentInitException {
 		org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
-		org.apache.log4j.Logger.getLogger(CELOE.class.toString()).setLevel(Level.DEBUG);
+		//org.apache.log4j.Logger.getLogger("org.dllearner.algorithms").setLevel(Level.DEBUG);
+//		org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+//		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		File file = new File(owlfile);
 		OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 		OWLDataFactory df = new OWLDataFactoryImpl();
@@ -68,11 +73,11 @@ public final class LiteralLearningTest {
 		cwr.init();
 		
 		OWLAPIReasoner oar = new OWLAPIReasoner(ks);
-		//oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
+//		oar.setReasonerImplementation(ReasonerImplementation.HERMIT);
 		oar.init();
 		
 		AbstractReasonerComponent rcs[] = {
-				cwr, 
+				//cwr, 
 				 oar
 				};
 		
@@ -108,6 +113,7 @@ public final class LiteralLearningTest {
 			
 			CELOE alg = new CELOE(lp, rc);
 			alg.setMaxClassDescriptionTests(1000);
+			alg.setMaxExecutionTimeInSeconds(0);
 			alg.setOperator(op);
 			alg.init();
 			
@@ -146,6 +152,15 @@ public final class LiteralLearningTest {
 		// T : 1970-10-22 <= x <= 1971-09-24
 		genericNumericTypeTest(DATE, DATES_OWL, XSD.DATE, "1971-09-24");
 	}
+	
+	@Test
+	public void datetimeTypeTest () throws ComponentInitException, OWLOntologyCreationException {
+		// E+: 1970-10-22, 1970-11-27, 1971-09-24 
+		// E-: 1970-01-05, 2002-03-24, 2002-09-27
+		// T : 1970-10-22 <= x <= 1971-09-24
+		genericNumericTypeTest(DATETIMES, DATETIMES_OWL, XSD.DATE_TIME, "1971-09-24");
+	}
+
 	@Test
 	public void literalComparisonTest () {
 		OWLLiteralImplInteger lit1 = new OWLLiteralImplInteger(50, XSD.INTEGER);
