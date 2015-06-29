@@ -76,6 +76,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -98,7 +99,7 @@ import com.jamonapi.MonitorFactory;
 public class CELOE extends AbstractCELA implements Cloneable{
 
 	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
-	private final static Marker sparql_debug = new BasicMarkerFactory().getMarker("SD");
+	private static Marker sparql_debug = MarkerFactory.getMarker("SD");
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
@@ -517,7 +518,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = nodes.descendingIterator();
-		logger.debug(sparql_debug,"`getnext"+nodes);
+		if (logger.isDebugEnabled()) {
+			for (OENode N:nodes) {
+				logger.debug(sparql_debug,"`getnext:"+N);				
+			}
+		}
+
 		while(it.hasNext()) {
 			OENode node = it.next();
 			logger.debug(sparql_debug,"``"+node+node.getAccuracy());
@@ -578,9 +584,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
+		logger.debug(sparql_debug, sparql_debug_out);
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
+		logger.debug(sparql_debug, "`acc:"+accuracy);
 		mon.stop();
-		logger.debug(sparql_debug, sparql_debug_out + accuracy);
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
