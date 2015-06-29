@@ -16,8 +16,13 @@ import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.ISOPeriodFormat;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.EntityType;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -26,6 +31,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 
 import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
@@ -47,7 +53,9 @@ public class OWLAPIUtils {
 		XSD.NON_POSITIVE_INTEGER,
 		XSD.NON_NEGATIVE_INTEGER,
 		XSD.SHORT,
-		XSD.BYTE
+		XSD.BYTE,
+		XSD.UNSIGNED_INT,
+		XSD.UNSIGNED_LONG
     ));
     public final static Set<OWLDatatype> floatDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
     	XSD.FLOAT,
@@ -73,6 +81,12 @@ public class OWLAPIUtils {
     	XSD.G_DAY,
     	XSD.G_YEAR
     ));
+    
+    public final static Set<OWLDatatype> periodDatatypes = Sets.newTreeSet(Arrays.asList(
+    		XSD.DURATION,
+    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
+    		new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration"))
+        ));
 	
 	public static final Set<OWLDatatype> numericDatatypes = Sets.union(intDatatypes, floatDatatypes);
 	
@@ -103,9 +117,37 @@ public class OWLAPIUtils {
 		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MMZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
+		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateTimeNoMillis());
 		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+	}
+	
+	public static final Map<OWLDatatype, PeriodFormatter> periodFormatters = new HashMap<>();
+	static {
+		periodFormatters.put(XSD.DURATION, ISOPeriodFormat.standard());
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration")), 
+				new PeriodFormatterBuilder()//PnDTnHnMnS
+        .appendLiteral("P")
+        .appendDays()
+        .appendSuffix("D")
+        .appendSeparatorIfFieldsAfter("T")
+        .appendHours()
+        .appendSuffix("H")
+        .appendMinutes()
+        .appendSuffix("M")
+        .appendSecondsWithOptionalMillis()
+        .appendSuffix("S")
+        .toFormatter());
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")), 
+				new PeriodFormatterBuilder()//PnYnM
+        .appendLiteral("P")
+        .appendYears()
+        .appendSuffix("Y")
+        .appendMonths()
+        .appendSuffix("M")
+        .toFormatter());
+		
 	}
 	
 	
