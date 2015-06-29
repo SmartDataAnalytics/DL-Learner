@@ -418,13 +418,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
 			ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
-			splits = splitter.computeSplits();
+			splits.putAll(splitter.computeSplits());
 		}
 		
 		// compute splits for time data properties
 		if (useTimeDatatypes) {
 			ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df);
-			splits = splitter.computeSplits();
+			splits.putAll(splitter.computeSplits());
 		}
 
 		// determine the maximum number of fillers for each role
