@@ -19,75 +19,36 @@
 
 package org.dllearner.core;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-import com.google.common.collect.ComparisonChain;
-
 /**
- * An evaluated OWLClassExpression is a OWLClassExpression and its score (with some
+ * An evaluated class expression is a class expression and its score (with some
  * convenience method and serialisation formats).
  * 
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescription implements Serializable, Comparable<EvaluatedDescription>{
+public class EvaluatedDescription extends EvaluatedHypothesis<OWLClassExpression>{
 
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1106431570510815033L;
-	protected OWLClassExpression description;
-	protected Score score;
-	
-	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
-	
-	/**
-	 * Constructs an evaluated OWLClassExpression using its score.
-	 * @param OWLClassExpression The description, which was evaluated.
-	 * @param score The score of the description.
+	 * Constructs an evaluated class expression using its score.
+	 * @param description The class expression, which was evaluated.
+	 * @param score The score of the class expression.
 	 */
 	public EvaluatedDescription(OWLClassExpression description, Score score) {
-		this.description = description;
-		this.score = score;
+		super(description, score);
 	}
-	
-	/**
-	 * Gets the description, which was evaluated.
-	 * @return The underlying description.
-	 */
-	public OWLClassExpression getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @return the score
-	 */
-	public Score getScore() {
-		return score;
-	}
-	
-	/**
-	 * Used for rewriting (simplification, beautification) of 
-	 * evaluated descriptions returned by the learning algorithm.
-	 * @param OWLClassExpression The OWLClassExpression to set.
-	 */
-	public void setDescription(OWLClassExpression description) {
-		this.description = description;
-	}	
 	
 	/**
 	 * @see org.dllearner.core.owl.Description#getLength()
 	 * @return Length of the description.
 	 */		
 	public int getDescriptionLength() {
-		return OWLClassExpressionUtils.getLength(description);
+		return OWLClassExpressionUtils.getLength(hypothesis);
 	}
 	
 	/**
@@ -95,15 +56,7 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	 * @return Depth of the description.
 	 */	
 	public int getDescriptionDepth() {
-		return OWLClassExpressionUtils.getDepth(description);
-	}
-	
-	/**
-	 * @see org.dllearner.core.Score#getScoreValue()
-	 * @return Value in this score system.
-	 */
-	public double getAccuracy() {
-		return score.getAccuracy();
+		return OWLClassExpressionUtils.getDepth(hypothesis);
 	}
 	
 	/**
@@ -114,8 +67,8 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(hypothesis));
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(hypothesis));
 			object.put("scoreValue", score.getAccuracy());	
 			return object.toString(3);
 		} catch (JSONException e) {
@@ -123,21 +76,4 @@ public class EvaluatedDescription implements Serializable, Comparable<EvaluatedD
 			return null;
 		}
 	}	
-	
-	@Override
-	public String toString() {
-		return description.toString() + " " + dfPercent.format(getAccuracy());
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(EvaluatedDescription o) {
-		return ComparisonChain.start()
-				.compare(score.getAccuracy(), o.score.getAccuracy())
-				.compare(description, o.getDescription())
-				.result();
-	}
-
 }

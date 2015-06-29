@@ -21,7 +21,6 @@ package org.dllearner.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +45,7 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefi
 
 import com.google.common.collect.ComparisonChain;
 
-public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedAxiom<T>>{
-	
-	private static DecimalFormat df = new DecimalFormat("##0.0");
+public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T>{
 	
 	private T axiom;
 	private AxiomScore score;
@@ -56,13 +53,11 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 	private boolean asserted = false;
 	
 	public EvaluatedAxiom(T axiom, AxiomScore score) {
-		this.axiom = axiom;
-		this.score = score;
+		super(axiom, score);
 	}
 	
 	public EvaluatedAxiom(T axiom, AxiomScore score, boolean asserted) {
-		this.axiom = axiom;
-		this.score = score;
+		this(axiom, score);
 		this.asserted = asserted;
 	}
 
@@ -116,7 +111,6 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 		return ind2Axioms;
 	}
 	
-	@Override
 	public int compareTo(EvaluatedAxiom<T> other) {
 		return ComparisonChain.start().
 				compare(other.getScore().getAccuracy(), score.getAccuracy()).
@@ -138,7 +132,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> implements Comparable<EvaluatedA
 	
 	public static <T extends OWLAxiom> String prettyPrint(EvaluatedAxiom<T> axiom) {
 		double acc = axiom.getScore().getAccuracy() * 100;
-		String accs = df.format(acc);
+		String accs = dfPercent.format(acc);
 		if(accs.length()==3) { accs = "  " + accs; }
 		if(accs.length()==4) { accs = " " + accs; }
 		String str =  accs + "%\t" + axiom.getAxiom();

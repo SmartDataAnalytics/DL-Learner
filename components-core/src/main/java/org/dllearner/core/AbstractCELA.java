@@ -105,7 +105,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
-	protected AbstractClassExpressionLearningProblem learningProblem;
+	protected AbstractClassExpressionLearningProblem<? extends Score> learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by

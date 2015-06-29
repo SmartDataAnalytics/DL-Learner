@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject>  extends AbstractComponent implements LearningProblem {
+public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V>>  extends AbstractComponent implements LearningProblem {
 	
 	protected AbstractReasonerComponent reasoner;
 
@@ -96,7 +96,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	 * @param hypothesis Hypothesis to evaluate.
 	 * @return 
 	 */
-	public EvaluatedDescription evaluate(V hypothesis){
+	public W evaluate(V hypothesis){
 		return evaluate(hypothesis, 1.0);
 	}
 	
@@ -108,7 +108,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	 * @param noise the (approximated) value of noise within the examples
 	 * @return 
 	 */
-	public EvaluatedDescription evaluate(V hypothesis, double noise) {
+	public W evaluate(V hypothesis, double noise) {
 		return null;
 	}
 	
