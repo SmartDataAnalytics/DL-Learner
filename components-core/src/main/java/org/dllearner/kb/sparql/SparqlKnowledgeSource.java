@@ -396,32 +396,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		}
 	}*/
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.KnowledgeSource#toDIG()
-	 */
-	@Override
-	public String toDIG(URI kbURI) {
-            throw new RuntimeException("Inside Dig Converter - this doesn't work in our custom version as we have upgraded to jena 2.6.2 which doesn't support DIG");
-//			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
-//					OntologyFormat.RDF_XML, kbURI);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.KnowledgeSource#export(java.io.File,
-	 *      org.dllearner.core.OntologyFormat)
-	 */
-	@Override
-	public void export(File file, OntologyFormat format)
-			throws OntologyFormatUnsupportedException {
-		// currently no export functions implemented, so we just throw an
-		// exception
-		throw new OntologyFormatUnsupportedException("export", format);
-	}
-
 	/**
 	 * @return the URL of the used sparql endpoint
 	 */

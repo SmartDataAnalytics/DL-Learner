@@ -152,16 +152,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         }
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see org.dllearner.core.KnowledgeSource#toDIG()
-    */
-    @Override
-    public String toDIG(URI kbURI) {
-        // TODO: need some handling for cases where the URL was not set
-        return OWLAPIDIGConverter.getTellsString(url, OntologyFormat.RDF_XML, kbURI);
-    }
 
     public URL getURL() {
         return url;
@@ -171,14 +161,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         this.url = url;
     }
 
-    /* (non-Javadoc)
-      * @see org.dllearner.core.KnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
-      */
-    @Override
-    public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
-        // currently no export functions implemented, so we just throw an exception
-        throw new OntologyFormatUnsupportedException("export", format);
-    }
 
     public String getBaseDir() {
         return baseDir;

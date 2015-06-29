@@ -178,19 +178,4 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
         this.fileName = fileName;
     }
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractKnowledgeSource#toDIG(java.net.URI)
-	 */
-	@Override
-	public String toDIG(URI kbURI) {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractKnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
-	 */
-	@Override
-	public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
-		
-	}
 }

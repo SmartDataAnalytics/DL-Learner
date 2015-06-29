@@ -86,18 +86,7 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	{
 		
 	}
-	
-	@Override
-	public void export(File file, OntologyFormat format)
-	{
-		
-	}
-	
-	@Override
-	public String toDIG(URI kbURI)
-	{
-		return null;
-	}
+
 
     /**
      * Get the OntologyToByteConverter associated with this object.
