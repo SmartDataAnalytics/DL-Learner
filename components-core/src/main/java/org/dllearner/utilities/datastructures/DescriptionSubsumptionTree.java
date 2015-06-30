@@ -30,6 +30,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -62,10 +63,10 @@ public class DescriptionSubsumptionTree {
 		 * holds descriptions of nodes with equivalent classes
 		 * should be ordered by length
 		 */
-		public SortedSet<EvaluatedDescription> equivalents = new TreeSet<EvaluatedDescription>(
-				new Comparator<EvaluatedDescription>() {
+		public SortedSet<EvaluatedDescription<? extends Score>> equivalents = new TreeSet<>(
+				new Comparator<EvaluatedDescription<? extends Score>>() {
 					@Override
-					public int compare(EvaluatedDescription o1, EvaluatedDescription o2) {
+					public int compare(EvaluatedDescription<? extends Score> o1, EvaluatedDescription<? extends Score> o2) {
 						int ret = o2.getDescriptionLength() - o1.getDescriptionLength();
 						return (ret == 0) ? -1 : 0;
 					}
@@ -78,7 +79,7 @@ public class DescriptionSubsumptionTree {
 		 */
 		public SortedSet<Node> subClasses = new TreeSet<Node>();
 		
-		public Node(EvaluatedDescription ed, boolean root) {
+		public Node(EvaluatedDescription<? extends Score> ed, boolean root) {
 			this.root = root;
 			if (this.root) {
 				accuracy = 0.0d;
@@ -147,9 +148,9 @@ public class DescriptionSubsumptionTree {
 
 
 		/**
-		 * @return the first, i.e. the shortest class OWLClassExpression of this node
+		 * @return the first, i.e. the shortest class expression of this node
 		 */
-		public EvaluatedDescription getEvalDesc() {
+		public EvaluatedDescription<?> getEvalDesc() {
 			return (equivalents.isEmpty()) ? null : equivalents.first();
 		}
 
@@ -180,15 +181,15 @@ public class DescriptionSubsumptionTree {
 			return ret.toString();
 		}
 		
-		public List<EvaluatedDescription> getOrderedBySubsumptionAndAccuracy(boolean distinct){
-			List<EvaluatedDescription> l = new ArrayList<EvaluatedDescription>();
+		public List<EvaluatedDescription<? extends Score>> getOrderedBySubsumptionAndAccuracy(boolean distinct){
+			List<EvaluatedDescription<? extends Score>> l = new ArrayList<>();
 			for(Node subs:subClasses){
 				l.add(subs.getEvalDesc());
 			}
 			
 			for(Node subs:subClasses){
 				if(distinct){
-					for(EvaluatedDescription subsubs : subs.getOrderedBySubsumptionAndAccuracy(distinct)){
+					for(EvaluatedDescription<? extends Score> subsubs : subs.getOrderedBySubsumptionAndAccuracy(distinct)){
 						if(!l.contains(subsubs)){
 							l.add(subsubs);
 						}
@@ -256,13 +257,13 @@ public class DescriptionSubsumptionTree {
 		return rootNode;
 	}
 	
-	public List<EvaluatedDescription> getMostGeneralDescriptions(boolean distinct){
+	public List<EvaluatedDescription<? extends Score>> getMostGeneralDescriptions(boolean distinct){
 		return rootNode.getOrderedBySubsumptionAndAccuracy(distinct);
 		
 	}
 
-	public void insert(Collection<? extends EvaluatedDescription> evaluatedDescriptions) {
-		for (EvaluatedDescription evaluatedDescription : evaluatedDescriptions) {
+	public void insert(Collection<? extends EvaluatedDescription<? extends Score>> evaluatedDescriptions) {
+		for (EvaluatedDescription<? extends Score> evaluatedDescription : evaluatedDescriptions) {
 			logger.warn("Next to insert: " + evaluatedDescription.toString());
 			Node n = new Node(evaluatedDescription);
 			this.rootNode.insert(n);

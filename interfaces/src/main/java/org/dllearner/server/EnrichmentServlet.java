@@ -481,9 +481,9 @@ public class EnrichmentServlet extends HttpServlet {
         System.out.println("done in " + runTime + " ms");	
 
         // convert the result to axioms (to make it compatible with the other algorithms)
-        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
-        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
         		axiom = dataFactory.getOWLEquivalentClassesAxiom(nc, learnedDescription.getDescription());

@@ -34,6 +34,7 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -83,7 +84,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
 
-	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
+	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 	private SortedSet<OWLClassExpression> subClasses;
 
 	private boolean useWordNetDistance = false;
@@ -408,14 +409,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
-		for (EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
+		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
 		return bestDescriptions;
 	}
 
 	@Override
-	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
@@ -440,7 +441,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	public List<EvaluatedAxiom<OWLDisjointClassesAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		List<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new ArrayList<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
 		Set<OWLClassExpression> descriptions;
-		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
+		for (EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
 			descriptions = new TreeSet<OWLClassExpression>();
 			descriptions.add(entityToDescribe);
 			descriptions.add(ed.getDescription());
@@ -450,9 +451,9 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		return axioms;
 	}
 
-	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<OWLClass, Integer> class2Count,
+	private List<EvaluatedDescription<? extends Score>> buildEvaluatedClassDescriptions(Map<OWLClass, Integer> class2Count,
 			Set<OWLClass> allClasses, int total) {
-		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
+		List<EvaluatedDescription<? extends Score>> evalDescs = new ArrayList<>();
 
 		//Remove temporarily entityToDescribe but keep track of their count
 		//				Integer all = class2Count.get(entityToDescribe);
@@ -473,7 +474,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			keepMostGeneralClasses(completeDisjointclasses);
 		}
 
-		EvaluatedDescription evalDesc;
+		EvaluatedDescription<? extends Score> evalDesc;
 		//firstly, create disjoint classexpressions which do not occur and give score of 1
 		for (OWLClass cls : completeDisjointclasses) {
 			if (useClassPopularity) {

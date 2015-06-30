@@ -4,7 +4,6 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.TimeLimitingCollector.TimeExceededException;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -43,6 +41,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
@@ -101,7 +100,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 
 	private List<EvaluatedRDFResourceTree> partialSolutions;
 	
-	private EvaluatedDescription currentBestSolution;
+	private EvaluatedDescription<? extends Score> currentBestSolution;
 	
 	private QueryTreeHeuristic heuristic;
 	
@@ -802,13 +801,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return evaluatedTrees;
 	}
 	
-	private EvaluatedDescription buildCombinedSolution(){
-		EvaluatedDescription bestCombinedSolution = null;
+	private EvaluatedDescription<? extends Score> buildCombinedSolution(){
+		EvaluatedDescription<? extends Score> bestCombinedSolution = null;
 		double bestScore = Double.NEGATIVE_INFINITY;
 		LiteralNodeConversionStrategy[] strategies = LiteralNodeConversionStrategy.values();
 		strategies = new LiteralNodeConversionStrategy[]{LiteralNodeConversionStrategy.DATATYPE};
 		for (LiteralNodeConversionStrategy strategy : strategies) {
-			EvaluatedDescription combinedSolution;
+			EvaluatedDescription<? extends Score> combinedSolution;
 			if(partialSolutions.size() == 1){
 				combinedSolution = partialSolutions.get(0).getEvaluatedDescription();
 			} else {

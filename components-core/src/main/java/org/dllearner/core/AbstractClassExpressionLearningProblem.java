@@ -32,7 +32,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription> implements LearningProblem {
+public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
 	
 	public AbstractClassExpressionLearningProblem(){
 

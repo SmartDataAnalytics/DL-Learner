@@ -45,10 +45,7 @@ import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefi
 
 import com.google.common.collect.ComparisonChain;
 
-public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T>{
-	
-	private T axiom;
-	private AxiomScore score;
+public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, AxiomScore>{
 	
 	private boolean asserted = false;
 	
@@ -62,11 +59,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T>{
 	}
 
 	public T getAxiom() {
-		return axiom;
-	}
-
-	public AxiomScore getScore() {
-		return score;
+		return getDescription();
 	}
 	
 	public boolean isAsserted() {
@@ -79,21 +72,21 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T>{
 
 	@Override
 	public String toString() {
-		return axiom + "(" + score.getAccuracy()+ ")";
+		return hypothesis + "(" + score.getAccuracy()+ ")";
 	}
 
 	public Map<OWLIndividual, List<OWLAxiom>> toRDF(String defaultNamespace){
 		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<OWLIndividual, List<OWLAxiom>>();
 		OWLDataFactory f = new OWLDataFactoryImpl();
 		
-		String id = DigestUtils.md5Hex(axiom.toString()) + score.getAccuracy();
+		String id = DigestUtils.md5Hex(hypothesis.toString()) + score.getAccuracy();
 		OWLNamedIndividual ind = f.getOWLNamedIndividual(IRI.create(defaultNamespace + id));
 		
 	
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		ManchesterOWLSyntaxObjectRenderer r = new ManchesterOWLSyntaxObjectRenderer(pw, new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
-		axiom.accept(r);
+		hypothesis.accept(r);
 
 		OWLAxiom ax1 = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.AddSuggestion, ind);
 		OWLAxiom ax2 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.hasAxiom, ind, sw.toString());
@@ -114,7 +107,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T>{
 	public int compareTo(EvaluatedAxiom<T> other) {
 		return ComparisonChain.start().
 				compare(other.getScore().getAccuracy(), score.getAccuracy()).
-				compare(axiom, other.getAxiom()).
+				compare(hypothesis, other.getAxiom()).
 				result();
 	}
 	

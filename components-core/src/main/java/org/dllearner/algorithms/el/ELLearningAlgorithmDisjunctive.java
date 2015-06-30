@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -35,6 +34,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.ELDown3;
@@ -42,7 +42,6 @@ import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -115,7 +114,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	
 //	private double noise = 0;
 	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
-	private EvaluatedDescription bestEvaluatedDescription;
+	private EvaluatedDescription<? extends Score> bestEvaluatedDescription;
 	// how important not to cover negatives
 	private double posWeight = 1.2; // 2;
 	private int startPosExamplesSize;

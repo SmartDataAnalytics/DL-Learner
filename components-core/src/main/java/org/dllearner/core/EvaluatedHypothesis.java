@@ -32,12 +32,12 @@ import com.google.common.collect.ComparisonChain;
  * @author Lorenz Buehmann
  *
  */
-public abstract class EvaluatedHypothesis<T extends OWLObject> implements Serializable, Comparable<EvaluatedHypothesis<T>>{
+public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score> implements Serializable, Comparable<EvaluatedHypothesis<T, S>>{
 
 	private static final long serialVersionUID = 1106431570510815033L;
 	
 	protected T hypothesis;
-	protected Score score;
+	protected S score;
 	
 	protected static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
@@ -46,7 +46,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject> implements Serial
 	 * @param hypothesis The hypothesis, which was evaluated.
 	 * @param score The score of the hypothesis.
 	 */
-	public EvaluatedHypothesis(T hypothesis, Score score) {
+	public EvaluatedHypothesis(T hypothesis, S score) {
 		this.hypothesis = hypothesis;
 		this.score = score;
 	}
@@ -62,7 +62,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject> implements Serial
 	/**
 	 * @return the score
 	 */
-	public Score getScore() {
+	public S getScore() {
 		return score;
 	}
 	
@@ -92,7 +92,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject> implements Serial
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(EvaluatedHypothesis<T> o) {
+	public int compareTo(EvaluatedHypothesis<T, S> o) {
 		return ComparisonChain.start()
 				.compare(score.getAccuracy(), o.score.getAccuracy())
 				.compare(hypothesis, o.getDescription())

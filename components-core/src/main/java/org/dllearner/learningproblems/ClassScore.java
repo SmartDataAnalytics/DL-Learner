@@ -33,9 +33,6 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  */
 public class ClassScore extends Score implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2003326044901308157L;
 	private Set<OWLIndividual> coveredInstances;
 	private Set<OWLIndividual> notCoveredInstances;

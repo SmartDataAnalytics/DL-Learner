@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V>>  extends AbstractComponent implements LearningProblem {
+public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V, T>>  extends AbstractComponent implements LearningProblem {
 	
 	protected AbstractReasonerComponent reasoner;
 

@@ -241,7 +241,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * Returns the best descriptions obtained so far.
 	 * @return Best class class expression found so far.
 	 */
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescription<? extends Score> getCurrentlyBestEvaluatedDescription() {
 		return bestEvaluatedDescriptions.getSet().last();
 	}
 	
@@ -251,7 +251,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * last. (In Java, iterators traverse a SortedSet in ascending order.)
 	 * @return Best class descriptions found so far.
 	 */
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}
 	
@@ -273,10 +273,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * 
 	 * @return A list of currently best class descriptions.
 	 */
-	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
-		TreeSet<? extends EvaluatedDescription> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
-		List<EvaluatedDescription> returnList = new LinkedList<EvaluatedDescription>();
-		for(EvaluatedDescription ed : currentlyBest.descendingSet()) {
+	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
+		TreeSet<? extends EvaluatedDescription<? extends Score>> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
+		List<EvaluatedDescription<? extends Score>> returnList = new LinkedList<>();
+		for(EvaluatedDescription<? extends Score> ed : currentlyBest.descendingSet()) {
 			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
@@ -315,7 +315,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param nrOfDescriptions Maximum number of descriptions returned.
 	 * @return Return value is getCurrentlyBestDescriptions(nrOfDescriptions, 0.0, false).
 	 */
-	public synchronized List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, 0.0, false);
 	}
 	
@@ -324,12 +324,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param accuracyThreshold Only return solutions with this accuracy or higher.
 	 * @return Return value is getCurrentlyBestDescriptions(Integer.MAX_VALUE, accuracyThreshold, false).
 	 */
-	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
+	public synchronized  List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, accuracyThreshold, false);
 	}
 	
-	public synchronized  List<? extends EvaluatedDescription> getCurrentlyBestMostGeneralEvaluatedDescriptions() {
-		List<? extends EvaluatedDescription> l = getCurrentlyBestEvaluatedDescriptions(getCurrentlyBestEvaluatedDescriptions().last().getAccuracy());
+	public synchronized  List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestMostGeneralEvaluatedDescriptions() {
+		List<? extends EvaluatedDescription<? extends Score>> l = getCurrentlyBestEvaluatedDescriptions(getCurrentlyBestEvaluatedDescriptions().last().getAccuracy());
 		DescriptionSubsumptionTree t = new DescriptionSubsumptionTree(reasoner);
 		t.insert(l);
 		return t.getMostGeneralDescriptions(true);
@@ -353,7 +353,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected String getSolutionString() {
 		int current = 1;
 		String str = "";
-		for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+		for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
 			String descriptionString = descriptionToString(description);

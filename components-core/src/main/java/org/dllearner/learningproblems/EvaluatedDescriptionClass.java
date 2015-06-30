@@ -37,17 +37,14 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionClass extends EvaluatedDescription implements Serializable{
+public class EvaluatedDescriptionClass extends EvaluatedDescription<ClassScore> implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5907640793141522431L;
 	private ClassScore classScore;
 	
 	/**
-	 * Constructs an evaluated OWLClassExpression for learning classes in ontologies.
-	 * @param OWLClassExpression Description.
+	 * Constructs an evaluated class expression for learning classes in ontologies.
+	 * @param description Description.
 	 * @param score Score of description.
 	 */
 	public EvaluatedDescriptionClass(OWLClassExpression description, ClassScore score) {

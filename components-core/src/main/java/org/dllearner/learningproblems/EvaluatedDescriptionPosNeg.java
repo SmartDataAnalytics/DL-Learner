@@ -40,7 +40,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
+public class EvaluatedDescriptionPosNeg extends EvaluatedDescription<ScorePosNeg> {
 	
 	private static final long serialVersionUID = -6962185910615506968L;
 	private ScorePosNeg score2;

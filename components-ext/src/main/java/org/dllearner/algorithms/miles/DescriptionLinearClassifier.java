@@ -12,6 +12,7 @@ import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.Score;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
@@ -173,7 +174,7 @@ public class DescriptionLinearClassifier {
 		celoe.start();
 		
 		List<OWLClassExpression> descriptions = new ArrayList<OWLClassExpression>();
-		for (EvaluatedDescription ed : celoe.getCurrentlyBestEvaluatedDescriptions(100)) {
+		for (EvaluatedDescription<? extends Score> ed : celoe.getCurrentlyBestEvaluatedDescriptions(100)) {
 			if(((EvaluatedDescriptionClass)ed).getAdditionalInstances().size() > 0){
 				System.out.println(ed);
 				System.out.println(((EvaluatedDescriptionClass)ed).getAdditionalInstances());

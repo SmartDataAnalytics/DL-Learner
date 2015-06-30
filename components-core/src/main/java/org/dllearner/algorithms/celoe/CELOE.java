@@ -36,6 +36,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -65,7 +66,6 @@ import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -77,7 +77,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
-import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -654,7 +653,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
 			boolean shorterDescriptionExists = false;
 			if(forceMutualDifference) {
-				for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+				for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
 					if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
 //						System.out.println("shorter: " + ed.getDescription());
 						shorterDescriptionExists = true;
@@ -902,7 +901,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@Override
 	public OWLClassExpression getCurrentlyBestDescription() {
-		EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
+		EvaluatedDescription<? extends Score> ed = getCurrentlyBestEvaluatedDescription();
 		return ed == null ? null : ed.getDescription();
 	}
 
@@ -917,7 +916,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}	
 	
 	@Override
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}	
 	
