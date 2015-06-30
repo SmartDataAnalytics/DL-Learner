@@ -26,6 +26,7 @@ import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 @ComponentAnn(name="ATDT", shortName="atdt", version=1.0, description="An abstract Terminological Decision Tree")
 public abstract class AbstractTDTClassifier extends AbstractCELA {
 	
@@ -102,16 +103,17 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	@ConfigOption(defaultValue = "false", name = "BINARYCLASSIFICATION", description = "value for limiting the number of generated concepts")
 	protected boolean binaryClassification;
 	
-	@ConfigOption(defaultValue = "false", name = "ccp", description = "value for limiting the number of generated concepts")
-	protected boolean ccp;
+	@ConfigOption(defaultValue = "true", name = "jacardDistance", description = "use an heuristic based on the Jacard Distance")
+	protected boolean useJacardDistance;
 	
-	public boolean isCcp() {
-		return ccp;
+	
+	public boolean isUseJacardDistance() {
+		return useJacardDistance;
 	}
 
 
-	public void setCcp(boolean ccp) {
-		this.ccp = ccp;
+	public void setUseJacardDistance(boolean useJacardDistance) {
+		this.useJacardDistance = useJacardDistance;
 	}
 
 	@ConfigOption(defaultValue = "false", name = "missingValueTreatment", description = "for overcoming the problem of missing values in tree algorithms.tree.models")
@@ -174,23 +176,13 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 			
 		
 		if(operator == null) {
-	System.out.println("OPERATOR:"+operator==null);
 //			// default operator 
 	operator = new DLTreesRefinementOperator(); 
 	((DLTreesRefinementOperator)operator).setReasoner(reasoner);
 	((DLTreesRefinementOperator)operator).setBeam(10); // default value
-////			
-////			if(operator instanceof CustomStartRefinementOperator) {
-////				((CustomStartRefinementOperator)operator).setStartClass(startClass);
-////			}
-////			if(operator instanceof ReasoningBasedRefinementOperator) {
-////				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
-////			}
        	operator.init();
        	
-		//System.out.println(operator==null);
-//			
-//		
+		
     }
 
 		//start to learn the new current concept description

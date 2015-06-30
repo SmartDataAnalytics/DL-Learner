@@ -36,7 +36,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 //import knowledgeBasesHandler.KnowledgeBase;
 
 /**
- * The original refinement Operator proposed for inducing Terminological Decision Trees
+ * A wrapper that allows to refine a concept acccording one of the following refinements operator:
+ * i) the original refinement operator for Terminological Decision Trees induction
+ * ii) Rho operator
+ * iii) Psi operator
  * @author Giuseppe Rizzo
  *
  */
@@ -51,28 +54,31 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	private ArrayList<OWLObjectProperty> allRoles;
 	private PosNegLP lp;
 	private Random generator;
-	public static final int ORIGINAL=3; //predefined constants
-	public static final int RHO=1;
-	public static final int PSI=2;
+	public static final String ORIGINAL="original"; //predefined constants
+	public static final String RHO="rho";
+	public static final String PSI="psi";
 
-	//private OWLDataFactory dataFactory;
+	//private OWLClassExpression expressions;
 	private Reasoner r;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	@ConfigOption(defaultValue = "5", name = "beam")
 	private int beam;
 
-	@ConfigOption(defaultValue = "1", name = "kindOperator")
-	private int ro; // the name of a refinement operator
+	@ConfigOption(defaultValue = "original", name = "kindOperator")
+	private String ro; // the name of a refinement operator
+
+	private Set<OWLClassExpression> refinements;
+
 	//	
 	//
 	//	
-	public int getRo() {
+	public String getRo() {
 		return ro;
 	}
 
 
-	public void setRo(int ro) {
+	public void setRo(String ro) {
 		this.ro = ro;
 	}
 
@@ -139,9 +145,8 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	public OWLClassExpression getRandomConcept() {
 
 		OWLClassExpression newConcept = null;
-		boolean binaryclassification= false; //TODO eliminare
+		
 		//System.out.println("*********"+ generator);
-		if (!binaryclassification){
 			// case A:  ALC and more expressive ontologies
 			do {
 
@@ -150,7 +155,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 				if (generator.nextDouble() < d) {
 					OWLClassExpression newConceptBase =     getRandomConcept();
 					if (generator.nextDouble() < d) {
-
+						if (allRoles.size()>0){ // for tackling the absence of roles
 						if (generator.nextDouble() <d) { // new role restriction
 							OWLObjectProperty role = allRoles.get(generator.nextInt(allRoles.size()));
 							//					OWLDescription roleRange = (OWLDescription) role.getRange
@@ -161,35 +166,16 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 						}
 						else					
 							newConcept = dataFactory.getOWLObjectComplementOf(newConceptBase);
+						}
+						else					
+								newConcept = dataFactory.getOWLObjectComplementOf(newConceptBase);
 					}
 				}
 
-			} while (!(r.getIndividuals(newConcept).size()>0) );
+			} while (!(r.getIndividuals(newConcept).size()>0) ); //not only a satisfiable concept but also with some instances in the Abox
 
-		}
-		else{
-			// for less expressive ontologies, e.g ALE
-			do {
-				newConcept = allConcepts.get(generator.nextInt(allConcepts.size()));
-				if (generator.nextDouble() < d) {
-					OWLClassExpression newConceptBase =  getRandomConcept(); //dataFactory.getOWLThing(); //
-					if (generator.nextDouble() < d)
-						if (generator.nextDouble() < d) { // new role restriction
-							OWLObjectProperty role = allRoles.get(generator.nextInt(allRoles.size()));
-							//					OWLDescription roleRange = (OWLDescription) role.getRange;
-
-							if (generator.nextDouble() < d)
-								newConcept = dataFactory.getOWLObjectAllValuesFrom(role, newConceptBase);
-							else
-								newConcept = dataFactory.getOWLObjectSomeValuesFrom(role, newConceptBase);
-						}
-				} // else ext
-				else //if (KnowledgeBase.generator.nextDouble() > 0.8) {					
-					newConcept = dataFactory.getOWLObjectComplementOf(newConcept);
-
-			} while (!(r.getIndividuals(newConcept).size()>0));
-		}
-		//System.out.println("*********");
+		
+				//System.out.println("*********");
 		return newConcept;				
 	}
 
@@ -239,16 +225,6 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	}
 
 
-	private OWLClassExpression setSeed() {
-
-		//for (OWLClassExpression cl: allConcepts){
-		//if (cl.toString().compareToIgnoreCase(conceptSeed)==0){		
-		//return cl;
-		//}
-
-		//}	
-		return null;
-	}
 
 
 
@@ -266,22 +242,13 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	@Override
 	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-
-		//		allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
-		//		//System.out.println("all Concepts: "+allConcepts.size());
-		//		allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
-		//this.beam=beam; // set the maximum number of candidates that can be generated
 		generator= new Random(2);
-
-		//		if (beam==0)
-		//			setBeam(4); // a default value
 
 	}
 
 
 
-     //	
+	//	
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		// TODO Auto-generated method stub
 		this.r= reasoner;
@@ -294,7 +261,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	}
 
-	
+
 	public void setReasoner(Reasoner reasoner) {
 		// TODO Auto-generated method stub
 		this.r= reasoner;
@@ -313,76 +280,71 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	public Set<OWLClassExpression> refine(OWLClassExpression definition, SortedSet<OWLIndividual> posExs,
 			SortedSet<OWLIndividual> negExs) {
 
-		Set<OWLClassExpression> children;
-		int n=-1; // initialization
-		ArrayList<OWLClassExpression> childrenList=new ArrayList<OWLClassExpression>();;
-		OWLClassExpression def= definition;
 		
-		if ((!definition.isOWLThing())&&(!definition.isOWLNothing())){
-			children = OWLClassExpressionUtils.getChildren(def);
+				if (!ro.equalsIgnoreCase(ORIGINAL)){
 			
-			Random rg= new Random();
+				if (ro.equalsIgnoreCase(RHO)){
+					RhoDRDown rho = new RhoDRDown();
 
-			if (children.size()>0){
-				n= rg.nextInt(children.size());
-				childrenList=new ArrayList<OWLClassExpression>(children);
+					rho.setReasoner((AbstractReasonerComponent)r);
+					ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
+					rho.setClassHierarchy(classHierarchy);
+					rho.setObjectPropertyHierarchy(r.getObjectPropertyHierarchy());
+					rho.setDataPropertyHierarchy(r.getDatatypePropertyHierarchy());
 
-			}
-		}
-
-		if (ro==RHO){
-			RhoDRDown rho = new RhoDRDown();
-
-			rho.setReasoner((AbstractReasonerComponent)r);
-			ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
-			rho.setClassHierarchy(classHierarchy);
-			rho.setObjectPropertyHierarchy(r.getObjectPropertyHierarchy());
-			rho.setDataPropertyHierarchy(r.getDatatypePropertyHierarchy());
-
-			rho.setApplyAllFilter(false);
-			rho.setUseAllConstructor(true);
-			rho.setUseExistsConstructor(true);
-			rho.setUseHasValueConstructor(false);
-			rho.setUseCardinalityRestrictions(false);
-			rho.setUseNegation(true);
-			rho.setUseBooleanDatatypes(false);
-			rho.setUseDoubleDatatypes(false);
-			rho.setUseStringDatatypes(false);
+					rho.setApplyAllFilter(false);
+					rho.setUseAllConstructor(true);
+					rho.setUseExistsConstructor(true);
+					rho.setUseHasValueConstructor(false);
+					rho.setUseCardinalityRestrictions(false);
+					rho.setUseNegation(true); // false for mutagenesis
+					rho.setUseBooleanDatatypes(true);
+					rho.setUseDoubleDatatypes(true);
+					rho.setUseStringDatatypes(false);
 
 
-			try {
-				rho.init();
-			} catch (ComponentInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//		System.out.println("Definition: "+definition);
-			
-			OWLClassExpression toRefine= (n!=-1)?childrenList.get(n):def;
-			Set<OWLClassExpression> refine = rho.refine(toRefine,3);
+					try {
+						rho.init();
+					} catch (ComponentInitException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 
-			//System.out.println("Refine size: "+ refine);
-			return refine;
+					OWLClassExpression toRefine= definition; //childrenList.get(n);
+					
+					try {
+						refinements = rho.refine(toRefine,2);	
+					} catch (Error e) {
+						// TODO: handle exception
+						refinements = new TreeSet<OWLClassExpression>(); // handling the max length of the tree
+					}
+					
+					
+					return refinements;
 
-		}else if (ro==PSI){
-			PsiDown psiDown=null;
-			
-			if (r instanceof AbstractReasonerComponent){
-			  psiDown= new PsiDown(lp,(AbstractReasonerComponent)r);
+				}else if (ro.equalsIgnoreCase(PSI)){
+					PsiDown psiDown=null;
 
-			}else
-				new RuntimeException("Psi Down cannot be instantiated");
-			
-//			ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
-			
-		Set<OWLClassExpression> refine = psiDown.refine(definition); 
-		return refine;
+					if (r instanceof AbstractReasonerComponent){
+						psiDown= new PsiDown(lp,(AbstractReasonerComponent)r);
 
-		}
-		else 
+					}else
+						new RuntimeException("Psi Down cannot be instantiated");
+
+					
+
+					refinements = psiDown.refine(definition); 
+					return refinements;
+
+				}
+				
+		}else 
 			return (generateNewConcepts(posExs, negExs, false));
 		
-		
+		return null;
+
+
 	}
 
 
@@ -403,6 +365,9 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return beam;
 	}
 
-	
+
+
+
+
 
 }
