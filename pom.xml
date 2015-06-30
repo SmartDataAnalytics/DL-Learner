@@ -231,7 +231,7 @@
 			<dependency>
 				<groupId>com.clarkparsia.pellet</groupId>
 				<artifactId>pellet-distribution</artifactId>
-				<version>2.3.3-dlleaner</version>
+				<version>2.3.3-dllearner</version>
 				<type>pom</type>
 				<exclusions>
 					<exclusion>
