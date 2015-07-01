@@ -105,7 +105,8 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		}
 		
 		// add the last element
-		splitsDP.add(values.get(nrOfValues - 1));
+		if(nrOfValues > 0)
+			splitsDP.add(values.get(nrOfValues - 1));
 		
 		return splitsDP;
 	}
