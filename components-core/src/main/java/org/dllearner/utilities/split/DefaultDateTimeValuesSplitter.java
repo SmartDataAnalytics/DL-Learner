@@ -100,7 +100,8 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 		}
 		
 		// add the last element
-		splitValues.add(values.get(nrOfValues - 1));
+		if (nrOfValues > 0)
+			splitValues.add(values.get(nrOfValues - 1));
 		
 		return splitValues;
 	}

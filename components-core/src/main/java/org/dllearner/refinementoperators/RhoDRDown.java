@@ -1238,7 +1238,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLDataProperty> dataProperties = new HashSet<OWLDataProperty>();
 			for (OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 				OWLDatatype datatype = reasoner.getDatatype(dp);
-				if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
+				if(datatype != null && OWLAPIUtils.dtDatatypes.contains(datatype)) {
 					dataProperties.add(dp);
 				}
 			}
