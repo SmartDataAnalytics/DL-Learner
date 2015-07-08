@@ -47,11 +47,13 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
+import org.semanticweb.owlapi.model.DataRangeType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataOneOf;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
 import org.semanticweb.owlapi.model.OWLDataRange;
@@ -918,13 +920,28 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 						return false;
 					}
+			} else if(filler.getDataRangeType() == DataRangeType.DATA_ONE_OF) {
+				OWLDataOneOf dataOneOf = (OWLDataOneOf) filler;
+				Set<OWLLiteral> values = dataOneOf.getValues();
+				
+				// given \exists r.{v_1,...,v_n} we can check for each value v_i 
+				// if (\exists r.{v_i})(ind) holds
+				for (OWLLiteral value : values) {
+					
+					boolean hasValue = hasTypeImpl(df.getOWLDataHasValue(property, value), individual);
+					
+					if(hasValue) {
+						return true;
+					}
+				}
+				return false;
 			}
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
 			OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
