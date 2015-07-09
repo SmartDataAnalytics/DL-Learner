@@ -3,6 +3,7 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.util.List;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLClass;
@@ -45,57 +46,63 @@ import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
+ * A utility class for OWL class expressions.
+ * 
  * @author Lorenz Buehmann
- *
  */
 public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLDataRangeVisitor{
 	
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 	private static OWLObjectDuplicator duplicator = new OWLObjectDuplicator(dataFactory);
 	private static final OWLClassExpressionUtils visitor = new OWLClassExpressionUtils();
-	private static int length = 0;
+	private static volatile int length = 0;
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
 	private static final OWLClassExpressionChildrenCollector CHILDREN_COLLECTOR = new OWLClassExpressionChildrenCollector();
 	
-	
-	
 	/**
-	 * Returns the length of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
+	 * Returns the length of a given class expression. 
+	 * @param ce the class expression
 	 * @return the length of the class expression
 	 */
-	public static int getLength(OWLClassExpression ce){
+	public static synchronized int getLength(OWLClassExpression ce){
 		length = 0;
 		ce.accept(visitor);
 		return length;
 	}
 	
 	/**
-	 * Returns the depth of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
+	 * Returns the depth of a given class expression. 
+	 * @param ce the class expression
 	 * @return the depth of the class expression
 	 */
-	public static int getDepth(OWLClassExpression ce){
+	public static synchronized int getDepth(OWLClassExpression ce){
 		int depth = ce.accept(DEPTH_FINDER);
 		return depth;
 	}
 	
 	/**
-	 * Returns the arity of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
+	 * Returns the arity of a given class expression. 
+	 * @param ce the class expression
 	 * @return the depth of the class expression
 	 */
-	public static int getArity(OWLClassExpression ce){
+	public static synchronized int getArity(OWLClassExpression ce){
 		return getChildren(ce).size();
 	}
 	
+	/**
+	 * Returns all direct child expressions of the given class expression.
+	 * @param ce the class expression
+	 * @return the direct child expression
+	 */
 	public static Set<OWLClassExpression> getChildren(OWLClassExpression ce){
 		return ce.accept(CHILDREN_COLLECTOR);
 	}
 	
+	/**
+	 * Returns a clone of the given class expression.
+	 * @param ce the class expression
+	 * @return a class expression clone
+	 */
 	public static OWLClassExpression clone(OWLClassExpression ce) {
 		return duplicator.duplicateObject(ce);
 	}
@@ -124,7 +131,7 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	 */
 	@Override
 	public void visit(OWLObjectIntersectionOf ce) {
-		Set<OWLClassExpression> operands = ce.getOperands();
+		List<OWLClassExpression> operands = ce.getOperandsAsList();
 		for (OWLClassExpression op : operands) {
 			op.accept(visitor);
 		}
@@ -136,7 +143,7 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	 */
 	@Override
 	public void visit(OWLObjectUnionOf ce) {
-		Set<OWLClassExpression> operands = ce.getOperands();
+		List<OWLClassExpression> operands = ce.getOperandsAsList();
 		for (OWLClassExpression op : operands) {
 			op.accept(visitor);
 		}
