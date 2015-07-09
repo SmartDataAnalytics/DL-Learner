@@ -42,7 +42,7 @@ $client = new SoapClient("main.wsdl");
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
 $client->init($id, $ksID);
-$rID = $client->setReasoner($id, "dig");
+$rID = $client->setReasoner($id, "cwr");
 $client->init($id, $rID);
 
 // create a concept in internal DL-Learner syntax

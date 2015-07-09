@@ -17,7 +17,6 @@ List of values available for
 sparql.predefinedEndpoint("DBPEDIA"); (replace DBPEDIA)
 Most of them are not used in any examples, but are available.
 DBPEDIA the global DBpedia endpoint http://dbpedia.openlinksw.com:8890/sparql
-LOCALDBPEDIA a local mirror of DBpedia running at aksw.org http://139.18.2.37:8890/sparql
 LOCALJOSECKI a local joseki store, url pointing at "http://localhost:2020/books"
 LOCALJOSEKIBIBLE a local joseki store, url pointing at "http://localhost:2020/bible"
 GOVTRACK www.govtrack.us | sparql: http://www.rdfabout.com/sparql
@@ -26,6 +25,4 @@ SPARQLETTE
 SWCONFERENCE
 REVYU
 MYOPENLINK
-FACTBOOK
-DBLP
-
+SWCONFERENCE

@@ -19,6 +19,7 @@
 
 package org.dllearner.test;
 
+import java.net.URL;
 import java.util.List;
 
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -31,7 +32,7 @@ import com.hp.hpl.jena.query.ResultSetFormatter;
 
 public class TestOneQueryForMusicRecommender {
 
-	
+
 
 static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 "<sparql xmlns=\"http://www.w3.org/2005/sparql-results#\">"+
@@ -58,58 +59,58 @@ static String xml ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
 "</result>"+
 "</results>"+
 "</sparql>";
-	
-	
+
+
 	public static void main(String[] args) {
 
 		String p1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 			"PREFIX mo: <http://purl.org/ontology/mo/>  ";
 		String sparqlQueryString = p1+ "SELECT ?artist ?name ?image ?homepage WHERE {?artist a mo:MusicArtist .?artist foaf:name \"Allison Crowe\" .?artist foaf:name ?name .?artist foaf:img ?image . ?artist foaf:homepage ?homepage .	}LIMIT 10";
-		
+
 		System.out.println("SparqlQuery: ");
 		System.out.println(sparqlQueryString);
 		System.out.println("wget -S -O test.txt "+"'http://dbtune.org:2105/sparql/?query="+sparqlQueryString+"'");
 
-		
+
 		ResultSet rs = ResultSetFactory.fromXML(xml);
 		@SuppressWarnings("unchecked")
 		List<QuerySolution> l = ResultSetFormatter.toList(rs);
-		
+
 		for (QuerySolution binding : l) {
 			System.out.println(binding.toString());
 		}
-		
+
 		System.out.println("Executing query");
 		rs = null;
 		//String service = "http://dbtune.org:2105/sparql/";
 		//QueryEngineHTTP queryExecution = new QueryEngineHTTP(service, sparqlQueryString);
-		
+
 		try{
-			SparqlQuery s = new SparqlQuery(sparqlQueryString, SparqlEndpoint.getEndpointJamendo());
+			SparqlQuery s = new SparqlQuery(sparqlQueryString, new SparqlEndpoint(new URL("http://dbtune.org:2105/sparql/")));
 			s.send();
 			//rs = queryExecution.execSelect();
-			
+
 			//ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			//ResultSetFormatter.outputAsJSON(baos, rs);
-		
-		
+
+
 			//System.out.println( baos.toString("UTF-8"));
 		} catch (Exception e) {
 			// should never happen as UTF-8 is supported
 			e.printStackTrace();
-		
+
 		}
 
 
 
 
-		
-		
-		
+
+
+
 
 	}
-	
-	
-	
+
+
+
 
 }

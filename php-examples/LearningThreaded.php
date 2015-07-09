@@ -42,13 +42,8 @@ $client = new SoapClient("main.wsdl");
 // load owl file in reasoner
 $id = $client->generateID();
 
-$state = $client->getState($id);
-
-var_dump($state);
-echo 'STATE END';
-
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "owlapi");
+$rID = $client->setReasoner($id, "cwr");
 
 // create a learning problem
 $posExamples = array(
@@ -73,7 +68,7 @@ $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 
 // choose refinement operator approach
-$client->setLearningAlgorithm($id, "refinement");
+$client->setLearningAlgorithm($id, "celoe");
 
 $client->initAll($id);
 
