@@ -40,7 +40,6 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 
 import com.google.common.collect.Sets;
 
@@ -577,7 +576,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		case PRED_ACC:
 			return (posAsPos + negAsNeg) / (double) allExamples.size();
 		case FMEASURE:
-			double recall = (posAsPos + negAsPos)/(double)positiveExamples.size();
+			double recall = posAsPos / (double)positiveExamples.size();
 			
 			if(recall < 1 - noise) {
 				return -1;
@@ -615,8 +614,9 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		
 		double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 		
+		double fscore = Heuristics.getFScore(recall, precision);
 //		return getFMeasure(recall, precision);
-		return Heuristics.getFScore(recall, precision);		
+		return fscore;
 	}
 	
 	// instead of using the standard operation, we use optimisation
