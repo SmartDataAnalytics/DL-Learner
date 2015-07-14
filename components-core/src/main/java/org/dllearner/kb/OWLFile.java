@@ -21,10 +21,10 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,20 +32,13 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.URLConfigOption;
-import org.dllearner.reasoning.OWLAPIDIGConverter;
 import org.dllearner.utilities.URLencodeUTF8;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.hazelcast.config.UrlXmlConfig;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 
 /**
@@ -129,14 +122,23 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
 
         } else if (url == null) {
         	try {
-        		url = new URL(baseDir == null ? "file://"
-        				: (fileName.startsWith("/") ? "" : (baseDir + (baseDir.endsWith("/") ? "" : "/")))
-        				+ fileName).toURI().normalize().toURL();
+        		Path path;
+        		if(fileName.startsWith("/")) {// file name starts with /
+        			path = Paths.get(fileName);
+        		} else {// else relative to base directory
+        			path = Paths.get(baseDir, fileName);
+        		}
+        		
+        		System.out.println(path);
+        		System.out.println(path.normalize());
+        		System.out.println(path.normalize().toUri());
+        		url = path.normalize().toUri().toURL();
+//        		url = new URL(baseDir == null ? "file://"
+//        				: (fileName.startsWith("/") ? "" : (baseDir + (baseDir.endsWith("/") ? "" : "/")))
+//        				+ fileName).toURI().normalize().toURL();
         	} catch (MalformedURLException e) {
         		throw new RuntimeException(e);
-        	} catch (URISyntaxException e) {
-        		throw new RuntimeException(e);
-        	}
+        	} 
         }
     }
 
