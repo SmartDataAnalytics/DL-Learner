@@ -267,6 +267,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDownTestPellet() throws ComponentInitException {
+		ToStringRenderer.getInstance().setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 		Logger.getRootLogger().setLevel(Level.TRACE);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
 		reasoner.init();
@@ -295,7 +296,7 @@ public class RefinementOperatorTests {
 //		System.out.println(rs);
 //		System.out.println("most general properties: " + rs.getMostGeneralProperties());
 		System.out.println(reasoner.getObjectPropertyHierarchy());
-		assertTrue(refinements.size()==8);		
+		assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size()==8);		
 	}
 	
 	private String uri(String name) {
