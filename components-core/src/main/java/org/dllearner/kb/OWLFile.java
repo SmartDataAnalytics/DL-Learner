@@ -128,17 +128,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         		} else {// else relative to base directory
         			path = Paths.get(baseDir, fileName);
         		}
-        		
-        		System.out.println(path);
-        		System.out.println(path.normalize());
-        		System.out.println(path.normalize().toUri());
+
         		url = path.normalize().toUri().toURL();
-//        		url = new URL(baseDir == null ? "file://"
-//        				: (fileName.startsWith("/") ? "" : (baseDir + (baseDir.endsWith("/") ? "" : "/")))
-//        				+ fileName).toURI().normalize().toURL();
         	} catch (MalformedURLException e) {
         		throw new RuntimeException(e);
-        	} 
+        	}
         }
     }
 
@@ -168,9 +162,23 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         return baseDir;
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
-    }
+	public void setBaseDir(String baseDir) {
+		/* when reading a config that did not provide a base directory it is
+		 * determined automatically. Unfortunately the string that is then set
+		 * here looks like "file:/tmp/dllearner/examples/arch/" (leading
+		 * 'file:' protocol part!!!). This seems to confuse the
+		 * Paths.get(baseDir, fileName) call in the init() method above which
+		 * creates a path that returns for example something like
+		 *
+		 *   file:///tmp/dllearner/file:/tmp/dllearner/examples/arch/arch.owl
+		 *
+		 * when path.normalize().toUri().toURL() is called. Thus the leading
+		 * 'file:' is cut off here. */
+		if (baseDir.startsWith("file:"))
+			baseDir = baseDir.substring(5);
+
+		this.baseDir = baseDir;
+	}
 
     public URL getUrl() {
         return url;
@@ -211,7 +219,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void setNamedGraphURIs(List<String> namedGraphURIs) {
         this.namedGraphURIs = namedGraphURIs;
     }
-    
+
     public void setReasoning(String reasoning) {
     	switch (reasoning) {
     	case "micro_rule":
@@ -236,11 +244,11 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     		this.reasoning = OntModelSpec.OWL_MEM;
     	}
     }
-    
+
     public void setReasoning(boolean reasoning) {
 		this.setReasoning(reasoning ? "rdfs" : "");
 	}
-    
+
     public void setReasoning(OntModelSpec reasoning) {
     	this.reasoning = reasoning;
     }
