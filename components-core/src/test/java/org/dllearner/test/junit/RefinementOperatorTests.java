@@ -287,14 +287,14 @@ public class RefinementOperatorTests {
 			System.out.println(refinement);
 		}		
 		// refinements should be as follows:
-		//		(male AND (NOT male)) 
-		//		(male AND (female OR female)) 
-		//		(female AND male AND male)
-		//		(male AND ALL hasChild.TOP) 
-		//		(male AND (female OR male)) 
-		//		(male AND male AND male) 
-		//		(male AND (NOT female)) 
-		//		(male AND EXISTS hasChild.TOP) 
+		//	male ⊓ male
+		//	male ⊓ (male   ⊔ male)
+		//	male ⊓ (female ⊔ male)
+		//	male ⊓ (female ⊔ female)
+		//	male ⊓ (¬male)
+		//	male ⊓ (¬female)
+		//	male ⊓ (∃ hasChild.⊤)
+		//	male ⊓ (∀ hasChild.⊤)
 //		System.out.println(rs);
 //		System.out.println("most general properties: " + rs.getMostGeneralProperties());
 		System.out.println(reasoner.getObjectPropertyHierarchy());
