@@ -130,7 +130,7 @@ public class RefinementOperatorTests {
 			System.out.println(result);
 		}
 			
-		int desiredResultSize = 116;
+		int desiredResultSize = 107;
 		if(results.size() != desiredResultSize) {
 			System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 		}
@@ -274,6 +274,7 @@ public class RefinementOperatorTests {
 		
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
+		op.setUseSomeOnly(false);
 		op.setSubHierarchy(reasoner.getClassHierarchy());
 		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
