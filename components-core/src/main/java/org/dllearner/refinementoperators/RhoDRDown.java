@@ -498,7 +498,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
 		// check that maxLength is valid
 		if(maxLength < OWLClassExpressionUtils.getLength(description)) {
-			throw new Error("length has to be at least class expression length (class expression: " + description + ", max length: " + maxLength + ")");
+			throw new Error("length has to be at least class expression length (class expression: " + description + " with length " + OWLClassExpressionUtils.getLength(description) +", and max length: " + maxLength + ")");
 		}
 		return refine(description, maxLength, null, startClass);
 	}
@@ -574,7 +574,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					if((useSomeOnly && isCombinable(description, c)) || !useSomeOnly) {
+					if(!useSomeOnly || isCombinable(description, c)) {
 						List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
 						newChildren.add(c);
 						newChildren.remove(child);

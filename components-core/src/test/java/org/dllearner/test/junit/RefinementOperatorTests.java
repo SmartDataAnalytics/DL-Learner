@@ -277,6 +277,7 @@ public class RefinementOperatorTests {
 		op.setSubHierarchy(reasoner.getClassHierarchy());
 		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		op.setUseSomeOnly(false);
 		op.init();
 		
 		OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
