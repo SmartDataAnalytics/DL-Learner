@@ -261,7 +261,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "dropDisjuncts", defaultValue="false")
 	private boolean dropDisjuncts = false;
 	
-	@ConfigOption(name = "someOnly", 
+	@ConfigOption(name = "useSomeOnly", 
 			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r", 
 			defaultValue="true")
 	private boolean useSomeOnly = true;
