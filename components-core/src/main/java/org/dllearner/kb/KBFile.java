@@ -24,8 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -33,13 +34,10 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -113,18 +111,22 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
 					e.printStackTrace();
 				}
 			} else {
+				/* Copyied from OWLFile */
+	        	try {
+	        		Path path;
+	        		if(fileString.startsWith("/")) {
+	        			path = Paths.get(fileString);
+	        		} else {// else relative to base directory
+	        			path = Paths.get(baseDir, fileString);
+	        		}
 
-				//this check is for eliminating the redundancy
-				//if the baseDir has separator at the end, do not add one more between baseDir and KB filename (or url)
-				String fullFilepath;
-				if (baseDir.endsWith("\\") || baseDir.endsWith("/")) {
-					fullFilepath = baseDir + getUrl();
-				} else {
-					fullFilepath = baseDir + File.separator + getUrl();
-				}
-				File f = new File(new URI(fullFilepath));
-				setUrl(f.toURI().toString());
-				kb = KBParser.parseKBFile(f);
+	        		URI uri = path.normalize().toUri();
+	        		setUrl(uri.toURL().toString());
+					kb = KBParser.parseKBFile(new File(uri));
+	        	} catch (MalformedURLException e) {
+	        		throw new RuntimeException(e);
+	        	}
+
 			}
 
             logger.trace("KB File " + getUrl() + " parsed successfully.");
@@ -132,8 +134,6 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
         } catch (ParseException e) {
             throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
         } catch (FileNotFoundException e) {
-            throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
-        } catch (URISyntaxException e) {
             throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
         } catch (OWLOntologyCreationException e) {
         	throw new ComponentInitException("KB file " + getUrl() + " could not converted to OWL ontology.", e);
