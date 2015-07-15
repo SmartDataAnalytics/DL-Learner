@@ -163,20 +163,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     }
 
 	public void setBaseDir(String baseDir) {
-		/* when reading a config that did not provide a base directory it is
-		 * determined automatically. Unfortunately the string that is then set
-		 * here looks like "file:/tmp/dllearner/examples/arch/" (leading
-		 * 'file:' protocol part!!!). This seems to confuse the
-		 * Paths.get(baseDir, fileName) call in the init() method above which
-		 * creates a path that returns for example something like
-		 *
-		 *   file:///tmp/dllearner/file:/tmp/dllearner/examples/arch/arch.owl
-		 *
-		 * when path.normalize().toUri().toURL() is called. Thus the leading
-		 * 'file:' is cut off here. */
-		if (baseDir.startsWith("file:"))
-			baseDir = baseDir.substring(5);
-
 		this.baseDir = baseDir;
 	}
 
