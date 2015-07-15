@@ -98,46 +98,34 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
 
     @Override
     public void init() throws ComponentInitException {
-        try {
-			if (url == null) {
-				url = baseDir + fileName;
-			}
-			String fileString = getUrl();
-			if (fileString.startsWith("http:") || fileString.startsWith("file:")) {
-				/** Leave it as is */
-				try {
-					kb = KBParser.parseKBFile(new URL(url));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				/* Copyied from OWLFile */
-	        	try {
-	        		Path path;
-	        		if(fileString.startsWith("/")) {
-	        			path = Paths.get(fileString);
-	        		} else {// else relative to base directory
-	        			path = Paths.get(baseDir, fileString);
-	        		}
+    	try {
+    		if (url == null) {
+    			/* Copyied from OWLFile */
+    			Path path;
+    			if(fileName.startsWith("/")) {
+    				path = Paths.get(fileName);
+    			} else {// else relative to base directory
+    				path = Paths.get(baseDir, fileName);
+    			}
 
-	        		URI uri = path.normalize().toUri();
-	        		setUrl(uri.toURL().toString());
-					kb = KBParser.parseKBFile(new File(uri));
-	        	} catch (MalformedURLException e) {
-	        		throw new RuntimeException(e);
-	        	}
+    			URI uri = path.normalize().toUri();
+    			setUrl(uri.toURL().toString());
+    		}
 
-			}
+    		kb = KBParser.parseKBFile(new URL(getUrl()));
+    		logger.trace("KB File " + getUrl() + " parsed successfully.");
 
-            logger.trace("KB File " + getUrl() + " parsed successfully.");
-
-        } catch (ParseException e) {
-            throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
-        } catch (FileNotFoundException e) {
-            throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
-        } catch (OWLOntologyCreationException e) {
-        	throw new ComponentInitException("KB file " + getUrl() + " could not converted to OWL ontology.", e);
-		}
+    	} catch (ParseException e) {
+    		throw new ComponentInitException("KB file " + getUrl() + " could not be parsed correctly.", e);
+    	} catch (FileNotFoundException e) {
+    		throw new ComponentInitException("KB file " + getUrl() + " could not be found.", e);
+    	} catch (OWLOntologyCreationException e) {
+    		throw new ComponentInitException("KB file " + getUrl() + " could not converted to OWL ontology.", e);
+    	} catch (MalformedURLException e) {
+    		throw new ComponentInitException("KB file URL " + getUrl() + " is invalid.", e);
+    	} catch (IOException e) {
+    		throw new ComponentInitException("KB file " + getUrl() + " could not be read.", e);
+    	}
     }
 
     @Override
