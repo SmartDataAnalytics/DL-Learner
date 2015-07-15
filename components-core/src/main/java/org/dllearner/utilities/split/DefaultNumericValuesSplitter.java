@@ -85,6 +85,12 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		
 		// create split set
 		List<T> splitsDP = new LinkedList<T>();
+		
+		// add the first element
+		if (nrOfValues > 0) {
+			splitsDP.add(values.get(0));
+		}
+		
 		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
 			int index;
 			if (nrOfValues <= maxNrOfSplits) {
@@ -92,7 +98,7 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 			} else {
 				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
 			}
-			index = Math.max(0, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
+			index = Math.max(index, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
 			
 			T number1 = values.get(index);
 			T number2 = values.get(index + 1);
@@ -105,7 +111,7 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		}
 		
 		// add the last element
-		if(nrOfValues > 0)
+		if(nrOfValues > 1)
 			splitsDP.add(values.get(nrOfValues - 1));
 		
 		return splitsDP;
