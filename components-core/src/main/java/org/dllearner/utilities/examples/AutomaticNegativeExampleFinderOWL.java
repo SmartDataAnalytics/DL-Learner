@@ -25,7 +25,6 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.utilities.datastructures.SetManipulation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -34,8 +33,8 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 public class AutomaticNegativeExampleFinderOWL {
 
-	// LOGGER: ComponentManager
-	private static Logger logger = Logger.getLogger(ComponentManager.class);
+	// LOGGER
+	private static Logger logger = Logger.getLogger(AutomaticNegativeExampleFinderOWL.class);
 
 	private AbstractReasonerComponent reasoningService;
 	

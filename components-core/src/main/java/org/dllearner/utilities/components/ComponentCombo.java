@@ -29,11 +29,12 @@ import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * A mix of components, which are typically combined to create a full 
@@ -49,7 +50,7 @@ public class ComponentCombo {
 
 	private Set<AbstractKnowledgeSource> sources;
 	private AbstractReasonerComponent reasoner;
-	private AbstractClassExpressionLearningProblem problem;
+	private PosNegLP problem;
 	private AbstractCELA algorithm;
 	
 	/**
@@ -59,7 +60,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */
-	public ComponentCombo(AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, AbstractClassExpressionLearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(AbstractKnowledgeSource source, AbstractReasonerComponent reasoner, PosNegLP problem, AbstractCELA algorithm) {
 		this(getSourceSet(source), reasoner, problem, algorithm);
 	}	
 	
@@ -70,7 +71,7 @@ public class ComponentCombo {
 	 * @param problem A learning problem.
 	 * @param algorithm A learning algorithm.
 	 */	
-	public ComponentCombo(Set<AbstractKnowledgeSource> sources, AbstractReasonerComponent reasoner, AbstractClassExpressionLearningProblem problem, AbstractCELA algorithm) {
+	public ComponentCombo(Set<AbstractKnowledgeSource> sources, AbstractReasonerComponent reasoner, PosNegLP problem, AbstractCELA algorithm) {
 		this.sources = sources;
 		this.reasoner = reasoner;
 		this.problem = problem;
@@ -92,19 +93,14 @@ public class ComponentCombo {
 	 * @param posExamples Set of positive examples.
 	 * @param negExamples Set of negative examples.
 	 */
-	public ComponentCombo(URL owlFile, Set<String> posExamples, Set<String> negExamples) {
-		ComponentManager cm = ComponentManager.getInstance();
-		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
+	public ComponentCombo(URL owlFile, Set<OWLIndividual> posExamples, Set<OWLIndividual> negExamples) {
+		AbstractKnowledgeSource source = new OWLFile();
 		sources = getSourceSet(source);
-		reasoner = cm.reasoner(ClosedWorldReasoner.class, source);
-		problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		cm.applyConfigEntry(problem, "positiveExamples", posExamples);
-		cm.applyConfigEntry(problem, "negativeExamples", negExamples);
-		try {
-			algorithm = cm.learningAlgorithm(OCEL.class, problem, reasoner);
-		} catch (LearningProblemUnsupportedException e) {
-			e.printStackTrace();
-		}
+		reasoner = new ClosedWorldReasoner(source);
+		problem = new PosNegLPStandard(reasoner);
+		problem.setPositiveExamples(posExamples);
+		problem.setNegativeExamples(negExamples);
+		algorithm = new OCEL(problem, reasoner);
 	}
 
 	/**
