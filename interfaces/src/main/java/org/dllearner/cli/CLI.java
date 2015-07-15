@@ -300,10 +300,8 @@ public class CLI {
             cli.setContext(context);
             cli.setConfFile(file);
             cli.run();
-        } catch (Exception e) {e.printStackTrace();
+        } catch (Exception e) {
             String stacktraceFileName = "log/error.log";
-
-//            e.printStackTrace();
             
             //Find the primary cause of the exception.
             Throwable primaryCause = findPrimaryCause(e);
