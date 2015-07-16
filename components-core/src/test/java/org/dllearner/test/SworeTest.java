@@ -19,22 +19,22 @@
 
 package org.dllearner.test;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 /**
  * Test for learning on SWORE ontology.
@@ -51,13 +51,9 @@ public class SworeTest {
 	 */
 	public static void main(String[] args) throws ComponentInitException, MalformedURLException {
 		
-		ComponentManager cm = ComponentManager.getInstance();
-		
 		// create knowledge source
-		AbstractKnowledgeSource source = cm.knowledgeSource(OWLFile.class);
 		String example = "examples/swore/swore.rdf";
-		cm.applyConfigEntry(source, "url", new File(example).toURI().toURL());
-		source.init();
+		AbstractKnowledgeSource source = new OWLFile(example);
 		
 		// create OWL API reasoning service with standard settings
 //		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, source);
@@ -68,24 +64,21 @@ public class SworeTest {
 		reasoner.init();
 		
 		// create a learning problem and set positive and negative examples
-		AbstractClassExpressionLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		Set<String> positiveExamples = new TreeSet<String>();
-		positiveExamples.add("http://ns.softwiki.de/req/important");
-		positiveExamples.add("http://ns.softwiki.de/req/very_important");
-		Set<String> negativeExamples = new TreeSet<String>();
-		negativeExamples.add("http://ns.softwiki.de/req/Topic");
-		cm.applyConfigEntry(lp, "positiveExamples", positiveExamples);
-		cm.applyConfigEntry(lp, "negativeExamples", negativeExamples);
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		Set<OWLIndividual> positiveExamples = new TreeSet<>();
+		OWLDataFactory df = OWLManager.getOWLDataFactory();
+		positiveExamples.add(df.getOWLNamedIndividual(IRI.create("http://ns.softwiki.de/req/important")));
+		positiveExamples.add(df.getOWLNamedIndividual(IRI.create("http://ns.softwiki.de/req/very_important")));
+		Set<OWLIndividual> negativeExamples = new TreeSet<>();
+		negativeExamples.add(df.getOWLNamedIndividual(IRI.create("http://ns.softwiki.de/req/Topic")));
+		lp.setPositiveExamples(positiveExamples);
+		lp.setNegativeExamples(negativeExamples);
 		lp.init();
 		
 		// create the learning algorithm
 		AbstractCELA la = null;
-		try {
-			la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
-			la.init();
-		} catch (LearningProblemUnsupportedException e) {
-			e.printStackTrace();
-		}
+		la = new OCEL(lp, reasoner);
+		la.init();
 	
 		// start the algorithm and print the best concept found
 		la.start();

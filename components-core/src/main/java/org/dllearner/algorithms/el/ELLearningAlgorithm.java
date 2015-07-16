@@ -71,6 +71,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
 	
+	@ConfigOption(name="treeSearchTimeSeconds",description="Specifies how long the algorithm should search for a partial solution (a tree).",defaultValue="10.0")
 	private double treeSearchTimeSeconds = 10.0;
 	private long treeStartTime;
 	
@@ -95,18 +96,22 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 	private boolean replaceSearchTree = false;
 	
+	@ConfigOption(name="maxClassExpressionDepth",defaultValue="2",description="The maximum depth for class expressions to test")
 	private int maxClassExpressionDepth = 2;
 	
+	@ConfigOption(name="maxNrOfResults",defaultValue="10",description="Sets the maximum number of results one is interested in")
 	private int maxNrOfResults = 10;
 	
 	private Set<OWLClass> ignoredConcepts = null;
 	
+	@ConfigOption(name="classToDescribe", description="class of which an OWL class expression should be learned")
 	private OWLClass classToDescribe;
 		
 	private double noise;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private SearchTreeNode startNode;
+	@ConfigOption(name="heuristic", defaultValue="StableHeuristic", description="The heuristic variable to use for ELTL")
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
 	private ELDown3 operator;

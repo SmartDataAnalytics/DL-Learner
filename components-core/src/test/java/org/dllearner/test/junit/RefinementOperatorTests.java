@@ -32,7 +32,6 @@ import org.dllearner.algorithms.ocel.OCEL;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -144,9 +143,8 @@ public class RefinementOperatorTests {
 		
 		// create learning algorithm in order to test under similar conditions than 
 		// within a learning algorithm
-		ComponentManager cm = ComponentManager.getInstance();
-		AbstractClassExpressionLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		OCEL la = new OCEL(lp, reasoner);
 		
 		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ZERO")));

@@ -45,8 +45,8 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
@@ -213,7 +213,6 @@ public class ExampleTests {
 							failed.append(writer.toString());
 						}
 						long timeNeeded = System.nanoTime() - startTime;
-						ComponentManager.getInstance().freeAllComponents();
 						if(!success && started) {
 							System.out.println("TEST FAILED.");
 						}

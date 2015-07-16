@@ -30,9 +30,9 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.Helper;
@@ -59,6 +59,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
+    @ConfigOption(name="maxExecutionTimeInSeconds",defaultValue="10",description="Maximum execution time in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 	
 	@ConfigOption(name = "classToDescribe", description="class of which an OWL class expression should be learned", required=true)
@@ -66,6 +67,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	private List<OWLIndividual> classInstances;
 	private TreeSet<OWLIndividual> classInstancesSet;
+	@ConfigOption(name="equivalence",defaultValue="true",description="Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
 	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)	
@@ -99,6 +101,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private boolean checkConsistency = true;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+	@ConfigOption(name="useInstanceChecks",defaultValue="true",description="Whether to use instance checks (or get individiuals query)")
 	private boolean useInstanceChecks = true;
 	
 	public ClassLearningProblem() {
@@ -181,7 +184,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		classInstances = new LinkedList<OWLIndividual>(getReasoner().getIndividuals(classToDescribe));
 		// sanity check
 		if(classInstances.size() == 0) {
-			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + ComponentManager.getInstance().getComponentName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
+			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + AnnComponentManager.getName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
 		}
 		
 		classInstancesSet = new TreeSet<OWLIndividual>(classInstances);

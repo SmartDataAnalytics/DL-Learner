@@ -105,22 +105,29 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * The learning problem variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
+	@ConfigOption(name="learningProblem", description="The Learning Problem variable to use in this algorithm")
 	protected AbstractClassExpressionLearningProblem<? extends Score> learningProblem;
 	
 	/**
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
 	 */
+	@ConfigOption(name="reasoner", description="The reasoner variable to use for this learning problem")
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
 	
-	
+	@ConfigOption(name="allowedConcepts", description="List of classes that are allowed")
 	protected Set<OWLClass> allowedConcepts = null;
+	@ConfigOption(name="ignoredConcepts", description="List of classes to ignore")
 	protected Set<OWLClass> ignoredConcepts = null;
+	@ConfigOption(name="allowedObjectProperties", description="List of object properties to allow")
 	protected Set<OWLObjectProperty> allowedObjectProperties = null;
+	@ConfigOption(name="ignoredObjectProperties", description="List of object properties to ignore")
 	protected Set<OWLObjectProperty> ignoredObjectProperties = null;
+	@ConfigOption(name="allowedDataProperties", description="List of data properties to allow")
 	protected Set<OWLDataProperty> allowedDataProperties = null;
+	@ConfigOption(name="ignoredDataProperties", description="List of data properties to ignore")
 	protected Set<OWLDataProperty> ignoredDataProperties = null;
 
     /**

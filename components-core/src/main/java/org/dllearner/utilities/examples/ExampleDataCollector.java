@@ -33,7 +33,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -89,7 +88,7 @@ public class ExampleDataCollector {
 			PosNegLPStandard lp = new PosNegLPStandard(rc);
 			lp.setPositiveExamples(Helper.getIndividualSet(pos));
 			lp.setNegativeExamples(Helper.getIndividualSet(neg));
-			OCEL la = ComponentManager.getInstance().learningAlgorithm(OCEL.class, lp, rc);
+			OCEL la = new OCEL(lp, rc);
 //			la.getConfigurator().setUseNegation(false);
 //			la.getConfigurator().setUseAllConstructor(false);
 //			la.getConfigurator().setUseExistsConstructor(false);

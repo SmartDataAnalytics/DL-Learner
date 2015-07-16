@@ -19,6 +19,7 @@
 
 package org.dllearner.core;
 
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V, T>>  extends AbstractComponent implements LearningProblem {
 	
+	@ConfigOption(name="reasoner",description="The reasoner component variable to use for this Learning Problem")
 	protected AbstractReasonerComponent reasoner;
 
     public AbstractLearningProblem(){

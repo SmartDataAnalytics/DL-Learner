@@ -25,7 +25,6 @@ import java.net.URL;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
@@ -48,12 +47,11 @@ public class ReasonerComponentFactory {
 	 * @return A reasoner component.
 	 */
 	public static AbstractReasonerComponent getReasonerComponent(String ontologyFile, ReasonerType type) {
-		ComponentManager cm = ComponentManager.getInstance();
 		AbstractReasonerComponent rc = null;
 
 		try {
 			// knowledge source
-			OWLFile ks = cm.knowledgeSource(OWLFile.class);
+			OWLFile ks = new OWLFile();
 			URL fileURL = new File(ontologyFile).toURI().toURL();
 			ks.setURL(fileURL);
 			ks.init();
@@ -61,26 +59,26 @@ public class ReasonerComponentFactory {
 			// reasoner component
 			switch (type) {
 			case CLOSED_WORLD_REASONER:
-				rc = cm.reasoner(ClosedWorldReasoner.class, ks);
+				rc = new ClosedWorldReasoner(ks);
 				break;
 			case OWLAPI_FACT:
-				rc = cm.reasoner(OWLAPIReasoner.class, ks);
+				rc = new OWLAPIReasoner(ks);
 				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.JFACT);
 				break;
 			case OWLAPI_PELLET:
-				rc = cm.reasoner(OWLAPIReasoner.class, ks);
+				rc = new OWLAPIReasoner(ks);
 				break;
 			//case DIG:
 			//case FAST_RETRIEVAL:
 			//case KAON2:
 			//case OWLAPI_FUZZY:
 			case OWLAPI_HERMIT:
-				rc = cm.reasoner(OWLAPIReasoner.class, ks);
+				rc = new OWLAPIReasoner(ks);
 				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.HERMIT);
 				break;
 			//case SPARQL_NATIVE:
 			default:
-				rc = cm.reasoner(ClosedWorldReasoner.class, ks);
+				rc = new ClosedWorldReasoner(ks);
 				break;
 			}
 			rc.init();
