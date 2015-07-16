@@ -627,7 +627,7 @@ public class ROLearner2 {
 //						 System.exit(0);
 					}
 				}
-
+				
 				// 2. too weak test
 				if (!propernessDetected && useTooWeakList) {
 					if (refinement instanceof OWLObjectIntersectionOf) {
@@ -693,6 +693,7 @@ public class ROLearner2 {
 			if (usePropernessChecks) {
 				long propCalcReasoningStart = System.nanoTime();
 				improperConcepts = rs.isSuperClassOf(toEvaluateConcepts, concept);
+				
 				propernessTestsReasoner += toEvaluateConcepts.size();
 				// boolean isProper =
 				// !learningProblem.getReasonerComponent().subsumes(refinement,
@@ -1371,5 +1372,4 @@ public class ROLearner2 {
 	public boolean isRunning() {
 		return isRunning;
 	}
-
 }
