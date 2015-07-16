@@ -70,6 +70,7 @@ import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
 import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -257,7 +258,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public void init() throws ComponentInitException {
-
         if(baseReasoner == null){
             baseReasoner = new OWLAPIReasoner(sources);
             baseReasoner.init();
@@ -908,13 +908,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						
 						//search a value which is in the interval
 						for (OWLLiteral value : values) {
-							DateTime dateTime = formatter.parseDateTime(value.getLiteral());
-							if(
-									(minDateTime == null || (dateTime.isEqual(minDateTime) ||  dateTime.isAfter(minDateTime)))
-									&& 
-									(maxDateTime == null || (dateTime.isEqual(maxDateTime) ||  dateTime.isBefore(maxDateTime)))
-									)
-									{
+							if(OWLAPIUtils.inRange(value, min, max)){
 								return true;
 							}
 						}
@@ -950,10 +944,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			SortedSet<OWLLiteral> values = mapping.get(individual);
 			
 			return values != null && values.contains(value);
+		} else if (description instanceof OWLObjectOneOf) {
+			return ((OWLObjectOneOf) description).getIndividuals().contains(individual);
 		}
 
 		throw new ReasoningMethodUnsupportedException("Instance check for class expression "
-				+ description + " unsupported.");
+				+ description + " of type " + description.getClassExpressionType() + " unsupported.");
 	}
 
 	@Override

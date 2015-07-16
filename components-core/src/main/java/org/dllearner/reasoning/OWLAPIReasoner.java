@@ -246,7 +246,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         boolean inconsistentOntology = !reasoner.isConsistent();
 
         if (!inconsistentOntology) {
-            reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
+            reasoner.precomputeInferences(
+            		InferenceType.CLASS_HIERARCHY, 
+            		InferenceType.CLASS_ASSERTIONS, 
+            		InferenceType.OBJECT_PROPERTY_HIERARCHY,
+            		InferenceType.DATA_PROPERTY_HIERARCHY,
+            		InferenceType.OBJECT_PROPERTY_ASSERTIONS,
+            		InferenceType.SAME_INDIVIDUAL);
         } else {
         	PelletExplanation expGen = new PelletExplanation(ontology);
         	System.out.println(expGen.getInconsistencyExplanation());

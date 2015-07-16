@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -214,5 +215,47 @@ public class OWLAPIUtils {
 			return startClass;
 		}
 
+	}
+	
+	/**
+	 * Checks whether the given value is in the closed interval [min,max], i.e. 
+	 * the value is greater than min and lower than max.
+	 * @param value the value
+	 * @param min the lower interval endpoint
+	 * @param max the upper interval endpoint
+	 * @return
+	 */
+	public static boolean inRange(OWLLiteral value, OWLLiteral min, OWLLiteral max) {
+		OWLDatatype datatype = value.getDatatype();
+		
+		if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
+			DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
+			
+			// parse min
+			DateTime minDateTime = null;
+			if(min != null) {
+				minDateTime = formatter.parseDateTime(min.getLiteral());
+			}
+			
+			// parse max
+			DateTime maxDateTime = null;
+			if(max != null) {
+				maxDateTime = formatter.parseDateTime(max.getLiteral());
+			}
+			
+			// parse value
+			DateTime dateTime = formatter.parseDateTime(value.getLiteral());
+			
+			if(
+					(minDateTime == null || (dateTime.isEqual(minDateTime) ||  dateTime.isAfter(minDateTime)))
+					&& 
+					(maxDateTime == null || (dateTime.isEqual(maxDateTime) ||  dateTime.isBefore(maxDateTime)))
+					)
+					{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

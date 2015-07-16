@@ -862,8 +862,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
 	@Override
-	public EvaluatedDescriptionClass evaluate(OWLClassExpression description) {
-		ClassScore score = computeScore(description);
+	public EvaluatedDescriptionClass evaluate(OWLClassExpression description, double noise) {
+		ClassScore score = computeScore(description, noise);
 		return new EvaluatedDescriptionClass(description, score);
 	}
 
