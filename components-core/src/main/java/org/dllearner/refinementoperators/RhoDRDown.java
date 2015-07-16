@@ -1221,7 +1221,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLDataProperty> numericDPs = reasoner.getNumericDataProperties();
 			logger.debug(sparql_debug, "Numeric DPs:"+numericDPs);
 			for(OWLDataProperty dp : numericDPs) {
-				if(splits.get(dp) != null && splits.size() > 0) {
+				if(splits.get(dp) != null && splits.get(dp).size() > 0) {
 					OWLLiteral min = splits.get(dp).get(0);
 					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
 
