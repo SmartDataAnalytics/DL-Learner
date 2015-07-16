@@ -19,12 +19,9 @@
 
 package org.dllearner.kb;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Collections;
 
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.utilities.owl.OntologyToByteConverter;

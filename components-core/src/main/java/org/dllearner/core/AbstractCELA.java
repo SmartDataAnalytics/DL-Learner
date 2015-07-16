@@ -445,10 +445,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			niceDescription = ce;
 		}
-
+		
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
-
+		
 		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
 		
 		return niceDescription;
