@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
@@ -82,7 +83,8 @@ public class DocumentationGenerator {
 		
 		Set<Class<?>> componentsDone = new HashSet<>();
 		Class<?>[] nonComponentClasses = {
-				CLI.class
+				CLI.class,
+				GlobalDoc.class
 		};
 		
 		// go through all types of components and write down their documentation
@@ -173,9 +175,14 @@ public class DocumentationGenerator {
 				header =  "component: " + ann.name() + " (" + klass + ") v" + ann.version();
 			}
 			description = ann.description();
-			catString = "cli";
+			if (component.equals(GlobalDoc.class)) {
+				catString="";
+				usage = "";
+			} else {
+				catString = "cli";
 
-			usage = "conf file usage: " + catString + ".type = \"" + klass + "\"\n";
+				usage = "conf file usage: " + catString + ".type = \"" + klass + "\"\n";
+			}
 		}
 		header += "\n" + Strings.repeat("=", header.length()) + "\n";
 		sb.append(header);
@@ -198,16 +205,20 @@ public class DocumentationGenerator {
 				type = "IRI";
 			}
 			String exampleValue = !option.exampleValue().isEmpty() ? option.exampleValue() : option.defaultValue();
-			Set<Class> noQuoteClasses = Sets.<Class>newHashSet(boolean.class, int.class, long.class, float.class, double.class, short.class, List.class, Set.class);
+			Set<Class> noQuoteClasses = Sets.<Class>newHashSet(boolean.class, int.class, long.class, float.class, double.class, short.class, List.class, Set.class, Map.class);
 			Set<Class> collectionClasses = Sets.<Class>newHashSet(List.class, Set.class);
+			Set<Class> mapClasses = Sets.<Class>newHashSet(Map.class);
 			
 			boolean needsQuotes = !noQuoteClasses.contains(entry.getValue());
 			boolean isCollection = collectionClasses.contains(entry.getValue());
+			boolean isMap = mapClasses.contains(entry.getValue());
 			
 			if(needsQuotes) {
 				exampleValue = "\"" + exampleValue + "\"";
 			} else if(isCollection && exampleValue.isEmpty()){
 				exampleValue = "{" + exampleValue + "}";
+			} else if (isMap && exampleValue.isEmpty()) {
+				exampleValue = "[]";
 			}
 			
 			sb.append("option name: " + option.name() + "\n"
@@ -215,7 +226,7 @@ public class DocumentationGenerator {
 					+ "type: " + type + "\n"
 					+ "required: " + option.required() + "\n"
 					+ "default value: " + option.defaultValue() + "\n"
-					+ "conf file usage: " + catString + "." + option.name() + " = " + exampleValue +"\n");
+					+ "conf file usage: " + (catString.isEmpty()? "" : catString + ".") + option.name() + " = " + exampleValue +"\n");
 			
 			sb.append("\n");
 		}

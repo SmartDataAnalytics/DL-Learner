@@ -29,6 +29,7 @@ function showAllCat(){
 <div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
+<div class="type menu Class"><li><a href="#org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc">GLOBAL OPTIONS</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.LocalModelBasedSparqlEndpointKS">Local Endpoint</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.MPSemKernelWorkflow">Mammalian Phenotype SemKernel Workflow</a></li></div>
@@ -69,7 +70,14 @@ function showAllCat(){
 </ul>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.celoe.CELOE"><h2>CELOE <small class="default-hidden">org.dllearner.algorithms.celoe.CELOE</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>celoe</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>filterDescriptionsFollowingFromKB</td><td>If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>maxClassExpressionTests</td><td>The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxClassExpressionTestsAfterImprovement</td><td>The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxDepth</td><td>maximum depth of description</td><td> double</td><td>7</td><td> false</td></tr>
@@ -77,6 +85,7 @@ function showAllCat(){
 <tr><td>maxExecutionTimeInSecondsAfterImprovement</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>reuseExistingDescription</td><td>If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> String</td><td>log/searchTree.txt</td><td> false</td></tr>
@@ -96,7 +105,10 @@ function showAllCat(){
 <tr><td>betaSC</td><td>beta index for F-measure in super class learning</td><td> double</td><td>3.0</td><td> false</td></tr>
 <tr><td>checkConsistency</td><td>whether to check for consistency of suggestions (when added to ontology)</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>classToDescribe</td><td>class of which an OWL class expression should be learned</td><td> IRI</td><td></td><td> true</td></tr>
+<tr><td>equivalence</td><td>Whether this is an equivalence problem (or superclass learning problem)</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>Maximum execution time in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useInstanceChecks</td><td>Whether to use instance checks (or get individiuals query)</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Class"><a name="org.dllearner.cli.CLI"><h2>Command Line Interface <small class="default-hidden">org.dllearner.cli.CLI</small></h2></a>
@@ -109,7 +121,16 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive"><h2>Disjunctive ELTL <small class="default-hidden">org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>deltl</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>Disjunctive ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf with support for disjunctions.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>instanceBasedDisjoints</td><td>whether to do real disjoint tests or check that two named classes do not have common instances</td><td> boolean</td><td></td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>stopOnFirstDefinition</td><td>algorithm will terminate immediately when a correct definition is found</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>treeSearchTimeSeconds</td><td>Specifies how long the algorithm should search for a partial solution (a tree).</td><td> double</td><td>1.0</td><td> false</td></tr>
@@ -119,18 +140,38 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithm"><h2>ELTL <small class="default-hidden">org.dllearner.algorithms.el.ELLearningAlgorithm</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>eltl</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>classToDescribe</td><td>class of which an OWL class expression should be learned</td><td> IRI</td><td></td><td> false</td></tr>
+<tr><td>heuristic</td><td>The heuristic variable to use for ELTL</td><td> ELHeuristic</td><td>StableHeuristic</td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxClassExpressionDepth</td><td>The maximum depth for class expressions to test</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> String</td><td>log/searchTree.txt</td><td> false</td></tr>
 <tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>stopOnFirstDefinition</td><td>algorithm will terminate immediately when a correct definition is found</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>treeSearchTimeSeconds</td><td>Specifies how long the algorithm should search for a partial solution (a tree).</td><td> double</td><td>10.0</td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>writeSearchTree</td><td>specifies whether to write a search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
+<div class="type Class"><a name="org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc"><h2>GLOBAL OPTIONS <small class="default-hidden">org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc</small></h2></a>
+<div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>prefixes</td><td>Mapping of prefixes to replace inside other configuration file entries <strong>Example:</strong> [ ("ex","http://example.com/father#") ]</td><td> Map</td><td></td><td> false</td></tr>
+<tr><td>rendering</td><td>The string renderer for any OWL expression output, can be "dlsyntax" or "manchester" <strong>Example:</strong> dlsyntax</td><td> String</td><td>manchester</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.KBFile"><h2>KB File <small class="default-hidden">org.dllearner.kb.KBFile</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>kbfile</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>baseDir</td><td>change the base directory (must be absolute)</td><td> String</td><td>directory of conf file</td><td> false</td></tr>
 <tr><td>fileName</td><td>relative or absolute path to KB file</td><td> String</td><td></td><td> false</td></tr>
 <tr><td>url</td><td>URL pointer to the KB file</td><td> String</td><td></td><td> false</td></tr>
 </tbody></table></div>
@@ -151,6 +192,14 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>mpskw</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.NaiveALLearner"><h2>Naive AL Learner <small class="default-hidden">org.dllearner.algorithms.NaiveALLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>naiveALLearner</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -168,6 +217,14 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.ocel.OCEL"><h2>OWL Class Expression Learner <small class="default-hidden">org.dllearner.algorithms.ocel.OCEL</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>ocel</dd><dt>version</dt><dd>1.2</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -193,7 +250,10 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PropertyAxiomLearningProblem"><h2>PropertyAxiomLearningProblem <small class="default-hidden">org.dllearner.learningproblems.PropertyAxiomLearningProblem</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>palp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>palp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>reasoner</td><td>The reasoner component variable to use for this Learning Problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type ReasonerComponent"><a name="org.dllearner.reasoning.SPARQLReasoner"><h2>SPARQL Reasoner <small class="default-hidden">org.dllearner.reasoning.SPARQLReasoner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>spr</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>useCache</td><td>Whether to use a file-based cache</td><td> boolean</td><td>true</td><td> false</td></tr>
@@ -280,8 +340,16 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>posonlylp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.qtl.QTL2Disjunctive"><h2>query tree learner with noise (disjunctive) <small class="default-hidden">org.dllearner.algorithms.qtl.QTL2Disjunctive</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>qtl2dis</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -292,7 +360,6 @@ function showAllCat(){
 <tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>someOnly</td><td>universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useAllConstructor</td><td>support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useBooleanDatatypes</td><td>support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
@@ -301,6 +368,7 @@ function showAllCat(){
 <tr><td>useInverse</td><td>support of inverse object properties (owl:inverseOf), e.g. r⁻.C </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useNegation</td><td>support of negation (owl:complementOf), e.g. ¬ C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useNumericDatatypes</td><td>support of numeric datatypes (xsd:int, xsd:double, ...), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useSomeOnly</td><td>universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useStringDatatypes</td><td>support of string datatypes (xsd:string), e.g. ∃ r.{"SOME_STRING"} </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useTimeDatatypes</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>

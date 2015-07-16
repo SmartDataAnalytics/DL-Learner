@@ -60,6 +60,7 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     @ConfigOption(name = "url", description = "URL pointer to the KB file")
     private String url;
     
+    @ConfigOption(name="baseDir",description="change the base directory (must be absolute)",defaultValue="directory of conf file")
     private String baseDir;
     @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
     private String fileName;

@@ -54,15 +54,15 @@ public class PostProcessor {
 	Map<String, ConfFileOption> directives;
 	
 	// a set of properties which contain URIs
-	static final Set<String> uriProperties = Sets.newHashSet(
-			"positiveExamples", 
-			"negativeExamples", 
-			"startClass", 
-			"classToDescribe",
-			"entityToDescribe",
-			"propertyToDescribe"
-			);
-	
+//	static final Set<String> uriProperties = Sets.newHashSet(
+//			"positiveExamples", 
+//			"negativeExamples", 
+//			"startClass", 
+//			"classToDescribe",
+//			"entityToDescribe",
+//			"propertyToDescribe"
+//			);
+
 	public PostProcessor(List<ConfFileOption> confOptions, Map<String, ConfFileOption> directives) {
 		this.confOptions = confOptions;
 		this.directives = directives;

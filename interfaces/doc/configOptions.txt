@@ -37,6 +37,24 @@ required: false
 default value: false
 conf file usage: cli.writeSpringConfiguration = false
 
+component: GLOBAL OPTIONS (org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc) v0.0
+=======================================================================================
+
+
+option name: prefixes
+description: Mapping of prefixes to replace inside other configuration file entries
+type: Map
+required: false
+default value: 
+conf file usage: prefixes = [ ("ex","http://example.com/father#") ]
+
+option name: rendering
+description: The string renderer for any OWL expression output, can be "dlsyntax" or "manchester"
+type: String
+required: false
+default value: manchester
+conf file usage: rendering = "dlsyntax"
+
 
 *********************
 * Knowledge Sources *
@@ -46,6 +64,13 @@ component: KB File (org.dllearner.kb.KBFile) v0.8
 =================================================
 
 conf file usage: ks.type = "kbfile"
+
+option name: baseDir
+description: change the base directory (must be absolute)
+type: String
+required: false
+default value: directory of conf file
+conf file usage: ks.baseDir = "directory of conf file"
 
 option name: fileName
 description: relative or absolute path to KB file
@@ -442,6 +467,62 @@ component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
 
 conf file usage: la.type = "naiveALLearner"
 
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
@@ -481,12 +562,61 @@ CELOE is an adapted and extended version of the OCEL algorithm applied for the o
 
 conf file usage: la.type = "celoe"
 
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
 option name: filterDescriptionsFollowingFromKB
 description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
 type: boolean
 required: false
 default value: false
 conf file usage: la.filterDescriptionsFollowingFromKB = false
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
 
 option name: maxClassExpressionTests
 description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
@@ -536,6 +666,13 @@ type: double
 required: false
 default value: 0.0
 conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
 
 option name: replaceSearchTree
 description: specifies whether to replace the search tree in the log file after each run or append the new search tree
@@ -606,6 +743,62 @@ ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org
 
 conf file usage: la.type = "eltl"
 
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: classToDescribe
+description: class of which an OWL class expression should be learned
+type: IRI
+required: false
+default value: 
+conf file usage: la.classToDescribe = ""
+
+option name: heuristic
+description: The heuristic variable to use for ELTL
+type: ELHeuristic
+required: false
+default value: StableHeuristic
+conf file usage: la.heuristic = "StableHeuristic"
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
 option name: instanceBasedDisjoints
 description: Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.
 type: boolean
@@ -613,12 +806,40 @@ required: false
 default value: true
 conf file usage: la.instanceBasedDisjoints = true
 
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: maxClassExpressionDepth
+description: The maximum depth for class expressions to test
+type: int
+required: false
+default value: 2
+conf file usage: la.maxClassExpressionDepth = 2
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in
+type: int
+required: false
+default value: 10
+conf file usage: la.maxNrOfResults = 10
+
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 type: double
 required: false
 default value: 0.0
 conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
 
 option name: replaceSearchTree
 description: specifies whether to replace the search tree in the log file after each run or append the new search tree
@@ -648,6 +869,13 @@ required: false
 default value: false
 conf file usage: la.stopOnFirstDefinition = false
 
+option name: treeSearchTimeSeconds
+description: Specifies how long the algorithm should search for a partial solution (a tree).
+type: double
+required: false
+default value: 10.0
+conf file usage: la.treeSearchTimeSeconds = 10.0
+
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
@@ -668,12 +896,75 @@ Disjunctive ELTL is an algorithm based on the refinement operator in http://jens
 
 conf file usage: la.type = "deltl"
 
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: instanceBasedDisjoints
+description: whether to do real disjoint tests or check that two named classes do not have common instances
+type: boolean
+required: false
+default value: 
+conf file usage: la.instanceBasedDisjoints = 
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
 type: double
 required: false
 default value: 0.0
 conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
 
 option name: startClass
 description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
@@ -715,6 +1006,62 @@ component: OWL Class Expression Learner (org.dllearner.algorithms.ocel.OCEL) v1.
 
 conf file usage: la.type = "ocel"
 
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
@@ -726,6 +1073,55 @@ component: query tree learner with noise (disjunctive) (org.dllearner.algorithms
 ==========================================================================================================
 
 conf file usage: la.type = "qtl2dis"
+
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
 
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
@@ -740,6 +1136,13 @@ type: double
 required: false
 default value: 0.0
 conf file usage: la.noisePercentage = 0.0
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
@@ -801,12 +1204,33 @@ required: true
 default value: 
 conf file usage: lp.classToDescribe = ""
 
+option name: equivalence
+description: Whether this is an equivalence problem (or superclass learning problem)
+type: boolean
+required: false
+default value: true
+conf file usage: lp.equivalence = true
+
+option name: maxExecutionTimeInSeconds
+description: Maximum execution time in seconds
+type: int
+required: false
+default value: 10
+conf file usage: lp.maxExecutionTimeInSeconds = 10
+
 option name: useApproximations
 description: Use Approximations
 type: boolean
 required: false
 default value: false
 conf file usage: lp.useApproximations = false
+
+option name: useInstanceChecks
+description: Whether to use instance checks (or get individiuals query)
+type: boolean
+required: false
+default value: true
+conf file usage: lp.useInstanceChecks = true
 
 component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
 ==================================================================================
@@ -864,6 +1288,13 @@ component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.Property
 ==========================================================================================================
 
 conf file usage: lp.type = "palp"
+
+option name: reasoner
+description: The reasoner component variable to use for this Learning Problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: lp.reasoner = ""
 
 
 
@@ -974,13 +1405,6 @@ required: false
 default value: true
 conf file usage: op.instanceBasedDisjoints = true
 
-option name: someOnly
-description: universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r
-type: boolean
-required: false
-default value: true
-conf file usage: op.someOnly = true
-
 option name: useAllConstructor
 description: support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C 
 type: boolean
@@ -1036,6 +1460,13 @@ type: boolean
 required: false
 default value: true
 conf file usage: op.useNumericDatatypes = true
+
+option name: useSomeOnly
+description: universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r
+type: boolean
+required: false
+default value: true
+conf file usage: op.useSomeOnly = true
 
 option name: useStringDatatypes
 description: support of string datatypes (xsd:string), e.g. ∃ r.{"SOME_STRING"} 

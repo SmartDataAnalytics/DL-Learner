@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.collections15.BidiMap;
+import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
@@ -36,6 +37,7 @@ public class DocumentationHTMLGenerator {
 		Map<Class<?>, String> componentNames = new DualHashBidiMap();
 		componentNames.putAll(cm.getComponentsNamed());
 		componentNames.put(CLI.class, "Command Line Interface");
+		componentNames.put(GlobalDoc.class, "GLOBAL OPTIONS");
 		TreeMap<String, Class<?>> componentNamesInv = new TreeMap<String, Class<?>>();
 		
 		// create inverse, ordered map for displaying labels

@@ -59,6 +59,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
     private long nanoStartTime;
+    @ConfigOption(name="maxExecutionTimeInSeconds",defaultValue="10",description="Maximum execution time in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 	
 	@ConfigOption(name = "classToDescribe", description="class of which an OWL class expression should be learned", required=true)
@@ -66,6 +67,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	private List<OWLIndividual> classInstances;
 	private TreeSet<OWLIndividual> classInstancesSet;
+	@ConfigOption(name="equivalence",defaultValue="true",description="Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
 	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)	
@@ -99,6 +101,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private boolean checkConsistency = true;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
+	@ConfigOption(name="useInstanceChecks",defaultValue="true",description="Whether to use instance checks (or get individiuals query)")
 	private boolean useInstanceChecks = true;
 	
 	public ClassLearningProblem() {

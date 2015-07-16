@@ -127,6 +127,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1;
 
+	@ConfigOption(name="instanceBasedDisjoints", description="whether to do real disjoint tests or check that two named classes do not have common instances")
 	private boolean instanceBasedDisjoints;
 
 	private DecimalFormat decFormat = new DecimalFormat("0.00"); 
