@@ -547,7 +547,7 @@ public class ROLearner2 {
 	}
 
 	// for all refinements of concept up to max length, we check whether they
-	// are properr
+	// are proper
 	// and call the method recursively if not
 	// recDepth is used only for statistics
 	private void extendNodeProper(ExampleBasedNode node, OWLClassExpression concept, int maxLength,
@@ -616,7 +616,7 @@ public class ROLearner2 {
 					// kurzes Konzept konstruieren
 					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement);
 					int n = shortConcept.compareTo(concept);
-
+					
 					// Konzepte sind gleich also Refinement improper
 					if (n == 0) {
 						propernessTestsAvoidedByShortConceptConstruction++;
@@ -879,7 +879,6 @@ public class ROLearner2 {
 			if (!redundant) {
 //				System.out.println("node " + node);
 //				System.out.println("refinement " + refinement);
-				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
 			}
 			
