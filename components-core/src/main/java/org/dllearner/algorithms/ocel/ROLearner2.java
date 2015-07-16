@@ -863,10 +863,10 @@ public class ROLearner2 {
 		// sich
 		// proper refinements ergeben könnten
 		for (OWLClassExpression refinement : refinements) {
-			// for(int i=0; i<=recDepth; i++)
-			// System.out.print(" ");
-			// System.out.println("call: " + refinement + " [maxLength " +
-			// maxLength + ", rec depth " + recDepth + "]");
+			 for(int i=0; i<=recDepth; i++)
+			 System.out.print(" ");
+			 System.out.println("call: " + refinement + " [maxLength " +
+			 maxLength + ", rec depth " + recDepth + "]");
 
 			// check for redundancy (otherwise we may run into very
 			// time-intensive loops,
@@ -877,8 +877,8 @@ public class ROLearner2 {
 			redundancyCheckTimeNs += System.nanoTime() - redundancyCheckTimeNsStart;
 
 			if (!redundant) {
-//				System.out.println("node " + node);
-//				System.out.println("refinement " + refinement);
+				System.out.println("node " + node);
+				System.out.println("refinement " + refinement);
 				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
 			}
