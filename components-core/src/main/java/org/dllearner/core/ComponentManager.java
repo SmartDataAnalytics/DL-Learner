@@ -74,7 +74,6 @@ public final class ComponentManager {
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
 //            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
-            "org.dllearner.reasoning.FastInstanceChecker",
 //learning problems
             "org.dllearner.learningproblems.PosNegLPStandard",
 //            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
