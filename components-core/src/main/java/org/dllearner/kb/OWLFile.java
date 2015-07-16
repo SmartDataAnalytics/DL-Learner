@@ -187,6 +187,14 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     }
 
     public void setSparql(String sparql) {
+    	setSparql(sparql, true);
+    }
+    
+    public void setSparql(String sparql, boolean autoQuote) {
+    	if (autoQuote) {
+    		// quote IRIs 
+    		sparql = sparql.replaceAll("(?<=^|\\s|\\()((?:([^<(:/?#\\s]*):)(?://([^/?#]*?))?([^?#]*?)(?:\\?([^#]*?))?(?:#(.*?))?)(?=(,|\\.|;|)(\\)|\\s|$))", "<$1>");
+    	}
         this.sparql = sparql;
     }
 
