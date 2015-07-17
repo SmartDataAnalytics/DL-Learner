@@ -22,14 +22,9 @@ package org.dllearner.core;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
- * Base class for all learning problems.
- * See also the wiki page for 
- * <a href="http://dl-learner.org/Projects/DLLearner/Architecture">DL-Learner-Architecture</a>.
- * Currently, we assume that all learning problems have the goal
- * of learning class descriptions. However, this may be extended
- * to other scenarios if desired. 
+ * Base class for all class expression learning problems.
  * 
- * @author Jens Lehmann
+ * @author Lorent Buehmann
  *
  */
 public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
