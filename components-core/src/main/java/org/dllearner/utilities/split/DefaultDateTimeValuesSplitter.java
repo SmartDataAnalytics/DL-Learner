@@ -54,13 +54,14 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 		
 		OWLDatatype datatype = reasoner.getDatatype(dp);
 		
+		DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
 		DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
 		
 		List<DateTime> values = new LinkedList<DateTime>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : ind2Values.entrySet()) {
 			
 			for (OWLLiteral value : entry.getValue()) {
-				DateTime dateTime = formatter.parseDateTime(value.getLiteral());
+				DateTime dateTime = parser.parseDateTime(value.getLiteral());
 				values.add(dateTime);
 			}
 			
