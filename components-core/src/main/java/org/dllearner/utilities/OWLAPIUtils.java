@@ -14,8 +14,11 @@ import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormat;
@@ -80,6 +83,7 @@ public class OWLAPIUtils {
     	XSD.DATE,
     	XSD.DATE_TIME,
     	XSD.G_DAY,
+    	XSD.G_MONTH,
     	XSD.G_YEAR
     ));
     
@@ -115,13 +119,29 @@ public class OWLAPIUtils {
 	static {
 		dateTimeFormatters.put(XSD.G_YEAR, ISODateTimeFormat.year());
 		dateTimeFormatters.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
-		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MMZ").withOffsetParsed());
+		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MM").withZone(DateTimeZone.UTC));
 		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
 		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
 		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+	}
+
+	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeParsers = new HashMap<>(dateTimeFormatters);
+	static {
+		dateTimeParsers.put(XSD.G_YEAR, ISODateTimeFormat.year());
+		dateTimeParsers.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
+		dateTimeParsers.put(XSD.G_MONTH, new DateTimeFormatterBuilder()
+		.append(DateTimeFormat.forPattern("--MM"))
+		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
+		.toFormatter().withOffsetParsed());
+		dateTimeParsers.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
+		dateTimeParsers.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
+		dateTimeParsers.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
+		dateTimeParsers.put(XSD.DATE, ISODateTimeFormat.date());
+		dateTimeParsers.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
+		dateTimeParsers.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 	
 	public static final Map<OWLDatatype, PeriodFormatter> periodFormatters = new HashMap<>();
@@ -202,22 +222,22 @@ public class OWLAPIUtils {
 		OWLDatatype datatype = value.getDatatype();
 		
 		if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
-			DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
+			DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
 			
 			// parse min
 			DateTime minDateTime = null;
 			if(min != null) {
-				minDateTime = formatter.parseDateTime(min.getLiteral());
+				minDateTime = parser.parseDateTime(min.getLiteral());
 			}
 			
 			// parse max
 			DateTime maxDateTime = null;
 			if(max != null) {
-				maxDateTime = formatter.parseDateTime(max.getLiteral());
+				maxDateTime = parser.parseDateTime(max.getLiteral());
 			}
 			
 			// parse value
-			DateTime dateTime = formatter.parseDateTime(value.getLiteral());
+			DateTime dateTime = parser.parseDateTime(value.getLiteral());
 			
 			if(
 					(minDateTime == null || (dateTime.isEqual(minDateTime) ||  dateTime.isAfter(minDateTime)))

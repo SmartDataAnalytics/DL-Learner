@@ -888,20 +888,20 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 						
 						// we can return false if largest number is below minimum or lowest number is above maximum
-						DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
+						DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
 						DateTime minDateTime = null;
 						if(min != null) {
-							minDateTime = formatter.parseDateTime(min.getLiteral());
+							minDateTime = parser.parseDateTime(min.getLiteral());
 						}
 						DateTime maxDateTime = null;
 						if(max != null) {
-							maxDateTime = formatter.parseDateTime(max.getLiteral());
+							maxDateTime = parser.parseDateTime(max.getLiteral());
 						}
 						
 						if(
-								(minDateTime != null && formatter.parseDateTime(values.last().getLiteral()).isBefore(minDateTime))
+								(minDateTime != null && parser.parseDateTime(values.last().getLiteral()).isBefore(minDateTime))
 								|| 
-								(maxDateTime != null && formatter.parseDateTime(values.first().getLiteral()).isAfter(maxDateTime))
+								(maxDateTime != null && parser.parseDateTime(values.first().getLiteral()).isAfter(maxDateTime))
 								){
 							return false;
 						}
