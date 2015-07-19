@@ -59,9 +59,9 @@ public class TreeSubsumptionTest{
 		ExtendedIterator<Individual> it = model.listIndividuals();
 		while(it.hasNext()) {
 			Individual ind = it.next();
-			RDFResourceTree tree = factory.getQueryTree(ind.getURI(), model);
-			
-			String treeString = tree.getStringRepresentation(Rendering.BRACES);
+//			RDFResourceTree tree = factory.getQueryTree(ind.getURI(), model);
+//			
+//			String treeString = tree.getStringRepresentation(Rendering.BRACES);
 		}
 		
 	}
