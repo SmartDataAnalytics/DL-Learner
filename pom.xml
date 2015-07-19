@@ -163,6 +163,28 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 				</configuration>
 			</plugin>
+			<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
+			See: https://github.com/aleksandr-m/gitflow-maven-plugin
+			Usage: gitflow:release-start and gitflow:release-finish -->
+	<plugin>
+	<groupId>com.amashchenko.maven.plugin</groupId>
+	<artifactId>gitflow-maven-plugin</artifactId>
+	<version>1.0.8</version>
+	<configuration>
+		<installProject>false</installProject>
+		<verbose>false</verbose>
+
+		<gitFlowConfig>
+			<productionBranch>master</productionBranch>
+			<developmentBranch>develop</developmentBranch>
+			<featureBranchPrefix>feature/</featureBranchPrefix>
+			<releaseBranchPrefix>release/</releaseBranchPrefix>
+			<hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+			<supportBranchPrefix>support/</supportBranchPrefix>
+			<versionTagPrefix></versionTagPrefix>
+		</gitFlowConfig>
+	</configuration>
+</plugin>
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
