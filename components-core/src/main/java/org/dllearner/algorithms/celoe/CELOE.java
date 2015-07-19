@@ -110,6 +110,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// all nodes in the search tree (used for selecting most promising node)
 	private TreeSet<OENode> nodes;
+	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
 	// root of search tree
 	private OENode startNode;

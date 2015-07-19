@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -42,6 +43,7 @@ import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblem;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
+import org.reflections.Reflections;
 import org.semanticweb.owlapi.model.OWLClass;
 
 import com.google.common.base.CaseFormat;
@@ -55,6 +57,10 @@ import com.google.common.collect.Sets;
  */
 public class DocumentationGenerator {
 
+	static {
+		AnnComponentManager.setReflectionScanner(new Reflections());
+		org.apache.log4j.Logger.getLogger(AnnComponentManager.class).setLevel(Level.DEBUG);
+	}
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
 	
 	private static final Map<Class, String> varNameMapping = new HashMap<Class, String>();

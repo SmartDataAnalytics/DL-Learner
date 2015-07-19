@@ -116,13 +116,13 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class expression solves a learning problem. There can be different
+	 * hypothesis solves a learning problem. There can be different
 	 * ways to compute accuracy depending on the type of learning problem
 	 * and other factors. However, all implementations are required to 
 	 * return a value between 0 and 1, where 1 stands for the highest
 	 * possible accuracy and 0 for the lowest possible accuracy.
 	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis).
 	 */	
 	public double getAccuracy(V object) {
 		return getAccuracy(object, 0.0);

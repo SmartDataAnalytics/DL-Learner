@@ -19,11 +19,8 @@
 
 package org.dllearner.core;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.sql.Ref;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -35,8 +32,14 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.refinementoperators.RefinementOperator;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 
 /**
@@ -50,6 +53,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
  *
  */
 public class AnnComponentManager {
+	private static Logger logger = LoggerFactory.getLogger(AnnComponentManager.class);
 
     // the list of annotation based components (note that we save them as string here
     // instead of class objects in order not to have dependencies on the implementation
@@ -57,66 +61,98 @@ public class AnnComponentManager {
     // objects are only created on invocation of the component manager);
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
-    private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.NaiveALLearner",
-            "org.dllearner.algorithms.celoe.CELOE",
-//            "org.dllearner.algorithms.celoe.PCELOE",
-            "org.dllearner.algorithms.el.ELLearningAlgorithm",
-            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
-//            "org.dllearner.algorithms.BruteForceLearner",
-//            "org.dllearner.algorithms.RandomGuesser",
-            "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner",
-            "org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner",
-            "org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner",
-            "org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
-            "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
-            "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
-            "org.dllearner.algorithms.DisjointClassesLearner",
-            "org.dllearner.algorithms.SimpleSubclassLearner",
-            "org.dllearner.algorithms.qtl.QTL2Disjunctive",
-            "org.dllearner.kb.KBFile",
-            "org.dllearner.kb.OWLFile",
-            "org.dllearner.kb.SparqlEndpointKS",
-            "org.dllearner.kb.LocalModelBasedSparqlEndpointKS",
-            "org.dllearner.kb.sparql.SparqlKnowledgeSource",
-            "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
-            "org.dllearner.learningproblems.PosNegLPStandard",
-//            "org.dllearner.learningproblems.PosNegLPStrict",
-//            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
-            "org.dllearner.learningproblems.PosOnlyLP",
-            "org.dllearner.learningproblems.ClassLearningProblem",
-            "org.dllearner.learningproblems.PropertyAxiomLearningProblem",
-            "org.dllearner.reasoning.ClosedWorldReasoner",
-            "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.SPARQLReasoner",
-//            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
-            "org.dllearner.algorithms.ocel.OCEL",
-            "org.dllearner.algorithms.ocel.MultiHeuristic",
-            "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
-            "org.dllearner.refinementoperators.RhoDRDown",
-//            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
-            // just for testing
-            // "org.dllearner.refinementoperators.ExampleOperator",
-            "org.dllearner.utilities.semkernel.SemKernelWorkflow",
-            "org.dllearner.utilities.semkernel.MPSemKernelWorkflow",
-    } ));
+    private static List<String> componentClassNames;
+//    ;= new ArrayList<String>  ( Arrays.asList(new String[]{
+//            "org.dllearner.algorithms.NaiveALLearner",
+//            "org.dllearner.algorithms.celoe.CELOE",
+////            "org.dllearner.algorithms.celoe.PCELOE",
+//            "org.dllearner.algorithms.el.ELLearningAlgorithm",
+//            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+////            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
+////            "org.dllearner.algorithms.BruteForceLearner",
+////            "org.dllearner.algorithms.RandomGuesser",
+//            "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner",
+//            "org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner",
+//            "org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner",
+//            "org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
+//            "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
+//            "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
+//            "org.dllearner.algorithms.DisjointClassesLearner",
+//            "org.dllearner.algorithms.SimpleSubclassLearner",
+//            "org.dllearner.algorithms.qtl.QTL2Disjunctive",
+//            "org.dllearner.kb.KBFile",
+//            "org.dllearner.kb.OWLFile",
+//            "org.dllearner.kb.SparqlEndpointKS",
+//            "org.dllearner.kb.LocalModelBasedSparqlEndpointKS",
+//            "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+//            "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
+//            "org.dllearner.learningproblems.PosNegLPStandard",
+////            "org.dllearner.learningproblems.PosNegLPStrict",
+////            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
+//            "org.dllearner.learningproblems.PosOnlyLP",
+//            "org.dllearner.learningproblems.ClassLearningProblem",
+//            "org.dllearner.learningproblems.PropertyAxiomLearningProblem",
+//            "org.dllearner.reasoning.ClosedWorldReasoner",
+//            "org.dllearner.reasoning.OWLAPIReasoner",
+//            "org.dllearner.reasoning.SPARQLReasoner",
+////            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
+//            "org.dllearner.algorithms.ocel.OCEL",
+//            "org.dllearner.algorithms.ocel.MultiHeuristic",
+//            "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
+//            "org.dllearner.algorithms.isle.NLPHeuristic",
+//            "org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex",
+//            "org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple",
+//            "org.dllearner.algorithms.el.DisjunctiveHeuristic",
+//            "org.dllearner.algorithms.isle.metrics.RelevanceWeightedStableHeuristic",
+//            "org.dllearner.algorithms.el.StableHeuristic",
+//            "org.dllearner.refinementoperators.RhoDRDown",
+////            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
+//            // just for testing
+//            // "org.dllearner.refinementoperators.ExampleOperator",
+//            "org.dllearner.utilities.semkernel.SemKernelWorkflow",
+//            "org.dllearner.utilities.semkernel.MPSemKernelWorkflow",
+//    } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;
     private static BidiMap<Class<? extends Component>, String> componentNamesShort;
 
 	private static AnnComponentManager cm = null;
+	private static Reflections reflectionScanner = null;
 
 	private AnnComponentManager() {
+		if (componentClassNames == null) {
+			componentClassNames = new ArrayList<>();
+			if (reflectionScanner == null) {
+				org.apache.log4j.Logger.getLogger(Reflections.class).setLevel(Level.OFF);
+				reflectionScanner = new Reflections("org.dllearner");
+			}
+			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class); 
+			for (Class<?> clazz
+					: Sets.intersection(
+							componentClasses,
+							componentAnnClasses
+					)
+				) {
+				if (!Modifier.isAbstract( clazz.getModifiers() ))
+					componentClassNames.add(clazz.getCanonicalName());
+			}
+			for (Class<?> clazz
+					: Sets.difference(componentClasses, componentAnnClasses)
+					) {
+				if (!Modifier.isAbstract( clazz.getModifiers() ))
+					logger.debug("Warning: " + clazz.getCanonicalName() + " implements Component but is not annotated, ignored");
+			}
+		}
 		// conversion of class strings to objects
 		components = new TreeSet<Class<? extends Component>>(new Comparator<Class<? extends Component>>() {
 
@@ -147,6 +183,11 @@ public class AnnComponentManager {
 	public static void setComponentClassNames(List<String> componentClassNames) {
 		AnnComponentManager.componentClassNames = componentClassNames;
 		cm = null;
+	}
+	
+	public static void setReflectionScanner(Reflections ref) {
+		AnnComponentManager.reflectionScanner = ref;
+		setComponentClassNames(null);
 	}
 
 	/**

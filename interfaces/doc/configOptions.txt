@@ -340,6 +340,12 @@ conf file usage: ks.tboxfilter = ""
 * AxiomLearningAlgorithm *
 **************************
 
+component: asymmetric object property axiom learner (org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner) v0.1
+===================================================================================================================================
+A learning algorithm for asymmetric object property axioms.
+
+conf file usage: la.type = "oplasymm"
+
 component: data property domain axiom learner (org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner) v0.1
 =======================================================================================================================
 A learning algorithm for data property domain axioms.
@@ -394,6 +400,18 @@ A learning algorithm for inverse functional object property axioms.
 
 conf file usage: la.type = "oplinvfunc"
 
+component: inverse object property axiom learner (org.dllearner.algorithms.properties.InverseObjectPropertyAxiomLearner) v0.1
+=============================================================================================================================
+A learning algorithm for inverse object property axioms.
+
+conf file usage: la.type = "oplinv"
+
+component: irreflexive object property axiom learner (org.dllearner.algorithms.properties.IrreflexiveObjectPropertyAxiomLearner) v0.1
+=====================================================================================================================================
+A learning algorithm for irreflexive object property axioms.
+
+conf file usage: la.type = "oplirrefl"
+
 component: object property domain axiom learner (org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner) v0.1
 ===========================================================================================================================
 A learning algorithm for object property domain axioms.
@@ -405,6 +423,12 @@ component: object property range learner (org.dllearner.algorithms.properties.Ob
 A learning algorithm for object property range axioms.
 
 conf file usage: la.type = "oplrange"
+
+component: reflexive object property axiom learner (org.dllearner.algorithms.properties.ReflexiveObjectPropertyAxiomLearner) v0.1
+=================================================================================================================================
+A learning algorithm for reflexive object property domain axioms.
+
+conf file usage: la.type = "oplrefl"
 
 component: data subproperty axiom learner (org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner) v0.1
 ==================================================================================================================
@@ -590,6 +614,13 @@ required: false
 default value: false
 conf file usage: la.filterDescriptionsFollowingFromKB = false
 
+option name: heuristic
+description: no description available
+type: AbstractHeuristic
+required: false
+default value: celoe_heuristic
+conf file usage: la.heuristic = "celoe_heuristic"
+
 option name: ignoredConcepts
 description: List of classes to ignore
 type: Set
@@ -736,6 +767,130 @@ type: boolean
 required: false
 default value: false
 conf file usage: la.writeSearchTree = false
+
+component: ETDT (org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier) v1.0
+=====================================================================================
+An Evidence-based Terminological Decision Tree
+
+conf file usage: la.type = "etdt"
+
+option name: BEAM
+description: value for limiting the number of generated concepts
+type: int
+required: false
+default value: 4
+conf file usage: la.BEAM = 4
+
+option name: PURITY_THRESHOLD
+description: Purity threshold for setting a leaf
+type: double
+required: false
+default value: 0.05
+conf file usage: la.PURITY_THRESHOLD = 0.05
+
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: nonspecificity
+description: a flag to decide if further control on the purity measure should be made
+type: boolean
+required: false
+default value: false
+conf file usage: la.nonspecificity = false
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+component: tdt (org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier) v1.0
+==============================================================================
+A Terminological Decision Tree
+
+conf file usage: la.type = "tdt"
+
+option name: BINARYCLASSIFICATION
+description: value for limiting the number of generated concepts
+type: boolean
+required: false
+default value: false
+conf file usage: la.BINARYCLASSIFICATION = false
+
+option name: PURITY_THRESHOLD
+description: Purity threshold for setting a leaf
+type: double
+required: false
+default value: 0.05
+conf file usage: la.PURITY_THRESHOLD = 0.05
+
+option name: ccp
+description: value for limiting the number of generated concepts
+type: boolean
+required: false
+default value: false
+conf file usage: la.ccp = false
+
+option name: missingValueTreatment
+description: for overcoming the problem of missing values in tree algorithms.tree.models
+type: boolean
+required: false
+default value: false
+conf file usage: la.missingValueTreatment = false
 
 component: ELTL (org.dllearner.algorithms.el.ELLearningAlgorithm) v0.5
 ======================================================================
@@ -1279,22 +1434,37 @@ required: false
 default value: false
 conf file usage: lp.useRetrievalForClassification = false
 
+component: PosNegUndLP (org.dllearner.learningproblems.PosNegUndLP) v1.0
+========================================================================
+A learning problem with uncertain-memebrship instances
+
+conf file usage: lp.type = "posNegUndLP"
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
+type: String
+required: false
+default value: predacc
+conf file usage: lp.accuracyMethod = "predacc"
+
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: lp.approxDelta = 0.05
+
+option name: useApproximations
+description: Use Approximations
+type: boolean
+required: false
+default value: false
+conf file usage: lp.useApproximations = false
+
 component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
 =========================================================================================
 
 conf file usage: lp.type = "posonlylp"
-
-component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.PropertyAxiomLearningProblem) v0.6
-==========================================================================================================
-
-conf file usage: lp.type = "palp"
-
-option name: reasoner
-description: The reasoner component variable to use for this Learning Problem
-type: AbstractReasonerComponent
-required: false
-default value: 
-conf file usage: lp.reasoner = ""
 
 
 
@@ -1364,6 +1534,25 @@ conf file usage: reasoner.useCache = true
 **********************
 * RefinementOperator *
 **********************
+
+component: Refinement Operator TDT (org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator) v1.0
+==============================================================================================================================
+
+conf file usage: op.type = "tdtop"
+
+option name: beam
+description: no description available
+type: int
+required: false
+default value: 5
+conf file usage: op.beam = 5
+
+option name: kindOperator
+description: no description available
+type: int
+required: false
+default value: 1
+conf file usage: op.kindOperator = 1
 
 component: rho refinement operator (org.dllearner.refinementoperators.RhoDRDown) v0.8
 =====================================================================================
@@ -1546,6 +1735,16 @@ type: double
 required: false
 default value: 0.1
 conf file usage: h.startNodeBonus = 0.1
+
+component: QueryTreeHeuristic (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex) v0.1
+======================================================================================================
+
+conf file usage: h.type = "qtree_heuristic_complex"
+
+component: QueryTreeHeuristic (org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple) v0.1
+=====================================================================================================
+
+conf file usage: h.type = "qtree_heuristic_simple"
 
 
 ********************

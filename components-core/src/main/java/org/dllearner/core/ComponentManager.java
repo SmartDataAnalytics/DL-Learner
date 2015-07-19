@@ -49,6 +49,7 @@ import org.dllearner.utilities.datastructures.Maps;
  * @author Jens Lehmann
  * 
  */
+@Deprecated
 public final class ComponentManager {
 
 	private static Logger logger = Logger
