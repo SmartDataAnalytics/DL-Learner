@@ -172,7 +172,7 @@
 	<version>1.0.8</version>
 	<configuration>
 		<installProject>false</installProject>
-		<verbose>false</verbose>
+		<verbose>true</verbose>
 
 		<gitFlowConfig>
 			<productionBranch>master</productionBranch>
