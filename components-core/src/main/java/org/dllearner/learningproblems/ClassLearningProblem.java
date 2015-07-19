@@ -35,6 +35,7 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -42,8 +43,12 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.QueryExecution;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -234,25 +239,47 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
-		
-		// overhang
 		Set<OWLIndividual> additionalInstances = new TreeSet<OWLIndividual>();
-		for(OWLIndividual ind : superClassInstances) {
-			if(getReasoner().hasType(description, ind)) {
-				additionalInstances.add(ind);
-			}
-		}
-		
-		// coverage
 		Set<OWLIndividual> coveredInstances = new TreeSet<OWLIndividual>();
-		for(OWLIndividual ind : classInstances) {
-			if(getReasoner().hasType(description, ind)) {
-				coveredInstances.add(ind);
+		
+		int additionalInstancesCnt = 0;
+		int coveredInstancesCnt = 0;
+		
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			// R(C)
+			String query = "SELECT (COUNT(*) AS ?cnt) WHERE {"
+					+ "?s a ?cls ; a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+					+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
+			ParameterizedSparqlString template = new ParameterizedSparqlString(query);
+			template.setIri("cls", description.asOWLClass().toStringID());
+			template.setIri("classToDescribe", classToDescribe.toStringID());
+			
+			QueryExecution qe = ((SPARQLReasoner) reasoner).getQueryExecutionFactory().createQueryExecution(template.toString());
+			additionalInstancesCnt = qe.execSelect().next().getLiteral("cnt").getInt();
+			
+			// R(A)
+			OWLObjectIntersectionOf ce = df.getOWLObjectIntersectionOf(classToDescribe, description);
+			coveredInstancesCnt = ((SPARQLReasoner) reasoner).getPopularityOf(ce);
+		} else {
+			// overhang
+			for(OWLIndividual ind : superClassInstances) {
+				if(getReasoner().hasType(description, ind)) {
+					additionalInstances.add(ind);
+				}
 			}
+			
+			// coverage
+			for(OWLIndividual ind : classInstances) {
+				if(getReasoner().hasType(description, ind)) {
+					coveredInstances.add(ind);
+				}
+			}
+			additionalInstancesCnt = additionalInstances.size();
+			coveredInstancesCnt = coveredInstances.size();
 		}
 		
-		double recall = coveredInstances.size()/(double)classInstances.size();
-		double precision = (additionalInstances.size() + coveredInstances.size() == 0) ? 0 : coveredInstances.size()/(double)(coveredInstances.size()+additionalInstances.size());
+		double recall = coveredInstancesCnt/(double)classInstances.size();
+		double precision = (additionalInstancesCnt + coveredInstancesCnt == 0) ? 0 : coveredInstancesCnt/(double)(coveredInstancesCnt+additionalInstancesCnt);
 		// for each OWLClassExpression with less than 100% coverage, we check whether it is
 		// leads to an inconsistent knowledge base
 		
@@ -554,7 +581,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// exact computation for 5 heuristics; each one adapted to super class learning;
 	// each one takes the noise parameter into account
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-
+		System.out.println(description);
 		nanoStartTime = System.nanoTime();
 		
 		if(heuristic.equals(HeuristicType.JACCARD)) {
@@ -592,40 +619,62 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			
 		} else if (heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE) || heuristic.equals(HeuristicType.PRED_ACC)) {
 			
-			// computing R(C) restricted to relevant instances
 			int additionalInstances = 0;
-			if(useInstanceChecks) {
-				for(OWLIndividual ind : superClassInstances) {
-					if(getReasoner().hasType(description, ind)) {
-						additionalInstances++;
-					}
-					if(terminationTimeExpired()){
-						return 0;
-					}
-				}
-			} else {
-				SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
-				individuals.retainAll(superClassInstances);
-				additionalInstances = individuals.size();
-			}
-			
-			
-			// computing R(A)
 			int coveredInstances = 0;
-			if(useInstanceChecks) {
-				for(OWLIndividual ind : classInstances) {
-					if(getReasoner().hasType(description, ind)) {
-						coveredInstances++;
-					}
-					if(terminationTimeExpired()){
-						return 0;
-					}
-				}
+			
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				// R(C)
+				String query = "SELECT (COUNT(*) AS ?cnt) WHERE {"
+						+ "?s a ?cls ; a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+						+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
+				ParameterizedSparqlString template = new ParameterizedSparqlString(query);
+				template.setIri("cls", description.asOWLClass().toStringID());
+				template.setIri("classToDescribe", classToDescribe.toStringID());
+				
+				QueryExecution qe = ((SPARQLReasoner) reasoner).getQueryExecutionFactory().createQueryExecution(template.toString());
+				additionalInstances = qe.execSelect().next().getLiteral("cnt").getInt();
+				
+				// R(A)
+				OWLObjectIntersectionOf ce = df.getOWLObjectIntersectionOf(classToDescribe, description);
+				coveredInstances = ((SPARQLReasoner) reasoner).getPopularityOf(ce);
+				
+				System.out.println(coveredInstances);
+				System.out.println(additionalInstances);
 			} else {
-				SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
-				individuals.retainAll(classInstances);
-				coveredInstances = individuals.size();
+				// computing R(C) restricted to relevant instances
+				if(useInstanceChecks) {
+					for(OWLIndividual ind : superClassInstances) {
+						if(getReasoner().hasType(description, ind)) {
+							additionalInstances++;
+						}
+						if(terminationTimeExpired()){
+							return 0;
+						}
+					}
+				} else {
+					SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
+					individuals.retainAll(superClassInstances);
+					additionalInstances = individuals.size();
+				}
+				
+				
+				// computing R(A)
+				if(useInstanceChecks) {
+					for(OWLIndividual ind : classInstances) {
+						if(getReasoner().hasType(description, ind)) {
+							coveredInstances++;
+						}
+						if(terminationTimeExpired()){
+							return 0;
+						}
+					}
+				} else {
+					SortedSet<OWLIndividual> individuals = getReasoner().getIndividuals(description);
+					individuals.retainAll(classInstances);
+					coveredInstances = individuals.size();
+				}
 			}
+			
 //			System.out.println(description + ":" + coveredInstances + "/" + classInstances.size());
 			double recall = coveredInstances/(double)classInstances.size();
 			
@@ -635,7 +684,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 //			}
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
-
+			
 			if(heuristic.equals(HeuristicType.AMEASURE)) {
 				// best reachable concept has same recall and precision 1:
 				// 1/t+1 * (t*r + 1)

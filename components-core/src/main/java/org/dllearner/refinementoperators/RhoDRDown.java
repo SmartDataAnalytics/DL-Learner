@@ -417,57 +417,70 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
-			ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
-			splits.putAll(splitter.computeSplits());
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				// TODO SPARQL support for splits
+			} else {
+				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
+				splits.putAll(splitter.computeSplits());
+			}
 		}
 
 		// compute splits for time data properties
 		if (useTimeDatatypes) {
-			ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df);
-			splits.putAll(splitter.computeSplits());
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				// TODO SPARQL support for splits
+			} else {
+				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df);
+				splits.putAll(splitter.computeSplits());
+			}
 		}
 
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
 			for(OWLObjectProperty op : reasoner.getObjectProperties()) {
-				int maxFillers = 0;
-				Map<OWLIndividual,SortedSet<OWLIndividual>> opMembers = reasoner.getPropertyMembers(op);
-				for(SortedSet<OWLIndividual> inds : opMembers.values()) {
-					if(inds.size()>maxFillers)
-						maxFillers = inds.size();
-					if(maxFillers >= cardinalityLimit) {
-						maxFillers = cardinalityLimit;
-						break;
-					}
-				}
-				maxNrOfFillers.put(op, maxFillers);
-
-				// handle inverse properties
-				if(useInverse) {
-					maxFillers = 0;
-
-					Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
-
-					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : opMembers.entrySet()) {
-						OWLIndividual subject = entry.getKey();
-						SortedSet<OWLIndividual> objects = entry.getValue();
-
-						for (OWLIndividual obj : objects) {
-							map.put(obj, subject);
-						}
-					}
-
-					for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
-						Collection<OWLIndividual> inds = entry.getValue();
-						if (inds.size() > maxFillers)
+				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+					// TODO SPARQL support for cardinalities
+					maxNrOfFillers.put(op, 10);
+				} else {
+					int maxFillers = 0;
+					Map<OWLIndividual,SortedSet<OWLIndividual>> opMembers = reasoner.getPropertyMembers(op);
+					for(SortedSet<OWLIndividual> inds : opMembers.values()) {
+						if(inds.size()>maxFillers)
 							maxFillers = inds.size();
-						if (maxFillers >= cardinalityLimit) {
+						if(maxFillers >= cardinalityLimit) {
 							maxFillers = cardinalityLimit;
 							break;
 						}
 					}
-					maxNrOfFillers.put(op.getInverseProperty(), maxFillers);
+					maxNrOfFillers.put(op, maxFillers);
+	
+					// handle inverse properties
+					if(useInverse) {
+						maxFillers = 0;
+	
+						Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
+	
+						for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : opMembers.entrySet()) {
+							OWLIndividual subject = entry.getKey();
+							SortedSet<OWLIndividual> objects = entry.getValue();
+	
+							for (OWLIndividual obj : objects) {
+								map.put(obj, subject);
+							}
+						}
+	
+						for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
+							Collection<OWLIndividual> inds = entry.getValue();
+							if (inds.size() > maxFillers)
+								maxFillers = inds.size();
+							if (maxFillers >= cardinalityLimit) {
+								maxFillers = cardinalityLimit;
+								break;
+							}
+						}
+						maxNrOfFillers.put(op.getInverseProperty(), maxFillers);
+					}
 				}
 			}
 		}
@@ -620,7 +633,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 					refinements.add(md);
 				}
-
 			}
 
 			// if enabled, we can remove elements of the disjunction
