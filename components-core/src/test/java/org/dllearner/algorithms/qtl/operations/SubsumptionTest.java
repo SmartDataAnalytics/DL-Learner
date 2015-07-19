@@ -24,10 +24,13 @@ import org.dllearner.algorithms.qtl.util.Entailment;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
 /**
  * @author Lorenz Buehmann
@@ -43,8 +46,8 @@ public class SubsumptionTest {
 	@BeforeClass
 	public static void init() {
 		String kb = "@prefix : <http://test.org/> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
-				+ ":a1 :p1 _:b . "
-				+ ":a2 :p1 _:s . _:s :p2 :b ."
+				+ "<_:a1> :p1 _:b . "
+				+ "<_:a2> :p1 _:s . _:s :p2 :b ."
 				+ ":a3 a :A . "
 				+ ":a4 a _:cls . _:cls rdfs:subClassOf :A ."
 				+ ":a5 a _:cls2 . _:cls2 rdfs:subClassOf _:cls3 . _:cls3 rdfs:subClassOf :A .";
@@ -64,11 +67,11 @@ public class SubsumptionTest {
 
 	@Test
 	public void testSubsumptionSimple() {
-		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/a1", model);
+		RDFResourceTree tree1 = treeFactory.getQueryTree(new ResourceImpl(AnonId.create("a1")), model);
 		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree1));
 		print(tree1);
 		
-		RDFResourceTree tree2 = treeFactory.getQueryTree("http://test.org/a2", model);
+		RDFResourceTree tree2 = treeFactory.getQueryTree(new ResourceImpl(AnonId.create("a2")), model);
 		print(tree2);
 		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree1));
 		assertFalse(QueryTreeUtils.isSubsumedBy(tree1, tree2));
