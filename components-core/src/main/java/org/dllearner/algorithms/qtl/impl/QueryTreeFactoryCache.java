@@ -19,36 +19,14 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
-import org.dllearner.algorithms.qtl.util.StopURIsOWL;
-import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.graph.Node;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.sparql.vocabulary.FOAF;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
 
 /**
@@ -57,8 +35,19 @@ import com.hp.hpl.jena.util.iterator.Filter;
  *
  */
 public class QueryTreeFactoryCache implements QueryTreeFactory {
+	
+//	private static final long size = 0;
+//
+//	LoadingCache<String, RDFResourceTree> cache = CacheBuilder.newBuilder().
+//			maximumSize(size)
+//			.build(
+//			new CacheLoader<String, RDFResourceTree>() {
+//				@Override
+//				public RDFResourceTree load(String resource) throws Exception {
+//					return delegatee.getQueryTree(resource, model);
+//				}
+//	});
 
-	private Set<Filter<Statement>> dropFilters = new HashSet<Filter<Statement>>();
 	private QueryTreeFactory delegatee;
 
 	public QueryTreeFactoryCache(QueryTreeFactory delegatee) {

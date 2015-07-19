@@ -6,7 +6,15 @@ package org.dllearner.algorithms.qtl.operations;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -64,6 +72,18 @@ public class SubsumptionTest {
 		print(tree2);
 		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree1));
 		assertFalse(QueryTreeUtils.isSubsumedBy(tree1, tree2));
+		
+		try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("/tmp/tree.obj"))) {
+			oos.writeObject(tree1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream("/tmp/tree.obj"))) {
+			RDFResourceTree tree = (RDFResourceTree) ois.readObject();
+			System.out.println(tree.getStringRepresentation());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test

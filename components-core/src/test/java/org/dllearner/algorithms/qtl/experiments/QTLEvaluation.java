@@ -482,7 +482,7 @@ public class QTLEvaluation {
 												filter.filter(bestMatchingTree.getTree()), 
 												dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 										
-										write2DB(sparqlQuery, nrOfExamples, noise, heuristicName, measureName,
+										write2DB(sparqlQuery, nrOfExamples, examples, noise, heuristicName, measureName,
 												QueryFactory.create(learnedSPARQLQuery).toString(), score.getFmeasure(), score.getPrecision(), score.getRecall(), 
 												bestQuery, position, bestScore.getFmeasure(), bestScore.getPrecision(), bestScore.getRecall());
 				
@@ -1679,7 +1679,7 @@ public class QTLEvaluation {
 		return new Score(precision, recall, fMeasure, predAcc, mathCorr);
 	}
 	
-	private synchronized void write2DB(String targetQuery, int nrOfExamples, double noise, String heuristic, String heuristicMeasure,
+	private synchronized void write2DB(String targetQuery, int nrOfExamples, ExamplesWrapper examples, double noise, String heuristic, String heuristicMeasure,
 			String queryTop, double fmeasureTop, double precisionTop, double recallTop,
 			String bestQuery, int bestRank, double bestFmeasure, double bestPrecision, double bestRecall
 			) {

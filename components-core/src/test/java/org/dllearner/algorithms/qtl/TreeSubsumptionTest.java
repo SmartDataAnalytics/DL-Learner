@@ -19,10 +19,27 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import org.apache.jena.riot.Lang;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
-import static org.junit.Assert.*;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree.Rendering;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.junit.Test;
+
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 
 
@@ -32,6 +49,22 @@ import org.junit.Test;
  *
  */
 public class TreeSubsumptionTest{
+	
+	@Test
+	public void treeGenerationTest() throws Exception {
+		QueryTreeFactory factory = new QueryTreeFactoryBase();
+		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		model.read(new FileInputStream("../examples/carcinogenesis/carcinogenesis.owl"), null, Lang.RDFXML.getLabel());
+		
+		ExtendedIterator<Individual> it = model.listIndividuals();
+		while(it.hasNext()) {
+			Individual ind = it.next();
+			RDFResourceTree tree = factory.getQueryTree(ind.getURI(), model);
+			
+			String treeString = tree.getStringRepresentation(Rendering.BRACES);
+		}
+		
+	}
 	
 	@Test
 	public void test1(){

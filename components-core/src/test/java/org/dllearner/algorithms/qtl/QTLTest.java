@@ -110,12 +110,42 @@ public class QTLTest {
 		PosNegLPStandard lp = new PosNegLPStandard();
 		Set<OWLIndividual> posExamples = Sets.newTreeSet();
 		
-		String posExStr = "http://dbpedia.org/resource/Paul_Porter, http://dbpedia.org/resource/Stanley_Hewitt, http://dbpedia.org/resource/Testicular_artery, http://dbpedia.org/resource/Descending_aorta, http://dbpedia.org/resource/Lumbar_arteries, http://dbpedia.org/resource/Superior_mesenteric_artery, http://dbpedia.org/resource/Aortic_bifurcation";
-		
+		String posExStr = "http://dbpedia.org/resource/Big_Star,\n" + 
+				"http://dbpedia.org/resource/Falling_in_Reverse,\n" + 
+				"http://dbpedia.org/resource/Kid_Canaveral,\n" + 
+				"http://dbpedia.org/resource/JEFF_the_Brotherhood,\n" + 
+				"http://dbpedia.org/resource/The_Terrible_Twos,\n" + 
+				"http://dbpedia.org/resource/Awolnation,\n" + 
+				"http://dbpedia.org/resource/Biffy_Clyro,\n" + 
+				"http://dbpedia.org/resource/White_Wives,\n" + 
+				"http://dbpedia.org/resource/October_Fall,\n" + 
+				"http://dbpedia.org/resource/Vandaveer,\n" + 
+				"http://dbpedia.org/resource/Silverchair,\n" + 
+				"http://dbpedia.org/resource/Karnataka_(band),\n" + 
+				"http://dbpedia.org/resource/These_Arms_Are_Snakes,\n" + 
+				"http://dbpedia.org/resource/Secret_and_Whisper,\n" + 
+				"http://dbpedia.org/resource/Wounded_Knees,\n" + 
+				"http://dbpedia.org/resource/Zemlyane,\n" + 
+				"http://dbpedia.org/resource/Beautiful_Creatures_(band),\n" + 
+				"http://dbpedia.org/resource/World_Under_Blood,\n" + 
+				"http://dbpedia.org/resource/Devour_the_Day,\n" + 
+				"http://dbpedia.org/resource/Ghostwriters,\n" + 
+				"http://dbpedia.org/resource/From_First_to_Last,\n" + 
+				"http://dbpedia.org/resource/Gruntruck,\n" + 
+				"http://dbpedia.org/resource/Excel_(band),\n" + 
+				"http://dbpedia.org/resource/Starpool,\n" + 
+				"http://dbpedia.org/resource/Phantasmagoria_(band),\n" + 
+				"http://dbpedia.org/resource/Cradle_of_Filth,\n" + 
+				"http://dbpedia.org/resource/Lifescreen,\n" + 
+				"http://dbpedia.org/resource/I_Am_Kloot,\n" + 
+				"http://dbpedia.org/resource/The_Afghan_Whigs,\n" + 
+				"http://dbpedia.org/resource/Deus_(band)";
 //		String posExStr = "http://dbpedia.org/resource/Ladislaus_the_Posthumous,"
 //				+ " http://dbpedia.org/resource/Nga_Kor_Ming, "
 //				+ "http://dbpedia.org/resource/L._M._Shaw";
-		for (String uri : Splitter.on(',').trimResults().split(posExStr)) {
+		
+		posExStr = "http://dbpedia.org/resource/Super_Robot_Wars_D, http://dbpedia.org/resource/Cosmic_Soldier_(video_game), http://dbpedia.org/resource/Reel_Fishing:_Angler's_Dream, http://dbpedia.org/resource/CR_Parodius_Da!, http://dbpedia.org/resource/Jikandia:_The_Timeless_Land, http://dbpedia.org/resource/Rainbow_Islands_Evolution, http://dbpedia.org/resource/Mega_Man_Battle_Chip_Challenge, http://dbpedia.org/resource/Case_Closed:_The_Mirapolis_Investigation, http://dbpedia.org/resource/Mist_of_Chaos, http://dbpedia.org/resource/Super_Robot_Wars_64, http://dbpedia.org/resource/Panorama_Cotton, http://dbpedia.org/resource/Mad_Stalker:_Full_Metal_Force_(1997_video_game), http://dbpedia.org/resource/Karous, http://dbpedia.org/resource/Gadget_Trial, http://dbpedia.org/resource/Battle_Arena_Toshinden_3, http://dbpedia.org/resource/Record_of_Agarest_War, http://dbpedia.org/resource/Metal_Gear_Solid_2:_Sons_of_Liberty, http://dbpedia.org/resource/Memories_Off:_Yubikiri_no_Kioku, http://dbpedia.org/resource/Harvest_Moon:_Hero_of_Leaf_Valley, http://dbpedia.org/resource/Harvest_Moon:_Back_to_Nature, http://dbpedia.org/resource/Harvest_Moon:_Tree_of_Tranquility, http://dbpedia.org/resource/Ultimate_Shooting_Collection, http://dbpedia.org/resource/Shantae:_Half-Genie_Hero, http://dbpedia.org/resource/Apocalypse:_Desire_Next, http://dbpedia.org/resource/Katekyo_Hitman_Reborn!_Dream_Hyper_Battle!, http://dbpedia.org/resource/Harvest_Moon_DS:_Grand_Bazaar, http://dbpedia.org/resource/Chaos_Field, http://dbpedia.org/resource/Charinko_Hero, http://dbpedia.org/resource/Blue_Flow, http://dbpedia.org/resource/Generation_of_Chaos";
+		for (String uri : Splitter.on(", ").trimResults().split(posExStr)) {
 			posExamples.add(new OWLNamedIndividualImpl(IRI.create(uri)));
 		}
 		lp.setPositiveExamples(posExamples);
@@ -129,7 +159,7 @@ public class QTLTest {
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
 		la.setReasoner(reasoner);
 		la.setTreeFactory(qtf);
-		la.setEntailment(Entailment.RDFS);
+		la.setEntailment(Entailment.SIMPLE);
 		la.setMaxTreeDepth(maxTreeDepth);
 		la.init();
 		

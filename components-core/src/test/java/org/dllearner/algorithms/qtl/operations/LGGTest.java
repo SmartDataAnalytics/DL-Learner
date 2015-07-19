@@ -9,6 +9,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.experiments.DBpediaEvaluationDataset;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
@@ -23,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.Filter;
 
 import static org.junit.Assert.*;
 
@@ -120,6 +122,35 @@ private static final String baseIRI = "http://test.org/";
 		System.out.println("Operation took " + (end - start) + "ms");
 		
 //		System.out.println(lggSimple.getStringRepresentation());
+	}
+	
+	@Test
+	public void testCorrectness() {
+		treeFactory.setMaxDepth(2);
+		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset().getQueryTreeFilters().toArray(new Filter[]{}));
+		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
+		Model model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(
+				model,
+				this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/dbpedia-Battle_Arena_Toshinden_3.ttl"), 
+				Lang.TURTLE);
+		
+		RDFResourceTree tree1 = treeFactory.getQueryTree("http://dbpedia.org/resource/Battle_Arena_Toshinden_3", model);
+		
+		// http://dbpedia.org/resource/Metal_Gear_Solid_2:_Sons_of_Liberty
+		model = ModelFactory.createDefaultModel();
+		RDFDataMgr.read(
+				model,
+				this.getClass().getClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/dbpedia-Metal_Gear_Solid_2:_Sons_of_Liberty.ttl"), 
+				Lang.TURTLE);
+		
+		RDFResourceTree tree2 = treeFactory.getQueryTree("http://dbpedia.org/resource/Metal_Gear_Solid_2:_Sons_of_Liberty", model);
+		long start = System.currentTimeMillis();
+		RDFResourceTree lggSimple = lggGenSimple.getLGG(tree1, tree2);
+		long end = System.currentTimeMillis();
+		System.out.println("Operation took " + (end - start) + "ms");
+		
+		System.out.println(lggSimple.getStringRepresentation());
 	}
 
 }
