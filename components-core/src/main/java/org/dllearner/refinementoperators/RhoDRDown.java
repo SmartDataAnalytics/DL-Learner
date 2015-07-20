@@ -200,7 +200,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
 
-	private int maxNrOfSplits = 10;
+	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
