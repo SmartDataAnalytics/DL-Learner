@@ -88,7 +88,9 @@ public abstract class AbstractValuesSplitter implements ValuesSplitter{
 		}
 
 		for (int splitNr = 1; splitNr < nrOfSplits; splitNr++) {
-			int index = (int) ((splitNr * (double) (nrOfValues)/(nrOfSplits-1))-1);
+			int index;// = (int) ((splitNr * (double) (nrOfValues)/(nrOfSplits-1))-1);
+			index = (int) Math.floor(splitNr * (double) nrOfValues / (nrOfSplits));
+			index = Math.max(index, (int) Math.floor(splitNr * (double) nrOfValues / (nrOfSplits - 1) - 1));
 
 			T number1 = values.get(index);
 			T number2 = values.get(Math.min(nrOfValues - 1, index + 1));

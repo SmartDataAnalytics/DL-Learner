@@ -83,7 +83,7 @@ public final class LiteralLearningTest {
 			ks.init();
 		}
 		TestRunner(String prefix, String owlfile, OWLDatatype restrictionType) throws OWLOntologyCreationException, ComponentInitException {
-			this(prefix, owlfile, restrictionType, 10);
+			this(prefix, owlfile, restrictionType, 12);
 		}
 		public void run() throws ComponentInitException {
 			Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
@@ -195,23 +195,7 @@ public final class LiteralLearningTest {
 		// T : 1970-10-22 <= x <= 1971-09-24
 		TestRunner runner = new TestRunner(DATES, DATES_OWL, XSD.DATE);
 		
-		runner.setDualRestrictionTarget("1970-10-22", "1971-09-24");
-		
-		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
-		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // upload fixed version of Pellet and confirm that it works
-		runner.setReasoners(cwr , oar);
-		
-		runner.run();
-
-
-	}
-	
-	@Test
-	public void gMonthTypeTest () throws OWLOntologyCreationException, ComponentInitException {
-		// TODO Pellet does not support any time zone
-		TestRunner runner = new TestRunner(MONTHS, MONTHS_OWL, XSD.G_MONTH, 12);
-		
-		runner.setDualRestrictionTarget("--03", "--05");
+		runner.setDualRestrictionTarget("1970-01-22", "1971-09-24");
 		
 		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
 		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // upload fixed version of Pellet and confirm that it works
@@ -227,7 +211,7 @@ public final class LiteralLearningTest {
 		// T : 1970-10-22 <= x <= 1971-09-24
 		TestRunner runner = new TestRunner(DATETIMES, DATETIMES_OWL, XSD.DATE_TIME);
 		
-		runner.setDualRestrictionTarget("1970-10-22T09:00:00", "1971-09-24T02:22:22");
+		runner.setDualRestrictionTarget("1970-01-22T08:10:10", "1971-09-24T02:22:22");
 		
 		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
 //		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks);
@@ -237,6 +221,20 @@ public final class LiteralLearningTest {
 		runner.run();
 	}
 
+	@Test
+	public void gMonthTypeTest () throws OWLOntologyCreationException, ComponentInitException {
+		// TODO Pellet does not support any time zone
+		TestRunner runner = new TestRunner(MONTHS, MONTHS_OWL, XSD.G_MONTH, 12);
+		
+		runner.setDualRestrictionTarget("--03", "--05");
+		
+		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
+		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // upload fixed version of Pellet and confirm that it works
+		runner.setReasoners(cwr , oar);
+		
+		runner.run();
+	}
+	
 	@Test
 	public void literalComparisonTest () {
 		OWLLiteralImplInteger lit1 = new OWLLiteralImplInteger(50, XSD.INTEGER);
