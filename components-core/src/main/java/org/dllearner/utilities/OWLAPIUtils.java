@@ -14,14 +14,11 @@ import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.DateTimeParser;
 import org.joda.time.format.ISODateTimeFormat;
 import org.joda.time.format.ISOPeriodFormat;
-import org.joda.time.format.PeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.expression.ParserException;
@@ -119,9 +116,9 @@ public class OWLAPIUtils {
 	static {
 		dateTimeFormatters.put(XSD.G_YEAR, ISODateTimeFormat.year());
 		dateTimeFormatters.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
-		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MM").withZone(DateTimeZone.UTC));
-		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
-		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
+		dateTimeFormatters.put(XSD.G_MONTH, DateTimeFormat.forPattern("--MM").withZoneUTC());
+		dateTimeFormatters.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DD").withZoneUTC());
+		dateTimeFormatters.put(XSD.G_DAY, DateTimeFormat.forPattern("---DD").withZoneUTC());
 		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
@@ -130,24 +127,30 @@ public class OWLAPIUtils {
 
 	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeParsers = new HashMap<>(dateTimeFormatters);
 	static {
-		dateTimeParsers.put(XSD.G_YEAR, ISODateTimeFormat.year());
-		dateTimeParsers.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
+//		dateTimeParsers.put(XSD.G_YEAR, ISODateTimeFormat.year());
+//		dateTimeParsers.put(XSD.G_YEAR_MONTH, ISODateTimeFormat.yearMonth());
 		dateTimeParsers.put(XSD.G_MONTH, new DateTimeFormatterBuilder()
 		.append(DateTimeFormat.forPattern("--MM"))
 		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
-		.toFormatter().withOffsetParsed());
-		dateTimeParsers.put(XSD.G_MONTH_DAY, DateTimeFormat.forPattern("--MM-DDZ").withOffsetParsed());
-		dateTimeParsers.put(XSD.G_DAY, DateTimeFormat.forPattern("---DDZ").withOffsetParsed());
-		dateTimeParsers.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
-		dateTimeParsers.put(XSD.DATE, ISODateTimeFormat.date());
-		dateTimeParsers.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
-		dateTimeParsers.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+		.toFormatter().withZoneUTC());
+		dateTimeParsers.put(XSD.G_MONTH_DAY, new DateTimeFormatterBuilder()
+		.append(DateTimeFormat.forPattern("--MM-DD"))
+		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
+		.toFormatter().withZoneUTC());
+		dateTimeParsers.put(XSD.G_DAY, new DateTimeFormatterBuilder()
+		.append(DateTimeFormat.forPattern("---DD"))
+		.appendOptional(DateTimeFormat.forPattern("Z").getParser())
+		.toFormatter().withZoneUTC());
+//		dateTimeParsers.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
+//		dateTimeParsers.put(XSD.DATE, ISODateTimeFormat.date());
+//		dateTimeParsers.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
+//		dateTimeParsers.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 	
 	public static final Map<OWLDatatype, PeriodFormatter> periodFormatters = new HashMap<>();
 	static {
 		periodFormatters.put(XSD.DURATION, ISOPeriodFormat.standard());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration")), 
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "dayTimeDuration")),
 				new PeriodFormatterBuilder()//PnDTnHnMnS
         .appendLiteral("P")
         .appendDays()
@@ -160,7 +163,7 @@ public class OWLAPIUtils {
         .appendSecondsWithOptionalMillis()
         .appendSuffix("S")
         .toFormatter());
-		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")), 
+		periodFormatters.put(new OWLDatatypeImpl(IRI.create(com.hp.hpl.jena.vocabulary.XSD.getURI() + "yearMonthDuration")),
 				new PeriodFormatterBuilder()//PnYnM
         .appendLiteral("P")
         .appendYears()
@@ -211,7 +214,7 @@ public class OWLAPIUtils {
 	}
 	
 	/**
-	 * Checks whether the given value is in the closed interval [min,max], i.e. 
+	 * Checks whether the given value is in the closed interval [min,max], i.e.
 	 * the value is greater than min and lower than max.
 	 * @param value the value
 	 * @param min the lower interval endpoint
@@ -241,7 +244,7 @@ public class OWLAPIUtils {
 			
 			if(
 					(minDateTime == null || (dateTime.isEqual(minDateTime) ||  dateTime.isAfter(minDateTime)))
-					&& 
+					&&
 					(maxDateTime == null || (dateTime.isEqual(maxDateTime) ||  dateTime.isBefore(maxDateTime)))
 					)
 					{
