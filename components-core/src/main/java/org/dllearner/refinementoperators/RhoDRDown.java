@@ -433,7 +433,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
 			}
-			System.err.println("XX"+splits);
 		}
 
 		// determine the maximum number of fillers for each role
