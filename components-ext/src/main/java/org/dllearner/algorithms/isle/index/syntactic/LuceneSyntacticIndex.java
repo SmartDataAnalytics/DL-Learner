@@ -3,8 +3,8 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +23,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.dllearner.algorithms.isle.TextDocumentGenerator;
 import org.dllearner.algorithms.isle.index.AnnotatedDocument;
 import org.dllearner.algorithms.isle.index.AnnotatedTextDocument;
@@ -52,8 +51,8 @@ public class LuceneSyntacticIndex implements Index {
 		this.indexReader = indexReader;
 		this.searchField = searchField;
 		searcher = new IndexSearcher(indexReader);
-		StandardAnalyzer analyzer = new StandardAnalyzer( Version.LUCENE_43);
-		parser = new QueryParser( Version.LUCENE_43, searchField, analyzer );
+		StandardAnalyzer analyzer = new StandardAnalyzer();
+		parser = new QueryParser(searchField, analyzer);
 		
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
@@ -63,7 +62,7 @@ public class LuceneSyntacticIndex implements Index {
 	}
 	
 	public LuceneSyntacticIndex(OWLOntology ontology, String indexDirectory, String searchField) throws Exception {
-		this(ontology, DirectoryReader.open(FSDirectory.open(new File(indexDirectory))), searchField);
+		this(ontology, DirectoryReader.open(FSDirectory.open(Paths.get(indexDirectory))), searchField);
 	}
 
 	/* (non-Javadoc)
