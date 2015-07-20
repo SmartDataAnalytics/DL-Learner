@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -417,8 +418,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
+				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner.getClass()) + ", option ignored");
 			} else {
 				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
@@ -427,8 +430,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for time data properties
 		if (useTimeDatatypes) {
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
+				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner.getClass()) + ", option ignored");
 			} else {
 				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
@@ -438,6 +443,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				logger.warn("Cardinality restrictions in Sparql not fully implemented, defaulting to 10.");
+			}
 			for(OWLObjectProperty op : reasoner.getObjectProperties()) {
 				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 					// TODO SPARQL support for cardinalities
