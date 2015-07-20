@@ -37,6 +37,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -47,10 +48,10 @@ import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * The problem of learning the OWL class expression of an existing class
@@ -75,7 +76,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	@ConfigOption(name="equivalence",defaultValue="true",description="Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
-	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)	
+	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
 	
 	@ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
@@ -87,7 +88,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	@ConfigOption(name = "betaSC", description="beta index for F-measure in super class learning", required=false, defaultValue="3.0")
 	private double betaSC = 3.0;
 	
-	@ConfigOption(name = "betaEq", description="beta index for F-measure in definition learning", required=false, defaultValue="1.0")	
+	@ConfigOption(name = "betaEq", description="beta index for F-measure in definition learning", required=false, defaultValue="1.0")
 	private double betaEq = 1.0;
 	
 	// instances of super classes excluding instances of the class itself
@@ -109,13 +110,15 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	@ConfigOption(name="useInstanceChecks",defaultValue="true",description="Whether to use instance checks (or get individiuals query)")
 	private boolean useInstanceChecks = true;
 	
+	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+
 	public ClassLearningProblem() {
 		
 	}
 	
 //	public ClassLearningProblemConfigurator getConfigurator(){
 //		return configurator;
-//	}	
+//	}
 	
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
@@ -130,7 +133,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		options.add(classToDescribeOption);
 		StringConfigOption type = new StringConfigOption("type", "whether to learn an equivalence class or super class axiom","equivalence"); //  or domain/range of a property.
 		type.setAllowedValues(new String[] {"equivalence", "superClass"}); // , "domain", "range"});
-		options.add(type);	
+		options.add(type);
 		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", true);
 		options.add(approx);
 		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
@@ -139,7 +142,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "pred_acc", "generalised_fmeasure", "jaccard"});
 		options.add(accMethod);
 		BooleanConfigOption consistency = new BooleanConfigOption("checkConsistency", "Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.", true);
-		options.add(consistency);	
+		options.add(consistency);
 		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
 		DoubleConfigOption betaSC = new DoubleConfigOption("betaSC", "Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning.", 3.0);
 		options.add(betaSC);
@@ -151,7 +154,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	public static String getName() {
 		return "class learning problem";
-	}	
+	}
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -173,7 +176,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
 			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
-		}		
+		}
 		
 		if(useApproximations && !(heuristic.equals(HeuristicType.PRED_ACC) || heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE))) {
 			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + heuristic + ".\"");
@@ -247,11 +250,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			// R(C)
-			String query = "SELECT (COUNT(*) AS ?cnt) WHERE {"
-					+ "?s a ?cls ; a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+			String query = "SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {"
+					+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+					+ converter.convert("?s", description)
 					+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
 			ParameterizedSparqlString template = new ParameterizedSparqlString(query);
-			template.setIri("cls", description.asOWLClass().toStringID());
+			//System.err.println(converter.convert("?s", description));
+			//template.setIri("cls", description.asOWLClass().toStringID());
 			template.setIri("classToDescribe", classToDescribe.toStringID());
 			
 			QueryExecution qe = ((SPARQLReasoner) reasoner).getQueryExecutionFactory().createQueryExecution(template.toString());
@@ -289,15 +294,15 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
 			acc = Heuristics.getAScore(recall, precision, coverageFactor);
 		} else {
-			// TODO: some superfluous instance checks are required to compute accuracy => 
-			// move accuracy computation here if possible 
+			// TODO: some superfluous instance checks are required to compute accuracy =>
+			// move accuracy computation here if possible
 			acc = getAccuracyOrTooWeakExact(description, noise);
 		}
 		
 		if(checkConsistency) {
 			
 			// we check whether the axiom already follows from the knowledge base
-//			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);			
+//			boolean followsFromKB = reasoner.isSuperClassOf(description, classToDescribe);
 			
 //			boolean followsFromKB = equivalence ? reasoner.isEquivalentClass(description, classToDescribe) : reasoner.isSuperClassOf(description, classToDescribe);
 			boolean followsFromKB = followsFromKB(description);
@@ -313,7 +318,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		} else {
 			return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), recall, additionalInstances, precision, acc);
 		}
-	}	
+	}
 	
 	public boolean isEquivalenceProblem() {
 		return equivalence;
@@ -324,14 +329,14 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	 */
 	@Override
 	public double getAccuracy(OWLClassExpression description, double noise) {
-		// a noise value of 1.0 means that we never return too weak (-1.0) 
+		// a noise value of 1.0 means that we never return too weak (-1.0)
 		return getAccuracyOrTooWeak(description, noise);
 	}
 
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods
-		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);		
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
 	}
 	
 	// instead of using the standard operation, we use optimisation
@@ -352,7 +357,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 						return -1;
 					}
 				}
-			}	
+			}
 			
 			double recall = instancesCovered/(double)classInstances.size();
 			
@@ -372,7 +377,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 					return approx[0];
 				}
 				
-			}		
+			}
 			
 			// standard computation (no approximation)
 			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
@@ -425,7 +430,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 						
 						// we can estimate the best possible concept to reach with downward refinement
 						// by setting precision to 1 and recall = mean stays as it is
-						double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(double)(coverageFactor+1);
+						double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(coverageFactor+1);
 						
 						// if the mean is greater than the required minimum, we can accept;
 						// we also accept if the interval is small and close to the minimum
@@ -442,13 +447,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 						// reject only if the upper border is far away (we are very
 						// certain not to lose a potential solution)
 //						if(upperBorderA + 0.1 < 1-noise) {
-						double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(double)(coverageFactor+1);
+						double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(coverageFactor+1);
 						if(optimumEstimateUpperBorder < 1 - noise) {
 							return -1;
 						}
-					}				
+					}
 				}
-			}	
+			}
 			
 			double recall = instancesCovered/(double)classInstances.size();
 			
@@ -487,7 +492,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 					double size;
 					if(estimatedA) {
 //						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);					
+						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);
 					} else {
 //						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
 						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
@@ -570,7 +575,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			} while(itPos.hasNext() || itNeg.hasNext());
 			
 			double ret = Heuristics.getPredictiveAccuracy(classInstances.size(), superClassInstances.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
-			return ret;			
+			return ret;
 		} else {
 			throw new Error("Approximation for " + heuristic + " not implemented.");
 		}
@@ -581,7 +586,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// exact computation for 5 heuristics; each one adapted to super class learning;
 	// each one takes the noise parameter into account
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-		System.out.println(description);
+		//System.out.println(description);
 		nanoStartTime = System.nanoTime();
 		
 		if(heuristic.equals(HeuristicType.JACCARD)) {
@@ -595,9 +600,9 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				if(terminationTimeExpired()){
 					return 0;
 				}
-			}				
+			}
 			
-			// if even the optimal case (no additional instances covered) is not sufficient, 
+			// if even the optimal case (no additional instances covered) is not sufficient,
 			// the concept is too weak
 			if(coveredInstancesSet.size() / (double) classInstances.size() <= 1 - noise) {
 				return -1;
@@ -624,11 +629,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 				// R(C)
-				String query = "SELECT (COUNT(*) AS ?cnt) WHERE {"
-						+ "?s a ?cls ; a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+				String query = "SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {"
+						+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
+						+ converter.convert("?s", description)
 						+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
 				ParameterizedSparqlString template = new ParameterizedSparqlString(query);
-				template.setIri("cls", description.asOWLClass().toStringID());
+				//System.err.println(converter.convert("?s", description));
+				//template.setIri("cls", description.asOWLClass().toStringID());
 				template.setIri("classToDescribe", classToDescribe.toStringID());
 				
 				QueryExecution qe = ((SPARQLReasoner) reasoner).getQueryExecutionFactory().createQueryExecution(template.toString());
@@ -638,8 +645,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				OWLObjectIntersectionOf ce = df.getOWLObjectIntersectionOf(classToDescribe, description);
 				coveredInstances = ((SPARQLReasoner) reasoner).getPopularityOf(ce);
 				
-				System.out.println(coveredInstances);
-				System.out.println(additionalInstances);
+				//System.out.println(coveredInstances);
+				//System.out.println(additionalInstances);
 			} else {
 				// computing R(C) restricted to relevant instances
 				if(useInstanceChecks) {
@@ -688,7 +695,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			if(heuristic.equals(HeuristicType.AMEASURE)) {
 				// best reachable concept has same recall and precision 1:
 				// 1/t+1 * (t*r + 1)
-				if((coverageFactor*recall+1)/(double)(coverageFactor+1) <(1-noise)) {
+				if((coverageFactor*recall+1)/(coverageFactor+1) <(1-noise)) {
 					return -1;
 				} else {
 					return Heuristics.getAScore(recall, precision, coverageFactor);
@@ -701,15 +708,15 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 					return Heuristics.getFScore(recall, precision, coverageFactor);
 				}
 			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
-				if((coverageFactor * coveredInstances + superClassInstances.size()) / (double) (coverageFactor * classInstances.size() + superClassInstances.size()) < 1 -noise) {
+				if((coverageFactor * coveredInstances + superClassInstances.size()) / (coverageFactor * classInstances.size() + superClassInstances.size()) < 1 -noise) {
 					return -1;
 				} else {
 					// correctly classified divided by all examples
-					return (coverageFactor * coveredInstances + superClassInstances.size() - additionalInstances) / (double) (coverageFactor * classInstances.size() + superClassInstances.size());					
+					return (coverageFactor * coveredInstances + superClassInstances.size() - additionalInstances) / (coverageFactor * classInstances.size() + superClassInstances.size());
 				}
 			}
 
-//			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);			
+//			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
 		} else if (heuristic.equals(HeuristicType.GEN_FMEASURE)) {
 			
 			// implementation is based on:
@@ -758,7 +765,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 //			System.out.println(coverageFactor);
 			
 			// too weak: see F-measure above
-			// => does not work for generalised F-measure, because even very general 
+			// => does not work for generalised F-measure, because even very general
 			// concepts do not have a recall of 1
 //			if(((1+Math.sqrt(coverageFactor))*rec)/(Math.sqrt(coverageFactor)+1)<1-noise) {
 //				return -1;
@@ -802,7 +809,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			if(getReasoner().hasType(description, ind)) {
 				coveredInstances++;
 			}
-		}		
+		}
 		return coveredInstances/(double)classInstances.size();
 	}
 	
@@ -849,11 +856,11 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	public double getGeneralisedRecall() {
 		return 0;
-	}	
+	}
 	
 	public double getGeneralisedPrecision() {
 		return 0;
-	}		
+	}
 	
 	@SuppressWarnings("unused")
 	private double getInverseJaccardDistance(TreeSet<OWLIndividual> set1, TreeSet<OWLIndividual> set2) {
@@ -876,19 +883,19 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		// see e.g. http://en.wikipedia.org/wiki/F-measure
 		return (precision + recall == 0) ? 0 :
 		  ( (1+Math.sqrt(coverageFactor)) * (precision * recall)
-				/ (Math.sqrt(coverageFactor) * precision + recall) ); 
+				/ (Math.sqrt(coverageFactor) * precision + recall) );
 	}
 	
 	// see paper: expression used in confidence interval estimation
 	public static double p3(double p1, int total) {
 		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
-	}		
+	}
 	
 	// see paper: expression used in confidence interval estimation
 //	private static double p2(int success, int total) {
 //		double p1 = p1(success, total);
 //		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
-//	}	
+//	}
 	
 	// see paper: p'
 	public static double p1(int success, int total) {
@@ -977,7 +984,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			accuracyMethod = "jaccard";
 		} else if(heuristic == HeuristicType.PRED_ACC) {
 			accuracyMethod = "pred_acc";
-		} 
+		}
 	}
 
 	public double getApproxDelta() {
