@@ -73,17 +73,8 @@ public class DocumentationGenerator {
 		varNameMapping.put(org.dllearner.core.Heuristic.class, "h");
 		varNameMapping.put(org.dllearner.refinementoperators.RefinementOperator.class, "op");
 	}
-	
-	/**
-	 * Writes documentation for all components available in this
-	 * <code>ComponentManager</code> instance. It goes through
-	 * all components (sorted by their type) and all the configuration
-	 * options of the components. Explanations, default values, allowed
-	 * values for the options are collected and the obtained string is
-	 * written in a file. 
-	 * @param file The documentation file.
-	 */
-	public void writeConfigDocumentation(File file) {
+
+	public String getConfigDocumentationString() {
 		String doc = "";
 		doc += "This file contains an automatically generated files of all components and their config options.\n\n";
 		
@@ -107,7 +98,7 @@ public class DocumentationGenerator {
 		}
 		
 		for (Class<?> cats : coreComps) {
-			ComponentAnn ann = (ComponentAnn) cats.getAnnotation(ComponentAnn.class);
+			ComponentAnn ann = cats.getAnnotation(ComponentAnn.class);
 			String name = cats.getSimpleName();
 			if (ann != null) {
 				name = ann.name();
@@ -140,8 +131,21 @@ public class DocumentationGenerator {
 			}
 		}
 		
-		Files.createFile(file, doc);
-	}	
+		return doc;
+	}
+	
+	/**
+	 * Writes documentation for all components available in this
+	 * <code>ComponentManager</code> instance. It goes through
+	 * all components (sorted by their type) and all the configuration
+	 * options of the components. Explanations, default values, allowed
+	 * values for the options are collected and the obtained string is
+	 * written in a file.
+	 * @param file The documentation file.
+	 */
+	public void writeConfigDocumentation(File file) {
+		Files.createFile(file, getConfigDocumentationString());
+	}
 	
 	private String getComponentConfigString(
 			Class<?> component, Class<?> category) {
@@ -176,7 +180,7 @@ public class DocumentationGenerator {
 			usage = "conf file usage: " + catString + ".type = \"" + AnnComponentManager.getShortName(ccomp) + "\"\n";
 			
 		} else {
-			ComponentAnn ann = (ComponentAnn) component.getAnnotation(ComponentAnn.class);
+			ComponentAnn ann = component.getAnnotation(ComponentAnn.class);
 			if (ann != null) {
 				header =  "component: " + ann.name() + " (" + klass + ") v" + ann.version();
 			}
@@ -246,6 +250,6 @@ public class DocumentationGenerator {
 		DocumentationGenerator dg = new DocumentationGenerator();
 		dg.writeConfigDocumentation(file);
 		System.out.println("Done");
-	}	
+	}
 	
 }
