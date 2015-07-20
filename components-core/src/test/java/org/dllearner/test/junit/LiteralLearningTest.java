@@ -3,9 +3,6 @@ package org.dllearner.test.junit;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,7 +15,6 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.junit.Test;
@@ -27,7 +23,6 @@ import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -38,7 +33,6 @@ import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplInteger;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
@@ -50,12 +44,16 @@ public final class LiteralLearningTest {
 	static final String FLOATS = "http://dl-learner.org/test/floats#";
 	static final String DATES = "http://dl-learner.org/test/dates#";
 	static final String DATETIMES = "http://dl-learner.org/test/datetimes#";
+	static final String MONTHS = "http://dl-learner.org/test/months#";
+	
+	
 	static final String NUMBERS_OWL = "../test/literals/numbers.owl";
 	static final String DOUBLES_OWL = "../test/literals/doubles.owl";
 	static final String SHORTS_OWL = "../test/literals/shorts.owl";
 	static final String FLOATS_OWL = "../test/literals/floats.owl";
 	static final String DATES_OWL = "../test/literals/dates.owl";
 	static final String DATETIMES_OWL = "../test/literals/datetimes.owl";
+	static final String MONTHS_OWL = "../test/literals/months-noz.owl";
 	
 	private class TestRunner {
 		public AbstractReasonerComponent[] rcs;
@@ -66,9 +64,11 @@ public final class LiteralLearningTest {
 		public OWLDataFactory df;
 		private OWLClassExpression target;
 		private OWLDatatype restrictionType;
-		TestRunner(String prefix, String owlfile, OWLDatatype restrictionType) throws OWLOntologyCreationException, ComponentInitException {
+		private int maxNrOfSplits;
+		TestRunner(String prefix, String owlfile, OWLDatatype restrictionType, int maxNrOfSplits) throws OWLOntologyCreationException, ComponentInitException {
 			this.prefix = prefix;
 			this.restrictionType = restrictionType;
+			this.maxNrOfSplits = maxNrOfSplits;
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
 //			org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
@@ -81,7 +81,9 @@ public final class LiteralLearningTest {
 			pm = new DefaultPrefixManager(prefix);
 			ks = new OWLAPIOntology(ontology);
 			ks.init();
-
+		}
+		TestRunner(String prefix, String owlfile, OWLDatatype restrictionType) throws OWLOntologyCreationException, ComponentInitException {
+			this(prefix, owlfile, restrictionType, 10);
 		}
 		public void run() throws ComponentInitException {
 			Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
@@ -104,6 +106,7 @@ public final class LiteralLearningTest {
 				op.setUseTimeDatatypes(true);
 				op.setUseNumericDatatypes(true);
 				op.setReasoner(rc);
+				op.setMaxNrOfSplits(maxNrOfSplits);
 				op.init();
 				
 				CELOE alg = new CELOE(lp, rc);
@@ -135,14 +138,14 @@ public final class LiteralLearningTest {
 					df.getOWLDatatypeRestriction(
 							restrictionType,
 							Sets.newHashSet(
-								df.getOWLFacetRestriction(
-									OWLFacet.MAX_INCLUSIVE,
-									df.getOWLLiteral(maxSolution, restrictionType)
-									),
 									df.getOWLFacetRestriction(
-											OWLFacet.MIN_INCLUSIVE,
-											df.getOWLLiteral(minSolution, restrictionType))
-							)));
+											OWLFacet.MAX_INCLUSIVE,
+											df.getOWLLiteral(maxSolution, restrictionType)
+											),
+											df.getOWLFacetRestriction(
+													OWLFacet.MIN_INCLUSIVE,
+													df.getOWLLiteral(minSolution, restrictionType))
+									)));
 		}
 		public void setReasoners(AbstractReasonerComponent... rcs) throws ComponentInitException {
 			this.rcs = rcs;
@@ -157,7 +160,7 @@ public final class LiteralLearningTest {
 		
 		runner.setSingleRestrictionTarget(OWLFacet.MAX_INCLUSIVE, solution);
 		
-		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);		
+		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
 		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks);
 		runner.setReasoners(cwr, oar);
 		
@@ -187,16 +190,16 @@ public final class LiteralLearningTest {
 	
 	@Test
 	public void dateTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		// E+: 1970-10-22, 1970-11-27, 1971-09-24 
+		// E+: 1970-10-22, 1970-11-27, 1971-09-24
 		// E-: 1970-01-05, 2002-03-24, 2002-09-27
 		// T : 1970-10-22 <= x <= 1971-09-24
 		TestRunner runner = new TestRunner(DATES, DATES_OWL, XSD.DATE);
 		
 		runner.setDualRestrictionTarget("1970-10-22", "1971-09-24");
 		
-		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);		
-//		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // TODO: upload fixed version of Pellet and confirm that it works
-		runner.setReasoners(cwr /*, oar */);
+		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
+		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // upload fixed version of Pellet and confirm that it works
+		runner.setReasoners(cwr , oar);
 		
 		runner.run();
 
@@ -204,8 +207,22 @@ public final class LiteralLearningTest {
 	}
 	
 	@Test
+	public void gMonthTypeTest () throws OWLOntologyCreationException, ComponentInitException {
+		// TODO Pellet does not support any time zone
+		TestRunner runner = new TestRunner(MONTHS, MONTHS_OWL, XSD.G_MONTH, 12);
+		
+		runner.setDualRestrictionTarget("--03", "--05");
+		
+		ClosedWorldReasoner cwr = new ClosedWorldReasoner(runner.ks);
+		OWLAPIReasoner oar = new OWLAPIReasoner(runner.ks); // upload fixed version of Pellet and confirm that it works
+		runner.setReasoners(cwr , oar);
+		
+		runner.run();
+	}
+	
+	@Test
 	public void datetimeTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		// E+: 1970-10-22, 1970-11-27, 1971-09-24 
+		// E+: 1970-10-22, 1970-11-27, 1971-09-24
 		// E-: 1970-01-05, 2002-03-24, 2002-09-27
 		// T : 1970-10-22 <= x <= 1971-09-24
 		TestRunner runner = new TestRunner(DATETIMES, DATETIMES_OWL, XSD.DATE_TIME);
