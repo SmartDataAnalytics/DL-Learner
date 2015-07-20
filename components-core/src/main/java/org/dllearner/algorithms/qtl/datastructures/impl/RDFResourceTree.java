@@ -76,6 +76,9 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public RDFResourceTree(int id, Node data) {
 		super(data);
 		this.id = id;
+		if(data.isBlank()) {
+			this.data = DEFAULT_VAR_NODE;
+		}
 	}
 	
 	public RDFResourceTree(Node data) {
