@@ -39,7 +39,13 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 
 	private int maxNrOfSplits = 10;
 
-	public DefaultNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+	public DefaultNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, int maxNrOfSplits) {
+		super(reasoner, dataFactory);
+		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
+	public DefaultNumericValuesSplitter(AbstractReasonerComponent reasoner,
+			OWLDataFactory dataFactory) {
 		super(reasoner, dataFactory);
 	}
 

@@ -32,8 +32,9 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 	
 	private int maxNrOfSplits = 10;
 
-	public DefaultDateTimeValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+	public DefaultDateTimeValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, int maxNrOfSplits) {
 		super(reasoner, dataFactory);
+		this.maxNrOfSplits = maxNrOfSplits;
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 			} else {
 				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
 			}
-			index = Math.max(0, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
+			index = Math.max(index, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
 			
 			DateTime value1 = values.get(index);
 			DateTime value2 = values.get(index + 1);

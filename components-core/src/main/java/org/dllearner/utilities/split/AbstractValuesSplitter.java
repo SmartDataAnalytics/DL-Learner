@@ -29,6 +29,11 @@ public abstract class AbstractValuesSplitter implements ValuesSplitter{
 		this.dataFactory = dataFactory;
 	}
 	
+	public AbstractValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, int maxNrOfSplits) {
+		this.reasoner = reasoner;
+		this.dataFactory = dataFactory;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */

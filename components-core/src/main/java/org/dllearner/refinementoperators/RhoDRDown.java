@@ -420,7 +420,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 				// TODO SPARQL support for splits
 			} else {
-				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df);
+				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
 			}
 		}
@@ -430,9 +430,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 				// TODO SPARQL support for splits
 			} else {
-				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df);
+				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
 			}
+			System.err.println("XX"+splits);
 		}
 
 		// determine the maximum number of fillers for each role
