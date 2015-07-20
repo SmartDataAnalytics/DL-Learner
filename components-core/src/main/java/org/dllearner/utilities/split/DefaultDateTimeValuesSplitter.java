@@ -4,7 +4,6 @@
 package org.dllearner.utilities.split;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +66,8 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 			}
 			
 		}
-		Collections.sort(values);
 		
-		List<DateTime> splitValues = computeSplitValues(values);
+		List<DateTime> splitValues = simpleListSplitter(values, maxNrOfSplits);
 		
 		for (DateTime value : splitValues) {
 			OWLLiteral literal = dataFactory.getOWLLiteral(value.toString(formatter), reasoner.getDatatype(dp));
@@ -79,36 +77,12 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 		return splitLiterals;
 	}
 	
-	private List<DateTime> computeSplitValues(List<DateTime> values) {
-		int nrOfValues = values.size();
-		
-		// create split set
-		List<DateTime> splitValues = new LinkedList<DateTime>();
-		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
-			int index;
-			if (nrOfValues <= maxNrOfSplits) {
-				index = splitNr;
-			} else {
-				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
-			}
-			index = Math.max(index, (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits) - 1));
-			
-			DateTime value1 = values.get(index);
-			DateTime value2 = values.get(index + 1);
-			
-			DateTime splitValue = computeSplitValue(value1, value2);
-
-			splitValues.add(splitValue);
-		}
-		
-		// add the last element
-		if (nrOfValues > 0)
-			splitValues.add(values.get(nrOfValues - 1));
-		
-		return splitValues;
-	}
-	
 	private DateTime computeSplitValue(DateTime value1, DateTime value2){
 		return value1;
+	}
+
+	@Override
+	protected <T> T mixTwoValues(T value1, T value2) {
+		return (T)computeSplitValue((DateTime)value1, (DateTime)value2);
 	}
 }

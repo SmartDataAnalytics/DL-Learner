@@ -2038,4 +2038,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.useTimeDatatypes = useTimeDatatypes;
 	}
 
+	public int getMaxNrOfSplits() {
+		return maxNrOfSplits;
+	}
+
+	public void setMaxNrOfSplits(int maxNrOfSplits) {
+		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
 }
