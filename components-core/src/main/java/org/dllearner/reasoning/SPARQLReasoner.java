@@ -2388,7 +2388,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		OWLDataRange range = getRangeImpl(dp);
-		if(range.isDatatype()) {
+		if(range != null && range.isDatatype()) {
 			return range.asOWLDatatype();
 		}
 		return XSD.STRING;
