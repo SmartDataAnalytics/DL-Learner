@@ -421,7 +421,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
 					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
-				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner.getClass()) + ", option ignored");
+				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
 				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
@@ -433,7 +433,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
 					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
-				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner.getClass()) + ", option ignored");
+				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
 				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
