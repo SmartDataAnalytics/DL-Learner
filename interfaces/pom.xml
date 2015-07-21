@@ -17,7 +17,6 @@
 	</parent>
 
 	<properties>
-		<release.name>1.0</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
 		<packaging.type>jar</packaging.type>
@@ -172,7 +171,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<finalName>dllearner-${release.name}</finalName>
+							<finalName>dllearner-${project.version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>src/main/assemble/archive.xml</descriptor>
@@ -377,7 +376,7 @@
 										</data>
 									</dataSet>
 									<changesIn>${basedir}/CHANGES.txt</changesIn>
-									<changesOut>${basedir}/target/dl-learner-${release.name}.changes</changesOut>
+									<changesOut>${basedir}/target/dl-learner-${project.version}.changes</changesOut>
 								</configuration>
 							</execution>
 						</executions>
