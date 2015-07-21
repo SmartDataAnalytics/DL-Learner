@@ -268,6 +268,12 @@ public class Enrichment {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.omitExistingAxioms = omitExistingAxioms;
 
+		try {
+			ks.init();
+		} catch (ComponentInitException e1) {
+			e1.printStackTrace();
+		}
+		
 		if(ks.isRemote()){
 			try {
 				cacheDir = "cache" + File.separator + URLEncoder.encode(ks.getEndpoint().getURL().toString(), "UTF-8");
@@ -1139,6 +1145,7 @@ public class Enrichment {
 					String cacheDir = System.getProperty("java.io.tmpdir") + File.separator + "dl-learner";
 					ks = new SparqlEndpointKS(se, cacheDir);
 				}
+				ks.init();
 			} catch (URISyntaxException e2) {
 				e2.printStackTrace();
 			}
