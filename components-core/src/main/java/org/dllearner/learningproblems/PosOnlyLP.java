@@ -19,7 +19,6 @@
 
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,11 +32,6 @@ import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringSetConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -79,27 +73,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	public PosOnlyLP(AbstractReasonerComponent reasoningService, SortedSet<OWLIndividual> positiveExamples) {
 		super(reasoningService);
 		this.positiveExamples = positiveExamples;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-	}
-
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples", null, true, false));
-		return options;
 	}
 
 	public static String getName() {

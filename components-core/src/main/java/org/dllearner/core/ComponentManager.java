@@ -27,13 +27,23 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.datastructures.Maps;
 
 /**
@@ -93,12 +103,12 @@ public final class ComponentManager {
 //            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
 
-	private static ComponentManager cm = null;	
+	private static ComponentManager cm = null;
 
 	// list of all configuration options of all components
 	private static Map<Class<? extends AbstractComponent>, String> componentNames;
-	private static Map<Class<? extends AbstractComponent>, List<ConfigOption<?>>> componentOptions;
-	private static Map<Class<? extends AbstractComponent>, Map<String, ConfigOption<?>>> componentOptionsByName;
+	private static Map<Class<? extends AbstractComponent>, List<ConfigOption>> componentOptions;
+	private static Map<Class<? extends AbstractComponent>, Map<String, ConfigOption>> componentOptionsByName;
 	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractClassExpressionLearningProblem>>> algorithmProblemsMapping;
 	private static Map<Class<? extends AbstractClassExpressionLearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
 	
@@ -107,6 +117,7 @@ public final class ComponentManager {
 	
 	private Comparator<Class<?>> classComparator = new Comparator<Class<?>>() {
 
+		@Override
 		public int compare(Class<?> c1, Class<?> c2) {
 			return c1.getName().compareTo(c2.getName());
 		}
@@ -133,7 +144,7 @@ public final class ComponentManager {
 		learningProblems = new TreeSet<Class<? extends AbstractClassExpressionLearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends AbstractCELA>>(classComparator);
 		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractClassExpressionLearningProblem>>>(
-				classComparator);		
+				classComparator);
 
 		// create classes from strings
 		for (String componentString : componentClasses) {
@@ -164,8 +175,8 @@ public final class ComponentManager {
 
 		componentNames = new HashMap<Class<? extends AbstractComponent>, String>();
 		// read in all configuration options
-		componentOptions = new HashMap<Class<? extends AbstractComponent>, List<ConfigOption<?>>>();
-		componentOptionsByName = new HashMap<Class<? extends AbstractComponent>, Map<String, ConfigOption<?>>>();
+		componentOptions = new HashMap<Class<? extends AbstractComponent>, List<ConfigOption>>();
+		componentOptionsByName = new HashMap<Class<? extends AbstractComponent>, Map<String, ConfigOption>>();
 //		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
 				
 		for (Class<? extends AbstractComponent> component : components) {
@@ -174,14 +185,12 @@ public final class ComponentManager {
 			componentNames.put(component, name);
 			
 			// assign options to components
-			List<ConfigOption<?>> options = (List<ConfigOption<?>>) invokeStaticMethod(component,
-					"createConfigOptions");
-			componentOptions.put(component, options);
+			Set<ConfigOption> options = AnnComponentManager.getConfigOptions(component);
 
 			// make config options accessible by name
-			Map<String, ConfigOption<?>> byName = new HashMap<String, ConfigOption<?>>();
-			for (ConfigOption<?> option : options) {
-				byName.put(option.getName(), option);
+			Map<String, ConfigOption> byName = new HashMap<String, ConfigOption>();
+			for (ConfigOption option : options) {
+				byName.put(option.name(), option);
 			}
 			componentOptionsByName.put(component, byName);
 			
@@ -207,7 +216,7 @@ public final class ComponentManager {
 	 * used before the first call to {@link #getInstance()}, otherwise
 	 * it has no effect.
 	 * 
-	 * @param componentClasses A list of class names, e.g. 
+	 * @param componentClasses A list of class names, e.g.
 	 * org.dllearner.refinement.ROLearner.
 	 */
 	public static void setComponentClasses(String[] componentClasses) {
@@ -240,59 +249,6 @@ public final class ComponentManager {
 		return componentStrings;
 	}
 
-	/**
-	 * Convenience method for testing purposes. If you know that the type of the
-	 * value is correct, it is preferable to create a ConfigEntry object and
-	 * apply it to the component (no type checking necessary).
-	 * 
-	 * @param <T> Type of the config option (Integer, String etc.).
-	 * @param component A component.
-	 * @param optionName The name of the config option.
-	 * @param value The value of the config option.
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> void applyConfigEntry(AbstractComponent component, String optionName, T value) {
-		logger.trace(component);
-		logger.trace(optionName);
-		logger.trace(value);
-		logger.trace(value.getClass());
-		// first we look whether the component is registered
-		if (components.contains(component.getClass())) {
-
-			// look for a config option with the specified name
-			ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
-					component.getClass()).get(optionName);
-			if (option != null) {
-				// check whether the given object has the correct type
-				if (!option.checkType(value)) {
-					System.out.println("Warning: value " + value + " is not valid for option "
-							+ optionName + " in component " + component
-							+ ". It does not have the correct type.");
-					return;
-				}
-
-				// we have checked the type, hence it should now be safe to
-				// typecast and
-				// create a ConfigEntry object
-				ConfigEntry<T> entry = null;
-				try {	
-					entry = new ConfigEntry<T>((ConfigOption<T>) option, value);
-					component.applyConfigEntry(entry);
-					pool.addConfigEntry(component, entry, true);
-				} catch (InvalidConfigOptionValueException e) {
-					pool.addConfigEntry(component, entry, false);
-					System.out.println("Warning: value " + value + " is not valid for option "
-							+ optionName + " in component " + component);
-				}
-			} else {
-				logger.warn("Warning: undefined option " + optionName + " in component "
-						+ component);
-			}
-		} else {
-			logger.warn("Warning: unregistered component " + component);
-		}
-	}
-	
 	public ComponentPool getPool() {
 		return pool;
 	}
@@ -305,16 +261,46 @@ public final class ComponentManager {
 	 * @param entry The configuration entry to set.
 	 * @return True if the config entry could be applied succesfully, otherwise false.
 	 */
-	public <T> boolean applyConfigEntry(AbstractComponent component, ConfigEntry<T> entry) {
-		try {
-			component.applyConfigEntry(entry);
-			pool.addConfigEntry(component, entry, true);
-			return true;
-		} catch (InvalidConfigOptionValueException e) {
-			pool.addConfigEntry(component, entry, false);
-			e.printStackTrace();
-			return false;
+	@Deprecated
+	public <T> boolean applyConfigEntry(AbstractComponent component, Class entry) {
+		logger.error("applyConfigEntry unimplemented");
+		return false;
+	}
+	
+	public <T> boolean applyConfigEntry(AbstractComponent component, String optionName, T value) {
+		List<AbstractComponent> childComponents = new LinkedList<>();
+		for (Method m : component.getClass().getMethods()) {
+			if (m.getName().equals("set" + optionName.substring(0, 1).toUpperCase() + optionName.substring(1))) {
+				try {
+					m.invoke(component, value);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return true;
+			} else if (m.getName().startsWith("get")
+					&& AbstractComponent.class.isAssignableFrom(m.getReturnType())) {
+				Object cc;
+				try {
+					cc = m.invoke(component);
+					childComponents.add((AbstractComponent) cc);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
+		for (AbstractComponent cc : childComponents) {
+			if (cc != null) {
+				boolean try_inv = applyConfigEntry(cc, optionName, value);
+				if (try_inv) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -338,7 +324,7 @@ public final class ComponentManager {
 	/**
 	 * Factory method for creating a reasoner component from a single
 	 * knowledge source. Example
-	 * call: reasoner(OWLAPIReasoner.class, ks) where ks is a 
+	 * call: reasoner(OWLAPIReasoner.class, ks) where ks is a
 	 * knowledge source object.
 	 * @see #reasoner(Class, Set)
 	 * @param <T> The type of this method is a subclass of reasoner component.
@@ -389,7 +375,7 @@ public final class ComponentManager {
 		Set<AbstractKnowledgeSource> s = new HashSet<AbstractKnowledgeSource>();
         Collections.addAll(s, sources);
 		return reasoner(reasoner, s);
-	}	
+	}
 	
 	/**
 	 * This method returns an instance of <code>ReasonerComponent</code>. The
@@ -427,7 +413,7 @@ public final class ComponentManager {
 	}
 
 	/**
-	 * Factory method for creating a learning algorithm, which 
+	 * Factory method for creating a learning algorithm, which
 	 * automagically calls the right constructor for the given problem.
 	 * @param <T> The type of this method is a subclass of learning algorithm.
 	 * @param laClass A class object, where the class is subclass of learning algorithm.
@@ -469,15 +455,15 @@ public final class ComponentManager {
 //	public <T extends LearningAlgorithm> T learningAlgorithm(Class<T> laClass, KnowledgeSource ks) {
 //		T la = invokeConstructor(laClass, new Class[] { KnowledgeSource.class }, new Object[] { ks });
 //		return la;
-//	}	
+//	}
 	
 	/**
 	 * The <code>ComponentManager</code> factory methods produce component
 	 * instances, which can be freed using this method. Calling the factory
-	 * methods without freeing components when they are not used anymore 
+	 * methods without freeing components when they are not used anymore
 	 * can (in theory) cause memory problems.
 	 * 
-	 * @param component The component to free. 
+	 * @param component The component to free.
 	 */
 	public void freeComponent(AbstractComponent component) {
 		pool.unregisterComponent(component);
@@ -490,48 +476,10 @@ public final class ComponentManager {
 	public synchronized void  freeAllComponents() {
 		pool.clearComponents();
 	}
-	
-	/**
-	 * Gets the value of a config option of the specified component.
-	 * This is done by first checking, which value the given option
-	 * was set to using {@link #applyConfigEntry(AbstractComponent, ConfigEntry)}.
-	 * If the value has not been changed, the default value for this
-	 * option is returned. Note, that this method will not work properly
-	 * if the component options are changed internally surpassing the
-	 * component manager (which is discouraged). 
-	 * 
-	 * @param <T> The type of the config option, e.g. String, boolean, integer.
-	 * @param component The component, which has the specified option.
-	 * @param option The option for which we want to know its value.
-	 * @return The value of the specified option in the specified component.
-	 */
-	public <T> T getConfigOptionValue(AbstractComponent component, ConfigOption<T> option) {
-		T object = pool.getLastValidConfigValue(component, option);
-		if(object==null) {
-			return option.getDefaultValue();
-		} else {
-			return object;
-		}
-	}
-	
-	/**
-	 * Works as {@link #getConfigOptionValue(AbstractComponent, ConfigOption)},
-	 * but using the name of the option instead of a <code>ConfigOption</code>
-	 * object.
-	 * @see #getConfigOptionValue(AbstractComponent, ConfigOption)
-	 * @param component A component.
-	 * @param optionName A valid option name for this component.
-	 * @return The value of the specified option in the specified component.
-	 */
-	public Object getConfigOptionValue(AbstractComponent component, String optionName) {
-		ConfigOption<?> option = (ConfigOption<?>) componentOptionsByName.get(
-				component.getClass()).get(optionName);
-		return getConfigOptionValue(component, option);
-	}
-	
+		
 	// convenience method for invoking a static method;
 	// used as a central point for exception handling for Java reflection
-	// static method calls	
+	// static method calls
 	private static Object invokeStaticMethod(Class<?> clazz, String methodName, Object... args) {
 		// unfortunately Java does not seem to offer a way to call
 		// a static method given a class object directly, so we have
@@ -583,23 +531,12 @@ public final class ComponentManager {
 	 * @param componentClass The class object of a component.
 	 * @return A list of available configuration options of the specified component.
 	 */
-	public static List<ConfigOption<?>> getConfigOptions(Class<? extends AbstractComponent> componentClass) {
+	public static Set<ConfigOption> getConfigOptions(Class<? extends AbstractComponent> componentClass) {
 		if (!components.contains(componentClass)) {
 			System.err.println("Warning: component " + componentClass
 					+ " is not a registered component. [ComponentManager.getConfigOptions]");
 		}
-		return componentOptions.get(componentClass);
-	}
-	
-	/**
-	 * Returns a <code>ConfigOption</code> object given a component and
-	 * the option name.
-	 * @param component A component class object.
-	 * @param name A valid configuration option name for the component.
-	 * @return A <code>ConfigOption</code> object for the specified component class and option name.
-	 */
-	public ConfigOption<?> getConfigOption(Class<? extends AbstractComponent> component, String name) {
-		return componentOptionsByName.get(component).get(name);
+		return AnnComponentManager.getConfigOptions(componentClass);
 	}
 	
 	/**
@@ -636,7 +573,7 @@ public final class ComponentManager {
 	 * of <code>ComponentManager</code>.
 	 * @return the components A list of reasoner component classes available in this
 	 * instance of <code>ComponentManager</code>.
-	 */	
+	 */
 	public List<Class<? extends AbstractReasonerComponent>> getReasonerComponents() {
 		return new LinkedList<Class<? extends AbstractReasonerComponent>>(reasonerComponents);
 	}
@@ -646,7 +583,7 @@ public final class ComponentManager {
 	 * of <code>ComponentManager</code>.
 	 * @return the components A list of learning problem classes available in this
 	 * instance of <code>ComponentManager</code>.
-	 */		
+	 */
 	public List<Class<? extends AbstractClassExpressionLearningProblem>> getLearningProblems() {
 		return new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>(learningProblems);
 	}
@@ -680,7 +617,7 @@ public final class ComponentManager {
 	
 	
 	/**
-	 * Retuns a list of all instanciated and registered Components 
+	 * Retuns a list of all instanciated and registered Components
 	 * @return Currently active components.
 	 */
 	public List<AbstractComponent> getLiveComponents(){
@@ -688,7 +625,7 @@ public final class ComponentManager {
 	}
 	
 	/**
-	 *  Retuns a list of all instanciated and registered LearningAlgorithm 
+	 *  Retuns a list of all instanciated and registered LearningAlgorithm
 	 * @return Currently active learning algorithms.
 	 */
 	public List<AbstractCELA> getLiveLearningAlgorithms(){
@@ -703,7 +640,7 @@ public final class ComponentManager {
 	}
 	
 	/**
-	 *  Retuns a list of all instanciated and registered KnowledgeSource 
+	 *  Retuns a list of all instanciated and registered KnowledgeSource
 	 * @return Currently active knowledge sources.
 	 */
 	public List<AbstractKnowledgeSource> getLiveKnowledgeSources(){

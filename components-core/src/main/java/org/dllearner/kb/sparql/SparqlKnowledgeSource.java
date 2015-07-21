@@ -33,16 +33,6 @@ import javax.swing.ProgressMonitor;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
-import org.dllearner.core.options.StringTupleListConfigOption;
-import org.dllearner.core.options.URLConfigOption;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitor;
 import org.dllearner.kb.aquisitors.SparqlTupleAquisitorImproved;
@@ -179,98 +169,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);
 
-	/**
-	 * Specifies the configuration options for this knowledge source.
-	 *
-	 * @see org.dllearner.core.AbstractComponent#createConfigOptions()
-	 * @return Options of this component.
-	 */
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new URLConfigOption("url", "URL of SPARQL Endpoint",
-				null, true, true));
-		options.add(new StringConfigOption("cacheDir", "dir of cache", "cache",
-				false, true));
-		options.add(new BooleanConfigOption("useCache",
-				"If true a Cache is used", true, false, true));
-		options.add(new BooleanConfigOption("useCacheDatabase", "If true, H2 database is used, otherwise one file per query is written.", false));
-		options
-				.add(new StringSetConfigOption(
-						"instances",
-						"relevant instances e.g. positive and negative examples in a learning problem",
-						null, true, true));
-		options.add(new IntegerConfigOption("recursionDepth",
-				"recursion depth of KB fragment selection", 1, false, true));
-		options
-				.add(new StringConfigOption(
-						"predefinedFilter",
-						"the mode of the SPARQL Filter, use one of YAGO,SKOS,YAGOSKOS , YAGOSPECIALHIERARCHY, TEST",
-						null, false, true));
-		options
-				.add(new StringConfigOption(
-						"predefinedEndpoint",
-						"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK",
-						null, false, true));
-		options
-				.add(new StringConfigOption(
-						"predefinedManipulator",
-						"the mode of the Manipulator, use one of STANDARD, DBPEDIA-NAVIGATOR",
-						null, false, true));
-		options.add(new StringSetConfigOption("predList",
-				"list of all ignored roles", new TreeSet<String>(), false, true));
-		options.add(new StringSetConfigOption("objList",
-				"list of all ignored objects", new TreeSet<String>(), false, true));
-		options
-				.add(new BooleanConfigOption(
-						"saveExtractedFragment",
-						"Specifies whether the extracted ontology is written to a file or not. " +
-						"The OWL file is written to the cache dir." +
-						"Some DBpedia URI will make the XML invalid",
-						false, false, true));
-		options.add(new StringTupleListConfigOption("replacePredicate",
-				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
-		options.add(new StringTupleListConfigOption("replaceObject",
-				"rule for replacing predicates", new ArrayList<StringTuple>(), false, true));
-		options.add(new IntegerConfigOption("breakSuperClassRetrievalAfter",
-				"stops a cyclic hierarchy after specified number of classes",
-				1000, false, true));
-
-		options.add(new BooleanConfigOption("useLits",
-				"use Literals in SPARQL query", true, false, true));
-		options
-		.add(new BooleanConfigOption(
-				"getAllSuperClasses",
-				"If true then all superclasses are retrieved until the most general class (owl:Thing) is reached.",
-				true, false, true));
-		options.add(new BooleanConfigOption("closeAfterRecursion",
-				"gets all classes for all instances", true, false, true));
-		options.add(new BooleanConfigOption("getPropertyInformation",
-				"gets all types for extracted ObjectProperties", false, false,
-				true));
-		options.add(new BooleanConfigOption("dissolveBlankNodes",
-				"determines whether Blanknodes are dissolved. This is a costly function.", true, false,
-				true));
-		options.add(new BooleanConfigOption("useImprovedSparqlTupelAquisitor",
-				"uses deeply nested SparqlQueries, according to recursion depth, still EXPERIMENTAL", false, false,
-				true));
-		options.add(CommonConfigOptions.getVerbosityOption());
-
-		options.add(new StringSetConfigOption("defaultGraphURIs",
-				"a list of all default Graph URIs", new TreeSet<String>(), false, true));
-		options.add(new StringSetConfigOption("namedGraphURIs",
-				"a list of all named Graph URIs", new TreeSet<String>(), false, true));
-		return options;
-	}
-
-	/*
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry)
-			throws InvalidConfigOptionValueException {
-		//TODO remove this function
-
-	}
 
 	/*
 	 * (non-Javadoc)

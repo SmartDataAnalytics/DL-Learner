@@ -19,9 +19,7 @@
 
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,9 +29,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
@@ -72,7 +67,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
     @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "predacc")
     private String accuracyMethod = "pred_acc";
     
-//	private boolean useFMeasure;	
+//	private boolean useFMeasure;
 	private boolean useOldDIGOptions = false;
 	
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
@@ -107,18 +102,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		this.negativeExamples = negativeExamples;
 	}
 
-	public static Collection<org.dllearner.core.options.ConfigOption<?>> createConfigOptions() {
-		Collection<org.dllearner.core.options.ConfigOption<?>> options = new LinkedList<org.dllearner.core.options.ConfigOption<?>>(PosNegLP.createConfigOptions());
-		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", false);
-		options.add(approx);
-		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
-		options.add(approxAccuracy);
-		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","predacc"); //  or domain/range of a property.
-		accMethod.setAllowedValues(new String[] {"fmeasure", "predacc"});
-		options.add(accMethod);		
-		return options;
-	}	
-	
 	@Override
 	public void init() throws ComponentInitException {
 		super.init();
@@ -237,7 +220,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	/**
 	 * Computes score of a given concept using the reasoner. Either retrieval or
 	 * instance check are used. For the latter, this method treats
-	 * <code>UseMultiInstanceChecks.TWO_CHECKS</code> as if it were 
+	 * <code>UseMultiInstanceChecks.TWO_CHECKS</code> as if it were
 	 * <code>UseMultiInstanceChecks.ONE_CHECKS</code> (it does not make much sense
 	 * to implement TWO_CHECKS in this function, because we have to test all
 	 * examples to create a score object anyway).
@@ -270,11 +253,11 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 						negAsNeg.add(negExample);
 				}
 				return new ScoreTwoValued(
-						OWLClassExpressionUtils.getLength(concept), 
-						getPercentPerLengthUnit(), 
+						OWLClassExpressionUtils.getLength(concept),
+						getPercentPerLengthUnit(),
 						posAsPos, posAsNeg, negAsPos, negAsNeg);
 			// instance checks for classification
-			} else {		
+			} else {
 				Set<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
 				Set<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
 				Set<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
@@ -293,9 +276,9 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					// System.out.println("pos classified: " + posClassified);
 					
 					return new ScoreTwoValued(
-							OWLClassExpressionUtils.getLength(concept), 
+							OWLClassExpressionUtils.getLength(concept),
 							getPercentPerLengthUnit(),
-							posAsPos, posAsNeg, 
+							posAsPos, posAsNeg,
 							negAsPos, negAsNeg);
 				} else {
 					for (OWLIndividual example : positiveExamples) {
@@ -346,13 +329,13 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 				}
 			}
 			
-			// TODO: this computes accuracy twice - more elegant method should be implemented 
+			// TODO: this computes accuracy twice - more elegant method should be implemented
 			double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), noise);
 			
 			return new ScoreTwoValued(
-					OWLClassExpressionUtils.getLength(concept), 
-					getPercentPerLengthUnit(), 
-					posAsPos, posAsNeg, negAsPos, negAsNeg, 
+					OWLClassExpressionUtils.getLength(concept),
+					getPercentPerLengthUnit(),
+					posAsPos, posAsNeg, negAsPos, negAsNeg,
 					accuracy);
 		}
 
@@ -363,8 +346,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 */
 	@Override
 	public double getAccuracy(OWLClassExpression description, double noise) {
-		// a noise value of 1.0 means that we never return too weak (-1.0) 
-		return getAccuracyOrTooWeak(description, noise);		
+		// a noise value of 1.0 means that we never return too weak (-1.0)
+		return getAccuracyOrTooWeak(description, noise);
 	}
 	
 	/* (non-Javadoc)
@@ -372,15 +355,15 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	 */
 	@Override
 	public double getAccuracy(OWLClassExpression description) {
-		// a noise value of 1.0 means that we never return too weak (-1.0) 
-		return getAccuracyOrTooWeak(description, 1.0);		
+		// a noise value of 1.0 means that we never return too weak (-1.0)
+		return getAccuracyOrTooWeak(description, 1.0);
 	}
 
 	@Override
-	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {	
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods
-		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);				
-	}	
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
+	}
 	
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		if(heuristic.equals(HeuristicType.PRED_ACC)) {
@@ -457,7 +440,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 						return -1;
 					}
 				}
-			}	
+			}
 			
 			double recall = instancesCovered/(double)positiveExamples.size();
 			
@@ -477,14 +460,14 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					return approx[0];
 				}
 				
-			}		
+			}
 			
 			// standard computation (no approximation)
 			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
 //			if(instancesCovered + instancesDescription == 0) {
 //				precision = 0;
 //			}
-			return Heuristics.getFScore(recall, precision, 1);			
+			return Heuristics.getFScore(recall, precision, 1);
 		} else {
 			throw new Error("Approximation for " + heuristic + " not implemented.");
 		}
@@ -497,14 +480,14 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			return getFMeasureOrTooWeakExact(description, noise);
 		} else {
 			throw new Error("Heuristic " + heuristic + " not implemented.");
-		}		
+		}
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#getAccuracyOrTooWeak(org.dllearner.core.owl.Description, double)
 	 */
 	public double getPredAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-		// TODO: what we essentially need here is that if the noise justifies 
+		// TODO: what we essentially need here is that if the noise justifies
 		// not covering 1.23 examples, then we stop with 2 examples not covered;
 		// but when noise justifies not covering exactly 2 examples, we can actually
 		// only stop with 3 examples; so we would have to add 1 for exact matches
@@ -519,7 +502,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		int notCoveredPos = 0;
 		int notCoveredNeg = 0;
 		
-		// we have to distinguish between a standard OWL reasoner or a SPARQL-based, 
+		// we have to distinguish between a standard OWL reasoner or a SPARQL-based,
 		// which probably is more expensive when using multiple instance checks
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			// get all instances of the concept to be tested
@@ -544,7 +527,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					if(notCoveredPos >= maxNotCovered) {
 						return -1;
 					}
-				} 
+				}
 			}
 			for (OWLIndividual example : negativeExamples) {
 				if (!getReasoner().hasType(description, example)) {
@@ -584,7 +567,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			
 			double precision = (negAsPos + posAsPos == 0) ? 0 : posAsPos / (double) (posAsPos + negAsPos);
 			
-			return Heuristics.getFScore(recall, precision);		
+			return Heuristics.getFScore(recall, precision);
 		default:
 			throw new Error("Heuristic " + heuristic + " not implemented.");
 		}
@@ -678,9 +661,9 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 					if(upperBorderA + 0.1 < 1-noise) {
 						return -1;
 					}
-				}				
+				}
 			}
-		}	
+		}
 		
 		double recall = instancesCovered/(double)positiveExamples.size();
 		
@@ -718,7 +701,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 				
 				double size;
 				if(estimatedA) {
-					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));
 				} else {
 					size = getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
@@ -733,7 +716,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
 		if(instancesCovered + instancesDescription == 0) {
 			precision = 0;
-		}	
+		}
 
 //		System.out.println("description: " + description);
 //		System.out.println("recall: " + recall);
