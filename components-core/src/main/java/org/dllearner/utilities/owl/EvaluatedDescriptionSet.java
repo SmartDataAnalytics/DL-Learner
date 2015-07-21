@@ -25,8 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -42,7 +43,7 @@ public class EvaluatedDescriptionSet {
 
 	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
 	
-	private TreeSet<EvaluatedDescription> set = new TreeSet<EvaluatedDescription>(comp);
+	private TreeSet<EvaluatedDescription<? extends Score>> set = new TreeSet<>(comp);
 
 	private int maxSize;
 	
@@ -50,7 +51,7 @@ public class EvaluatedDescriptionSet {
 		this.maxSize = maxSize;
 	}
 	
-	public void add(OWLClassExpression description, double accuracy, AbstractLearningProblem problem) {
+	public void add(OWLClassExpression description, double accuracy, AbstractClassExpressionLearningProblem<? extends Score> problem) {
 		// bug http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
 		// -> set should be filled up to max size before we compare acc. with the worst result
 		if(set.size()<maxSize || getWorst().getAccuracy() <= accuracy) {
@@ -58,16 +59,16 @@ public class EvaluatedDescriptionSet {
 		}	
 		if(set.size()>maxSize) {
 			// delete the worst element
-			Iterator<EvaluatedDescription> it = set.iterator();
+			Iterator<EvaluatedDescription<? extends Score>> it = set.iterator();
 			it.next();
 			it.remove();
 		}		
 	}
 	
-	public void add(EvaluatedDescription ed) {
+	public void add(EvaluatedDescription<? extends Score> ed) {
 		set.add(ed);
 		if(set.size()>maxSize) {
-			Iterator<EvaluatedDescription> it = set.iterator();
+			Iterator<EvaluatedDescription<? extends Score>> it = set.iterator();
 			it.next();
 			it.remove();
 		}
@@ -87,7 +88,7 @@ public class EvaluatedDescriptionSet {
 		return set.size();
 	}
 	
-	public EvaluatedDescription getBest() {
+	public EvaluatedDescription<? extends Score> getBest() {
 		return set.size()==0 ? null : set.last();
 	}
 	
@@ -95,20 +96,20 @@ public class EvaluatedDescriptionSet {
 		return set.size()==0 ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
 	}
 	
-	public EvaluatedDescription getWorst() {
+	public EvaluatedDescription<? extends Score> getWorst() {
 		return set.size()==0 ? null : set.first();
 	}
 	
 	/**
 	 * @return the set
 	 */
-	public TreeSet<EvaluatedDescription> getSet() {
+	public TreeSet<EvaluatedDescription<? extends Score>> getSet() {
 		return set;
 	}
 	
 	public List<OWLClassExpression> toDescriptionList() {
 		List<OWLClassExpression> list = new LinkedList<OWLClassExpression>();
-		for(EvaluatedDescription ed : set.descendingSet()) {
+		for(EvaluatedDescription<? extends Score> ed : set.descendingSet()) {
 			list.add(ed.getDescription());
 		}
 		return list;

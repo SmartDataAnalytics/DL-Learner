@@ -3,10 +3,10 @@
  */
 package org.dllearner.algorithms.isle.index.syntactic;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -32,7 +32,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 
 import com.hp.hpl.jena.graph.Triple;
 
@@ -45,11 +44,11 @@ public class NTriplesFileLuceneSyntacticIndexCreator {
 
 	public NTriplesFileLuceneSyntacticIndexCreator(InputStream nTriplesStream, String indexPath, String searchField) throws IOException {
 		//setup the index
-		Directory directory = FSDirectory.open(new File(indexPath));
+		Directory directory = FSDirectory.open(Paths.get(indexPath));
 		
 		//setup the index analyzer
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+		Analyzer analyzer = new StandardAnalyzer();
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		indexWriterConfig.setRAMBufferSizeMB(1024.0);
 		indexWriterConfig.setOpenMode(OpenMode.CREATE);
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
@@ -101,11 +100,12 @@ public class NTriplesFileLuceneSyntacticIndexCreator {
 		String field = "text";
 		new NTriplesFileLuceneSyntacticIndexCreator(new FileInputStream(indexFile), indexPath, field);
 
-		IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(indexPath)));
+		Directory directory = FSDirectory.open(Paths.get(indexPath));
+		IndexReader reader = DirectoryReader.open(directory);
 		IndexSearcher searcher = new IndexSearcher(reader);
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+		Analyzer analyzer = new StandardAnalyzer();
 
-		QueryParser parser = new QueryParser(Version.LUCENE_43, field, analyzer);
+		QueryParser parser = new QueryParser(field, analyzer);
 		Query query = parser.parse("film AND direction");
 		
 		TopDocs docs = searcher.search(query, 10);

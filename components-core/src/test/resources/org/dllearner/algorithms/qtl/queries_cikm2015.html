@@ -1,0 +1,591 @@
+<style>table.reference {
+	width:100%;
+	max-width:100%;
+	border-left:1px solid #dddddd;
+	border-right:1px solid #dddddd;	
+	border-bottom:1px solid #dddddd;		
+}
+table.reference>thead>tr>th, table.reference>tbody>tr>th, table.reference>tfoot>tr>th, table.reference>thead>tr>td, table.reference>tbody>tr>td, table.reference>tfoot>tr>td {
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+}
+table.reference tr:nth-child(odd)	{background-color:#ffffff;}
+table.reference tr:nth-child(even)	{background-color:#f1f1f1;}</style>
+
+<table class="reference">
+<thead><tr><th>ID</th><th>Query</th></tr></thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/AustralianRulesFootballPlayer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/debutTeam&gt; &lt;http://dbpedia.org/resource/Collingwood_Football_Club&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>2</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Bacteria&gt; .
+    ?s &lt;http://dbpedia.org/ontology/class&gt; &lt;http://dbpedia.org/resource/Alphaproteobacteria&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>3</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Band&gt; .
+    ?s &lt;http://dbpedia.org/ontology/instrument&gt; &lt;http://dbpedia.org/resource/Guitar&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>4</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/BeachVolleyballPlayer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/hometown&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/language&gt; &lt;http://dbpedia.org/resource/English_language&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>5</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/BeautyQueen&gt; .
+    ?s &lt;http://dbpedia.org/ontology/education&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/type&gt; &lt;http://dbpedia.org/resource/Public_university&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>6</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Bodybuilder&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>7</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Brain&gt; .
+    ?s &lt;http://dbpedia.org/ontology/artery&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/branchFrom&gt; &lt;http://dbpedia.org/resource/Internal_carotid_artery&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>8</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Bridge&gt; .
+    ?s &lt;http://dbpedia.org/ontology/maintainedBy&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/parentOrganisation&gt; &lt;http://dbpedia.org/resource/New_York_City&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>9</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Canal&gt; .
+    ?s &lt;http://dbpedia.org/ontology/startPoint&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/United_Kingdom&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>10</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Canoeist&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/Germany&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>11</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Cardinal&gt; .
+    ?s &lt;http://dbpedia.org/ontology/nationality&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/religion&gt; &lt;http://dbpedia.org/resource/Catholic_Church&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>12</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/CricketGround&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; &lt;http://dbpedia.org/resource/England&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>13</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Cricketer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/deathPlace&gt; &lt;http://dbpedia.org/resource/England&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>14</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Crustacean&gt; .
+    ?s &lt;http://dbpedia.org/ontology/kingdom&gt; &lt;http://dbpedia.org/resource/Animal&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>15</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/CyclingRace&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; &lt;http://dbpedia.org/resource/Belgium&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>16</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/FigureSkater&gt; .
+    ?s &lt;http://dbpedia.org/ontology/residence&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/governmentType&gt; &lt;http://dbpedia.org/resource/Federalism&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>17</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/FilmFestival&gt; .
+    ?s &lt;http://dbpedia.org/ontology/language&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/languageFamily&gt; &lt;http://dbpedia.org/resource/Germanic_languages&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>18</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/FootballMatch&gt; .
+    ?s &lt;http://dbpedia.org/ontology/city&gt; &lt;http://dbpedia.org/resource/Dublin&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>19</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/FormulaOneRacer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/nationality&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/capital&gt; &lt;http://dbpedia.org/resource/Rome&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>20</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/GovernmentAgency&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/largestCity&gt; &lt;http://dbpedia.org/resource/New_York_City&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>21</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/GrandPrix&gt; .
+    ?s &lt;http://dbpedia.org/ontology/fastestDriver&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/firstRace&gt; &lt;http://dbpedia.org/resource/1950_British_Grand_Prix&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>22</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Grape&gt; .
+    ?s &lt;http://dbpedia.org/ontology/origin&gt; &lt;http://dbpedia.org/resource/France&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>23</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/GreenAlga&gt; .
+    ?s &lt;http://dbpedia.org/ontology/genus&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/kingdom&gt; &lt;http://dbpedia.org/resource/Plant&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>24</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Guitarist&gt; .
+    ?s &lt;http://dbpedia.org/ontology/instrument&gt; &lt;http://dbpedia.org/resource/Guitar&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>25</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Historian&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/timeZone&gt; &lt;http://dbpedia.org/resource/Eastern_Time_Zone&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>26</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/HistoricPlace&gt; .
+    ?s &lt;http://dbpedia.org/ontology/architect&gt; &lt;http://dbpedia.org/resource/Samuel_Hannaford&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>27</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/HorseRace&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>28</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/IceHockeyLeague&gt; .
+    ?s &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>29</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/InformationAppliance&gt; .
+    ?s &lt;http://dbpedia.org/ontology/operatingSystem&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/language&gt; &lt;http://dbpedia.org/resource/English_language&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>30</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Judge&gt; .
+    ?s &lt;http://dbpedia.org/ontology/deathPlace&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/timeZone&gt; &lt;http://dbpedia.org/resource/Eastern_Time_Zone&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>31</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/LawFirm&gt; .
+    ?s &lt;http://dbpedia.org/ontology/headquarter&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>32</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Manga&gt; .
+    ?s &lt;http://dbpedia.org/ontology/author&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/residence&gt; &lt;http://dbpedia.org/resource/Japan&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>33</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/MemberOfParliament&gt; .
+    ?s &lt;http://dbpedia.org/ontology/president&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/almaMater&gt; &lt;http://dbpedia.org/resource/University_of_Ghana&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>34</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/MilitaryConflict&gt; .
+    ?s &lt;http://dbpedia.org/ontology/commander&gt; &lt;http://dbpedia.org/resource/Napoleon&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>35</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/MilitaryPerson&gt; .
+    ?s &lt;http://dbpedia.org/ontology/deathPlace&gt; &lt;http://dbpedia.org/resource/Germany&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>36</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Model&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>37</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/MotorsportSeason&gt; .
+    ?s &lt;http://dbpedia.org/ontology/series&gt; &lt;http://dbpedia.org/resource/Grand_Prix_motorcycle_racing&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>38</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/NCAATeamSeason&gt; .
+    ?s &lt;http://dbpedia.org/ontology/coach&gt; &lt;http://dbpedia.org/resource/Bobby_Bowden&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>39</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Nerve&gt; .
+    ?s &lt;http://dbpedia.org/ontology/branchFrom&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/branchFrom&gt; &lt;http://dbpedia.org/resource/Trigeminal_nerve&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>40</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/NetballPlayer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; &lt;http://dbpedia.org/resource/New_Zealand&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>41</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Noble&gt; .
+    ?s &lt;http://dbpedia.org/ontology/deathPlace&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/province&gt; &lt;http://dbpedia.org/resource/Province_of_Rome&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>42</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/OlympicEvent&gt; .
+    ?s &lt;http://dbpedia.org/ontology/nextEvent&gt; &lt;http://dbpedia.org/resource/2016_Summer_Olympics&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>43</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/PokerPlayer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/hometown&gt; &lt;http://dbpedia.org/resource/Nevada&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>44</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Pope&gt; .
+    ?s &lt;http://dbpedia.org/ontology/birthPlace&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/Italy&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>45</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/President&gt; .
+    ?s &lt;http://dbpedia.org/ontology/occupation&gt; &lt;http://dbpedia.org/resource/Politician&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>46</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/PrimeMinister&gt; .
+    ?s &lt;http://dbpedia.org/ontology/party&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/colour&gt; &lt;http://dbpedia.org/resource/Red&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>47</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Prison&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/isPartOf&gt; &lt;http://dbpedia.org/resource/Texas&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>48</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Racecourse&gt; .
+    ?s &lt;http://dbpedia.org/ontology/owner&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/type&gt; &lt;http://dbpedia.org/resource/Privately_held_company&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>49</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/RoadJunction&gt; .
+    ?s &lt;http://dbpedia.org/ontology/type&gt; &lt;http://dbpedia.org/resource/Traffic_circle&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>50</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Rower&gt; .
+    ?s &lt;http://dbpedia.org/ontology/country&gt; &lt;http://dbpedia.org/resource/Germany&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>51</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Ship&gt; .
+    ?s &lt;http://dbpedia.org/ontology/powerType&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/location&gt; &lt;http://dbpedia.org/resource/Germany&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>52</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/SkiArea&gt; .
+    ?s &lt;http://dbpedia.org/ontology/nearestCity&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/type&gt; &lt;http://dbpedia.org/resource/City&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>53</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/SoccerClubSeason&gt; .
+    ?s &lt;http://dbpedia.org/ontology/league&gt; &lt;http://dbpedia.org/resource/Football_League_First_Division&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>54</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/TelevisionStation&gt; .
+    ?s &lt;http://dbpedia.org/ontology/broadcastNetwork&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/broadcastArea&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>55</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/TennisPlayer&gt; .
+    ?s &lt;http://dbpedia.org/ontology/residence&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>56</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/TennisTournament&gt; .
+    ?s &lt;http://dbpedia.org/ontology/championInSingleFemale&gt; &lt;http://dbpedia.org/resource/Serena_Williams&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>57</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/VideoGame&gt; .
+    ?s &lt;http://dbpedia.org/ontology/developer&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/regionServed&gt; &lt;http://dbpedia.org/resource/Japan&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>58</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Weapon&gt; .
+    ?s &lt;http://dbpedia.org/ontology/origin&gt; ?o0 .
+    ?o0 &lt;http://dbpedia.org/ontology/ethnicGroup&gt; &lt;http://dbpedia.org/resource/White_people&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>59</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/Website&gt; .
+    ?s &lt;http://dbpedia.org/ontology/type&gt; &lt;http://dbpedia.org/resource/Social_networking_service&gt;
+  }
+</pre></td>
+</tr>
+<tr>
+<td>60</td>
+<td><pre>SELECT DISTINCT  ?s
+WHERE
+  { ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://dbpedia.org/ontology/WineRegion&gt; .
+    ?s &lt;http://dbpedia.org/ontology/location&gt; &lt;http://dbpedia.org/resource/United_States&gt;
+  }
+</pre></td>
+</tr>
+</tbody>
+</table>

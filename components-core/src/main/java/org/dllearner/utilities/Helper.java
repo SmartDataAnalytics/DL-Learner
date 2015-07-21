@@ -34,10 +34,12 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
 import org.dllearner.core.owl.FlatABox;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
@@ -483,12 +485,50 @@ public class Helper {
 	}
 	
 	// concepts case 1: no ignore or allowed list
+	public static <T extends OWLEntity> Set<T> computeEntities(AbstractReasonerComponent rs, EntityType<T> entityType) {
+		// if there is no ignore or allowed list, we just ignore the concepts
+		// of uninteresting namespaces
+		if (entityType == EntityType.CLASS) {
+			return (Set<T>) rs.getClasses();
+		} else if (entityType == EntityType.OBJECT_PROPERTY) {
+			return (Set<T>) rs.getObjectProperties();
+		} else if (entityType == EntityType.DATA_PROPERTY) {
+			return (Set<T>) rs.getDatatypeProperties();
+		}
+		return null;
+	}
+	
+	// concepts case 1: no ignore or allowed list
 	public static Set<OWLClass> computeConcepts(AbstractReasonerComponent rs) {
 		// if there is no ignore or allowed list, we just ignore the concepts
 		// of uninteresting namespaces
 		Set<OWLClass> concepts = rs.getClasses();
 //		Helper.removeUninterestingConcepts(concepts);
 		return concepts;
+	}
+	
+	public static <T extends OWLEntity> Set<T> computeEntitiesUsingIgnoreList(AbstractReasonerComponent rs, EntityType<T> entityType, Set<T> ignoredEntites) {
+		Set<T> entities;
+		
+		if (entityType == EntityType.CLASS) {
+			entities = (Set<T>) rs.getClasses();
+		} else if (entityType == EntityType.OBJECT_PROPERTY) {
+			entities = (Set<T>) rs.getObjectProperties();
+		} else if (entityType == EntityType.DATA_PROPERTY) {
+			entities = (Set<T>) rs.getDatatypeProperties();
+		} else {
+			throw new UnsupportedOperationException("Entity type " + entityType + " currently not supported.");
+		}
+		
+		entities = new TreeSet<>(entities);
+		
+		for (T entity : ignoredEntites) {
+			boolean success = entities.remove(entity);
+			if (!success) {
+				logger.warn("Warning: Ignored entity " + entity + " does not exist in knowledge base.");
+			}
+		}
+		return entities;
 	}
 	
 	// concepts case 2: ignore list
@@ -531,6 +571,21 @@ public class Helper {
 		for (OWLObjectProperty ar : roles) {
 			if(!existingRoles.contains(ar)) 
 				return ar;
+		}
+		return null;
+	}
+	
+	/**
+	 * Checks whether the entities exist in background knowledge
+	 * @param entites The entities to check.
+	 * @return The first non-existing entity or null if they are all in the
+	 * background knowledge.
+	 */
+	public static <T extends OWLEntity> T checkEntities(AbstractReasonerComponent rs, Set<T> entities) {
+		Set<T> existingEntities = (Set<T>) computeEntities(rs, entities.iterator().next().getEntityType());
+		for (T entity : entities) {
+			if(!existingEntities.contains(entity)) 
+				return entity;
 		}
 		return null;
 	}

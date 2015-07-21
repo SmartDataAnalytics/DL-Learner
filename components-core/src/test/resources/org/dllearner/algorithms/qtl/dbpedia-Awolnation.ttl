@@ -1,0 +1,294 @@
+<http://dbpedia.org/resource/Home_Town_Hero>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://schema.org/MusicGroup> , <http://dbpedia.org/ontology/Organisation> , <http://dbpedia.org/ontology/Agent> , <http://schema.org/Organization> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://dbpedia.org/ontology/Band> , <http://www.w3.org/2002/07/owl#Thing> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "2004+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "2000+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Under_the_Influence_of_Giants> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Under_the_Influence_of_Giants> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Drew_Stewart> , <http://dbpedia.org/resource/Aaron_Bruno> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Post-grunge> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/Southern_California> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Maverick_Records> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Hometown Hero"@en .
+
+<http://dbpedia.org/ontology/Organisation>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "組織"@ja , "Organisation"@de , "organisatie"@nl , "organisation"@fr , "organisation"@en , "organizacija"@sl , "organização"@pt , "조직"@ko , "οργάνωση"@el ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://dbpedia.org/ontology/Agent> ;
+        <http://www.w3.org/2002/07/owl#disjointWith>
+                <http://dbpedia.org/ontology/wgs84_pos:SpatialThing> ;
+        <http://www.w3.org/2002/07/owl#equivalentClass>
+                <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://schema.org/Organization> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Organisation> .
+
+<http://dbpedia.org/resource/Aaron_Bruno>
+        a       <http://dbpedia.org/ontology/MusicalArtist> , <http://wikidata.dbpedia.org/resource/Q5> , <http://schema.org/Person> , <http://dbpedia.org/ontology/Person> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#NaturalPerson> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://xmlns.com/foaf/0.1/Person> , <http://dbpedia.org/ontology/Artist> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/MusicGroup> , <http://dbpedia.org/ontology/Agent> , <http://wikidata.dbpedia.org/resource/Q215627> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1999+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/alias>
+                "AWOL" ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Under_the_Influence_of_Giants> , <http://dbpedia.org/resource/Awolnation> , <http://dbpedia.org/resource/Home_Town_Hero> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Under_the_Influence_of_Giants> , <http://dbpedia.org/resource/Awolnation> , <http://dbpedia.org/resource/Home_Town_Hero> ;
+        <http://dbpedia.org/ontology/background>
+                "solo_singer" ;
+        <http://dbpedia.org/ontology/birthDate>
+                "1978-11-11+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/birthPlace>
+                <http://dbpedia.org/resource/California> , <http://dbpedia.org/resource/Los_Angeles> ;
+        <http://dbpedia.org/ontology/birthYear>
+                "1978+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Alternative_dance> , <http://dbpedia.org/resource/Post-grunge> , <http://dbpedia.org/resource/Power_pop> , <http://dbpedia.org/resource/Contemporary_R&B> , <http://dbpedia.org/resource/Indie_pop> , <http://dbpedia.org/resource/Electronic_rock> , <http://dbpedia.org/resource/Trip_hop> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Musical_keyboard> , <http://dbpedia.org/resource/Drum_kit> , <http://dbpedia.org/resource/Synthesizer> , <http://dbpedia.org/resource/Piano> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Percussion_instrument> , <http://dbpedia.org/resource/Guitar> , <http://dbpedia.org/resource/Bass_guitar> ;
+        <http://dbpedia.org/ontology/occupation>
+                <http://dbpedia.org/resource/Guitarist> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Musician> , <http://dbpedia.org/resource/Songwriter> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/UTIOG_Records> , <http://dbpedia.org/resource/Red_Bull_Records> , <http://dbpedia.org/resource/Maverick_Records> ;
+        <http://purl.org/dc/elements/1.1/description>
+                "American singer"@en , "American singer" ;
+        <http://xmlns.com/foaf/0.1/givenName>
+                "Aaron"@en ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Aaron Bruno"@en , "Bruno, Aaron"@en ;
+        <http://xmlns.com/foaf/0.1/surname>
+                "Bruno"@en .
+
+<http://dbpedia.org/resource/Red_Bull_Records>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://dbpedia.org/ontology/Organisation> , <http://www.w3.org/2002/07/owl#Thing> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://dbpedia.org/ontology/Company> , <http://dbpedia.org/ontology/RecordLabel> , <http://schema.org/Organization> , <http://dbpedia.org/ontology/Agent> ;
+        <http://dbpedia.org/ontology/country>
+                <http://dbpedia.org/resource/West_Hollywood,_California> ;
+        <http://dbpedia.org/ontology/distributingCompany>
+                <http://dbpedia.org/resource/RED_Distribution> , <http://dbpedia.org/resource/PIAS_Entertainment_Group> ;
+        <http://dbpedia.org/ontology/distributingLabel>
+                <http://dbpedia.org/resource/RED_Distribution> , <http://dbpedia.org/resource/PIAS_Entertainment_Group> ;
+        <http://dbpedia.org/ontology/foundingYear>
+                "2007+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/parentCompany>
+                <http://dbpedia.org/resource/Red_Bull> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.redbullrecords.com/> .
+
+<http://dbpedia.org/resource/Under_the_Influence_of_Giants>
+        a       <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/MusicGroup> , <http://schema.org/Organization> , <http://dbpedia.org/ontology/Band> , <http://dbpedia.org/ontology/Organisation> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://dbpedia.org/ontology/Agent> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "2008+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "2000+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Awolnation> , <http://dbpedia.org/resource/Home_Town_Hero> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Home_Town_Hero> , <http://dbpedia.org/resource/Awolnation> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/bandMember>
+                <http://dbpedia.org/resource/Aaron_Bruno> ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Hoobastank> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Indie_pop> , <http://dbpedia.org/resource/Alternative_rock> , <http://dbpedia.org/resource/Alternative_dance> , <http://dbpedia.org/resource/Indie_rock> , <http://dbpedia.org/resource/Rhythm_and_blues> , <http://dbpedia.org/resource/Soul_music> , <http://dbpedia.org/resource/Dance-punk> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/California> , <http://dbpedia.org/resource/United_States> , <http://dbpedia.org/resource/Los_Angeles> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Under the Influence of Giants"@en .
+
+<http://dbpedia.org/resource/Los_Angeles>
+        a       <http://dbpedia.org/ontology/City> , <http://dbpedia.org/ontology/Settlement> , <http://schema.org/City> , <http://www.ontologydesignpatterns.org/ont/d0.owl#Location> , <http://dbpedia.org/ontology/Place> , <http://www.opengis.net/gml/_Feature> , <http://dbpedia.org/ontology/PopulatedPlace> , <http://schema.org/Place> , <http://dbpedia.org/ontology/Wikidata:Q532> ;
+        <http://dbpedia.org/ontology/PopulatedPlace/areaTotal>
+                "1302.0"^^<http://dbpedia.org/datatype/squareKilometre> , "1302.764019499008"^^<http://dbpedia.org/datatype/squareKilometre> ;
+        <http://dbpedia.org/ontology/PopulatedPlace/populationDensity>
+                "3175.6902540116175"^^<http://dbpedia.org/datatype/inhabitantsPerSquareKilometre> ;
+        <http://dbpedia.org/ontology/areaCode>
+                "213, 310/424, 323, 661, 747/818" ;
+        <http://dbpedia.org/ontology/areaLand>
+                1.2147e+09 , 1.214e+09 ;
+        <http://dbpedia.org/ontology/areaTotal>
+                1.30276e+09 , 1.302e+09 ;
+        <http://dbpedia.org/ontology/areaWater>
+                8.8e+07 , 8.80596e+07 ;
+        <http://dbpedia.org/ontology/elevation>
+                "71.0"^^<http://www.w3.org/2001/XMLSchema#double> , "71.0184"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        <http://dbpedia.org/ontology/foundingDate>
+                "1850-04-04+01:00"^^<http://www.w3.org/2001/XMLSchema#date> , "1781-09-04+01:00"^^<http://www.w3.org/2001/XMLSchema#date> ;
+        <http://dbpedia.org/ontology/governingBody>
+                <http://dbpedia.org/resource/Los_Angeles_City_Council> ;
+        <http://dbpedia.org/ontology/governmentType>
+                <http://dbpedia.org/resource/Mayor%E2%80%93council_government> ;
+        <http://dbpedia.org/ontology/isPartOf>
+                <http://dbpedia.org/resource/Los_Angeles_County,_California> , <http://dbpedia.org/resource/California> ;
+        <http://dbpedia.org/ontology/leaderName>
+                <http://dbpedia.org/resource/Eric_Garcetti> , <http://dbpedia.org/resource/Mike_Feuer> , <http://dbpedia.org/resource/Ron_Galperin> ;
+        <http://dbpedia.org/ontology/leaderTitle>
+                "City Attorney"@en , "Mayor"@en , "City Controller"@en ;
+        <http://dbpedia.org/ontology/percentageOfAreaWater>
+                "6.7"^^<http://www.w3.org/2001/XMLSchema#float> ;
+        <http://dbpedia.org/ontology/populationDensity>
+                "3175.69"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        <http://dbpedia.org/ontology/populationMetro>
+                16400000 ;
+        <http://dbpedia.org/ontology/populationTotal>
+                3904657 ;
+        <http://dbpedia.org/ontology/populationTotalRanking>
+                2 ;
+        <http://dbpedia.org/ontology/populationUrban>
+                15067000 ;
+        <http://dbpedia.org/ontology/postalCode>
+                "90001–90068, 90070–90084, 90086–90089, 90091, 90093–90097, 90099, 90101–90103, 90174, 90185, 90189, 90291–90293, 91040–91043, 91303–91308, 91342–91349, 91352–91353, 91356–91357, 91364–91367, 91401–91499, 91601–91609" ;
+        <http://dbpedia.org/ontology/timeZone>
+                <http://dbpedia.org/resource/Pacific_Time_Zone> ;
+        <http://dbpedia.org/ontology/utcOffset>
+                "-8" , "−7" ;
+        <http://www.georss.org/georss/point>
+                "34.05 -118.25" ;
+        <http://www.w3.org/2003/01/geo/wgs84_pos#lat>
+                "34.05"^^<http://www.w3.org/2001/XMLSchema#float> ;
+        <http://www.w3.org/2003/01/geo/wgs84_pos#long>
+                "-118.25"^^<http://www.w3.org/2001/XMLSchema#float> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://www.lacity.org/> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "City of Los Angeles"@en , "Los Angeles"@en ;
+        <http://xmlns.com/foaf/0.1/nick>
+                "\"L.A.\", \"City of Angels\", \"Angeltown\", \"Lalaland\", \"Tinseltown\""@en .
+
+<http://dbpedia.org/resource/California>
+        a       <http://dbpedia.org/ontology/PopulatedPlace> , <http://schema.org/AdministrativeArea> , <http://dbpedia.org/ontology/Place> , <http://www.ontologydesignpatterns.org/ont/d0.owl#Location> , <http://dbpedia.org/ontology/Wikidata:Q532> , <http://schema.org/Place> , <http://dbpedia.org/ontology/Region> , <http://dbpedia.org/ontology/AdministrativeRegion> ;
+        <http://dbpedia.org/ontology/PopulatedPlace/areaTotal>
+                "423970.0"^^<http://dbpedia.org/datatype/squareKilometre> ;
+        <http://dbpedia.org/ontology/areaCode>
+                "209 213 310 323 408 415 510 530 559 562 619 626 650 661 707 714 760 805 818 831 858 909 916 925 949" ;
+        <http://dbpedia.org/ontology/areaLand>
+                4.03932e+11 ;
+        <http://dbpedia.org/ontology/areaTotal>
+                4.2397e+11 ;
+        <http://dbpedia.org/ontology/areaWater>
+                2.0047e+10 ;
+        <http://dbpedia.org/ontology/capital>
+                <http://dbpedia.org/resource/Sacramento,_California> ;
+        <http://dbpedia.org/ontology/country>
+                <http://dbpedia.org/resource/United_States> ;
+        <http://dbpedia.org/ontology/demonym>
+                "Californian"@en ;
+        <http://dbpedia.org/ontology/language>
+                <http://dbpedia.org/resource/Spanish_language> , <http://dbpedia.org/resource/English_American> , <http://dbpedia.org/resource/Tagalog_language> , <http://dbpedia.org/resource/Multilingualism> , <http://dbpedia.org/resource/Chinese_language> ;
+        <http://dbpedia.org/ontology/largestCity>
+                <http://dbpedia.org/resource/Los_Angeles> ;
+        <http://dbpedia.org/ontology/maximumElevation>
+                "4421.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        <http://dbpedia.org/ontology/minimumElevation>
+                "86.0"^^<http://www.w3.org/2001/XMLSchema#double> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "State of California"@en .
+
+<http://dbpedia.org/resource/Indie_rock>
+        a       <http://dbpedia.org/ontology/MusicGenre> , <http://dbpedia.org/ontology/Genre> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept> , <http://dbpedia.org/ontology/TopicalConcept> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Bass_guitar> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Keyboard_instrument> , <http://dbpedia.org/resource/Guitar> , <http://dbpedia.org/resource/Drum_kit> ;
+        <http://dbpedia.org/ontology/musicFusionGenre>
+                <http://dbpedia.org/resource/Indie_folk> , <http://dbpedia.org/resource/Alternative_dance> , <http://dbpedia.org/resource/New_rave> , <http://dbpedia.org/resource/Indietronica> , <http://dbpedia.org/resource/Grindie> ;
+        <http://dbpedia.org/ontology/musicSubgenre>
+                <http://dbpedia.org/resource/Noise_rock> , <http://dbpedia.org/resource/Jangle_pop> , <http://dbpedia.org/resource/Post-punk_revival> , <http://dbpedia.org/resource/C86_(album)> , <http://dbpedia.org/resource/Post-rock> , <http://dbpedia.org/resource/Indie_pop> , <http://dbpedia.org/resource/Sadcore> , <http://dbpedia.org/resource/Baroque_pop> , <http://dbpedia.org/resource/Dream_pop> , <http://dbpedia.org/resource/Noise_pop> , <http://dbpedia.org/resource/Dance-punk> , <http://dbpedia.org/resource/Math_rock> , <http://dbpedia.org/resource/Lo-fi_music> ;
+        <http://dbpedia.org/ontology/stylisticOrigin>
+                <http://dbpedia.org/resource/New_wave_music> , <http://dbpedia.org/resource/Garage_rock> , <http://dbpedia.org/resource/Post-punk> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Indie rock"@en .
+
+<http://dbpedia.org/resource/Blind_Melon>
+        a       <http://dbpedia.org/ontology/Organisation> , <http://dbpedia.org/ontology/Agent> , <http://dbpedia.org/ontology/Band> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> , <http://schema.org/MusicGroup> , <http://www.w3.org/2002/07/owl#Thing> , <http://schema.org/Organization> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> ;
+        <http://dbpedia.org/ontology/activeYearsEndYear>
+                "1990+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "1990+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Awolnation> , <http://dbpedia.org/resource/Unified_Theory_(band)> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Awolnation> , <http://dbpedia.org/resource/Unified_Theory_(band)> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/bandMember>
+                <http://dbpedia.org/resource/Rogers_Stevens> ;
+        <http://dbpedia.org/ontology/formerBandMember>
+                <http://dbpedia.org/resource/Shannon_Hoon> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Folk_rock> , <http://dbpedia.org/resource/Psychedelic_rock> , <http://dbpedia.org/resource/Neo-psychedelia> , <http://dbpedia.org/resource/Blues_rock> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/California> , <http://dbpedia.org/resource/Los_Angeles> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Capitol_Records> , <http://dbpedia.org/resource/EMI> ;
+        <http://xmlns.com/foaf/0.1/homepage>
+                <http://blindmelon.com> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Blind Melon"@en .
+
+<http://dbpedia.org/resource/Alternative_rock>
+        a       <http://dbpedia.org/ontology/Genre> , <http://dbpedia.org/ontology/TopicalConcept> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Concept> , <http://dbpedia.org/ontology/MusicGenre> ;
+        <http://dbpedia.org/ontology/instrument>
+                <http://dbpedia.org/resource/Electric_guitar> , <http://dbpedia.org/resource/Keyboard_instrument> , <http://dbpedia.org/resource/Bass_guitar> , <http://dbpedia.org/resource/Singing> , <http://dbpedia.org/resource/Drum_kit> ;
+        <http://dbpedia.org/ontology/musicFusionGenre>
+                <http://dbpedia.org/resource/Alternative_metal> , <http://dbpedia.org/resource/Psychobilly> , <http://dbpedia.org/resource/Riot_grrrl> , <http://dbpedia.org/resource/Industrial_rock> , <http://dbpedia.org/resource/Grebo_(music)> , <http://dbpedia.org/resource/Post-punk_revival> , <http://dbpedia.org/resource/Madchester> , <http://dbpedia.org/resource/Alternative_dance> ;
+        <http://dbpedia.org/ontology/musicSubgenre>
+                <http://dbpedia.org/resource/Post-rock> , <http://dbpedia.org/resource/Paisley_Underground> , <http://dbpedia.org/resource/Dream_pop> , <http://dbpedia.org/resource/Math_rock> , <http://dbpedia.org/resource/Post-grunge> , <http://dbpedia.org/resource/Grunge> , <http://dbpedia.org/resource/Noise_pop> , <http://dbpedia.org/resource/College_rock> , <http://dbpedia.org/resource/Jangle_pop> , <http://dbpedia.org/resource/Neo-psychedelia> , <http://dbpedia.org/resource/Emo> , <http://dbpedia.org/resource/Shoegazing> , <http://dbpedia.org/resource/Indie_rock> , <http://dbpedia.org/resource/Indie_pop> , <http://dbpedia.org/resource/Britpop> , <http://dbpedia.org/resource/Post-Britpop> , <http://dbpedia.org/resource/Noise_rock> ;
+        <http://dbpedia.org/ontology/stylisticOrigin>
+                <http://dbpedia.org/resource/New_wave_music> , <http://dbpedia.org/resource/Post-punk> , <http://dbpedia.org/resource/Hardcore_punk> , <http://dbpedia.org/resource/Punk_rock> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Alternative rock"@en .
+
+<http://dbpedia.org/ontology/Band>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "Musikgruppe"@de , "band"@nl , "groupe de musique"@fr , "gruppo musicale"@it , "バンド_(音楽)"@ja , "banda"@es , "μουσικό συγκρότημα"@el , "banda"@pt , "Band"@en , "음악 그룹"@ko ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://dbpedia.org/ontology/Organisation> , <http://schema.org/MusicGroup> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Band> .
+
+<http://dbpedia.org/resource/Awolnation>
+        a       <http://dbpedia.org/ontology/Agent> , <http://schema.org/MusicGroup> , <http://schema.org/Organization> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#SocialPerson> , <http://dbpedia.org/ontology/Organisation> , <http://www.w3.org/2002/07/owl#Thing> , <http://dbpedia.org/ontology/Band> , <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> ;
+        <http://dbpedia.org/ontology/activeYearsStartYear>
+                "2009+01:00"^^<http://www.w3.org/2001/XMLSchema#gYear> ;
+        <http://dbpedia.org/ontology/associatedBand>
+                <http://dbpedia.org/resource/Home_Town_Hero> , <http://dbpedia.org/resource/Blind_Melon> , <http://dbpedia.org/resource/Under_the_Influence_of_Giants> ;
+        <http://dbpedia.org/ontology/associatedMusicalArtist>
+                <http://dbpedia.org/resource/Under_the_Influence_of_Giants> , <http://dbpedia.org/resource/Home_Town_Hero> , <http://dbpedia.org/resource/Blind_Melon> ;
+        <http://dbpedia.org/ontology/background>
+                "group_or_band" ;
+        <http://dbpedia.org/ontology/bandMember>
+                <http://dbpedia.org/resource/Aaron_Bruno> ;
+        <http://dbpedia.org/ontology/genre>
+                <http://dbpedia.org/resource/Electronic_rock> , <http://dbpedia.org/resource/Indie_rock> , <http://dbpedia.org/resource/Alternative_rock> ;
+        <http://dbpedia.org/ontology/hometown>
+                <http://dbpedia.org/resource/Los_Angeles> , <http://dbpedia.org/resource/California> ;
+        <http://dbpedia.org/ontology/recordLabel>
+                <http://dbpedia.org/resource/Red_Bull_Records> ;
+        <http://xmlns.com/foaf/0.1/name>
+                "Awolnation"@en .
+
+<http://dbpedia.org/ontology/Agent>
+        a       <http://www.w3.org/2002/07/owl#Class> ;
+        <http://www.w3.org/2000/01/rdf-schema#comment>
+                "Ανάλογα με την κλάση foaf:Agent, ένας πράκτορας είναι μια οντότητα που ενεργεί. Αυτό προορίζεται να είναι μια υπερκλάση της κλάσης Άτόμο και Οργανισμός."@el , "Analogous to a foaf:Agent, an agent is an entity that acts. This is intended to be the super class of Person and Organisation."@en ;
+        <http://www.w3.org/2000/01/rdf-schema#label>
+                "agent"@fr , "agent"@nl , "agent"@en , "Agent"@de , "agente"@it , "agente"@es , "エージェント"@ja , "πράκτορας"@el ;
+        <http://www.w3.org/2000/01/rdf-schema#subClassOf>
+                <http://www.w3.org/2002/07/owl#Thing> ;
+        <http://www.w3.org/2002/07/owl#disjointWith>
+                <http://dbpedia.org/ontology/Place> ;
+        <http://www.w3.org/2002/07/owl#equivalentClass>
+                <http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#Agent> ;
+        <http://www.w3.org/ns/prov#wasDerivedFrom>
+                <http://mappings.dbpedia.org/index.php/OntologyClass:Agent> .

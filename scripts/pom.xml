@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 	</parent>
 
 
@@ -128,6 +128,10 @@
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.semanticweb.elk</groupId>
+		    <artifactId>elk-owlapi</artifactId>
 		</dependency>
 		<!-- <dependency>
 			<groupId>net.sourceforge.owlapi</groupId>

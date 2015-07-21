@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY shorts "http://dl-learner.org/test/shorts#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/shorts#"
+     xml:base="http://dl-learner.org/test/shorts"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:shorts="http://dl-learner.org/test/shorts#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/shorts"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#value -->
+
+    <owl:DatatypeProperty rdf:about="&shorts;value">
+        <rdfs:domain rdf:resource="&shorts;Number"/>
+        <rdfs:range rdf:resource="&xsd;short"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#Number -->
+
+    <owl:Class rdf:about="&shorts;Number"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N1 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N1">
+        <value rdf:datatype="&xsd;short">1</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N10 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N10">
+        <value rdf:datatype="&xsd;short">10</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N100 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N100">
+        <value rdf:datatype="&xsd;short">100</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N102 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N102">
+        <value rdf:datatype="&xsd;short">102</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N104 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N104">
+        <value rdf:datatype="&xsd;short">104</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N107 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N107">
+        <value rdf:datatype="&xsd;short">107</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N109 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N109">
+        <value rdf:datatype="&xsd;short">109</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N110 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N110">
+        <value rdf:datatype="&xsd;short">110</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N2 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N2">
+        <value rdf:datatype="&xsd;short">2</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N3 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N3">
+        <value rdf:datatype="&xsd;short">3</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N4 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N4">
+        <value rdf:datatype="&xsd;short">4</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N5 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N5">
+        <value rdf:datatype="&xsd;short">5</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N6 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N6">
+        <value rdf:datatype="&xsd;short">6</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N7 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N7">
+        <value rdf:datatype="&xsd;short">7</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N8 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N8">
+        <value rdf:datatype="&xsd;short">8</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/shorts#N9 -->
+
+    <owl:NamedIndividual rdf:about="&shorts;N9">
+        <value rdf:datatype="&xsd;short">9</value>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

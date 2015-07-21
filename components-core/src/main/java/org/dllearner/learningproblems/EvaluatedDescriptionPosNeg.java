@@ -40,7 +40,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
+public class EvaluatedDescriptionPosNeg extends EvaluatedDescription<ScorePosNeg> {
 	
 	private static final long serialVersionUID = -6962185910615506968L;
 	private ScorePosNeg score2;
@@ -130,8 +130,8 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(hypothesis));
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(hypothesis));
 			object.put("accuracy", score2.getAccuracy());
 			object.put("coveredPositives", getJSONArray(score2.getCoveredPositives()));
 			object.put("coveredNegatives", getJSONArray(score2.getCoveredNegatives()));
@@ -146,7 +146,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	
 	@Override
 	public String toString() {
-		return description.toString() + "(accuracy: " + getAccuracy() + ")";
+		return hypothesis.toString() + "(accuracy: " + getAccuracy() + ")";
 	}
 	
 	// we need to use this method instead of the standard JSON array constructor,

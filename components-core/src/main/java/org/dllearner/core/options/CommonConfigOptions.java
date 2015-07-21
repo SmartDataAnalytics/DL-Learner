@@ -51,7 +51,7 @@ public final class CommonConfigOptions {
 	public static boolean useBooleanDatatypesDefault = true;
 	public static boolean useDoubleDatatypesDefault = true;
 	public static boolean useStringDatatypesDefault = false;
-	public static int maxExecutionTimeInSecondsDefault = 0;
+	public static int maxExecutionTimeInSecondsDefault = 10;
 	public static int minExecutionTimeInSecondsDefault = 0;
 	public static int guaranteeXgoodDescriptionsDefault = 1;
 	public static int maxClassDescriptionTestsDefault = 0;

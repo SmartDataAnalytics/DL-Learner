@@ -62,6 +62,15 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	
 	private boolean useSimpleScore = false;
 	
+	public ObjectPropertyDomainAxiomLearner(){
+		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
+		super.negExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s ?p ?o. FILTER NOT EXISTS{?s a ?type}}");
+	
+		COUNT_QUERY = DISTINCT_SUBJECTS_COUNT_QUERY;
+		
+		axiomType = AxiomType.OBJECT_PROPERTY_DOMAIN;
+	}
+	
 	public ObjectPropertyDomainAxiomLearner(SparqlEndpointKS ks){
 		this.ks = ks;
 		super.posExamplesQueryTemplate = new ParameterizedSparqlString("SELECT DISTINCT ?s WHERE {?s a ?type}");
@@ -81,6 +90,10 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_QUERY.setIri("p", entityToDescribe.toStringID());
 		SUBJECTS_OF_TYPE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
 		SUBJECTS_OF_TYPE_WITH_INFERENCE_COUNT_BATCHED_QUERY.setIri("p", entityToDescribe.toStringID());
+	}
+	
+	public void setPropertyToDescribe(OWLObjectProperty entityToDescribe) {
+		super.setEntityToDescribe(entityToDescribe);
 	}
 	
 	/* (non-Javadoc)

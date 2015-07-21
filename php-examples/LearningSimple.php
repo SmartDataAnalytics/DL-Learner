@@ -42,7 +42,7 @@ $client = new SoapClient("main.wsdl");
 // load owl file in DIG reasoner (you need a running DIG reasoner)
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "fastInstanceChecker");
+$rID = $client->setReasoner($id, "cwr");
 
 // create a learning problem
 $posExamples = array('http://example.com/father#stefan',
@@ -51,7 +51,7 @@ $posExamples = array('http://example.com/father#stefan',
 $negExamples = array('http://example.com/father#heinz',
                      'http://example.com/father#anna',
                      'http://example.com/father#michelle');
-$client->setLearningProblem($id, "posNegLPStandard");
+$client->setLearningProblem($id, "posNegStandard");
 $client->setPositiveExamples($id, $posExamples);
 $client->setNegativeExamples($id, $negExamples);
 

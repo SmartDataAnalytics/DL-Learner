@@ -78,31 +78,29 @@ public interface BaseReasoner {
 	
 	/**
 	 * Gets all data properties with range xsd:boolean.
-	 * @see org.dllearner.core.owl.Datatype#BOOLEAN
 	 * @return Boolean data properties in KB.
 	 */
 	public Set<OWLDataProperty> getBooleanDatatypeProperties();
 	
 	/**
-	 * Gets all data properties with range xsd:double.
-	 * TODO We could extend this to all types, which can be parsed into
-	 * a double value, e.g. floats.
-	 * @see org.dllearner.core.owl.Datatype#DOUBLE
-	 * @return Double data properties in KB.
+	 * Gets all data properties with a range that describes floating point values, i.e. 
+	 * xsd:float, xsd:double and xsd:decimal.
+	 * @return Floating point data properties in KB.
 	 */
 	public Set<OWLDataProperty> getDoubleDatatypeProperties();
 	
 	/**
-	 * Gets all data properties with numeric range 
+	 * Gets all data properties with a numeric range 
 	 * @return Numeric data properties in KB.
 	 */
 	public Set<OWLDataProperty> getNumericDataProperties();
 	
 	/**
-	 * Gets all data properties with range xsd:int.
-	 * TODO We could extend this to all types, which can be parsed into
-	 * Integers, e.g. xsd:integer, xsd:negativeInteger, xsd:nonNegativeInteger etc.
-	 * @see org.dllearner.core.owl.Datatype#INT
+	 * Gets all integer type data properties, i.e. with range 
+	 * xsd:byte, xsd:short, xsd:int, xsd:integer, 
+	 * xsd:negativeInteger, xsd:nonNegativeInteger,
+	 * xsd:positiveInteger, xsd:nonPositiveInteger.
+	 * @see org.dllearner.utilities.OWLAPIUtils#intDatatypes
 	 * @return Integer data properties in KB.
 	 */
 	public Set<OWLDataProperty> getIntDatatypeProperties();

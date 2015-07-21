@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 import java.util.Set;
 
 import org.dllearner.utilities.Helper;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Computes the score (a negative value) by comparing the classification results
@@ -37,7 +37,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Jens Lehmann
  *
  */
-public class ScoreThreeValued extends ScorePosNeg {
+public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	
 	private static final long serialVersionUID = -1780084688122949685L;
 
@@ -54,22 +54,22 @@ public class ScoreThreeValued extends ScorePosNeg {
 	private boolean showCorrectClassifications = false;
 	private static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 	
-	private Set<OWLIndividual> posClassified;
-	private Set<OWLIndividual> neutClassified;
-	private Set<OWLIndividual> negClassified;
-	private Set<OWLIndividual> posExamples;
-	private Set<OWLIndividual> neutExamples;
-	private Set<OWLIndividual> negExamples;
+	private Set<T> posClassified;
+	private Set<T> neutClassified;
+	private Set<T> negClassified;
+	private Set<T> posExamples;
+	private Set<T> neutExamples;
+	private Set<T> negExamples;
 	
-    private Set<OWLIndividual> posAsNeg;
-    private Set<OWLIndividual> negAsPos;
-    private Set<OWLIndividual> posAsNeut;
-    private Set<OWLIndividual> neutAsPos;
-    private Set<OWLIndividual> neutAsNeg;
-    private Set<OWLIndividual> negAsNeut;
-    private Set<OWLIndividual> posAsPos;
-    private Set<OWLIndividual> negAsNeg;
-    private Set<OWLIndividual> neutAsNeut;      
+    private Set<T> posAsNeg;
+    private Set<T> negAsPos;
+    private Set<T> posAsNeut;
+    private Set<T> neutAsPos;
+    private Set<T> neutAsNeg;
+    private Set<T> negAsNeut;
+    private Set<T> posAsPos;
+    private Set<T> negAsNeg;
+    private Set<T> neutAsNeut;      
     
     private double score;
     private double accuracy;
@@ -85,12 +85,12 @@ public class ScoreThreeValued extends ScorePosNeg {
     		double errorPenalty,
     		boolean penaliseNeutralExamples,
     		double percentPerLengthUnit,
-    		Set<OWLIndividual> posClassified,
-    		Set<OWLIndividual> neutClassified,
-    		Set<OWLIndividual> negClassified,
-    		Set<OWLIndividual> posExamples,
-    		Set<OWLIndividual> neutExamples,
-    		Set<OWLIndividual> negExamples) {
+    		Set<T> posClassified,
+    		Set<T> neutClassified,
+    		Set<T> negClassified,
+    		Set<T> posExamples,
+    		Set<T> neutExamples,
+    		Set<T> negExamples) {
     	this.conceptLength = conceptLength;
     	this.accuracyPenalty = accuracyPenalty;
     	this.errorPenalty = errorPenalty;
@@ -133,7 +133,7 @@ public class ScoreThreeValued extends ScorePosNeg {
         	score -= (neutAsPos.size()*accuracyPenalty        
             + neutAsNeg.size()*accuracyPenalty);
         
-        // TODO: man könnte hier statt error penality auch accuracy penalty
+        // TODO: man könnte hier statt error penalty auch accuracy penalty
         // nehmen
         double worstValue = nrOfExamples * errorPenalty;
         // ergibt Zahl zwischen -1 und 0
@@ -166,6 +166,43 @@ public class ScoreThreeValued extends ScorePosNeg {
     @Override
     public double getScoreValue() {
         return score;
+    }
+    
+	/**
+	 * @return number of cases of individuals that got exactly the same
+	 *         classification with both definitions
+	 */
+    public int getMatchRate() {
+    	return posAsPos.size() + negAsNeg.size();
+    }
+    
+	/**
+	 * @return amount of individuals for which class-membership w.r.t.
+	 *         the given query could not determined using the induced
+	 *         definition, while they actually belong (do not belong) to the
+	 *         query concept
+	 */
+    public int getOmmissionErrorRate() {
+    	return posAsNeut.size() + negAsNeut.size();
+    }
+    
+	/**
+	 * @return amount of individuals found not to belong to the query concept
+	 *         according to the induced definition, while they actually belong
+	 *         to it and vice-versa
+	 */
+    public int getCommissionErrorRate() {
+    	return posAsNeg.size() + negAsPos.size();
+    }
+    
+	/**
+	 * @return amount of individuals found to belong or not to belong to the
+	 *         query concept according to the induced definition, while either
+	 *         case is not logically derivable from the knowledge base with the
+	 *         original definition
+	 */
+    public int getInductionRate() {
+    	return neutAsPos.size() + neutAsNeg.size();
     }
     
     @Override
@@ -206,32 +243,40 @@ public class ScoreThreeValued extends ScorePosNeg {
         return str;
     }
 
-	public Set<OWLIndividual> getNegClassified() {
+	public Set<T> getNegClassified() {
 		return negClassified;
 	}
 
-	public Set<OWLIndividual> getPosClassified() {
+	public Set<T> getPosClassified() {
 		return posClassified;
 	}
 
 	@Override
-	public Set<OWLIndividual> getCoveredNegatives() {
+	public Set<T> getCoveredNegatives() {
 		return negAsPos;
 	}
 
 	@Override
-	public Set<OWLIndividual> getCoveredPositives() {
+	public Set<T> getCoveredPositives() {
 		return posAsPos;
 	}
 	
 	@Override
-	public Set<OWLIndividual> getNotCoveredPositives() {
+	public Set<T> getNotCoveredPositives() {
 		return posAsNeg;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
+	 */
+	@Override
+	public Set<T> getNotCoveredNegatives() {
+		return negAsNeg;
+	}	
 
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
+		return new ScoreThreeValued<T>(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}
 
 	/* (non-Javadoc)
@@ -241,13 +286,4 @@ public class ScoreThreeValued extends ScorePosNeg {
 	public double getAccuracy() {
 		return accuracy;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
-	 */
-	@Override
-	public Set<OWLIndividual> getNotCoveredNegatives() {
-		return negAsNeg;
-	}	
-    
 }

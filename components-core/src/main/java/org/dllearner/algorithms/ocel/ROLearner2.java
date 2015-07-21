@@ -33,7 +33,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
@@ -225,7 +225,7 @@ public class ROLearner2 {
 
 	public ROLearner2(
 //			OCELConfigurator configurator,
-			AbstractLearningProblem learningProblem,
+			AbstractClassExpressionLearningProblem learningProblem,
 			AbstractReasonerComponent rs,
 			RefinementOperator operator,
 			ExampleBasedHeuristic heuristic,
@@ -547,7 +547,7 @@ public class ROLearner2 {
 	}
 
 	// for all refinements of concept up to max length, we check whether they
-	// are properr
+	// are proper
 	// and call the method recursively if not
 	// recDepth is used only for statistics
 	private void extendNodeProper(ExampleBasedNode node, OWLClassExpression concept, int maxLength,
@@ -616,7 +616,7 @@ public class ROLearner2 {
 					// kurzes Konzept konstruieren
 					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement);
 					int n = shortConcept.compareTo(concept);
-
+					
 					// Konzepte sind gleich also Refinement improper
 					if (n == 0) {
 						propernessTestsAvoidedByShortConceptConstruction++;
@@ -627,7 +627,7 @@ public class ROLearner2 {
 //						 System.exit(0);
 					}
 				}
-
+				
 				// 2. too weak test
 				if (!propernessDetected && useTooWeakList) {
 					if (refinement instanceof OWLObjectIntersectionOf) {
@@ -693,6 +693,7 @@ public class ROLearner2 {
 			if (usePropernessChecks) {
 				long propCalcReasoningStart = System.nanoTime();
 				improperConcepts = rs.isSuperClassOf(toEvaluateConcepts, concept);
+				
 				propernessTestsReasoner += toEvaluateConcepts.size();
 				// boolean isProper =
 				// !learningProblem.getReasonerComponent().subsumes(refinement,
@@ -863,10 +864,10 @@ public class ROLearner2 {
 		// sich
 		// proper refinements ergeben könnten
 		for (OWLClassExpression refinement : refinements) {
-			// for(int i=0; i<=recDepth; i++)
-			// System.out.print(" ");
-			// System.out.println("call: " + refinement + " [maxLength " +
-			// maxLength + ", rec depth " + recDepth + "]");
+//			 for(int i=0; i<=recDepth; i++)
+//			 System.out.print(" ");
+//			 System.out.println("call: " + refinement + " [maxLength " +
+//			 maxLength + ", rec depth " + recDepth + "]");
 
 			// check for redundancy (otherwise we may run into very
 			// time-intensive loops,
@@ -879,7 +880,6 @@ public class ROLearner2 {
 			if (!redundant) {
 //				System.out.println("node " + node);
 //				System.out.println("refinement " + refinement);
-				
 				extendNodeProper(node, refinement, maxLength, recDepth + 1);
 			}
 			
@@ -1343,11 +1343,12 @@ public class ROLearner2 {
 			result = true;
 		} else if(solutions.size() >= guaranteeXgoodDescriptions && terminateOnNoiseReached) {
 				if(guaranteeXgoodDescriptions != 1) {
-				logger.info("Minimum number (" + guaranteeXgoodDescriptions
-						+ ") of good descriptions reached.");
+					logger.info("Minimum number (" + guaranteeXgoodDescriptions
+							+ ") of good descriptions reached.");
+					
+					guaranteeXgoodAlreadyReached = true;
+					result = true;
 				}
-				guaranteeXgoodAlreadyReached = true;
-				result = true;
 		}
 		
 				
@@ -1371,5 +1372,4 @@ public class ROLearner2 {
 	public boolean isRunning() {
 		return isRunning;
 	}
-
 }

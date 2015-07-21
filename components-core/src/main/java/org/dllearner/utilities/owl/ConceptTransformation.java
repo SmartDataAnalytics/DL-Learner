@@ -20,6 +20,7 @@
 package org.dllearner.utilities.owl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import com.google.common.collect.Sets;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -75,6 +78,48 @@ public class ConceptTransformation {
 	// wandelt ein Konzept in Negationsnormalform um
 	public static OWLClassExpression transformToNegationNormalForm(OWLClassExpression concept) {
 		return concept.getNNF();
+	}
+	
+	/**
+	 * Expand the class expression by adding \exists r.\top for all properties r
+	 * that are involved in some \forall r.C on the same modal depth. 
+	 * @param ce
+	 * @return
+	 */
+	public static OWLClassExpression appendSomeValuesFrom(OWLClassExpression ce) {
+		// if forall semantics is someonly
+		if (ce instanceof OWLObjectIntersectionOf) {
+			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+			Set<OWLObjectPropertyExpression> universallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			Set<OWLObjectPropertyExpression> existentiallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
+				newOperands.add(appendSomeValuesFrom(operand));
+				if(operand instanceof OWLObjectAllValuesFrom) {
+					universallyQuantifiedProperties.add(((OWLObjectAllValuesFrom) operand).getProperty());
+				} else if(operand instanceof OWLObjectSomeValuesFrom) {
+					existentiallyQuantifiedProperties.add(((OWLObjectSomeValuesFrom) operand).getProperty());
+				}
+			}
+			for (OWLObjectPropertyExpression ope : Sets.difference(universallyQuantifiedProperties, existentiallyQuantifiedProperties)) {
+				newOperands.add(df.getOWLObjectSomeValuesFrom(ope, df.getOWLThing()));
+			}
+			return df.getOWLObjectIntersectionOf(newOperands);
+		} 
+//		else if(ce instanceof OWLObjectUnionOf) {
+//			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+//			
+//			for (OWLClassExpression operand : ((OWLObjectUnionOf) ce).getOperands()) {
+//				OWLClassExpression newOperand = appendSomeValuesFrom(operand);
+//				if(newOperand instanceof OWLObjectAllValuesFrom) {
+//					newOperand = df.getOWLObjectIntersectionOf(ce,
+//							df.getOWLObjectSomeValuesFrom(((OWLObjectAllValuesFrom) newOperand).getProperty(), df.getOWLThing()));
+//				} 
+//				newOperands.add(newOperand);
+//			}
+//			
+//			return df.getOWLObjectUnionOf(newOperands);
+//		}
+		return ce.getNNF();
 	}
 	
 	// nimmt Konzept in Negationsnormalform und wendet äquivalenzerhaltende
@@ -282,7 +327,7 @@ public class ConceptTransformation {
 	}	
 	
 	/**
-	 * Method to determine, whether a class OWLClassExpression is minimal,
+	 * Method to determine, whether a class expression is minimal,
 	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
 	 * minimal.	This method performs heuristic sanity checks (it will
 	 * not try to find semantically equivalent shorter descriptions).
@@ -330,15 +375,27 @@ public class ConceptTransformation {
 			}
 		} else if(description instanceof OWLObjectSomeValuesFrom) {
 			// \exists r.\bot \equiv \bot
-			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) description).getProperty().asOWLObjectProperty();
+			
+			OWLObjectPropertyExpression pe = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
-			if(filler.isOWLThing()) {
-				OWLClassExpression range = rs.getRange(property);
-				filler = range;
-			} else if(filler.isAnonymous()){
-				filler = replaceRange(filler, rs);
+			
+			if(pe.isAnonymous()) {
+				if(filler.isOWLThing()) {
+					OWLClassExpression domain = rs.getDomain(pe.getNamedProperty());
+					filler = domain;
+				} else if(filler.isAnonymous()){
+					filler = replaceRange(filler, rs);
+				}
+			} else {
+				if(filler.isOWLThing()) {
+					OWLClassExpression range = rs.getRange(pe.asOWLObjectProperty());
+					filler = range;
+				} else if(filler.isAnonymous()){
+					filler = replaceRange(filler, rs);
+				}
 			}
-			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(property, filler);
+			
+			rewrittenClassExpression = df.getOWLObjectSomeValuesFrom(pe, filler);
 		}
 		return rewrittenClassExpression;
 	}
@@ -456,7 +513,8 @@ public class ConceptTransformation {
 		// the context changes if we have a restriction
 		if(description instanceof OWLRestriction) {
 			if(((OWLRestriction) description).isObjectRestriction()){
-				OWLObjectProperty op = ((OWLObjectPropertyExpression)((OWLRestriction) description).getProperty()).asOWLObjectProperty();
+				OWLObjectPropertyExpression pe = (OWLObjectPropertyExpression)((OWLRestriction) description).getProperty();
+				OWLObjectProperty op = pe.getNamedProperty();
 				PropertyContext currentContextCopy = (PropertyContext) currentContext.clone();
 				// if we have an all-restriction, we return it; otherwise we call the child
 				// (if it exists)

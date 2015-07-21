@@ -21,21 +21,45 @@ package org.dllearner.algorithms.qtl.operations.lgg;
 
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 /**
  * 
  * @author Lorenz Bühmann
  *
  */
-public interface LGGGenerator<N> {
+public interface LGGGenerator {
 	
-	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2);
+	/**
+	 * Returns the Least General Generalization of 2 RDF resource trees.
+	 * @param tree1 
+	 * @param tree2
+	 * @return
+	 */
+	RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2);
 	
-	QueryTree<N> getLGG(QueryTree<N> tree1, QueryTree<N> tree2, boolean learnFilters);
+	/**
+	 * Returns the Least General Generalization of 2 RDF resource trees.
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+	RDFResourceTree getLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters);
 	
-	QueryTree<N> getLGG(List<QueryTree<N>> trees);
+	/**
+	 * Returns the Least General Generalization of 2 RDF resource trees.
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+	RDFResourceTree getLGG(List<RDFResourceTree> trees);
 	
-	QueryTree<N> getLGG(List<QueryTree<N>> trees, boolean learnFilters);
+	/**
+	 * Returns the Least General Generalization of 2 RDF resource trees.
+	 * @param tree1
+	 * @param tree2
+	 * @return
+	 */
+	RDFResourceTree getLGG(List<RDFResourceTree> trees, boolean learnFilters);
 
 }

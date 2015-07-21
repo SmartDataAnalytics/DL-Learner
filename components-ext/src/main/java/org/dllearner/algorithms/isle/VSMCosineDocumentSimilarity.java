@@ -17,6 +17,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -26,7 +27,6 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Version;
 
 /**
  * Imagine an N-dimensional space where N is the number of unique words in a pair of texts. Each of the two texts 
@@ -49,7 +49,7 @@ public class VSMCosineDocumentSimilarity {
     private final RealVector v2;
     
     static {
-        TYPE_STORED.setIndexed(true);
+        TYPE_STORED.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
         TYPE_STORED.setTokenized(true);
         TYPE_STORED.setStored(true);
         TYPE_STORED.setStoreTermVectors(true);
@@ -128,8 +128,8 @@ public class VSMCosineDocumentSimilarity {
      */
     private Directory createIndex(String s1, String s2) throws IOException {
         Directory directory = new RAMDirectory();
-        Analyzer analyzer = new SimpleAnalyzer(Version.LUCENE_43);
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+        Analyzer analyzer = new SimpleAnalyzer();
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(directory, iwc);
         addDocument(writer, s1);
         addDocument(writer, s2);
@@ -160,7 +160,7 @@ public class VSMCosineDocumentSimilarity {
     private Map<String, Integer> getTermFrequencies(IndexReader reader, int docId)
             throws IOException {
         Terms vector = reader.getTermVector(docId, CONTENT);
-        TermsEnum termsEnum = vector.iterator(null);
+        TermsEnum termsEnum = vector.iterator();
         Map<String, Integer> frequencies = new HashMap<String, Integer>();
         BytesRef text = null;
         while ((text = termsEnum.next()) != null) {
@@ -186,7 +186,7 @@ public class VSMCosineDocumentSimilarity {
         if (vector == null) {
             return new HashMap<String, Double>();
         }
-        TermsEnum termsEnum = vector.iterator(null);
+        TermsEnum termsEnum = vector.iterator();
         Map<String, Double> weights = new HashMap<String, Double>();
         BytesRef text = null;
         while ((text = termsEnum.next()) != null) {

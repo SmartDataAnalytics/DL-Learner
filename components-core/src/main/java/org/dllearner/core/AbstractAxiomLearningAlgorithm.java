@@ -34,27 +34,19 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
-import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.IntegerEditor;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -96,11 +88,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="", propertyEditorClass=IntegerEditor.class)
+	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="")
 	protected int maxExecutionTimeInSeconds = 10;
-	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="", propertyEditorClass=BooleanEditor.class)
+	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="")
 	protected boolean returnOnlyNewAxioms;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.", propertyEditorClass=IntegerEditor.class)
+	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
 	
@@ -293,7 +285,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		// we have to set up a new query execution factory working on our local model
 		qef = new QueryExecutionFactoryModel(sample);
-		reasoner = new SPARQLReasoner(qef, false);
+		reasoner = new SPARQLReasoner(qef);
 		
 		// get the page size 
 		//TODO put to base class
@@ -303,7 +295,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		sampleQueryTemplate.setIri("p", entityToDescribe.toStringID());
 		Query query = sampleQueryTemplate.asQuery();
 		query.setLimit(pageSize);
-		
 		
 		boolean isEmpty = false;
 		int i = 0;
@@ -725,6 +716,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	private void adaptChunkCount(){
 		
+	}
+	
+	@Autowired
+	public void setKs(SparqlEndpointKS ks) {
+		this.ks = ks;
 	}
 	
 	class OWLFilter extends Filter<OntClass>{

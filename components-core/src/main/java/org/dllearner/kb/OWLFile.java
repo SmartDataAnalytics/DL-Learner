@@ -21,10 +21,10 @@ package org.dllearner.kb;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,18 +32,14 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.URLConfigOption;
-import org.dllearner.reasoning.OWLAPIDIGConverter;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.URLencodeUTF8;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import com.hp.hpl.jena.ontology.OntModelSpec;
 
 /**
  * @author Jens Lehmann
@@ -57,16 +53,27 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     private static Logger logger = Logger.getLogger(OWLFile.class);
 
     // TODO: turn this into a config option
+    @ConfigOption(name = "url", description = "URL pointer to the KB file or Endpoint")
     private URL url;
+    @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
     private String fileName;
+    @ConfigOption(name = "baseDir",  description = "separately specify directory of KB file")
     private String baseDir;
 
+    @ConfigOption(name = "sparql",   description = "SPARQL CONSTRUCT expression to download from Endpoint")
     private String sparql = null;
+    @ConfigOption(name = "defaultGraphURIs", description = "a list of default graph URIs to query from the Endpoint")
     private List<String> defaultGraphURIs = new LinkedList<String>();
+    @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
     private List<String> namedGraphURIs = new LinkedList<String>();
 
+    private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
+    @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
+    		+ " Available reasoners are: \"micro_rule\", \"mini_rule\", \"rdfs\", \"rule\"")
+    private String reasoningString = "";
+
     public static String getName() {
-        return "OWL file";
+    	return "OWL file";
     }
 
     public OWLFile() {
@@ -85,27 +92,12 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         }
     }
 
-    public static Collection<ConfigOption<?>> createConfigOptions() {
-        Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-        URLConfigOption urlOption = new URLConfigOption("url", "URL pointing to the OWL file", null, true, true);
-        urlOption.setRefersToFile(true);
-        options.add(urlOption);
-        return options;
-    }
-
-    /*
-      * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-      */
-    @Override
-    public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-
-    }
-
     /* (non-Javadoc)
       * @see org.dllearner.core.Component#init()
       */
     @Override
     public void init() throws ComponentInitException {
+    	setReasoning(getReasoningString());
         if (sparql != null) {
             StringBuilder sb = new StringBuilder();
 
@@ -129,12 +121,18 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
             }
 
         } else if (url == null) {
-            try {
-//              url = new URL("file://" + baseDir + "/" + fileName);
-          	 url = new URL((baseDir == null ? "file://" : baseDir + "/") + fileName);
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
+        	try {
+        		Path path;
+        		if(fileName.startsWith("/")) {// file name starts with /
+        			path = Paths.get(fileName);
+        		} else {// else relative to base directory
+        			path = Paths.get(baseDir, fileName);
+        		}
+
+        		url = path.normalize().toUri().toURL();
+        	} catch (MalformedURLException e) {
+        		throw new RuntimeException(e);
+        	}
         }
     }
 
@@ -150,16 +148,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         }
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see org.dllearner.core.KnowledgeSource#toDIG()
-    */
-    @Override
-    public String toDIG(URI kbURI) {
-        // TODO: need some handling for cases where the URL was not set
-        return OWLAPIDIGConverter.getTellsString(url, OntologyFormat.RDF_XML, kbURI);
-    }
 
     public URL getURL() {
         return url;
@@ -169,22 +157,14 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         this.url = url;
     }
 
-    /* (non-Javadoc)
-      * @see org.dllearner.core.KnowledgeSource#export(java.io.File, org.dllearner.core.OntologyFormat)
-      */
-    @Override
-    public void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException {
-        // currently no export functions implemented, so we just throw an exception
-        throw new OntologyFormatUnsupportedException("export", format);
-    }
 
     public String getBaseDir() {
         return baseDir;
     }
 
-    public void setBaseDir(String baseDir) {
-        this.baseDir = baseDir;
-    }
+	public void setBaseDir(String baseDir) {
+		this.baseDir = baseDir;
+	}
 
     public URL getUrl() {
         return url;
@@ -207,6 +187,14 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     }
 
     public void setSparql(String sparql) {
+    	setSparql(sparql, true);
+    }
+    
+    public void setSparql(String sparql, boolean autoQuote) {
+    	if (autoQuote) {
+    		// quote IRIs 
+    		sparql = sparql.replaceAll("(?<=^|\\s|\\()((?:([^<(:/?#\\s]*):)(?://([^/?#]*?))?([^?#]*?)(?:\\?([^#]*?))?(?:#(.*?))?)(?=(,|\\.|;|)(\\)|\\s|$))", "<$1>");
+    	}
         this.sparql = sparql;
     }
 
@@ -225,4 +213,49 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void setNamedGraphURIs(List<String> namedGraphURIs) {
         this.namedGraphURIs = namedGraphURIs;
     }
+
+    public void setReasoning(String reasoning) {
+    	switch (reasoning) {
+    	case "micro_rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_MICRO_RULE_INF;
+    		break;
+    	case "mini_rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_MINI_RULE_INF;
+    		break;
+    	case "true":
+    	case "rdfs":
+    		this.reasoning = OntModelSpec.OWL_MEM_RDFS_INF;
+    		break;
+    	case "rule":
+    		this.reasoning = OntModelSpec.OWL_MEM_RULE_INF;
+    		break;
+    	case "false":
+    	case "":
+    		this.reasoning = OntModelSpec.OWL_MEM;
+    		break;
+    	default:
+    		logger.warn("Unknown reasoning type: " + reasoning + ", must be one of [micro_rule, mini_rule, rdfs, rule]");
+    		this.reasoning = OntModelSpec.OWL_MEM;
+    	}
+    }
+
+    public void setReasoning(boolean reasoning) {
+		this.setReasoning(reasoning ? "rdfs" : "");
+	}
+
+    public void setReasoning(OntModelSpec reasoning) {
+    	this.reasoning = reasoning;
+    }
+
+	public OntModelSpec getReasoning() {
+		return this.reasoning;
+	}
+
+	public String getReasoningString() {
+		return reasoningString;
+	}
+
+	public void setReasoningString(String reasoningString) {
+		this.reasoningString = reasoningString;
+	}
 }

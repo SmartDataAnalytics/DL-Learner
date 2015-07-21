@@ -3,12 +3,15 @@
  */
 package org.dllearner.test;
 
+import java.net.URL;
 import java.util.SortedSet;
 
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
+import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -33,10 +36,17 @@ public class SPARQLReasonerTest {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		
 		Model model = RDFDataMgr.loadModel("../examples/swore/swore.rdf");
-        AbstractReasonerComponent rc = new SPARQLReasoner(new LocalModelBasedSparqlEndpointKS(model));
+		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(model, true);
+//		ks.setEnableReasoning(true);
+		ks.init();
+		
+		AbstractReasonerComponent rc = new SPARQLReasoner(ks);
+//		AbstractReasonerComponent rc = new SPARQLReasoner(new SparqlEndpointKS(new SparqlEndpoint(
+//				new URL("http://localhost:8890/sparql"), "http://family-benchmark.owl")));
         rc.init();
         
         OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
+//        OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://www.benchmark.org/family#Female"));
         SortedSet<OWLIndividual> posExamples = rc.getIndividuals(classToDescribe);
         SortedSet<OWLIndividual> negExamples = rc.getIndividuals();
         negExamples.removeAll(posExamples);

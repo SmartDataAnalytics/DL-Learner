@@ -19,6 +19,8 @@
 
 package org.dllearner.algorithms.el;
 
+import org.dllearner.core.ComponentInitException;
+
 public class DisjunctiveHeuristic implements ELHeuristic {
 
 	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
@@ -33,6 +35,13 @@ public class DisjunctiveHeuristic implements ELHeuristic {
 		} else {
 			return -1;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import org.dllearner.algorithms.el.ELDescriptionTreeComparator;
 import org.dllearner.algorithms.el.ELHeuristic;
 import org.dllearner.algorithms.el.SearchTreeNode;
+import org.dllearner.core.ComponentInitException;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -89,7 +90,7 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	
 	public double getNodeScore(SearchTreeNode node){
 		double score = node.getAccuracy();
-		OWLClassExpression d = node.getDescriptionTree().transformToDescription();
+		OWLClassExpression d = node.getDescriptionTree().transformToClassExpression();
 		for (RelevanceMetric metric : relevanceMetrics) {
 			score += weightings.getWeight(metric.getClass()) * metric.getRelevance(classToDescribe, d);
 		}
@@ -120,6 +121,13 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 			}
 			
 		}		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
 	}
 
 }

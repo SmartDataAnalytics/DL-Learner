@@ -49,6 +49,7 @@ import org.dllearner.utilities.datastructures.Maps;
  * @author Jens Lehmann
  * 
  */
+@Deprecated
 public final class ComponentManager {
 
 	private static Logger logger = Logger
@@ -60,7 +61,7 @@ public final class ComponentManager {
 	private static Collection<Class<? extends AbstractComponent>> components;
 	private static Collection<Class<? extends AbstractKnowledgeSource>> knowledgeSources;
 	private static Collection<Class<? extends AbstractReasonerComponent>> reasonerComponents;
-	private static Collection<Class<? extends AbstractLearningProblem>> learningProblems;
+	private static Collection<Class<? extends AbstractClassExpressionLearningProblem>> learningProblems;
 	private static Collection<Class<? extends AbstractCELA>> learningAlgorithms;
 	// you can either use the components.ini file or directly specify the classes to use
 	@Deprecated
@@ -74,7 +75,6 @@ public final class ComponentManager {
 //reasoners
             "org.dllearner.reasoning.OWLAPIReasoner",
 //            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",  // added by Josue
-            "org.dllearner.reasoning.FastInstanceChecker",
 //learning problems
             "org.dllearner.learningproblems.PosNegLPStandard",
 //            "org.dllearner.learningproblems.FuzzyPosNegLPStandard", // added by Josue
@@ -87,8 +87,8 @@ public final class ComponentManager {
 //            "org.dllearner.algorithms.ocel.ROLearner2",
             "org.dllearner.algorithms.ocel.OCEL",
 //            "org.dllearner.algorithms.gp.GP",
-            "org.dllearner.algorithms.elcopy.ELLearningAlgorithm",
-            "org.dllearner.algorithms.elcopy.ELLearningAlgorithmDisjunctive",
+            "org.dllearner.algorithms.el.ELLearningAlgorithm",
+            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
             "org.dllearner.algorithms.celoe.CELOE",
 //            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE" //added by Josue
      } ));
@@ -99,8 +99,8 @@ public final class ComponentManager {
 	private static Map<Class<? extends AbstractComponent>, String> componentNames;
 	private static Map<Class<? extends AbstractComponent>, List<ConfigOption<?>>> componentOptions;
 	private static Map<Class<? extends AbstractComponent>, Map<String, ConfigOption<?>>> componentOptionsByName;
-	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractLearningProblem>>> algorithmProblemsMapping;
-	private static Map<Class<? extends AbstractLearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
+	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractClassExpressionLearningProblem>>> algorithmProblemsMapping;
+	private static Map<Class<? extends AbstractClassExpressionLearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
 	
 	// list of default values of config options
 //	private static Map<ConfigOption<?>,Object> configOptionDefaults;
@@ -130,9 +130,9 @@ public final class ComponentManager {
 		components = new TreeSet<Class<? extends AbstractComponent>>(classComparator);
 		knowledgeSources = new TreeSet<Class<? extends AbstractKnowledgeSource>>(classComparator);
 		reasonerComponents = new TreeSet<Class<? extends AbstractReasonerComponent>>(classComparator);
-		learningProblems = new TreeSet<Class<? extends AbstractLearningProblem>>(classComparator);
+		learningProblems = new TreeSet<Class<? extends AbstractClassExpressionLearningProblem>>(classComparator);
 		learningAlgorithms = new TreeSet<Class<? extends AbstractCELA>>(classComparator);
-		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractLearningProblem>>>(
+		algorithmProblemsMapping = new TreeMap<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractClassExpressionLearningProblem>>>(
 				classComparator);		
 
 		// create classes from strings
@@ -146,12 +146,12 @@ public final class ComponentManager {
 					knowledgeSources.add((Class<? extends AbstractKnowledgeSource>) component);
 				} else if (AbstractReasonerComponent.class.isAssignableFrom(component)) {
 					reasonerComponents.add((Class<? extends AbstractReasonerComponent>) component);
-				} else if (AbstractLearningProblem.class.isAssignableFrom(component)) {
-					learningProblems.add((Class<? extends AbstractLearningProblem>) component);
+				} else if (AbstractClassExpressionLearningProblem.class.isAssignableFrom(component)) {
+					learningProblems.add((Class<? extends AbstractClassExpressionLearningProblem>) component);
 				} else if (AbstractCELA.class.isAssignableFrom(component)) {
 					Class<? extends AbstractCELA> learningAlgorithmClass = (Class<? extends AbstractCELA>) component;
 					learningAlgorithms.add(learningAlgorithmClass);
-					Collection<Class<? extends AbstractLearningProblem>> problems = (Collection<Class<? extends AbstractLearningProblem>>) invokeStaticMethod(
+					Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = (Collection<Class<? extends AbstractClassExpressionLearningProblem>>) invokeStaticMethod(
 							learningAlgorithmClass, "supportedLearningProblems");
 					algorithmProblemsMapping.put(learningAlgorithmClass, problems);
 				}
@@ -414,7 +414,7 @@ public final class ComponentManager {
 	 * @param reasoner A reasoning service object.
 	 * @return A learning problem component.
 	 */
-	public <T extends AbstractLearningProblem> T learningProblem(Class<T> lpClass, AbstractReasonerComponent reasoner) {
+	public <T extends AbstractClassExpressionLearningProblem> T learningProblem(Class<T> lpClass, AbstractReasonerComponent reasoner) {
 		if (!learningProblems.contains(lpClass)) {
 			System.err.println("Warning: learning problem " + lpClass
 					+ " is not a registered learning problem component.");
@@ -437,7 +437,7 @@ public final class ComponentManager {
 	 * @throws LearningProblemUnsupportedException Thrown when the learning problem and
 	 * the learning algorithm are not compatible.
 	 */
-	public <T extends AbstractCELA> T learningAlgorithm(Class<T> laClass, AbstractLearningProblem lp, AbstractReasonerComponent rs) throws LearningProblemUnsupportedException {
+	public <T extends AbstractCELA> T learningAlgorithm(Class<T> laClass, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs) throws LearningProblemUnsupportedException {
 		if (!learningAlgorithms.contains(laClass)) {
 			System.err.println("Warning: learning algorithm " + laClass
 					+ " is not a registered learning algorithm component.");
@@ -445,8 +445,8 @@ public final class ComponentManager {
 
 		// find the right constructor: use the one that is registered and
 		// has the class of the learning problem as a subclass
-		Class<? extends AbstractLearningProblem> constructorArgument = null;
-		for (Class<? extends AbstractLearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
+		Class<? extends AbstractClassExpressionLearningProblem> constructorArgument = null;
+		for (Class<? extends AbstractClassExpressionLearningProblem> problemClass : algorithmProblemsMapping.get(laClass)) {
 			if (problemClass.isAssignableFrom(lp.getClass())) {
 				constructorArgument = problemClass;
 			}
@@ -647,8 +647,8 @@ public final class ComponentManager {
 	 * @return the components A list of learning problem classes available in this
 	 * instance of <code>ComponentManager</code>.
 	 */		
-	public List<Class<? extends AbstractLearningProblem>> getLearningProblems() {
-		return new LinkedList<Class<? extends AbstractLearningProblem>>(learningProblems);
+	public List<Class<? extends AbstractClassExpressionLearningProblem>> getLearningProblems() {
+		return new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>(learningProblems);
 	}
 
 	/**
@@ -656,10 +656,10 @@ public final class ComponentManager {
 	 * @param learningProblem A learning problem type.
 	 * @return The set of learning algorithms applicable for this learning problem.
 	 */
-	public List<Class<? extends AbstractCELA>> getApplicableLearningAlgorithms(Class<? extends AbstractLearningProblem> learningProblem) {
+	public List<Class<? extends AbstractCELA>> getApplicableLearningAlgorithms(Class<? extends AbstractClassExpressionLearningProblem> learningProblem) {
 		List<Class<? extends AbstractCELA>> algorithms = new LinkedList<Class<? extends AbstractCELA>>();
-		for(Entry<Class<? extends AbstractLearningProblem>,Collection<Class<? extends AbstractCELA>>> entry : problemAlgorithmsMapping.entrySet()) {
-			Class<? extends AbstractLearningProblem> prob = entry.getKey();
+		for(Entry<Class<? extends AbstractClassExpressionLearningProblem>,Collection<Class<? extends AbstractCELA>>> entry : problemAlgorithmsMapping.entrySet()) {
+			Class<? extends AbstractClassExpressionLearningProblem> prob = entry.getKey();
 			if(prob.isAssignableFrom(learningProblem)) {
 				algorithms.addAll(entry.getValue());
 			}

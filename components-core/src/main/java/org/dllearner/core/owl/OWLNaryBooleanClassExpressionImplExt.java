@@ -110,7 +110,7 @@ public abstract class OWLNaryBooleanClassExpressionImplExt extends
             if (!(obj instanceof OWLNaryBooleanClassExpression)) {
                 return false;
             }
-            return ((OWLNaryBooleanClassExpression) obj).getOperands().equals(
+            return ((OWLNaryBooleanClassExpression) obj).getOperandsAsList().equals(
                     operands);
         }
         return false;

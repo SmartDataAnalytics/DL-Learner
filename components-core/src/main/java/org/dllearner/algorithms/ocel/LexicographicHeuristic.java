@@ -19,6 +19,8 @@
 
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.ComponentInitException;
+
 
 public class LexicographicHeuristic implements ExampleBasedHeuristic {
 
@@ -105,6 +107,14 @@ public class LexicographicHeuristic implements ExampleBasedHeuristic {
 	@Override	
 	public boolean equals(Object o) {
 		return (o instanceof LexicographicHeuristic);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
 	}
 	
 }

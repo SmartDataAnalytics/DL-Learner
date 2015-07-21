@@ -25,17 +25,18 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -44,7 +45,7 @@ import com.google.common.collect.Sets.SetView;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends AbstractLearningProblem {
+public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	private static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
@@ -53,7 +54,7 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 
     @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
-    @org.dllearner.core.config.ConfigOption(name = "useMultiInstanceChecks", description = "Use The Multi Instance Checks", defaultValue = "UseMultiInstanceChecks.TWOCHECKS", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    @org.dllearner.core.config.ConfigOption(name = "useMultiInstanceChecks", description = "Use The Multi Instance Checks", defaultValue = "UseMultiInstanceChecks.TWOCHECKS", required = false)
     private UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
     @org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
     private double percentPerLengthUnit = 0.05;
@@ -136,7 +137,8 @@ public abstract class PosNegLP extends AbstractLearningProblem {
 		
 		allExamples = Helper.union(positiveExamples, negativeExamples);
 		
-		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples)) {
+		// sanity check whether examples are contained in KB
+		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
             Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
             double percentage = (double) (missing.size()/allExamples.size());
             percentage = Math.round(percentage * 1000) / 1000;
@@ -193,6 +195,4 @@ public abstract class PosNegLP extends AbstractLearningProblem {
     public void setUseMultiInstanceChecks(UseMultiInstanceChecks useMultiInstanceChecks) {
         this.useMultiInstanceChecks = useMultiInstanceChecks;
     }
-
-
 }

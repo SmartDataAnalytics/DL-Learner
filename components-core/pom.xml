@@ -10,8 +10,113 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 	</parent>
+	
+	<profiles>
+	<profile>
+		<id>release</id>
+		<build>
+			<plugins>
+				<!--Surefire - for JUnits -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<!-- Uncomment this when the junits are independent of a runtime directory -->
+						<!--<includes> -->
+						<!--<include>org/dllearner/test/junit/*</include> -->
+						<!--</includes> -->
+						<excludes>
+							<exclude>org/dllearner/test/*</exclude>
+							<exclude>org/dllearner/test/junit/TestOntologies.java</exclude>
+							<exclude>org/dllearner/test/junit/PropertyLearningTest.java</exclude>
+							<exclude>org/dllearner/test/junit/DisjointClassesLearningTest.java</exclude>
+							<!--This line excludes inner classes -->
+							<exclude>**/*$*</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<!-- Jar the tests up into a separate jar so other components tests' 
+					can leverage them -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>test-jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<!-- <plugin> -->
+				<!-- <groupId>com.mycila</groupId> -->
+				<!-- <artifactId>license-maven-plugin</artifactId> -->
+				<!-- <configuration> -->
+				<!-- <header>src/etc/header.txt</header> -->
+				<!-- </configuration> -->
+				<!-- </plugin> -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>1.8</version>
+					<configuration>
+						<licenseName>gpl_v3</licenseName>
+						<organizationName>AKSW</organizationName>
+						<inceptionYear>2007</inceptionYear>
+						<roots>
+							<root>src/main/java</root>
+							<root>src/test/java</root>
+						</roots>
+						<addSvnKeyWords>true</addSvnKeyWords>
+					</configuration>
+					<executions>
+						<execution>
+							<id>download-licenses</id>
+							<goals>
+								<goal>download-licenses</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<header></header>
+						<show>public</show>
+						<nohelp>true</nohelp>
+						<destDir>doc/javadoc</destDir>
+						<doctitle>DL-Learner Javadoc</doctitle>
+						<author>true</author>
+						<nodeprecated>false</nodeprecated>
+						<nodeprecatedlist>false</nodeprecatedlist>
+						<noindex>false</noindex>
+						<nonavbar>false</nonavbar>
+						<notree>false</notree>
+						<overview>src/etc/overview.html</overview>
+						<source>${compiler.version}</source>
+						<sourcepath>src/main/java</sourcepath>
+						<splitindex>true</splitindex>
+						<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
+						<use>true</use>
+						<version>true</version>
+						<linksource>true</linksource>
+						<bottom>&lt;img style='float:right'
+							src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
+							border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
+							under the terms of the GNU General Public License.&lt;br
+							/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+						<encoding>ISO-8859-1</encoding>
+						<windowtitle>DL-Learner Javadoc</windowtitle>
+						<additionalparam>-Xdoclint:none</additionalparam>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+</profiles>
 
 	<build>
 		<plugins>
@@ -47,67 +152,6 @@
 					</execution>
 				</executions>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>com.mycila</groupId> -->
-<!-- 				<artifactId>license-maven-plugin</artifactId> -->
-<!-- 				<configuration> -->
-<!-- 					<header>src/etc/header.txt</header> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>1.8</version>
-				<configuration>
-					<licenseName>gpl_v3</licenseName>
-					<organizationName>AKSW</organizationName>
-					<inceptionYear>2007</inceptionYear>
-					 <roots>
-		                <root>src/main/java</root>
-		                <root>src/test/java</root>
-		              </roots>
-		              <addSvnKeyWords>true</addSvnKeyWords>
-				</configuration>
-				<executions>
-					<execution>
-						<id>download-licenses</id>
-						<goals>
-							<goal>download-licenses</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<header></header>
-					<show>public</show>
-					<nohelp>true</nohelp>
-					<destDir>doc/javadoc</destDir>
-					<doctitle>DL-Learner Javadoc</doctitle>
-					<author>true</author>
-					<nodeprecated>false</nodeprecated>
-					<nodeprecatedlist>false</nodeprecatedlist>
-					<noindex>false</noindex>
-					<nonavbar>false</nonavbar>
-					<notree>false</notree>
-					<overview>src/etc/overview.html</overview>
-					<source>${compiler.version}</source>
-					<sourcepath>src/main/java</sourcepath>
-					<splitindex>true</splitindex>
-					<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
-					<use>true</use>
-					<version>true</version>
-					<linksource>true</linksource>
-					<bottom>&lt;img style='float:right' src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png' border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced under the terms of the GNU General Public License.&lt;br /&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
-					<encoding>ISO-8859-1</encoding>
-					<windowtitle>DL-Learner Javadoc</windowtitle>
-					<additionalparam>-Xdoclint:none</additionalparam>
-				</configuration>
-			</plugin>
-
-
 		</plugins>
 	</build>
 
@@ -116,12 +160,12 @@
 			<groupId>org.ini4j</groupId>
 			<artifactId>ini4j</artifactId>
 		</dependency>
-    <!--
+    
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
-    -->
+    
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
@@ -152,10 +196,10 @@
 		</dependency>
     -->
 
-        <dependency>
+      <!--   <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
-        </dependency>
+        </dependency> -->
     <!-- 
          <dependency>
             <groupId>org.apache.jena</groupId>
@@ -318,6 +362,12 @@
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
 				<artifactId>jena-sparql-api-core</artifactId>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-ext</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
@@ -352,5 +402,15 @@
 				<artifactId>weka-stable</artifactId>
 				<version>3.6.9</version>
 			</dependency> -->
+			<dependency>
+				<groupId>org.aksw</groupId>
+				<artifactId>semlibsvm</artifactId>
+			</dependency>
+
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.9-RC1</version>
+			</dependency>
 	</dependencies>
 </project>

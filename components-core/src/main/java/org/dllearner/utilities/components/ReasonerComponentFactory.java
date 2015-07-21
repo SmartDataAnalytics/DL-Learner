@@ -25,10 +25,10 @@ import java.net.URL;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.ReasonerType;
 
 /**
@@ -47,31 +47,38 @@ public class ReasonerComponentFactory {
 	 * @return A reasoner component.
 	 */
 	public static AbstractReasonerComponent getReasonerComponent(String ontologyFile, ReasonerType type) {
-		ComponentManager cm = ComponentManager.getInstance();
 		AbstractReasonerComponent rc = null;
 
 		try {
 			// knowledge source
-			OWLFile ks = cm.knowledgeSource(OWLFile.class);
+			OWLFile ks = new OWLFile();
 			URL fileURL = new File(ontologyFile).toURI().toURL();
 			ks.setURL(fileURL);
 			ks.init();
 
 			// reasoner component
 			switch (type) {
-			case FAST_INSTANCE_CHECKER:
-				rc = cm.reasoner(FastInstanceChecker.class, ks);
+			case CLOSED_WORLD_REASONER:
+				rc = new ClosedWorldReasoner(ks);
 				break;
 			case OWLAPI_FACT:
-				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).setReasonerTypeString("fact");
+				rc = new OWLAPIReasoner(ks);
+				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.JFACT);
 				break;
 			case OWLAPI_PELLET:
-				rc = cm.reasoner(OWLAPIReasoner.class, ks);
-				((OWLAPIReasoner) rc).setReasonerTypeString("pellet");
+				rc = new OWLAPIReasoner(ks);
 				break;
+			//case DIG:
+			//case FAST_RETRIEVAL:
+			//case KAON2:
+			//case OWLAPI_FUZZY:
+			case OWLAPI_HERMIT:
+				rc = new OWLAPIReasoner(ks);
+				((OWLAPIReasoner) rc).setReasonerImplementation(ReasonerImplementation.HERMIT);
+				break;
+			//case SPARQL_NATIVE:
 			default:
-				rc = cm.reasoner(FastInstanceChecker.class, ks);
+				rc = new ClosedWorldReasoner(ks);
 				break;
 			}
 			rc.init();

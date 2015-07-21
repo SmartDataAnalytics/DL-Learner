@@ -18,7 +18,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.dllearner.algorithms.isle.index.Index;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -58,8 +57,8 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 	}
 	
 	public Index buildIndex() throws Exception{
-		Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_43, analyzer);
+		Analyzer analyzer = new StandardAnalyzer();
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
 		System.out.println( "Creating index ..." );
 

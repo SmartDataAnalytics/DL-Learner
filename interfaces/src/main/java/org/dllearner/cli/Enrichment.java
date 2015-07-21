@@ -77,6 +77,7 @@ import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
+import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
@@ -91,7 +92,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
@@ -268,6 +268,12 @@ public class Enrichment {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.omitExistingAxioms = omitExistingAxioms;
 
+		try {
+			ks.init();
+		} catch (ComponentInitException e1) {
+			e1.printStackTrace();
+		}
+		
 		if(ks.isRemote()){
 			try {
 				cacheDir = "cache" + File.separator + URLEncoder.encode(ks.getEndpoint().getURL().toString(), "UTF-8");
@@ -309,7 +315,7 @@ public class Enrichment {
 	}
 
 	public void start() throws ComponentInitException, IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, LearningProblemUnsupportedException, MalformedURLException {
-		reasoner = new SPARQLReasoner(ks, cacheDir);
+		reasoner = new SPARQLReasoner(ks);
 		reasoner.init();
 
 		if(useInference){
@@ -557,9 +563,9 @@ public class Enrichment {
         System.out.println("done in " + runTime + " ms");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
-        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = new LinkedList<EvaluatedAxiom<OWLAxiom>>();
-        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
         		axiom = dataFactory.getOWLEquivalentClassesAxiom(nc, learnedDescription.getDescription());
@@ -1139,6 +1145,7 @@ public class Enrichment {
 					String cacheDir = System.getProperty("java.io.tmpdir") + File.separator + "dl-learner";
 					ks = new SparqlEndpointKS(se, cacheDir);
 				}
+				ks.init();
 			} catch (URISyntaxException e2) {
 				e2.printStackTrace();
 			}

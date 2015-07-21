@@ -27,42 +27,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
-import org.dllearner.algorithms.celoe.CELOE;
-import org.dllearner.algorithms.qtl.QTL2;
+import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
+import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
+import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
+//import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
-import org.dllearner.confparser3.ConfParserConfiguration;
-import org.dllearner.confparser3.ParseException;
+import org.dllearner.confparser.ConfParserConfiguration;
+import org.dllearner.confparser.ParseException;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.utilities.Files;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
 
 /**
  * 
@@ -71,6 +72,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
 public class CLI {
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
@@ -83,19 +85,22 @@ public class CLI {
 	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
+	@ConfigOption(name = "writeSpringConfiguration", defaultValue = "false", description = "Write the Spring XML configuration to disk corresponding to the .conf file")
 	private boolean writeSpringConfiguration = false;
+	@ConfigOption(name = "performCrossValidation", defaultValue = "false", description = "Run in Cross-Validation mode")
 	private boolean performCrossValidation = false;
+	@ConfigOption(name = "nrOfFolds", defaultValue = "10", description = "Number of folds in Cross-Validation mode")
 	private int nrOfFolds = 10;
-	private int noOfRuns = 1;
-	
+	@ConfigOption(name = "logLevel", defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
+			+ "Note, to see results, at least \"INFO\" is required.")
 	private String logLevel = "INFO";
 
-	private AbstractLearningProblem lp;
+	private AbstractClassExpressionLearningProblem lp;
 
 	private AbstractReasonerComponent rs;
 
 	private AbstractCELA la;
-
+	
 
 	public CLI() {
 		
@@ -113,14 +118,14 @@ public class CLI {
     		Resource confFileR = new FileSystemResource(confFile);
     		List<Resource> springConfigResources = new ArrayList<Resource>();
             configuration = new ConfParserConfiguration(confFileR);
-
+            
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
             context =  builder.buildApplicationContext(configuration,springConfigResources);	
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
             rs = getMainReasonerComponent();
     		la = context.getBean(AbstractCELA.class);
-    		lp = context.getBean(AbstractLearningProblem.class);
+    		lp = context.getBean(AbstractClassExpressionLearningProblem.class);
     	}
 	}
 	
@@ -152,19 +157,44 @@ public class CLI {
 		
 		rs = getMainReasonerComponent();
 		
-		la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
 		
 			if (performCrossValidation) {
+				la = context.getBeansOfType(AbstractCELA.class).entrySet().iterator().next().getValue();
+				
 				PosNegLP lp = context.getBean(PosNegLP.class);
-				if(la instanceof QTL2){
-					new SPARQLCrossValidation((QTL2) la,lp,rs,nrOfFolds,false);	
-				} else {
-					new CrossValidation(la,lp,rs,nrOfFolds,false);	
+//				if(la instanceof QTL2){
+//					//new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);	
+//				} 
+				if((la instanceof TDTClassifier)||(la instanceof DSTTDTClassifier) ){
+					
+					//TODO:  verify if the quality of the code can be improved
+					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
+					ArrayList<OWLClass> concepts = new ArrayList<OWLClass>(rs.getClasses());
+					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
+					
+					ArrayList<OWLObjectProperty> roles = new ArrayList<OWLObjectProperty>(rs.getAtomicRolesList());
+					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
+					((DLTreesRefinementOperator) op).setAllRoles(roles);
+					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
+					
+					if (la instanceof TDTClassifier)
+					    ((TDTClassifier)la).setOperator(op);
+					else
+						((DSTTDTClassifier)la).setOperator(op);
+					new CrossValidation2(la,lp,rs,nrOfFolds,false);
+				}else {
+					new CrossValidation2(la,lp,rs,nrOfFolds,false);	
 				}
 			} else {
-				lp = context.getBean(AbstractLearningProblem.class);
+				if(context.getBean(AbstractLearningProblem.class) instanceof AbstractClassExpressionLearningProblem) {
+					lp = context.getBean(AbstractClassExpressionLearningProblem.class);
+				} else {
+					
+				}
+				
+				Map<String, LearningAlgorithm> learningAlgs = context.getBeansOfType(LearningAlgorithm.class);
 //				knowledgeSource = context.getBeansOfType(Knowledge1Source.class).entrySet().iterator().next().getValue();
-				for(Entry<String, LearningAlgorithm> entry : context.getBeansOfType(LearningAlgorithm.class).entrySet()){
+				for(Entry<String, LearningAlgorithm> entry : learningAlgs.entrySet()){
 					algorithm = entry.getValue();
 					logger.info("Running algorithm instance \"" + entry.getKey() + "\" (" + algorithm.getClass().getSimpleName() + ")");
 					algorithm.start();
@@ -182,7 +212,7 @@ public class CLI {
 				String key = entry.getKey();
 				AbstractReasonerComponent value = entry.getValue();
 
-				if (value instanceof FastInstanceChecker) {
+				if (value instanceof ClosedWorldReasoner) {
 					rc = value;
 				}
 
@@ -205,7 +235,7 @@ public class CLI {
 	/**
 	 * @return the lp
 	 */
-	public AbstractLearningProblem getLearningProblem() {
+	public AbstractClassExpressionLearningProblem getLearningProblem() {
 		return lp;
 	}
 	
@@ -270,10 +300,8 @@ public class CLI {
             cli.setContext(context);
             cli.setConfFile(file);
             cli.run();
-        } catch (Exception e) {e.printStackTrace();
+        } catch (Exception e) {
             String stacktraceFileName = "log/error.log";
-
-//            e.printStackTrace();
             
             //Find the primary cause of the exception.
             Throwable primaryCause = findPrimaryCause(e);
@@ -361,13 +389,4 @@ public class CLI {
 		return knowledgeSource;
 	}
 	
-	
-	public int getNoOfRuns() {
-		return noOfRuns;
-	}
-
-	public void setNoOfRuns(int noOfRuns) {
-		this.noOfRuns = noOfRuns;
-	}
-
 }

@@ -3,16 +3,17 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -22,7 +23,12 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataHasValue;
 import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
 import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
+import org.semanticweb.owlapi.model.OWLFacetRestriction;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -34,14 +40,10 @@ import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
 import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * @author Lorenz Buehmann
@@ -92,7 +94,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			operands.set(i, operands.get(i).accept(this));
 		}
 		
-		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
@@ -112,11 +114,40 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			}
 		}
 		
+		// combine facet restrictions with same p
+		Multimap<OWLDataPropertyExpression, OWLDataSomeValuesFrom> map = HashMultimap.create();
+		for (OWLClassExpression operand : newOperands) {
+			if(operand instanceof OWLDataSomeValuesFrom) {
+				map.put(((OWLDataSomeValuesFrom) operand).getProperty(), (OWLDataSomeValuesFrom) operand);
+			}
+		}
+		for (Entry<OWLDataPropertyExpression, Collection<OWLDataSomeValuesFrom>> entry : map.asMap().entrySet()) {
+			OWLDataPropertyExpression dp = entry.getKey();
+			Collection<OWLDataSomeValuesFrom> datapropertyRestrictions = entry.getValue();
+			
+			if(datapropertyRestrictions.size() > 1) {
+				Set<OWLFacetRestriction> facetRestrictions = new TreeSet<OWLFacetRestriction>();
+				for (OWLDataSomeValuesFrom restriction : datapropertyRestrictions) {
+					OWLDataRange dataRange = restriction.getFiller();
+					if(dataRange instanceof OWLDatatypeRestriction) {
+						facetRestrictions.addAll(((OWLDatatypeRestriction) dataRange).getFacetRestrictions());
+					}
+				}
+				if(facetRestrictions.size() > 1) {
+					OWLDatatype datatype = ((OWLDatatypeRestriction)datapropertyRestrictions.iterator().next().getFiller()).getDatatype();
+					OWLDataRange newDataRange = df.getOWLDatatypeRestriction(datatype, facetRestrictions);
+					OWLClassExpression newRestriction = df.getOWLDataSomeValuesFrom(dp, newDataRange);
+					newOperands.removeAll(datapropertyRestrictions);
+					newOperands.add(newRestriction);
+				}
+			}
+		}
+		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		return df.getOWLObjectIntersectionOf(newOperands);
+		return df.getOWLObjectIntersectionOf(new HashSet<>(newOperands));
 	}
 
 	/**
@@ -138,7 +169,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
-		Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+		List<OWLClassExpression> newOperands = new ArrayList<OWLClassExpression>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
@@ -165,10 +196,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		
-		
-		
-		return df.getOWLObjectUnionOf(newOperands);
+		return df.getOWLObjectUnionOf(new HashSet<>(newOperands));
 	}
 
 	/* (non-Javadoc)

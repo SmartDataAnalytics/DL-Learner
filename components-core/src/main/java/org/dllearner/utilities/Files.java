@@ -37,12 +37,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Charsets;
+
 
 /**
  * @author Jens Lehmann
  * 
  */
 public class Files {
+
+	private static final Logger logger = LoggerFactory.getLogger(Files.class);
+	
 	public static boolean debug = false;
 
 	/**
@@ -165,14 +173,12 @@ public class Files {
 	 *            Content of the file.
 	 */
 	public static void createFile(File file, String content) {
-		try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))){
-			os.write(content.getBytes());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			if(debug){System.exit(0);}
+		File parentFile = file.getParentFile();
+		if (parentFile != null) { parentFile.mkdirs(); }
+		try {
+			com.google.common.io.Files.write(content, file, Charsets.UTF_8);
 		} catch (IOException e) {
-			e.printStackTrace();
-			if(debug){System.exit(0);}
+			logger.error("Failed to write content to file " + file, e);
 		}
 	}
 
@@ -186,15 +192,9 @@ public class Files {
 	 */
 	public static void appendToFile(File file, String content) {
 		try {
-			FileOutputStream fos = new FileOutputStream(file, true);
-			fos.write(content.getBytes());
-			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			if(debug){System.exit(0);}
+			com.google.common.io.Files.append(content, file, Charsets.UTF_8);
 		} catch (IOException e) {
-			e.printStackTrace();
-			if(debug){System.exit(0);}
+			logger.error("Failed to append content to file " + file, e);
 		}
 	}
 	

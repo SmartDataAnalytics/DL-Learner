@@ -4,18 +4,12 @@ public class NegativeTreeCoverageExecption extends QTLException {
 	
 	private static final long serialVersionUID = -7681044405109324652L;
 	
+	private static final String MESSAGE = "The negative query tree [%s] was covered.";
+	
 	private String coveredNegativeExample;
 
-	public NegativeTreeCoverageExecption() {
-		super();
-	}
-
 	public NegativeTreeCoverageExecption(String coveredNegativeExample) {
-		this.coveredNegativeExample = coveredNegativeExample;
-	}
-	
-	public NegativeTreeCoverageExecption(String coveredNegativeExample, String message) {
-		super(message);
+		super(String.format(MESSAGE, coveredNegativeExample));
 		this.coveredNegativeExample = coveredNegativeExample;
 	}
 	

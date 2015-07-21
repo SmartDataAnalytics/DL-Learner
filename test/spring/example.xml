@@ -5,7 +5,7 @@
 
 	<bean class="org.dllearner.kb.SparqlEndpointKS" id="ks"
 		init-method="init">
-		<property name="url" value="http://live.dbpedia.org/sparql" />
+		<property name="url" value="http://dbpedia.org/sparql" />
 		<property name="defaultGraphURIs">
 			<list>
 				<value>http://dbpedia.org</value>

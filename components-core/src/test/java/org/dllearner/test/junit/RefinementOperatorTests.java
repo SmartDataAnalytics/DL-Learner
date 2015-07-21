@@ -29,10 +29,9 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -130,7 +129,7 @@ public class RefinementOperatorTests {
 			System.out.println(result);
 		}
 			
-		int desiredResultSize = 116;
+		int desiredResultSize = 107;
 		if(results.size() != desiredResultSize) {
 			System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 		}
@@ -144,9 +143,8 @@ public class RefinementOperatorTests {
 		
 		// create learning algorithm in order to test under similar conditions than 
 		// within a learning algorithm
-		ComponentManager cm = ComponentManager.getInstance();
-		AbstractLearningProblem lp = cm.learningProblem(PosNegLPStandard.class, reasoner);
-		OCEL la = cm.learningAlgorithm(OCEL.class, lp, reasoner);
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		OCEL la = new OCEL(lp, reasoner);
 		
 		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ZERO")));
@@ -267,15 +265,18 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDownTestPellet() throws ComponentInitException {
+		ToStringRenderer.getInstance().setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 		Logger.getRootLogger().setLevel(Level.TRACE);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
 		reasoner.init();
 		
 		RhoDRDown op = new RhoDRDown();
 		op.setReasoner(reasoner);
+		op.setUseSomeOnly(false);
 		op.setSubHierarchy(reasoner.getClassHierarchy());
 		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+		op.setUseSomeOnly(false);
 		op.init();
 		
 		OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
@@ -284,18 +285,18 @@ public class RefinementOperatorTests {
 			System.out.println(refinement);
 		}		
 		// refinements should be as follows:
-		//		(male AND (NOT male)) 
-		//		(male AND (female OR female)) 
-		//		(female AND male AND male)
-		//		(male AND ALL hasChild.TOP) 
-		//		(male AND (female OR male)) 
-		//		(male AND male AND male) 
-		//		(male AND (NOT female)) 
-		//		(male AND EXISTS hasChild.TOP) 
+		//	male ⊓ male
+		//	male ⊓ (male   ⊔ male)
+		//	male ⊓ (female ⊔ male)
+		//	male ⊓ (female ⊔ female)
+		//	male ⊓ (¬male)
+		//	male ⊓ (¬female)
+		//	male ⊓ (∃ hasChild.⊤)
+		//	male ⊓ (∀ hasChild.⊤)
 //		System.out.println(rs);
 //		System.out.println("most general properties: " + rs.getMostGeneralProperties());
 		System.out.println(reasoner.getObjectPropertyHierarchy());
-		assertTrue(refinements.size()==8);		
+		assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size()==8);		
 	}
 	
 	private String uri(String name) {

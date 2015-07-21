@@ -19,12 +19,9 @@
 
 package org.dllearner.kb;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Collections;
 
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.OntologyFormat;
 import org.dllearner.core.options.ConfigEntry;
 import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
@@ -86,18 +83,7 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 	{
 		
 	}
-	
-	@Override
-	public void export(File file, OntologyFormat format)
-	{
-		
-	}
-	
-	@Override
-	public String toDIG(URI kbURI)
-	{
-		return null;
-	}
+
 
     /**
      * Get the OntologyToByteConverter associated with this object.

@@ -13,7 +13,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
@@ -67,7 +67,7 @@ public class SomeOnlyReasonerTest {
         
         ks.init();
         
-        AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+        AbstractReasonerComponent rc = new ClosedWorldReasoner(ks);
 //        ((FastInstanceChecker)rc).setForAllSemantics(ForallSemantics.SomeOnly);
         rc.init();
        

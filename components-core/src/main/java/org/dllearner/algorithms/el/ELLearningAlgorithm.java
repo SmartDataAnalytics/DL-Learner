@@ -19,6 +19,7 @@
 
 package org.dllearner.algorithms.el;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,26 +29,30 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.learningproblems.ScoreTwoValued;
 import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -65,18 +70,12 @@ import com.jamonapi.MonitorFactory;
 public class ELLearningAlgorithm extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithm.class);	
-//	private ELLearningAlgorithmConfigurator configurator;
 	
-	private ELDown3 operator;
-	
-	private boolean isRunning = false;
-	private boolean stop = false;
-	
+	@ConfigOption(name="treeSearchTimeSeconds",description="Specifies how long the algorithm should search for a partial solution (a tree).",defaultValue="10.0")
 	private double treeSearchTimeSeconds = 10.0;
 	private long treeStartTime;
-	// "instanceBasedDisjoints", "Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator."
 	
-	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.", propertyEditorClass=BooleanEditor.class)
+	@ConfigOption(name="instanceBasedDisjoints", required=false, defaultValue="true", description="Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.")
 	private boolean instanceBasedDisjoints = true;
 	
 	@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
@@ -85,64 +84,61 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	
-	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private OWLClassExpression startClass;
 	
+	@ConfigOption(name = "writeSearchTree", defaultValue="false", description="specifies whether to write a search tree")
+	private boolean writeSearchTree = false;
+
+	@ConfigOption(name = "searchTreeFile", defaultValue="log/searchTree.txt", description="file to use for the search tree")
+	private String searchTreeFile = "log/searchTree.txt";
+
+	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
+	private boolean replaceSearchTree = false;
+	
+	@ConfigOption(name="maxClassExpressionDepth",defaultValue="2",description="The maximum depth for class expressions to test")
 	private int maxClassExpressionDepth = 2;
 	
+	@ConfigOption(name="maxNrOfResults",defaultValue="10",description="Sets the maximum number of results one is interested in")
 	private int maxNrOfResults = 10;
 	
 	private Set<OWLClass> ignoredConcepts = null;
 	
+	@ConfigOption(name="classToDescribe", description="class of which an OWL class expression should be learned")
 	private OWLClass classToDescribe;
 		
 	private double noise;
 	
 	// a set with limited size (currently the ordering is defined in the class itself)
 	private SearchTreeNode startNode;
+	@ConfigOption(name="heuristic", defaultValue="StableHeuristic", description="The heuristic variable to use for ELTL")
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
+	private ELDown3 operator;
 
 	private boolean isEquivalenceProblem = true;
 	private Monitor timeMonitor;
 	
 	double max = -1d;
 	OWLClassExpression maxDescription;
+
+	private OWLObjectRenderer renderer;
 	
-	public ELLearningAlgorithm() {
-		
-	}
+	public ELLearningAlgorithm() {}
 	
-	public ELLearningAlgorithm(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public ELLearningAlgorithm(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-//		configurator = new ELLearningAlgorithmConfigurator(this);
-		timeMonitor = MonitorFactory.getTimeMonitor("time");
 	}
 	
 	public static String getName() {
 		return "standard EL learning algorithm";
 	}	
 	
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}
-	
-
-//	@Override
-//	public ELLearningAlgorithmConfigurator getConfigurator() {
-//		return configurator;
-//	}	
-	
-//	public static Collection<ConfigOption<?>> createConfigOptions() {
-//		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-////		options.add(CommonConfigOptions.getNoisePercentage());
-////		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-//		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-//		return options;
-//	}		
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -167,14 +163,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		noise = noisePercentage/100d;
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
+		
+		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
+		
+		renderer = new DLSyntaxObjectRenderer();
+		DefaultPrefixManager pm = new DefaultPrefixManager(baseURI);
+		renderer.setShortFormProvider(pm);
+		
+		ToStringRenderer.getInstance().setRenderer(renderer);
 	}	
-	
-	/**
-	 * @param heuristic the heuristic to set
-	 */
-	public void setHeuristic(ELHeuristic heuristic) {
-		this.heuristic = heuristic;
-	}
 	
 	@Override
 	public void start() {
@@ -182,39 +179,57 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = true;
 		reset();
 		treeStartTime = System.nanoTime();
+		nanoStartTime = System.nanoTime();
 		
 		// create start node
 		if(startClass == null){
 			startClass = dataFactory.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = dataFactory.getOWLThing();
+			}
 		}
+
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
+		
+		double highestAccuracy = 0.0;
 		
 		// main loop
 		int loop = 0;
 		while(!stop && !stoppingCriteriaSatisfied()) {
 			// pick the best candidate according to the heuristic
 			SearchTreeNode best = candidates.pollLast();
+			
 			// apply operator
 			List<ELDescriptionTree> refinements = operator.refine(best.getDescriptionTree());
+			
 			// add all refinements to search tree, candidates, best descriptions
 			for(ELDescriptionTree refinement : refinements) {
-//				System.out.println("refinement: " + refinement);
 				addDescriptionTree(refinement, best);
 			}
-//			System.out.println("Hits:" + timeMonitor.getHits());
-//			System.out.println("Total:" + timeMonitor.getTotal());
-//			System.out.println("Avg:" + timeMonitor.getAvg());
-//			System.out.println("Max:" + timeMonitor.getMax());
-//			System.out.println(maxDescription);
-			timeMonitor.reset();
-			loop++;
+			
 			// logging
 			if(logger.isTraceEnabled()) {
 				logger.trace("Choosen node " + best);
-				logger.trace(startNode.getTreeString());
+				logger.trace(startNode.getTreeString(renderer));
 				logger.trace("Loop " + loop + " completed.");
 			}
+			
+			if(bestEvaluatedDescriptions.getBestAccuracy() > highestAccuracy) {
+				highestAccuracy = bestEvaluatedDescriptions.getBestAccuracy();
+				long durationInMillis = getCurrentRuntimeInMilliSeconds();
+				String durationStr = getDurationAsString(durationInMillis);
+				logger.info("more accurate (" + dfPercent.format(highestAccuracy) + ") class expression found after " + durationStr + ": " + descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+			}
+			
+			if(writeSearchTree) {
+				writeSearchTree();
+			}
+			
 		}
 		
 		// print solution(s)
@@ -223,40 +238,40 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a OWLClassExpression in tree form
+	// evaluates a class expression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		// create search tree node
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
 		
-		// convert tree to standard description
-		OWLClassExpression description = descriptionTree.transformToDescription();
-		if(isDescriptionAllowed(description)){
-			description = getNiceDescription(description);
-			timeMonitor.start();
-			double accuracy = getLearningProblem().getAccuracyOrTooWeak(description, noise);
-			timeMonitor.stop();
-//			if(timeMonitor.getLastValue() > max){
-//				max = timeMonitor.getLastValue();
-//				maxDescription = description;
-//			}
-			int negCovers = ((PosNegLP)getLearningProblem()).coveredNegativeExamplesOrTooWeak(description);
-//			if(negCovers == -1) {
+		// convert tree to standard class expression
+		OWLClassExpression classExpression = descriptionTree.transformToClassExpression();
+		
+		if(isDescriptionAllowed(classExpression)){
+			// rewrite class expression
+			classExpression = getNiceDescription(classExpression);
+			
+			// compute score
+			ScorePosNeg<OWLNamedIndividual> score = (ScorePosNeg<OWLNamedIndividual>) learningProblem.computeScore(classExpression, noise);
+			
+			// compute accuracy
+			double accuracy = score.getAccuracy();
+			
 			if(accuracy == -1) {
 				node.setTooWeak();
 			} else {
-				node.setCoveredNegatives(negCovers);
+				// set covered pos and neg examples
+				node.setCoveredPositives(score.getCoveredPositives().size());
+				node.setCoveredNegatives(score.getCoveredNegatives().size());
 			}
 			node.setAccuracy(accuracy);
 			node.setScore(accuracy);
 			
-//			System.out.println(OWLClassExpression + ":" + accuracy);
 			// link to parent (unless start node)
 			if(parentNode == null) {
 				startNode = node;
 			} else {
 				parentNode.addChild(node);
 			}
-			
 			
 			if(!node.isTooWeak()) {
 				// add as candidate
@@ -265,53 +280,25 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// check whether we want to add it to the best evaluated descriptions;
 				// to do this we pick the worst considered evaluated description
 				// (remember that the set has limited size, so it's likely not the worst overall);
-				// the OWLClassExpression has a chance to make it in the set if it has
+				// the class expression has a chance to make it in the set if it has
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
 				if(bestEvaluatedDescriptions.size() == 0 || ((EvaluatedDescriptionPosNeg)bestEvaluatedDescriptions.getWorst()).getCoveredNegatives().size() >= node.getCoveredNegatives()) {
-					ScorePosNeg score = (ScorePosNeg) learningProblem.computeScore(description);
-					((ScoreTwoValued)score).setAccuracy(node.getScore());
-					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(description, score);
+					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(classExpression, score);
 					bestEvaluatedDescriptions.add(ed);
+//					System.out.println("Add " + ed);
+				} else {
+					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(classExpression, score);
+//					System.out.println("reject " + ed);
 				}
-				
 			}
-			
 		}
-	}
-	
-	/**
-	 * Replace role fillers with the range of the property, if exists.
-	 * @param d
-	 * @return
-	 */
-	private OWLClassExpression getNiceDescription(OWLClassExpression d){
-		OWLClassExpression rewrittenClassExpression = d;
-		if(d instanceof OWLObjectIntersectionOf){
-			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
-			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
-				newOperands.add(getNiceDescription(operand));
-			}
-			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
-		} else if(d instanceof OWLObjectSomeValuesFrom) {
-			// \exists r.\bot \equiv \bot
-			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
-			if(filler.isOWLThing()) {
-				OWLClassExpression range = reasoner.getRange(property);
-				filler = range;
-			} else if(filler.isAnonymous()){
-				filler = getNiceDescription(filler);
-			}
-			rewrittenClassExpression = dataFactory.getOWLObjectSomeValuesFrom(property, filler);
-		}
-		return rewrittenClassExpression;
 	}
 	
 	private boolean stoppingCriteriaSatisfied() {
 		// in some cases, there could be no candidate left ...
 		if(candidates.isEmpty()) {
-//			System.out.println("EMPTY");
+			logger.info("Stopping algorithm: No candidates left.");
 			return true;
 		}
 		
@@ -320,12 +307,20 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		double runTimeSeconds = runTime / (double) 1000000000;
 		
 		if(runTimeSeconds >= treeSearchTimeSeconds) {
+			logger.info("Stopping algorithm: Max. execution time was reached.");
 			return true;
 		}
 		
 		// stop if we have a node covering all positives and none of the negatives
 		SearchTreeNode bestNode = candidates.last();
-		return stopOnFirstDefinition && (bestNode.getCoveredNegatives() == 0);
+		boolean perfectDefinitionFound = ((PosNegLP)learningProblem).getPositiveExamples().size() == bestNode.getCoveredPositives()
+				&& (bestNode.getCoveredNegatives() == 0);
+		if(stopOnFirstDefinition && perfectDefinitionFound) {
+			logger.info("Stopping algorithm: Perfect definition found.");
+			return true;
+		}
+				
+		return false;
 	}
 	
 	private void reset() {
@@ -336,73 +331,64 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	}
 	
 	private boolean isDescriptionAllowed(OWLClassExpression description) {
-		if(isEquivalenceProblem) {
-			// the class to learn must not appear on the outermost property level
-			if(occursOnFirstLevel(description, classToDescribe)) {
-				return false;
-			}
-			
-			//non of the equivalent classes must occur on the first level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
-			if(classToDescribe != null){
-				toTest.add(classToDescribe);
-			}
-			while(!toTest.isEmpty()) {
-				OWLClassExpression d = toTest.pollFirst();
-				if(occursOnFirstLevel(description, d)) {
+		if(learningProblem instanceof ClassLearningProblem) {
+			if(isEquivalenceProblem) {
+				// the class to learn must not appear on the outermost property level
+				if(OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
 					return false;
 				}
-				toTest.addAll(reasoner.getEquivalentClasses(d));
-			}
-		} else {
-			// none of the superclasses of the class to learn must appear on the
-			// outermost property level
-			TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
-			if(classToDescribe != null){
-				toTest.add(classToDescribe);
-			}
-			while(!toTest.isEmpty()) {
-				OWLClassExpression d = toTest.pollFirst();
-				if(occursOnFirstLevel(description, d)) {
-					return false;
+				
+				//non of the equivalent classes must occur on the first level
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				if(classToDescribe != null){
+					toTest.add(classToDescribe);
 				}
-				toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
-			}
-		}	
+				while(!toTest.isEmpty()) {
+					OWLClassExpression d = toTest.pollFirst();
+					if(OWLClassExpressionUtils.occursOnFirstLevel(description, d)) {
+						return false;
+					}
+					toTest.addAll(reasoner.getEquivalentClasses(d));
+				}
+			} else {
+				// none of the superclasses of the class to learn must appear on the
+				// outermost property level
+				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				if(classToDescribe != null){
+					toTest.add(classToDescribe);
+				}
+				while(!toTest.isEmpty()) {
+					OWLClassExpression d = toTest.pollFirst();
+					if(OWLClassExpressionUtils.occursOnFirstLevel(description, d)) {
+						return false;
+					}
+					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
+				}
+			}	
+			return true;
+		}
+		
 		return true;
 	}
 	
-	// determine whether a named class occurs on the outermost level, i.e. property depth 0
-		// (it can still be at higher depth, e.g. if intersections are nested in unions)
-		private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
-            return description.containsConjunct(cls);
+	private void writeSearchTree() {
+		StringBuilder treeString = new StringBuilder();
+		treeString.append(startNode.getTreeString(renderer)).append("\n");
 
-        }
-	
-	@Override
-	public void stop() {
-		stop = true;
+		// replace or append
+		if (replaceSearchTree) {
+			Files.createFile(new File(searchTreeFile), treeString.toString());
+		} else {
+			Files.appendToFile(new File(searchTreeFile), treeString.toString());
+		}
 	}
 	
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}	
-	
-	@Override
-	public OWLClassExpression getCurrentlyBestDescription() {
-		return getCurrentlyBestEvaluatedDescription().getDescription();
+	/**
+	 * @param heuristic the heuristic to set
+	 */
+	public void setHeuristic(ELHeuristic heuristic) {
+		this.heuristic = heuristic;
 	}
-
-	@Override
-	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		return bestEvaluatedDescriptions.toDescriptionList();
-	}
-	
-	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
-		return bestEvaluatedDescriptions.getSet().last();
-	}	
 	
 	public boolean isInstanceBasedDisjoints() {
 		return instanceBasedDisjoints;
@@ -411,12 +397,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public void setInstanceBasedDisjoints(boolean instanceBasedDisjoints) {
 		this.instanceBasedDisjoints = instanceBasedDisjoints;
 	}
-
-	@Override
-	public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
-		return bestEvaluatedDescriptions.getSet();
-	}		
-	
 	
 	/**
 	 * @param stopOnFirstDefinition the stopOnFirstDefinition to set
@@ -507,6 +487,27 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	 */
 	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
 		this.maxClassExpressionDepth = maxClassExpressionDepth;
+	}
+	
+	/**
+	 * @param writeSearchTree the writeSearchTree to set
+	 */
+	public void setWriteSearchTree(boolean writeSearchTree) {
+		this.writeSearchTree = writeSearchTree;
+	}
+	
+	/**
+	 * @param searchTreeFile the searchTreeFile to set
+	 */
+	public void setSearchTreeFile(String searchTreeFile) {
+		this.searchTreeFile = searchTreeFile;
+	}
+	
+	/**
+	 * @param replaceSearchTree the replaceSearchTree to set
+	 */
+	public void setReplaceSearchTree(boolean replaceSearchTree) {
+		this.replaceSearchTree = replaceSearchTree;
 	}
 
 }

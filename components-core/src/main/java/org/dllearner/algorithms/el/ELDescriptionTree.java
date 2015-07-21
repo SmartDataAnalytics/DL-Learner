@@ -146,7 +146,7 @@ public class ELDescriptionTree implements Cloneable {
 		return levelNodeMapping.get(level);
 	}
 
-	public OWLClassExpression transformToDescription() {
+	public OWLClassExpression transformToClassExpression() {
 		return rootNode.transformToDescription();
 	}
 

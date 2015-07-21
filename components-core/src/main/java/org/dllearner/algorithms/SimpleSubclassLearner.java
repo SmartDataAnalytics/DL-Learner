@@ -33,6 +33,7 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.semanticweb.owlapi.model.IRI;
@@ -40,8 +41,6 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -58,7 +57,7 @@ import com.hp.hpl.jena.query.ResultSet;
 public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSubClassOfAxiom, OWLIndividual, OWLClass> implements
 		ClassExpressionLearningAlgorithm {
 
-	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
+	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 
 	public SimpleSubclassLearner(SparqlEndpointKS ks) {
 		this.ks = ks;
@@ -72,14 +71,14 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
-		for (EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
+		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
 		return bestDescriptions;
 	}
 
 	@Override
-	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
@@ -98,7 +97,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	@Override
 	public List<EvaluatedAxiom<OWLSubClassOfAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<OWLSubClassOfAxiom>>();
-		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
+		for (EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
 			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubClassOfAxiom>(df.getOWLSubClassOfAxiom(entityToDescribe,
 					ed.getDescription()), new AxiomScore(ed.getAccuracy())));
 		}
@@ -107,7 +106,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public void start() {
-		currentlyBestEvaluatedDescriptions = new ArrayList<EvaluatedDescription>();
+		currentlyBestEvaluatedDescriptions = new ArrayList<>();
 		super.start();
 	}
 	

@@ -126,6 +126,7 @@ public class OENode implements SearchTreeNode {
 	
 	public String getShortDescription(String baseURI, Map<String, String> prefixes) {
 		String ret = OWLAPIRenderers.toDLSyntax(description) + " [";
+//		String ret = OWLAPIRenderers.toManchesterOWLSyntax(description) + " [";
 //		ret += "score" + NLPHeuristic.getNodeScore(this) + ",";
 		ret += "acc:" + dfPercent.format(accuracy) + ", ";
 		ret += "he:" + horizontalExpansion + ", ";

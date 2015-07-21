@@ -30,7 +30,6 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics;
@@ -102,11 +101,13 @@ public class HeuristicTests {
 		for(int i=8; i<13; i++) {
 			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[3],ind[i]));
 		}
-		ComponentManager cm = ComponentManager.getInstance();
 		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
-		ClassLearningProblem problem = cm.learningProblem(ClassLearningProblem.class, reasoner);
+		ks.init();
+		
+		AbstractReasonerComponent reasoner = new OWLAPIReasoner(ks);
 		reasoner.init();
+		
+		ClassLearningProblem problem = new ClassLearningProblem(reasoner);
 		
 		//// equivalent classes, no noise, no approximations ////
 		
@@ -134,6 +135,7 @@ public class HeuristicTests {
 		// TODO: generalised F-Measure
 		
 		//// super class learning ////
+		// beta = 3.0
 		
 		// Jaccard
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.JACCARD, false, false, 0.05);
@@ -145,15 +147,15 @@ public class HeuristicTests {
 		assertEqualsClassLP(problem, nc[1], 5/(double)7);
 		assertEqualsClassLP(problem, nc[2], 4/(double)7);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.AMEASURE);
+		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.AMEASURE, false, false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.4375);		
 		
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, false, 0.05);
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
-		// recall = 0.5, precision = 0.25, F1-score = 0.33...
-		assertEqualsClassLP(problem, nc[2], 0.366025403784);		
+		// recall = 0.5, precision = 0.25, F_beta-score = 5/11...
+		assertEqualsClassLP(problem, nc[2], 5d/11);		
 		
 		// TODO: generalised F-Measure
 		
@@ -201,11 +203,14 @@ public class HeuristicTests {
 		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[2]));
 		man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[1],ind[5]));
 		
-		ComponentManager cm = ComponentManager.getInstance();
 		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
-		AbstractReasonerComponent reasoner = cm.reasoner(OWLAPIReasoner.class, ks);
-		PosNegLPStandard problem = cm.learningProblem(PosNegLPStandard.class, reasoner);
+		ks.init();
+		
+		AbstractReasonerComponent reasoner = new OWLAPIReasoner(ks);
 		reasoner.init();		
+		
+		PosNegLPStandard problem = new PosNegLPStandard(reasoner);
+		
 		
 		OWLIndividual[] pos1 = new OWLIndividual[] {ind[0], ind[1], ind[2], ind[3], ind[4]};
 		OWLIndividual[] neg1 = new OWLIndividual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
@@ -262,17 +267,17 @@ public class HeuristicTests {
 	// the class learning problem provides several ways to get the accuracy of a description, this method
 	// tests all of those
 	private static void assertEqualsClassLP(ClassLearningProblem problem, OWLClassExpression description, double accuracy) {
-		assertEquals(accuracy, problem.getAccuracy(description), delta);
+		assertEquals(accuracy, problem.getAccuracy(description, 1.0), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
-		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);
-		assertEquals(accuracy, problem.evaluate(description).getAccuracy(), delta);
+		assertEquals(accuracy, problem.computeScore(description, 1.0).getAccuracy(), delta);
+		assertEquals(accuracy, problem.evaluate(description, 1.0).getAccuracy(), delta);
 	}
 	
 	private static void assertEqualsPosNegLPStandard(PosNegLPStandard problem, OWLClassExpression description, double accuracy) {
-		assertEquals(accuracy, problem.getAccuracy(description), delta);
+		assertEquals(accuracy, problem.getAccuracy(description,1.0), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
-		assertEquals(accuracy, problem.computeScore(description).getAccuracy(), delta);
-		assertEquals(accuracy, problem.evaluate(description).getAccuracy(), delta);
+		assertEquals(accuracy, problem.computeScore(description, 1.0).getAccuracy(), delta);
+		assertEquals(accuracy, problem.evaluate(description, 1.0).getAccuracy(), delta);
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
@@ -288,7 +293,7 @@ public class HeuristicTests {
 	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 //		problem.getConfigurator().setType("superClass");
-		problem.setEquivalence(false);
+		problem.setEquivalence(equivalenceLearning);
 		problem.setHeuristic(accuracyMethod);
 		problem.setUseApproximations(useApproximations);
 		problem.setApproxDelta(approxAccuracy);

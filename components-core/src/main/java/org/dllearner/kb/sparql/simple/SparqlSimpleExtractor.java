@@ -307,18 +307,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         this.tboxfilter = tboxfilter;
     }
 
-	@Override
-	public String toDIG(URI kbURI) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void export(File file, OntologyFormat format)
-			throws OntologyFormatUnsupportedException {
-		// TODO Auto-generated method stub
-
-	}
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {

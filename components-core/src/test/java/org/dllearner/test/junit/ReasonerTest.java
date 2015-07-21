@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLFile;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -48,7 +48,7 @@ public class ReasonerTest {
 		// read file into reasoner
 		OWLFile file = new OWLFile("src/test/resources/nlp2rdf/positives.owl");
 		file.init();
-		FastInstanceChecker fic = new FastInstanceChecker();
+		ClosedWorldReasoner fic = new ClosedWorldReasoner();
 		fic.setSources(file);
 		fic.init();
 		

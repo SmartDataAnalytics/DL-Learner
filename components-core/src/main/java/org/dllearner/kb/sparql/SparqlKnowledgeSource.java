@@ -20,7 +20,6 @@
 package org.dllearner.kb.sparql;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +33,6 @@ import javax.swing.ProgressMonitor;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.OntologyFormatUnsupportedException;
 import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.options.ConfigEntry;
@@ -71,7 +68,7 @@ import com.jamonapi.MonitorFactory;
 
 /**
  * Represents the SPARQL Endpoint Component.
- * 
+ *
  * @author Jens Lehmann
  * @author Sebastian Knappe
  * @author Sebastian Hellmann
@@ -80,7 +77,7 @@ import com.jamonapi.MonitorFactory;
 public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
 	private ProgressMonitor mon;
-	
+
 	private static final boolean debugExitAfterExtraction = false; // switches
 
     private byte[] ontologyBytes;
@@ -103,7 +100,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		this.url = url;
 		this.instances = instances;
 	}
-	
+
 	private SparqlEndpoint endpoint = null;
 
 	//private String format = "N-TRIPLES";
@@ -111,11 +108,11 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private URL ontologyFragmentURL;
 
-	
-	
+
+
 	private Manipulator manipulator = null;
-	
-	
+
+
 
 	// received ontology as array, used if format=Array(an element of the
 	// array consists of the subject, predicate and object separated by '<'
@@ -129,9 +126,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	//// TODO: turn those into config options ///
 	private URL url;
-	
+
 	private Set<String> instances;
-	
+
 	private int recursionDepth = 1;
 
 	private boolean getAllSuperClasses = true;
@@ -184,7 +181,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	/**
 	 * Specifies the configuration options for this knowledge source.
-	 * 
+	 *
 	 * @see org.dllearner.core.AbstractComponent#createConfigOptions()
 	 * @return Options of this component.
 	 */
@@ -212,7 +209,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		options
 				.add(new StringConfigOption(
 						"predefinedEndpoint",
-						"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK, FACTBOOK",
+						"the mode of the SPARQL Filter, use one of DBPEDIA, LOCAL, GOVTRACK, REVYU, MYOPENLINK",
 						null, false, true));
 		options
 				.add(new StringConfigOption(
@@ -272,12 +269,12 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	public <T> void applyConfigEntry(ConfigEntry<T> entry)
 			throws InvalidConfigOptionValueException {
 		//TODO remove this function
-		
+
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
@@ -300,7 +297,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		TupleAquisitor tupleAquisitor = getTupleAquisitor();
 
 		Configuration configuration = new Configuration(tupleAquisitor,
-				manipulator, recursionDepth, getAllSuperClasses, 
+				manipulator, recursionDepth, getAllSuperClasses,
 						closeAfterRecursion, propertyInformation, breakSuperClassRetrievalAfter,
 						dissolveBlankNodes);
 
@@ -313,18 +310,18 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 			// the actual extraction is started here
 			Monitor extractionTime = JamonMonitorLogger.getTimeMonitor(SparqlKnowledgeSource.class, "total extraction time").start();
 			List<Node> seedNodes=new ArrayList<Node>();
-			
+
 			//if(!threaded){
 				seedNodes = m.extract(instances);
 			/*}else{
 				int maxPoolSize = configurator.getInstances().size();
 				ThreadPoolExecutor ex = new ThreadPoolExecutor(5,maxPoolSize,1,TimeUnit.SECONDS,new ArrayBlockingQueue<Runnable>(100));
 				List<FutureTask<Node>> tasks = new ArrayList<FutureTask<Node>>();
-							
+
 				for (String uri : configurator.getInstances()) {
-					
+
 					ExtractOneInstance e = new ExtractOneInstance(m,uri);
-					
+
 					FutureTask<Node> ft = new FutureTask<Node>(e);
 					ex.submit(ft);
 					tasks.add(ft);
@@ -336,11 +333,11 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 					//System.out.println(ft.get());
 					//System.out.println("aaa");
 					seedNodes.add(ft.get());
-					
+
 				}
 			}*/
 			extractionTime.stop();
-		
+
 			// Do this so that we can support the OWLOntologyKnowledgeSource
             // and can be thread safe.
 			OWLOntology fragment = m.getOWLAPIOntologyForNodes(seedNodes, saveExtractedFragment);
@@ -349,10 +346,10 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 			logger.info("Finished collecting fragment. needed "+extractionTime.getLastValue()+" ms");
 
 			ontologyFragmentURL = m.getPhysicalOntologyURL();
-			
+
 			nrOfExtractedAxioms = configuration.getOwlAPIOntologyCollector().getNrOfExtractedAxioms();
-			
-		
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -376,51 +373,25 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
     public List<Node> extractParallel(){
 		return null;
 	}
-	
+
 	/*private class ExtractOneInstance  implements Callable{
 		Manager m;
 		Node n;
 		String uri;
-		
+
 		private ExtractOneInstance(Manager m, String uri){
 			super();
 			this.m = m;
 			this.uri = uri;
 		}
-		
-		
-		
+
+
+
 		public Node call(){
 			System.out.println("funky");
 			return m.extractOneURI(uri);
 		}
 	}*/
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.KnowledgeSource#toDIG()
-	 */
-	@Override
-	public String toDIG(URI kbURI) {
-            throw new RuntimeException("Inside Dig Converter - this doesn't work in our custom version as we have upgraded to jena 2.6.2 which doesn't support DIG");
-//			return JenaOWLDIGConverter.getTellsString(ontologyFragmentURL,
-//					OntologyFormat.RDF_XML, kbURI);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.KnowledgeSource#export(java.io.File,
-	 *      org.dllearner.core.OntologyFormat)
-	 */
-	@Override
-	public void export(File file, OntologyFormat format)
-			throws OntologyFormatUnsupportedException {
-		// currently no export functions implemented, so we just throw an
-		// exception
-		throw new OntologyFormatUnsupportedException("export", format);
-	}
 
 	/**
 	 * @return the URL of the used sparql endpoint
@@ -434,14 +405,14 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 				}else{
 					return getSparqlEndpoint().getURL();
 				}
-				
+
 			}else{
 				return getUrl();
 			}
 		}else {
 			return endpoint.getURL();
 		}
-		
+
 	}
 
 
@@ -449,7 +420,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		return new SparqlQuery(query, getSparqlEndpoint());
 	}
 
-	
+
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {
 			if (predefinedEndpoint == null) {
@@ -459,17 +430,17 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 			} else {
 				endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 				// System.out.println(endpoint);
-	
+
 			}
 		}
 		return endpoint;
 
 	}
-	
+
 	public SPARQLTasks getSPARQLTasks() {
 
 		// get Options for endpoints
-		
+
 		if (useCache){
 			return new SPARQLTasks(new Cache(cacheDir, useCacheDatabase),
 					getSparqlEndpoint());
@@ -492,11 +463,11 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	}
 
 	public Manipulator getManipulator() {
-		
+
 		if(this.manipulator!=null){
 			return this.manipulator;
 		}
-		
+
 		// get Options for Filters
 		if (predefinedManipulator != null) {
 			return Manipulator.getManipulatorByName(predefinedManipulator);
@@ -513,10 +484,10 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 		}
 
 	}
-	
+
 	public void setManipulator(Manipulator m ){
 		this.manipulator = m;
-		
+
 	}
 
 	public TupleAquisitor getTupleAquisitor() {
@@ -535,7 +506,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	public URL getOntologyFragmentURL() {
 		return ontologyFragmentURL;
 	}
-	
+
 	public boolean isUseCache() {
 		return useCache;
 	}
@@ -547,7 +518,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	public int getNrOfExtractedAxioms() {
 		return nrOfExtractedAxioms;
 	}
-	
+
 	public void addProgressMonitor(ProgressMonitor mon){
 		this.mon = mon;
 	}

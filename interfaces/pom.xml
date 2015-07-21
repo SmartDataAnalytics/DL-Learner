@@ -1,21 +1,22 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 
 	<artifactId>interfaces</artifactId>
 	<packaging>${packaging.type}</packaging>
-	<name>Interfaces: GUI, CLI, Web Service</name>
+	<name>dllearner-interfaces</name>
 	<url>http://aksw.org/Projects/DLLearner</url>
+	<description>Interfaces: GUI, CLI, Web Service</description>
 
 
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
 	</parent>
 
 	<properties>
-		<release.name>1.0</release.name>
 		<dist-dir>dl-learner-dist</dist-dir>
 		<install-dir>share/dl-learner</install-dir>
 		<packaging.type>jar</packaging.type>
@@ -148,6 +149,10 @@
 									<mainClass>org.dllearner.cli.Enrichment</mainClass>
 									<name>enrichment</name>
 								</program>
+								<program>
+									<mainClass>org.dllearner.cli.SemKernelCLI</mainClass>
+									<name>semkernel</name>
+								</program>
 								<!-- <program> <mainClass>org.dllearner.gui.StartGUI</mainClass> 
 									<name>gui</name> </program> <program> <mainClass>org.dllearner.cli.QuickStart</mainClass> 
 									<name>quickstart</name> </program> <program> <mainClass>org.dllearner.server.DLLearnerWS</mainClass> 
@@ -166,7 +171,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<finalName>dllearner-${release.name}</finalName>
+							<finalName>dllearner-${project.version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>src/main/assemble/archive.xml</descriptor>
@@ -233,7 +238,7 @@
 				<finalName>dl-learner</finalName>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo.appassembler</groupId>
+						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>appassembler-maven-plugin</artifactId>
 						<version>1.9</version>
 						<executions>
@@ -320,8 +325,7 @@
 									<goal>jdeb</goal>
 								</goals>
 								<configuration>
-									<deb>${basedir}/target/dl-learner-${release.name}.deb</deb>
-									<version>${release.name}</version>
+									<deb>${basedir}/target/dl-learner_[[version]]_all.deb</deb>
 									<controlDir>${basedir}/src/debian</controlDir>
 									<dataSet>
 										<data>
@@ -372,7 +376,7 @@
 										</data>
 									</dataSet>
 									<changesIn>${basedir}/CHANGES.txt</changesIn>
-									<changesOut>${basedir}/target/dl-learner-${release.name}.changes</changesOut>
+									<changesOut>${basedir}/target/dl-learner-${project.version}.changes</changesOut>
 								</configuration>
 							</execution>
 						</executions>

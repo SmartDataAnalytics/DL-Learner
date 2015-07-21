@@ -19,9 +19,8 @@
 
 package org.dllearner.core.owl;
 
-import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -40,26 +39,15 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
  */
 public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty>{
 
-	private TreeSet<OWLDataProperty> mostGeneralRoles = new TreeSet<OWLDataProperty>();
-	private TreeSet<OWLDataProperty> mostSpecialRoles = new TreeSet<OWLDataProperty>();
-
 	private static final OWLDataProperty OWL_TOP_DATA_PROPERTY = new OWLDataPropertyImpl(
 			OWLRDFVocabulary.OWL_TOP_DATA_PROPERTY.getIRI());
 	private static final OWLDataProperty OWL_BOTTOM_DATA_PROPERTY = new OWLDataPropertyImpl(
 			OWLRDFVocabulary.OWL_BOTTOM_DATA_PROPERTY.getIRI());
 
-	public DatatypePropertyHierarchy(Set<OWLDataProperty> atomicRoles,
-			TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyUp,
-			TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyDown) {
+	public DatatypePropertyHierarchy(
+			SortedMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyUp,
+			SortedMap<OWLDataProperty, SortedSet<OWLDataProperty>> roleHierarchyDown) {
 		super(roleHierarchyUp, roleHierarchyDown);
-		
-		// find most general and most special roles
-		for(OWLDataProperty role : atomicRoles) {
-			if(getMoreGeneralRoles(role).size()==0)
-				mostGeneralRoles.add(role);
-			if(getMoreSpecialRoles(role).size()==0)
-				mostSpecialRoles.add(role);			
-		}
 	}
 	
 	public SortedSet<OWLDataProperty> getMoreGeneralRoles(OWLDataProperty role) {
@@ -77,15 +65,15 @@ public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty
 	/**
 	 * @return The most general roles.
 	 */
-	public TreeSet<OWLDataProperty> getMostGeneralRoles() {
-		return mostGeneralRoles;
+	public SortedSet<OWLDataProperty> getMostGeneralRoles() {
+		return getMostGeneralEntities();
 	}
 
 	/**
 	 * @return The most special roles.
 	 */
-	public TreeSet<OWLDataProperty> getMostSpecialRoles() {
-		return mostSpecialRoles;
+	public SortedSet<OWLDataProperty> getMostSpecialRoles() {
+		return getMostSpecialEntities();
 	}
 
 	/* (non-Javadoc)
@@ -104,5 +92,8 @@ public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty
 		return OWL_BOTTOM_DATA_PROPERTY;
 	}
 	
-	
+	@Override
+	public DatatypePropertyHierarchy clone() {
+		return new DatatypePropertyHierarchy(getHierarchyUp(), getHierarchyDown());		
+	}
 }

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -51,6 +52,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
     
     private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This
 	 * is used to build the subsumption hierarchy. 
@@ -64,28 +66,34 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	}
 
 	/**
-	 * Returns the direct super classes.
+	 * Returns the all super classes.
 	 * @param concept
 	 * @return
 	 */
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
-		return getSuperClasses(concept, true);
+		return getSuperClasses(concept, false);
 	}
 	
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept, boolean direct) {
+		if(concept.isOWLThing()) {
+			return new TreeSet<OWLClassExpression>();
+		}
 		return getParents(concept, direct);
 	}
 
 	/**
-	 * Returns the direct subclasses.
+	 * Returns the all subclasses.
 	 * @param concept
 	 * @return
 	 */
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
-		return getSubClasses(concept, true);
+		return getSubClasses(concept, false);
 	}
 	
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept, boolean direct) {
+		if(concept.isOWLNothing()) {
+			return new TreeSet<OWLClassExpression>();
+		}
 		return getChildren(concept, direct);
 	}
 

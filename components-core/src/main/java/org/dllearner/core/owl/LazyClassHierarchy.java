@@ -25,11 +25,8 @@ import java.util.TreeMap;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Represents a class subsumption hierarchy (ignoring equivalent concepts).
@@ -41,8 +38,6 @@ public class LazyClassHierarchy extends ClassHierarchy {
 
 	public static Logger logger = LoggerFactory.getLogger(LazyClassHierarchy.class);
 	
-    private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
-
 	private AbstractReasonerComponent rc;
 	
 	public LazyClassHierarchy(AbstractReasonerComponent rc) {
@@ -71,5 +66,13 @@ public class LazyClassHierarchy extends ClassHierarchy {
 	@Override
 	public AbstractHierarchy<OWLClassExpression> cloneAndRestrict(Set<? extends OWLClassExpression> allowedEntities) {
 		return new LazyClassHierarchy(rc);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.owl.AbstractHierarchy#thinOutSubsumptionHierarchy()
+	 */
+	@Override
+	public void thinOutSubsumptionHierarchy() {
+		// do nothing here because we don't have anything precomputed
 	}
 }

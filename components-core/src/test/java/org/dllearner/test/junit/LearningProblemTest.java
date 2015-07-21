@@ -13,7 +13,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -68,7 +68,7 @@ public class LearningProblemTest {
 		
 		AbstractKnowledgeSource ks = new OWLAPIOntology(kb);
 		
-		AbstractReasonerComponent reasoner = new FastInstanceChecker(ks);
+		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(ks);
 		reasoner.init();		
 		
 		SortedSet<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>(Sets.newHashSet(ind[0], ind[1], ind[2], ind[3], ind[4]));

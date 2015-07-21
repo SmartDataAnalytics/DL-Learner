@@ -21,18 +21,18 @@ package org.dllearner.algorithms.qtl.operations.nbr.strategy;
 
 import java.util.List;
 
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
 
 /**
- * 
+ * A strategy used to apply negative-based reduction on query trees.
  * @author Lorenz Bühmann
  *
  */
-public interface NBRStrategy<N> {
+public interface NBRStrategy {
 	
-	QueryTree<N> computeNBR(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees);
+	RDFResourceTree computeNBR(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees);
 	
-	List<QueryTree<N>> computeNBRs(QueryTree<N> posExampleTree, List<QueryTree<N>> negExampleTrees);
+	List<RDFResourceTree> computeNBRs(RDFResourceTree posExampleTree, List<RDFResourceTree> negExampleTrees);
 
 }
