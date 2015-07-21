@@ -143,8 +143,8 @@ private static final String baseIRI = "http://test.org/";
 //		System.out.println(lggSimple.getStringRepresentation());
 	}
 	
-	@Test
-	public void testCorrectness() {
+//	@Test
+	public void correctness() {
 		treeFactory.setMaxDepth(2);
 		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset().getQueryTreeFilters().toArray(new Filter[]{}));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
