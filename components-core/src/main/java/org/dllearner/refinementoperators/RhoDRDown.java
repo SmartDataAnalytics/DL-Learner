@@ -1562,10 +1562,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// get candidates for a refinement of \top restricted to a class B
 	public SortedSet<OWLClassExpression> getNegClassCandidates(OWLClassExpression index) {
-		return getNegClassCandidatesRecursive(index, df.getOWLNothing());
+		return getNegClassCandidatesRecursive(index, df.getOWLNothing(), null);
 	}
 
-	private SortedSet<OWLClassExpression> getNegClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression lowerClass) {
+	private SortedSet<OWLClassExpression> getNegClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression lowerClass, Set<OWLClassExpression> seenClasses) {
+		if (seenClasses == null) { seenClasses = new TreeSet<>(); }
 		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
@@ -1615,8 +1616,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 						if(meaningful) {
 							candidates.add(negatedCandidate);
-						} else {
-							candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
+						} else if (!seenClasses.contains(candidate)) {
+							seenClasses.add(candidate);
+							candidates.addAll(getNegClassCandidatesRecursive(index, candidate, seenClasses));
 						}
 					}
 				}
