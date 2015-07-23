@@ -287,12 +287,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			maxExecutionTimeInSeconds = Math.min(maxExecutionTimeInSeconds, maxExecutionTimeInSecondsAfterImprovement);
 		}
 		
-		// compute used concepts/roles from allowed/ignored
-		// concepts/roles
-		
-		
-		// copy class hierarchy and modify it such that each class is only
-		// reachable via a single path
+		// TODO add comment
 		ClassHierarchy classHierarchy = initClassHierarchy();
 		ObjectPropertyHierarchy objectPropertyHierarchy = initObjectPropertyHierarchy();
 		DatatypePropertyHierarchy datatypePropertyHierarchy = initDataPropertyHierarchy();
@@ -300,13 +295,22 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
 			heuristic = new OEHeuristicRuntime();
+			heuristic.init();
 		}
 		
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
 		
+		if (writeSearchTree) {
+			File f = new File(searchTreeFile);
+			if (f.getParentFile() != null) {
+				f.getParentFile().mkdirs();
+			}
+			Files.clearFile(f);
+		}
+		
 		// start at owl:Thing by default
-		if(startClass == null) {
-			startClass = dataFactory.getOWLThing();
+		if (startClass == null) {
+			startClass = computeStartClass();
 		} else {
 			try {
 				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(this.startClass, reasoner, dataFactory);
@@ -314,34 +318,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				logger.warn("Error parsing start class.", e);
 				logger.warn("Using owl:Thing instead.");
 				this.startClass = dataFactory.getOWLThing();
-			}			
-		}
-		
-		// create a refinement operator and pass all configuration
-		// variables to it
-		if(operator == null) {
-			// we use a default operator and inject the class hierarchy for now
-			operator = new RhoDRDown();
-			if(operator instanceof CustomStartRefinementOperator) {
-				((CustomStartRefinementOperator)operator).setStartClass(startClass);
 			}
-			if(operator instanceof ReasoningBasedRefinementOperator) {
-				((ReasoningBasedRefinementOperator)operator).setReasoner(reasoner);
-			}
-			operator.init();
-		}
-		if(operator instanceof CustomHierarchyRefinementOperator) {
-			((CustomHierarchyRefinementOperator)operator).setClassHierarchy(classHierarchy);
-			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
-			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
-		}
-		
-		if(writeSearchTree) {
-			File f = new File(searchTreeFile );
-			if(f.getParentFile() != null){
-				f.getParentFile().mkdirs();
-			}
-			Files.clearFile(f);
 		}
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
@@ -350,17 +327,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// we put important parameters in class variables
 		noise = noisePercentage/100d;
-//		System.out.println("noise " + noise);
-//		maxDepth = configurator.getMaxDepth();
+
 		// (filterFollowsFromKB is automatically set to false if the problem
 		// is not a class learning problem
 		filterFollowsFromKB = filterDescriptionsFollowingFromKB && isClassLearningProblem;
-		
-//		Set<OWLClassExpression> concepts = operator.refine(Thing.instance, 5);
-//		for(OWLClassExpression concept : concepts) {
-//			System.out.println(concept);
-//		}
-//		System.out.println("refinements of thing: " + concepts.size());
 		
 		// actions specific to ontology engineering
 		if(isClassLearningProblem) {
@@ -369,88 +339,32 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			isEquivalenceProblem = problem.isEquivalenceProblem();
 			
 			examples = reasoner.getIndividuals(classToDescribe);
-			
-			// start class: intersection of super classes for definitions (since it needs to
-			// capture all instances), but owl:Thing for learning subclasses (since it is
-			// superfluous to add super classes in this case)
-			if(isEquivalenceProblem) {
-				Set<OWLClassExpression> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
-				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
-					// the existing definition is reused, which in the simplest case means to
-					// use it as a start class or, if it is already too specific, generalise it
-					
-					// pick the longest existing definition as candidate
-					OWLClassExpression existingDefinition = null;
-					int highestLength = 0;
-					for(OWLClassExpression exDef : existingDefinitions) {
-						if(OWLClassExpressionUtils.getLength(exDef) > highestLength) {
-							existingDefinition = exDef;
-							highestLength = OWLClassExpressionUtils.getLength(exDef);
-						}
-					}
-					
-					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<OWLClassExpression>();
-					startClassCandidates.add(existingDefinition);
-					// hack for RhoDRDown
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(true);
-					}
-					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
-					
-					// use upward refinement until we find an appropriate start class
-					boolean startClassFound = false;
-					OWLClassExpression candidate;
-					do {
-						candidate = startClassCandidates.pollFirst();
-						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
-							// add upward refinements to list
-							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, OWLClassExpressionUtils.getLength(candidate));
-//							System.out.println("ref: " + refinements);
-							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
-//							Collections.reverse(refinementList);
-//							System.out.println("list: " + refinementList);
-							startClassCandidates.addAll(refinementList);
-//							System.out.println("candidates: " + startClassCandidates);
-						} else {
-							startClassFound = true;
-						}
-					} while(!startClassFound);
-					startClass = candidate;
-					
-					if(startClass.equals(existingDefinition)) {
-						logger.info("Reusing existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
-					} else {
-						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
-					}
-					
-//					System.out.println("start class: " + startClass);
-//					System.out.println("existing def: " + existingDefinition);
-//					System.out.println(reasoner.getIndividuals(existingDefinition));
-					
-					if(operator instanceof RhoDRDown) {
-						((RhoDRDown)operator).setDropDisjuncts(false);
-					}
-					
-				} else {
-					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
-					if(superClasses.size() > 1) {
-						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
-					} else if(superClasses.size() == 1){
-						startClass = (OWLClassExpression) superClasses.toArray()[0];
-					} else {
-						startClass = dataFactory.getOWLThing();
-						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
-								"sensible to learn a class expression in this case.");
-					}					
-				}
-			}				
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
 		} else if(learningProblem instanceof PosNegLP) {
 			examples = Helper.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
 		}
+		
+		// create a refinement operator and pass all configuration
+		// variables to it
+		if (operator == null) {
+			// we use a default operator and inject the class hierarchy for now
+			operator = new RhoDRDown();
+			if (operator instanceof CustomStartRefinementOperator) {
+				((CustomStartRefinementOperator) operator).setStartClass(startClass);
+			}
+			if (operator instanceof ReasoningBasedRefinementOperator) {
+				((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
+			}
+			operator.init();
+		}
+		if (operator instanceof CustomHierarchyRefinementOperator) {
+			((CustomHierarchyRefinementOperator) operator).setClassHierarchy(classHierarchy);
+			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
+			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
+		}
 	}
-
+	
 	@Override
 	public void start() {
 		stop = false;
@@ -511,6 +425,87 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		logger.info("solutions:\n" + getSolutionString());
 		
 		isRunning = false;
+	}
+	
+	/*
+	 * Compute the start class in the search space from which the refinement will start. 
+	 * We use the intersection of super classes for definitions (since it needs to
+	 * capture all instances), but owl:Thing for learning subclasses (since it is
+	 * superfluous to add super classes in this case)
+	 */
+	private OWLClassExpression computeStartClass() {
+		OWLClassExpression startClass = dataFactory.getOWLThing();
+		
+		if(isClassLearningProblem) {
+			if(isEquivalenceProblem) {
+				Set<OWLClassExpression> existingDefinitions = reasoner.getAssertedDefinitions(classToDescribe);
+				if(reuseExistingDescription && (existingDefinitions.size() > 0)) {
+					// the existing definition is reused, which in the simplest case means to
+					// use it as a start class or, if it is already too specific, generalise it
+					
+					// pick the longest existing definition as candidate
+					OWLClassExpression existingDefinition = null;
+					int highestLength = 0;
+					for(OWLClassExpression exDef : existingDefinitions) {
+						if(OWLClassExpressionUtils.getLength(exDef) > highestLength) {
+							existingDefinition = exDef;
+							highestLength = OWLClassExpressionUtils.getLength(exDef);
+						}
+					}
+					
+					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<OWLClassExpression>();
+					startClassCandidates.add(existingDefinition);
+					// hack for RhoDRDown
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(true);
+					}
+					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
+					
+					// use upward refinement until we find an appropriate start class
+					boolean startClassFound = false;
+					OWLClassExpression candidate;
+					do {
+						candidate = startClassCandidates.pollFirst();
+						if(((ClassLearningProblem)learningProblem).getRecall(candidate)<1.0) {
+							// add upward refinements to list
+							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, OWLClassExpressionUtils.getLength(candidate));
+//							System.out.println("ref: " + refinements);
+							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
+//							Collections.reverse(refinementList);
+//							System.out.println("list: " + refinementList);
+							startClassCandidates.addAll(refinementList);
+//							System.out.println("candidates: " + startClassCandidates);
+						} else {
+							startClassFound = true;
+						}
+					} while(!startClassFound);
+					startClass = candidate;
+					
+					if(startClass.equals(existingDefinition)) {
+						logger.info("Reusing existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + " as start class for learning algorithm.");
+					} else {
+						logger.info("Generalised existing class expression " + OWLAPIRenderers.toManchesterOWLSyntax(existingDefinition) + " to " + OWLAPIRenderers.toManchesterOWLSyntax(startClass) + ", which is used as start class for the learning algorithm.");
+					}
+					
+					if(operator instanceof RhoDRDown) {
+						((RhoDRDown)operator).setDropDisjuncts(false);
+					}
+					
+				} else {
+					Set<OWLClassExpression> superClasses = reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
+					if(superClasses.size() > 1) {
+						startClass = dataFactory.getOWLObjectIntersectionOf(superClasses);
+					} else if(superClasses.size() == 1){
+						startClass = (OWLClassExpression) superClasses.toArray()[0];
+					} else {
+						startClass = dataFactory.getOWLThing();
+						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
+								"sensible to learn a class expression in this case.");
+					}					
+				}
+			}		
+		}
+		return startClass;
 	}
 	
 	private OENode getNextNodeToExpand() {
@@ -591,8 +586,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			logger.warn("Invalid accuracy value " + accuracy + " for class expression " + description + ". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
-			System.exit(0);
+			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description + 
+					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
 		
 		expressionTests++;
@@ -642,7 +637,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(niceDescription.equals(classToDescribe)) {
 				return false;
 			}
-//			System.err.println(node);System.out.println(niceDescription);
 			
 			if(!isDescriptionAllowed(niceDescription, node)) {
 				return false;
