@@ -92,6 +92,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -502,6 +503,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				logger.info("Error parsing startClass: " + e.getMessage());
 				this.startClass = df.getOWLThing();
 			}
+		}
+		
+		if(subHierarchy == null) {
+			subHierarchy = reasoner.getClassHierarchy();
+		}
+		if(objectPropertyHierarchy == null) {
+			objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
+		}
+		if(dataPropertyHierarchy == null) {
+			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
 		isInitialised = true;
