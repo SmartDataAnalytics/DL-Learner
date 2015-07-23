@@ -250,7 +250,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			// R(C)
-			String query = "SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {"
+			String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 					+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
 					+ converter.convert("?s", description)
 					+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
@@ -629,7 +629,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			
 			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 				// R(C)
-				String query = "SELECT (COUNT(DISTINCT(?s)) AS ?cnt) WHERE {"
+				String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 						+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
 						+ converter.convert("?s", description)
 						+ "FILTER NOT EXISTS {?s a ?classToDescribe}}";
