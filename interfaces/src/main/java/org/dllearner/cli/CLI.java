@@ -113,14 +113,14 @@ public class CLI {
 	
 	// separate init methods, because some scripts may want to just get the application
 	// context from a conf file without actually running it
-	public void init() throws IOException {    	
+	public void init() throws IOException {
     	if(context == null) {
     		Resource confFileR = new FileSystemResource(confFile);
     		List<Resource> springConfigResources = new ArrayList<Resource>();
             configuration = new ConfParserConfiguration(confFileR);
             
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-            context =  builder.buildApplicationContext(configuration,springConfigResources);	
+            context =  builder.buildApplicationContext(configuration,springConfigResources);
             
             knowledgeSource = context.getBean(KnowledgeSource.class);
             rs = getMainReasonerComponent();
@@ -152,8 +152,8 @@ public class CLI {
         		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
         	} else {
         		Files.createFile(springFile, xml.toString());
-        	}		
-		}  
+        	}
+		}
 		
 		rs = getMainReasonerComponent();
 		
@@ -163,8 +163,8 @@ public class CLI {
 				
 				PosNegLP lp = context.getBean(PosNegLP.class);
 //				if(la instanceof QTL2){
-//					//new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);	
-//				} 
+//					//new SPARQLCrossValidation((QTL2Disjunctive) la,lp,rs,nrOfFolds,false);
+//				}
 				if((la instanceof TDTClassifier)||(la instanceof DSTTDTClassifier) ){
 					
 					//TODO:  verify if the quality of the code can be improved
@@ -183,7 +183,7 @@ public class CLI {
 						((DSTTDTClassifier)la).setOperator(op);
 					new CrossValidation2(la,lp,rs,nrOfFolds,false);
 				}else {
-					new CrossValidation2(la,lp,rs,nrOfFolds,false);	
+					new CrossValidation2(la,lp,rs,nrOfFolds,false);
 				}
 			} else {
 				if(context.getBean(AbstractLearningProblem.class) instanceof AbstractClassExpressionLearningProblem) {
@@ -230,7 +230,7 @@ public class CLI {
 
 	public void setWriteSpringConfiguration(boolean writeSpringConfiguration) {
 		this.writeSpringConfiguration = writeSpringConfiguration;
-	}    
+	}
 	
 	/**
 	 * @return the lp
@@ -255,9 +255,9 @@ public class CLI {
     
 	/**
 	 * @param args
-	 * @throws ParseException 
-	 * @throws IOException 
-	 * @throws ReasoningMethodUnsupportedException 
+	 * @throws ParseException
+	 * @throws IOException
+	 * @throws ReasoningMethodUnsupportedException
 	 */
 	public static void main(String[] args) throws ParseException, IOException, ReasoningMethodUnsupportedException {
 		
@@ -274,7 +274,7 @@ public class CLI {
 		File file = new File(args[args.length - 1]);
 		if(!file.exists()) {
 			System.out.println("File \"" + file + "\" does not exist.");
-			System.exit(0);			
+			System.exit(0);
 		}
 		
 		Resource confFile = new FileSystemResource(file);
@@ -308,7 +308,9 @@ public class CLI {
 
             // Get the Root Error Message
             logger.error("An Error Has Occurred During Processing.");
-//            logger.error(primaryCause.getMessage());
+            if (primaryCause != null) {
+            	logger.error(primaryCause.getMessage());
+            }
             logger.debug("Stack Trace: ", e);
             logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
