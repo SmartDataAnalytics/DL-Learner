@@ -2293,7 +2293,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		} catch (QueryExceptionHTTP e) {
 			throw new QueryExceptionHTTP("Error sending query \"" + queryString + "\" to endpoint " + qef.getId(), e);
 		} catch (Exception e) {
-			throw new RuntimeException("Query execution failed." ,e);
+			throw new RuntimeException("Error sending query \"" + queryString + "\" to endpoint " + qef.getId(), e);
 		}
 	}
 	

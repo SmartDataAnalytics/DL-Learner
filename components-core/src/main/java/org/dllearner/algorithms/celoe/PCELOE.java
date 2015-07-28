@@ -69,11 +69,13 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -390,7 +392,7 @@ public class PCELOE extends AbstractCELA {
 		List<Runnable> tasks = new ArrayList<Runnable>();
 		
 		for(int i = 0; i < nrOfWorkers; i++){
-			tasks.add(new Worker());
+			tasks.add(new PCELOEWorker());
 		}
 		
 		//needed to block until all threads have been finished, because otherwise the main thread outputs the result to early
@@ -1147,15 +1149,17 @@ public class PCELOE extends AbstractCELA {
 		return highestAccuracy;
 	}
 	
-	class Worker implements Runnable{
+	class PCELOEWorker implements Runnable{
 
 		@Override
 		public void run() {
 			OENode nextNode;
 			while (!terminationCriteriaSatisfied()) {
+				String threadName = Thread.currentThread().getName();
 				
 				nextNode = getNextNodeToExpand();
-				System.out.println(Thread.currentThread().getName() + "---" + nextNode);
+				System.out.println(threadName + " processing " + nextNode);
+				
 				if(nextNode != null){
 					int horizExp = nextNode.getHorizontalExpansion();
 					
@@ -1165,6 +1169,7 @@ public class PCELOE extends AbstractCELA {
 					while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 						// pick element from set
 						OWLClassExpression refinement = refinements.pollFirst();
+						System.out.println(threadName + " analysing " + refinement);
 						
 						// get length of class expression
 						int length = OWLClassExpressionUtils.getLength(refinement);
@@ -1173,7 +1178,10 @@ public class PCELOE extends AbstractCELA {
 						// (this also avoids duplicate node children)
 						if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 							// add node to search tree
-							addNode(refinement, nextNode);
+							boolean added = addNode(refinement, nextNode);
+							if(added) {
+								System.out.println(threadName + " put " + refinement);
+							}
 						}
 					}
 					currentlyProcessedNodes.remove(nextNode);
@@ -1184,6 +1192,7 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	public static void main(String[] args) throws Exception{
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
