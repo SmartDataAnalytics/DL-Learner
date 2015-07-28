@@ -76,7 +76,6 @@ import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +85,6 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -1616,7 +1614,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public void setSynchronized() {
-		logger.warn("Method setSynchronized() not implemented yet!"); 
+		baseReasoner.setSynchronized();
 	}
 
 }

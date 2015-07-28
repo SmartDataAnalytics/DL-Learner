@@ -94,13 +94,10 @@ import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
-import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 import uk.ac.manchester.cs.owl.owlapi.alternateimpls.ThreadSafeOWLReasoner;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
@@ -1412,6 +1409,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	 */
 	@Override
 	public void setSynchronized() {
-		reasoner = new ThreadSafeOWLReasoner(reasoner);
+		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
+			reasoner = new ThreadSafeOWLReasoner(reasoner);
+		}
 	}
 }

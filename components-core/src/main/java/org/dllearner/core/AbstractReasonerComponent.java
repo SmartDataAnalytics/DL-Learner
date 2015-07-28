@@ -1635,5 +1635,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 */
 	public abstract OWLDatatype getDatatype(OWLDataProperty dp);
 	
+	/**
+	 * Enabled a synchronized mode such that all reasoner methods are supposed
+	 * to be thread safe.
+	 */
 	public abstract void setSynchronized();
 }
