@@ -1634,4 +1634,6 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * @return
 	 */
 	public abstract OWLDatatype getDatatype(OWLDataProperty dp);
+	
+	public abstract void setSynchronized();
 }

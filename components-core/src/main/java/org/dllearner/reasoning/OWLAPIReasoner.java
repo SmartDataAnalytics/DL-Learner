@@ -101,6 +101,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+import uk.ac.manchester.cs.owl.owlapi.alternateimpls.ThreadSafeOWLReasoner;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
@@ -1404,5 +1405,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		return dataproperty2datatype.get(dp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
+	 */
+	@Override
+	public void setSynchronized() {
+		reasoner = new ThreadSafeOWLReasoner(reasoner);
 	}
 }

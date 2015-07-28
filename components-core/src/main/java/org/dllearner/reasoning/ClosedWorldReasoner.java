@@ -1611,4 +1611,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		return baseReasoner.getDatatype(dp);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
+	 */
+	@Override
+	public void setSynchronized() {
+		logger.warn("Method setSynchronized() not implemented yet!"); 
+	}
+
 }

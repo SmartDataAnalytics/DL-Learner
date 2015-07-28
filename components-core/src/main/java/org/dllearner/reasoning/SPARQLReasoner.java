@@ -2394,4 +2394,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return XSD.STRING;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
+	 */
+	@Override
+	public void setSynchronized() {
+		logger.warn("Method setSynchronized() not implemented yet!"); 
+	}
+
 }
