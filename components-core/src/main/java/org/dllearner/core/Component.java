@@ -35,8 +35,8 @@ public interface Component {
 	 * @throws ComponentInitException This exception is thrown if any
 	 * exceptions occur within the initialisation process of this
 	 * component. As component developer, you are encouraged to
-	 * rethrow occuring exception as ComponentInitException and 
-	 * giving an error message as well as the actualy exception by
+	 * re-throw occurring exception as ComponentInitException and 
+	 * giving an error message as well as the actually exception by
 	 * using the constructor {@link ComponentInitException#ComponentInitException(String, Throwable)}. 
 	 */
 	public abstract void init() throws ComponentInitException;

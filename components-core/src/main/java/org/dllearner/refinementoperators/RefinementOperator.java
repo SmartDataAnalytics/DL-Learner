@@ -27,7 +27,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
  * Interface for all refinement operators based on OWL/Description Logics.
  * A refinement operator
- * maps a OWLClassExpression to a set of descriptions. For downward refinement
+ * maps a description to a set of descriptions. For downward refinement
  * operators those descriptions are more special. For upward refinement
  * operators, those descriptions are more general. 
  * 
