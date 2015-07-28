@@ -182,6 +182,10 @@
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-impl</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapitools-concurrentimpl</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.clarkparsia.pellet</groupId>
