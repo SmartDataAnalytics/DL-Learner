@@ -90,14 +90,12 @@ import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
 /**
- * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
- * It adapts and extends the standard supervised learning algorithm for the
- * ontology engineering use case. 
+ * The PCELOE is an experimental, parallel implementation of the CELOE algorithm.
  * 
- * @author Jens Lehmann
+ * @author Lorenz Buehmann
  *
  */
-@ComponentAnn(name="PCELOE", shortName="pceloe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
+@ComponentAnn(name="PCELOE", shortName="pceloe", version=1.0, description="PCELOE is an experimental, parallel implementation of the CELOE algorithm.")
 public class PCELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(PCELOE.class);
