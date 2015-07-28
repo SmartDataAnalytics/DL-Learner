@@ -71,6 +71,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 	}
 	
 	public OWLClassExpression minimizeClone(OWLClassExpression ce){
+		OWLObjectDuplicator objectDuplicator = new OWLObjectDuplicator(df);
 		OWLClassExpression clone = objectDuplicator.duplicateObject(ce);
 		return clone.accept(this);
 	}

@@ -65,6 +65,7 @@ import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
 import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.SynchronizedRefinementOperator;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
@@ -99,13 +100,9 @@ import com.jamonapi.MonitorFactory;
 public class PCELOE extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(PCELOE.class);
-//	private CELOEConfigurator configurator;
 	
 	private boolean isRunning = false;
 	private boolean stop = false;	
-	
-//	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
-//	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
 	private LengthLimitedRefinementOperator operator;
 	
@@ -366,6 +363,9 @@ public class PCELOE extends AbstractCELA {
 			((CustomHierarchyRefinementOperator) operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator) operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
+		
+		reasoner.setSynchronized();
+		operator = new SynchronizedRefinementOperator(operator);
 	}
 	
 	@Override
@@ -514,15 +514,17 @@ public class PCELOE extends AbstractCELA {
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
-		Iterator<OENode> it = nodes.descendingIterator();
-
-		while(it.hasNext()) {
-			OENode node = it.next();
-			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-					return node;
-			} else {
-				if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-					return node;
+		synchronized (nodes) {
+			Iterator<OENode> it = nodes.descendingIterator();
+	
+			while(it.hasNext()) {
+				OENode node = it.next();
+				if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+						return node;
+				} else {
+					if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+						return node;
+					}
 				}
 			}
 		}
@@ -1156,7 +1158,7 @@ public class PCELOE extends AbstractCELA {
 				String threadName = Thread.currentThread().getName();
 				
 				nextNode = getNextNodeToExpand();
-				System.out.println(threadName + " processing " + nextNode);
+//				System.out.println(threadName + " processing " + nextNode);
 				
 				if(nextNode != null){
 					int horizExp = nextNode.getHorizontalExpansion();
@@ -1167,7 +1169,7 @@ public class PCELOE extends AbstractCELA {
 					while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 						// pick element from set
 						OWLClassExpression refinement = refinements.pollFirst();
-						System.out.println(threadName + " analysing " + refinement);
+//						System.out.println(threadName + " analysing " + refinement);
 						
 						// get length of class expression
 						int length = OWLClassExpressionUtils.getLength(refinement);
@@ -1178,11 +1180,12 @@ public class PCELOE extends AbstractCELA {
 							// add node to search tree
 							boolean added = addNode(refinement, nextNode);
 							if(added) {
-								System.out.println(threadName + " put " + refinement);
+//								System.out.println(threadName + " put " + refinement);
 							}
 						}
 					}
 					currentlyProcessedNodes.remove(nextNode);
+//					showIfBetterSolutionsFound();
 				}
 				
 			}
@@ -1190,7 +1193,7 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
@@ -1209,6 +1212,7 @@ public class PCELOE extends AbstractCELA {
 		
 		PCELOE alg = new PCELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
+		alg.setNrOfThreads(8);
 //		alg.setMaxClassDescriptionTests(200);
 		alg.init();
 		
