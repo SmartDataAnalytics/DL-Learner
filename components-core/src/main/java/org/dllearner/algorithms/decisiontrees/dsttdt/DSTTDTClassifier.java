@@ -2,44 +2,18 @@ package org.dllearner.algorithms.decisiontrees.dsttdt;
 
 
 import java.util.ArrayList;
+//import knowledgeBasesHandler.KnowledgeBase;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
-
-//import knowledgeBasesHandler.KnowledgeBase;
-
-
-
-
-
-
-
-
-
-
-
-
 import java.util.TreeSet;
-
-
-
-
-
-
-
-
-
-
-
-
 
 import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
 import org.dllearner.algorithms.decisiontrees.dsttdt.models.DSTDLTree;
 import org.dllearner.algorithms.decisiontrees.dsttdt.models.EvidentialModel;
 import org.dllearner.algorithms.decisiontrees.heuristics.TreeInductionHeuristics;
-import org.dllearner.algorithms.decisiontrees.refinementoperators.*;
-import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
+import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.utils.Couple;
 import org.dllearner.algorithms.decisiontrees.utils.Npla;
 import org.dllearner.algorithms.decisiontrees.utils.Split;
@@ -49,13 +23,15 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.annotations.OutVariable;
+import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.dllearner.learningproblems.PosNegUndLP;
 
 
 
@@ -63,15 +39,20 @@ import org.dllearner.learningproblems.PosNegUndLP;
 public class DSTTDTClassifier extends AbstractCELA{
 	
 	//static final double THRESHOLD = 0.05;
-	//static final double M = 3;	
+	//static final double M = 3;
 	private static Logger logger= LoggerFactory.getLogger(DSTTDTClassifier.class);
+	
+	@OutVariable
 	private DSTDLTree currentmodel; // model induced from the procedure
 	private boolean stop;
 	
+	@Unused
 	protected OWLClassExpression classToDescribe; //target concept
-	protected TreeInductionHeuristics heuristic; // heuristic 
+	@ConfigOption(description = "instance of heuristic to use", defaultValue = "TreeInductionHeuristics")
+	protected TreeInductionHeuristics heuristic; // heuristic
 	//protected LengthLimitedRefinementOperator operator ;// refinement operator
 
+	@ConfigOption(description = "refinement operator instance to use", defaultValue = "DLTreesRefinementOperator")
 	protected RefinementOperator operator;
 
 	//private KnowledgeBase kb;
@@ -109,7 +90,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 	protected double prPos;
 	protected double prNeg;
 	//protected OWLClassExpression classToDescribe; //target concept
-	//protected DLTreeHeuristics heuristic; // heuristic 
+	//protected DLTreeHeuristics heuristic; // heuristic
 	//protected LengthLimitedRefinementOperator operator ;// refinement operator
 
 	//protected RefinementOperator operator;
@@ -176,12 +157,13 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 
 
+	@Override
 	public void init() throws ComponentInitException{
-		//inizialization 
+		//inizialization
 		
 		// TODO Auto-generated method stub
-				baseURI = reasoner.getBaseURI();	
-				prefixes = reasoner.getPrefixes();	
+				baseURI = reasoner.getBaseURI();
+				prefixes = reasoner.getPrefixes();
 
 				// if no one injected a heuristic, we use a default one
 				if(heuristic == null) {
@@ -193,9 +175,9 @@ public class DSTTDTClassifier extends AbstractCELA{
 				}
 
 				if(operator == null) {
-					// default operator 
+					// default operator
 					operator= new DLTreesRefinementOperator((PosNegUndLP)super.learningProblem, getReasoner(), 4);
-					//operator = new DLTreesRefinementOperator( this.learningProblem,reasoner,4); 
+					//operator = new DLTreesRefinementOperator( this.learningProblem,reasoner,4);
 					((DLTreesRefinementOperator)operator).setReasoner(reasoner);
 					((DLTreesRefinementOperator)operator).setBeam(4); // default value
 					//System.out.println("Refinement operator"+operator);
@@ -222,7 +204,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DSTDLTree induceDSTDLTree
-	(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,	SortedSet<OWLIndividual> undExs) {	
+	(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,	SortedSet<OWLIndividual> undExs) {
 		
 
 		Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> examples = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExs, negExs, undExs, beam, prPos, prNeg);
@@ -250,7 +232,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 			int psize = posExs.size();
 			int nsize = negExs.size();
 			int usize = undExs.size();
-			System.out.printf("Learning problem\t p:%d\t n:%d\t u:%d\t prPos:%4f\t prNeg:%4f\n", 
+			System.out.printf("Learning problem\t p:%d\t n:%d\t u:%d\t prPos:%4f\t prNeg:%4f\n",
 					psize, nsize, usize, prPos, prNeg);
 
 
@@ -307,11 +289,11 @@ public class DSTTDTClassifier extends AbstractCELA{
 					currentTree.setRoot(dataFactory.getOWLThing(), mass); // set positive lea
 					//				return tree;
 				}
-				else if (perPos==0 && perNeg > puritythreshold) { // no positive	
+				else if (perPos==0 && perNeg > puritythreshold) { // no positive
 					//				System.out.println("NoThing as leaf");
 					currentTree.setRoot(dataFactory.getOWLNothing(), mass); // set negative leaf
 					//					return tree;
-				}		
+				}
 				else{
 					//System.out.println("Non specificity: "+nonSpecifityControl);
 					if (!nonSpecifityControl){
@@ -344,7 +326,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 						else
 							newRootConcept= heuristic.selectWorstConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg);			MassFunction refinementMass = newRootConcept.getSecondElement();
 
-						//System.out.println(newRootConcept.getFirstElement()+"----"+refinementMass);	
+						//System.out.println(newRootConcept.getFirstElement()+"----"+refinementMass);
 						SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();;
 						SortedSet<OWLIndividual> negExsT =new  TreeSet<OWLIndividual>();;
 						SortedSet<OWLIndividual> undExsT =new  TreeSet<OWLIndividual>();
@@ -356,7 +338,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 						Split.split(newRootConcept.getFirstElement(), dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						// select node concept
 
-						currentTree.setRoot(newRootConcept.getFirstElement(), refinementMass);		
+						currentTree.setRoot(newRootConcept.getFirstElement(), refinementMass);
 
 						//	undExsT = union(undExsT,
 						//						tree.setPosTree(induceDSTDLTree(posExsT, negExsT, undExsT, dim, prPos, prNeg));
@@ -380,12 +362,12 @@ public class DSTTDTClassifier extends AbstractCELA{
 						lastTrees.push(currentTree);
 
 					}
-					else if(mass.getNonSpecificityMeasureValue()<0.1){ 
+					else if(mass.getNonSpecificityMeasureValue()<0.1){
 						//System.out.println();
 						DLTreesRefinementOperator dlTreesRefinementOperator = (DLTreesRefinementOperator)operator;
 						
 						//System.out.println("is null?: "+dlTreesRefinementOperator==null);
-						//Set<OWLClassExpression> 
+						//Set<OWLClassExpression>
 						
 						//refine = dlTreesRefinementOperator.refine(dataFactory.getOWLThing(), posExs, negExs);
 						Set<OWLClassExpression> refine = null;
@@ -405,12 +387,12 @@ public class DSTTDTClassifier extends AbstractCELA{
 						if  (dlTreesRefinementOperator.getRo() ==DLTreesRefinementOperator.ORIGINAL) // 3: the original refinement operator for terminological trees
 							newRootConcept= heuristic.selectBestConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg);
 						else
-							newRootConcept= heuristic.selectWorstConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg); // otherwise select the worst concept 
+							newRootConcept= heuristic.selectWorstConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg); // otherwise select the worst concept
 
 						//heuristic.selectBestConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg);
 						MassFunction refinementMass = newRootConcept.getSecondElement();
 
-						//logger.debug(newRootConcept.getFirstElement()+"----"+refinementMass);	
+						//logger.debug(newRootConcept.getFirstElement()+"----"+refinementMass);
 						SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();
 						SortedSet<OWLIndividual> negExsT = new TreeSet<OWLIndividual>();
 						SortedSet<OWLIndividual> undExsT = new TreeSet<OWLIndividual>();
@@ -423,7 +405,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 						Split.split(newRootConcept.getFirstElement(), dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						// select node concept
 
-						//tree.setRoot(newRootConcept.getFirstElement(), refinementMass);		
+						//tree.setRoot(newRootConcept.getFirstElement(), refinementMass);
 						currentTree.setRoot(newRootConcept.getFirstElement(), refinementMass);
 						//	undExsT = union(undExsT,
 						//						tree.setPosTree(induceDSTDLTree(posExsT, negExsT, undExsT, dim, prPos, prNeg));
@@ -454,15 +436,15 @@ public class DSTTDTClassifier extends AbstractCELA{
 							currentTree.setRoot(dataFactory.getOWLThing(), mass); // set positive leaf
 							//					return tree;
 						}
-						else {// no positive			
+						else {// no positive
 							currentTree.setRoot(dataFactory.getOWLNothing(), mass); // set negative leaf
 							//					return tree;
-						}	
+						}
 
 					}
 
 				}
-			}	
+			}
 
 		}
 
@@ -490,7 +472,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		while (!stack.isEmpty()){
 			
 			DSTDLTree currenttree=stack.pop();
-			OWLClassExpression rootClass = currenttree.getRoot(); 
+			OWLClassExpression rootClass = currenttree.getRoot();
 			MassFunction m= currenttree.getRootBBA();
 		if (rootClass.equals(dataFactory.getOWLThing())){
 			//		System.out.println("Caso 1");
@@ -516,12 +498,12 @@ public class DSTTDTClassifier extends AbstractCELA{
 			result.setSecondElement(m);
 			list.add(result);
 
-		}		
+		}
 		else if (reasoner.hasType(rootClass, indTestEx)){
 			//System.out.println(kb.getReasoner().hasType(kb.getIndividuals()[indTestEx], rootClass));
 			if (currenttree.getPosSubTree()!=null){
 
-//				classifyExampleDST( list, indTestEx, tree.getPosSubTree());	
+//				classifyExampleDST( list, indTestEx, tree.getPosSubTree());
 				stack.push(currenttree.getPosSubTree());
 				//			System.out.println("------");
 			}
@@ -564,7 +546,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 					Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
 					result.setFirstElement(+1);
 					result.setSecondElement(m);
-					list.add(result);	
+					list.add(result);
 					//				System.out.println("ADdded");
 				}
 				//System.out.println("---->");
@@ -648,7 +630,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 
 	/**
-	 * Implementation of forcing criterion for the final class assignement 
+	 * Implementation of forcing criterion for the final class assignement
 	 * @param results
 	 * @param c
 	 * @param bba
@@ -696,7 +678,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		PosNegUndLP learningProblem2 = (PosNegUndLP)learningProblem;
 		SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)learningProblem2.getPositiveExample();
 		SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)learningProblem2.getNegativeExample();
-		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExample();								
+		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExample();
 
 		//System.out.printf("--- Query Concept #%d \n",c);
 		

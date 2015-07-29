@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
+import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
@@ -83,6 +84,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject, E extends OWLEntity> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
+	@Unused
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
 	
@@ -95,7 +97,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
-	
+	@ConfigOption(description = "the sparql endpoint knowledge source")
 	protected SparqlEndpointKS ks;
 	
 	// the instances which are set
@@ -103,6 +105,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	private QueryExecutionFactory ksQef;
 	
 	// the instances on which the algorithms are really applied
+	@ConfigOption(description = "The sparql reasoner instance to use", defaultValue = "SPARQLReasoner")
 	protected SPARQLReasoner reasoner;
 	protected QueryExecutionFactory qef;
 	
@@ -114,6 +117,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected boolean timeout = true;
 	
+	@Unused
 	protected boolean forceSPARQL_1_0_Mode = false;
 	
 	protected int chunkCount = 0;
@@ -143,6 +147,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@ConfigOption(description = "the OWL entity to learn about")
 	protected E entityToDescribe;
 	
+	@Unused
 	protected boolean useSampling = true;
 	protected int popularity;
 	

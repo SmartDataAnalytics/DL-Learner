@@ -70,13 +70,11 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -102,8 +100,9 @@ public class PCELOE extends AbstractCELA {
 	private static Logger logger = Logger.getLogger(PCELOE.class);
 	
 	private boolean isRunning = false;
-	private boolean stop = false;	
+	private boolean stop = false;
 	
+	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -144,7 +143,7 @@ public class PCELOE extends AbstractCELA {
 	// important parameters (non-config options but internal)
 	private double noise;
 
-	private boolean filterFollowsFromKB;	
+	private boolean filterFollowsFromKB;
 	
 	// less important parameters
 	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
@@ -178,7 +177,7 @@ public class PCELOE extends AbstractCELA {
 		@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 		private boolean replaceSearchTree = false;
 		
-		@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")	
+		@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 		private int maxNrOfResults = 10;
 
 		@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
@@ -211,7 +210,7 @@ public class PCELOE extends AbstractCELA {
 		@ConfigOption(name = "stopOnFirstDefinition", defaultValue="false", description="algorithm will terminate immediately when a correct definition is found")
 		private boolean stopOnFirstDefinition = false;
 		
-		
+		@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 		private boolean expandAccuracy100Nodes = false;
 		private double currentHighestAccuracy;
 	
@@ -281,7 +280,7 @@ public class PCELOE extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();	
+		prefixes = reasoner.getPrefixes();
 			
 		if(maxExecutionTimeInSeconds != 0 && maxExecutionTimeInSecondsAfterImprovement != 0) {
 			maxExecutionTimeInSeconds = Math.min(maxExecutionTimeInSeconds, maxExecutionTimeInSecondsAfterImprovement);
@@ -417,7 +416,7 @@ public class PCELOE extends AbstractCELA {
 
 		if(singleSuggestionMode) {
 			bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
-		}		
+		}
 		
 		// print solution(s)
 		logger.info("solutions:\n" + getSolutionString());
@@ -430,7 +429,7 @@ public class PCELOE extends AbstractCELA {
 	}
 	
 	/*
-	 * Compute the start class in the search space from which the refinement will start. 
+	 * Compute the start class in the search space from which the refinement will start.
 	 * We use the intersection of super classes for definitions (since it needs to
 	 * capture all instances), but owl:Thing for learning subclasses (since it is
 	 * superfluous to add super classes in this case)
@@ -461,7 +460,7 @@ public class PCELOE extends AbstractCELA {
 					if(operator instanceof RhoDRDown) {
 						((RhoDRDown)operator).setDropDisjuncts(true);
 					}
-					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -503,9 +502,9 @@ public class PCELOE extends AbstractCELA {
 						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
 								"sensible to learn a class expression in this case.");
-					}					
+					}
 				}
-			}		
+			}
 		}
 		return startClass;
 	}
@@ -577,7 +576,7 @@ public class PCELOE extends AbstractCELA {
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description + 
+			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
 					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
 		
@@ -604,10 +603,10 @@ public class PCELOE extends AbstractCELA {
 			if(accuracy > bestAccuracy) {
 				bestAccuracy = accuracy;
 				bestDescription = description;
-				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription)); 
+				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription));
 			}
 			return true;
-		} 
+		}
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -616,7 +615,7 @@ public class PCELOE extends AbstractCELA {
 		if(!isCandidate) {
 			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
-			isCandidate = 
+			isCandidate =
 				(accuracy > accThreshold ||
 				(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
 		}
@@ -633,7 +632,7 @@ public class PCELOE extends AbstractCELA {
 				return false;
 			}
 			
-			// another test: none of the other suggested descriptions should be 
+			// another test: none of the other suggested descriptions should be
 			// a subdescription of this one unless accuracy is different
 			// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
 			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
@@ -645,7 +644,7 @@ public class PCELOE extends AbstractCELA {
 						shorterDescriptionExists = true;
 						break;
 					}
-				}				
+				}
 			}
 			
 //			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
@@ -665,7 +664,7 @@ public class PCELOE extends AbstractCELA {
 		}
 		
 		return true;
-	}		
+	}
 	
 	// checks whether the class expression is allowed
 		private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
@@ -690,13 +689,13 @@ public class PCELOE extends AbstractCELA {
 						}
 						toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 					}
-				}			
+				}
 			} else if (learningProblem instanceof ClassAsInstanceLearningProblem) {
 				return true;
 			}
 			
 			// perform forall sanity tests
-			if (parentNode != null && 
+			if (parentNode != null &&
 					(ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription()))) {
 				// we have an additional \forall construct, so we now fetch the contexts
 				// in which it occurs
@@ -730,7 +729,7 @@ public class PCELOE extends AbstractCELA {
 						return false;
 					}
 				}
-			}		
+			}
 			
 			// we do not want to have negations of sibling classes on the outermost level
 			// (they are expressed more naturally by saying that the siblings are disjoint,
@@ -747,7 +746,7 @@ public class PCELOE extends AbstractCELA {
 			if(cls.isOWLThing()) {
 				return false;
 			}
-			return (description instanceof OWLNaryBooleanClassExpression && 
+			return (description instanceof OWLNaryBooleanClassExpression &&
 					((OWLNaryBooleanClassExpression)description).getOperands().contains(cls));
 //	        return description.containsConjunct(cls) ||
 //	                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
@@ -759,9 +758,9 @@ public class PCELOE extends AbstractCELA {
 //				SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(cls);
 //				if(description instanceof OWLObjectIntersectionOf) {
 //					List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
-//					
+//
 //					for (OWLClassExpression op : operands) {
-//						if(superClasses.contains(op) || 
+//						if(superClasses.contains(op) ||
 //								(op instanceof OWLObjectUnionOf && !Sets.intersection(((OWLObjectUnionOf)op).getOperands(),superClasses).isEmpty())) {
 //							for (OWLClassExpression op2 : operands) {
 //								if((op2 instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)op2).getOperands().contains(cls))) {
@@ -770,7 +769,7 @@ public class PCELOE extends AbstractCELA {
 //							}
 //						}
 //					}
-//					
+//
 //					for (OWLClassExpression op1 : operands) {
 //						for (OWLClassExpression op2 : operands) {
 //							if(!op1.isAnonymous() && op2 instanceof OWLObjectUnionOf) {
@@ -795,8 +794,8 @@ public class PCELOE extends AbstractCELA {
 	
 	
 	private boolean terminationCriteriaSatisfied() {
-		return 
-		stop || 
+		return
+		stop ||
 		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
 		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
@@ -865,13 +864,13 @@ public class PCELOE extends AbstractCELA {
 		// we need to check whether it was the last one
 		if(minHorizExp == newHorizExp - 1) {
 			
-			// the best accuracy that a node can achieve 
+			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 			
 			for(OENode n : nodes.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
-						// we can stop instantly when another node with min. 
+						// we can stop instantly when another node with min.
 						return;
 					}
 					if(heuristic.getNodeScore(n) < scoreThreshold) {
@@ -902,12 +901,12 @@ public class PCELOE extends AbstractCELA {
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		return bestEvaluatedDescriptions.getBest();
-	}	
+	}
 	
 	@Override
 	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
-	}	
+	}
 	
 	public double getCurrentlyBestAccuracy() {
 		return bestEvaluatedDescriptions.getBest().getAccuracy();
@@ -916,7 +915,7 @@ public class PCELOE extends AbstractCELA {
 	@Override
 	public boolean isRunning() {
 		return isRunning;
-	}	
+	}
 	
 	@Override
 	public void stop() {
@@ -1011,10 +1010,12 @@ public class PCELOE extends AbstractCELA {
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
+	@Deprecated
 	public int getMaxClassDescriptionTests() {
 		return maxClassExpressionTests;
 	}
 
+	@Deprecated
 	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
 		this.maxClassExpressionTests = maxClassDescriptionTests;
 	}
@@ -1052,10 +1053,12 @@ public class PCELOE extends AbstractCELA {
 		this.heuristic = heuristic;
 	}
 
+	@Deprecated
 	public int getMaxClassExpressionTestsWithoutImprovement() {
 		return maxClassExpressionTestsAfterImprovement;
 	}
 
+	@Deprecated
 	public void setMaxClassExpressionTestsWithoutImprovement(
 			int maxClassExpressionTestsWithoutImprovement) {
 		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;
@@ -1068,7 +1071,7 @@ public class PCELOE extends AbstractCELA {
 	public void setMaxExecutionTimeInSecondsAfterImprovement(
 			int maxExecutionTimeInSecondsAfterImprovement) {
 		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
-	}	
+	}
 	
 	public boolean isSingleSuggestionMode() {
 		return singleSuggestionMode;
