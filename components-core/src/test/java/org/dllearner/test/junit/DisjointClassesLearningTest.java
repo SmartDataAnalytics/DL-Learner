@@ -1,8 +1,14 @@
 package org.dllearner.test.junit;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.dllearner.algorithms.DisjointClassesLearner;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.SparqlEndpointKS;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -24,12 +30,17 @@ public class DisjointClassesLearningTest { //extends TestCase{
 //		reasoner.prepareSubsumptionHierarchy();
 //	}
 
-	public void testLearnSingleClass(){
+	@Test
+	public void testLearnSingleClass() throws MalformedURLException, ComponentInitException{
+		ks = new SparqlEndpointKS(new SparqlEndpoint(new URL("http://sake.informatik.uni-leipzig.de:8890/sparql")));
+		ks.init();
+		reasoner = new SPARQLReasoner(ks);
+		reasoner.init();
 		DisjointClassesLearner l = new DisjointClassesLearner(ks);
 		l.setReasoner(reasoner);
 		l.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		l.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Book")));
-
+		l.init();
 		l.start();
 
 		System.out.println(l.getCurrentlyBestAxioms(5));

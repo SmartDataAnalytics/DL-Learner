@@ -34,6 +34,8 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
+import org.dllearner.core.annotations.Unused;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -78,13 +80,16 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 					"SELECT (COUNT(?s) AS ?overlap) WHERE {?s a ?cls, ?cls_other . }");
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
-			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .} }");
 
 	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 	private SortedSet<OWLClassExpression> subClasses;
 
+	@Unused
 	private boolean useWordNetDistance = false;
+	@ConfigOption(description = "only keep most general classes in suggestions", defaultValue = "true")
 	private boolean suggestMostGeneralClasses = true;
+	@ConfigOption(description = "include instance count / popularity when computing scores", defaultValue = "true")
 	private boolean useClassPopularity = true;
 
 	private Set<OWLClass> allClasses;
@@ -159,7 +164,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
-							df.getOWLDisjointClassesAxiom(entityToDescribe, cls), 
+							df.getOWLDisjointClassesAxiom(entityToDescribe, cls),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -195,7 +200,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
-							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate), 
+							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -207,7 +212,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	private SortedSet<OWLClass> getCandidates(){
 		SortedSet<OWLClass> candidates;
 		
-		if (strictOWLMode) { 
+		if (strictOWLMode) {
 			candidates = reasoner.getOWLClasses();
 		} else {
 			candidates = reasoner.getClasses();
@@ -405,11 +410,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//			Set<OWLClass> topClasses = new HashSet<OWLClass>();
 			//			for(OntClass cls : model.listOWLClasses().toSet()){
 			//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
-			//				if(superClasses.isEmpty() || 
+			//				if(superClasses.isEmpty() ||
 			//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
 			//					topClasses.add(df.getOWLClass(IRI.create(cls.getURI()));
 			//				}
-			//				
+			//
 			//			}
 			//			classes.retainAll(topClasses);
 			for (OWLClass nc : new HashSet<OWLClass>(classes)) {//System.out.print(nc + "::");
@@ -484,7 +489,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		}
 		;
 
-		//if the classes are connected via subsumption we assume that they are not disjoint 
+		//if the classes are connected via subsumption we assume that they are not disjoint
 		if (reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)) {
 			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
 					new AxiomScore(0d, 1d));
