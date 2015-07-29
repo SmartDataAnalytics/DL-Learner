@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 import org.springframework.beans.BeanUtils;
@@ -63,9 +64,8 @@ public class ConfigHelper {
 	public static <T> void configure(Component component, String configName, T configValue){
 		List<Field> fields = getAllFields(component);
         for(Field f : fields){
-        	ConfigOption option = f.getAnnotation(ConfigOption.class);
-        	if(option != null){
-        		if(option.name().equals(configName)){
+        	if(f.isAnnotationPresent(ConfigOption.class)){
+        		if(AnnComponentManager.getName(f).equals(configName)){
         			try {
 						PropertyEditor editor = PropertyEditor.class.newInstance();
 						editor.setAsText(configValue.toString());
@@ -105,17 +105,16 @@ public class ConfigHelper {
 	 * @param component The component to analyse.
 	 * @return All config options of the component with their respective value.
 	 */
-	public static Map<ConfigOption,Object> getConfigOptionValues(Component component) {
-		Map<ConfigOption,Object> optionValues = new HashMap<ConfigOption,Object>();
+	public static Map<Field,Object> getConfigOptionValues(Component component) {
+		Map<Field,Object> optionValues = new HashMap<Field,Object>();
 		List<Field> fields = getAllFields(component);
 		for(Field field : fields) {
-			ConfigOption option = field.getAnnotation(ConfigOption.class);
-			if(option != null) {
+			if(field.isAnnotationPresent(ConfigOption.class)) {
 				try {
 					// we invoke the public getter instead of accessing a private field (may cause problem with SecurityManagers)
 					// use Spring BeanUtils TODO: might be unnecessarily slow because we already have the field?
 					Object value = BeanUtils.getPropertyDescriptor(component.getClass(), field.getName()).getReadMethod().invoke(component);
-					optionValues.put(option, value);
+					optionValues.put(field, value);
 				} catch (IllegalArgumentException e1) {
 					e1.printStackTrace();
 				} catch (IllegalAccessException e1) {
@@ -128,7 +127,7 @@ public class ConfigHelper {
 			}
 		}
 		return optionValues;
-	}	
+	}
 	
 	/**
 	 * Returns all config options for the given component.
@@ -154,7 +153,7 @@ public class ConfigHelper {
 	 * @param component
 	 * @return
 	 */
-	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<?> component){
+	public static Map<Field,Class<?>> getConfigOptionTypes(Class<?> component){
 		return getConfigOptionTypes(component, true);
 	}
 	
@@ -163,12 +162,12 @@ public class ConfigHelper {
 	 * @param component
 	 * @return
 	 */
-	public static Map<ConfigOption,Class<?>> getConfigOptionTypes(Class<?> component, boolean useSuperTypes){
-		Map<ConfigOption,Class<?>> optionTypes = new TreeMap<ConfigOption,Class<?>>(new Comparator<ConfigOption>() {
+	public static Map<Field,Class<?>> getConfigOptionTypes(Class<?> component, boolean useSuperTypes){
+		Map<Field,Class<?>> optionTypes = new TreeMap<Field,Class<?>>(new Comparator<Field>() {
 
 			@Override
-			public int compare(ConfigOption o1, ConfigOption o2) {
-				return o1.name().compareTo(o2.name());
+			public int compare(Field o1, Field o2) {
+				return AnnComponentManager.getName(o1).compareTo(AnnComponentManager.getName(o2));
 			}
 		});
 		Field[] fields = component.getDeclaredFields();
@@ -178,9 +177,8 @@ public class ConfigHelper {
 			}
 		}
 		for(Field f : fields){
-        	ConfigOption option = f.getAnnotation(ConfigOption.class);
-        	if(option != null){
-        		optionTypes.put(option, f.getType());
+        	if(f.isAnnotationPresent(ConfigOption.class)) {
+        		optionTypes.put(f, f.getType());
         	}
         }
 		return optionTypes;

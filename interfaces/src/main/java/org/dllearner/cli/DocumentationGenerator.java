@@ -20,6 +20,7 @@
 package org.dllearner.cli;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -207,9 +208,10 @@ public class DocumentationGenerator {
 
 	private void optionsTable(StringBuilder sb, Class<?> component, String catString) {
 		// generate table for configuration options
-		Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(component);
-		for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
-			ConfigOption option = entry.getKey();
+		Map<Field,Class<?>> options = ConfigHelper.getConfigOptionTypes(component);
+		for(Entry<Field,Class<?>> entry : options.entrySet()) {
+			String optionName = AnnComponentManager.getName(entry.getKey());
+			ConfigOption option = entry.getKey().getAnnotation(ConfigOption.class);
 			String type = entry.getValue().getSimpleName();
 			if(entry.getValue().equals(OWLClass.class)) {
 				type = "IRI";
@@ -231,12 +233,12 @@ public class DocumentationGenerator {
 				exampleValue = "[]";
 			}
 			
-			sb.append("option name: " + option.name() + "\n"
+			sb.append("option name: " + optionName + "\n"
 					+ "description: " + option.description() + "\n"
 					+ "type: " + type + "\n"
 					+ "required: " + option.required() + "\n"
 					+ "default value: " + option.defaultValue() + "\n"
-					+ "conf file usage: " + (catString.isEmpty()? "" : catString + ".") + option.name() + " = " + exampleValue +"\n");
+					+ "conf file usage: " + (catString.isEmpty()? "" : catString + ".") + optionName + " = " + exampleValue +"\n");
 			
 			sb.append("\n");
 		}
