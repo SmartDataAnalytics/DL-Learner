@@ -255,6 +255,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		this.suggestMostGeneralClasses = suggestMostGeneralClasses;
 	}
 	
+	public boolean isUseClassPopularity() {
+		return useClassPopularity;
+	}
+
+	public void setUseClassPopularity(boolean useClassPopularity) {
+		this.useClassPopularity = useClassPopularity;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
 	 */

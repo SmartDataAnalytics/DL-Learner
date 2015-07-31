@@ -106,6 +106,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
+	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -211,6 +212,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
+	@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 	private boolean expandAccuracy100Nodes = false;
 	private double currentHighestAccuracy;
 	
@@ -1049,10 +1051,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.heuristic = heuristic;
 	}
 
+	@Deprecated
 	public int getMaxClassExpressionTestsWithoutImprovement() {
 		return maxClassExpressionTestsAfterImprovement;
 	}
 
+	@Deprecated
 	public void setMaxClassExpressionTestsWithoutImprovement(
 			int maxClassExpressionTestsWithoutImprovement) {
 		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;

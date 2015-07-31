@@ -478,4 +478,12 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	public void setNoisePercentage(double noisePercentage) {
 		this.noisePercentage = noisePercentage;
 	}
+
+	public boolean isStopOnFirstDefinition() {
+		return stopOnFirstDefinition;
+	}
+
+	public void setStopOnFirstDefinition(boolean stopOnFirstDefinition) {
+		this.stopOnFirstDefinition = stopOnFirstDefinition;
+	}
 }
