@@ -34,7 +34,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * evaluated by the learning algorithm, i.e. it has been checked
  * which examples it covers. It can be used as return value for
  * learning algorithms to make it easier for applications to
- * assess how good an offered class OWLClassExpression is and how it
+ * assess how good an offered class description is and how it
  * classifies particular examples.
  * 
  * @author Jens Lehmann
@@ -46,8 +46,8 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription<ScorePosNeg
 	private ScorePosNeg score2;
 	
 	/**
-	 * Constructs an evaluated OWLClassExpression using its score.
-	 * @param OWLClassExpression The description, which was evaluated.
+	 * Constructs an evaluated description using its score.
+	 * @param description The description, which was evaluated.
 	 * @param score The score of the description.
 	 */
 	public EvaluatedDescriptionPosNeg(OWLClassExpression description, ScorePosNeg score) {
@@ -56,8 +56,8 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription<ScorePosNeg
 	}
 	
 	/**
-	 * Constructs an evaluated OWLClassExpression using example coverage.
-	 * @param OWLClassExpression The description, which was evaluated.
+	 * Constructs an evaluated description using example coverage.
+	 * @param description The description, which was evaluated.
 	 * @param posAsPos Positive examples classified as positive by (i.e. instance of) the description.
 	 * @param posAsNeg Positive examples classified as negative by (i.e. not instance of) the description.
 	 * @param negAsPos Negative examples classified as positive by (i.e. instance of) the description.
