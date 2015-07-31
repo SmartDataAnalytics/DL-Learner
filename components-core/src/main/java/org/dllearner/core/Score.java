@@ -34,9 +34,6 @@ import java.io.Serializable;
  */
 public abstract class Score implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6479328496461875019L;
 
 	/**

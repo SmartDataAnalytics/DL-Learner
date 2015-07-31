@@ -37,6 +37,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.ScoreSimple;
 import org.dllearner.refinementoperators.ELDown3;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -122,7 +123,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private Set<OWLIndividual> currentPosExamples;
 	private Set<OWLIndividual> currentNegExamples;
 	private SearchTreeNode bestCurrentNode;
-	private double bestCurrentScore = 0;
+	private Score bestCurrentScore = ScoreSimple.MIN;
 	private long treeStartTime;
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1;
@@ -189,7 +190,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 			ELDescriptionTree startTree = new ELDescriptionTree(reasoner, startClass);
 			addDescriptionTree(startTree, null);
 //			bestCurrentTree = top;
-			bestCurrentScore = Double.NEGATIVE_INFINITY;
+			bestCurrentScore = ScoreSimple.MIN;
 			
 			// main loop
 			int loop = 0;
@@ -222,7 +223,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //				System.out.println("==");
 			}
 			
-			if(bestCurrentScore > minimumTreeScore) {
+			if(Double.compare(bestCurrentScore.getAccuracy(), minimumTreeScore) > 0) {
 				// we found a tree (partial solution)
 				currentSolution.add(bestCurrentNode.getDescriptionTree());
 				OWLClassExpression bestDescription = bestCurrentNode.getDescriptionTree().transformToClassExpression();
@@ -288,7 +289,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		isRunning = false;
 	}
 
-	// evaluates a OWLClassExpression in tree form
+	// evaluates a class expression in tree form
 	private void addDescriptionTree(ELDescriptionTree descriptionTree, SearchTreeNode parentNode) {
 		
 		// redundancy check
@@ -301,7 +302,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		SearchTreeNode node = new SearchTreeNode(descriptionTree);
 		
 		// compute score
-		double score = getTreeScore(descriptionTree);
+		Score score = getTreeScore(descriptionTree);
 		node.setScore(score);
 		
 		// link to parent (unless start node)
@@ -313,18 +314,18 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 		// TODO: define "too weak" as a coverage on negative examples, which is
 		// too high for the tree to be considered
-		if(score != Double.NEGATIVE_INFINITY) {
+		if(score.getAccuracy() != Double.NEGATIVE_INFINITY) {
 			candidates.add(node);
 		}
 		
 		// check whether this is the best tree
-		if(score > bestCurrentScore) {
+		if(Double.compare(score.getAccuracy(), bestCurrentScore.getAccuracy()) > 0) {
 			bestCurrentNode = node;
 			bestCurrentScore = score;
 		}
 	}
 	
-	private double getTreeScore(ELDescriptionTree tree) {
+	private Score getTreeScore(ELDescriptionTree tree) {
 		
 		OWLClassExpression d = tree.transformToClassExpression();
 		
@@ -345,7 +346,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 //			score -= 100;
 			// further refining such a tree will not cover more positives
 			// => reject
-			return Double.NEGATIVE_INFINITY;
+			return ScoreSimple.MIN;
 		}
 		
 		// test coverage on current negative examples
@@ -369,7 +370,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		
 //		System.out.println("score: " + score);
 		
-		return score;
+		return new ScoreSimple(score);
 	}
 	
 	private boolean treeCriteriaSatisfied() {
@@ -398,7 +399,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		// we stop when the score of the last tree added is too low
 		// (indicating that the algorithm could not find anything appropriate 
 		// in the timeframe set)
-		if(bestCurrentScore <= minimumTreeScore) {
+		if(Double.compare(bestCurrentScore.getAccuracy(), minimumTreeScore) <= 0) {
 			return true;
 		}
 		
