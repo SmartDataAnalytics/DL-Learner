@@ -194,9 +194,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(name = "maxClassExpressionTestsAfterImprovement", defaultValue="0", description = "The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)")
 	private int maxClassExpressionTestsAfterImprovement = 0;
 	
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = 10;
-
 	@ConfigOption(defaultValue = "0", name = "maxExecutionTimeInSecondsAfterImprovement", description = "maximum execution of the algorithm in seconds")
 	private int maxExecutionTimeInSecondsAfterImprovement = 0;
 	
@@ -239,7 +236,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		setMaxClassExpressionTests(celoe.maxClassExpressionTests);
 		setMaxClassExpressionTestsAfterImprovement(celoe.maxClassExpressionTestsAfterImprovement);
 		setMaxDepth(celoe.maxDepth);
-		setMaxExecutionTimeInSeconds(celoe.maxExecutionTimeInSeconds);
+		setMaxExecutionTimeInSeconds(celoe.getMaxExecutionTimeInSeconds());
 		setMaxExecutionTimeInSecondsAfterImprovement(celoe.maxExecutionTimeInSecondsAfterImprovement);
 		setMaxNrOfResults(celoe.maxNrOfResults);
 		setNoisePercentage(celoe.noisePercentage);
@@ -1025,14 +1022,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Deprecated
 	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
 		this.maxClassExpressionTests = maxClassDescriptionTests;
-	}
-
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
 	public boolean isTerminateOnNoiseReached() {

@@ -100,6 +100,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
 	private boolean useMinimizer = true;
+	
+	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
+	protected int maxExecutionTimeInSeconds = 10;
 
 	/**
 	 * The learning problem variable, which must be used by
@@ -375,6 +378,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return str;
 	}
 	
+	/**
+	 * Computes an internal class hierarchy that only contains classes
+	 * that are allowed.
+	 * @return optimized class hierarchy
+	 */
 	protected ClassHierarchy initClassHierarchy() {
 		Set<OWLClass> usedConcepts;
 		if(allowedConcepts != null) {
@@ -392,6 +400,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return hierarchy;
 	}
 	
+	/**
+	 * Computes an internal object property hierarchy that only contains 
+	 * object properties that are allowed.
+	 * @return optimized object property hierarchy
+	 */
 	protected ObjectPropertyHierarchy initObjectPropertyHierarchy() {
 		Set<OWLObjectProperty> usedProperties;
 		if(allowedObjectProperties != null) {
@@ -410,6 +423,11 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		return hierarchy;
 	}
 	
+	/**
+	 * Computes an internal data property hierarchy that only contains 
+	 * data properties that are allowed.
+	 * @return optimized data property hierarchy
+	 */
 	protected DatatypePropertyHierarchy initDataPropertyHierarchy() {
 		Set<OWLDataProperty> usedProperties;
 		if(allowedDataProperties != null) {
@@ -425,6 +443,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
+	}
+	
+	protected boolean isTimeExpired() {
+		return getCurrentRuntimeInMilliSeconds() >= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds);
 	}
 	
 	protected long getCurrentRuntimeInMilliSeconds() {
@@ -580,6 +602,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 
 	public void setUseMinimizer(boolean useMinimizer) {
 		this.useMinimizer = useMinimizer;
+	}
+	
+	public int getMaxExecutionTimeInSeconds() {
+		return maxExecutionTimeInSeconds;
+	}
+
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
     
     /**
