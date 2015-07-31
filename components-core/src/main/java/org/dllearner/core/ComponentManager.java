@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public final class ComponentManager {
 	// list of all configuration options of all components
 	private static Map<Class<? extends AbstractComponent>, String> componentNames;
 	private static Map<Class<? extends AbstractComponent>, List<ConfigOption>> componentOptions;
-	private static Map<Class<? extends AbstractComponent>, Map<String, ConfigOption>> componentOptionsByName;
+	private static Map<Class<? extends AbstractComponent>, Map<String, Field>> componentOptionsByName;
 	private static Map<Class<? extends AbstractCELA>, Collection<Class<? extends AbstractClassExpressionLearningProblem>>> algorithmProblemsMapping;
 	private static Map<Class<? extends AbstractClassExpressionLearningProblem>, Collection<Class<? extends AbstractCELA>>> problemAlgorithmsMapping;
 	
@@ -176,7 +177,7 @@ public final class ComponentManager {
 		componentNames = new HashMap<Class<? extends AbstractComponent>, String>();
 		// read in all configuration options
 		componentOptions = new HashMap<Class<? extends AbstractComponent>, List<ConfigOption>>();
-		componentOptionsByName = new HashMap<Class<? extends AbstractComponent>, Map<String, ConfigOption>>();
+		componentOptionsByName = new HashMap<Class<? extends AbstractComponent>, Map<String, Field>>();
 //		configOptionDefaults = new HashMap<ConfigOption<?>,Object>();
 				
 		for (Class<? extends AbstractComponent> component : components) {
@@ -185,12 +186,12 @@ public final class ComponentManager {
 			componentNames.put(component, name);
 			
 			// assign options to components
-			Set<ConfigOption> options = AnnComponentManager.getConfigOptions(component);
+			Set<Field> options = AnnComponentManager.getConfigOptions(component);
 
 			// make config options accessible by name
-			Map<String, ConfigOption> byName = new HashMap<String, ConfigOption>();
-			for (ConfigOption option : options) {
-				byName.put(option.name(), option);
+			Map<String, Field> byName = new HashMap<String, Field>();
+			for (Field f : options) {
+				byName.put(AnnComponentManager.getName(f), f);
 			}
 			componentOptionsByName.put(component, byName);
 			
@@ -531,7 +532,7 @@ public final class ComponentManager {
 	 * @param componentClass The class object of a component.
 	 * @return A list of available configuration options of the specified component.
 	 */
-	public static Set<ConfigOption> getConfigOptions(Class<? extends AbstractComponent> componentClass) {
+	public static Set<Field> getConfigOptions(Class<? extends AbstractComponent> componentClass) {
 		if (!components.contains(componentClass)) {
 			System.err.println("Warning: component " + componentClass
 					+ " is not a registered component. [ComponentManager.getConfigOptions]");

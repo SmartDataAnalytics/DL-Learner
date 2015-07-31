@@ -54,6 +54,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -201,11 +202,12 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getConfigOptions(String component, boolean allInfo) throws UnknownComponentException {
 		Class<? extends Component> componentClass = cm.getComponentClass(component);
-		Set<org.dllearner.core.config.ConfigOption> options = AnnComponentManager.getConfigOptions(componentClass);
+		Set<Field> options = AnnComponentManager.getConfigOptions(componentClass);
 		String[] optionsString = new String[options.size()];
 		int i = 0;
-		for(org.dllearner.core.config.ConfigOption option : options) {
-			optionsString[i] = option.name();
+		for(Field f : options) {
+			ConfigOption option = f.getAnnotation(ConfigOption.class);
+			optionsString[i] = AnnComponentManager.getName(f);
 			if(allInfo) {
 				optionsString[i] += "#" + option.description();
 				optionsString[i] += "#" + option.required();

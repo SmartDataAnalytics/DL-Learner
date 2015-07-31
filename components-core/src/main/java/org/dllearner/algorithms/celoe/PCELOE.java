@@ -101,7 +101,8 @@ public class PCELOE extends AbstractCELA {
 
 	private boolean isRunning = false;
 	private boolean stop = false;
-
+	
+	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 
 	// all nodes in the search tree (used for selecting most promising node)
@@ -143,8 +144,8 @@ public class PCELOE extends AbstractCELA {
 	private double noise;
 
 	private boolean filterFollowsFromKB;
-
-	// less important parameters
+	
+    // less important parameters
 	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
 	// but it can also suppress quite useful expressions
 	private boolean forceMutualDifference = false;
@@ -175,7 +176,7 @@ public class PCELOE extends AbstractCELA {
 
 		@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 		private boolean replaceSearchTree = false;
-
+		
 		@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 		private int maxNrOfResults = 10;
 
@@ -210,6 +211,7 @@ public class PCELOE extends AbstractCELA {
 		private boolean stopOnFirstDefinition = false;
 
 
+		@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 		private boolean expandAccuracy100Nodes = false;
 		private double currentHighestAccuracy;
 
@@ -1014,10 +1016,12 @@ public class PCELOE extends AbstractCELA {
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
+	@Deprecated
 	public int getMaxClassDescriptionTests() {
 		return maxClassExpressionTests;
 	}
 
+	@Deprecated
 	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
 		this.maxClassExpressionTests = maxClassDescriptionTests;
 	}
@@ -1055,10 +1059,12 @@ public class PCELOE extends AbstractCELA {
 		this.heuristic = heuristic;
 	}
 
+	@Deprecated
 	public int getMaxClassExpressionTestsWithoutImprovement() {
 		return maxClassExpressionTestsAfterImprovement;
 	}
 
+	@Deprecated
 	public void setMaxClassExpressionTestsWithoutImprovement(
 			int maxClassExpressionTestsWithoutImprovement) {
 		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;

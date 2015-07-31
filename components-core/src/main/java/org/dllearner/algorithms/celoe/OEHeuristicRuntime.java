@@ -36,12 +36,12 @@ import org.dllearner.core.config.ConfigOption;
 public class OEHeuristicRuntime extends AbstractHeuristic{
 	
 	
-	// strong penalty for long descriptions
+	@ConfigOption(description = "penalty for long descriptions (horizontal expansion) (strong by default)", defaultValue = "0.1")
 	private double expansionPenaltyFactor = 0.1;
-	// bonus for being better than parent node
+	@ConfigOption(description = "bonus for being better than parent node", defaultValue = "0.3")
 	private double gainBonusFactor = 0.3;
-	// penalty if a node OWLClassExpression has very many refinements since exploring 
-	// such a node is computationally very expensive
+	@ConfigOption(description = "penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive",
+			defaultValue = "0.0001")
 	private double nodeRefinementPenalty = 0.0001;
 	
 	@ConfigOption(name = "startNodeBonus", defaultValue="0.1")
@@ -54,8 +54,9 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 	@Override
 	public void init() throws ComponentInitException {
 
-	}		
+	}
 
+	@Override
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();
@@ -74,34 +75,42 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 		return score;
 	}
 
+	@Override
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
 	}
 
+	@Override
 	public double getGainBonusFactor() {
 		return gainBonusFactor;
 	}
 
+	@Override
 	public void setGainBonusFactor(double gainBonusFactor) {
 		this.gainBonusFactor = gainBonusFactor;
 	}
 
+	@Override
 	public double getNodeRefinementPenalty() {
 		return nodeRefinementPenalty;
 	}
 
+	@Override
 	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
 		this.nodeRefinementPenalty = nodeRefinementPenalty;
 	}
 
+	@Override
 	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}
 
+	@Override
 	public double getStartNodeBonus() {
 		return startNodeBonus;
 	}
 
+	@Override
 	public void setStartNodeBonus(double startNodeBonus) {
 		this.startNodeBonus = startNodeBonus;
 	}

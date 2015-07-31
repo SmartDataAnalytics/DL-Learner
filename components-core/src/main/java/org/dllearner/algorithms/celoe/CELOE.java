@@ -89,7 +89,7 @@ import com.jamonapi.MonitorFactory;
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
  * It adapts and extends the standard supervised learning algorithm for the
- * ontology engineering use case. 
+ * ontology engineering use case.
  * 
  * @author Jens Lehmann
  *
@@ -101,11 +101,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private static Marker sparql_debug = MarkerFactory.getMarker("SD");
 	
 	private boolean isRunning = false;
-	private boolean stop = false;	
+	private boolean stop = false;
 	
 //	private OEHeuristicStable heuristicStable = new OEHeuristicStable();
 //	private OEHeuristicRuntime heuristicRuntime = new OEHeuristicRuntime();
 	
+	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 	
 	// all nodes in the search tree (used for selecting most promising node)
@@ -146,7 +147,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// important parameters (non-config options but internal)
 	private double noise;
 
-	private boolean filterFollowsFromKB = false;	
+	private boolean filterFollowsFromKB = false;
 	
 	// less important parameters
 	// forces that one solution cannot be subexpression of another expression; this option is useful to get diversity
@@ -176,7 +177,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@ConfigOption(name = "replaceSearchTree", defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 	private boolean replaceSearchTree = false;
 	
-	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")	
+	@ConfigOption(name = "maxNrOfResults", defaultValue="10", description="Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).")
 	private int maxNrOfResults = 10;
 
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
@@ -214,6 +215,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@SuppressWarnings("unused")
 	private long timeLastImprovement = 0;
+	@ConfigOption(defaultValue = "false",  description = "whether to try and refine solutions which already have accuracy value of 1")
 	private boolean expandAccuracy100Nodes = false;
 	private double currentHighestAccuracy;
 	
@@ -281,7 +283,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();
-		prefixes = reasoner.getPrefixes();	
+		prefixes = reasoner.getPrefixes();
 			
 		if(maxExecutionTimeInSeconds != 0 && maxExecutionTimeInSecondsAfterImprovement != 0) {
 			maxExecutionTimeInSeconds = Math.min(maxExecutionTimeInSeconds, maxExecutionTimeInSecondsAfterImprovement);
@@ -416,7 +418,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if(singleSuggestionMode) {
 			bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
-		}	
+		}
 		
 		// print some stats
 		printAlgorithmRunStats();
@@ -428,7 +430,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	/*
-	 * Compute the start class in the search space from which the refinement will start. 
+	 * Compute the start class in the search space from which the refinement will start.
 	 * We use the intersection of super classes for definitions (since it needs to
 	 * capture all instances), but owl:Thing for learning subclasses (since it is
 	 * superfluous to add super classes in this case)
@@ -459,7 +461,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					if(operator instanceof RhoDRDown) {
 						((RhoDRDown)operator).setDropDisjuncts(true);
 					}
-					LengthLimitedRefinementOperator upwardOperator = (LengthLimitedRefinementOperator) new OperatorInverter(operator);
+					LengthLimitedRefinementOperator upwardOperator = new OperatorInverter(operator);
 					
 					// use upward refinement until we find an appropriate start class
 					boolean startClassFound = false;
@@ -501,9 +503,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						startClass = dataFactory.getOWLThing();
 						logger.warn(classToDescribe + " is equivalent to owl:Thing. Usually, it is not " +
 								"sensible to learn a class expression in this case.");
-					}					
+					}
 				}
-			}		
+			}
 		}
 		return startClass;
 	}
@@ -515,7 +517,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		Iterator<OENode> it = nodes.descendingIterator();
 		if (logger.isDebugEnabled()) {
 			for (OENode N:nodes) {
-				logger.debug(sparql_debug,"`getnext:"+N);				
+				logger.debug(sparql_debug,"`getnext:"+N);
 			}
 		}
 
@@ -561,7 +563,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 */
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		String sparql_debug_out = "";
-		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description; 
+		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description;
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
@@ -586,7 +588,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
 		if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
-			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description + 
+			throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
 					". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
 		}
 		
@@ -613,10 +615,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			if(accuracy > bestAccuracy) {
 				bestAccuracy = accuracy;
 				bestDescription = description;
-				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription)); 
+				logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription));
 			}
 			return true;
-		} 
+		}
 		
 		// maybe add to best descriptions (method keeps set size fixed);
 		// we need to make sure that this does not get called more often than
@@ -625,7 +627,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if(!isCandidate) {
 			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
-			isCandidate = 
+			isCandidate =
 				(accuracy > accThreshold ||
 				(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
 		}
@@ -642,7 +644,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				return false;
 			}
 			
-			// another test: none of the other suggested descriptions should be 
+			// another test: none of the other suggested descriptions should be
 			// a subdescription of this one unless accuracy is different
 			// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
 			// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
@@ -654,7 +656,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						shorterDescriptionExists = true;
 						break;
 					}
-				}				
+				}
 			}
 			
 //			System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
@@ -674,7 +676,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		return true;
-	}	
+	}
 	
 	// checks whether the class expression is allowed
 	private boolean isDescriptionAllowed(OWLClassExpression description, OENode parentNode) {
@@ -699,13 +701,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					}
 					toTest.addAll(reasoner.getClassHierarchy().getSuperClasses(d));
 				}
-			}			
+			}
 		} else if (learningProblem instanceof ClassAsInstanceLearningProblem) {
 			return true;
 		}
 		
 		// perform forall sanity tests
-		if (parentNode != null && 
+		if (parentNode != null &&
 				(ConceptTransformation.getForallOccurences(description) > ConceptTransformation.getForallOccurences(parentNode.getDescription()))) {
 			// we have an additional \forall construct, so we now fetch the contexts
 			// in which it occurs
@@ -739,7 +741,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 					return false;
 				}
 			}
-		}		
+		}
 		
 		// we do not want to have negations of sibling classes on the outermost level
 		// (they are expressed more naturally by saying that the siblings are disjoint,
@@ -756,7 +758,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if(cls.isOWLThing()) {
 			return false;
 		}
-		return (description instanceof OWLNaryBooleanClassExpression && 
+		return (description instanceof OWLNaryBooleanClassExpression &&
 				((OWLNaryBooleanClassExpression)description).getOperands().contains(cls));
 //        return description.containsConjunct(cls) ||
 //                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
@@ -768,9 +770,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //			SortedSet<OWLClassExpression> superClasses = reasoner.getSuperClasses(cls);
 //			if(description instanceof OWLObjectIntersectionOf) {
 //				List<OWLClassExpression> operands = ((OWLObjectIntersectionOf) description).getOperandsAsList();
-//				
+//
 //				for (OWLClassExpression op : operands) {
-//					if(superClasses.contains(op) || 
+//					if(superClasses.contains(op) ||
 //							(op instanceof OWLObjectUnionOf && !Sets.intersection(((OWLObjectUnionOf)op).getOperands(),superClasses).isEmpty())) {
 //						for (OWLClassExpression op2 : operands) {
 //							if((op2 instanceof OWLObjectUnionOf && ((OWLObjectUnionOf)op2).getOperands().contains(cls))) {
@@ -779,7 +781,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 //						}
 //					}
 //				}
-//				
+//
 //				for (OWLClassExpression op1 : operands) {
 //					for (OWLClassExpression op2 : operands) {
 //						if(!op1.isAnonymous() && op2 instanceof OWLObjectUnionOf) {
@@ -803,8 +805,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	    }
 	
 	private boolean terminationCriteriaSatisfied() {
-		return 
-		stop || 
+		return
+		stop ||
 		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
 		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
 		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
@@ -871,13 +873,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// we need to check whether it was the last one
 		if(minHorizExp == newHorizExp - 1) {
 			
-			// the best accuracy that a node can achieve 
+			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 			
 			for(OENode n : nodes.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
-						// we can stop instantly when another node with min. 
+						// we can stop instantly when another node with min.
 						return;
 					}
 					if(heuristic.getNodeScore(n) < scoreThreshold) {
@@ -908,12 +910,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Override
 	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
 		return bestEvaluatedDescriptions.getBest();
-	}	
+	}
 	
 	@Override
 	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
-	}	
+	}
 	
 	public double getCurrentlyBestAccuracy() {
 		return bestEvaluatedDescriptions.getBest().getAccuracy();
@@ -922,7 +924,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Override
 	public boolean isRunning() {
 		return isRunning;
-	}	
+	}
 	
 	@Override
 	public void stop() {
@@ -1017,10 +1019,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
+	@Deprecated
 	public int getMaxClassDescriptionTests() {
 		return maxClassExpressionTests;
 	}
 
+	@Deprecated
 	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
 		this.maxClassExpressionTests = maxClassDescriptionTests;
 	}
@@ -1058,10 +1062,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.heuristic = heuristic;
 	}
 
+	@Deprecated
 	public int getMaxClassExpressionTestsWithoutImprovement() {
 		return maxClassExpressionTestsAfterImprovement;
 	}
 
+	@Deprecated
 	public void setMaxClassExpressionTestsWithoutImprovement(
 			int maxClassExpressionTestsWithoutImprovement) {
 		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;
@@ -1074,7 +1080,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public void setMaxExecutionTimeInSecondsAfterImprovement(
 			int maxExecutionTimeInSecondsAfterImprovement) {
 		this.maxExecutionTimeInSecondsAfterImprovement = maxExecutionTimeInSecondsAfterImprovement;
-	}	
+	}
 	
 	public boolean isSingleSuggestionMode() {
 		return singleSuggestionMode;
@@ -1190,7 +1196,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 												df.getOWLThing())
 									),
 									df.getOWLObjectAllValuesFrom(
-											df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")), 
+											df.getOWLObjectProperty(IRI.create("http://example.com/father#hasChild")),
 											df.getOWLThing()
 											)
 				);

@@ -19,6 +19,7 @@
 
 package org.dllearner.core;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -136,7 +137,7 @@ public class AnnComponentManager {
 				reflectionScanner = new Reflections("org.dllearner");
 			}
 			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
-			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class); 
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class);
 			for (Class<?> clazz
 					: Sets.intersection(
 							componentClasses,
@@ -395,13 +396,13 @@ public class AnnComponentManager {
 	 * @param component
 	 * @return OWLClassExpression of the component.
 	 */
-	public static Set<ConfigOption> getConfigOptions(Class<? extends Component> component){
-		Set<ConfigOption> set = new HashSet<>();
+	public static Set<Field> getConfigOptions(Class<? extends Component> component){
+		Set<Field> set = new HashSet<>();
 	    Class<?> c = component;
 	    while (c != null) {
-	        for (java.lang.reflect.Field field : c.getDeclaredFields()) {
+	        for (Field field : c.getDeclaredFields()) {
 	            if (field.isAnnotationPresent(ConfigOption.class)) {
-	                set.add(field.getAnnotation(ConfigOption.class));
+	                set.add(field);
 	            }
 	        }
 	        c = c.getSuperclass();
@@ -430,5 +431,15 @@ public class AnnComponentManager {
 
 	public static boolean addComponentClassName(String e) {
 		return componentClassNames.add(e);
+	}
+
+	/**
+	 * Returns the name of a config option
+	 * @param f the Reflection field of the option
+	 * @return name of the option
+	 */
+	public static String getName(Field f) {
+		f.getAnnotation(ConfigOption.class);
+		return f.getName();
 	}
 }
