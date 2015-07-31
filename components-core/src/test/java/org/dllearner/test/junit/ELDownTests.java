@@ -42,7 +42,7 @@ import org.dllearner.kb.OWLFile;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Files;
@@ -108,7 +108,7 @@ public class ELDownTests {
 		
 		// For this test, we need to turn instance based disjoints
 		// off! (We do not have any instances here.)
-		RefinementOperator operator = new ELDown3(rs, false);
+		RefinementOperator operator = new ELDown(rs, false);
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();
@@ -226,7 +226,7 @@ public class ELDownTests {
 		logger.removeAllAppenders();
 		logger.addAppender(app);		
 		
-		RefinementOperator operator = new ELDown3(rs);
+		RefinementOperator operator = new ELDown(rs);
 		
 		Set<OWLClassExpression> refinements = operator.refine(input);
 		
@@ -276,7 +276,7 @@ public class ELDownTests {
 		logger.removeAllAppenders();
 		logger.addAppender(app);		
 		
-		RefinementOperator operator = new ELDown3(rs);
+		RefinementOperator operator = new ELDown(rs);
 		
 		Set<OWLClassExpression> refinements = operator.refine(input);
 		
@@ -312,7 +312,7 @@ public class ELDownTests {
 		OWLClassExpression input = KBParser.parseConcept("(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#10.0\" AND (EXISTS \"http://www.co-ode.org/ontologies/galen#DomainAttribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#6.0\" AND \"http://www.co-ode.org/ontologies/galen#TopCategory\")) AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".(\"http://www.co-ode.org/ontologies/galen#1.0\" AND (\"http://www.co-ode.org/ontologies/galen#TopCategory\" AND EXISTS \"http://www.co-ode.org/ontologies/galen#Attribute\".TOP)))))");
 		input = ConceptTransformation.cleanConcept(input);
 		
-		ELDown3 operator = new ELDown3(reasoner);
+		ELDown operator = new ELDown(reasoner);
 		operator.refine(input);
 		
 	}
@@ -320,7 +320,7 @@ public class ELDownTests {
 	@Test
 	public void test5() {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
-		RefinementOperator operator = new ELDown3(rs);
+		RefinementOperator operator = new ELDown(rs);
 		Set<OWLClassExpression> refinements = operator.refine(new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI()));
 		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
@@ -357,7 +357,7 @@ public class ELDownTests {
 		
 		ELDescriptionNode w = new ELDescriptionNode(v2, r1);
 
-		ELDown3 operator = new ELDown3(reasoner);
+		ELDown operator = new ELDown(reasoner);
 		System.out.println(operator.asCheck(w));		
 		
 	}

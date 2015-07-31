@@ -488,14 +488,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
      * all learning algorithm implementations.
      */
 	@Override
-    public AbstractClassExpressionLearningProblem getLearningProblem() {
+    public AbstractClassExpressionLearningProblem<? extends Score> getLearningProblem() {
         return learningProblem;
     }
 
     @Autowired
     @Override
     public void setLearningProblem(LearningProblem learningProblem) {
-        this.learningProblem = (AbstractClassExpressionLearningProblem) learningProblem;
+        this.learningProblem = (AbstractClassExpressionLearningProblem<? extends Score>)learningProblem;
     }
 
     /**

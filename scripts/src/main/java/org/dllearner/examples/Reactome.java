@@ -20,7 +20,7 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
-import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
@@ -3252,7 +3252,7 @@ public class Reactome {
     private static void setUp() {
         logger.setLevel(Level.DEBUG);
         Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
-        Logger.getLogger(ELDown3.class).setLevel(Level.TRACE);
+        Logger.getLogger(ELDown.class).setLevel(Level.TRACE);
         ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
     }
     

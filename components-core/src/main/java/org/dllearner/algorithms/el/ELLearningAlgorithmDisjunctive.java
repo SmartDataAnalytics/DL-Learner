@@ -38,7 +38,7 @@ import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScoreSimple;
-import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
@@ -87,7 +87,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 
 	private static Logger logger = Logger.getLogger(ELLearningAlgorithmDisjunctive.class);	
 	
-	private ELDown3 operator;
+	private ELDown operator;
 	private OWLClassExpressionMinimizer minimizer;
 	
 	private SearchTreeNode startNode;
@@ -165,7 +165,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 				this.startClass = dataFactory.getOWLThing();
 			}
 		}
-		operator = new ELDown3(reasoner, instanceBasedDisjoints);
+		operator = new ELDown(reasoner, instanceBasedDisjoints);
+		operator.init();
 		
 		baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();

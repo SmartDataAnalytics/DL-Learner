@@ -41,6 +41,7 @@ import org.dllearner.algorithms.el.TreeAndRoleSet;
 import org.dllearner.algorithms.el.TreeAndRoleSetComparator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -76,15 +77,14 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Jens Lehmann
  *
  */
-@SuppressWarnings("unused")
-public class ELDown3 extends RefinementOperatorAdapter {
+public class ELDown extends RefinementOperatorAdapter {
 
-	private static Logger logger = Logger.getLogger(ELDown3.class);	
+	private static Logger logger = Logger.getLogger(ELDown.class);	
 	
 	private AbstractReasonerComponent rs;
 	
 	// hierarchies
-	private Hierarchy subsumptionHierarchy;
+	private ClassHierarchy classHierarchy;
 	private ObjectPropertyHierarchy opHierarchy;
 	private DatatypePropertyHierarchy dpHierarchy;
 	
@@ -114,15 +114,40 @@ public class ELDown3 extends RefinementOperatorAdapter {
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
-	public ELDown3(AbstractReasonerComponent rs) {
+	private boolean instanceBasedDisjoints;
+
+	public ELDown(AbstractReasonerComponent rs) {
 		this(rs, true);
 	}
 	
-	public ELDown3(AbstractReasonerComponent rs, boolean instanceBasedDisjoints) {
+	public ELDown(AbstractReasonerComponent rs, boolean instanceBasedDisjoints) {
 		this.rs = rs;
-		subsumptionHierarchy = rs.getClassHierarchy();
-		opHierarchy = rs.getObjectPropertyHierarchy();
-		dpHierarchy = rs.getDatatypePropertyHierarchy();
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
+	}
+	
+	public ELDown(AbstractReasonerComponent rs, boolean instanceBasedDisjoints, ClassHierarchy classHierarchy,
+			ObjectPropertyHierarchy opHierarchy, DatatypePropertyHierarchy dpHierarchy) {
+		this.rs = rs;
+		this.instanceBasedDisjoints = instanceBasedDisjoints;
+		this.classHierarchy = classHierarchy;
+		this.opHierarchy = opHierarchy;
+		this.dpHierarchy = dpHierarchy;
+	}
+	
+	@Override
+	public void init() throws ComponentInitException {
+		if(classHierarchy == null) {
+			classHierarchy = rs.getClassHierarchy();
+		}
+		
+		if(opHierarchy == null) {
+			opHierarchy = rs.getObjectPropertyHierarchy();
+		}
+		
+		if(dpHierarchy == null) {
+			dpHierarchy = rs.getDatatypePropertyHierarchy();
+		}
+		
 		
 		// query reasoner for domains and ranges
 		// (because they are used often in the operator)
@@ -665,10 +690,6 @@ public class ELDown3 extends RefinementOperatorAdapter {
 		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
 
-	@Override
-	public void init() throws ComponentInitException {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 }

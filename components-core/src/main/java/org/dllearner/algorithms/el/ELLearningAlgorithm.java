@@ -20,8 +20,6 @@
 package org.dllearner.algorithms.el;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,22 +34,18 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.refinementoperators.ELDown3;
+import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
 
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
@@ -109,7 +103,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	@ConfigOption(name="heuristic", defaultValue="StableHeuristic", description="The heuristic variable to use for ELTL")
 	private ELHeuristic heuristic;
 	private TreeSet<SearchTreeNode> candidates;
-	private ELDown3 operator;
+	private ELDown operator;
 
 	private boolean isEquivalenceProblem = true;
 	private Monitor timeMonitor;
@@ -117,8 +111,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	double max = -1d;
 	OWLClassExpression maxDescription;
 
-	private OWLObjectRenderer renderer;
-	
 	public ELLearningAlgorithm() {}
 	
 	public ELLearningAlgorithm(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
@@ -128,12 +120,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public static String getName() {
 		return "standard EL learning algorithm";
 	}	
-	
-	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
-		problems.add(PosNegLP.class);
-		return problems;
-	}
 	
 	@Override
 	public void init() throws ComponentInitException {
@@ -145,21 +131,18 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		candidates = new TreeSet<SearchTreeNode>(heuristic);
 		
 		ClassHierarchy classHierarchy = initClassHierarchy();
+		ObjectPropertyHierarchy obHierarchy = initObjectPropertyHierarchy();
+		DatatypePropertyHierarchy dpHierarchy = initDataPropertyHierarchy();
 		
-		operator = new ELDown3(reasoner, instanceBasedDisjoints);
+		operator = new ELDown(reasoner, instanceBasedDisjoints, classHierarchy, obHierarchy, dpHierarchy);
 		operator.setMaxClassExpressionDepth(maxClassExpressionDepth);
+		operator.init();
 		
 		noise = noisePercentage/100d;
 		
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		
 		timeMonitor = MonitorFactory.getTimeMonitor("eltl-time");
-		
-		renderer = new DLSyntaxObjectRenderer();
-		DefaultPrefixManager pm = new DefaultPrefixManager(baseURI);
-		renderer.setShortFormProvider(pm);
-		
-		ToStringRenderer.getInstance().setRenderer(renderer);
 	}	
 	
 	@Override
@@ -247,7 +230,6 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			if(accuracy == -1) {
 				node.setTooWeak();
 			} else {
-				// set covered pos and neg examples
 				node.setScore(score);
 			}
 			node.setAccuracy(accuracy);
@@ -306,9 +288,11 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		return false;
 	}
 	
+	/*
+	 * set all values back to their default values (used for running
+	 * the algorithm more than once)
+	 */
 	private void reset() {
-		// set all values back to their default values (used for running
-		// the algorithm more than once)
 		candidates.clear();
 		bestEvaluatedDescriptions.getSet().clear();
 	}
