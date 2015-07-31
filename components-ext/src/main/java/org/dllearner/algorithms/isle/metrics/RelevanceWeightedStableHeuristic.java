@@ -101,8 +101,8 @@ public class RelevanceWeightedStableHeuristic implements ELHeuristic {
 	public int compare(SearchTreeNode o1, SearchTreeNode o2) {
 	
 //		int diff = o2.getCoveredNegatives() - o1.getCoveredNegatives();
-		double score1 = o1.getScore();
-		double score2 = o2.getScore();
+		double score1 = o1.getScore().getAccuracy();
+		double score2 = o2.getScore().getAccuracy();
 		int diff = Double.compare(score1, score2);
 		if(diff>0) {		
 			return 1;
