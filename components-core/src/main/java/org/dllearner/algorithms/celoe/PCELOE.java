@@ -52,12 +52,14 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.ref.RefinementOperator;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
@@ -80,6 +82,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -390,9 +393,38 @@ public class PCELOE extends AbstractCELA {
 
 		List<Runnable> tasks = new ArrayList<Runnable>();
 
+		boolean shareRefinementOperator = false;
+		
 		for(int i = 0; i < nrOfWorkers; i++){
-			tasks.add(new PCELOEWorker());
+			PCELOEWorker worker = new PCELOEWorker();
+			if(shareRefinementOperator) {
+				 worker = new PCELOEWorker();
+			} else {
+				ClosedWorldReasoner reasonerCopy = new ClosedWorldReasoner();
+				reasonerCopy.setSources(reasoner.getSources());
+				try {
+					reasonerCopy.init();
+				} catch (ComponentInitException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if(operator instanceof SynchronizedRefinementOperator) {
+					operator = ((SynchronizedRefinementOperator) operator).getDelegate();
+				}
+				RhoDRDown op = new RhoDRDown((RhoDRDown) operator);
+				op.setReasoner(reasonerCopy);
+				try {
+					op.init();
+				} catch (ComponentInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				worker = new PCELOEWorker(op);
+			}
+			tasks.add(worker);
 		}
+		nanoStartTime = System.nanoTime();
 
 		//needed to block until all threads have been finished, because otherwise the main thread outputs the result to early
 		List<Future> futures = new ArrayList<Future>();
@@ -540,7 +572,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	// expand node horizontically
-	private TreeSet<OWLClassExpression> refineNode(OENode node) {
+	private TreeSet<OWLClassExpression> refineNode(LengthLimitedRefinementOperator operator, OENode node) {
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -627,7 +659,7 @@ public class PCELOE extends AbstractCELA {
 		}
 
 		if(isCandidate) {
-			OWLClassExpression niceDescription = rewrite(node.getExpression());
+			OWLClassExpression niceDescription = node.getExpression();//rewrite(node.getExpression());
 			ConceptTransformation.transformToOrderedForm(niceDescription);
 
 			if(niceDescription.equals(classToDescribe)) {
@@ -910,7 +942,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	@Override
-	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
+	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}
 
@@ -1159,6 +1191,16 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	class PCELOEWorker implements Runnable{
+		
+		private LengthLimitedRefinementOperator operator;
+
+		public PCELOEWorker() {
+			operator = PCELOE.this.operator;
+		}
+		
+		public PCELOEWorker(LengthLimitedRefinementOperator operator) {
+			this.operator = operator;
+		}
 
 		@Override
 		public void run() {
@@ -1173,7 +1215,7 @@ public class PCELOE extends AbstractCELA {
 					int horizExp = nextNode.getHorizontalExpansion();
 
 					// apply refinement operator
-					TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
+					TreeSet<OWLClassExpression> refinements = refineNode(operator, nextNode);
 
 					while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 						// pick element from set
@@ -1221,7 +1263,7 @@ public class PCELOE extends AbstractCELA {
 
 		PCELOE alg = new PCELOE(lp, rc);
 		alg.setMaxExecutionTimeInSeconds(10);
-		alg.setNrOfThreads(8);
+		alg.setNrOfThreads(4);
 //		alg.setMaxClassDescriptionTests(200);
 		alg.init();
 

@@ -66,5 +66,12 @@ public class SynchronizedRefinementOperator implements LengthLimitedRefinementOp
 			return delegate.refine(description, maxLength, knownRefinements);
 		}
 	}
+	
+	/**
+	 * @return the wrapped refinement operator
+	 */
+	public LengthLimitedRefinementOperator getDelegate() {
+		return delegate;
+	}
 
 }
