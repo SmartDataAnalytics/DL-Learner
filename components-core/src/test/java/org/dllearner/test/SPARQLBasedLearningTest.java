@@ -3,6 +3,7 @@
  */
 package org.dllearner.test;
 
+import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.celoe.CELOE;
@@ -86,7 +87,7 @@ public class SPARQLBasedLearningTest {
 //		}
 		
 		
-		TreeSet<? extends EvaluatedDescription> solutions = celoe.getCurrentlyBestEvaluatedDescriptions();
+		NavigableSet<? extends EvaluatedDescription> solutions = celoe.getCurrentlyBestEvaluatedDescriptions();
 		
 		System.out.println(solutions);
 	}

@@ -20,9 +20,9 @@
 package org.dllearner.utilities.owl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
@@ -32,9 +32,8 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
- * A set of evaluated descriptions, which is bound by a maximum
- * size. Can be used by algorithms to store the most promising
- * n class descriptions.
+ * A set of evaluated descriptions, which is bound by a maximum size. Can be
+ * used by algorithms to store the most promising n class descriptions.
  * 
  * @author Jens Lehmann
  *
@@ -42,35 +41,35 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 public class EvaluatedDescriptionSet {
 
 	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
-	
-	private TreeSet<EvaluatedDescription<? extends Score>> set = new TreeSet<>(comp);
+
+	private NavigableSet<EvaluatedDescription<? extends Score>> set = new TreeSet<>(comp);
 
 	private int maxSize;
-	
+
 	public EvaluatedDescriptionSet(int maxSize) {
 		this.maxSize = maxSize;
 	}
-	
-	public void add(OWLClassExpression description, double accuracy, AbstractClassExpressionLearningProblem<? extends Score> problem) {
-		// bug http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
-		// -> set should be filled up to max size before we compare acc. with the worst result
-		if(set.size()<maxSize || getWorst().getAccuracy() <= accuracy) {
+
+	public void add(OWLClassExpression description, double accuracy,
+			AbstractClassExpressionLearningProblem<? extends Score> problem) {
+		// bug
+		// http://sourceforge.net/tracker/?func=detail&atid=986319&aid=3029181&group_id=203619
+		// -> set should be filled up to max size before we compare acc. with
+		// the worst result
+		if (set.size() < maxSize || getWorst().getAccuracy() <= accuracy) {
 			set.add(problem.evaluate(description));
-		}	
-		if(set.size()>maxSize) {
-			// delete the worst element
-			Iterator<EvaluatedDescription<? extends Score>> it = set.iterator();
-			it.next();
-			it.remove();
-		}		
+		}
+		// delete the worst element if set is full
+		if (set.size() > maxSize) {
+			set.pollFirst();
+		}
 	}
-	
+
 	public void add(EvaluatedDescription<? extends Score> ed) {
 		set.add(ed);
-		if(set.size()>maxSize) {
-			Iterator<EvaluatedDescription<? extends Score>> it = set.iterator();
-			it.next();
-			it.remove();
+		// delete the worst element if set is full
+		if (set.size() > maxSize) {
+			set.pollFirst();
 		}
 	}
 
@@ -78,35 +77,36 @@ public class EvaluatedDescriptionSet {
 		for(EvaluatedDescriptionPosNeg ed : eds) {
 			add(ed);
 		}
-	}	
-	
+	}
+
 	public boolean isFull() {
 		return (set.size() >= maxSize);
 	}
-	
+
+	public boolean isEmpty() {
+		return (set.size() >= maxSize);
+	}
+
 	public int size() {
 		return set.size();
 	}
-	
+
 	public EvaluatedDescription<? extends Score> getBest() {
-		return set.size()==0 ? null : set.last();
+		return set.isEmpty() ? null : set.last();
 	}
-	
+
 	public double getBestAccuracy() {
-		return set.size()==0 ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
+		return set.isEmpty() ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
 	}
-	
+
 	public EvaluatedDescription<? extends Score> getWorst() {
-		return set.size()==0 ? null : set.first();
+		return set.isEmpty() ? null : set.first();
 	}
-	
-	/**
-	 * @return the set
-	 */
-	public TreeSet<EvaluatedDescription<? extends Score>> getSet() {
+
+	public NavigableSet<EvaluatedDescription<? extends Score>> getSet() {
 		return set;
 	}
-	
+
 	public List<OWLClassExpression> toDescriptionList() {
 		List<OWLClassExpression> list = new LinkedList<OWLClassExpression>();
 		for(EvaluatedDescription<? extends Score> ed : set.descendingSet()) {
@@ -114,14 +114,14 @@ public class EvaluatedDescriptionSet {
 		}
 		return list;
 	}
-	
+
 	@Override
 	public String toString() {
 		return set.toString();
 	}
 
 	/**
-	 * @return the maxSize
+	 * @return the maximum size
 	 */
 	public int getMaxSize() {
 		return maxSize;

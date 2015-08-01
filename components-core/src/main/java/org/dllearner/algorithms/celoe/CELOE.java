@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -243,7 +244,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		setMaxNrOfResults(celoe.maxNrOfResults);
 		setNoisePercentage(celoe.noisePercentage);
 		
-		RhoDRDown op = new RhoDRDown((RhoDRDown)celoe.operator);
+		LengthLimitedRefinementOperator op = new RhoDRDown((RhoDRDown)celoe.operator);
 		try {
 			op.init();
 		} catch (ComponentInitException e) {
@@ -622,7 +623,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// necessary since rewriting is expensive
 		boolean isCandidate = !bestEvaluatedDescriptions.isFull();
 		if(!isCandidate) {
-			EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
+			EvaluatedDescription<? extends Score> worst = bestEvaluatedDescriptions.getWorst();
 			double accThreshold = worst.getAccuracy();
 			isCandidate =
 				(accuracy > accThreshold ||
@@ -905,12 +906,12 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	@Override
-	public EvaluatedDescription getCurrentlyBestEvaluatedDescription() {
+	public EvaluatedDescription<? extends Score> getCurrentlyBestEvaluatedDescription() {
 		return bestEvaluatedDescriptions.getBest();
 	}
 	
 	@Override
-	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
+	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}
 	

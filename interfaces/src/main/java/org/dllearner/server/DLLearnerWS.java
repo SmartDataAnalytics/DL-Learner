@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -418,7 +419,7 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
+		NavigableSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
 				.getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -261,7 +262,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * last. (In Java, iterators traverse a SortedSet in ascending order.)
 	 * @return Best class descriptions found so far.
 	 */
-	public TreeSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
+	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}
 	
@@ -284,7 +285,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @return A list of currently best class descriptions.
 	 */
 	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
-		TreeSet<? extends EvaluatedDescription<? extends Score>> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
+		NavigableSet<? extends EvaluatedDescription<? extends Score>> currentlyBest = getCurrentlyBestEvaluatedDescriptions();
 		List<EvaluatedDescription<? extends Score>> returnList = new LinkedList<>();
 		for(EvaluatedDescription<? extends Score> ed : currentlyBest.descendingSet()) {
 			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
