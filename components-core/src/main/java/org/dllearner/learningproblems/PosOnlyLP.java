@@ -362,4 +362,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	public void setPositiveExamples(SortedSet<OWLIndividual> positiveExamples) {
 		this.positiveExamples = positiveExamples;
 	}
+
+	public void setPositiveExamples(Set<OWLIndividual> positiveExamples) {
+		this.positiveExamples = new TreeSet<OWLIndividual>(positiveExamples);
+	}
 }
