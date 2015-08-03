@@ -1601,7 +1601,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			for(OWLClassExpression candidate : superClasses) {
 				if(!candidate.isOWLThing()) {
 					OWLObjectComplementOf negatedCandidate = df.getOWLObjectComplementOf(candidate);
-
+					System.out.println("isDisjoint(" + negatedCandidate + ", " + index + ")");
 					// check disjointness with index/range (should not be disjoint otherwise not useful)
 					if(!isDisjoint(negatedCandidate,index)) {
 						boolean meaningful;
@@ -1777,12 +1777,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	private boolean isDisjoint(OWLClassExpression d1, OWLClassExpression d2) {
-		if(d1.isOWLThing() || d2.isOWLThing()) {
-			return false;
-		}
-
 		if(d1.isOWLNothing() || d2.isOWLNothing()) {
 			return true;
+		}
+		
+		if(d1.isOWLThing() || d2.isOWLThing()) {
+			return false;
 		}
 
 		// check whether we have cached this query

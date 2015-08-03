@@ -52,14 +52,12 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.core.ref.RefinementOperator;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
 import org.dllearner.refinementoperators.CustomStartRefinementOperator;
@@ -72,17 +70,18 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.ConceptTransformation;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.PropertyContext;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -382,7 +381,7 @@ public class PCELOE extends AbstractCELA {
 		nanoStartTime = System.nanoTime();
 
 
-
+		logger.info("start class:" + startClass);
 		addNode(startClass, null);
 
 		int nrOfWorkers = nrOfThreads;
@@ -542,53 +541,7 @@ public class PCELOE extends AbstractCELA {
 		}
 		return startClass;
 	}
-
-	private OENode getNextNodeToExpand() {
-		// we expand the best node of those, which have not achieved 100% accuracy
-		// already and have a horizontal expansion equal to their length
-		// (rationale: further extension is likely to add irrelevant syntactical constructs)
-		synchronized (nodes) {
-			Iterator<OENode> it = nodes.descendingIterator();
-
-			while(it.hasNext()) {
-				OENode node = it.next();
-				if (currentlyProcessedNodes.contains(node)) continue;
-
-				if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-						currentlyProcessedNodes.add(node);
-						return node;
-				} else {
-					if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
-						currentlyProcessedNodes.add(node);
-						return node;
-					}
-				}
-			}
-		}
-
-		// this should practically never be called, since for any reasonable learning
-		// task, we will always have at least one node with less than 100% accuracy
-		return null;//nodes.last();
-	}
-
-	// expand node horizontically
-	private TreeSet<OWLClassExpression> refineNode(LengthLimitedRefinementOperator operator, OENode node) {
-		MonitorFactory.getTimeMonitor("refineNode").start();
-		// we have to remove and add the node since its heuristic evaluation changes through the expansion
-		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
-		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		nodes.remove(node);
-		int horizExp = node.getHorizontalExpansion();
-		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
-//		System.out.println("refinements: " + refinements);
-		node.incHorizontalExpansion();
-		node.setRefinementCount(refinements.size());
-//		System.out.println("refined node: " + node);
-		nodes.add(node);
-		MonitorFactory.getTimeMonitor("refineNode").stop();
-		return refinements;
-	}
-
+	
 	/**
 	 * Add node to search tree if it is not too weak.
 	 * @return TRUE if node was added and FALSE otherwise
@@ -702,6 +655,52 @@ public class PCELOE extends AbstractCELA {
 		}
 
 		return true;
+	}
+
+	private OENode getNextNodeToExpand() {
+		// we expand the best node of those, which have not achieved 100% accuracy
+		// already and have a horizontal expansion equal to their length
+		// (rationale: further extension is likely to add irrelevant syntactical constructs)
+		synchronized (nodes) {
+			Iterator<OENode> it = nodes.descendingIterator();
+
+			while(it.hasNext()) {
+				OENode node = it.next();
+				if (currentlyProcessedNodes.contains(node)) continue;
+
+				if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+						currentlyProcessedNodes.add(node);
+						return node;
+				} else {
+					if(node.getAccuracy() < 1.0 || node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
+						currentlyProcessedNodes.add(node);
+						return node;
+					}
+				}
+			}
+		}
+		
+		// this should practically never be called, since for any reasonable learning
+		// task, we will always have at least one node with less than 100% accuracy
+		return null;//nodes.last();
+	}
+
+	// expand node horizontically
+	private Set<OWLClassExpression> refineNode(LengthLimitedRefinementOperator operator, OENode node) {
+		MonitorFactory.getTimeMonitor("refineNode").start();
+		// we have to remove and add the node since its heuristic evaluation changes through the expansion
+		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
+		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
+		nodes.remove(node);
+		int horizExp = node.getHorizontalExpansion();
+		Set<OWLClassExpression> refinements = operator.refine(node.getDescription(), horizExp+1);
+//		System.out.println("refinements: " + refinements);
+		node.incHorizontalExpansion();
+		node.setRefinementCount(refinements.size());
+//		System.out.println("refined node: " + node);
+		nodes.add(node);
+		MonitorFactory.getTimeMonitor("refineNode").stop();
+		return refinements;
 	}
 
 	// checks whether the class expression is allowed
@@ -834,8 +833,8 @@ public class PCELOE extends AbstractCELA {
 	private boolean terminationCriteriaSatisfied() {
 		return
 		stop ||
-		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
-		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
+//		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
+//		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
 		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement*1000000000l))) ||
 		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l))) ||
 		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
@@ -846,7 +845,7 @@ public class PCELOE extends AbstractCELA {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
 //		nodes = new TreeSet<OENode>(heuristic);
-		nodes = Sets.synchronizedNavigableSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
+		nodes = Sets.synchronizedNavigableSet(new TreeSet<OENode>(heuristic));
 		descriptions = Collections.synchronizedSortedSet(new TreeSet<OWLClassExpression>());
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
@@ -1193,6 +1192,10 @@ public class PCELOE extends AbstractCELA {
 	class PCELOEWorker implements Runnable{
 		
 		private LengthLimitedRefinementOperator operator;
+		
+		private NavigableSet<OENode> currentNodes = new TreeSet<OENode>(heuristic);
+		
+		int currentExpressionTests = 0;
 
 		public PCELOEWorker() {
 			operator = PCELOE.this.operator;
@@ -1209,18 +1212,20 @@ public class PCELOE extends AbstractCELA {
 				String threadName = Thread.currentThread().getName();
 
 				nextNode = getNextNodeToExpand();
-//				System.out.println(threadName + " processing " + nextNode);
+				System.out.println("NODE:" + nextNode);
 
 				if(nextNode != null){
+					currentExpressionTests = 0;
+					
 					int horizExp = nextNode.getHorizontalExpansion();
 
 					// apply refinement operator
-					TreeSet<OWLClassExpression> refinements = refineNode(operator, nextNode);
-
-					while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
+					Set<OWLClassExpression> refinements = refineNode(operator, nextNode);
+					Iterator<OWLClassExpression> iterator = refinements.iterator();
+					while(iterator.hasNext() && !terminationCriteriaSatisfied()) {
 						// pick element from set
-						OWLClassExpression refinement = refinements.pollFirst();
-//						System.out.println(threadName + " analysing " + refinement);
+						OWLClassExpression refinement = iterator.next();
+						System.out.println("REF:" + refinement);
 
 						// get length of class expression
 						int length = OWLClassExpressionUtils.getLength(refinement);
@@ -1237,18 +1242,136 @@ public class PCELOE extends AbstractCELA {
 					}
 					currentlyProcessedNodes.remove(nextNode);
 //					showIfBetterSolutionsFound();
+					
+					nodes.addAll(currentNodes);
+					currentNodes.clear();
+					expressionTests += currentExpressionTests;
+				}
+				
+			}
+		}
+		
+		/**
+		 * Add node to search tree if it is not too weak.
+		 * @return TRUE if node was added and FALSE otherwise
+		 */
+		private boolean addNode(OWLClassExpression description, OENode parentNode) {
+			MonitorFactory.getTimeMonitor("addNode").start();
+
+			// redundancy check (return if redundant)
+			boolean nonRedundant = descriptions.add(description);
+			if(!nonRedundant) {
+				return false;
+			}
+
+			// check whether the class expression is allowed
+			if(!isDescriptionAllowed(description, parentNode)) {
+				return false;
+			}
+
+			// quality of class expression (return if too weak)
+			Monitor mon = MonitorFactory.start("lp");
+			double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);System.out.println(accuracy);
+			mon.stop();
+
+			// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
+			if(accuracy > 1.0 || (accuracy < 0.0 && accuracy != -1)) {
+				throw new RuntimeException("Invalid accuracy value " + accuracy + " for class expression " + description +
+						". This could be caused by a bug in the heuristic measure and should be reported to the DL-Learner bug tracker.");
+			}
+
+			currentExpressionTests++;
+
+			// return FALSE if 'too weak'
+			if(accuracy == -1) {
+				return false;
+			}
+
+			OENode node = new OENode(parentNode, description, accuracy);
+
+			// link to parent (unless start node)
+			if(parentNode == null) {
+				startNode = node;
+			} else {
+				parentNode.addChild(node);
+			}
+			currentNodes.add(node);
+
+			// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
+			// due to the high number of examples -- so we just stick to the approximate accuracy
+			if(singleSuggestionMode) {
+				if(accuracy > bestAccuracy) {
+					bestAccuracy = accuracy;
+					bestDescription = description;
+					logger.info("more accurate (" + dfPercent.format(bestAccuracy) + ") class expression found: " + descriptionToString(bestDescription)); // + getTemporaryString(bestDescription));
+				}
+				return true;
+			}
+
+			// maybe add to best descriptions (method keeps set size fixed);
+			// we need to make sure that this does not get called more often than
+			// necessary since rewriting is expensive
+			boolean isCandidate = !bestEvaluatedDescriptions.isFull();
+			if(!isCandidate) {
+				EvaluatedDescription worst = bestEvaluatedDescriptions.getWorst();
+				double accThreshold = worst.getAccuracy();
+				isCandidate =
+					(accuracy > accThreshold ||
+					(accuracy >= accThreshold && OWLClassExpressionUtils.getLength(description) < worst.getDescriptionLength()));
+			}
+
+			if(isCandidate) {
+				OWLClassExpression niceDescription = node.getExpression();//rewrite(node.getExpression());
+				ConceptTransformation.transformToOrderedForm(niceDescription);
+
+				if(niceDescription.equals(classToDescribe)) {
+					return false;
 				}
 
+				if(!isDescriptionAllowed(niceDescription, node)) {
+					return false;
+				}
+
+				// another test: none of the other suggested descriptions should be
+				// a subdescription of this one unless accuracy is different
+				// => comment: on the one hand, this appears to be too strict, because once A is a solution then everything containing
+				// A is not a candidate; on the other hand this suppresses many meaningless extensions of A
+				boolean shorterDescriptionExists = false;
+				if(forceMutualDifference) {
+					for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
+						if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001 && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
+//							System.out.println("shorter: " + ed.getDescription());
+							shorterDescriptionExists = true;
+							break;
+						}
+					}
+				}
+
+//				System.out.println("shorter description? " + shorterDescriptionExists + " nice: " + niceDescription);
+
+				if(!shorterDescriptionExists) {
+					if(!filterFollowsFromKB || !((ClassLearningProblem)learningProblem).followsFromKB(niceDescription)) {
+//						System.out.println(node + "->" + niceDescription);
+						bestEvaluatedDescriptions.add(niceDescription, accuracy, learningProblem);
+//						System.out.println("acc: " + accuracy);
+//						System.out.println(bestEvaluatedDescriptions);
+					}
+				}
+
+//				bestEvaluatedDescriptions.add(node.getDescription(), accuracy, learningProblem);
+
+//				System.out.println(bestEvaluatedDescriptions.getSet().size());
 			}
+
+			return true;
 		}
 	}
 
 	public static void main(String[] args) throws Exception{
-//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));
-
 
 		AbstractKnowledgeSource ks = new OWLFile("../examples/family/father_oe.owl");
 		ks.init();

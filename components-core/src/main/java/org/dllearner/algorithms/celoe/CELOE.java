@@ -384,13 +384,13 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
-			
+			System.out.println("NODE:" + nextNode);
 			// apply refinement operator
-			TreeSet<OWLClassExpression> refinements = refineNode(nextNode);
-				
-			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
+			Set<OWLClassExpression> refinements = refineNode(nextNode);
+			Iterator<OWLClassExpression> iterator = refinements.iterator();
+			while(iterator.hasNext() && !terminationCriteriaSatisfied()) {
 				// pick element from set
-				OWLClassExpression refinement = refinements.pollFirst();
+				OWLClassExpression refinement = iterator.next();System.out.println("REF:" + refinement);
 				
 				// get length of class expression
 				int length = OWLClassExpressionUtils.getLength(refinement);
@@ -537,7 +537,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 	
 	// expand node horizontically
-	private TreeSet<OWLClassExpression> refineNode(OENode node) {
+	private Set<OWLClassExpression> refineNode(OENode node) {
 		logger.debug(sparql_debug,"REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
@@ -545,7 +545,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
 		nodes.remove(node);
 		int horizExp = node.getHorizontalExpansion();
-		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
+		Set<OWLClassExpression> refinements = operator.refine(node.getDescription(), horizExp+1);
 //		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
@@ -843,7 +843,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 	}
 	
-	private void writeSearchTree(TreeSet<OWLClassExpression> refinements) {
+	private void writeSearchTree(Set<OWLClassExpression> refinements) {
 		StringBuilder treeString = new StringBuilder("best node: ").append(bestEvaluatedDescriptions.getBest()).append("\n");
 		if (refinements.size() > 1) {
 			treeString.append("all expanded nodes:\n");
