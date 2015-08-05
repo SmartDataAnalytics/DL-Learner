@@ -46,10 +46,22 @@ public class EvaluatedDescriptionSet {
 
 	private int maxSize;
 
+	/**
+	 * @param maxSize the maximum number of elements contained in this set
+	 */
 	public EvaluatedDescriptionSet(int maxSize) {
 		this.maxSize = maxSize;
 	}
 
+	/**
+	 * Adds an class expression to this set. Some kind of lazy evaluation is applied, 
+	 * i.e. an evaluated description is only generated if the given accuracy
+	 * is higher than the accuracy value of the worst evaluated description 
+	 * contained in this set.
+	 * @param description the class expression
+	 * @param accuracy the accuracy of the class expression
+	 * @param problem the learning problem
+	 */
 	public void add(OWLClassExpression description, double accuracy,
 			AbstractClassExpressionLearningProblem<? extends Score> problem) {
 		// bug
@@ -65,6 +77,11 @@ public class EvaluatedDescriptionSet {
 		}
 	}
 
+	/**
+	 * Adds an evaluated description to this set and ensures that the size does not
+	 * exceed the limit.
+	 * @param ed the evaluated description to add
+	 */
 	public void add(EvaluatedDescription<? extends Score> ed) {
 		set.add(ed);
 		// delete the worst element if set is full
@@ -73,40 +90,69 @@ public class EvaluatedDescriptionSet {
 		}
 	}
 
+	/**
+	 * Adds a collection of evaluated description to this set and ensures that the size does not
+	 * exceed the limit.
+	 * @param eds the evaluated descriptions to add
+	 */
 	public void addAll(Collection<EvaluatedDescriptionPosNeg> eds) {
 		for(EvaluatedDescriptionPosNeg ed : eds) {
 			add(ed);
 		}
 	}
 
+	/**
+	 * @return true if this set with a maximum size of n contains n elements.
+	 */
 	public boolean isFull() {
 		return (set.size() >= maxSize);
 	}
 
+	/**
+	 * @return true if this set contains no elements. 
+	 */
 	public boolean isEmpty() {
-		return (set.size() >= maxSize);
+		return (set.isEmpty());
 	}
 
+	/**
+	 * @return the size of this set
+	 */
 	public int size() {
 		return set.size();
 	}
 
+	/**
+	 * @return the best evaluated description or <code>null</code> if this set is empty.
+	 */
 	public EvaluatedDescription<? extends Score> getBest() {
 		return set.isEmpty() ? null : set.last();
 	}
-
-	public double getBestAccuracy() {
-		return set.isEmpty() ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
-	}
-
+	
+	/**
+	 * @return the worst evaluated description or <code>null</code> if this set is empty.
+	 */
 	public EvaluatedDescription<? extends Score> getWorst() {
 		return set.isEmpty() ? null : set.first();
 	}
 
+	/**
+	 * @return the best accuracy so far or -Infinity if this set is empty.
+	 */
+	public double getBestAccuracy() {
+		return set.isEmpty() ? Double.NEGATIVE_INFINITY : set.last().getAccuracy();
+	}
+
+	/**
+	 * @return the underlying set of evaluated descriptions.
+	 */
 	public NavigableSet<EvaluatedDescription<? extends Score>> getSet() {
 		return set;
 	}
 
+	/**
+	 * @return a list which contains only the class expressions of this set.
+	 */
 	public List<OWLClassExpression> toDescriptionList() {
 		List<OWLClassExpression> list = new LinkedList<OWLClassExpression>();
 		for(EvaluatedDescription<? extends Score> ed : set.descendingSet()) {
@@ -114,16 +160,16 @@ public class EvaluatedDescriptionSet {
 		}
 		return list;
 	}
+	
+	/**
+	 * @return the maximum size of this set.
+	 */
+	public int getMaxSize() {
+		return maxSize;
+	}
 
 	@Override
 	public String toString() {
 		return set.toString();
-	}
-
-	/**
-	 * @return the maximum size
-	 */
-	public int getMaxSize() {
-		return maxSize;
 	}
 }
