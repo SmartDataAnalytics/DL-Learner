@@ -1212,7 +1212,7 @@ public class PCELOE extends AbstractCELA {
 				String threadName = Thread.currentThread().getName();
 
 				nextNode = getNextNodeToExpand();
-				System.out.println("NODE:" + nextNode);
+//				System.out.println("NODE:" + nextNode);
 
 				if(nextNode != null){
 					currentExpressionTests = 0;
@@ -1225,7 +1225,7 @@ public class PCELOE extends AbstractCELA {
 					while(iterator.hasNext() && !terminationCriteriaSatisfied()) {
 						// pick element from set
 						OWLClassExpression refinement = iterator.next();
-						System.out.println("REF:" + refinement);
+//						System.out.println("REF:" + refinement);
 
 						// get length of class expression
 						int length = OWLClassExpressionUtils.getLength(refinement);

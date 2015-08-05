@@ -384,13 +384,14 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// chose best node according to heuristics
 			nextNode = getNextNodeToExpand();
 			int horizExp = nextNode.getHorizontalExpansion();
-			System.out.println("NODE:" + nextNode);
+//			System.out.println("NODE:" + nextNode);
 			// apply refinement operator
 			Set<OWLClassExpression> refinements = refineNode(nextNode);
 			Iterator<OWLClassExpression> iterator = refinements.iterator();
 			while(iterator.hasNext() && !terminationCriteriaSatisfied()) {
 				// pick element from set
-				OWLClassExpression refinement = iterator.next();System.out.println("REF:" + refinement);
+				OWLClassExpression refinement = iterator.next();
+//				System.out.println("REF:" + refinement);
 				
 				// get length of class expression
 				int length = OWLClassExpressionUtils.getLength(refinement);
