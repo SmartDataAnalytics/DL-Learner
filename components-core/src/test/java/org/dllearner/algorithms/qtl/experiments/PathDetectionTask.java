@@ -80,11 +80,13 @@ public class PathDetectionTask implements Callable<Path> {
 						ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
 						String object = split.remove(split.size() - 1);
 						List<Set<String>> propertyClusters = new ArrayList<Set<String>>();
-						Set<String> cluster = new TreeSet<String>();
+						
 						for (String clusterString : split) {
+							Set<String> cluster = new TreeSet<String>();
 							for (String property : Splitter.on(",").split(clusterString)) {
-								cluster.add(property);
+								cluster.add(property.replace("[", "").replace("]", ""));
 							}
+							propertyClusters.add(cluster);
 						}
 						return new Path(cls, propertyClusters, object);
 					} catch (IOException e) {

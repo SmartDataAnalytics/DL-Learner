@@ -5,6 +5,7 @@ package org.dllearner.algorithms.qtl.experiments;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,10 +28,17 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.core.Var;
 
 /**
  * Generate learning problems based on the DBpedia knowledge base.
@@ -84,7 +92,7 @@ public class DBpediaLearningProblemsGenerator {
 		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
 		Collections.shuffle(classesList, new Random(123));
 		classes = classesList;
-//		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal")));
+		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/PokerPlayer")));
 		
 		Iterator<OWLClass> iterator = classes.iterator();
 		
@@ -160,8 +168,15 @@ public class DBpediaLearningProblemsGenerator {
 //			e.printStackTrace();
 //		}
 		
+		String queries = "";
 		for (Path path : paths) {
 			System.out.println(path);
+			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
+		}
+		try {
+			Files.write(queries, new File(benchmarkDirectory, "queries.txt"), Charsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
