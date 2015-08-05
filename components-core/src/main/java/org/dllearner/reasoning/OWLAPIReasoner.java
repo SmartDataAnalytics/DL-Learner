@@ -1254,24 +1254,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLClass> getInconsistentClassesImpl() {
-		Set<OWLClass> concepts = new HashSet<OWLClass>();
+		Set<OWLClass> unsatisfiableClasses;
 
-		Node<OWLClass> unsatClsNodes;
 		try {
-			unsatClsNodes = reasoner.getUnsatisfiableClasses();
+			unsatisfiableClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 		} catch (UnsupportedOperationException e) {
 			if (useFallbackReasoner) {
-				unsatClsNodes = fallbackReasoner.getUnsatisfiableClasses();
+				unsatisfiableClasses = fallbackReasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			} else {
 				throw e;
 			}
 		}
 
-		for (OWLClass concept : unsatClsNodes.getEntities()) {
-			concepts.add(df.getOWLClass(IRI.create(concept.toStringID())));
-		}
-
-		return concepts;
+		return unsatisfiableClasses;
 	}
 
 	public Set<OWLClass> getInconsistentOWLClasses() {
