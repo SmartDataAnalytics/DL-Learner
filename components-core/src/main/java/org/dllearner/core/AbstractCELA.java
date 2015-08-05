@@ -55,6 +55,8 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -79,6 +81,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  *
  */
 public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AbstractCELA.class);
 	
 	protected OWLObjectRenderer renderer = new DLSyntaxObjectRenderer();
 	
@@ -137,9 +141,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
     /**
      * Default Constructor
      */
-    public AbstractCELA(){
-
-    }
+    public AbstractCELA(){}
+    
 	/**
 	 * Each learning algorithm gets a learning problem and
 	 * a reasoner as input.
@@ -385,6 +388,18 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @return optimized class hierarchy
 	 */
 	protected ClassHierarchy initClassHierarchy() {
+		// we ignore all unsatisfiable classes
+		Set<OWLClass> unsatisfiableClasses = reasoner.getInconsistentClasses();
+		if(!unsatisfiableClasses.isEmpty()) {
+			logger.warn("Ignoring unsatsifiable classes " + unsatisfiableClasses);
+			if(ignoredConcepts == null) {
+				ignoredConcepts = unsatisfiableClasses;
+			} else {
+				ignoredConcepts.addAll(unsatisfiableClasses);
+			}
+		}
+		
+		
 		Set<OWLClass> usedConcepts;
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list

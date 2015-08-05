@@ -82,6 +82,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
@@ -176,6 +177,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     private boolean materializeExistentialRestrictions = false;
 	private boolean useCaching = true;
     private boolean handlePunning = false;
+    private boolean precomputeNegations = true;
     
 	/**
 	 * Creates an instance of the fast instance checker.
@@ -246,7 +248,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 * @return The name of this component.
 	 */
 	public static String getName() {
-		return "fast instance checker";
+		return "closed world reasoner";
 	}
 
 	/*
@@ -341,10 +343,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					 *  Instead, we could later answer '\neg A(x)' by just check
 					 *  for A(x) and return the inverse. 
 					 */
-//					classInstancesNeg.put(atomicConcept, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
+					if(precomputeNegations) {
+						classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) Helper.difference(individuals, pos));
+					}
 				} else {
-					OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(cls);
-					classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedAtomicConcept));
+					OWLObjectComplementOf negatedClass = df.getOWLObjectComplementOf(cls);
+					classInstancesNeg.put(cls, (TreeSet<OWLIndividual>) baseReasoner.getIndividuals(negatedClass));
 				}
 			} else {
 				System.err.println(cls);
@@ -995,7 +999,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()) {
 				if(isDefaultNegation()){
-					return new TreeSet<OWLIndividual>(Sets.difference(individuals, classInstancesPos.get(operand)));
+					if(precomputeNegations) {
+						return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
+					}
+					SetView<OWLIndividual> diff = Sets.difference(individuals, classInstancesPos.get(operand));
+					return new TreeSet<OWLIndividual>(diff);
 				} else {
 					return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
 				}
@@ -1553,6 +1561,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	@Override
 	protected Set<OWLClassExpression> getAssertedDefinitionsImpl(OWLClass nc) {
 		return baseReasoner.getAssertedDefinitionsImpl(nc);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#getInconsistentClassesImpl()
+	 */
+	@Override
+	protected Set<OWLClass> getInconsistentClassesImpl() throws ReasoningMethodUnsupportedException {
+		return baseReasoner.getInconsistentClasses();
 	}
 
     public OWLAPIReasoner getReasonerComponent() {
