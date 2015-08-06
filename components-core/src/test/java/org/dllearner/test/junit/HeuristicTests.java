@@ -82,7 +82,7 @@ public class HeuristicTests {
 			man.addAxiom(kb, df.getOWLClassAssertionAxiom(df.getOWLThing(),ind[i]));
 		}
 		
-		// A0 has 20 instances (i0 to i19) 
+		// A0 has 20 instances (i0 to i19)
 		for(int i=0; i<20; i++) {
 			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[0],ind[i]));
 		}
@@ -95,7 +95,7 @@ public class HeuristicTests {
 		// A2 has 40 instances (i10 to i49)
 		for(int i=10; i<50; i++) {
 			man.addAxiom(kb, df.getOWLClassAssertionAxiom(nc[2],ind[i]));
-		}		
+		}
 		
 		// A3 has 5 instances (i8 to i12)
 		for(int i=8; i<13; i++) {
@@ -141,7 +141,7 @@ public class HeuristicTests {
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.JACCARD, false, false, 0.05);
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
-		assertEqualsClassLP(problem, nc[2], 1/(double)5);		
+		assertEqualsClassLP(problem, nc[2], 1/(double)5);
 		
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.PRED_ACC, false, false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 5/(double)7);
@@ -149,13 +149,13 @@ public class HeuristicTests {
 		
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.AMEASURE, false, false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 0.5);
-		assertEqualsClassLP(problem, nc[2], 0.4375);		
+		assertEqualsClassLP(problem, nc[2], 0.4375);
 		
 		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, false, 0.05);
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F_beta-score = 5/11...
-		assertEqualsClassLP(problem, nc[2], 5d/11);		
+		assertEqualsClassLP(problem, nc[2], 5d/11);
 		
 		// TODO: generalised F-Measure
 		
@@ -207,7 +207,7 @@ public class HeuristicTests {
 		ks.init();
 		
 		AbstractReasonerComponent reasoner = new OWLAPIReasoner(ks);
-		reasoner.init();		
+		reasoner.init();
 		
 		PosNegLPStandard problem = new PosNegLPStandard(reasoner);
 		
@@ -216,7 +216,7 @@ public class HeuristicTests {
 		OWLIndividual[] neg1 = new OWLIndividual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
 		
 		// F-Measure and no approximations
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", false);
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, HeuristicType.FMEASURE, false);
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -224,7 +224,7 @@ public class HeuristicTests {
 //		System.out.println(problem.getFMeasureOrTooWeakExact(nc[1], 1));
 		
 		// F-Measure and approximations
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, "fmeasure", true);
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, HeuristicType.FMEASURE, true);
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -285,7 +285,7 @@ public class HeuristicTests {
 		problem.setClassToDescribe(classToDescribe);
 		problem.setHeuristic(accuracyMethod);
 		problem.setUseApproximations(false);
-		problem.init();	
+		problem.init();
 		
 	}
 	
@@ -297,22 +297,22 @@ public class HeuristicTests {
 		problem.setHeuristic(accuracyMethod);
 		problem.setUseApproximations(useApproximations);
 		problem.setApproxDelta(approxAccuracy);
-		problem.init();		
+		problem.init();
 	}
 	
 //	@SuppressWarnings("unchecked")
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, HeuristicType accuracyMethod, boolean useApproximations) throws ComponentInitException {
 		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
 		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
 		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod, useApproximations);
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<OWLIndividual> positiveExamples, Set<OWLIndividual> negativeExamples, String accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<OWLIndividual> positiveExamples, Set<OWLIndividual> negativeExamples, HeuristicType accuracyMethod, boolean useApproximations) throws ComponentInitException {
 		problem.setPositiveExamples(positiveExamples);
 		problem.setNegativeExamples(negativeExamples);
 		problem.setAccuracyMethod(accuracyMethod);
 		problem.setUseApproximations(useApproximations);
-		problem.init();		
-	}	
+		problem.init();
+	}
 }

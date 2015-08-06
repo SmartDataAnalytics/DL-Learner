@@ -25,7 +25,7 @@ import org.semanticweb.owlapi.model.OWLEntity;
 
 /**
  * Calculates accuracy and score (with respect to some length penalty) of
- * a class description. 
+ * a class description.
  * 
  * TODO: In fact, a score value influencing a learning algorithm
  * should not be calculated here, but rather in a separate heuristic
@@ -39,31 +39,16 @@ public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
 
 	private static final long serialVersionUID = 6264873890324824550L;
 	
-	private Set<T> posAsPos;	
+	private Set<T> posAsPos;
     private Set<T> posAsNeg;
     private Set<T> negAsPos;
-    private Set<T> negAsNeg;    
+    private Set<T> negAsNeg;
     private double score;
     private double accuracy;
     private int nrOfExamples;
     private int conceptLength;
     private double percentPerLengthUnit;
-	
-	public ScoreTwoValued(Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg) {
-		this(0,0,posAsPos,posAsNeg,negAsPos,negAsNeg);
-	}    
-    
-	@Deprecated
-	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg) {
-    	this.conceptLength = conceptLength;
-    	this.percentPerLengthUnit = percentPerLengthUnit;
-		this.posAsPos = posAsPos;
-		this.posAsNeg = posAsNeg;
-		this.negAsPos = negAsPos;
-		this.negAsNeg = negAsNeg;
-		nrOfExamples = posAsPos.size()+posAsNeg.size()+negAsPos.size()+negAsNeg.size();
-		computeScore();
-	}
+
 	
 	public ScoreTwoValued(int conceptLength, double percentPerLengthUnit, Set<T> posAsPos, Set<T> posAsNeg, Set<T> negAsPos, Set<T> negAsNeg, double accuracy) {
     	this.conceptLength = conceptLength;
@@ -77,21 +62,10 @@ public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
 		score = accuracy - 1 - percentPerLengthUnit * conceptLength;
 	}
 	
-	// score should not be computed within this class anymore, but directly within learning problem (to support
-	// different functions like predictive accuracy, F-measure etc.)
-	@Deprecated
-	private void computeScore() {
-		// compute accuracy
-		accuracy = posAsPos.size() + negAsNeg.size();
-		accuracy = accuracy / (double) nrOfExamples;
-		// compute score
-		score = accuracy - 1 - percentPerLengthUnit * conceptLength;
-	}
-	
 	@Override
 	public double getAccuracy() {
 		return accuracy;
-	}	
+	}
 	
 	/**
 	 * score = accuracy - 1 - length * length penalty
@@ -130,11 +104,11 @@ public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	@Override
 	public Set<T> getNotCoveredNegatives() {
 		return negAsNeg;
-	}		
+	}
 	
 	@Override
 	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
-		return new ScoreTwoValued<T>(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg);
+		return new ScoreTwoValued<T>(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg, accuracy);
 	}
 	
 	/**

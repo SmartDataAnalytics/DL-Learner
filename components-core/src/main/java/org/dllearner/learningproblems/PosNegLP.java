@@ -40,7 +40,7 @@ import com.google.common.collect.Sets.SetView;
  *
  */
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
-	private static Logger logger = Logger.getLogger(PosNegLP.class);
+	protected static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();

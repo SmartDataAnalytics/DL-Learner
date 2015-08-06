@@ -64,13 +64,8 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
     @ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
 	private boolean useApproximations;
     
-    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "predacc")
-    private String accuracyMethod = "pred_acc";
-    
-//	private boolean useFMeasure;
-	private boolean useOldDIGOptions = false;
-	
-	private HeuristicType heuristic = HeuristicType.PRED_ACC;
+    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
+    private HeuristicType accuracyMethod = HeuristicType.PRED_ACC;
 	
 
 	public PosNegLPStandard() {
@@ -106,28 +101,9 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public void init() throws ComponentInitException {
 		super.init();
 
-		String accM = getAccuracyMethod();
-		if(accM.equals("standard")) {
-			heuristic = HeuristicType.AMEASURE;
-		} else if(accM.equals("fmeasure")) {
-			heuristic = HeuristicType.FMEASURE;
-		} else if(accM.equals("generalised_fmeasure")) {
-			heuristic = HeuristicType.GEN_FMEASURE;
-		} else if(accM.equals("jaccard")) {
-			heuristic = HeuristicType.JACCARD;
-		} else if(accM.equals("pred_acc")) {
-			heuristic = HeuristicType.PRED_ACC;
-		}
 		
-//		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
-		
-//		if((!useApproximations && useFMeasure) || (useApproximations && !useFMeasure)) {
-//			System.err.println("Currently F measure can only be used in combination with approximated reasoning.");
-//			System.exit(0);
-//		}
-		
-		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
-			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
+		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {
+			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
 		}
 		
 	}
@@ -218,126 +194,51 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	}
 
 	/**
-	 * Computes score of a given concept using the reasoner. Either retrieval or
-	 * instance check are used. For the latter, this method treats
-	 * <code>UseMultiInstanceChecks.TWO_CHECKS</code> as if it were
-	 * <code>UseMultiInstanceChecks.ONE_CHECKS</code> (it does not make much sense
-	 * to implement TWO_CHECKS in this function, because we have to test all
-	 * examples to create a score object anyway).
+	 * Computes score of a given concept using the reasoner.
 	 * 
-	 * NOTE: The options above are no longer supported, because of interface changes (the options
-	 * are more or less only relevant in combination with DIG).
-	 * 
-	 * @see org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks
 	 * @param concept
 	 *            The concept to test.
 	 * @return Corresponding Score object.
 	 */
 	@Override
 	public ScorePosNeg computeScore(OWLClassExpression concept, double noise) {
-		if(useOldDIGOptions) {
-			if (isUseRetrievalForClassification()) {
-				SortedSet<OWLIndividual> posClassified = getReasoner().getIndividuals(concept);
-				Set<OWLIndividual> posAsPos = Helper.intersection(positiveExamples, posClassified);
-				Set<OWLIndividual> negAsPos = Helper.intersection(negativeExamples, posClassified);
-				SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
 
-				// piecewise set construction
-				for (OWLIndividual posExample : positiveExamples) {
-					if (!posClassified.contains(posExample))
-						posAsNeg.add(posExample);
-				}
-				SortedSet<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
-				for (OWLIndividual negExample : negativeExamples) {
-					if (!posClassified.contains(negExample))
-						negAsNeg.add(negExample);
-				}
-				return new ScoreTwoValued(
-						OWLClassExpressionUtils.getLength(concept),
-						getPercentPerLengthUnit(),
-						posAsPos, posAsNeg, negAsPos, negAsNeg);
-			// instance checks for classification
-			} else {
-				Set<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
-				Set<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
-				Set<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
-				Set<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
-				
-				if (getUseMultiInstanceChecks() != UseMultiInstanceChecks.NEVER) {
-					SortedSet<OWLIndividual> posClassified = getReasoner().hasType(concept,
-                            allExamples);
-					Set<OWLIndividual> negClassified = Helper.difference(allExamples,
-							posClassified);
-					posAsPos = Helper.intersection(positiveExamples, posClassified);
-					posAsNeg = Helper.intersection(positiveExamples, negClassified);
-					negAsPos = Helper.intersection(negativeExamples, posClassified);
-					negAsNeg = Helper.intersection(negativeExamples, negClassified);
-					
-					// System.out.println("pos classified: " + posClassified);
-					
-					return new ScoreTwoValued(
-							OWLClassExpressionUtils.getLength(concept),
-							getPercentPerLengthUnit(),
-							posAsPos, posAsNeg,
-							negAsPos, negAsNeg);
-				} else {
-					for (OWLIndividual example : positiveExamples) {
-						if (getReasoner().hasType(concept, example)) {
-							posAsPos.add(example);
-						} else {
-							posAsNeg.add(example);
-						}
-					}
-					for (OWLIndividual example : negativeExamples) {
-						if (getReasoner().hasType(concept, example)) {
-							negAsPos.add(example);
-						} else {
-							negAsNeg.add(example);
-						}
-					}
-					return new ScoreTwoValued(OWLClassExpressionUtils.getLength(concept), getPercentPerLengthUnit(), posAsPos, posAsNeg, negAsPos,
-							negAsNeg);
-				}
-			}
+		SortedSet<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
+
+		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(concept);
+
+			posAsPos.addAll(Sets.intersection(positiveExamples, individuals));
+			posAsNeg.addAll(Sets.difference(positiveExamples, individuals));
+			negAsNeg.addAll(Sets.difference(negativeExamples, individuals));
+			negAsPos.addAll(Sets.intersection(negativeExamples, individuals));
 		} else {
-			
-			SortedSet<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
-			SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
-			SortedSet<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
-			SortedSet<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
-			
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
-				SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(concept);
-				
-				posAsPos.addAll(Sets.intersection(positiveExamples, individuals));
-				posAsNeg.addAll(Sets.difference(positiveExamples, individuals));
-				negAsNeg.addAll(Sets.difference(negativeExamples, individuals));
-				negAsPos.addAll(Sets.intersection(negativeExamples, individuals));
-			} else {
-				for (OWLIndividual example : positiveExamples) {
-					if (getReasoner().hasType(concept, example)) {
-						posAsPos.add(example);
-					} else {
-						posAsNeg.add(example);
-					}
-				}
-				for (OWLIndividual example : negativeExamples) {
-					if (getReasoner().hasType(concept, example))
-						negAsPos.add(example);
-					else
-						negAsNeg.add(example);
+			for (OWLIndividual example : positiveExamples) {
+				if (getReasoner().hasType(concept, example)) {
+					posAsPos.add(example);
+				} else {
+					posAsNeg.add(example);
 				}
 			}
-			
-			// TODO: this computes accuracy twice - more elegant method should be implemented
-			double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), noise);
-			
-			return new ScoreTwoValued(
-					OWLClassExpressionUtils.getLength(concept),
-					getPercentPerLengthUnit(),
-					posAsPos, posAsNeg, negAsPos, negAsNeg,
-					accuracy);
+			for (OWLIndividual example : negativeExamples) {
+				if (getReasoner().hasType(concept, example))
+					negAsPos.add(example);
+				else
+					negAsNeg.add(example);
+			}
 		}
+
+		// TODO: this computes accuracy twice - more elegant method should be implemented
+		double accuracy = getAccuracy(posAsPos.size(), posAsNeg.size(), negAsPos.size(), negAsNeg.size(), noise);
+
+		return new ScoreTwoValued(
+				OWLClassExpressionUtils.getLength(concept),
+				getPercentPerLengthUnit(),
+				posAsPos, posAsNeg, negAsPos, negAsNeg,
+				accuracy);
 
 	}
 
@@ -366,7 +267,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	}
 	
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
-		if(heuristic.equals(HeuristicType.PRED_ACC)) {
+		if(accuracyMethod.equals(HeuristicType.PRED_ACC)) {
 			int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
 			
 			int notCoveredPos = 0;
@@ -423,7 +324,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 			return ret;
 					
-		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+		} else if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 //			System.out.println("Testing " + description);
 			
 			// we abort when there are too many uncovered positives
@@ -469,17 +370,17 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 //			}
 			return Heuristics.getFScore(recall, precision, 1);
 		} else {
-			throw new Error("Approximation for " + heuristic + " not implemented.");
+			throw new Error("Approximation for " + accuracyMethod + " not implemented.");
 		}
 	}
 	
 	public double getAccuracyOrTooWeakExact(OWLClassExpression description, double noise) {
-		if(heuristic.equals(HeuristicType.PRED_ACC)) {
+		if(accuracyMethod.equals(HeuristicType.PRED_ACC)) {
 			return getPredAccuracyOrTooWeakExact(description, noise);
-		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+		} else if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 			return getFMeasureOrTooWeakExact(description, noise);
 		} else {
-			throw new Error("Heuristic " + heuristic + " not implemented.");
+			throw new Error("Heuristic " + accuracyMethod + " not implemented.");
 		}
 	}
 	
@@ -555,7 +456,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			return -1;
 		}
 		
-		switch (heuristic) {
+		switch (accuracyMethod) {
 		case PRED_ACC:
 			return (posAsPos + negAsNeg) / (double) allExamples.size();
 		case FMEASURE:
@@ -569,7 +470,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			
 			return Heuristics.getFScore(recall, precision);
 		default:
-			throw new Error("Heuristic " + heuristic + " not implemented.");
+			throw new Error("Heuristic " + accuracyMethod + " not implemented.");
 		}
 
 	}
@@ -602,131 +503,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		return fscore;
 	}
 	
-	// instead of using the standard operation, we use optimisation
-	// and approximation here;
-	// now deprecated because the Heuristics helper class is used
-	@Deprecated
-	public double getFMeasureOrTooWeakApprox(OWLClassExpression description, double noise) {
-		// we abort when there are too many uncovered positives
-		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
-		int instancesCovered = 0;
-		int instancesNotCovered = 0;
-		int total = 0;
-		boolean estimatedA = false;
-		
-		double lowerBorderA = 0;
-		int lowerEstimateA = 0;
-		double upperBorderA = 1;
-		int upperEstimateA = positiveExamples.size();
-		
-		for(OWLIndividual ind : positiveExamples) {
-			if(getReasoner().hasType(description, ind)) {
-				instancesCovered++;
-			} else {
-				instancesNotCovered ++;
-				if(instancesNotCovered > maxNotCovered) {
-					return -1;
-				}
-			}
-			
-			// approximation step (starting after 10 tests)
-			total = instancesCovered + instancesNotCovered;
-			if(total > 10) {
-				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesCovered, total);
-				double p2 = ClassLearningProblem.p3(p1, total);
-				lowerBorderA = Math.max(0, p1 - p2);
-				upperBorderA = Math.min(1, p1 + p2);
-				double size = upperBorderA - lowerBorderA;
-				// if the interval has a size smaller than 10%, we can be confident
-				if(size < 2 * approxDelta) {
-					// we have to distinguish the cases that the accuracy limit is
-					// below, within, or above the limit and that the mean is below
-					// or above the limit
-					double mean = instancesCovered/(double)total;
-					
-					// if the mean is greater than the required minimum, we can accept;
-					// we also accept if the interval is small and close to the minimum
-					// (worst case is to accept a few inaccurate descriptions)
-					if(mean > 1-noise || (upperBorderA > mean && size < 0.03)) {
-						instancesCovered = (int) (instancesCovered/(double)total * positiveExamples.size());
-						upperEstimateA = (int) (upperBorderA * positiveExamples.size());
-						lowerEstimateA = (int) (lowerBorderA * positiveExamples.size());
-						estimatedA = true;
-						break;
-					}
-					
-					// reject only if the upper border is far away (we are very
-					// certain not to lose a potential solution)
-					if(upperBorderA + 0.1 < 1-noise) {
-						return -1;
-					}
-				}
-			}
-		}
-		
-		double recall = instancesCovered/(double)positiveExamples.size();
-		
-//		MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
-//		MonitorFactory.add("aInstances","count", total);
-		
-		// we know that a definition candidate is always subclass of the
-		// intersection of all super classes, so we test only the relevant instances
-		// (leads to undesired effects for descriptions not following this rule,
-		// but improves performance a lot);
-		// for learning a superclass of a defined class, similar observations apply;
-
-
-		int testsPerformed = 0;
-		int instancesDescription = 0;
-//		boolean estimatedB = false;
-		
-		for(OWLIndividual ind : negativeExamples) {
-
-			if(getReasoner().hasType(description, ind)) {
-				instancesDescription++;
-			}
-			
-			testsPerformed++;
-			
-			if(testsPerformed > 10) {
-				
-				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesDescription, testsPerformed);
-				double p2 = ClassLearningProblem.p3(p1, testsPerformed);
-				double lowerBorder = Math.max(0, p1 - p2);
-				double upperBorder = Math.min(1, p1 + p2);
-				int lowerEstimate = (int) (lowerBorder * negativeExamples.size());
-				int upperEstimate = (int) (upperBorder * negativeExamples.size());
-				
-				double size;
-				if(estimatedA) {
-					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));
-				} else {
-					size = getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
-				}
-				
-				if(size < 0.1) {
-					instancesDescription = (int) (instancesDescription/(double)testsPerformed * negativeExamples.size());
-					break;
-				}
-			}
-		}
-		
-		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-		if(instancesCovered + instancesDescription == 0) {
-			precision = 0;
-		}
-
-//		System.out.println("description: " + description);
-//		System.out.println("recall: " + recall);
-//		System.out.println("precision: " + precision);
-//		System.out.println("F-measure: " + getFMeasure(recall, precision));
-//		System.out.println("exact: " + getAccuracyOrTooWeakExact(description, noise));
-		
-		return getFMeasure(recall, precision);
-	}
-		
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#evaluate(org.dllearner.core.owl.Description)
 	 */
@@ -756,11 +532,11 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
         this.useApproximations = useApproximations;
     }
 
-    public String getAccuracyMethod() {
+    public HeuristicType getAccuracyMethod() {
         return accuracyMethod;
     }
 
-    public void setAccuracyMethod(String accuracyMethod) {
+    public void setAccuracyMethod(HeuristicType accuracyMethod) {
         this.accuracyMethod = accuracyMethod;
     }
     
