@@ -15,18 +15,13 @@ public class PropertyAxiomLearningProblem<T extends OWLPropertyAxiom> extends Ab
 	@Override
 	public void init() throws ComponentInitException {
 		// TODO Auto-generated method stub
+		throw new ComponentInitException("not implemented");
 	}
 
 	@Override
 	public AxiomScore computeScore(T hypothesis, double noise) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public double getAccuracy(T hypothesis, double noise) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

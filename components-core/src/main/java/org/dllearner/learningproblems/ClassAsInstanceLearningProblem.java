@@ -94,7 +94,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 		}
 
 		// compute the accuracy
-		double accuracy = getAccuracy(description);
+		double accuracy = getAccuracyOrTooWeak(description);
 
 		return new ScoreTwoValued<OWLClass>(OWLClassExpressionUtils.getLength(description), percentPerLengthUnit, posAsPos, posAsNeg,
 				negAsPos, negAsNeg, accuracy);
@@ -107,14 +107,6 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	public EvaluatedDescription evaluate(OWLClassExpression description) {
 		ScorePosNeg<OWLClass> score = computeScore(description);
 		return new EvaluatedDescriptionPosNeg(description, score);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.AbstractLearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description, double noise) {
-		return getAccuracyOrTooWeak(description, noise);
 	}
 
 	/* (non-Javadoc)

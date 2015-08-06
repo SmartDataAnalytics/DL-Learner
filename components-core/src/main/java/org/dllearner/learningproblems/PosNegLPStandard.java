@@ -242,24 +242,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description, double noise) {
-		// a noise value of 1.0 means that we never return too weak (-1.0)
-		return getAccuracyOrTooWeak(description, noise);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description) {
-		// a noise value of 1.0 means that we never return too weak (-1.0)
-		return getAccuracyOrTooWeak(description, 1.0);
-	}
-
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods

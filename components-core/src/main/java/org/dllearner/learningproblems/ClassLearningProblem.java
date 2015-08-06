@@ -281,15 +281,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return equivalence;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description, double noise) {
-		// a noise value of 1.0 means that we never return too weak (-1.0)
-		return getAccuracyOrTooWeak(description, noise);
-	}
-
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods
@@ -639,13 +630,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				}
 			}
 			
-//			System.out.println(description + ":" + coveredInstances + "/" + classInstances.size());
 			double recall = coveredInstances/(double)classInstances.size();
-			
-			// noise computation is incorrect
-//			if(recall < 1 - noise) {
-//				return -1;
-//			}
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 			
@@ -709,24 +694,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			int icSize = icPos.size() + icNeg.size();
 			double prec = (icSize == 0) ? 0 : tmp1Size / (double) icSize;
 			double rec = tmp1Size / (double) (classInstances.size() + negatedClassInstances.size());
-			
-//			System.out.println(description);
-			
-//			System.out.println("I_C pos: " + icPos);
-//			System.out.println("I_C neg: " + icNeg);
-//			System.out.println("class instances: " + classInstances);
-//			System.out.println("negated class instances: " + negatedClassInstances);
-			
-//			System.out.println(prec);
-//			System.out.println(rec);
-//			System.out.println(coverageFactor);
-			
-			// too weak: see F-measure above
-			// => does not work for generalised F-measure, because even very general
-			// concepts do not have a recall of 1
-//			if(((1+Math.sqrt(coverageFactor))*rec)/(Math.sqrt(coverageFactor)+1)<1-noise) {
-//				return -1;
-//			}
+
 			// we only return too weak if there is no recall
 			if(rec <= 0.0000001) {
 				return -1;
@@ -745,18 +713,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 		return val;
 	}
-	
-//	@Deprecated
-//	public double getAccuracyOrTooWeakStandard(OWLClassExpression description, double minAccuracy) {
-//		// since we have to perform a retrieval operation anyway, we cannot easily
-//		// get a benefit from the accuracy limit
-//		double accuracy = getAccuracy(description);
-//		if(accuracy >= minAccuracy) {
-//			return accuracy;
-//		} else {
-//			return -1;
-//		}
-//	}
 	
 	// please note that getting recall and precision wastes some computational
 	// resource, because both methods need to compute the covered instances
@@ -805,12 +761,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	public static double p3(double p1, int total) {
 		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
 	}
-	
-	// see paper: expression used in confidence interval estimation
-//	private static double p2(int success, int total) {
-//		double p1 = p1(success, total);
-//		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
-//	}
 	
 	// see paper: p'
 	public static double p1(int success, int total) {

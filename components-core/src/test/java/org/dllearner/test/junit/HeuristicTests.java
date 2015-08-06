@@ -267,14 +267,12 @@ public class HeuristicTests {
 	// the class learning problem provides several ways to get the accuracy of a description, this method
 	// tests all of those
 	private static void assertEqualsClassLP(ClassLearningProblem problem, OWLClassExpression description, double accuracy) {
-		assertEquals(accuracy, problem.getAccuracy(description, 1.0), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
 		assertEquals(accuracy, problem.computeScore(description, 1.0).getAccuracy(), delta);
 		assertEquals(accuracy, problem.evaluate(description, 1.0).getAccuracy(), delta);
 	}
 	
 	private static void assertEqualsPosNegLPStandard(PosNegLPStandard problem, OWLClassExpression description, double accuracy) {
-		assertEquals(accuracy, problem.getAccuracy(description,1.0), delta);
 		assertEquals(accuracy, problem.getAccuracyOrTooWeak(description, 1.0), delta);
 		assertEquals(accuracy, problem.computeScore(description, 1.0).getAccuracy(), delta);
 		assertEquals(accuracy, problem.evaluate(description, 1.0).getAccuracy(), delta);

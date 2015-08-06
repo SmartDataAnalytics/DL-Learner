@@ -129,28 +129,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		return new ScorePosOnly(instancesCovered, instancesNotCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description, double noise) {
-		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
-
-		int instancesCovered = 0;
-		for(OWLIndividual ind : positiveExamples) {
-			if(retrieval.contains(ind)) {
-				instancesCovered++;
-			}
-		}
-
-		double coverage = instancesCovered/(double)positiveExamples.size();
-		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
-
-		return getAccuracy(coverage, protusion);
-	}
-
-
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 
 		// instead of using the standard operation, we use optimisation
