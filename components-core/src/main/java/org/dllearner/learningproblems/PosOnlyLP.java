@@ -82,22 +82,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	@Override
 	public void init() {
 
-		// old init code, where pos only was realised through pseudo negatives
-
-		// by default we test all other instances of the knowledge base
-//		pseudoNegatives = Helper.difference(reasoner.getIndividuals(), positiveExamples);
-
-		// create an instance of a standard definition learning problem
-		// instanciated with pseudo-negatives
-//		definitionLP = ComponentFactory.getPosNegLPStandard(
-//				reasoner,
-//				SetManipulation.indToString(positiveExamples),
-//				SetManipulation.indToString(pseudoNegatives));
-		//definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
-		// TODO: we must make sure that the problem also gets the same
-		// reasoning options (i.e. options are the same up to reversed example sets)
-//		definitionLP.init();
-
 		Random rand = new Random(1);
 
 		if(getReasoner()!=null) {
@@ -119,18 +103,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	public void setUseApproximations(boolean useApproximations) {
 		this.useApproximations = useApproximations;
 	}
-
-	/**
-	 * @return the pseudoNegatives
-	 */
-//	public SortedSet<OWLIndividual> getPseudoNegatives() {
-//		return pseudoNegatives;
-//	}
-
-
-//	public int coveredPseudoNegativeExamplesOrTooWeak(OWLClassExpression concept) {
-//		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
-//	}posOnlyLPLearningTests
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)

@@ -99,9 +99,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private TreeSet<OWLIndividual> negatedClassInstances;
 	
     @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "pred_acc")
-    private String accuracyMethod = "pred_acc";
-    
-	private HeuristicType heuristic = HeuristicType.AMEASURE;
+	private HeuristicType accuracyMethod = HeuristicType.AMEASURE;
 	
 	@ConfigOption(name = "checkConsistency", description = "whether to check for consistency of suggestions (when added to ontology)", required=false, defaultValue="true")
 	private boolean checkConsistency = true;
@@ -122,36 +120,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
-//		configurator = new ClassLearningProblemConfigurator(this);
 	}
 	
-	/*
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		URLConfigOption classToDescribeOption = new URLConfigOption("classToDescribe", "class of which a OWLClassExpression should be learned", null, true, false);
-		classToDescribeOption.setRefersToOWLClass(true);
-		options.add(classToDescribeOption);
-		StringConfigOption type = new StringConfigOption("type", "whether to learn an equivalence class or super class axiom","equivalence"); //  or domain/range of a property.
-		type.setAllowedValues(new String[] {"equivalence", "superClass"}); // , "domain", "range"});
-		options.add(type);
-		BooleanConfigOption approx = new BooleanConfigOption("useApproximations", "whether to use stochastic approximations for computing accuracy", true);
-		options.add(approx);
-		DoubleConfigOption approxAccuracy = new DoubleConfigOption("approxAccuracy", "accuracy of the approximation (only for expert use)", 0.05);
-		options.add(approxAccuracy);
-		StringConfigOption accMethod = new StringConfigOption("accuracyMethod", "Specifies, which method/function to use for computing accuracy.","standard"); //  or domain/range of a property.
-		accMethod.setAllowedValues(new String[] {"standard", "fmeasure", "pred_acc", "generalised_fmeasure", "jaccard"});
-		options.add(accMethod);
-		BooleanConfigOption consistency = new BooleanConfigOption("checkConsistency", "Specify whether to check consistency for solution candidates. This is convenient for user interfaces, but can be performance intensive.", true);
-		options.add(consistency);
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds(10));
-		DoubleConfigOption betaSC = new DoubleConfigOption("betaSC", "Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for super class learning.", 3.0);
-		options.add(betaSC);
-		DoubleConfigOption betaEq = new DoubleConfigOption("betaEq", "Higher values of beta rate recall higher than precision or in other words, covering the instances of the class to describe is more important even at the cost of covering additional instances. The actual implementation depends on the selected heuristic. This values is used only for equivalence class learning.", 1.0);
-		options.add(betaEq);
-		return options;
-	}
-	*/
-
 	public static String getName() {
 		return "class learning problem";
 	}
@@ -161,25 +131,12 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 //		classToDescribe = df.getOWLClass(IRI.create(configurator.getClassToDescribe().toString());
 //		useApproximations = configurator.getUseApproximations();
 		
-		String accM = accuracyMethod;
-		if(accM.equals("standard")) {
-			heuristic = HeuristicType.AMEASURE;
-		} else if(accM.equals("fmeasure")) {
-			heuristic = HeuristicType.FMEASURE;
-		} else if(accM.equals("generalised_fmeasure")) {
-			heuristic = HeuristicType.GEN_FMEASURE;
-		} else if(accM.equals("jaccard")) {
-			heuristic = HeuristicType.JACCARD;
-		} else if(accM.equals("pred_acc")) {
-			heuristic = HeuristicType.PRED_ACC;
-		}
-		
-		if(useApproximations && heuristic.equals(HeuristicType.PRED_ACC)) {
+		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {
 			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}
 		
-		if(useApproximations && !(heuristic.equals(HeuristicType.PRED_ACC) || heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE))) {
-			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + heuristic + ".\"");
+		if(useApproximations && !(accuracyMethod.equals(HeuristicType.PRED_ACC) || accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE))) {
+			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + accuracyMethod + ".\"");
 		}
 		
 //		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
@@ -223,7 +180,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 		
-		if(heuristic.equals(HeuristicType.GEN_FMEASURE)) {
+		if(accuracyMethod.equals(HeuristicType.GEN_FMEASURE)) {
 			OWLClassExpression classToDescribeNeg = df.getOWLObjectComplementOf(classToDescribe);
 			negatedClassInstances = new TreeSet<OWLIndividual>();
 			for(OWLIndividual ind : superClassInstances) {
@@ -289,9 +246,9 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		// leads to an inconsistent knowledge base
 		
 		double acc = 0;
-		if(heuristic.equals(HeuristicType.FMEASURE)) {
+		if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 			acc = Heuristics.getFScore(recall, precision, coverageFactor);
-		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
+		} else if(accuracyMethod.equals(HeuristicType.AMEASURE)) {
 			acc = Heuristics.getAScore(recall, precision, coverageFactor);
 		} else {
 			// TODO: some superfluous instance checks are required to compute accuracy =>
@@ -342,7 +299,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// instead of using the standard operation, we use optimisation
 	// and approximation here
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
-		if(heuristic.equals(HeuristicType.FMEASURE)) {
+		if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 			// we abort when there are too many uncovered positives
 			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 			int instancesCovered = 0;
@@ -386,7 +343,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 //			}
 			return Heuristics.getFScore(recall, precision, coverageFactor);
 			
-		} else if(heuristic.equals(HeuristicType.AMEASURE)) {
+		} else if(accuracyMethod.equals(HeuristicType.AMEASURE)) {
 			// the F-MEASURE implementation is now separate (different optimisation
 			// strategy)
 			
@@ -430,7 +387,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 						
 						// we can estimate the best possible concept to reach with downward refinement
 						// by setting precision to 1 and recall = mean stays as it is
-						double optimumEstimate = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(coverageFactor+1);
+						double optimumEstimate = accuracyMethod.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(coverageFactor+1);
 						
 						// if the mean is greater than the required minimum, we can accept;
 						// we also accept if the interval is small and close to the minimum
@@ -447,7 +404,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 						// reject only if the upper border is far away (we are very
 						// certain not to lose a potential solution)
 //						if(upperBorderA + 0.1 < 1-noise) {
-						double optimumEstimateUpperBorder = heuristic.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(coverageFactor+1);
+						double optimumEstimateUpperBorder = accuracyMethod.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(coverageFactor+1);
 						if(optimumEstimateUpperBorder < 1 - noise) {
 							return -1;
 						}
@@ -492,10 +449,10 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 					double size;
 					if(estimatedA) {
 //						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);
+						size = accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);
 					} else {
 //						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-						size = heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
+						size = accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
 					}
 					
 					if(size < 0.1) {
@@ -518,9 +475,9 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				precision = 0;
 			}
 			
-			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : Heuristics.getAScore(recall, precision, coverageFactor);
+			return accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : Heuristics.getAScore(recall, precision, coverageFactor);
 						
-		} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+		} else if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 			
 			int notCoveredPos = 0;
@@ -577,7 +534,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			double ret = Heuristics.getPredictiveAccuracy(classInstances.size(), superClassInstances.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 			return ret;
 		} else {
-			throw new Error("Approximation for " + heuristic + " not implemented.");
+			throw new Error("Approximation for " + accuracyMethod + " not implemented.");
 		}
 		
 	}
@@ -589,7 +546,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		//System.out.println(description);
 		nanoStartTime = System.nanoTime();
 		
-		if(heuristic.equals(HeuristicType.JACCARD)) {
+		if(accuracyMethod.equals(HeuristicType.JACCARD)) {
 			
 			// computing R(A)
 			TreeSet<OWLIndividual> coveredInstancesSet = new TreeSet<OWLIndividual>();
@@ -622,7 +579,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			Set<OWLIndividual> union = Helper.union(classInstancesSet, additionalInstancesSet);
 			return Heuristics.getJaccardCoefficient(coveredInstancesSet.size(), union.size());
 			
-		} else if (heuristic.equals(HeuristicType.AMEASURE) || heuristic.equals(HeuristicType.FMEASURE) || heuristic.equals(HeuristicType.PRED_ACC)) {
+		} else if (accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE) || accuracyMethod.equals(HeuristicType.PRED_ACC)) {
 			
 			int additionalInstances = 0;
 			int coveredInstances = 0;
@@ -692,7 +649,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			
 			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 			
-			if(heuristic.equals(HeuristicType.AMEASURE)) {
+			if(accuracyMethod.equals(HeuristicType.AMEASURE)) {
 				// best reachable concept has same recall and precision 1:
 				// 1/t+1 * (t*r + 1)
 				if((coverageFactor*recall+1)/(coverageFactor+1) <(1-noise)) {
@@ -700,14 +657,14 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				} else {
 					return Heuristics.getAScore(recall, precision, coverageFactor);
 				}
-			} else if(heuristic.equals(HeuristicType.FMEASURE)) {
+			} else if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
 				// best reachable concept has same recall and precision 1:
 				if(((1+Math.sqrt(coverageFactor))*recall)/(Math.sqrt(coverageFactor)+1)<1-noise) {
 					return -1;
 				} else {
 					return Heuristics.getFScore(recall, precision, coverageFactor);
 				}
-			} else if(heuristic.equals(HeuristicType.PRED_ACC)) {
+			} else if(accuracyMethod.equals(HeuristicType.PRED_ACC)) {
 				if((coverageFactor * coveredInstances + superClassInstances.size()) / (coverageFactor * classInstances.size() + superClassInstances.size()) < 1 -noise) {
 					return -1;
 				} else {
@@ -717,7 +674,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			}
 
 //			return heuristic.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : getAccuracy(recall, precision);
-		} else if (heuristic.equals(HeuristicType.GEN_FMEASURE)) {
+		} else if (accuracyMethod.equals(HeuristicType.GEN_FMEASURE)) {
 			
 			// implementation is based on:
 			// http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
@@ -838,44 +795,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	// see http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
 	// for all methods below (currently dummies)
-	public double getMatchRate() {
-		return 0;
-	}
-	
-	public double getOmissionError() {
-		return 0;
-	}
-	
-	public double getInductionRate() {
-		return 0;
-	}
-	
-	public double getComissionError() {
-		return 0;
-	}
-	
-	public double getGeneralisedRecall() {
-		return 0;
-	}
-	
-	public double getGeneralisedPrecision() {
-		return 0;
-	}
-	
+
 	@SuppressWarnings("unused")
 	private double getInverseJaccardDistance(TreeSet<OWLIndividual> set1, TreeSet<OWLIndividual> set2) {
 		Set<OWLIndividual> intersection = Helper.intersection(set1, set2);
 		Set<OWLIndividual> union = Helper.union(set1, set2);
 		return 1 - (union.size() - intersection.size()) / (double) union.size();
 	}
-	
-	// computes accuracy from coverage and protusion (changing this function may
-	// make it necessary to change the appoximation too) => not the case anymore
-//	private double getAccuracy(double recall, double precision) {
-//		return (coverageFactor * coverage + Math.sqrt(protusion)) / (coverageFactor + 1);
-		// log: changed from precision^^0.5 (root) to precision^^0.8 as the root is too optimistic in some cases
-//		return (coverageFactor * recall + Math.pow(precision, 0.8)) / (coverageFactor + 1);
-//	}
 	
 	private double getFMeasure(double recall, double precision) {
 		// balanced F measure
@@ -967,26 +893,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		this.useApproximations = useApproximations;
 	}
 
-	public HeuristicType getHeuristic() {
-		return heuristic;
-	}
-
-	public void setHeuristic(HeuristicType heuristic) {
-		this.heuristic = heuristic;
-		
-		if(heuristic == HeuristicType.AMEASURE) {
-			accuracyMethod = "standard";
-		} else if(heuristic == HeuristicType.FMEASURE) {
-			accuracyMethod = "fmeasure";
-		} else if(heuristic == HeuristicType.GEN_FMEASURE) {
-			accuracyMethod = "generalised_fmeasure";
-		} else if(heuristic == HeuristicType.JACCARD) {
-			accuracyMethod = "jaccard";
-		} else if(heuristic == HeuristicType.PRED_ACC) {
-			accuracyMethod = "pred_acc";
-		}
-	}
-
 	public double getApproxDelta() {
 		return approxDelta;
 	}
@@ -1019,11 +925,11 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		this.checkConsistency = checkConsistency;
 	}
 
-	public String getAccuracyMethod() {
+	public HeuristicType getAccuracyMethod() {
 		return accuracyMethod;
 	}
 
-	public void setAccuracyMethod(String accuracyMethod) {
+	public void setAccuracyMethod(HeuristicType accuracyMethod) {
 		this.accuracyMethod = accuracyMethod;
 	}
 	
