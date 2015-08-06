@@ -98,8 +98,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// specific variables for generalised F-measure
 	private TreeSet<OWLIndividual> negatedClassInstances;
 	
-    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "pred_acc")
-	private HeuristicType accuracyMethod = HeuristicType.AMEASURE;
+    @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
+	private HeuristicType accuracyMethod = HeuristicType.PRED_ACC;
 	
 	@ConfigOption(name = "checkConsistency", description = "whether to check for consistency of suggestions (when added to ontology)", required=false, defaultValue="true")
 	private boolean checkConsistency = true;
@@ -132,7 +132,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 //		useApproximations = configurator.getUseApproximations();
 		
 		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {
-			System.err.println("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
+			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}
 		
 		if(useApproximations && !(accuracyMethod.equals(HeuristicType.PRED_ACC) || accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE))) {
@@ -789,19 +789,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 	}
 	
-	public double getPredictiveAccuracy() {
-		return 0;
-	}
-	
 	// see http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
 	// for all methods below (currently dummies)
-
-	@SuppressWarnings("unused")
-	private double getInverseJaccardDistance(TreeSet<OWLIndividual> set1, TreeSet<OWLIndividual> set2) {
-		Set<OWLIndividual> intersection = Helper.intersection(set1, set2);
-		Set<OWLIndividual> union = Helper.union(set1, set2);
-		return 1 - (union.size() - intersection.size()) / (double) union.size();
-	}
 	
 	private double getFMeasure(double recall, double precision) {
 		// balanced F measure
