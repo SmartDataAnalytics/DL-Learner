@@ -689,7 +689,4 @@ public class ELDown extends RefinementOperatorAdapter {
 	public void setMaxClassExpressionDepth(int maxClassExpressionDepth) {
 		this.maxClassExpressionDepth = maxClassExpressionDepth;
 	}
-
-	
-	
 }

@@ -660,7 +660,6 @@ public class PCELOE extends AbstractCELA {
 
 		if(isCandidate) {
 			OWLClassExpression niceDescription = node.getExpression();//rewrite(node.getExpression());
-			ConceptTransformation.transformToOrderedForm(niceDescription);
 
 			if(niceDescription.equals(classToDescribe)) {
 				return false;

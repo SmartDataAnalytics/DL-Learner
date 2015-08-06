@@ -200,12 +200,11 @@ public class Psi implements GeneticRefinementOperator {
 		// sich lohnt Operatoren zu definieren, die keine Negationsnormalform
 		// erfordern)
 		
-		OWLClassExpression conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
+		OWLClassExpression conceptMod = concept.getNNF();
 		// um mehr Cache Hits zu bekommen, wird noch vereinfach und geordnet
 		
 		
 		OWLClassExpression conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedForm(conceptModForCache);
 		
 		ScorePosNeg score = program.getScore();
 		// Eval-Cache füllen
@@ -224,7 +223,6 @@ public class Psi implements GeneticRefinementOperator {
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
 		OWLClassExpression newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedForm(newConceptMod);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		

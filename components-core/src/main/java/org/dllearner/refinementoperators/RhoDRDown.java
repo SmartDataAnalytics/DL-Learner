@@ -616,7 +616,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						// clean concept and transform it to ordered negation normal form
 						// (non-recursive variant because only depth 1 was modified)
 						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+						mc = mc.getNNF();
 
 						// check whether the intersection is OK (sanity checks), then add it
 						if(checkIntersection((OWLObjectIntersectionOf) mc))
@@ -643,10 +643,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					newChildren.remove(child);
 					newChildren.add(c);
 					Collections.sort(newChildren);
-					OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
+					OWLClassExpression md = new OWLObjectUnionOfImplExt(newChildren);
 
 					// transform to ordered negation normal form
-					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(md);
+					md = md.getNNF();
 					// note that we do not have to call clean here because a disjunction will
 					// never be nested in another disjunction in this operator
 
@@ -885,7 +885,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 						// clean and transform to ordered negation normal form
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.cleanConceptNonRecursive(mc);
-						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+						mc = (OWLObjectIntersectionOf) mc.getNNF();
 
 						// last check before intersection is added
 						if(checkIntersection(mc))
@@ -1130,9 +1130,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 
 						// convert all concepts in ordered negation normal form
+						Set<OWLObjectUnionOf> tmp = new HashSet<OWLObjectUnionOf>();
 						for(OWLClassExpression concept : baseSet) {
-							ConceptTransformation.transformToOrderedForm(concept);
+							tmp.add((OWLObjectUnionOf) concept.getNNF());
 						}
+						baseSet = new TreeSet<OWLObjectUnionOf>(tmp);
 
 						// apply the exists filter (throwing out all refinements with
 						// double \exists r for any r)

@@ -152,19 +152,16 @@ public class OCEL extends AbstractCELA {
 	// double horizontalExpansionFactor = 0.6;
 
 
-    public OCEL(){
-    	
-    }
+    public OCEL(){}
+    
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-//		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public OCEL(PosOnlyLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-//		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {

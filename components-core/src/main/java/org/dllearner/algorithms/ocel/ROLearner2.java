@@ -1102,7 +1102,7 @@ public class ROLearner2 {
 				OWLClassExpression mc = dataFactory.getOWLObjectIntersectionOf(currentDescription, currNode.getConcept());
 
 				mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-				ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+				mc = mc.getNNF();
 
 				// System.out.println("extended concept to: " + mc);
 				logger.debug("misclassifications: " + misclassifications);

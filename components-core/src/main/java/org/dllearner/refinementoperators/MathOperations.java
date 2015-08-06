@@ -146,8 +146,8 @@ public class MathOperations {
 	}
 	
 	/**
-	 * Implements a cross product in the sense that each union OWLClassExpression in the
-	 * base set is extended by each OWLClassExpression in the new set. 
+	 * Implements a cross product in the sense that each union in the
+	 * base set is extended by each class expression in the new set. 
 	 * 
 	 * Example:
 	 * baseSet = {A1 OR A2, A1 or A3}

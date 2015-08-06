@@ -127,7 +127,6 @@ public class ELDownTests {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			// eliminate conjunctions nested in other conjunctions
 			tmp = ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
 		}
@@ -214,7 +213,6 @@ public class ELDownTests {
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
 		}		
@@ -233,7 +231,6 @@ public class ELDownTests {
 //		assertTrue(refinements.size() == desired.size());
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
 		for(OWLClassExpression refinement : refinements) {
-			ConceptTransformation.transformToOrderedForm(refinement);
 			boolean ok = desired.contains(refinement);
 			System.out.println(ok + ": " + refinement);
 //			assertTrue(desired.contains(refinement));
@@ -264,7 +261,6 @@ public class ELDownTests {
 		for(String str : desiredString) {
 			OWLClassExpression tmp = KBParser.parseConcept(str);
 			tmp = ConceptTransformation.cleanConcept(tmp);
-			ConceptTransformation.transformToOrderedForm(tmp);
 			desired.add(tmp);
 			System.out.println("desired: " + tmp);
 		}		
@@ -283,7 +279,6 @@ public class ELDownTests {
 //		assertTrue(refinements.size() == desired.size());
 		System.out.println("\nproduced refinements and their unit test status (true = assertion satisfied):");
 		for(OWLClassExpression refinement : refinements) {
-			ConceptTransformation.transformToOrderedForm(refinement);
 			boolean ok = desired.contains(refinement);
 			System.out.println(ok + ": " + refinement);
 //			assertTrue(desired.contains(refinement));

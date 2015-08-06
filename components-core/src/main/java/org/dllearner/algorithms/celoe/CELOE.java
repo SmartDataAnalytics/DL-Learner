@@ -632,7 +632,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewrite(node.getExpression());
-			ConceptTransformation.transformToOrderedForm(niceDescription);
 			
 			if(niceDescription.equals(classToDescribe)) {
 				return false;
