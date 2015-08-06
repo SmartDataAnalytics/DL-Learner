@@ -205,9 +205,9 @@ public class EnrichmentServlet extends HttpServlet {
 		final boolean useInference = req.getParameter("use_inference") == null ? false : Boolean.valueOf(req
 				.getParameter("use_inference"));
 		
-		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms")); 
-		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time")); 
-		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold")); 
+		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms"));
+		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time"));
+		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold"));
 
 		String resourceURI = req.getParameter("resource_uri");
 		if (resourceURI == null) {
@@ -465,7 +465,7 @@ public class EnrichmentServlet extends HttpServlet {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setHeuristic(HeuristicType.FMEASURE);
+        lp.setAccuracyMethod(HeuristicType.FMEASURE);
         lp.setUseApproximations(false);
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
@@ -478,7 +478,7 @@ public class EnrichmentServlet extends HttpServlet {
         System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
         runTime = System.currentTimeMillis() - startTime;
-        System.out.println("done in " + runTime + " ms");	
+        System.out.println("done in " + runTime + " ms");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
@@ -491,7 +491,7 @@ public class EnrichmentServlet extends HttpServlet {
         		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy()))); 
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy())));
         }
 		return learnedAxioms;
 	}

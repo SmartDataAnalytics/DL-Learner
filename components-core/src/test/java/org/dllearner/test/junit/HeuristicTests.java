@@ -283,7 +283,7 @@ public class HeuristicTests {
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
 	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
-		problem.setHeuristic(accuracyMethod);
+		problem.setAccuracyMethod(accuracyMethod);
 		problem.setUseApproximations(false);
 		problem.init();
 		
@@ -294,7 +294,7 @@ public class HeuristicTests {
 		problem.setClassToDescribe(classToDescribe);
 //		problem.getConfigurator().setType("superClass");
 		problem.setEquivalence(equivalenceLearning);
-		problem.setHeuristic(accuracyMethod);
+		problem.setAccuracyMethod(accuracyMethod);
 		problem.setUseApproximations(useApproximations);
 		problem.setApproxDelta(approxAccuracy);
 		problem.init();
