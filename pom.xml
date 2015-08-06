@@ -658,6 +658,7 @@
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.10.3</version>
 			<configuration>
 				<links>
 					<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
