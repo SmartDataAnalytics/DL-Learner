@@ -83,6 +83,7 @@ function showAllCat(){
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>expandAccuracy100Nodes</td><td>whether to try and refine solutions which already have accuracy value of 1</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>filterDescriptionsFollowingFromKB</td><td>If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>heuristic</td><td>no description available</td><td> AbstractHeuristic</td><td>celoe_heuristic</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
@@ -96,6 +97,7 @@ function showAllCat(){
 <tr><td>maxExecutionTimeInSecondsAfterImprovement</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>operator</td><td>the refinement operator instance to use</td><td> LengthLimitedRefinementOperator</td><td></td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>reuseExistingDescription</td><td>If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.</td><td> boolean</td><td>false</td><td> false</td></tr>
@@ -180,11 +182,13 @@ function showAllCat(){
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>beam</td><td>value for limiting the number of generated concepts</td><td> int</td><td>4</td><td> false</td></tr>
+<tr><td>heuristic</td><td>instance of heuristic to use</td><td> TreeInductionHeuristics</td><td>TreeInductionHeuristics</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>nonSpecifityControl</td><td>a flag to decide if further control on the purity measure should be made</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>operator</td><td>refinement operator instance to use</td><td> RefinementOperator</td><td>DLTreesRefinementOperator</td><td> false</td></tr>
 <tr><td>puritythreshold</td><td>Purity threshold for setting a leaf</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
@@ -226,12 +230,16 @@ function showAllCat(){
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxLength</td><td>maximum length of class expression</td><td> int</td><td>4</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.celoe.OEHeuristicRuntime"><h2>OEHeuristicRuntime <small class="default-hidden">org.dllearner.algorithms.celoe.OEHeuristicRuntime</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>celoe_heuristic</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>expansionPenaltyFactor</td><td>penalty for long descriptions (horizontal expansion) (strong by default)</td><td> double</td><td>0.1</td><td> false</td></tr>
+<tr><td>gainBonusFactor</td><td>bonus for being better than parent node</td><td> double</td><td>0.3</td><td> false</td></tr>
+<tr><td>nodeRefinementPenalty</td><td>penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive</td><td> double</td><td>0.0001</td><td> false</td></tr>
 <tr><td>startNodeBonus</td><td>no description available</td><td> double</td><td>0.1</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -271,6 +279,7 @@ function showAllCat(){
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>expandAccuracy100Nodes</td><td>whether to try and refine solutions which already have accuracy value of 1</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>filterDescriptionsFollowingFromKB</td><td>If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>heuristic</td><td>no description available</td><td> AbstractHeuristic</td><td>celoe_heuristic</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
@@ -285,6 +294,7 @@ function showAllCat(){
 <tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
 <tr><td>nrOfThreads</td><td>number of threads running in parallel</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>operator</td><td>the refinement operator instance to use</td><td> LengthLimitedRefinementOperator</td><td></td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>reuseExistingDescription</td><td>If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.</td><td> boolean</td><td>false</td><td> false</td></tr>
@@ -324,6 +334,8 @@ function showAllCat(){
 <div class="type RefinementOperator"><a name="org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator"><h2>Refinement Operator TDT <small class="default-hidden">org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>tdtop</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beam</td><td>no description available</td><td> int</td><td>5</td><td> false</td></tr>
+<tr><td>lp</td><td>the learning problem instance to use</td><td> PosNegLP</td><td></td><td> false</td></tr>
+<tr><td>reasoner</td><td>the reasoner instance to use</td><td> Reasoner</td><td></td><td> false</td></tr>
 <tr><td>ro</td><td>no description available</td><td> int</td><td>1</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -366,10 +378,12 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm data subproperty axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.DisjointClassesLearner"><h2>disjoint classes learner <small class="default-hidden">org.dllearner.algorithms.DisjointClassesLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>cldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>entityToDescribe</td><td>no description available</td><td> OWLEntity</td><td></td><td> false</td></tr>
-<tr><td>maxExecutionTimeInSeconds</td><td></td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>entityToDescribe</td><td>the OWL entity to learn about</td><td> OWLEntity</td><td></td><td> false</td></tr>
+<tr><td>ks</td><td>the sparql endpoint knowledge source</td><td> SparqlEndpointKS</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds (abstract)</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> int</td><td></td><td> false</td></tr>
-<tr><td>returnOnlyNewAxioms</td><td></td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The sparql reasoner instance to use</td><td> SPARQLReasoner</td><td>SPARQLReasoner</td><td> false</td></tr>
+<tr><td>returnOnlyNewAxioms</td><td>omit axioms already existing in the knowledge base</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>suggestMostGeneralClasses</td><td>only keep most general classes in suggestions</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useClassPopularity</td><td>include instance count / popularity when computing scores</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
@@ -461,19 +475,24 @@ function showAllCat(){
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.SimpleSubclassLearner"><h2>simple subclass learner <small class="default-hidden">org.dllearner.algorithms.SimpleSubclassLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>clsub</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>entityToDescribe</td><td>no description available</td><td> OWLEntity</td><td></td><td> false</td></tr>
-<tr><td>maxExecutionTimeInSeconds</td><td></td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>entityToDescribe</td><td>the OWL entity to learn about</td><td> OWLEntity</td><td></td><td> false</td></tr>
+<tr><td>ks</td><td>the sparql endpoint knowledge source</td><td> SparqlEndpointKS</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds (abstract)</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>maxFetchedRows</td><td>The maximum number of rows fetched from the endpoint to approximate the result.</td><td> int</td><td></td><td> false</td></tr>
-<tr><td>returnOnlyNewAxioms</td><td></td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>reasoner</td><td>The sparql reasoner instance to use</td><td> SPARQLReasoner</td><td>SPARQLReasoner</td><td> false</td></tr>
+<tr><td>returnOnlyNewAxioms</td><td>omit axioms already existing in the knowledge base</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner"><h2>symmetric object property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplsymm</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for symmetric object property axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier"><h2>tdt <small class="default-hidden">org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>tdt</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A Terminological Decision Tree</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>binaryClassification</td><td>value for limiting the number of generated concepts</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>binaryClassification</td><td>if it is a binary classification problem</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>ccp</td><td>value for limiting the number of generated concepts</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>classToDescribe</td><td>concept for splitting undefined examples into positive and negative for binary classification problems</td><td> OWLClassExpression</td><td></td><td> false</td></tr>
+<tr><td>heuristic</td><td>the heuristic instance to use</td><td> TreeInductionHeuristics</td><td>TreeInductionHeuristics</td><td> false</td></tr>
 <tr><td>missingValueTreatmentForTDT</td><td>for overcoming the problem of missing values in tree algorithms.tree.models</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>operator</td><td>the refinement operator instance to use</td><td> RefinementOperator</td><td>DLTreesRefinementOperator</td><td> false</td></tr>
 <tr><td>puritythreshold</td><td>Purity threshold for setting a leaf</td><td> double</td><td>0.05</td><td> false</td></tr>
 </tbody></table></div>
 </div>
