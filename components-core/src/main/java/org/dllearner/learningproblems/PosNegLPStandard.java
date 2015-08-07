@@ -347,9 +347,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			
 			// standard computation (no approximation)
 			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-//			if(instancesCovered + instancesDescription == 0) {
-//				precision = 0;
-//			}
 			return Heuristics.getFScore(recall, precision, 1);
 		} else {
 			throw new Error("Approximation for " + accuracyMethod + " not implemented.");
@@ -376,9 +373,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		// only stop with 3 examples; so we would have to add 1 for exact matches
 		// which is not done yet
 		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size());
-		// maybe use this approach:
-//		int maxNotCovered = (int) Math.ceil(noise*positiveExamples.size()+0.0001);
-		
 //		System.out.println("noise: " + noise);
 //		System.out.println("max not covered: " + maxNotCovered);
 		
@@ -419,16 +413,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 			}
 		}
 		
-//		System.out.println("not covered pos: " + notCoveredPos);
-//		System.out.println("not covered neg: " + notCoveredNeg);
-		
-//		if(useFMeasure) {
-//			double recall = (positiveExamples.size() - notCoveredPos) / (double) positiveExamples.size();
-//			double precision = (positiveExamples.size() - notCoveredPos) / (double) (allExamples.size() - notCoveredPos - notCoveredNeg);
-//			return getFMeasure(recall, precision);
-//		} else {
-			return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
-//		}
+		return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
 	}
 	
 	public double getAccuracy(int posAsPos, int posAsNeg, int negAsPos, int negAsNeg, double noise) {
@@ -492,10 +477,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
 		ScorePosNeg score = computeScore(description, noise);
 		return new EvaluatedDescriptionPosNeg(description, score);
-	}
-
-	private double getFMeasure(double recall, double precision) {
-		return 2 * precision * recall / (precision + recall);
 	}
 
     public double getApproxDelta() {
