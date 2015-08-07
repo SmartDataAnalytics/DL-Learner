@@ -27,7 +27,6 @@ import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
@@ -114,11 +113,11 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 			logger.warn("You declared some individuals as both positive and negative examples.");
 		}
 		
-		allExamples = Helper.union(positiveExamples, negativeExamples);
+		allExamples = Sets.union(positiveExamples, negativeExamples);
 		
 		// sanity check whether examples are contained in KB
 		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
-            Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
+            Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
             double percentage = missing.size()/allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
 			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";

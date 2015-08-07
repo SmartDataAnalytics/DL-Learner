@@ -25,12 +25,13 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+
+import com.google.common.collect.Sets;
 
 /**
  * Caches results of previous concept evaluation to speed up
@@ -70,25 +71,25 @@ public class EvaluationCache {
 	 */
 	public SortedSetTuple<OWLIndividual> infer(OWLClassExpression concept) {
 		if(checkForEqualConcepts) {
-			SortedSet<OWLIndividual> pos = cache.get(concept);
-			SortedSet<OWLIndividual> neg = Helper.difference(examples, pos);
+			Set<OWLIndividual> pos = cache.get(concept);
+			Set<OWLIndividual> neg = Sets.difference(examples, pos);
 			return new SortedSetTuple<OWLIndividual>(pos,neg);
 		} else {
 			// for a negation NOT C we can only say which concepts are not in it
 			// (those in C), but we cannot say which ones are in NOT C
 			
 			// for a conjunction we know that the intersection of instances
-			// of all children belongs to the concept			
+			// of all children belongs to the concept
 			if(concept instanceof OWLObjectIntersectionOf) {
 				handleMultiConjunction((OWLObjectIntersectionOf)concept);
 			// disjunctions are similar to conjunctions but we use union here;
 			// note that there can be instances which are neither in a concept
-			// C nor in a concept D, but in (C OR D)				
+			// C nor in a concept D, but in (C OR D)
 			} else if(concept instanceof OWLObjectUnionOf) {
 				List<OWLClassExpression> operands = ((OWLObjectUnionOf) concept).getOperandsAsList();
 				Set<OWLIndividual> pos = cache.get(operands.get(0));
 				for (int i = 1; i < operands.size(); i++) {
-					pos = Helper.union(pos, cache.get(operands.get(i)));
+					pos = Sets.union(pos, cache.get(operands.get(i)));
 				}
 			// in all other cases we cannot infer anything, so we return an
 			// empty tuple
@@ -104,7 +105,7 @@ public class EvaluationCache {
 		List<OWLClassExpression> operands = mc.getOperandsAsList();
 		Set<OWLIndividual> pos = cache.get(operands.get(0));
 		for (int i = 1; i < operands.size(); i++) {
-			pos = Helper.intersection(pos, cache.get(operands.get(i)));
+			pos = Sets.intersection(pos, cache.get(operands.get(i)));
 		}
 		// TODO: handle the case that some children may not be in cache
 		return null;

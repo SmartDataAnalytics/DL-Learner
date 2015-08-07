@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.Helper;
+import com.google.common.collect.Sets;
 
 /**
  * 
@@ -56,8 +56,8 @@ public class SortedSetTuple<T> {
 		return negSet;
 	}
 	
-	public SortedSet<T> getCompleteSet() {
-		return Helper.union(posSet, negSet);
+	public Set<T> getCompleteSet() {
+		return Sets.union(posSet, negSet);
 	}
 	
 }

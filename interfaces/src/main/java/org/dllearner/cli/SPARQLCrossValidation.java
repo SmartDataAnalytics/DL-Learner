@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.dllearner.algorithms.qtl.QTL2Disjunctive;
-import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
@@ -41,12 +40,13 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import com.google.common.collect.Sets;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -63,7 +63,7 @@ public class SPARQLCrossValidation {
 	protected Stat length = new Stat();
 	protected Stat accuracyTraining = new Stat();
 	protected Stat fMeasure = new Stat();
-	protected Stat fMeasureTraining = new Stat(); 
+	protected Stat fMeasureTraining = new Stat();
 	protected static boolean writeToFile = false;
 	protected static File outputFile;
 	
@@ -80,9 +80,9 @@ public class SPARQLCrossValidation {
 		
 	}
 	
-	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractClassExpressionLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {		
+	public SPARQLCrossValidation(QTL2Disjunctive la, AbstractClassExpressionLearningProblem lp, IndividualReasoner rs, int folds, boolean leaveOneOut) {
 		
-		DecimalFormat df = new DecimalFormat();	
+		DecimalFormat df = new DecimalFormat();
 
 		// the training and test sets used later on
 		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
@@ -104,7 +104,7 @@ public class SPARQLCrossValidation {
 			}
 			List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
 			List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
-			Collections.shuffle(posExamplesList, new Random(1));			
+			Collections.shuffle(posExamplesList, new Random(1));
 			Collections.shuffle(negExamplesList, new Random(2));
 			
 			// sanity check whether nr. of folds makes sense for this benchmark
@@ -127,7 +127,7 @@ public class SPARQLCrossValidation {
 				System.exit(1);
 			} else {
 				// calculating where to split the sets, ; note that we split
-				// positive and negative examples separately such that the 
+				// positive and negative examples separately such that the
 				// distribution of positive and negative examples remains similar
 				// (note that there are better but more complex ways to implement this,
 				// which guarantee that the sum of the elements of a fold for pos
@@ -146,8 +146,8 @@ public class SPARQLCrossValidation {
 					testSetsPos.add(i, testPos);
 					testSetsNeg.add(i, testNeg);
 					trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
-					trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));				
-				}	
+					trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));
+				}
 				
 			}
 
@@ -164,7 +164,7 @@ public class SPARQLCrossValidation {
 			}
 			
 
-			try {			
+			try {
 				lp.init();
 				la.init();
 			} catch (ComponentInitException e) {
@@ -181,14 +181,14 @@ public class SPARQLCrossValidation {
 			System.out.println(concept);
 //			Set<OWLIndividual> tmp = rs.hasType(concept, testSetsPos.get(currFold));
 			Set<OWLIndividual> tmp = hasType(testSetsPos.get(currFold), la);
-			Set<OWLIndividual> tmp2 = Helper.difference(testSetsPos.get(currFold), tmp);
+			Set<OWLIndividual> tmp2 = Sets.difference(testSetsPos.get(currFold), tmp);
 //			Set<OWLIndividual> tmp3 = rs.hasType(concept, testSetsNeg.get(currFold));
 			Set<OWLIndividual> tmp3 = hasType(testSetsNeg.get(currFold), la);
 			
 			outputWriter("test set errors pos: " + tmp2);
 			outputWriter("test set errors neg: " + tmp3);
 			
-			// calculate training accuracies 
+			// calculate training accuracies
 			System.out.println(getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold)));
 //			int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainingSetsPos.get(currFold));
 			int trainingCorrectPosClassified = getCorrectPosClassified(trainingSetsPos.get(currFold), la);
@@ -196,7 +196,7 @@ public class SPARQLCrossValidation {
 			int trainingCorrectNegClassified = getCorrectNegClassified(trainingSetsNeg.get(currFold), la);
 			int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
 			double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainingSetsPos.get(currFold).size()+
-					trainingSetsNeg.get(currFold).size()));			
+					trainingSetsNeg.get(currFold).size()));
 			accuracyTraining.addNumber(trainingAccuracy);
 			// calculate test accuracies
 //			int correctPosClassified = getCorrectPosClassified(rs, concept, testSetsPos.get(currFold));
@@ -219,13 +219,13 @@ public class SPARQLCrossValidation {
 			double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
 			double recall = correctPosClassified / (double) testSetsPos.get(currFold).size();
 //			System.out.println(precision);System.out.println(recall);
-			fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
+			fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));
 			
 			length.addNumber(OWLClassExpressionUtils.getLength(concept));
 			
 			outputWriter("fold " + currFold + ":");
 			outputWriter("  training: " + pos.size() + " positive and " + neg.size() + " negative examples");
-			outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, " 
+			outputWriter("  testing: " + correctPosClassified + "/" + testSetsPos.get(currFold).size() + " correct positives, "
 					+ correctNegClassified + "/" + testSetsNeg.get(currFold).size() + " correct negatives");
 			outputWriter("  concept: " + concept);
 			outputWriter("  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)");
@@ -238,9 +238,9 @@ public class SPARQLCrossValidation {
 		outputWriter("Finished " + folds + "-folds cross-validation.");
 		outputWriter("runtime: " + statOutput(df, runtime, "s"));
 		outputWriter("length: " + statOutput(df, length, ""));
-		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 		outputWriter("F-Measure: " + statOutput(df, fMeasure, "%"));
-		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
+		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));
 		outputWriter("predictive accuracy: " + statOutput(df, accuracy, "%"));
 			
 	}
@@ -290,7 +290,7 @@ public class SPARQLCrossValidation {
 	}
 	
 	public static Set<OWLIndividual> getTrainingSet(Set<OWLIndividual> examples, Set<OWLIndividual> testingSet) {
-		return Helper.difference(examples, testingSet);
+		return Sets.difference(examples, testingSet);
 	}
 	
 	// takes nr. of examples and the nr. of folds for this examples;
@@ -309,7 +309,7 @@ public class SPARQLCrossValidation {
 		String str = "av. " + df.format(stat.getMean()) + unit;
 		str += " (deviation " + df.format(stat.getStandardDeviation()) + unit + "; ";
 		str += "min " + df.format(stat.getMin()) + unit + "; ";
-		str += "max " + df.format(stat.getMax()) + unit + ")";		
+		str += "max " + df.format(stat.getMax()) + unit + ")";
 		return str;
 	}
 

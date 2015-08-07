@@ -36,7 +36,6 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -50,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 
@@ -270,10 +270,10 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			boolean isConsistent = followsFromKB || isConsistent(description);
 			
 //			double acc = useFMeasure ? getFMeasure(coverage, protusion) : getAccuracy(coverage, protusion);
-			return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), recall, additionalInstances, precision, acc, isConsistent, followsFromKB);
+			return new ClassScore(coveredInstances, Sets.difference(classInstancesSet, coveredInstances), recall, additionalInstances, precision, acc, isConsistent, followsFromKB);
 		
 		} else {
-			return new ClassScore(coveredInstances, Helper.difference(classInstancesSet, coveredInstances), recall, additionalInstances, precision, acc);
+			return new ClassScore(coveredInstances, Sets.difference(classInstancesSet, coveredInstances), recall, additionalInstances, precision, acc);
 		}
 	}
 	
@@ -567,7 +567,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 				}
 			}
 					
-			Set<OWLIndividual> union = Helper.union(classInstancesSet, additionalInstancesSet);
+			Set<OWLIndividual> union = Sets.union(classInstancesSet, additionalInstancesSet);
 			return Heuristics.getJaccardCoefficient(coveredInstancesSet.size(), union.size());
 			
 		} else if (accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE) || accuracyMethod.equals(HeuristicType.PRED_ACC)) {
@@ -685,8 +685,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			// first compute I_C \cap Cn(DC)
 			// it seems that in our setting, we can ignore Cn, because the examples (class instances)
 			// are already part of the background knowledge
-			Set<OWLIndividual> tmp1Pos = Helper.intersection(icPos, classInstancesSet);
-			Set<OWLIndividual> tmp1Neg = Helper.intersection(icNeg, negatedClassInstances);
+			Set<OWLIndividual> tmp1Pos = Sets.intersection(icPos, classInstancesSet);
+			Set<OWLIndividual> tmp1Neg = Sets.intersection(icNeg, negatedClassInstances);
 			int tmp1Size = tmp1Pos.size() + tmp1Neg.size();
 			
 			// Cn(I_C) \cap D_C is the same set if we ignore Cn ...

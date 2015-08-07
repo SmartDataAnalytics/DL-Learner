@@ -55,6 +55,7 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 
 /**
@@ -118,8 +119,8 @@ public class ROLearner2 {
 	// if this variable is set to true, then the refinement operator
 	// is applied until all concept of equal length have been found
 	// e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage
-	// are potentially more method calls, but the advantage is that 
-	// the algorithm is better in locating relevant concept in the 
+	// are potentially more method calls, but the advantage is that
+	// the algorithm is better in locating relevant concept in the
 	// subsumption hierarchy (otherwise, if the most general concept
 	// is not promising, it may never get expanded)
 	private boolean forceRefinementLengthIncrease;
@@ -296,7 +297,7 @@ public class ROLearner2 {
 		solutions.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
-		guaranteeXgoodAlreadyReached = false;		
+		guaranteeXgoodAlreadyReached = false;
 		propernessTestsReasoner = 0;
 		propernessTestsAvoidedByShortConceptConstruction = 0;
 		propernessTestsAvoidedByTooWeakList = 0;
@@ -438,8 +439,8 @@ public class ROLearner2 {
 				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") class expression found: " + OWLAPIRenderers.toManchesterOWLSyntax(candidatesStable.last().getConcept()));
 				if(logger.isTraceEnabled()){
-					logger.trace(Helper.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
-					logger.trace(Helper.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
+					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
+					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
 				}
 				printBestSolutions(5, false);
 				printStatistics(false);
@@ -496,8 +497,8 @@ public class ROLearner2 {
 			int show = 1;
 			String manchester = "MANCHESTER:\n";
 			for (ExampleBasedNode c : solutions) {
-				logger.info(show + ": " + OWLAPIRenderers.toManchesterOWLSyntax(c.getConcept()) 
-						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length " 
+				logger.info(show + ": " + OWLAPIRenderers.toManchesterOWLSyntax(c.getConcept())
+						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length "
 						+ OWLClassExpressionUtils.getLength(c.getConcept())
 						+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept()) + ")");
 //				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
@@ -523,7 +524,7 @@ public class ROLearner2 {
 		} else {
 			logger.info("Algorithm terminated successfully ("+conceptTests+" descriptions tested).\n");
             logger.info(rs.toString());
-		}		
+		}
 
 		totalLearningTime.stop();
 		isRunning = false;
@@ -622,7 +623,7 @@ public class ROLearner2 {
 						propernessTestsAvoidedByShortConceptConstruction++;
 						propernessDetected = true;
 
-//						 System.out.println("refinement " + refinement + 
+//						 System.out.println("refinement " + refinement +
 //								 " can be shortened");
 //						 System.exit(0);
 					}
@@ -721,7 +722,7 @@ public class ROLearner2 {
 		// System.out.println("refinements: " + refinements);
 		// else
 		// System.out.println("refinements: more than 10");
-		//		
+		//
 		// System.out.println("improper concepts: " + improperConcepts);
 
 		for (OWLClassExpression refinement : properConcepts) {
@@ -850,11 +851,11 @@ public class ROLearner2 {
 				// it is often useful to continue expanding until a longer node is
 				// reached (to replace atomic concepts with more specific ones)
 				if(forceRefinementLengthIncrease && !newNode.isTooWeak()) {
-					// extend node again if its concept has the same length 
+					// extend node again if its concept has the same length
 					if(OWLClassExpressionUtils.getLength(node.getConcept()) == OWLClassExpressionUtils.getLength(newNode.getConcept())) {
 						extendNodeProper(newNode, refinement, maxLength, recDepth + 1);
 					}
-				}				
+				}
 				
 			}
 		}
@@ -1264,7 +1265,7 @@ public class ROLearner2 {
 //			solutionsOrderedBySubsumption.addAll(solutions);
 			for (OWLClassExpression d : solutionsOrderedBySubsumption)
 				logger.trace("special: " + d);
-			throw new Error("implementation needs to be updated to show ordered solutions");			
+			throw new Error("implementation needs to be updated to show ordered solutions");
 		}
 		/*
 		 * for (int j = 0; j < solutions.size(); j++) { OWLClassExpression d =
@@ -1274,11 +1275,11 @@ public class ROLearner2 {
 	}
 
 	public ScorePosNeg getSolutionScore() {
-		return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
+		return learningProblem.computeScore(getBestSolution());
 	}
 
 	private ScorePosNeg getScore(OWLClassExpression d) {
-		return (ScorePosNeg) learningProblem.computeScore(d);
+		return learningProblem.computeScore(d);
 	}
 
 	public ExampleBasedNode getStartNode() {
@@ -1328,7 +1329,7 @@ public class ROLearner2 {
 		}
 		
 		//ignore default
-		if(maxClassDescriptionTests == 0) 
+		if(maxClassDescriptionTests == 0)
 			result = false;
 		//test
 		else if(conceptTests >= maxClassDescriptionTests){
@@ -1337,7 +1338,7 @@ public class ROLearner2 {
 			return true;
 		}
 		
-		// we stop if sufficiently many solutions (concepts fitting the noise parameter) have been 
+		// we stop if sufficiently many solutions (concepts fitting the noise parameter) have been
 		// reached - unless this termination criterion is switched off using terminateOnNoiseReached = false
 		if (guaranteeXgoodAlreadyReached){
 			result = true;
@@ -1363,7 +1364,7 @@ public class ROLearner2 {
 			result = result && true;
 		}else {
 			result = false;
-		} 
+		}
 		
 		return result;
 	

@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Sets;
+
 /**
  * TODO: JavaDoc
  * 
@@ -56,7 +58,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class Helper {
 
-	private static Logger logger = LoggerFactory.getLogger(Helper.class);	
+	private static Logger logger = LoggerFactory.getLogger(Helper.class);
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	// findet alle atomaren Konzepte in einem Konzept
@@ -199,90 +201,11 @@ public class Helper {
 		}
 	}
 
-	/**
-	 * Das ist eine "generic method", d.h. die Methode hat einen bestimmten Typ.
-	 * Ich habe das benutzt um allen beteiligten Mengen den gleichen Typ zu
-	 * geben, denn ansonsten ist es nicht möglich der neu zu erzeugenden Menge
-	 * (union) den gleichen Typ wie den Argumenten zu geben.
-	 * 
-	 * Die Methode hat gegenüber addAll den Vorteil, dass sie ein neues Objekt
-	 * erzeugt.
-	 * 
-	 * @param <T>
-	 * @param set1
-	 * @param set2
-	 */
-	public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
-		// TODO: effizientere Implementierung (längere Liste klonen und Elemente
-		// anhängen)
-		Set<T> union = new TreeSet<T>();
-		union.addAll(set1);
-		union.addAll(set2);
-		return union;
-		/*
-		 * Set union; if(set1.size()>set2.size()) { union = set1.clone(); } else {
-		 *  } return union;
-		 */
-	}
-
-	public static <T> SortedSet<T> union(SortedSet<T> set1, SortedSet<T> set2) {
-		// Set<T> union = set1.clone();
-		// ((Cloneable) set1).clone();
-
-		// TODO: effizientere Implementierung (längere Liste klonen und Elemente
-		// anhängen)
-
-		// f�r TreeSet gibt es einen Konstruktor, der eine Collection
-		// entgegennimmt
-		// und einen weiteren, der ein SortedSet entgegennimmt; vermutlich ist
-		// letzterer schneller
-
-		SortedSet<T> union;
-		if (set1.size() > set2.size()) {
-			union = new TreeSet<T>(set1);
-			union.addAll(set2);
-		} else {
-			union = new TreeSet<T>(set2);
-			union.addAll(set1);
-		}
-		// SortedSet<T> union = new TreeSet<T>(set1);
-		// union.addAll(set1);
-		// union.addAll(set2);
-		return union;
-
-	}
-
-	public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
-		// TreeSet<T> intersection = (TreeSet<T>) set1.clone();
-		// TODO: effizienter implementieren d.h. lange Liste klonen und dann
-		// retainAll
-		SortedSet<T> intersection = new TreeSet<T>(set1);
-		// intersection.addAll(set1);
-		intersection.retainAll(set2);
-		return intersection;
-	}
-
 	public static <T> Set<T> intersectionTuple(Set<T> set, SortedSetTuple<T> tuple) {
-		Set<T> ret = intersection(set, tuple.getPosSet());
+		Set<T> ret = Sets.intersection(set, tuple.getPosSet());
 		ret.retainAll(tuple.getNegSet());
 		return ret;
 	}
-
-	public static <T> SortedSet<T> difference(SortedSet<T> set1, SortedSet<T> set2) {
-		// TODO: effizienter implementieren
-		SortedSet<T> difference = new TreeSet<T>(set1);
-		// difference.addAll(set1);
-		difference.removeAll(set2);
-		return difference;
-	}
-
-	public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
-		// TODO: effizienter implementieren
-		SortedSet<T> difference = new TreeSet<T>(set1);
-		// difference.addAll(set1);
-		difference.removeAll(set2);
-		return difference;
-	}	
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
 	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
@@ -321,168 +244,43 @@ public class Helper {
 		return ret;
 	}
 
-	/**
-	 * TODO: split in two methods (one for concepts, one for roles), document
-	 * what exactly the method is doing, remove dependencies from old Config
-	 * class, incorporate the new methods in the learning algorithms when
-	 * appropriate (common conf options for allowed concepts/roles and forbidden
-	 * concepts/roles need to be created)
-	 * 
-	 * Computes the set of allowed concepts based on configuration settings
-	 * (also ignores anonymous and standard RDF, RDFS, OWL concept produces by
-	 * Jena).
-	 * 
-	 * DEPRECATED METHOD (RELIED ON OLD CONFIG).
-	 * 
-	 */
-//	public static void autoDetectConceptsAndRoles(ReasonerComponent rs) {
-//		// einige Sachen, die momentan nur vom Refinement-Algorithmus
-//		// unterstützt werden (später ev. auch von anderen Algorithmen)
-//		// if (Config.algorithm == Algorithm.REFINEMENT) {
+//	/**
+//	 * Removes concepts, which should be ignored by the learning algorithm.
+//	 * (The main reason to use this method is because Jena introduces such
+//	 * concepts when ontologies are converted to DIG.) Currently ignored
+//	 * concepts are those having prefix "anon" and concepts belonging to
+//	 * the RDF, RDFS, OWL standards.
+//	 *
+//	 * @param concepts The set from which concepts will be removed.
+//	 */
+//	@Deprecated
+//	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
+//		Iterator<OWLClass> it = concepts.iterator();
+//		while (it.hasNext()) {
+//			String conceptName = it.next().toStringID();
 //
-//		// berechnen der verwendbaren Konzepte
-//		if (Config.Refinement.allowedConceptsAutoDetect) {
-//			// TODO: Code aus DIG-Reasoner-Klasse einfügen
-//
-//			Set<AtomicConcept> allowedConceptsTmp = new TreeSet<AtomicConcept>(
-//					new ConceptComparator());
-//			allowedConceptsTmp.addAll(rs.getAtomicConcepts());
-//			Iterator<AtomicConcept> it = allowedConceptsTmp.iterator();
-//			while (it.hasNext()) {
-//				String conceptName = it.next().toStringID();
-//				// System.out.println(conceptName);
-//				// seltsame anon-Konzepte, die von Jena erzeugt werden
-//				// löschen
-//				if (conceptName.startsWith("anon")) {
-//					System.out
-//							.println("  Ignoring concept "
-//									+ conceptName
-//									+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
-//					it.remove();
-//				} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-//					System.out.println("  Ignoring concept " + conceptName
-//							+ " (RDF construct produced by Jena when reading in OWL file).");
-//					it.remove();
-//				} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-//					System.out.println("  Ignoring concept " + conceptName
-//							+ " (RDF Schema construct produced by Jena when reading in OWL file).");
-//					it.remove();
-//				} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
-//					System.out.println("  Ignoring concept " + conceptName
-//							+ " (OWL construct produced by Jena when reading in OWL file).");
-//					it.remove();
-//				}
-//			}
-//
-//			// hier werden jetzt noch die zu ignorierenden Konzepte entfernt
-//			if (Config.Refinement.ignoredConcepts != null) {
-//
-//				for (AtomicConcept ac : Config.Refinement.ignoredConcepts) {
-//					boolean success = allowedConceptsTmp.remove(ac);
-//					if (!success) {
-//						System.out.println("Ignored concept " + ac
-//								+ " does not exist in knowledge base.");
-//						System.exit(0);
-//					}
-//
-//				}
-//			}
-//
-//			Config.Refinement.allowedConcepts = allowedConceptsTmp;
-//		} else {
-//			// prüfen, ob nur verfügbare Konzepte vom Nutzer gewählt worden
-//			Set<AtomicConcept> allowed = new HashSet<AtomicConcept>();
-//			allowed.addAll(Config.Refinement.allowedConcepts);
-//			allowed.removeAll(rs.getAtomicConcepts());
-//			if (allowed.size() > 0) {
-//				System.out
-//						.println("Some of the concepts you told the learner to use in the definition, "
-//								+ "do not exist in the background knowledge: " + allowed);
-//				System.out.println("Please correct this problem and restart.");
-//				System.exit(0);
-//			}
-//		}
-//
-//		if (Config.Refinement.allowedRolesAutoDetect) {
-//			Set<AtomicRole> allowedRolesTmp = rs.getAtomicRoles();
-//
-//			// hier werden jetzt noch die zu ignorierenden Rollen entfernt
-//			if (Config.Refinement.ignoredRoles != null) {
-//
-//				for (AtomicRole ar : Config.Refinement.ignoredRoles) {
-//					boolean success = allowedRolesTmp.remove(ar);
-//					if (!success) {
-//						System.out.println("Ignored role " + ar
-//								+ " does not exist in knowledge base.");
-//						System.exit(0);
-//					}
-//
-//				}
-//			}
-//
-//			Config.Refinement.allowedRoles = allowedRolesTmp;
-//
-//		} else {
-//			Set<AtomicRole> allowedR = new HashSet<AtomicRole>();
-//			allowedR.addAll(Config.Refinement.allowedRoles);
-//
-//			Set<AtomicRole> existingR = new TreeSet<AtomicRole>(new RoleComparator());
-//			existingR.addAll(rs.getAtomicRoles());
-//
-//			// allowedR.removeAll(rs.getAtomicRoles());
-//			allowedR.removeAll(existingR);
-//
-//			if (allowedR.size() > 0) {
-//				System.out
-//						.println("Some of the roles you told the learner to use in the definition, "
-//								+ "do not exist in the background knowledge: " + allowedR);
-//				System.out.println("Please correct this problem and restart.");
-//				System.out.println(rs.getAtomicRoles());
-//				System.out.println(Config.Refinement.allowedRoles);
-//				System.exit(0);
+//			// ignore some concepts (possibly produced by Jena)
+//			if (conceptName.startsWith("anon")) {
+//				logger.debug("  Ignoring concept "
+//								+ conceptName
+//								+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
+//				it.remove();
+//			} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
+//				logger.debug("  Ignoring concept " + conceptName
+//						+ " (RDF construct produced by Jena when reading in OWL file).");
+//				it.remove();
+//			} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
+//				logger.debug("  Ignoring concept " + conceptName
+//						+ " (RDF Schema construct produced by Jena when reading in OWL file).");
+//				it.remove();
+//			} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
+//				logger.debug("  Ignoring concept " + conceptName
+//						+ " (OWL construct produced by Jena when reading in OWL file).");
+//				it.remove();
 //			}
 //
 //		}
 //	}
-
-	/**
-	 * Removes concepts, which should be ignored by the learning algorithm.
-	 * (The main reason to use this method is because Jena introduces such
-	 * concepts when ontologies are converted to DIG.) Currently ignored
-	 * concepts are those having prefix "anon" and concepts belonging to
-	 * the RDF, RDFS, OWL standards.
-	 * 
-	 * @param concepts The set from which concepts will be removed.
-	 * @deprecated Deprecated method, because it is not needed anymore. 
-	 */
-	@Deprecated
-	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
-		Iterator<OWLClass> it = concepts.iterator();
-		while (it.hasNext()) {
-			String conceptName = it.next().toStringID();
-			
-			// ignore some concepts (possibly produced by Jena)
-			if (conceptName.startsWith("anon")) {
-				logger.debug("  Ignoring concept "
-								+ conceptName
-								+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
-				it.remove();
-			} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-				logger.debug("  Ignoring concept " + conceptName
-						+ " (RDF construct produced by Jena when reading in OWL file).");
-				it.remove();
-			} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-				logger.debug("  Ignoring concept " + conceptName
-						+ " (RDF Schema construct produced by Jena when reading in OWL file).");
-				it.remove();
-			} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
-				logger.debug("  Ignoring concept " + conceptName
-						+ " (OWL construct produced by Jena when reading in OWL file).");
-				it.remove();
-			}
-			
-		}
-	}
 	
 	// concepts case 1: no ignore or allowed list
 	public static <T extends OWLEntity> Set<T> computeEntities(AbstractReasonerComponent rs, EntityType<T> entityType) {
@@ -543,33 +341,17 @@ public class Helper {
 		return concepts;
 	}
 	
-	// concepts case 3: allowed list
-	// superseeded by checkConcepts()
-//	public static void checkAllowedList(ReasonerComponent rs, Set<AtomicConcept> allowedConcepts) {
-//		// check whether allowed concepts exist in knowledgebase(s)
-//		Set<AtomicConcept> allowed = new HashSet<AtomicConcept>();
-//		allowed.addAll(allowedConcepts);
-//		allowed.removeAll(rs.getAtomicConcepts());
-//		if (allowed.size() > 0) {
-//			System.out
-//					.println("Some of the concepts you told the learner to use in the definition, "
-//							+ "do not exist in the background knowledge: " + allowed);
-//			System.out.println("Please correct this problem and restart.");
-//			System.exit(0);
-//		}		
-//	}
-	
 	/**
 	 * Checks whether the roles exist in background knowledge
 	 * @param roles The roles to check.
 	 * @return The first non-existing role or null if they are all in the
 	 * background knowledge.
 	 */
-	// 
+	//
 	public static OWLObjectProperty checkRoles(AbstractReasonerComponent rs, Set<OWLObjectProperty> roles) {
 		Set<OWLObjectProperty> existingRoles = rs.getObjectProperties();
 		for (OWLObjectProperty ar : roles) {
-			if(!existingRoles.contains(ar)) 
+			if(!existingRoles.contains(ar))
 				return ar;
 		}
 		return null;
@@ -584,7 +366,7 @@ public class Helper {
 	public static <T extends OWLEntity> T checkEntities(AbstractReasonerComponent rs, Set<T> entities) {
 		Set<T> existingEntities = (Set<T>) computeEntities(rs, entities.iterator().next().getEntityType());
 		for (T entity : entities) {
-			if(!existingEntities.contains(entity)) 
+			if(!existingEntities.contains(entity))
 				return entity;
 		}
 		return null;
@@ -596,11 +378,11 @@ public class Helper {
 	 * @return The first non-existing role or null if they are all in the
 	 * background knowledge.
 	 */
-	// 
+	//
 	public static OWLClass checkConcepts(AbstractReasonerComponent rs, Set<OWLClass> concepts) {
 		Set<OWLClass> existingConcepts = rs.getClasses();
 		for (OWLClass ar : concepts) {
-			if(!existingConcepts.contains(ar)) 
+			if(!existingConcepts.contains(ar))
 				return ar;
 		}
 		return null;
@@ -620,14 +402,14 @@ public class Helper {
 				aBox.atomicConceptsNeg.put(atomicConcept.toStringID(), getStringSet(rs
 						.getIndividuals(negatedAtomicConcept)));
 				aBox.concepts.add(atomicConcept.toStringID());
-			}			
+			}
 		}
 
 		if(!rs.getObjectProperties().isEmpty()) {
 			for (OWLObjectProperty atomicRole : rs.getObjectProperties()) {
 				aBox.rolesPos.put(atomicRole.toStringID(), getStringMap(rs.getPropertyMembers(atomicRole)));
 				aBox.roles.add(atomicRole.toStringID());
-			}			
+			}
 		}
 
 		aBox.domain = getStringSet(rs.getIndividuals());
@@ -639,12 +421,5 @@ public class Helper {
 		System.out.println("OK (" + dematDuration + " ms)");
 		return aBox;
 	}
-	
-	public static String arrayContent(int[] ar) {
-		String str = ""; 
-		for(int i=0; i<ar.length; i++) {
-			str += ar[i] + ",";
-		}
-		return str;
-	}	
+
 }

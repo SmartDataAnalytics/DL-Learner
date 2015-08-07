@@ -48,7 +48,6 @@ import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToIRIFunction;
@@ -92,7 +91,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -1646,9 +1644,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLDataProperty> mostGeneralDP = dataPropertyHierarchy.getMostGeneralRoles();
 		// we make the (reasonable) assumption here that all sub and super
 		// datatype properties have the same type (e.g. boolean, integer, double)
-		Set<OWLDataProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
-		Set<OWLDataProperty> mostGeneralNumericDPs = Helper.intersection(mostGeneralDP, reasoner.getNumericDataProperties());
-		Set<OWLDataProperty> mostGeneralStringDPs = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
+		Set<OWLDataProperty> mostGeneralBDP = Sets.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
+		Set<OWLDataProperty> mostGeneralNumericDPs = Sets.intersection(mostGeneralDP, reasoner.getNumericDataProperties());
+		Set<OWLDataProperty> mostGeneralStringDPs = Sets.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));
 		computeMostGeneralNumericDPRecursive(domain, mostGeneralNumericDPs, mgNumeric.get(domain));
 		computeMostGeneralStringDPRecursive(domain, mostGeneralStringDPs, mgsd.get(domain));

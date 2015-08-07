@@ -342,7 +342,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		} else if(learningProblem instanceof PosOnlyLP) {
 			examples = ((PosOnlyLP)learningProblem).getPositiveExamples();
 		} else if(learningProblem instanceof PosNegLP) {
-			examples = Helper.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
+			examples = Sets.union(((PosNegLP)learningProblem).getPositiveExamples(),((PosNegLP)learningProblem).getNegativeExamples());
 		}
 		
 		// create a refinement operator and pass all configuration

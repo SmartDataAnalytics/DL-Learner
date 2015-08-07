@@ -31,7 +31,6 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -135,7 +134,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		
 		if (isUseRetrievalForClassification()) {
 			SortedSet<OWLIndividual> posClassified = getReasoner().getIndividuals(concept);
-			Set<OWLIndividual> negAsPos = Helper.intersection(negativeExamples, posClassified);
+			Set<OWLIndividual> negAsPos = Sets.intersection(negativeExamples, posClassified);
 			SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
 
 			// the set is constructed piecewise to avoid expensive set

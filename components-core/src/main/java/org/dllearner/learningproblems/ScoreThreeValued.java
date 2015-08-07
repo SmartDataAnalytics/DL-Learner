@@ -22,14 +22,15 @@ package org.dllearner.learningproblems;
 import java.text.DecimalFormat;
 import java.util.Set;
 
-import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLEntity;
+
+import com.google.common.collect.Sets;
 
 /**
  * Computes the score (a negative value) by comparing the classification results
  * with ideal results.
  * 
- * TODO: The implementation is not very efficient, because some things are 
+ * TODO: The implementation is not very efficient, because some things are
  * only computed to be able to present the score results. This means that
  * it would be better to compute only the necessary computations and do
  * the other ones only when they are needed to calculate statistical values.
@@ -69,7 +70,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
     private Set<T> negAsNeut;
     private Set<T> posAsPos;
     private Set<T> negAsNeg;
-    private Set<T> neutAsNeut;      
+    private Set<T> neutAsNeut;
     
     private double score;
     private double accuracy;
@@ -108,20 +109,20 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
     }
     
     private void computeClassificationMatrix() {
-        posAsNeg = Helper.intersection(posExamples,negClassified);
-        negAsPos = Helper.intersection(negExamples,posClassified);
-        posAsNeut = Helper.intersection(posExamples,neutClassified);
-        neutAsPos = Helper.intersection(neutExamples,posClassified);
-        neutAsNeg = Helper.intersection(neutExamples,negClassified);
-        negAsNeut = Helper.intersection(negExamples,neutClassified);
+        posAsNeg = Sets.intersection(posExamples,negClassified);
+        negAsPos = Sets.intersection(negExamples,posClassified);
+        posAsNeut = Sets.intersection(posExamples,neutClassified);
+        neutAsPos = Sets.intersection(neutExamples,posClassified);
+        neutAsNeg = Sets.intersection(neutExamples,negClassified);
+        negAsNeut = Sets.intersection(negExamples,neutClassified);
         // die 3 Berechnungen sind nicht so wichtig f�r die Punktzahl, d.h. falls
         // es Performance bringt, dann kann man sie auch ausgliedern
-        posAsPos = Helper.intersection(posExamples,posClassified);
-        negAsNeg = Helper.intersection(negExamples,negClassified);
-        neutAsNeut = Helper.intersection(neutExamples,neutClassified);     	
+        posAsPos = Sets.intersection(posExamples,posClassified);
+        negAsNeg = Sets.intersection(negExamples,negClassified);
+        neutAsNeut = Sets.intersection(neutExamples,neutClassified);
     }
     
-    private void computeStatistics() {     
+    private void computeStatistics() {
         score = - posAsNeg.size()*errorPenalty
         - negAsPos.size()*errorPenalty
         - posAsNeut.size()*accuracyPenalty;
@@ -130,7 +131,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
         	score -= negAsNeut.size()*accuracyPenalty;
         
         if(penaliseNeutralExamples)
-        	score -= (neutAsPos.size()*accuracyPenalty        
+        	score -= (neutAsPos.size()*accuracyPenalty
             + neutAsNeg.size()*accuracyPenalty);
         
         // TODO: man könnte hier statt error penalty auch accuracy penalty
@@ -144,7 +145,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
         // ausgegliedert werden
         // int domainSize = abox.domain.size();
         int numberOfExamples = posExamples.size()+negExamples.size();
-        int domainSize = numberOfExamples + neutExamples.size(); 
+        int domainSize = numberOfExamples + neutExamples.size();
         int correctlyClassified = posAsPos.size() + negAsNeg.size() + neutAsNeut.size();
         int correctOnExamples = posAsPos.size() + negAsNeg.size();
         int errors = posAsNeg.size() + negAsPos.size();
@@ -156,10 +157,10 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
         // und neg. Beispiele
         accuracyOnExamples = (double) correctOnExamples/numberOfExamples;
         
-        accuracyOnPositiveExamples = (double) posAsPos.size()/posExamples.size(); 
+        accuracyOnPositiveExamples = (double) posAsPos.size()/posExamples.size();
         
         // Error = Quotient von komplett falsch klassifizierten durch Anzahl pos.
-        // und neg. Beispiele 
+        // und neg. Beispiele
         errorRate = (double) errors/numberOfExamples;
     }
 
@@ -226,11 +227,11 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
         str += "Inaccurately classified (penalty of " + df.format(accuracyPenalty) + " per instance):\n";
         str += "  positive --> neutral: " + posAsNeut + "\n";
         if(penaliseNeutralExamples) {
-        	str += "  neutral --> positive: " + neutAsPos + "\n";  
+        	str += "  neutral --> positive: " + neutAsPos + "\n";
         	str += "  neutral --> negative: " + neutAsNeg + "\n";
         }
         if(scoreMethod == ScoreMethod.FULL)
-        	str += "  negative --> neutral: " + negAsNeut + "\n"; 
+        	str += "  negative --> neutral: " + negAsNeut + "\n";
         str += "Classification errors (penalty of " + df.format(errorPenalty) + " per instance):\n";
         str += "  positive --> negative: " + posAsNeg + "\n";
         str += "  negative --> positive: " + negAsPos + "\n";
@@ -238,7 +239,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
         str += "  Score: " + df.format(score) + "\n";
         str += "  Accuracy: " + df.format(accuracy*100) + "%\n";
         str += "  Accuracy on examples: " + df.format(accuracyOnExamples*100) + "%\n";
-        str += "  Accuracy on positive examples: " + df.format(accuracyOnPositiveExamples*100) + "%\n";        
+        str += "  Accuracy on positive examples: " + df.format(accuracyOnPositiveExamples*100) + "%\n";
         str += "  Error rate: " + df.format(errorRate*100) + "%\n";
         return str;
     }
@@ -272,7 +273,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	@Override
 	public Set<T> getNotCoveredNegatives() {
 		return negAsNeg;
-	}	
+	}
 
 	@Override
 	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {

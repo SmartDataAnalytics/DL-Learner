@@ -27,8 +27,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.URLencodeUTF8;
+
+import com.google.common.collect.Sets;
 
 /**
  * a container for examples used for operations like randomization
@@ -96,7 +97,7 @@ public class Examples {
 		retrievedClean.removeAll(posTrain);
 		retrievedClean.removeAll(negTrain);
 
-		int posAsPos = Helper.intersection(retrievedClean, getPosTest()).size();
+		int posAsPos = Sets.intersection(retrievedClean, getPosTest()).size();
 		return ((double) posAsPos) / ((double) retrievedClean.size());
 	}
 
@@ -111,7 +112,7 @@ public class Examples {
 		if (sizeTotalOfPositives() == 0) {
 			return 0.0d;
 		}
-		int posAsPos = Helper.intersection(getPosTest(), retrieved).size();
+		int posAsPos = Sets.intersection(getPosTest(), retrieved).size();
 		return ((double) posAsPos) / ((double) posTest.size());
 	}
 
@@ -235,7 +236,7 @@ public class Examples {
 	}
 
 	/**
-	 * sum of training and test data 
+	 * sum of training and test data
 	 * @return
 	 */
 	public int size() {
