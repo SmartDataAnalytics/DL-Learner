@@ -19,29 +19,20 @@
 
 package org.dllearner.utilities;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.owl.FlatABox;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,85 +51,6 @@ public class Helper {
 
 	private static Logger logger = LoggerFactory.getLogger(Helper.class);
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
-	
-	// findet alle atomaren Konzepte in einem Konzept
-	public static List<OWLClass> getAtomicConcepts(OWLClassExpression concept) {
-		return new ArrayList<OWLClass>(concept.getClassesInSignature());
-	}
-
-	// findet alle atomaren Rollen in einem Konzept
-	public static List<OWLObjectProperty> getAtomicRoles(OWLClassExpression concept) {
-		return new ArrayList<OWLObjectProperty>(concept.getObjectPropertiesInSignature());
-	}
-
-	// sucht, ob der übergebene String mit einem Prefix beginnt der
-	// versteckt werden soll und gibt diesen zurück, ansonsten wird
-	// null zurück gegeben
-	// public static String findPrefixToHide(String name) {
-	// for(String prefix : Config.hidePrefixes) {
-	// if(name.startsWith(prefix))
-	// return prefix;
-	// }
-	// return null;
-	// }
-
-	/**
-	 * 
-	 * Transforms an URI to an abbreviated version, e.g. if the base URI is
-	 * "http://example.com/" and the uri is "http://example.com/test", then
-	 * "test" is returned. If the the uri is "http://anotherexample.com/test2"
-	 * and a prefix "ns1" is given for "http://anotherexample.com", then
-	 * "ns1:test2" is returned. If there is no match, uri is returned.
-	 * 
-	 * @param uri
-	 *            The full uri, which should be transformed to an abbreviated
-	 *            version.
-	 * @param baseURI
-	 *            The base uri (ignored if null).
-	 * @param prefixes
-	 *            A prefix map (ignored if null), where each entry contains a
-	 *            short string e.g. ns1 as key and the corresponding uri as
-	 *            value.
-	 * @return Abbreviated version of the parameter uri.
-	 */
-	public static String getAbbreviatedString(String uri, String baseURI,
-			Map<String, String> prefixes) {
-		if (baseURI != null && uri.startsWith(baseURI)) {
-			return uri.substring(baseURI.length());
-		} else {
-			if (prefixes != null) {
-				for (Entry<String, String> prefix : prefixes.entrySet()) {
-					if (uri.startsWith(prefix.getValue()))
-						return prefix.getKey() + ":" + uri.substring(prefix.getValue().length());
-				}
-			}
-			return uri;
-		}
-	}
-
-	/**
-	 * Transforms a list of URIs into their abbreviated version.
-	 * @see #getAbbreviatedString(String, String, Map)
-	 * @param list List of URIs.
-	 * @param baseURI The base uri (ignored if null).
-	 * @param prefixes A prefix map (ignored if null), where each entry contains a
-	 *            short string e.g. ns1 as key and the corresponding uri as
-	 *            value.
-	 * @return A list with shortened URIs.
-	 */
-	public static String getAbbreviatedCollection(Collection<String> list, String baseURI,
-			Map<String, String> prefixes) {
-		StringBuffer str = new StringBuffer("[");
-		Iterator<String> it = list.iterator(); // easier to implement using an iterator than foreach
-		while(it.hasNext()) {
-			str.append(getAbbreviatedString(it.next(),baseURI,prefixes));
-			if(it.hasNext()) {
-				str.append(", ");
-			}
-		}
-		str.append("]");
-		return str.toString();
-	}
 	
 	public static String prettyPrintNanoSeconds(long nanoSeconds) {
 		return prettyPrintNanoSeconds(nanoSeconds, false, false);
@@ -191,16 +103,6 @@ public class Helper {
 		return str;
 	}
 
-	public static <T1, T2> void addMapEntry(Map<T1, SortedSet<T2>> map, T1 keyEntry, T2 setEntry) {
-		if (map.containsKey(keyEntry)) {
-			map.get(keyEntry).add(setEntry);
-		} else {
-			SortedSet<T2> newSet = new TreeSet<T2>();
-			newSet.add(setEntry);
-			map.put(keyEntry, newSet);
-		}
-	}
-
 	public static <T> Set<T> intersectionTuple(Set<T> set, SortedSetTuple<T> tuple) {
 		Set<T> ret = Sets.intersection(set, tuple.getPosSet());
 		ret.retainAll(tuple.getNegSet());
@@ -244,44 +146,6 @@ public class Helper {
 		return ret;
 	}
 
-//	/**
-//	 * Removes concepts, which should be ignored by the learning algorithm.
-//	 * (The main reason to use this method is because Jena introduces such
-//	 * concepts when ontologies are converted to DIG.) Currently ignored
-//	 * concepts are those having prefix "anon" and concepts belonging to
-//	 * the RDF, RDFS, OWL standards.
-//	 *
-//	 * @param concepts The set from which concepts will be removed.
-//	 */
-//	@Deprecated
-//	public static void removeUninterestingConcepts(Set<OWLClass> concepts) {
-//		Iterator<OWLClass> it = concepts.iterator();
-//		while (it.hasNext()) {
-//			String conceptName = it.next().toStringID();
-//
-//			// ignore some concepts (possibly produced by Jena)
-//			if (conceptName.startsWith("anon")) {
-//				logger.debug("  Ignoring concept "
-//								+ conceptName
-//								+ " (probably an anonymous concept produced by Jena when reading in OWL file).");
-//				it.remove();
-//			} else if (conceptName.startsWith("http://www.w3.org/1999/02/22-rdf-syntax-ns#")) {
-//				logger.debug("  Ignoring concept " + conceptName
-//						+ " (RDF construct produced by Jena when reading in OWL file).");
-//				it.remove();
-//			} else if (conceptName.startsWith("http://www.w3.org/2000/01/rdf-schema#")) {
-//				logger.debug("  Ignoring concept " + conceptName
-//						+ " (RDF Schema construct produced by Jena when reading in OWL file).");
-//				it.remove();
-//			} else if (conceptName.startsWith("http://www.w3.org/2002/07/owl#")) {
-//				logger.debug("  Ignoring concept " + conceptName
-//						+ " (OWL construct produced by Jena when reading in OWL file).");
-//				it.remove();
-//			}
-//
-//		}
-//	}
-	
 	// concepts case 1: no ignore or allowed list
 	public static <T extends OWLEntity> Set<T> computeEntities(AbstractReasonerComponent rs, EntityType<T> entityType) {
 		// if there is no ignore or allowed list, we just ignore the concepts
@@ -386,40 +250,6 @@ public class Helper {
 				return ar;
 		}
 		return null;
-	}
-
-	// creates a flat ABox by querying a reasoner
-	public static FlatABox createFlatABox(AbstractReasonerComponent rs)
-			throws ReasoningMethodUnsupportedException {
-		long dematStartTime = System.currentTimeMillis();
-
-		FlatABox aBox = new FlatABox(); // FlatABox.getInstance();
-		if(!rs.getClasses().isEmpty()) {
-			for (OWLClass atomicConcept : rs.getClasses()) {
-				aBox.atomicConceptsPos.put(atomicConcept.toStringID(), getStringSet(rs
-						.getIndividuals(atomicConcept)));
-				OWLObjectComplementOf negatedAtomicConcept = df.getOWLObjectComplementOf(atomicConcept);
-				aBox.atomicConceptsNeg.put(atomicConcept.toStringID(), getStringSet(rs
-						.getIndividuals(negatedAtomicConcept)));
-				aBox.concepts.add(atomicConcept.toStringID());
-			}
-		}
-
-		if(!rs.getObjectProperties().isEmpty()) {
-			for (OWLObjectProperty atomicRole : rs.getObjectProperties()) {
-				aBox.rolesPos.put(atomicRole.toStringID(), getStringMap(rs.getPropertyMembers(atomicRole)));
-				aBox.roles.add(atomicRole.toStringID());
-			}
-		}
-
-		aBox.domain = getStringSet(rs.getIndividuals());
-		aBox.top = aBox.domain;
-
-		// System.out.println(aBox);
-
-		long dematDuration = System.currentTimeMillis() - dematStartTime;
-		System.out.println("OK (" + dematDuration + " ms)");
-		return aBox;
 	}
 
 }
