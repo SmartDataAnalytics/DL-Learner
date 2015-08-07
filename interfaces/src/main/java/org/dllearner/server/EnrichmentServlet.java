@@ -69,7 +69,6 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SPARULTranslator;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.json.JSONArray;
@@ -444,7 +443,7 @@ public class EnrichmentServlet extends HttpServlet {
         SparqlKnowledgeSource ks2;
 		AbstractReasonerComponent rc;
 		ks2 = new SparqlKnowledgeSource();
-		ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+		ks2.setInstances(Helper.getStringSet(examples.getCompleteSet()));
 		ks2.setUrl(ks.getEndpoint().getURL());
 		ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
 		ks2.setUseLits(false);

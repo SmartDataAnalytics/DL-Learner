@@ -41,7 +41,7 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -239,8 +239,8 @@ public class CrossValidation {
 	
 	private void validate(AbstractCELA la, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs,
 			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg){
-		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
-		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
+		Set<String> pos = Helper.getStringSet(trainPos);
+		Set<String> neg = Helper.getStringSet(trainNeg);
 		String output = "";
 		output += "+" + new TreeSet<String>(pos) + "\n";
 		output += "-" + new TreeSet<String>(neg) + "\n";

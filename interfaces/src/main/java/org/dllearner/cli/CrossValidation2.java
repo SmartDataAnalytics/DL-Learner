@@ -22,7 +22,7 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -256,9 +256,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	private void validate(AbstractCELA la, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs,
 			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg,Set<OWLIndividual> trainUnd, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg, Set<OWLIndividual> testUnd){
 		//System.out.println("Validation starting");
-		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
-		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
-		Set<String> und = Datastructures.individualSetToStringSet(trainUnd);
+		Set<String> pos = Helper.getStringSet(trainPos);
+		Set<String> neg = Helper.getStringSet(trainNeg);
+		Set<String> und = Helper.getStringSet(trainUnd);
 		String output = "";
 		TreeSet<String> treeSetPos = new TreeSet<String>(pos);
 		output += "+" + treeSetPos + "\n";

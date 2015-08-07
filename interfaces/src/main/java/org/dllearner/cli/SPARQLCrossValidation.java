@@ -40,7 +40,7 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Files;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -154,8 +154,8 @@ public class SPARQLCrossValidation {
 		// run the algorithm
 		for(int currFold=0; currFold<folds; currFold++) {
 
-			Set<String> pos = Datastructures.individualSetToStringSet(trainingSetsPos.get(currFold));
-			Set<String> neg = Datastructures.individualSetToStringSet(trainingSetsNeg.get(currFold));
+			Set<String> pos = Helper.getStringSet(trainingSetsPos.get(currFold));
+			Set<String> neg = Helper.getStringSet(trainingSetsNeg.get(currFold));
 			if(lp instanceof PosNegLP){
 				((PosNegLP)lp).setPositiveExamples(trainingSetsPos.get(currFold));
 				((PosNegLP)lp).setNegativeExamples(trainingSetsNeg.get(currFold));

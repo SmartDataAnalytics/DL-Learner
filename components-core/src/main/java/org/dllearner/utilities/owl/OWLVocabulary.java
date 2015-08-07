@@ -95,10 +95,5 @@ public class OWLVocabulary {
 		|| OWL_SUBCLASS_OF.equalsIgnoreCase(possSubClass));
 		
 	}
-//	public static final String RDF_TYPE = "";
-//	public static final String RDF_TYPE = "";
-//	public static final String RDF_TYPE = "";
-//	public static final String RDF_TYPE = "";
-//	public static final String RDF_TYPE = "";
-//	public static final String RDF_TYPE = "";
+
 }
