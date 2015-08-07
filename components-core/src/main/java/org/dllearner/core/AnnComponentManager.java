@@ -20,6 +20,8 @@
 package org.dllearner.core;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -298,6 +300,50 @@ public class AnnComponentManager {
 	 */
 	public BidiMap<Class<? extends Component>, String> getComponentsNamedShort() {
 		return componentNamesShort;
+	}
+
+	/**
+	 * Applies a config entry to a component. If the entry is not valid, the method
+	 * prints an exception and returns false.
+	 * @param <T> Type of the config option.
+	 * @param component A component object.
+	 * @param entry The configuration entry to set.
+	 * @return True if the config entry could be applied succesfully, otherwise false.
+	 */
+	@Deprecated
+	public static <T> boolean applyConfigEntry(AbstractComponent component, String optionName, T value) {
+		List<AbstractComponent> childComponents = new LinkedList<>();
+		for (Method m : component.getClass().getMethods()) {
+			if (m.getName().equals("set" + optionName.substring(0, 1).toUpperCase() + optionName.substring(1))) {
+				try {
+					m.invoke(component, value);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.debug("Error setting " + optionName + " to " + value + " on " + component + ": ", e);
+					return false;
+				}
+				return true;
+			} else if (m.getName().startsWith("get")
+					&& AbstractComponent.class.isAssignableFrom(m.getReturnType())) {
+				Object cc;
+				try {
+					cc = m.invoke(component);
+					childComponents.add((AbstractComponent) cc);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.trace("Error querying " + m.getName() + " for subcomponent in " + component, e);
+				}
+			}
+		}
+		for (AbstractComponent cc : childComponents) {
+			if (cc != null) {
+				boolean try_inv = applyConfigEntry(cc, optionName, value);
+				if (try_inv) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public final static Class[] coreComponentClasses = {
