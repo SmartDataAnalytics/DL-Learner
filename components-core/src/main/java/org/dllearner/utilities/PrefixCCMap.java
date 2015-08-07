@@ -69,7 +69,7 @@ public class PrefixCCMap extends HashMap<String, String>{
 	/**
 	 * This main methods updates the local prefix file by loading latest prefix list from prefix.cc.
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
 		//load latest file from prefix.cc
