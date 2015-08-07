@@ -42,7 +42,6 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
-import org.dllearner.Info;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
@@ -101,14 +100,14 @@ public class DLLearnerWS {
 	private Random rand=new Random();
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
 
-	/**
-	 * Returns the DL-Learner version this web service is based on.
-	 * @return DL-Learner-Build.
-	 */
-	@WebMethod
-	public String getBuild() {
-		return Info.build;
-	}
+//	/**
+//	 * Returns the DL-Learner version this web service is based on.
+//	 * @return DL-Learner-Build.
+//	 */
+//	@WebMethod
+//	public String getBuild() {
+//		return Info.build;
+//	}
 
 	/**
 	 * Method to check whether web service is online and how fast it responses.
