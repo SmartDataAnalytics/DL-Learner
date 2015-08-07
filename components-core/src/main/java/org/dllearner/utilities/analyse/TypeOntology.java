@@ -1,4 +1,4 @@
-package org.dllearner.scripts.analyse;
+package org.dllearner.utilities.analyse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
