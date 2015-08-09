@@ -96,7 +96,7 @@ public class PathDetectionTask implements Callable<Path> {
 					// load data
 					System.out.println(Thread.currentThread().getId() + ":" + "Loading data of depth " + depth + " for " + cls.toStringID() + "...");
 					long s = System.currentTimeMillis();
-					Model data = loadDataFromCacheOrCompute(cls, depth, true);
+					Model data = ModelFactory.createDefaultModel();//loadDataFromCacheOrCompute(cls, depth, true);
 					System.out.println(Thread.currentThread().getId() + ":" + "Got " + data.size() + " triples for " + cls.toStringID() + " in " + (System.currentTimeMillis() - s) + "ms");
 					
 					// analyze
@@ -237,7 +237,8 @@ public class PathDetectionTask implements Callable<Path> {
 					
 			System.out.println(query);
 //			System.out.println(query);
-			QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(query);
+//			QueryExecution qe = new QueryExecutionFactoryModel(model).createQueryExecution(query);
+			QueryExecution qe = ks.getQueryExecutionFactory().createQueryExecution(query);
 			ResultSet rs = qe.execSelect();
 			
 			while(rs.hasNext()) {

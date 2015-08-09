@@ -92,7 +92,7 @@ public class DBpediaLearningProblemsGenerator {
 		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
 		Collections.shuffle(classesList, new Random(123));
 		classes = classesList;
-		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/PokerPlayer")));
+//		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/PokerPlayer")));
 		
 		Iterator<OWLClass> iterator = classes.iterator();
 		
