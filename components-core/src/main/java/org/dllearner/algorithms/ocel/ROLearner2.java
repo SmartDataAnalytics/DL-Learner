@@ -67,7 +67,6 @@ import com.jamonapi.Monitor;
 public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
-//	private OCELConfigurator configurator;
 
 	// basic setup: learning problem and reasoning service
 	private AbstractReasonerComponent rs;
@@ -577,66 +576,44 @@ public class ROLearner2 {
 		if (refinements.size() > maxNrOfRefinements)
 			maxNrOfRefinements = refinements.size();
 
+		// remove all refinements that are already children of the node
 		long childConceptsDeletionTimeNsStart = System.nanoTime();
-		// entferne aus den refinements alle Konzepte, die bereits Kinder des
-		// Knotens sind
-		// for(Node n : node.getChildren()) {
-		// refinements.remove(n.getConcept());
-		// }
-
-		// das ist viel schneller, allerdings bekommt man ein anderes candidate
-		// set(??)
 		refinements.removeAll(node.getChildConcepts());
-
 		childConceptsDeletionTimeNs += System.nanoTime() - childConceptsDeletionTimeNsStart;
 
-		// if(refinements.size()<30) {
-		// // System.out.println("refinements: " + refinements);
-		// for(OWLClassExpression refinement: refinements)
-		// System.out.println("refinement: " + refinement);
-		// }
-
+		// evaluate all concepts whose length is bigger than the horizontal expansion of the node
 		long evaluateSetCreationTimeNsStart = System.nanoTime();
-
-		// alle Konzepte, die länger als horizontal expansion sind, müssen
-		// ausgewertet
-		// werden
-		TreeSet<OWLClassExpression> toEvaluateConcepts = new TreeSet<OWLClassExpression>();
+		Set<OWLClassExpression> toEvaluateConcepts = new TreeSet<OWLClassExpression>();
 		Iterator<OWLClassExpression> it = refinements.iterator();
-		// for(Concept refinement : refinements) {
+		
 		while (it.hasNext()) {
 
 			OWLClassExpression refinement = it.next();
 			if (OWLClassExpressionUtils.getLength(refinement) > node.getHorizontalExpansion()) {
-				// sagt aus, ob festgestellt wurde, ob refinement proper ist
-				// (sagt nicht aus, dass das refinement proper ist!)
-				boolean propernessDetected = false;
+				// TRUE means that improperness was detected, but FALSE does not mean that the refinement is proper
+				boolean impropernessDetected = false;
 
 				// 1. short concept construction
 				if (useShortConceptConstruction) {
-					// kurzes Konzept konstruieren
 					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement);
+					// compare with original concept
 					int n = shortConcept.compareTo(concept);
 					
-					// Konzepte sind gleich also Refinement improper
+					// concepts are equal, i.e. refinement is improper
 					if (n == 0) {
 						propernessTestsAvoidedByShortConceptConstruction++;
-						propernessDetected = true;
-
-//						 System.out.println("refinement " + refinement +
-//								 " can be shortened");
-//						 System.exit(0);
+						impropernessDetected = true;
 					}
 				}
 				
 				// 2. too weak test
-				if (!propernessDetected && useTooWeakList) {
+				if (!impropernessDetected && useTooWeakList) {
 					if (refinement instanceof OWLObjectIntersectionOf) {
 						boolean tooWeakElement = containsTooWeakElement((OWLObjectIntersectionOf) refinement);
 						if (tooWeakElement) {
 							propernessTestsAvoidedByTooWeakList++;
 							conceptTestsTooWeakList++;
-							propernessDetected = true;
+							impropernessDetected = true;
 							// tooWeakList.add(refinement);
 
 							// Knoten wird direkt erzeugt (es ist buganfällig
@@ -650,8 +627,7 @@ public class ROLearner2 {
 							ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement) - 1);
 							newNode.setTooWeak(true);
-							newNode
-									.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
+							newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
 							node.addChild(newNode);
 
 							// Refinement muss gelöscht werden, da es proper ist
@@ -661,16 +637,8 @@ public class ROLearner2 {
 				}
 
 				// properness konnte nicht vorher ermittelt werden
-				if (!propernessDetected) {
+				if (!impropernessDetected) {
 					toEvaluateConcepts.add(refinement);
-					// if(!res) {
-					// System.out.println("already in: " + refinement);
-					// Comparator comp = toEvaluateConcepts.comparator();
-					// for(OWLClassExpression d : toEvaluateConcepts) {
-					// if(comp.compare(d,refinement)==0)
-					// System.out.println("see: " + d);
-					// }
-					// }
 				}
 
 			}
