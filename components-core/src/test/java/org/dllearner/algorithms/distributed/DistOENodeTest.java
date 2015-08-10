@@ -134,13 +134,13 @@ public class DistOENodeTest {
 		assertEquals(2, rootA.getChildren().size());
 
 		nodeB1.copyTo(rootA);
-		// now root A should have 3 child nodes...
+		// now root A should have 3 child nodes, ...
 		assertEquals(3, rootA.getChildren().size());
 		// ...root A should be the parent of B1'...
 		DistOENode nodeB1Prime = rootA.getChildren().get(2);
 		assertEquals(rootA, nodeB1Prime.getParent());
 		// ...and B1' should be a copy of B1...
-		assertFalse(nodeB1.equals(nodeB1Prime));
+		assertFalse(nodeB1 == nodeB1Prime);
 		// ...with the same values...
 		assertEquals(nodeB1.getAccuracy(), nodeB1Prime.getAccuracy(), 0);
 		assertEquals(nodeB1.getDescription(), nodeB1Prime.getDescription());
@@ -148,9 +148,8 @@ public class DistOENodeTest {
 				nodeB1Prime.getHorizontalExpansion());
 		assertEquals(nodeB1.getRefinementCount(), nodeB1Prime.getRefinementCount());
 		assertTrue(nodeB1.isInUse());
-		// ...and the same child nodes...
-		assertEquals(1, nodeB1Prime.getChildren().size());
-		assertEquals(nodeB1.getChildren().get(0), nodeB1Prime.getChildren().get(0));
+		// ...but without the children of B
+		assertEquals(0, nodeB1Prime.getChildren().size());
 	}
 
 	@Test
