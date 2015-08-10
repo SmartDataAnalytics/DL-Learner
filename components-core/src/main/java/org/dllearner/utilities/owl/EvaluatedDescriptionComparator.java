@@ -19,6 +19,7 @@
 
 package org.dllearner.utilities.owl;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -32,11 +33,13 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
  * Comparator for evaluated descriptions, which orders them by
  * accuracy as first criterion, length as second criterion, and
  * syntactic structure as third criterion.
- * 
+ *
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription> {
+public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription>, Serializable {
+
+	private static final long serialVersionUID = 5909674564482231433L;
 
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
@@ -50,10 +53,10 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 		else if(acc1 < acc2)
 			return -1;
 		else {
-			int length1 = 
+			int length1 =
 					getLength(ed1);
 //			ed1.getDescriptionLength();
-			int length2 = 
+			int length2 =
 					getLength(ed2);
 //			ed2.getDescriptionLength();
 			if(length1 < length2)
@@ -64,7 +67,7 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 				return ed1.getDescription().compareTo(ed2.getDescription());
 		}
 	}
-	
+
 	private int getLength(EvaluatedDescription ed){
 		int length = 0;
 		OWLClassExpression ce = ed.getDescription();

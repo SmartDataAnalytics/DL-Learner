@@ -61,7 +61,7 @@ public class OENode implements SearchTreeNode, Serializable {
 	// the refinement count corresponds to the number of refinements of the
 	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
-	private int refinementCount = 0;
+	protected int refinementCount = 0;
 
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 
