@@ -45,7 +45,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
  * @author Jens Lehmann
  * @author Sebastian Hellmann
  *         <p/>
- *         SH: I added SPARQL capabilities.  Either URL is set directly or the basedir and filename is set or the URL and the SPARQL query is set
+ *         SH added SPARQL capabilities.  Either URL is set directly or the basedir and filename is set or the URL and the SPARQL query is set
  */
 @ComponentAnn(name = "OWL File", shortName = "owlfile", version = 0.9)
 public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource {
@@ -192,7 +192,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     
     public void setSparql(String sparql, boolean autoQuote) {
     	if (autoQuote) {
-    		// quote IRIs 
+    		// quote IRIs
     		sparql = sparql.replaceAll("(?<=^|\\s|\\()((?:([^<(:/?#\\s]*):)(?://([^/?#]*?))?([^?#]*?)(?:\\?([^#]*?))?(?:#(.*?))?)(?=(,|\\.|;|)(\\)|\\s|$))", "<$1>");
     	}
         this.sparql = sparql;

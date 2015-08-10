@@ -1,8 +1,5 @@
 package org.dllearner.kb;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -17,9 +14,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	private OntModel model;
-//	private String fileName;
-//	private String baseDir;
-//	private boolean enableReasoning = false;
 	
 	public LocalModelBasedSparqlEndpointKS() {
 	}
@@ -27,11 +21,11 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 //	public LocalModelBasedSparqlEndpointKS(String ontologyURL) throws MalformedURLException {
 //		this(new URL(ontologyURL));
 //	}
-//	
+//
 //	public LocalModelBasedSparqlEndpointKS(URL ontologyURL) {
 //		this.fileName = ontologyURL.toString();
 //	}
-//	
+//
 	public LocalModelBasedSparqlEndpointKS(OntModel model) {
 		this.model = model;
 	}
@@ -63,7 +57,7 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 //		}
 //		// read the RDF/XML file
 //		baseModel.read(in, null);
-//		
+//
 //		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
 //	}
 	
@@ -83,11 +77,11 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 //	public void setFileName(String fileName) {
 //		this.fileName = fileName;
 //	}
-//	
+//
 //	public String getFileName() {
 //		return fileName;
 //	}
-//	
+//
 //	public String getBaseDir() {
 //        return baseDir;
 //    }
@@ -95,11 +89,11 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 //    public void setBaseDir(String baseDir) {
 //        this.baseDir = baseDir;
 //    }
-//    
+//
 //    public void setEnableReasoning(boolean enableReasoning) {
 //		this.enableReasoning = enableReasoning;
 //	}
-//    
+//
 //    public boolean isEnableReasoning() {
 //		return enableReasoning;
 //	}
