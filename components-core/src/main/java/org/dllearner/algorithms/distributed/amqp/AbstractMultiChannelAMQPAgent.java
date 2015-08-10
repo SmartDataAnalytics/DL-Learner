@@ -29,7 +29,7 @@ import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MultiChannelMessagingAgent;
 import org.dllearner.algorithms.distributed.containers.MessageContainer;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 	private long maxBlockingWaitMilisecs = 5000;
 
 
-	public AbstractMultiChannelAMQPAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public AbstractMultiChannelAMQPAgent(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 		queueIdentifiers = new ArrayList<String>();
 		queues = new HashMap<String, AMQQueue>();

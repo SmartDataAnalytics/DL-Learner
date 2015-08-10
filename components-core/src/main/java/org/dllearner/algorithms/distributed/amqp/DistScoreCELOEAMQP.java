@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,13 +35,14 @@ import javax.jms.JMSException;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.distributed.containers.RefinementAndScoreContainer;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.OWLAPIOntology;
@@ -81,6 +83,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
+import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -315,13 +318,13 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         setWriteSearchTree(celoe.writeSearchTree);
     }
 
-    public DistScoreCELOEAMQP(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+    public DistScoreCELOEAMQP(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
         super(problem, reasoner);
     }
 
-    public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-        Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
-        problems.add(AbstractLearningProblem.class);
+    public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+        Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+        problems.add(AbstractClassExpressionLearningProblem.class);
         return problems;
     }
 
@@ -515,7 +518,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
             examples = ((PosOnlyLP) learningProblem).getPositiveExamples();
 
         } else if(learningProblem instanceof PosNegLP) {
-            examples = Helper.union(
+            examples = Sets.union(
                     ((PosNegLP) learningProblem).getPositiveExamples(),
                     ((PosNegLP) learningProblem).getNegativeExamples());
         }
@@ -523,7 +526,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
 
     @Override
     public OWLClassExpression getCurrentlyBestDescription() {
-        EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
+        EvaluatedDescription<? extends Score> ed = getCurrentlyBestEvaluatedDescription();
         return ed == null ? null : ed.getDescription();
     }
 
@@ -538,7 +541,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
     }
 
     @Override
-    public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+    public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
         return bestEvaluatedDescriptions.getSet();
     }
 
@@ -790,7 +793,6 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
 
         if(isCandidate) {
             OWLClassExpression niceDescription = rewriteNode(node);
-            ConceptTransformation.transformToOrderedForm(niceDescription);
 
             if(niceDescription.equals(classToDescribe)) {
                 return;
@@ -804,7 +806,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
              * meaningless extensions of A */
             boolean shorterDescriptionExists = false;
             if(forceMutualDifference) {
-                for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+                for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
                     if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001
                             && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
                         shorterDescriptionExists = true;
@@ -926,7 +928,6 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
 //      System.out.println("Test4 " + new Date());
         if(isCandidate) {
             OWLClassExpression niceDescription = rewriteNode(node);
-            ConceptTransformation.transformToOrderedForm(niceDescription);
 
             if(niceDescription.equals(classToDescribe)) {
                 return false;
@@ -946,7 +947,7 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
              * meaningless extensions of A */
             boolean shorterDescriptionExists = false;
             if(forceMutualDifference) {
-                for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+                for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
                     if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001
                             && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
                         shorterDescriptionExists = true;
@@ -1146,12 +1147,6 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         return startNode;
     }
 
-    @SuppressWarnings("unused")
-    private String bestDescriptionToString() {
-        EvaluatedDescription best = bestEvaluatedDescriptions.getBest();
-        return OWLAPIRenderers.toManchesterOWLSyntax(best.getDescription()) + " (accuracy: " + dfPercent.format(best.getAccuracy()) + ")";
-    }
-
     private void updateMinMaxHorizExp(OENode node) {
         System.out.println("updateMinMaxHorizExp called...");
         int newHorizExp = node.getHorizontalExpansion();
@@ -1223,19 +1218,23 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         this.startClass = startClass;
     }
 
-    public Set<OWLClass> getAllowedConcepts() {
+    @Override
+	public Set<OWLClass> getAllowedConcepts() {
         return allowedConcepts;
     }
 
-    public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
+    @Override
+	public void setAllowedConcepts(Set<OWLClass> allowedConcepts) {
         this.allowedConcepts = allowedConcepts;
     }
 
-    public Set<OWLClass> getIgnoredConcepts() {
+    @Override
+	public Set<OWLClass> getIgnoredConcepts() {
         return ignoredConcepts;
     }
 
-    public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
+    @Override
+	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
         this.ignoredConcepts = ignoredConcepts;
     }
 
@@ -1295,11 +1294,13 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         this.maxClassExpressionTests = maxClassDescriptionTests;
     }
 
-    public int getMaxExecutionTimeInSeconds() {
+    @Override
+	public int getMaxExecutionTimeInSeconds() {
         return maxExecutionTimeInSeconds;
     }
 
-    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+    @Override
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
         this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
     }
 
@@ -1319,11 +1320,13 @@ public class DistScoreCELOEAMQP extends AbstractAMQPAgent implements Cloneable{
         this.reuseExistingDescription = reuseExistingDescription;
     }
 
-    public boolean isUseMinimizer() {
+    @Override
+	public boolean isUseMinimizer() {
         return useMinimizer;
     }
 
-    public void setUseMinimizer(boolean useMinimizer) {
+    @Override
+	public void setUseMinimizer(boolean useMinimizer) {
         this.useMinimizer = useMinimizer;
     }
 

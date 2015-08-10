@@ -10,10 +10,6 @@ public class DistOENodeTree extends TreeSet<DistOENode> {
 
 	public DistOENodeTree() {
 		super(new DistOEHeuristicRuntime());
-//		this(
-//				new DistOENode(null, OWLManager.getOWLDataFactory().getOWLThing(), 0),
-//				new DistOEHeuristicRuntime());
-		System.out.println("###################### DistOENodeTree() called ################");
 	}
 
 	public DistOENodeTree(DistOENode root) {

@@ -40,7 +40,7 @@ import com.google.common.collect.ComparisonChain;
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription>, Serializable {
+public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescription<? extends Score>>, Serializable {
 
 	private static final long serialVersionUID = 5909674564482231433L;
 
@@ -55,7 +55,7 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 				.compare(ed1.getDescription(), ed2.getDescription()) // syntactic sorting
 				.result();
 	}
-	
+
 	private int getLength(EvaluatedDescription<? extends Score> ed){
 		int length = 0;
 		OWLClassExpression ce = ed.getDescription();
@@ -74,5 +74,4 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 		}
 		return length;
 	}
-
 }

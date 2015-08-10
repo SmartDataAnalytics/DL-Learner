@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -17,12 +18,13 @@ import org.dllearner.algorithms.celoe.OENode;
 import org.dllearner.algorithms.distributed.containers.NodeContainer;
 import org.dllearner.algorithms.distributed.containers.RefinementAndScoreContainer;
 import org.dllearner.algorithms.distributed.containers.RefinementDataContainer;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractHeuristic;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -65,6 +67,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
+import com.google.common.collect.Sets;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -322,7 +326,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
 
     }
 
-    public DistScoreAndRefinementCELOEAMQP(AbstractLearningProblem problem,
+    public DistScoreAndRefinementCELOEAMQP(AbstractClassExpressionLearningProblem problem,
             AbstractReasonerComponent reasoner) {
 
         super(problem, reasoner);
@@ -532,7 +536,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
             examples = ((PosOnlyLP) learningProblem).getPositiveExamples();
 
         } else if(learningProblem instanceof PosNegLP) {
-            examples = Helper.union(
+            examples = Sets.union(
                     ((PosNegLP) learningProblem).getPositiveExamples(),
                     ((PosNegLP) learningProblem).getNegativeExamples());
         }
@@ -550,7 +554,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
 
     @Override
     public OWLClassExpression getCurrentlyBestDescription() {
-        EvaluatedDescription ed = getCurrentlyBestEvaluatedDescription();
+        EvaluatedDescription<? extends Score> ed = getCurrentlyBestEvaluatedDescription();
         return ed == null ? null : ed.getDescription();
     }
 
@@ -565,7 +569,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
     }
 
     @Override
-    public TreeSet<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions() {
+    public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
         return bestEvaluatedDescriptions.getSet();
     }
 
@@ -594,7 +598,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
         }
 
         OWLClassExpression niceDescription = rewriteNode(startNode);
-        ConceptTransformation.transformToOrderedForm(niceDescription);
+
         if(niceDescription.equals(classToDescribe)) {
             throw new Exception("start concept must not equal the class to describe");
         }
@@ -605,7 +609,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
 
         boolean shorterDescriptionExists = false;
         if(forceMutualDifference) {
-            for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+            for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
 
                 boolean isSubDescr = ConceptTransformation.isSubdescription(
                                 niceDescription, ed.getDescription());
@@ -876,7 +880,6 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
 
         if(isCandidate) {
             OWLClassExpression niceDescription = rewriteNode(node);
-            ConceptTransformation.transformToOrderedForm(niceDescription);
 
             if(niceDescription.equals(classToDescribe)) {
                 logger.info(description + " equals class to describe");
@@ -895,7 +898,7 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
              * meaningless extensions of A */
             boolean shorterDescriptionExists = false;
             if(forceMutualDifference) {
-                for(EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+                for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
                     if(Math.abs(ed.getAccuracy()-accuracy) <= 0.00001
                             && ConceptTransformation.isSubdescription(niceDescription, ed.getDescription())) {
                         shorterDescriptionExists = true;
@@ -1109,12 +1112,12 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
         }
     }
 
-    public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
+    public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
 
-        Collection<Class<? extends AbstractLearningProblem>> problems =
-                new LinkedList<Class<? extends AbstractLearningProblem>>();
+        Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems =
+                new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
 
-        problems.add(AbstractLearningProblem.class);
+        problems.add(AbstractClassExpressionLearningProblem.class);
         return problems;
     }
 
@@ -1284,11 +1287,13 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
     }
 
     // maxExecutionTimeInSeconds
-    public int getMaxExecutionTimeInSeconds() {
+    @Override
+	public int getMaxExecutionTimeInSeconds() {
         return maxExecutionTimeInSeconds;
     }
 
-    public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
+    @Override
+	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
         this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
     }
 
@@ -1405,11 +1410,13 @@ public class DistScoreAndRefinementCELOEAMQP extends AbstractMultiChannelAMQPAge
     }
 
     // useMinimizer
-    public boolean isUseMinimizer() {
+    @Override
+	public boolean isUseMinimizer() {
         return useMinimizer;
     }
 
-    public void setUseMinimizer(boolean useMinimizer) {
+    @Override
+	public void setUseMinimizer(boolean useMinimizer) {
         this.useMinimizer = useMinimizer;
     }
 

@@ -20,7 +20,7 @@ import org.dllearner.algorithms.distributed.containers.NodeContainer;
 import org.dllearner.algorithms.distributed.containers.RefinementAndScoreContainer;
 import org.dllearner.algorithms.distributed.containers.RefinementDataContainer;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public abstract class AbstractMPIAgent extends AbstractCELA implements
     private final int refinementScoreMsg = 3;  // --> RefinementAndScoreContainer
     private final int terminateMsg = 23;
 
-    public AbstractMPIAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+    public AbstractMPIAgent(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
         super(problem, reasoner);
     }
 

@@ -16,11 +16,12 @@ import org.dllearner.algorithms.distributed.DistOEHeuristicRuntime;
 import org.dllearner.algorithms.distributed.DistOENode;
 import org.dllearner.algorithms.distributed.DistOENodeTree;
 import org.dllearner.algorithms.distributed.containers.NodeTreeContainer;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -203,7 +204,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	public DistCELOEAMQP() {
 	}
 
-	public DistCELOEAMQP(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public DistCELOEAMQP(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
 
@@ -352,7 +353,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 			examples = ((PosOnlyLP) learningProblem).getPositiveExamples();
 
 		} else if(learningProblem instanceof PosNegLP) {
-			examples = Helper.union(
+			examples = Sets.union(
 					((PosNegLP) learningProblem).getPositiveExamples(),
 					((PosNegLP) learningProblem).getNegativeExamples());
 		}
@@ -467,7 +468,6 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 
 		if (isCandidate) {
 			OWLClassExpression niceDescription = rewriteNode(node);
-			ConceptTransformation.transformToOrderedForm(niceDescription);
 
 			if (niceDescription.equals(classToDescribe)) return false;
 
@@ -483,7 +483,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 			boolean shorterDescriptionExists = false;
 
 			if (forceMutualDifference) {
-				for (EvaluatedDescription ed : bestEvaluatedDescriptions.getSet()) {
+				for (EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet()) {
 					double accDiff = Math.abs(ed.getAccuracy() - accuracy);
 					boolean isSubDescription =
 							ConceptTransformation.isSubdescription(
@@ -972,10 +972,12 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		this.maxDepth = maxDepth;
 	}
 
+	@Override
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
 
+	@Override
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
@@ -1053,10 +1055,12 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
 	}
 
+	@Override
 	public boolean isUseMinimizer() {
 		return useMinimizer;
 	}
 
+	@Override
 	public void setUseMinimizer(boolean useMinimizer) {
 		this.useMinimizer = useMinimizer;
 	}

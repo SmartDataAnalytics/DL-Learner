@@ -24,7 +24,7 @@ import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MessagingAgent;
 import org.dllearner.algorithms.distributed.containers.MessageContainer;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public abstract class AbstractAMQPAgent extends AbstractCELA implements Messagin
     private long maxBlockingWaitMilisecs = 5000;
 
 
-    public AbstractAMQPAgent(AbstractLearningProblem problem, AbstractReasonerComponent reasoner) {
+    public AbstractAMQPAgent(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
         super(problem, reasoner);
     }
 
