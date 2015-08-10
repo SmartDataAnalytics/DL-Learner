@@ -23,8 +23,8 @@ public class DistOENodeTreeTest {
 		OWLClass owlThing = OWLManager.getOWLDataFactory().getOWLThing();
 		DistOENodeTree tree = new DistOENodeTree();
 
-		assertEquals(tree.root.getDescription(), owlThing);
-		assertEquals(1, tree.size());
+		assertNull(tree.root);
+		assertEquals(0, tree.size());
 	}
 
 	@Test
