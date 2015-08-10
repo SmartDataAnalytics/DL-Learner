@@ -24,25 +24,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
-import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
+import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.config.ListStringEditor;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.propertyeditors.URLEditor;
 
 /**
  * SPARQL endpoint knowledge source (without fragment extraction),
@@ -53,8 +48,8 @@ import org.springframework.beans.propertyeditors.URLEditor;
  *
  */
 @ComponentAnn(name = "SPARQL endpoint", shortName = "sparql", version = 0.2)
-public class SparqlEndpointKS implements KnowledgeSource {
-	
+public class SparqlEndpointKS extends AbstractKnowledgeSource {
+
 	private static final Logger logger = LoggerFactory.getLogger(SparqlEndpointKS.class);
 
 	private SparqlEndpoint endpoint;
@@ -63,26 +58,32 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	private boolean isRemote = true;
 	private boolean initialized = false;
 
-	@ConfigOption(name = "url", required=true, propertyEditorClass = URLEditor.class)
+	@ConfigOption(name = "url", description="URL of the SPARQL endpoint", required=true)
 	private URL url;
 
-	@ConfigOption(name = "defaultGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "defaultGraphURIs", description="a list of default graph URIs", defaultValue="{}", required=false)
 	private List<String> defaultGraphURIs = new LinkedList<String>();
 
-	@ConfigOption(name = "namedGraphs", defaultValue="[]", required=false, propertyEditorClass = ListStringEditor.class)
+	@ConfigOption(name = "namedGraphURIs", description="a list of named graph URIs", defaultValue="{}", required=false)
 	private List<String> namedGraphURIs = new LinkedList<String>();
 
 	// some parameters for the query execution
 	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
 	private long queryDelay = 50;
-	
+
 	// caching options
+	@ConfigOption(name = "useCache", defaultValue = "true", description = "Use this setting to enable caching of SPARQL queries in a local database.", required = false)
 	private boolean useCache = true;
+
+	@ConfigOption(name = "cacheDir", defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
+
+	@ConfigOption(name = "cacheTTL", defaultValue = "86400", description = "The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).", required = false)
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
-	
+
+	@ConfigOption(name = "retryCount", defaultValue = "3", description = "The maximum number of retries for the execution of a particular SPARQL query.", required = false)
 	protected int retryCount = 3;
-	
+
 	protected QueryExecutionFactory qef;
 
 	private long pageSize = 10000;
@@ -135,12 +136,12 @@ public class SparqlEndpointKS implements KnowledgeSource {
 		}
 		logger.info("SPARQL KB setup:\n" + toString());
 	}
-	
+
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
 		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
-		
+
 
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
@@ -148,20 +149,20 @@ public class SparqlEndpointKS implements KnowledgeSource {
 			// use in-memory cache
 //			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
-		
+
 		// add some delay
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
-		
+
 		if(retryCount > 0) {
 			qef = new QueryExecutionFactoryRetry(qef, 3, 1, TimeUnit.SECONDS);
 		}
-		
+
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
 //		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
-		
+
 		return qef;
 	}
-	
+
 	public void setPageSize(long pageSize) {
 		this.pageSize = pageSize;
 	}
@@ -205,7 +206,7 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public void setSupportsSPARQL_1_1(boolean supportsSPARQL_1_1) {
 		this.supportsSPARQL_1_1 = supportsSPARQL_1_1;
 	}
-	
+
 	/**
 	 * Set a delay between each sent SPARQL query to avoid overloading of the
 	 * endpoint. Note that this does only make sense for remote endpoints and
@@ -215,30 +216,30 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	public void setQueryDelay(int queryDelay) {
 		this.queryDelay = queryDelay;
 	}
-	
+
 	/**
 	 * @param useCache the useCache to set
 	 */
 	public void setUseCache(boolean useCache) {
 		this.useCache = useCache;
 	}
-	
+
 	/**
 	 * Set the file-based cache directory. Default is the temporary
-	 * folder of the operating system retrieved by using java.io.tmpdir, 
+	 * folder of the operating system retrieved by using java.io.tmpdir,
 	 * i.e. in most cases
 	 * <table>
 	 * <tr><th>OS</th><th>Directory</th></tr>
 	 * <tr><td>Linux</td><td>/tmp/</td></tr>
 	 * <tr><td>Windows</td><td>C:\temp</td></tr>
 	 * </table>
-	 * 
+	 *
 	 * @param cacheDir the absolute cache directory path
 	 */
 	public void setCacheDir(String cacheDir) {
 		this.cacheDir = cacheDir;
 	}
-	
+
 	/**
 	 * Set the time-to-live for the file-based SPARQL cache.
 	 * @param cacheTTL the time-to-live value in milliseconds
@@ -250,7 +251,11 @@ public class SparqlEndpointKS implements KnowledgeSource {
 	@Override
 	public String toString() {
 		String out = String.format("%-15s %-25s%n", "Endpoint:", "Remote");
-		out += String.format("%-15s %-25s%n", "URL:", qef.getId());
+		if (qef != null) {
+			out += String.format("%-15s %-25s%n", "URL:", qef.getId());
+		} else {
+			out += String.format("%-15s %-25s%n", "URL:", "null");
+		}
 		out += String.format("%-15s %-25s%n", "Cache:", cacheDir);
 		out += String.format("%-15s %dms%n", "Delay:", queryDelay);
 		return out;

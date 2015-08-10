@@ -2,7 +2,7 @@
  * Copyright (C) 2007-2009, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -41,20 +42,19 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
-import org.dllearner.Info;
-import org.dllearner.cli.ConfMapper;
 import org.dllearner.core.AbstractCELA;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ComponentManager;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.options.ConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -62,6 +62,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.kb.sparql.SparqlQueryException;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.utilities.datastructures.Datastructures;
@@ -81,11 +82,11 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
  * DL-Learner web service interface. The web service makes use of the component
- * architecture of DL-Learner (see 
+ * architecture of DL-Learner (see
  * <a href="http://dl-learner.org/wiki/Architecture">architecture wiki page</a>),
- * i.e. it allows to create, configure and run components. In addition, it provides 
+ * i.e. it allows to create, configure and run components. In addition, it provides
  * access to some reasoning and querying methods.
- * 
+ *
  * @author Jens Lehmann
  *
  */
@@ -94,21 +95,20 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 public class DLLearnerWS {
 
 	private static Logger logger = Logger.getLogger(DLLearnerWS.class);
-	
+
 	private Map<Integer, ClientState> clients = new TreeMap<Integer,ClientState>();
 	private Random rand=new Random();
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
-	private static ConfMapper confMapper = new ConfMapper();
-	
-	/**
-	 * Returns the DL-Learner version this web service is based on.
-	 * @return DL-Learner-Build.
-	 */
-	@WebMethod
-	public String getBuild() {
-		return Info.build;
-	}
-	
+
+//	/**
+//	 * Returns the DL-Learner version this web service is based on.
+//	 * @return DL-Learner-Build.
+//	 */
+//	@WebMethod
+//	public String getBuild() {
+//		return Info.build;
+//	}
+
 	/**
 	 * Method to check whether web service is online and how fast it responses.
 	 * This method simply returns true.
@@ -117,13 +117,13 @@ public class DLLearnerWS {
 	@WebMethod
 	public boolean ping() {
 		return true;
-	}	
-	
+	}
+
 	/**
-	 * Generates a unique ID for the client and initialises a session. 
-	 * Using the ID the client can call the other web service methods. 
-	 * Two calls to this method are guaranteed to return different results. 
-	 * 
+	 * Generates a unique ID for the client and initialises a session.
+	 * Using the ID the client can call the other web service methods.
+	 * Two calls to this method are guaranteed to return different results.
+	 *
 	 * @return A session ID.
 	 */
 	@WebMethod
@@ -136,89 +136,92 @@ public class DLLearnerWS {
 		logger.info("New client " + id + " at DL-Learner web service.");
 		return id;
 	}
-	
+
 	///////////////////////////////////////
 	// methods for basic component setup //
 	///////////////////////////////////////
-	
+
 	/**
-	 * Gets a list of all DL-Learner components accessible via this web service. 
+	 * Gets a list of all DL-Learner components accessible via this web service.
 	 * @return All components accessible via this web service.
 	 */
 	@WebMethod
 	public String[] getComponents() {
-		Set<String> components = confMapper.getComponents();
+		Set<String> components = cm.getComponentStrings();
 		return components.toArray(new String[components.size()]);
 	}
-	
+
 	/**
-	 * Gets a list of all DL-Learner knowledge source components accessible via this web service. 
+	 * Gets a list of all DL-Learner knowledge source components accessible via this web service.
 	 * @return All knowledge source components accessible via this web service.
 	 */
 	@WebMethod
 	public String[] getKnowledgeSources() {
-		Set<String> knowledgeSources = confMapper.getKnowledgeSources();
+		Set<String> knowledgeSources = cm.getComponentStringsOfType(KnowledgeSource.class);
 		return knowledgeSources.toArray(new String[knowledgeSources.size()]);
 	}
-	
+
 	/**
-	 * Gets a list of all DL-Learner reasoner components accessible via this web service. 
+	 * Gets a list of all DL-Learner reasoner components accessible via this web service.
 	 * @return All reasoner components accessible via this web service.
-	 */	
+	 */
 	@WebMethod
 	public String[] getReasoners() {
-		Set<String> reasoners = confMapper.getReasoners();
-		return reasoners.toArray(new String[reasoners.size()]);		
+		Set<String> reasoners = cm.getComponentStringsOfType(AbstractReasonerComponent.class);
+		return reasoners.toArray(new String[reasoners.size()]);
 	}
-	
+
 	/**
-	 * Gets a list of all DL-Learner learning problem components accessible via this web service. 
+	 * Gets a list of all DL-Learner learning problem components accessible via this web service.
 	 * @return All learning problem components accessible via this web service.
-	 */	
+	 */
 	@WebMethod
 	public String[] getLearningProblems() {
-		Set<String> learningProblems = confMapper.getLearningProblems();
-		return learningProblems.toArray(new String[learningProblems.size()]);		
+		Set<String> learningProblems = cm.getComponentStringsOfType(AbstractLearningProblem.class);
+		return learningProblems.toArray(new String[learningProblems.size()]);
 	}
-	
+
 	/**
-	 * Gets a list of all DL-Learner learning algorithm components accessible via this web service. 
+	 * Gets a list of all DL-Learner learning algorithm components accessible via this web service.
 	 * @return All learning algorithm components accessible via this web service.
-	 */	
+	 */
 	@WebMethod
 	public String[] getLearningAlgorithms() {
-		Set<String> learningAlgorithms = confMapper.getLearningAlgorithms();
-		return learningAlgorithms.toArray(new String[learningAlgorithms.size()]);		
-	}	
-	
+		Set<String> learningAlgorithms = cm.getComponentStringsOfType(AbstractCELA.class);
+		return learningAlgorithms.toArray(new String[learningAlgorithms.size()]);
+	}
+
 	/**
 	 * Gets the configuration options supported by the component. This allows e.g. to
 	 * automatically build user interfaces for configuring components.
 	 * @param component Name of the component.
-	 * @param allInfo Whether or not complete information is desired (including option description, allowed values, default value).
+	 * @param allInfo Whether or not complete information is desired (including option description, required, default value, example value).
 	 * @return A list of configuration options supported by the component.
 	 * @throws UnknownComponentException Thrown if component is not known (see {@link #getComponents()}).
 	 */
 	@WebMethod
 	public String[] getConfigOptions(String component, boolean allInfo) throws UnknownComponentException {
-		Class<? extends AbstractComponent> componentClass = confMapper.getComponentClass(component);
-		List<ConfigOption<?>> options = ComponentManager.getConfigOptions(componentClass);
+		Class<? extends Component> componentClass = cm.getComponentClass(component);
+		Set<Field> options = AnnComponentManager.getConfigOptions(componentClass);
 		String[] optionsString = new String[options.size()];
-		for(int i=0; i<options.size(); i++) {
-			ConfigOption<?> option = options.get(i);
-			optionsString[i] = option.getName();
+		int i = 0;
+		for(Field f : options) {
+			ConfigOption option = f.getAnnotation(ConfigOption.class);
+			optionsString[i] = AnnComponentManager.getName(f);
 			if(allInfo) {
-				optionsString[i] += "#" + option.getDescription();
-				optionsString[i] += "#" + option.getAllowedValuesDescription();
-				optionsString[i] += "#" + option.getDefaultValue();				
-			}	
+				optionsString[i] += "#" + option.description();
+				optionsString[i] += "#" + option.required();
+				optionsString[i] += "#" + option.defaultValue();
+				optionsString[i] += "#" + option.exampleValue();
+			}
+			i++;
 		}
 		return optionsString;
 	}
-	
+
 	/**
 	 * Adds a knowledge source.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param component The name of the component.
 	 * @param url The URL of the knowledge source.
@@ -231,7 +234,7 @@ public class DLLearnerWS {
 	public int addKnowledgeSource(int id, String component, String url) throws ClientNotKnownException, UnknownComponentException, MalformedURLException {
 		logger.info("Adding knowledge source " + component + " with URL parameter " + url + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractKnowledgeSource> ksClass = confMapper.getKnowledgeSourceClass(component);
+		Class<? extends AbstractKnowledgeSource> ksClass = (Class<? extends AbstractKnowledgeSource>) cm.getComponentClass(component);
 		if(ksClass == null)
 			throw new UnknownComponentException(component);
 		AbstractKnowledgeSource ks = null;
@@ -247,10 +250,10 @@ public class DLLearnerWS {
 		logger.info("...done.");
 		return state.addKnowledgeSource(ks);
 	}
-	
+
 	/**
 	 * Removes a knowledge source.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param componentID ID of knowledge source to remove.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
@@ -259,10 +262,10 @@ public class DLLearnerWS {
 	public void removeKnowledgeSource(int id, int componentID) throws ClientNotKnownException {
 		getState(id).removeKnowledgeSource(componentID);
 	}
-	
+
 	/**
 	 * Sets the reasoner to use.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param component The name of the component.
 	 * @return An identifier for the component.
@@ -273,10 +276,10 @@ public class DLLearnerWS {
 	public int setReasoner(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		logger.info("Setting reasoner " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractReasonerComponent> rcClass = confMapper.getReasonerComponentClass(component);
+		Class<? extends AbstractReasonerComponent> rcClass = (Class<? extends AbstractReasonerComponent>) cm.getComponentClass(component);
 		if(rcClass == null)
 			throw new UnknownComponentException(component);
-		
+
 		AbstractReasonerComponent rc = null;
 		try {
 			rc = rcClass.getConstructor(Set.class).newInstance(state.getKnowledgeSources());
@@ -287,10 +290,10 @@ public class DLLearnerWS {
 		logger.info("...done.");
 		return state.setReasonerComponent(rc);
 	}
-	
+
 	/**
 	 * Sets the learning problem to use.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param component The name of the component.
 	 * @return An identifier for the component.
@@ -301,11 +304,11 @@ public class DLLearnerWS {
 	public int setLearningProblem(int id, String component) throws ClientNotKnownException, UnknownComponentException {
 		logger.info("Setting learning problem " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractLearningProblem> lpClass = confMapper.getLearningProblemClass(component);
+		Class<? extends AbstractClassExpressionLearningProblem> lpClass = (Class<? extends AbstractClassExpressionLearningProblem>) cm.getComponentClass(component);
 		if(lpClass == null)
 			throw new UnknownComponentException(component);
-		
-		AbstractLearningProblem lp = null;
+
+		AbstractClassExpressionLearningProblem lp = null;
 		try {
 			lp = lpClass.getConstructor(AbstractReasonerComponent.class).newInstance(state.getReasonerComponent());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -315,10 +318,10 @@ public class DLLearnerWS {
 		logger.info("...done.");
 		return state.setLearningProblem(lp);
 	}
-	
+
 	/**
 	 * Sets the learning algorithm to use.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param component The name of the component.
 	 * @return An identifier for the component.
@@ -330,13 +333,13 @@ public class DLLearnerWS {
 	public int setLearningAlgorithm(int id, String component) throws ClientNotKnownException, UnknownComponentException, LearningProblemUnsupportedException {
 		logger.info("Setting learning algorithm " + component + "...");
 		ClientState state = getState(id);
-		Class<? extends AbstractCELA> laClass = confMapper.getLearningAlgorithmClass(component);
+		Class<? extends AbstractCELA> laClass = (Class<? extends AbstractCELA>) cm.getComponentClass(component);
 		if(laClass == null)
 			throw new UnknownComponentException(component);
-		
+
 		AbstractCELA la = null;
 		try {
-			la = laClass.getConstructor(AbstractLearningProblem.class, AbstractReasonerComponent.class)
+			la = laClass.getConstructor(AbstractClassExpressionLearningProblem.class, AbstractReasonerComponent.class)
 					.newInstance(state.getLearningProblem(), state.getReasonerComponent());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
@@ -345,7 +348,7 @@ public class DLLearnerWS {
 		logger.info("...done.");
 		return state.setLearningAlgorithm(la);
 	}
-	
+
 	/**
 	 * Initialise all components.
 	 * @param id Session ID.
@@ -364,14 +367,14 @@ public class DLLearnerWS {
 		logger.info("Initializing learning algorithm...");
 		state.getLearningAlgorithm().init();
 	}
-	
+
 	/**
 	 * Initialise the specified component.
 	 * @param id Session-ID.
 	 * @param componentID Component-ID.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 * @throws UnknownComponentException Thrown if the component is unknown.
-	 * @throws ComponentInitException 
+	 * @throws ComponentInitException
 	 */
 	@WebMethod
 	public void init(int id, int componentID) throws ClientNotKnownException, UnknownComponentException, ComponentInitException {
@@ -379,16 +382,16 @@ public class DLLearnerWS {
 		AbstractComponent component = state.getComponent(componentID);
 		component.init();
 	}
-	
+
 	/**
 	 * Starts the learning algorithm and returns the best concept found. This
 	 * method will block until learning is completed.
-	 * 
+	 *
 	 * @param id Session ID.
 	 * @param format The format of the result string: "manchester", "kb", "dl".
 	 * @return The best solution found.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
-	 */	
+	 */
 	@WebMethod
 	public String learn(int id, String format) throws ClientNotKnownException {
 		ClientState state = getState(id);
@@ -401,12 +404,12 @@ public class DLLearnerWS {
 		else
 			return solution.toString();
 	}
-	
+
 	/**
 	 * Returns a list of JSON encoded description including extra information
 	 * (which partially depends on the learning problem) such as the accuracy
 	 * of the learned description.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @return A JSON string encoding learned descriptions.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
@@ -415,7 +418,7 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
+		NavigableSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
 				.getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;
@@ -429,12 +432,12 @@ public class DLLearnerWS {
 		json += "}";
 		return json;
 	}
-	
+
 	/**
 	 * Returns a list of JSON encoded description including extra information
 	 * (which partially depends on the learning problem) such as the accuracy
 	 * of the learned description.
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param limit Maximum number of results desired.
 	 * @return A JSON string encoding learned descriptions.
@@ -455,16 +458,16 @@ public class DLLearnerWS {
 		json+="}";
 		return json;
 	}
-	
+
 	/**
 	 * Starts the learning algorithm and returns immediately. The learning
-	 * algorithm is executed in its own thread and can be queried and 
+	 * algorithm is executed in its own thread and can be queried and
 	 * controlled using other Web Service methods.
-	 * 
+	 *
 	 * @param id Session ID.
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 */
-	@WebMethod 
+	@WebMethod
 	public void learnThreaded(int id) throws ClientNotKnownException {
 		final ClientState state = getState(id);
 		Thread learningThread = new Thread() {
@@ -477,9 +480,9 @@ public class DLLearnerWS {
 		};
 		learningThread.start();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @return
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
@@ -489,9 +492,9 @@ public class DLLearnerWS {
 		ClientState state = getState(id);
 		return state.getLearningAlgorithm().getCurrentlyBestEvaluatedDescription().toString();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param nrOfConcepts
 	 * @param format
@@ -513,9 +516,9 @@ public class DLLearnerWS {
 			    conc.add(iter.next().toString());
 		return conc.toArray(new String[conc.size()]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param limit
 	 * @return
@@ -525,9 +528,9 @@ public class DLLearnerWS {
 	public String getCurrentlyBestEvaluatedDescriptions(int id, int limit) throws ClientNotKnownException{
 		return currentlyBestEvaluatedDescriptions(id,limit,-1,false);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param nrOfDescriptions
 	 * @param accuracyThreshold
@@ -540,9 +543,9 @@ public class DLLearnerWS {
 	{
 		return currentlyBestEvaluatedDescriptions(id,nrOfDescriptions,accuracyThreshold,filterNonMinimalDescriptions);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param nrOfDescriptions
 	 * @param accuracyThreshold
@@ -573,9 +576,9 @@ public class DLLearnerWS {
 		json += "}";
 		return json;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @return
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
@@ -584,7 +587,7 @@ public class DLLearnerWS {
 	public boolean isAlgorithmRunning(int id) throws ClientNotKnownException {
 		return getState(id).getLearningAlgorithm().isRunning();
 	}
-	
+
 	/**
 	 * Stops the learning algorithm smoothly.
 	 * @param id The session ID.
@@ -594,31 +597,35 @@ public class DLLearnerWS {
 	public void stop(int id) throws ClientNotKnownException {
 		getState(id).getLearningAlgorithm().stop();
 	}
-	
+
 	/////////////////////////////////////////
 	// methods for component configuration //
 	/////////////////////////////////////////
-	
+
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param positiveExamples
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
-	 */ 
+	 */
 	@WebMethod
 	public void setPositiveExamples(int id, String[] positiveExamples) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<String> posExamples = new TreeSet<String>(Arrays.asList(positiveExamples));
-		Set<OWLIndividual> inds = new HashSet<OWLIndividual>();
+		SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
 		for (String ex : posExamples) {
 			inds.add(new OWLNamedIndividualImpl(IRI.create(ex)));
 		}
-		((PosNegLP)state.getLearningProblem()).setPositiveExamples(inds);
+		if (state.getLearningProblem() instanceof PosOnlyLP) {
+			((PosOnlyLP)state.getLearningProblem()).setPositiveExamples(inds);
+		} else {
+			((PosNegLP)state.getLearningProblem()).setPositiveExamples(inds);
+		}
 	}
-	
+
 
 	/**
-	 * 
+	 *
 	 * @param id The session ID.
 	 * @param negativeExamples
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
@@ -633,9 +640,9 @@ public class DLLearnerWS {
 		}
 		((PosNegLP)state.getLearningProblem()).setNegativeExamples(inds);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -647,9 +654,9 @@ public class DLLearnerWS {
 	public void applyConfigEntryInt(int sessionID, int componentID, String optionName, Integer value) throws ClientNotKnownException, UnknownComponentException	{
 		applyConfigEntry(sessionID, componentID,optionName,value);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -661,9 +668,9 @@ public class DLLearnerWS {
 	public void applyConfigEntryString(int sessionID, int componentID, String optionName, String value) throws ClientNotKnownException, UnknownComponentException {
 		applyConfigEntry(sessionID, componentID,optionName,value);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -677,10 +684,10 @@ public class DLLearnerWS {
 		// URLs are passed as String and then converted
 		URL url = new URL(value);
 		applyConfigEntry(sessionID, componentID,optionName,url);
-	}	
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -693,9 +700,9 @@ public class DLLearnerWS {
 		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
 		applyConfigEntry(sessionID, componentID,optionName,stringSet);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -712,10 +719,10 @@ public class DLLearnerWS {
 		}
 //		Set<String> stringSet = new TreeSet<String>(Arrays.asList(value));
 		applyConfigEntry(sessionID, componentID, optionName, tuples);
-	}	
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -727,9 +734,9 @@ public class DLLearnerWS {
 	public void applyConfigEntryBoolean(int sessionID, int componentID, String optionName, Boolean value) throws ClientNotKnownException, UnknownComponentException	{
 		applyConfigEntry(sessionID, componentID,optionName,value);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -765,9 +772,9 @@ public class DLLearnerWS {
 //		}
 //		cm.applyConfigEntry(component, optionName, value);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -780,9 +787,9 @@ public class DLLearnerWS {
 	public String[] getConfigOptionValueStringArray(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, String[].class);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -795,9 +802,9 @@ public class DLLearnerWS {
 	public String getConfigOptionValueString(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, String.class);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -810,10 +817,10 @@ public class DLLearnerWS {
 	public String getConfigOptionValueURL(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		URL url = getConfigOptionValue(sessionID, componentID, optionName, URL.class);
 		return url.toString();
-	}	
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -826,9 +833,9 @@ public class DLLearnerWS {
 	public Double getConfigOptionValueDouble(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, Double.class);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -841,9 +848,9 @@ public class DLLearnerWS {
 	public Boolean getConfigOptionValueBoolean(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, Boolean.class);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
@@ -856,22 +863,22 @@ public class DLLearnerWS {
 	public Integer getConfigOptionValueInt(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		return getConfigOptionValue(sessionID, componentID, optionName, Integer.class);
 	}
-	
+
 	////////////////////////////////////
 	// reasoning and querying methods //
 	////////////////////////////////////
-	
+
 	@WebMethod
 	public String[] getAtomicConcepts(int id) throws ClientNotKnownException {
 		Set<OWLClass> atomicConcepts = getState(id).getReasonerComponent().getClasses();
 		return Datastructures.sortedSet2StringListConcepts(atomicConcepts);
 	}
-	
+
 	@WebMethod
 	public String getSubsumptionHierarchy(int id) throws ClientNotKnownException {
 		return getState(id).getReasonerComponent().toString();
 	}
-	
+
 	@WebMethod
 	public String[] retrieval(int id, String conceptString) throws ClientNotKnownException, ParseException {
 		ClientState state = getState(id);
@@ -880,27 +887,27 @@ public class DLLearnerWS {
 		Set<OWLIndividual> individuals = state.getReasonerComponent().getIndividuals(concept);
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
-	
+
 	@WebMethod
 	public int getConceptLength(String conceptString) throws ParseException {
 		// call parser to parse concept
 		return OWLClassExpressionUtils.getLength(KBParser.parseConcept(conceptString));
 	}
-	
+
 	@WebMethod
 	public String[] getAtomicRoles(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<OWLObjectProperty> roles = state.getReasonerComponent().getObjectProperties();
 		return Datastructures.sortedSet2StringListRoles(roles);
 	}
-	
+
 	@WebMethod
 	public String[] getInstances(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		Set<OWLIndividual> individuals = state.getReasonerComponent().getIndividuals();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
-	
+
 	@WebMethod
 	public String[] getIndividualsForARole(int id, String role) throws ClientNotKnownException {
 		ClientState state = getState(id);
@@ -909,12 +916,12 @@ public class DLLearnerWS {
 		Set<OWLIndividual> individuals = m.keySet();
 		return Datastructures.sortedSet2StringListIndividuals(individuals);
 	}
-	
+
 	////////////////////////////////////////
 	//     SPARQL component methods       //
 	////////////////////////////////////////
-	
-		
+
+
 	@WebMethod
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
@@ -927,34 +934,34 @@ public class DLLearnerWS {
 		    e.printStackTrace();
 		    throw new SparqlQueryException("SparqlQuery failed"+e.toString());
 		}
-		
+
 		if(json == null) { throw new SparqlQueryException("Sparql Query failed. Please try again later.");}
 		return json;
 		//if ((json=state.getQuery(queryID).getJson())!=null) return json;
-		//else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet); 
+		//else if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsJSON(resultSet);
 		//else return SparqlQuery.getAsJSON(state.getQuery(queryID).send());
 	}
-	
+
 	@WebMethod
 	public String getAsXMLString(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException
 	{
 		ClientState state = getState(sessionID);
-		
+
 		String xml = null;
-		try{	
+		try{
 		    xml = state.getQuery(queryID).getXMLString();
         	}catch (Exception e) {
         	    e.printStackTrace();
         	    throw new SparqlQueryException("SparqlQuery failed"+e.toString());
         	}
-		
+
 		if(xml == null) throw new SparqlQueryException("SparqlQuery failed xml was null");
 		return xml;
 		//if ((resultSet=state.getQuery(queryID).getResultSet())!=null) return SparqlQuery.getAsXMLString(resultSet);
 		//if ((json=state.getQuery(queryID).getJson())!=null) return SparqlQuery.getAsXMLString(SparqlQuery.JSONtoResultSet(json));
 		//else return SparqlQuery.getAsXMLString(state.getQuery(queryID).send());
 	}
-	
+
 	@WebMethod
 	public int sparqlQueryThreaded(int sessionID, int componentID, String query) throws ClientNotKnownException
 	{
@@ -977,7 +984,7 @@ public class DLLearnerWS {
 		sparqlThread.start();
 		return id;
 	}
-	
+
 	@WebMethod
 	public String sparqlQuery(int sessionID, int componentID, String query) throws ClientNotKnownException
 	{
@@ -992,7 +999,7 @@ public class DLLearnerWS {
 		}
 		else return sparql.getJson();*/
 	}
-	
+
 	/**
 	 * Queries one of the standard endpoints defined in DL-Learner.
 	 * @param predefinedEndpoint A string describing the endpoint e.g. DBpedia.
@@ -1012,21 +1019,21 @@ public class DLLearnerWS {
 		}
 		return st.query(query);
 	}
-	
+
 	@WebMethod
 	public boolean isSparqlQueryRunning(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
 		return state.getQuery(queryID).isRunning();
 	}
-	
+
 	@WebMethod
 	public void stopSparqlThread(int sessionID, int queryID) throws ClientNotKnownException
 	{
 		ClientState state = getState(sessionID);
 		state.getQuery(queryID).stop();
 	}
-	
+
 	@WebMethod
 	public int[] getConceptDepth(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
@@ -1040,7 +1047,7 @@ public class DLLearnerWS {
 		}
 		return depth;
 	}
-	
+
 	@WebMethod
 	public int[] getConceptArity(int id, int nrOfConcepts) throws ClientNotKnownException {
 		ClientState state = getState(id);
@@ -1054,7 +1061,7 @@ public class DLLearnerWS {
 		}
 		return arity;
 	}
-	
+
 	@WebMethod
 	public String SparqlRetrieval(String conceptString,int limit) throws ParseException {
 		// call parser to parse concept
@@ -1062,17 +1069,7 @@ public class DLLearnerWS {
 		// TODO Refactoring replace
 		return null;
 	}
-	
-	@WebMethod
-	public String getNaturalDescription(int id, String conceptString, String endpoint) throws ParseException, ClientNotKnownException {
-		// call parser to parse concept
-		ClientState state = getState(id);
-		AbstractReasonerComponent service = state.getReasonerComponent();
-//		return NaturalLanguageDescriptionConvertVisitor.getNaturalLanguageDescription(conceptString, service);
-		// TODO Refactoring replace
-		return null;
-	}
-	
+
 	@WebMethod
 	public String[] getNegativeExamples(int sessionID, int componentID,String[] positives, int results, String namespace, String[] filterClasses) throws ClientNotKnownException
 	{
@@ -1084,7 +1081,7 @@ public class DLLearnerWS {
 		SparqlKnowledgeSource ks=(SparqlKnowledgeSource)component;
 		SPARQLTasks task=ks.getSPARQLTasks();
 		AutomaticNegativeExampleFinderSPARQL finder=new AutomaticNegativeExampleFinderSPARQL(positiveSet,task,filterSet);
-		
+
 		/*finder.makeNegativeExamplesFromNearbyClasses(positiveSet, sparqlResultSetLimit);
 		SortedSet<String> negExamples=finder.getNegativeExamples(results);
 		if (negExamples.isEmpty()){*/
@@ -1103,14 +1100,14 @@ public class DLLearnerWS {
 				 }
 			}
 		//}
-		
+
 		return negExamples.toArray(new String[negExamples.size()]);
 	}
-	
+
 	/////////////////////////////
 	// private utility methods //
 	/////////////////////////////
-	
+
 	// returns session state or throws client not known exception
 	private ClientState getState(int id) throws ClientNotKnownException {
 		ClientState state = clients.get(id);
@@ -1118,7 +1115,7 @@ public class DLLearnerWS {
 			throw new ClientNotKnownException(id);
 		return state;
 	}
-	
+
 	@SuppressWarnings({"unchecked"})
 	private <T> T getConfigOptionValue(int sessionID, int componentID, String optionName, Class<T> clazz) throws ClientNotKnownException, UnknownComponentException, ConfigOptionTypeException {
 		Object value = getConfigOptionValue(sessionID, componentID, optionName);
@@ -1127,11 +1124,11 @@ public class DLLearnerWS {
 		else
 			throw new ConfigOptionTypeException(optionName, clazz, value.getClass());
 	}
-	
+
 	private Object getConfigOptionValue(int sessionID, int componentID, String optionName) throws ClientNotKnownException, UnknownComponentException {
 		ClientState state = getState(sessionID);
 		AbstractComponent component = state.getComponent(componentID);
 		return "";//cm.getConfigOptionValue(component, optionName);
-	}	
-	
+	}
+
 }

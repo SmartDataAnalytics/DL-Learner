@@ -66,6 +66,15 @@ public class ManchesterOWLSyntaxOWLObjectRendererImplExt implements
         ren = new ManchesterOWLSyntaxObjectRendererExt(writerDelegate,
                 new SimpleShortFormProvider());
     }
+    
+    /** default constructor */
+    public ManchesterOWLSyntaxOWLObjectRendererImplExt(boolean useTabbing, boolean useWrapping) {
+        writerDelegate = new WriterDelegate();
+        ren = new ManchesterOWLSyntaxObjectRendererExt(writerDelegate,
+                new SimpleShortFormProvider());
+        ren.setUseTabbing(useTabbing);
+        ren.setUseWrapping(useWrapping);
+    }
 
     @Override
     public synchronized String render(OWLObject object) {

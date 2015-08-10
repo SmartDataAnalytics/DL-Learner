@@ -35,11 +35,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Reasoner;
-import org.dllearner.core.config.BooleanEditor;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -48,12 +48,16 @@ import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
 import org.dllearner.utilities.ToIRIFunction;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
+import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
+import org.dllearner.utilities.split.ValuesSplitter;
+import org.semanticweb.owlapi.expression.ParserException;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -190,20 +194,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
 
 	// splits for double datatype properties in ascending order
-	private Map<OWLDataProperty,List<Double>> splits = new TreeMap<OWLDataProperty,List<Double>>();
+	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
 
-	private Map<OWLDataProperty,List<Byte>> splitsByte = new TreeMap<OWLDataProperty,List<Byte>>();
-	private Map<OWLDataProperty,List<Short>> splitsShort = new TreeMap<OWLDataProperty,List<Short>>();
-	private Map<OWLDataProperty,List<Integer>> splitsInt = new TreeMap<OWLDataProperty,List<Integer>>();
-	private Map<OWLDataProperty,List<Long>> splitsLong = new TreeMap<OWLDataProperty,List<Long>>();
-	private Map<OWLDataProperty,List<Float>> splitsFloat = new TreeMap<OWLDataProperty,List<Float>>();
-	private Map<OWLDataProperty,List<Double>> splitsDouble = new TreeMap<OWLDataProperty,List<Double>>();
-
-	private Map<OWLDataProperty,List<? extends Number>> splitsNumber = new TreeMap<OWLDataProperty,List<? extends Number>>();
-	private int maxNrOfSplits = 10;
+	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
@@ -219,47 +216,55 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
 
-	@ConfigOption(name = "applyAllFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "applyAllFilter", defaultValue="true")
 	private boolean applyAllFilter = true;
 
-	@ConfigOption(name = "applyExistsFilter", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "applyExistsFilter", defaultValue="true")
 	private boolean applyExistsFilter = true;
 
-	@ConfigOption(name = "useAllConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useAllConstructor", description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
 	private boolean useAllConstructor = true;
 
-	@ConfigOption(name = "useExistsConstructor", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useExistsConstructor", description="support of existential restrictions (owl:someValuesFrom), e.g. \u2203 r.C ", defaultValue="true")
 	private boolean useExistsConstructor = true;
 
-	@ConfigOption(name = "useHasValueConstructor", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useHasValueConstructor", description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false")
 	private boolean useHasValueConstructor = false;
 
-	@ConfigOption(name = "useCardinalityRestrictions", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useCardinalityRestrictions", description="support of qualified cardinality restrictions (owl:minCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
 	private boolean useCardinalityRestrictions = true;
 
-	@ConfigOption(name = "useNegation", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useNegation", description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
-	
-	@ConfigOption(name = "useInverse", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+
+	@ConfigOption(name = "useInverse", description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
-	@ConfigOption(name = "useBooleanDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useBooleanDatatypes", description="support of boolean datatypes (xsd:boolean), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useBooleanDatatypes = true;
 
-	@ConfigOption(name = "useNumericDatatypes", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useNumericDatatypes", description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useNumericDatatypes = true;
 
-	@ConfigOption(name = "useStringDatatypes", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "useTimeDatatypes", defaultValue="true")
+	private boolean useTimeDatatypes = true;
+
+	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false")
 	private boolean useStringDatatypes = false;
 
-	@ConfigOption(name = "disjointChecks", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "disjointChecks", defaultValue="true")
 	private boolean disjointChecks = true;
 
-	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true")
 	private boolean instanceBasedDisjoints = true;
 
-	@ConfigOption(name = "dropDisjuncts", defaultValue="false", propertyEditorClass = BooleanEditor.class)
+	@ConfigOption(name = "dropDisjuncts", defaultValue="false")
 	private boolean dropDisjuncts = false;
+
+	@ConfigOption(name = "useSomeOnly",
+			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",
+			defaultValue="true")
+	private boolean useSomeOnly = true;
 
 	// caches for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
@@ -314,7 +319,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		opDomains = reasoner.getObjectPropertyDomains();
 		opRanges = reasoner.getObjectPropertyRanges();
 		dpDomains = reasoner.getDataPropertyDomains();
-		
+
 		if (useHasValueConstructor) {
 			for (OWLObjectProperty op : reasoner.getObjectProperties()) {
 				// init
@@ -323,7 +328,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// sets ordered by corresponding individual (which we ignore)
 				Map<OWLIndividual, SortedSet<OWLIndividual>> propertyMembers = reasoner.getPropertyMembers(op);
-				
+
 				Collection<SortedSet<OWLIndividual>> fillerSets = propertyMembers.values();
 				for (SortedSet<OWLIndividual> fillerSet : fillerSets) {
 					for (OWLIndividual i : fillerSet) {
@@ -336,7 +341,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-				
+
 				// keep only frequent patterns
 				Set<OWLIndividual> frequentInds = new TreeSet<OWLIndividual>();
 				for (OWLIndividual i : opMap.keySet()) {
@@ -346,20 +351,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					}
 				}
 				frequentValues.put(op, frequentInds);
-				
+
 				if(useInverse) {
 					opMap = new TreeMap<OWLIndividual, Integer>();
 					valueFrequency.put(op.getInverseProperty(), opMap);
-					
+
 					frequentInds = new TreeSet<OWLIndividual>();
-					
+
 					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : propertyMembers
 							.entrySet()) {
 						OWLIndividual subject = entry.getKey();
 						SortedSet<OWLIndividual> values = entry.getValue();
-						
+
 						opMap.put(subject, values.size());
-						
+
 						if (values.size() >= frequencyThreshold) {
 							frequentInds.add(subject);
 						}
@@ -368,18 +373,18 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
-		
+
 		if(useDataHasValueConstructor) {
 			for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 				Map<OWLLiteral, Integer> dpMap = new TreeMap<OWLLiteral, Integer>();
 				dataValueFrequency.put(dp, dpMap);
-	
+
 				// sets ordered by corresponding individual (which we ignore)
 				Collection<SortedSet<OWLLiteral>> fillerSets = reasoner.getDatatypeMembers(dp).values();
 				for(SortedSet<OWLLiteral> fillerSet : fillerSets) {
 					for(OWLLiteral i : fillerSet) {
 						Integer value = dpMap.get(i);
-	
+
 						if(value != null) {
 							dpMap.put(i, value+1);
 						} else {
@@ -387,7 +392,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 				}
-	
+
 				// keep only frequent patterns
 				Set<OWLLiteral> frequentInds = new TreeSet<OWLLiteral>();
 				for(OWLLiteral i : dpMap.keySet()) {
@@ -399,9 +404,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				frequentDataValues.put(dp, frequentInds);
 			}
 		}
-		
+
 		if(useInverse) {
-			
+
 		}
 
 		// we do not need the temporary set anymore and let the
@@ -409,65 +414,103 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		valueFrequency = null;
 		dataValueFrequency.clear();// = null;
 
-//		System.out.println("freqDataValues: " + frequentDataValues);
 
 		// compute splits for numeric data properties
-		for (OWLDataProperty dp : reasoner.getNumericDataProperties()) {
-			computeSplits2(dp);
+		if(useNumericDatatypes) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
+				// TODO SPARQL support for splits
+				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
+			} else {
+				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
+				splits.putAll(splitter.computeSplits());
+			}
 		}
 
-		// compute splits for double datatype properties
-		for(OWLDataProperty dp : reasoner.getDoubleDatatypeProperties()) {
-			computeSplits(dp);
+		// compute splits for time data properties
+		if (useTimeDatatypes) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
+				// TODO SPARQL support for splits
+				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
+			} else {
+				ValuesSplitter splitter = new DefaultDateTimeValuesSplitter(reasoner, df, maxNrOfSplits);
+				splits.putAll(splitter.computeSplits());
+			}
 		}
 
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
+			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				logger.warn("Cardinality restrictions in Sparql not fully implemented, defaulting to 10.");
+			}
 			for(OWLObjectProperty op : reasoner.getObjectProperties()) {
-				int maxFillers = 0;
-				Map<OWLIndividual,SortedSet<OWLIndividual>> opMembers = reasoner.getPropertyMembers(op);
-				for(SortedSet<OWLIndividual> inds : opMembers.values()) {
-					if(inds.size()>maxFillers)
-						maxFillers = inds.size();
-					if(maxFillers >= cardinalityLimit) {
-						maxFillers = cardinalityLimit;
-						break;
-					}
-				}
-				maxNrOfFillers.put(op, maxFillers);
-				
-				// handle inverse properties
-				if(useInverse) {
-					maxFillers = 0;
-					
-					Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
-					
-					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : opMembers.entrySet()) {
-						OWLIndividual subject = entry.getKey();
-						SortedSet<OWLIndividual> objects = entry.getValue();
-						
-						for (OWLIndividual obj : objects) {
-							map.put(obj, subject);
-						}
-					}
-					
-					for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
-						Collection<OWLIndividual> inds = entry.getValue();
-						if (inds.size() > maxFillers)
+				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+					// TODO SPARQL support for cardinalities
+					maxNrOfFillers.put(op, 10);
+				} else {
+					int maxFillers = 0;
+					Map<OWLIndividual,SortedSet<OWLIndividual>> opMembers = reasoner.getPropertyMembers(op);
+					for(SortedSet<OWLIndividual> inds : opMembers.values()) {
+						if(inds.size()>maxFillers)
 							maxFillers = inds.size();
-						if (maxFillers >= cardinalityLimit) {
+						if(maxFillers >= cardinalityLimit) {
 							maxFillers = cardinalityLimit;
 							break;
 						}
 					}
-					maxNrOfFillers.put(op.getInverseProperty(), maxFillers);
+					maxNrOfFillers.put(op, maxFillers);
+	
+					// handle inverse properties
+					if(useInverse) {
+						maxFillers = 0;
+	
+						Multimap<OWLIndividual, OWLIndividual> map = HashMultimap.create();
+	
+						for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : opMembers.entrySet()) {
+							OWLIndividual subject = entry.getKey();
+							SortedSet<OWLIndividual> objects = entry.getValue();
+	
+							for (OWLIndividual obj : objects) {
+								map.put(obj, subject);
+							}
+						}
+	
+						for (Entry<OWLIndividual, Collection<OWLIndividual>> entry : map.asMap().entrySet()) {
+							Collection<OWLIndividual> inds = entry.getValue();
+							if (inds.size() > maxFillers)
+								maxFillers = inds.size();
+							if (maxFillers >= cardinalityLimit) {
+								maxFillers = cardinalityLimit;
+								break;
+							}
+						}
+						maxNrOfFillers.put(op.getInverseProperty(), maxFillers);
+					}
 				}
 			}
 		}
 
 		if(startClass == null) {
 			startClass = df.getOWLThing();
+		} else {
+			try {
+				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
+			} catch (ParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				this.startClass = df.getOWLThing();
+			}
+		}
+		
+		if(subHierarchy == null) {
+			subHierarchy = reasoner.getClassHierarchy();
+		}
+		if(objectPropertyHierarchy == null) {
+			objectPropertyHierarchy = reasoner.getObjectPropertyHierarchy();
+		}
+		if(dataPropertyHierarchy == null) {
+			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
 		isInitialised = true;
@@ -485,7 +528,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength) {
 		// check that maxLength is valid
 		if(maxLength < OWLClassExpressionUtils.getLength(description)) {
-			throw new Error("length has to be at least class expression length (class expression: " + description + ", max length: " + maxLength + ")");
+			throw new Error("length has to be at least class expression length (class expression: " + description + " with length " + OWLClassExpressionUtils.getLength(description) +", and max length: " + maxLength + ")");
 		}
 		return refine(description, maxLength, null, startClass);
 	}
@@ -561,20 +604,22 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
-					newChildren.add(c);
-					newChildren.remove(child);
-					Collections.sort(newChildren);
-					OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
+					if(!useSomeOnly || isCombinable(description, c)) {
+						List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
+						newChildren.add(c);
+						newChildren.remove(child);
+						Collections.sort(newChildren);
+						OWLClassExpression mc = new OWLObjectIntersectionOfImplExt(newChildren);
 
-					// clean concept and transform it to ordered negation normal form
-					// (non-recursive variant because only depth 1 was modified)
-					mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+						// clean concept and transform it to ordered negation normal form
+						// (non-recursive variant because only depth 1 was modified)
+						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
+						mc = ConceptTransformation.nnf(mc);
 
-					// check whether the intersection is OK (sanity checks), then add it
-					if(checkIntersection((OWLObjectIntersectionOf) mc))
-						refinements.add(mc);
+						// check whether the intersection is OK (sanity checks), then add it
+						if(checkIntersection((OWLObjectIntersectionOf) mc))
+							refinements.add(mc);
+					}
 				}
 
 			}
@@ -596,16 +641,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					newChildren.remove(child);
 					newChildren.add(c);
 					Collections.sort(newChildren);
-					OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
+					OWLClassExpression md = new OWLObjectUnionOfImplExt(newChildren);
 
 					// transform to ordered negation normal form
-					ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(md);
+					md = ConceptTransformation.nnf(md);
 					// note that we do not have to call clean here because a disjunction will
 					// never be nested in another disjunction in this operator
 
 					refinements.add(md);
 				}
-
 			}
 
 			// if enabled, we can remove elements of the disjunction
@@ -628,9 +672,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if (description instanceof OWLObjectSomeValuesFrom) {
 			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
-			
+
 			OWLClassExpression domain = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
-			
+
 			// rule 1: EXISTS r.D => EXISTS r.E
 			tmp = refine(filler, maxLength-2, null, domain);
 
@@ -671,7 +715,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 
 		} else if (description instanceof OWLObjectAllValuesFrom) {
-			refine((OWLObjectAllValuesFrom) description, maxLength);
+			refinements.addAll(refine((OWLObjectAllValuesFrom) description, maxLength));
 		} else if (description instanceof OWLObjectCardinalityRestriction) {
 			OWLObjectPropertyExpression role = ((OWLObjectCardinalityRestriction) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectCardinalityRestriction) description).getFiller();
@@ -707,16 +751,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		} else if (description instanceof OWLDataSomeValuesFrom) {
-			OWLDataPropertyExpression dp = ((OWLDataSomeValuesFrom) description).getProperty();
+			OWLDataProperty dp = ((OWLDataSomeValuesFrom) description).getProperty().asOWLDataProperty();
 			OWLDataRange dr = ((OWLDataSomeValuesFrom) description).getFiller();
 			if(dr instanceof OWLDatatypeRestriction){
 				OWLDatatype datatype = ((OWLDatatypeRestriction) dr).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) dr).getFacetRestrictions();
+
+
 				OWLDatatypeRestriction newDatatypeRestriction = null;
-				if(datatype.isDouble()){
+				if(OWLAPIUtils.isNumericDatatype(datatype) || OWLAPIUtils.dtDatatypes.contains(datatype)){
 					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
 						OWLFacet facet = facetRestriction.getFacet();
-						double value = facetRestriction.getFacetValue().parseDouble();
+
+						OWLLiteral value =  facetRestriction.getFacetValue();
+
 						if(facet == OWLFacet.MAX_INCLUSIVE){
 							// find out which split value was used
 							int splitIndex = splits.get(dp).lastIndexOf(value);
@@ -724,8 +772,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 								throw new Error("split error");
 							int newSplitIndex = splitIndex - 1;
 							if(newSplitIndex >= 0) {
-								double newValue = splits.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMaxInclusiveRestriction(newValue);
+								OWLLiteral newValue = splits.get(dp).get(newSplitIndex);
+								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						} else if(facet == OWLFacet.MIN_INCLUSIVE){
 							// find out which split value was used
@@ -734,34 +782,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 								throw new Error("split error");
 							int newSplitIndex = splitIndex + 1;
 							if(newSplitIndex < splits.get(dp).size()) {
-								double newValue = splits.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMinInclusiveRestriction(newValue);
-							}
-						}
-					}
-				} else if(datatype.isInteger()){
-					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
-						OWLFacet facet = facetRestriction.getFacet();
-						int value = facetRestriction.getFacetValue().parseInteger();
-						if(facet == OWLFacet.MAX_INCLUSIVE){
-							// find out which split value was used
-							int splitIndex = splitsInt.get(dp).lastIndexOf(value);
-							if(splitIndex == -1)
-								throw new Error("split error");
-							int newSplitIndex = splitIndex - 1;
-							if(newSplitIndex >= 0) {
-								int newValue = splitsInt.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMaxInclusiveRestriction(newValue);
-							}
-						} else if(facet == OWLFacet.MIN_INCLUSIVE){
-							// find out which split value was used
-							int splitIndex = splitsInt.get(dp).lastIndexOf(value);
-							if(splitIndex == -1)
-								throw new Error("split error");
-							int newSplitIndex = splitIndex + 1;
-							if(newSplitIndex < splitsInt.get(dp).size()) {
-								int newValue = splitsInt.get(dp).get(newSplitIndex);
-								newDatatypeRestriction = df.getOWLDatatypeMinInclusiveRestriction(newValue);
+								OWLLiteral newValue = splits.get(dp).get(newSplitIndex);
+								newDatatypeRestriction = asDatatypeRestriction(dp, newValue, facet);
 							}
 						}
 					}
@@ -774,7 +796,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression dp = ((OWLDataHasValue) description).getProperty();
 			OWLLiteral value = ((OWLDataHasValue) description).getValue();
-			
+
 			if(!dp.isAnonymous()){
 				Set<OWLDataProperty> subDPs = dataPropertyHierarchy.getMoreSpecialRoles(dp.asOWLDataProperty());
 				for(OWLDataProperty subDP : subDPs) {
@@ -827,6 +849,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 					}
 
+					// we only add \forall r.C to an intersection if there is
+					// already some existential restriction \exists r.C
+					if(useSomeOnly) {
+						skip = !isCombinable(description, c);
+					}
+
 					// check for double datatype properties
 					/*
 					if(c instanceof DatatypeSomeRestriction &&
@@ -855,7 +883,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 						// clean and transform to ordered negation normal form
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.cleanConceptNonRecursive(mc);
-						ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
 						if(checkIntersection(mc))
@@ -875,10 +903,37 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //		System.out.println(refinements);
 		return refinements;
 	}
-	
+
+	private boolean isCombinable(OWLClassExpression ce, OWLClassExpression child) {
+		boolean combinable = true;
+
+		if(child instanceof OWLObjectAllValuesFrom) {
+			boolean tmp = false;
+			OWLObjectPropertyExpression r1 = ((OWLObjectAllValuesFrom) child).getProperty();
+			if(ce instanceof OWLObjectIntersectionOf){
+				for(OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
+					if(child instanceof OWLObjectSomeValuesFrom) {
+						OWLObjectPropertyExpression r2 = ((OWLObjectSomeValuesFrom) operand).getProperty();
+						if(r1.equals(r2)){
+							tmp = true;
+							break;
+						}
+					}
+				}
+			} else if(ce instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectPropertyExpression r2 = ((OWLObjectSomeValuesFrom) ce).getProperty();
+				if(r1.equals(r2)){
+					tmp = true;
+				}
+			}
+			combinable = tmp;
+		}
+		return combinable;
+	}
+
 	private Set<OWLClassExpression> refine(OWLObjectAllValuesFrom ce, int maxLength) {
 		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
-		
+
 		OWLObjectPropertyExpression role = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
 		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
@@ -912,7 +967,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				refinements.add(max);
 //			}
 //		}
-		
+
 		return refinements;
 	}
 
@@ -1073,9 +1128,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 
 						// convert all concepts in ordered negation normal form
+						Set<OWLObjectUnionOf> tmp = new HashSet<OWLObjectUnionOf>();
 						for(OWLClassExpression concept : baseSet) {
-							ConceptTransformation.transformToOrderedForm(concept);
+							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
 						}
+						baseSet = new TreeSet<OWLObjectUnionOf>(tmp);
 
 						// apply the exists filter (throwing out all refinements with
 						// double \exists r for any r)
@@ -1171,7 +1228,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(useExistsConstructor) {
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m3.add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
-				
+
 				if(useInverse) {
 					m3.add(df.getOWLObjectSomeValuesFrom(r.getInverseProperty(), df.getOWLThing()));
 				}
@@ -1184,7 +1241,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// M_A and M_A' where A'=ran(r)
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m3.add(df.getOWLObjectAllValuesFrom(r, df.getOWLThing()));
-				
+
 				if(useInverse) {
 					m3.add(df.getOWLObjectAllValuesFrom(r.getInverseProperty(), df.getOWLThing()));
 				}
@@ -1192,14 +1249,40 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 
 		if(useNumericDatatypes) {
-			Set<OWLDataProperty> doubleDPs = reasoner.getDoubleDatatypeProperties();
-			logger.debug(sparql_debug, "DOUBLE DPs:"+doubleDPs);
-			for(OWLDataProperty dp : doubleDPs) {
+			Set<OWLDataProperty> numericDPs = reasoner.getNumericDataProperties();
+			logger.debug(sparql_debug, "Numeric DPs:"+numericDPs);
+			for(OWLDataProperty dp : numericDPs) {
+				if(splits.get(dp) != null && splits.get(dp).size() > 0) {
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+
+						OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+
+						restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+				}
+			}
+		}
+
+		if(useTimeDatatypes) {
+			Set<OWLDataProperty> dataProperties = new HashSet<OWLDataProperty>();
+			for (OWLDataProperty dp : reasoner.getDatatypeProperties()) {
+				OWLDatatype datatype = reasoner.getDatatype(dp);
+				if(datatype != null && OWLAPIUtils.dtDatatypes.contains(datatype)) {
+					dataProperties.add(dp);
+				}
+			}
+			for(OWLDataProperty dp : dataProperties) {
 				if(splits.get(dp).size() > 0) {
-					double min = splits.get(dp).get(0);
-					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+
+						OWLDatatypeRestriction restriction = asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
+
+						restriction = asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE);
+						m3.add(df.getOWLDataSomeValuesFrom(dp, restriction));
 				}
 			}
 		}
@@ -1236,6 +1319,17 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		logger.debug(sparql_debug, "m: " + m);
 
 		mComputationTimeNs += System.nanoTime() - mComputationTimeStartNs;
+	}
+
+	private OWLDatatypeRestriction asDatatypeRestriction(OWLDataProperty dp, OWLLiteral value, OWLFacet facet) {
+		OWLDatatype datatype = reasoner.getDatatype(dp);
+
+		OWLDatatypeRestriction restriction = df.getOWLDatatypeRestriction(
+				datatype,
+				Collections.singleton(df.getOWLFacetRestriction(
+						facet,
+						value)));
+		return restriction;
 	}
 
 	// computation of the set M_A
@@ -1330,13 +1424,27 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			Set<OWLDataProperty> numericDPs = mgNumeric.get(nc);
 
 			for(OWLDataProperty dp : numericDPs) {
-				if(splits.get(dp).size() > 0) {
-					double min = splits.get(dp).get(0);
-					double max = splits.get(dp).get(splits.get(dp).size()-1);
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMinInclusiveRestriction(min)));
-					m3.add(df.getOWLDataSomeValuesFrom(dp, df.getOWLDatatypeMaxInclusiveRestriction(max)));
+				List<OWLLiteral> splitLiterals = splits.get(dp);
+				if(splitLiterals != null && splitLiterals.size() > 0) {
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
 				}
 			}
+		}
+
+		if(useTimeDatatypes) {
+			Set<OWLDataProperty> dtDPs = mgDT.get(nc);
+
+//			for(OWLDataProperty dp : dtDPs) {
+//				if(splits.get(dp).size() > 0) {
+//					OWLLiteral min = splits.get(dp).get(0);
+//					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
+//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
+//				}
+//			}
 		}
 
 		if(useDataHasValueConstructor) {
@@ -1379,7 +1487,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
 
 		SortedSet<OWLClassExpression> subClasses = subHierarchy.getSubClasses(upperClass, true);
-		
+
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
 			String query = "SELECT DISTINCT ?concept WHERE {";
@@ -1392,7 +1500,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							+ "}";
 			query += "}";
 //			System.out.println(query);
-			
+
 			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
 			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
 			ResultSet rs = qe.execSelect();
@@ -1407,7 +1515,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 //				candidates.addAll(getNegClassCandidatesRecursive(index, cls));
 //			}
 		} else {
-			
+
 			// we descend the subsumption hierarchy to ensure that we get
 			// the most general concepts satisfying the criteria
 			for(OWLClassExpression candidate :  subClasses) {
@@ -1432,7 +1540,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						} else {
 							meaningful = !isDisjoint(df.getOWLObjectComplementOf(candidate),index);
 						}
-	
+
 						if(meaningful) {
 							// candidate went successfully through all checks
 							candidates.add(candidate);
@@ -1454,15 +1562,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// get candidates for a refinement of \top restricted to a class B
 	public SortedSet<OWLClassExpression> getNegClassCandidates(OWLClassExpression index) {
-		return getNegClassCandidatesRecursive(index, df.getOWLNothing());
+		return getNegClassCandidatesRecursive(index, df.getOWLNothing(), null);
 	}
 
-	private SortedSet<OWLClassExpression> getNegClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression lowerClass) {
+	private SortedSet<OWLClassExpression> getNegClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression lowerClass, Set<OWLClassExpression> seenClasses) {
+		if (seenClasses == null) { seenClasses = new TreeSet<>(); }
 		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
 		SortedSet<OWLClassExpression> superClasses = subHierarchy.getSuperClasses(lowerClass);
-		
+
 		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
 			String query = "SELECT DISTINCT ?concept WHERE {";
@@ -1492,11 +1601,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			for(OWLClassExpression candidate : superClasses) {
 				if(!candidate.isOWLThing()) {
 					OWLObjectComplementOf negatedCandidate = df.getOWLObjectComplementOf(candidate);
-					
+
 					// check disjointness with index/range (should not be disjoint otherwise not useful)
 					if(!isDisjoint(negatedCandidate,index)) {
 						boolean meaningful;
-						
+
 						if(instanceBasedDisjoints) {
 							SortedSet<OWLIndividual> tmp = reasoner.getIndividuals(index);
 							tmp.removeAll(reasoner.getIndividuals(negatedCandidate));
@@ -1507,14 +1616,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 						if(meaningful) {
 							candidates.add(negatedCandidate);
-						} else {
-							candidates.addAll(getNegClassCandidatesRecursive(index, candidate));
+						} else if (!seenClasses.contains(candidate)) {
+							seenClasses.add(candidate);
+							candidates.addAll(getNegClassCandidatesRecursive(index, candidate, seenClasses));
 						}
 					}
 				}
 			}
 		}
-		
+
 		return candidates;
 	}
 
@@ -1522,7 +1632,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute the applicable properties if this has not been done yet
 		if(appOP.get(domain) == null)
 			computeApp(domain);
-		
+
 		// initialise mgr, mgbd, mgdd, mgsd
 		mgr.put(domain, new TreeSet<OWLObjectProperty>());
 		mgbd.put(domain, new TreeSet<OWLDataProperty>());
@@ -1534,9 +1644,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLDataProperty> mostGeneralDP = dataPropertyHierarchy.getMostGeneralRoles();
 		// we make the (reasonable) assumption here that all sub and super
 		// datatype properties have the same type (e.g. boolean, integer, double)
-		Set<OWLDataProperty> mostGeneralBDP = Helper.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
-		Set<OWLDataProperty> mostGeneralNumericDPs = Helper.intersection(mostGeneralDP, reasoner.getNumericDataProperties());
-		Set<OWLDataProperty> mostGeneralStringDPs = Helper.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
+		Set<OWLDataProperty> mostGeneralBDP = Sets.intersection(mostGeneralDP, reasoner.getBooleanDatatypeProperties());
+		Set<OWLDataProperty> mostGeneralNumericDPs = Sets.intersection(mostGeneralDP, reasoner.getNumericDataProperties());
+		Set<OWLDataProperty> mostGeneralStringDPs = Sets.intersection(mostGeneralDP, reasoner.getStringDatatypeProperties());
 		computeMgbdRecursive(domain, mostGeneralBDP, mgbd.get(domain));
 		computeMostGeneralNumericDPRecursive(domain, mostGeneralNumericDPs, mgNumeric.get(domain));
 		computeMostGeneralStringDPRecursive(domain, mostGeneralStringDPs, mgsd.get(domain));
@@ -1604,7 +1714,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 
 		}
-		
+
 		appOP.put(domain, applicableRoles);
 
 		// boolean datatype properties
@@ -1670,7 +1780,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(d1.isOWLThing() || d2.isOWLThing()) {
 			return false;
 		}
-		
+
 		if(d1.isOWLNothing() || d2.isOWLNothing()) {
 			return true;
 		}
@@ -1714,7 +1824,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else {
 			SortedSet<OWLIndividual> d1Instances = reasoner.getIndividuals(d1);
 			SortedSet<OWLIndividual> d2Instances = reasoner.getIndividuals(d2);
-			
+
 			for(OWLIndividual d1Instance : d1Instances) {
 				if(d2Instances.contains(d1Instance))
 					return false;
@@ -1760,101 +1870,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// check b subClassOf b AND NOT A (if yes then it is not meaningful)
 		return !reasoner.isSuperClassOf(d, b);
 	}
-
-	private void computeSplits(OWLDataProperty dp) {
-		Set<Double> valuesSet = new TreeSet<Double>();
-//		Set<OWLIndividual> individuals = rs.getIndividuals();
-		Map<OWLIndividual,SortedSet<Double>> valueMap = reasoner.getDoubleDatatypeMembers(dp);
-		// add all values to the set (duplicates will be remove automatically)
-		for(Entry<OWLIndividual,SortedSet<Double>> e : valueMap.entrySet())
-			valuesSet.addAll(e.getValue());
-		// convert set to a list where values are sorted
-		List<Double> values = new LinkedList<Double>(valuesSet);
-		Collections.sort(values);
-
-		int nrOfValues = values.size();
-		// create split set
-		List<Double> splitsDP = new LinkedList<Double>();
-		for(int splitNr=0; splitNr < Math.min(maxNrOfSplits,nrOfValues-1); splitNr++) {
-			int index;
-			if(nrOfValues<=maxNrOfSplits)
-				index = splitNr;
-			else
-				index = (int) Math.floor(splitNr * (double)nrOfValues/(maxNrOfSplits+1));
-
-			double value = 0.5*(values.get(index)+values.get(index+1));
-			splitsDP.add(value);
-		}
-		splits.put(dp, splitsDP);
-
-//		System.out.println(values);
-//		System.out.println(splits);
-//		System.exit(0);
-	}
-
-	//TODO implement numerical splitting
-
-	private <T extends Number & Comparable<T>> void computeSplits2(OWLDataProperty dp) {
-		Set<T> valuesSet = new TreeSet<T>();
-//		Set<OWLIndividual> individuals = rs.getIndividuals();
-		Map<OWLIndividual, SortedSet<T>> valueMap = reasoner.getNumericDatatypeMembers(dp);
-
-		// add all values to the set (duplicates will be remove automatically)
-		for(Entry<OWLIndividual, SortedSet<T>> e : valueMap.entrySet()){
-			valuesSet.addAll(e.getValue());
-		}
-
-		// convert set to a list where values are sorted
-		List<T> values = new LinkedList<T>(valuesSet);
-		Collections.sort(values);
-
-		int nrOfValues = values.size();
-
-		// create split set
-		List<T> splitsDP = new LinkedList<T>();
-		for (int splitNr = 0; splitNr < Math.min(maxNrOfSplits, nrOfValues - 1); splitNr++) {
-			int index;
-			if (nrOfValues <= maxNrOfSplits) {
-				index = splitNr;
-			} else {
-				index = (int) Math.floor(splitNr * (double) nrOfValues / (maxNrOfSplits + 1));
-			}
-			T number1 = values.get(index);
-			T number2 = values.get(index + 1);
-
-			T avg = avg(number1, number2);
-
-			splitsDP.add(avg);
-		}
-		splitsNumber.put(dp, splitsDP);
-	}
-
-	private <T extends Number & Comparable<T>> T avg(T number1, T number2){
-		return number1;
-//		T avg = null;
-//		if((number1 instanceof Integer && number2 instanceof Integer) ||
-//			(number1 instanceof Long && number2 instanceof Long) ||
-//			(number1 instanceof Byte && number2 instanceof Byte)
-//				) {
-//			avg = number1;
-//		} else if(number1 instanceof Double && number2 instanceof Double) {
-//			avg = (T) Double.valueOf(
-//					BigDecimal.valueOf(number1.doubleValue()).
-//			add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//					BigDecimal.valueOf(0.5d))).doubleValue());
-//		} else if(number1 instanceof Float && number2 instanceof Float) {
-//			avg = (T) Float.valueOf(
-//					BigDecimal.valueOf(number1.floatValue()).
-//			add(BigDecimal.valueOf(number2.floatValue()).divide(
-//					BigDecimal.valueOf(0.5d))).floatValue());
-//		}
-//		return avg;
-
-//		return (T) BigDecimal.valueOf(number1.doubleValue()).
-//				add(BigDecimal.valueOf(number2.doubleValue()).divide(
-//						BigDecimal.valueOf(0.5d)));
-	}
-
 
 	public int getFrequencyThreshold() {
 		return frequencyThreshold;
@@ -1966,7 +1981,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	@Override
-    public void setStartClass(OWLClassExpression startClass) {
+	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
 	}
 
@@ -2020,11 +2035,35 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public void setUseNumericDatatypes(boolean useNumericDatatypes) {
 		this.useNumericDatatypes = useNumericDatatypes;
 	}
-	
+
 	/**
 	 * @param useInverse whether to use inverse properties in property restrictions
 	 */
 	public void setUseInverse(boolean useInverse) {
 		this.useInverse = useInverse;
 	}
+
+	/**
+	 * @param useSomeOnly whether to allow universal restrictions on a property r only if there exists already
+	 * a existential restriction on the same property in an intersection
+	 */
+	public void setUseSomeOnly(boolean useSomeOnly) {
+		this.useSomeOnly = useSomeOnly;
+	}
+
+	/**
+	 * @param useTimeDatatypes whether to use data/time literal restrictions
+	 */
+	public void setUseTimeDatatypes(boolean useTimeDatatypes) {
+		this.useTimeDatatypes = useTimeDatatypes;
+	}
+
+	public int getMaxNrOfSplits() {
+		return maxNrOfSplits;
+	}
+
+	public void setMaxNrOfSplits(int maxNrOfSplits) {
+		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
 }

@@ -1,24 +1,18 @@
 package org.dllearner.learningproblems;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.core.AbstractLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.ScorePosNeg;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 /**
- * A ternary learning problem (positive, negative and uncertain instances) to manage the problem of the Open World Assumption 
- * typically employed for ontologies 
+ * A ternary learning problem (positive, negative and uncertain instances) to manage the problem of the Open World Assumption
+ * typically employed for ontologies
  * @author Utente
  *
  */
@@ -105,22 +99,11 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 		return super.evaluate(description);
 	}
 
-	@Override
-	public double getAccuracy(OWLClassExpression description) {
-		// TODO Auto-generated method stub
-		return super.getAccuracy(description);
-	}
-
-	@Override
-	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		// TODO Auto-generated method stub
-		return super.getAccuracyOrTooWeak(description, noise);
-	}
 	//TODO add two methods: the first one performs classification by inducing the derived concept definition (see the source code of PosNegstandard )
 		// the second one performs classification with the induced algorithms.tree.models in order to deal with specific settings such as binary classification or missing values for TDTs and ETDTs
 	/**
-	 * A method for binarizing a ternary learning problem. This is important to work if you want to run a method 
-	 * such as CELOE starting from randomly generated queries 
+	 * A method for binarizing a ternary learning problem. This is important to work if you want to run a method
+	 * such as CELOE starting from randomly generated queries
 	 * @return
 	 */
 	public PosNegLP getPosNegLP(){
@@ -133,7 +116,7 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	    binaryProblem.setNegativeExamples(therestOfWorld);
 //	    System.out.println(getPositiveExamples().size()+"    "+therestOfWorld.size());
 		
-	return binaryProblem;	
+	return binaryProblem;
 	}
 
 }

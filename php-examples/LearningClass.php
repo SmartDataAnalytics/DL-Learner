@@ -41,10 +41,10 @@ $client = new SoapClient("main.wsdl");
 
 $id = $client->generateID();
 $ksID = $client->addKnowledgeSource($id, "owlfile", $ontology);
-$rID = $client->setReasoner($id, "fastInstanceChecker");
+$rID = $client->setReasoner($id, "cwr");
 
 // create a learning problem
-$lp = $client->setLearningProblem($id, "classLearning");
+$lp = $client->setLearningProblem($id, "clp");
 $client->applyConfigEntryURL($id, $lp, "classToDescribe", "http://ns.softwiki.de/req/CustomerRequirement");
 
 $la_id = $client->setLearningAlgorithm($id, "celoe");

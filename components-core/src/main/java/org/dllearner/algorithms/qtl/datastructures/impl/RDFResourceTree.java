@@ -41,6 +41,10 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  */
 public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
 	
+	public enum Rendering {
+		INDENTED, BRACES
+	}
+	
 	private final int id;
 	
 	public static final Node DEFAULT_VAR_NODE = NodeFactory.createVariable("");
@@ -72,6 +76,9 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public RDFResourceTree(int id, Node data) {
 		super(data);
 		this.id = id;
+		if(data.isBlank()) {
+			this.data = DEFAULT_VAR_NODE;
+		}
 	}
 	
 	public RDFResourceTree(Node data) {
@@ -245,15 +252,23 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	public String getStringRepresentation() {
-		return getStringRepresentation(false, null, PrefixCCPrefixMapping.Full);
+		return getStringRepresentation(false, null, null, PrefixCCPrefixMapping.Full);
+	}
+	
+	public String getStringRepresentation(Rendering syntax) {
+		return getStringRepresentation(false, syntax, null, PrefixCCPrefixMapping.Full);
 	}
 	
 	public String getStringRepresentation(String baseIRI) {
-		return getStringRepresentation(false, baseIRI, PrefixCCPrefixMapping.Full);
+		return getStringRepresentation(false, null, baseIRI, PrefixCCPrefixMapping.Full);
 	}
 	
 	public String getStringRepresentation(String baseIRI, PrefixMapping pm) {
-		return getStringRepresentation(false, baseIRI, pm);
+		return getStringRepresentation(false, null, baseIRI, pm);
+	}
+	
+	public String getStringRepresentation(Rendering syntax, String baseIRI, PrefixMapping pm) {
+		return getStringRepresentation(false, syntax, baseIRI, pm);
 	}
 	    
 	/**
@@ -262,18 +277,51 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 * @param stopWhenLeafNode
 	 * @return
 	 */
-	public String getStringRepresentation(boolean stopIfChildIsResourceNode, String baseIRI, PrefixMapping pm) {
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
 		
-		buildTreeString(sb, stopIfChildIsResourceNode, 0, context);
+		if(syntax == Rendering.BRACES) {
+			buildTreeString(sb, stopIfChildIsResourceNode, 0, context);
+		} else {
+			buildTreeStringIndented(sb, stopIfChildIsResourceNode, 1, context);
+		}
 		
 		return "TREE [\n" + sb.toString() + "]";
 	}
 	
 	private void buildTreeString(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
+		
+		// render current node
+		String ren;
+		if(isLiteralNode() && !isLiteralValueNode()) {
+			ren = "?^^" + FmtUtils.stringForNode(NodeFactory.createURI(this.getDatatype().getURI()), context);
+		} else {
+			ren = FmtUtils.stringForNode(this.getData(), context);
+		}
+		sb.append(ren);//.append("\n");
+		
+		// render edges + children
+		if (isRoot() || !isResourceNode() || (isResourceNode() && !stopIfChildIsResourceNode)) {
+			for(Node edge : getEdges()) {
+				for (RDFResourceTree child : getChildren(edge)) {
+					sb.append("(");
+					if (edge != null) {
+						sb.append(FmtUtils.stringForNode(edge, context));
+						sb.append("(");
+					}
+					child.buildTreeString(sb, stopIfChildIsResourceNode, depth + 1, context);
+					sb.append(")");
+					sb.append(")");
+//					sb.append("\n");
+				}
+			}
+		}
+	}
+	
+	private void buildTreeStringIndented(StringBuilder sb, boolean stopIfChildIsResourceNode, int depth, SerializationContext context) {
 		
 		// render current node
 		String ren;
@@ -292,11 +340,11 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 						sb.append("\t");
 					}
 					if (edge != null) {
-						sb.append("  ");
+//						sb.append("  ");
 						sb.append(FmtUtils.stringForNode(edge, context));
 						sb.append(" ---> ");
 					}
-					child.buildTreeString(sb, stopIfChildIsResourceNode, depth + 1, context);
+					child.buildTreeStringIndented(sb, stopIfChildIsResourceNode, depth + 1, context);
 				}
 			}
 		}

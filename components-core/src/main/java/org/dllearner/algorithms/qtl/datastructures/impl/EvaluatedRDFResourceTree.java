@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
 import org.dllearner.learningproblems.QueryTreeScore;
 
 import com.google.common.collect.ComparisonChain;
@@ -36,7 +37,7 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 //	private ScoreTwoValued score;
 	
 	// the corresponding description set lazily
-	private EvaluatedDescription description;
+	private EvaluatedDescription<? extends Score> description;
 	
 	// the query trees of which the underlying query tree was generated from
 	private Set<RDFResourceTree> baseQueryTrees = new HashSet<>();
@@ -139,17 +140,17 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 	/**
 	 * @return the query tree as OWL class expression
 	 */
-	public EvaluatedDescription getEvaluatedDescription() {
+	public EvaluatedDescription<? extends Score> getEvaluatedDescription() {
 		return asEvaluatedDescription();
 	}
 	/**
 	 * @param OWLClassExpression the OWLClassExpression to set
 	 */
-	public void setDescription(EvaluatedDescription description) {
+	public void setDescription(EvaluatedDescription<? extends Score> description) {
 		this.description = description;
 	}
 	
-	public EvaluatedDescription asEvaluatedDescription(){
+	public EvaluatedDescription<? extends Score> asEvaluatedDescription(){
 		if(description == null){
 			description = new EvaluatedDescription(QueryTreeUtils.toOWLClassExpression(getTree()), score);
 		}

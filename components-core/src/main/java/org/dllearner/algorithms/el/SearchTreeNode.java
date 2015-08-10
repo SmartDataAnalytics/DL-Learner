@@ -21,8 +21,8 @@ package org.dllearner.algorithms.el;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import org.dllearner.core.Score;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 
 
@@ -42,7 +42,7 @@ public class SearchTreeNode {
 	private int coveredNegatives;
 	private boolean tooWeak = false;
 	
-	private double score;
+	private Score score;
 	protected double accuracy;
 	
 	public SearchTreeNode(ELDescriptionTree descriptionTree) {
@@ -50,14 +50,14 @@ public class SearchTreeNode {
 	}
 
 	/**
-	 * @return the tooWeak
+	 * @return whether the node is too weak
 	 */
 	public boolean isTooWeak() {
 		return tooWeak;
 	}
 
 	/**
-	 * @param tooWeak the tooWeak to set
+	 * @param tooWeak set if the node is too weak
 	 */
 	public void setTooWeak() {
 		tooWeak = true;
@@ -150,11 +150,17 @@ public class SearchTreeNode {
 		return treeString;
 	}
 
-	public double getScore() {
+	/**
+	 * @return the score of the node
+	 */
+	public Score getScore() {
 		return score;
 	}
 
-	public void setScore(double score) {
+	/**
+	 * @param score the score of the node to set
+	 */
+	public void setScore(Score score) {
 		this.score = score;
 	}	
 	

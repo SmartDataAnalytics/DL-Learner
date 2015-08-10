@@ -19,22 +19,21 @@
 
 package org.dllearner.core;
 
-import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.dllearner.core.config.ConfigOption;
+import org.semanticweb.owlapi.model.OWLObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Base class for all learning problems.
- * See also the wiki page for 
+ * See also the wiki page for
  * <a href="http://dl-learner.org/Projects/DLLearner/Architecture">DL-Learner-Architecture</a>.
- * Currently, we assume that all learning problems have the goal
- * of learning class descriptions. However, this may be extended
- * to other scenarios if desired. 
  * 
  * @author Jens Lehmann
  *
  */
-public abstract class AbstractLearningProblem<T extends Score>  extends AbstractComponent implements LearningProblem {
+public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V, T>>  extends AbstractComponent implements LearningProblem {
 	
+	@ConfigOption(name="reasoner",description="The reasoner component variable to use for this Learning Problem")
 	protected AbstractReasonerComponent reasoner;
 
     public AbstractLearningProblem(){
@@ -42,9 +41,9 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
     }
 	/**
 	 * Constructs a learning problem using a reasoning service for
-	 * querying the background knowledge. It can be used for 
+	 * querying the background knowledge. It can be used for
 	 * evaluating solution candidates.
-	 * @param reasoner The reasoning service used as 
+	 * @param reasoner The reasoning service used as
 	 * background knowledge.
 	 */
 	public AbstractLearningProblem(AbstractReasonerComponent reasoner) {
@@ -56,7 +55,7 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
 	 * problem.
 	 * Implementations, which do not only use the provided reasoning
 	 * service class variable, must make sure that a call to this method
-	 * indeed changes the reasoning service. 
+	 * indeed changes the reasoning service.
 	 * @param reasoner New reasoning service.
 	 */
 	public void changeReasonerComponent(AbstractReasonerComponent reasoner) {
@@ -64,99 +63,85 @@ public abstract class AbstractLearningProblem<T extends Score>  extends Abstract
 	}
 		
 	/**
-	 * Computes the <code>Score</code> of a given class description
+	 * Computes the <code>Score</code> of a given hypothesis
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
-	 * to measure how good the class expression fits the learning problem.
+	 * to measure how good the hypothesis fits the learning problem.
 	 * Score objects are used to store e.g. covered examples, accuracy etc.,
 	 * so often it is more efficient to only create score objects for
-	 * promising class descriptions.
-	 * @param description A class expression (as solution candidate for this learning problem).
+	 * promising hypotheses.
+	 * @param hypothesis A hypothesis (as solution candidate for this learning problem).
 	 * @return A <code>Score</code> object.
 	 */
-	public T computeScore(OWLClassExpression description) {
-		return computeScore(description, 0.0);
+	public T computeScore(V hypothesis) {
+		return computeScore(hypothesis, 0.0);
 	}
 	
 	/**
-	 * Computes the <code>Score</code> of a given class description
+	 * Computes the <code>Score</code> of a given hypothesis
 	 * with respect to this learning problem.
 	 * This can (but does not need to) be used by learning algorithms
-	 * to measure how good the class expression fits the learning problem.
+	 * to measure how good the hypothesis fits the learning problem.
 	 * Score objects are used to store e.g. covered examples, accuracy etc.,
 	 * so often it is more efficient to only create score objects for
-	 * promising class descriptions.
-	 * @param description A class expression (as solution candidate for this learning problem).
+	 * promising hypotheses.
+	 * @param hypothesis A hypothesis (as solution candidate for this learning problem).
 	 * @param noise the (approximated) value of noise within the examples
 	 * @return A <code>Score</code> object.
 	 */
-	public abstract T computeScore(OWLClassExpression concept, double noise);
+	public abstract T computeScore(V hypothesis, double noise);
 	
 	/**
-	 * Evaluates the class expression by computing the score and returning an
-	 * evaluated class expression of the correct type (ClassLearningProblem
+	 * Evaluates the hypothesis by computing the score and returning an
+	 * evaluated hypothesis of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
-	 * @param description Description to evaluate.
-	 * @return 
+	 * @param hypothesis Hypothesis to evaluate.
+	 * @return
 	 */
-	public EvaluatedDescription evaluate(OWLClassExpression description){
-		return evaluate(description, 1.0);
+	public W evaluate(V hypothesis){
+		return evaluate(hypothesis, 1.0);
 	}
 	
 	/**
-	 * Evaluates the class expression by computing the score and returning an
-	 * evaluated class expression of the correct type (ClassLearningProblem
+	 * Evaluates the hypothesis by computing the score and returning an
+	 * evaluated hypothesis of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
-	 * @param description Description to evaluate.
+	 * @param hypothesis Hypothesis to evaluate.
 	 * @param noise the (approximated) value of noise within the examples
-	 * @return 
+	 * @return
 	 */
-	public EvaluatedDescription evaluate(OWLClassExpression description, double noise) {
+	public W evaluate(V hypothesis, double noise) {
 		return null;
 	}
 	
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class expression solves a learning problem. There can be different
+	 * hypothesis solves a learning problem. There can be different
 	 * ways to compute accuracy depending on the type of learning problem
-	 * and other factors. However, all implementations are required to 
+	 * and other factors. However, all implementations are required to
 	 * return a value between 0 and 1, where 1 stands for the highest
 	 * possible accuracy and 0 for the lowest possible accuracy.
 	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
-	 */	
-	public double getAccuracy(OWLClassExpression description) {
-		return getAccuracy(description, 0.0);
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis).
+	 * or -1 as described above.
+	 */
+	public double getAccuracyOrTooWeak(V object) {
+		return getAccuracyOrTooWeak(object, 0.0);
 	}
 	
 	/**
-	 * This method returns a value, which indicates how accurate a
-	 * class expression solves a learning problem. There can be different
-	 * ways to compute accuracy depending on the type of learning problem
-	 * and other factors. However, all implementations are required to 
-	 * return a value between 0 and 1, where 1 stands for the highest
-	 * possible accuracy and 0 for the lowest possible accuracy.
-	 * 
-	 * @param description Description to evaluate.
-	 * @param noise the (approximated) value of noise within the examples
-	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
-	 */	
-	public abstract double getAccuracy(OWLClassExpression description, double noise);
-	
-	/**
-	 * This method computes the accuracy as {@link #getAccuracy(OWLClassExpression)},
-	 * but returns -1 instead of the accuracy if 1.) the accuracy of the 
-	 * OWLClassExpression is below the given threshold and 2.) the accuracy of all
-	 * more special w.r.t. subsumption descriptions is below the given threshold.
+	 * This method computes the accuracy as {@link #getAccuracy(V)},
+	 * but returns -1 instead of the accuracy if 1.) the accuracy of the
+	 * hypothesis is below the given threshold and 2.) the accuracy of all
+	 * more special w.r.t. subsumption hypotheses is below the given threshold.
 	 * This is used for efficiency reasons, i.e. -1 can be returned instantly if
-	 * it is clear that the class expression and all its refinements are not 
+	 * it is clear that the hypothesis and all its refinements are not
 	 * sufficiently accurate.
 	 * 
-	 * @return A value between 0 and 1 indicating the quality (of a class description)
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis)
 	 * or -1 as described above.
-	 */	
-	public abstract double getAccuracyOrTooWeak(OWLClassExpression description, double noise);
+	 */
+	public abstract double getAccuracyOrTooWeak(V hypothesis, double noise);
 
     /**
      * Implementations of learning problems can use this class

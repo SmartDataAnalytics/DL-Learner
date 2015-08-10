@@ -12,19 +12,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
-import org.dllearner.cli.*;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.io.ToStringRenderer;
@@ -34,21 +32,21 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
-import com.google.common.collect.Sets;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+
+import com.google.common.collect.Sets;
 
 
 public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 	DecimalFormat df = new DecimalFormat();
-	protected Stat commissionTraining = new Stat(); // commission, omission and induction rate for 
+	protected Stat commissionTraining = new Stat(); // commission, omission and induction rate for
 	protected Stat commission = new Stat();
 	protected Stat omissionTraining = new Stat();
 	protected Stat omission = new Stat();
 	protected Stat inductionTraining = new Stat();
-	protected Stat induction = new Stat();	
+	protected Stat induction = new Stat();
 
 
 	public CrossValidation2() {
@@ -56,7 +54,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	}
 
 
-	public CrossValidation2(AbstractCELA la, AbstractLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
+	public CrossValidation2(AbstractCELA la, AbstractClassExpressionLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
 		super();
 		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 		ToStringRenderer.getInstance().setRenderer(renderer);
@@ -93,9 +91,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
 		List<OWLIndividual> undExamplesList = new LinkedList<OWLIndividual>(undExamples);
 		//System.out.println("Undefined membership: "+undExamples);
-		Collections.shuffle(posExamplesList, new Random(1));			
+		Collections.shuffle(posExamplesList, new Random(1));
 		Collections.shuffle(negExamplesList, new Random(2));
-		if(lp instanceof PosNegUndLP){ 
+		if(lp instanceof PosNegUndLP){
 			Collections.shuffle(undExamplesList, new Random(3));
 
 		}
@@ -121,7 +119,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			System.exit(1);
 		} else {
 			// calculating where to split the sets, ; note that we split
-			// positive and negative examples separately such that the 
+			// positive and negative examples separately such that the
 			// distribution of positive and negative examples remains similar
 			// (note that there are better but more complex ways to implement this,
 			// which guarantee that the sum of the elements of a fold for pos
@@ -147,9 +145,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 				testSetsNeg.add(i, testNeg);
 				testSetsUnd.add(i,testUnd);
 				trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
-				trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));				
+				trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));
 				trainingSetsUnd.add(i, getTrainingSet(undExamples, testUnd));
-			}	
+			}
 
 			//System.out.println("Test set size: "+testSetsPos.size());
 		}
@@ -159,7 +157,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()-1);
 			for(int currFold=0; currFold<folds; currFold++) {
 				try {
-					final AbstractLearningProblem lpClone = (AbstractLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
+					final AbstractClassExpressionLearningProblem lpClone = (AbstractClassExpressionLearningProblem) lp.getClass().getMethod("clone").invoke(lp);
 					final Set<OWLIndividual> trainPos = trainingSetsPos.get(currFold);
 					final Set<OWLIndividual> trainNeg = trainingSetsNeg.get(currFold);
 
@@ -172,7 +170,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 					if(lp instanceof PosNegLP){
 						((PosNegLP)lpClone).setPositiveExamples(trainPos);
 						((PosNegLP)lpClone).setNegativeExamples(trainNeg);
-						if (lp instanceof PosNegUndLP){ 
+						if (lp instanceof PosNegUndLP){
 							((PosNegUndLP)lpClone).setUncertainExample(trainUnd);
 						}
 					} else if(lp instanceof PosOnlyLP){
@@ -213,7 +211,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		} 
+		}
 		else {
 			for(int currFold=0; currFold<folds; currFold++) {
 				final Set<OWLIndividual> trainPos = trainingSetsPos.get(currFold);
@@ -245,9 +243,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		outputWriter("Finished " + folds + "-folds cross-validation.");
 		outputWriter("runtime: " + statOutput(df, runtime, "s"));
 		outputWriter("length: " + statOutput(df, length, ""));
-		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 		outputWriter("F-Measure: " + statOutput(df, fMeasure, "%"));
-		outputWriter("Match rate on training set: " + statOutput(df, accuracyTraining, "%"));		
+		outputWriter("Match rate on training set: " + statOutput(df, accuracyTraining, "%"));
 		outputWriter("Match rate: " + statOutput(df, accuracy, "%"));
 		outputWriter("Commission rate: " + statOutput(df, commission, "%"));
 		outputWriter("Omission rate: " + statOutput(df, omission, "%"));
@@ -255,12 +253,12 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	}
 
 
-	private void validate(AbstractCELA la, AbstractLearningProblem lp, AbstractReasonerComponent rs,
+	private void validate(AbstractCELA la, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs,
 			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg,Set<OWLIndividual> trainUnd, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg, Set<OWLIndividual> testUnd){
 		//System.out.println("Validation starting");
-		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
-		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
-		Set<String> und = Datastructures.individualSetToStringSet(trainUnd);
+		Set<String> pos = Helper.getStringSet(trainPos);
+		Set<String> neg = Helper.getStringSet(trainNeg);
+		Set<String> und = Helper.getStringSet(trainUnd);
 		String output = "";
 		TreeSet<String> treeSetPos = new TreeSet<String>(pos);
 		output += "+" + treeSetPos + "\n";
@@ -269,7 +267,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		TreeSet<String> treeSetUnd = new TreeSet<String>(und);
 		output += "?" + treeSetUnd + "\n";
 		//System.out.printf("Learning algoritm preparation: %d %d %d \n", treeSetPos.size(),treeSetNeg.size(),treeSetUnd.size());
-		try {			
+		try {
 			lp.init();
 			la.setLearningProblem(lp);
 			la.init();
@@ -287,7 +285,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		int trainingCorrectPosClassified,trainingCorrectNegClassified,trainingCorrectUndClassified,trainingCorrectExamples;
 		int trainingSize;
 		double trainingAccuracy;
-		int negAsPosTraining; 
+		int negAsPosTraining;
 		int posAsNegTraining;
 
 		int undAsPosTraining;
@@ -331,19 +329,19 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 		double currAccuracy;
 
-		OWLClassExpression concept = la.getCurrentlyBestDescription(); 
+		OWLClassExpression concept = la.getCurrentlyBestDescription();
 		int testsize = testPos.size()+
 				testNeg.size()+testUnd.size();
 		if(!(la instanceof DSTTDTClassifier)&& !(la instanceof TDTClassifier)){
 			//System.out.println("Training  completed");
-			// extract the current concept description 
+			// extract the current concept description
 			//System.out.println("Training  completed"+ concept);
 
 			Set<OWLIndividual> tmp = rs.hasType(concept, testPos);
-			Set<OWLIndividual> tmp2 = Helper.difference(testPos, tmp);
+			Set<OWLIndividual> tmp2 = Sets.difference(testPos, tmp);
 			Set<OWLIndividual> tmp3 = rs.hasType(concept, testNeg);
 
-			// calculate training accuracies 
+			// calculate training accuracies
 
 			trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainPos);
 			trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainNeg);
@@ -351,13 +349,13 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			trainingCorrectExamples = trainingCorrectUndClassified+trainingCorrectPosClassified + trainingCorrectNegClassified;
 			trainingSize = trainPos.size()+
 					trainNeg.size()+trainUnd.size();
-			trainingAccuracy = 100*((double)trainingCorrectExamples/trainingSize);	
+			trainingAccuracy = 100*((double)trainingCorrectExamples/trainingSize);
 
 			//System.out.println("Training Correct Examples: "+ trainingCorrectExamples+ " Size: "+trainingSize);
 			accuracyTraining.addNumber(trainingAccuracy); //in a ternary setting this is the match rate
 
 
-			//compute training match (accuracy), commission omission and induction 
+			//compute training match (accuracy), commission omission and induction
 			OWLDataFactory factory= new OWLDataFactoryImpl(); //get a data factory for derive the complement concept description
 			negAsPosTraining = rs.hasType(concept, trainNeg).size();
 			posAsNegTraining= rs.hasType(factory.getOWLObjectComplementOf(concept), trainPos).size(); // commission cases
@@ -421,7 +419,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			double recallTraining = trainingCorrectPosClassified / (double) trainPos.size();
 			System.out.println(precisionTraining +"----"+recallTraining);
 			//			System.exit(1);
-			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining)); 
+			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining));
 
 
 			// calculate test F-Score
@@ -449,7 +447,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			trainingCorrectExamples = trainingCorrectUndClassified+trainingCorrectPosClassified + trainingCorrectNegClassified;
 			trainingSize = trainPos.size()+
 					trainNeg.size()+trainUnd.size();
-			trainingAccuracy = 100*((double)trainingCorrectExamples/trainingSize);	
+			trainingAccuracy = 100*((double)trainingCorrectExamples/trainingSize);
 
 			accuracyTraining.addNumber(trainingAccuracy);
 			negAsPosTraining =   getWrongClassification(trainNeg, la);
@@ -462,9 +460,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			negAsUndTraining= getOmittedClassification(-1, trainNeg, la);
 
 			//System.out.println();
-			//System.out.println("Training "+posAsUndTraining+ "-----------"+ negAsUndTraining);			 
-			undAsPosTraining = getInductionClassification(trainUnd, la);  //positive and negative induction 
-			undAsNegTraining=  0; //getInductionClassified(-1,0,trainUnd, tdt);    
+			//System.out.println("Training "+posAsUndTraining+ "-----------"+ negAsUndTraining);
+			undAsPosTraining = getInductionClassification(trainUnd, la);  //positive and negative induction
+			undAsNegTraining=  0; //getInductionClassified(-1,0,trainUnd, tdt);
 
 			//System.out.println("Training");
 			commissions = negAsPosTraining+posAsNegTraining;
@@ -484,7 +482,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			inductionTraining.addNumber(trainingInduction);
 			omissionTraining.addNumber(trainingOmission);
 
-			correctPosClassified = getCorrectClassifications(1, testPos, la); //getCorrectPosClassified(rs, concept, testPos); 
+			correctPosClassified = getCorrectClassifications(1, testPos, la); //getCorrectPosClassified(rs, concept, testPos);
 			correctNegClassified = getCorrectClassifications(-1, testNeg, la);
 			correctUndClassified = getCorrectClassifications(0, testUnd, la);
 			correctExamples = correctUndClassified+correctPosClassified + correctNegClassified;
@@ -529,7 +527,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			double recallTraining = trainingCorrectPosClassified / (double) trainPos.size();
 			System.out.println(precisionTraining +"----"+recallTraining);
 
-			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining)); 
+			fMeasureTraining.addNumber(100*Heuristics.getFScore(recallTraining, precisionTraining));
 
 
 			// calculate test F-Score
@@ -550,7 +548,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		//System.exit(0);
 		output += "fold " + currFold + ":" + "\n";
 		output += "  training: " + pos.size() + " positive, " + neg.size() + " negative examples and "+ und.size() + " uncertain examples";
-		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, " 
+		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, "
 				+ correctNegClassified + "/" + testNeg.size() + " correct negatives " + correctUndClassified+"/"+ testUnd.size()+" correct uncertain \n";
 		output += "  concept: " + concept.toString().replace("\n", " ") + "\n";
 		output += "  match: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)" + "\n";
@@ -570,7 +568,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		int trainingCorrectClassified=0;
 		for (OWLIndividual indTestEx: set){
 			int label =0;
-			if (la instanceof DSTTDTClassifier) 
+			if (la instanceof DSTTDTClassifier)
 				label=((DSTTDTClassifier)la).classifyExamplesDST(indTestEx, ((DSTTDTClassifier)la).getCurrentmodel());
 			else if (la instanceof TDTClassifier){
 				label= ((TDTClassifier)la).classifyExample(indTestEx, ((TDTClassifier)la).getCurrentmodel());}
@@ -579,7 +577,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			//
 			//		}
 			//		System.out.println(" GetCorrectClassified Label: "+label);
-			if (label == groundtruth) { 
+			if (label == groundtruth) {
 			 //System.out.println("\t  Ground truth "+label+" Predicted "+ groundtruth+ ": matched");
 
 				trainingCorrectClassified++;
@@ -608,7 +606,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			//			System.out.println(" GetWrongClassified neg aS POS Label"+label);
 			//System.out.println("\t Ground truth +1 Predicted "+ label);
 			//System.out.println(((label==+1)));
-			if ((label==+1)) { 
+			if ((label==+1)) {
 				
 				trainingWrongClassified++;
 			}
@@ -637,7 +635,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			//tdt.classifyExamplesDST(indTestEx, tdt.getCurrentmodel());
 		   	//System.out.println("label: "+label +" groundtruth +1");
 		   	//System.out.println(((label!=-1) && (label!=0)));
-			if ((label==-1)) { 
+			if ((label==-1)) {
 				//				System.out.println("POS s neg label: "+label);
 				//System.out.println("\t Ground truth "+groundtruth+" Predicted "+ label+ ":committed");
 				trainingWrongClassified++;
@@ -677,7 +675,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		int trainingWrongClassified=0;
 		for (OWLIndividual indTestEx: set){
 			int label = 0;
-			if (la instanceof DSTTDTClassifier) 
+			if (la instanceof DSTTDTClassifier)
 				label=((DSTTDTClassifier)la).classifyExamplesDST(indTestEx, ((DSTTDTClassifier)la).getCurrentmodel());
 			else if (la instanceof TDTClassifier)
 				label=((TDTClassifier)la).classifyExample(indTestEx, ((TDTClassifier)la).getCurrentmodel());
@@ -693,7 +691,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 	private int getCorrectUndClassified(AbstractReasonerComponent rs, OWLClassExpression concept, Set<OWLIndividual> testUnd) {
 		OWLDataFactory df = new OWLDataFactoryImpl();
-		OWLObjectComplementOf complementOfConcept = df.getOWLObjectComplementOf(concept); 
+		OWLObjectComplementOf complementOfConcept = df.getOWLObjectComplementOf(concept);
 		int nOfUnc=0;
 		for (OWLIndividual ind:testUnd){
 			if ((!rs.hasType(concept, ind)) && !(rs.hasType(complementOfConcept, ind)))
@@ -705,7 +703,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 	}
 
 
-	@Override 
+	@Override
 	public int getCorrectNegClassified(AbstractReasonerComponent rs, OWLClassExpression concept, Set<OWLIndividual> testSetNeg){
 		// for dealing explictly with the Open World Assumption
 		OWLDataFactory df = new OWLDataFactoryImpl();

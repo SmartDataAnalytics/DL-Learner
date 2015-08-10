@@ -22,14 +22,15 @@ package org.dllearner.learningproblems;
 import java.text.DecimalFormat;
 import java.util.Set;
 
-import org.dllearner.utilities.Helper;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLEntity;
+
+import com.google.common.collect.Sets;
 
 /**
  * Computes the score (a negative value) by comparing the classification results
  * with ideal results.
  * 
- * TODO: The implementation is not very efficient, because some things are 
+ * TODO: The implementation is not very efficient, because some things are
  * only computed to be able to present the score results. This means that
  * it would be better to compute only the necessary computations and do
  * the other ones only when they are needed to calculate statistical values.
@@ -37,7 +38,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Jens Lehmann
  *
  */
-public class ScoreThreeValued extends ScorePosNeg {
+public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	
 	private static final long serialVersionUID = -1780084688122949685L;
 
@@ -54,22 +55,22 @@ public class ScoreThreeValued extends ScorePosNeg {
 	private boolean showCorrectClassifications = false;
 	private static ScoreMethod scoreMethod = ScoreMethod.POSITIVE;
 	
-	private Set<OWLIndividual> posClassified;
-	private Set<OWLIndividual> neutClassified;
-	private Set<OWLIndividual> negClassified;
-	private Set<OWLIndividual> posExamples;
-	private Set<OWLIndividual> neutExamples;
-	private Set<OWLIndividual> negExamples;
+	private Set<T> posClassified;
+	private Set<T> neutClassified;
+	private Set<T> negClassified;
+	private Set<T> posExamples;
+	private Set<T> neutExamples;
+	private Set<T> negExamples;
 	
-    private Set<OWLIndividual> posAsNeg;
-    private Set<OWLIndividual> negAsPos;
-    private Set<OWLIndividual> posAsNeut;
-    private Set<OWLIndividual> neutAsPos;
-    private Set<OWLIndividual> neutAsNeg;
-    private Set<OWLIndividual> negAsNeut;
-    private Set<OWLIndividual> posAsPos;
-    private Set<OWLIndividual> negAsNeg;
-    private Set<OWLIndividual> neutAsNeut;      
+    private Set<T> posAsNeg;
+    private Set<T> negAsPos;
+    private Set<T> posAsNeut;
+    private Set<T> neutAsPos;
+    private Set<T> neutAsNeg;
+    private Set<T> negAsNeut;
+    private Set<T> posAsPos;
+    private Set<T> negAsNeg;
+    private Set<T> neutAsNeut;
     
     private double score;
     private double accuracy;
@@ -85,12 +86,12 @@ public class ScoreThreeValued extends ScorePosNeg {
     		double errorPenalty,
     		boolean penaliseNeutralExamples,
     		double percentPerLengthUnit,
-    		Set<OWLIndividual> posClassified,
-    		Set<OWLIndividual> neutClassified,
-    		Set<OWLIndividual> negClassified,
-    		Set<OWLIndividual> posExamples,
-    		Set<OWLIndividual> neutExamples,
-    		Set<OWLIndividual> negExamples) {
+    		Set<T> posClassified,
+    		Set<T> neutClassified,
+    		Set<T> negClassified,
+    		Set<T> posExamples,
+    		Set<T> neutExamples,
+    		Set<T> negExamples) {
     	this.conceptLength = conceptLength;
     	this.accuracyPenalty = accuracyPenalty;
     	this.errorPenalty = errorPenalty;
@@ -108,20 +109,20 @@ public class ScoreThreeValued extends ScorePosNeg {
     }
     
     private void computeClassificationMatrix() {
-        posAsNeg = Helper.intersection(posExamples,negClassified);
-        negAsPos = Helper.intersection(negExamples,posClassified);
-        posAsNeut = Helper.intersection(posExamples,neutClassified);
-        neutAsPos = Helper.intersection(neutExamples,posClassified);
-        neutAsNeg = Helper.intersection(neutExamples,negClassified);
-        negAsNeut = Helper.intersection(negExamples,neutClassified);
+        posAsNeg = Sets.intersection(posExamples,negClassified);
+        negAsPos = Sets.intersection(negExamples,posClassified);
+        posAsNeut = Sets.intersection(posExamples,neutClassified);
+        neutAsPos = Sets.intersection(neutExamples,posClassified);
+        neutAsNeg = Sets.intersection(neutExamples,negClassified);
+        negAsNeut = Sets.intersection(negExamples,neutClassified);
         // die 3 Berechnungen sind nicht so wichtig f�r die Punktzahl, d.h. falls
         // es Performance bringt, dann kann man sie auch ausgliedern
-        posAsPos = Helper.intersection(posExamples,posClassified);
-        negAsNeg = Helper.intersection(negExamples,negClassified);
-        neutAsNeut = Helper.intersection(neutExamples,neutClassified);     	
+        posAsPos = Sets.intersection(posExamples,posClassified);
+        negAsNeg = Sets.intersection(negExamples,negClassified);
+        neutAsNeut = Sets.intersection(neutExamples,neutClassified);
     }
     
-    private void computeStatistics() {     
+    private void computeStatistics() {
         score = - posAsNeg.size()*errorPenalty
         - negAsPos.size()*errorPenalty
         - posAsNeut.size()*accuracyPenalty;
@@ -130,7 +131,7 @@ public class ScoreThreeValued extends ScorePosNeg {
         	score -= negAsNeut.size()*accuracyPenalty;
         
         if(penaliseNeutralExamples)
-        	score -= (neutAsPos.size()*accuracyPenalty        
+        	score -= (neutAsPos.size()*accuracyPenalty
             + neutAsNeg.size()*accuracyPenalty);
         
         // TODO: man könnte hier statt error penalty auch accuracy penalty
@@ -144,7 +145,7 @@ public class ScoreThreeValued extends ScorePosNeg {
         // ausgegliedert werden
         // int domainSize = abox.domain.size();
         int numberOfExamples = posExamples.size()+negExamples.size();
-        int domainSize = numberOfExamples + neutExamples.size(); 
+        int domainSize = numberOfExamples + neutExamples.size();
         int correctlyClassified = posAsPos.size() + negAsNeg.size() + neutAsNeut.size();
         int correctOnExamples = posAsPos.size() + negAsNeg.size();
         int errors = posAsNeg.size() + negAsPos.size();
@@ -156,10 +157,10 @@ public class ScoreThreeValued extends ScorePosNeg {
         // und neg. Beispiele
         accuracyOnExamples = (double) correctOnExamples/numberOfExamples;
         
-        accuracyOnPositiveExamples = (double) posAsPos.size()/posExamples.size(); 
+        accuracyOnPositiveExamples = (double) posAsPos.size()/posExamples.size();
         
         // Error = Quotient von komplett falsch klassifizierten durch Anzahl pos.
-        // und neg. Beispiele 
+        // und neg. Beispiele
         errorRate = (double) errors/numberOfExamples;
     }
 
@@ -226,11 +227,11 @@ public class ScoreThreeValued extends ScorePosNeg {
         str += "Inaccurately classified (penalty of " + df.format(accuracyPenalty) + " per instance):\n";
         str += "  positive --> neutral: " + posAsNeut + "\n";
         if(penaliseNeutralExamples) {
-        	str += "  neutral --> positive: " + neutAsPos + "\n";  
+        	str += "  neutral --> positive: " + neutAsPos + "\n";
         	str += "  neutral --> negative: " + neutAsNeg + "\n";
         }
         if(scoreMethod == ScoreMethod.FULL)
-        	str += "  negative --> neutral: " + negAsNeut + "\n"; 
+        	str += "  negative --> neutral: " + negAsNeut + "\n";
         str += "Classification errors (penalty of " + df.format(errorPenalty) + " per instance):\n";
         str += "  positive --> negative: " + posAsNeg + "\n";
         str += "  negative --> positive: " + negAsPos + "\n";
@@ -238,37 +239,45 @@ public class ScoreThreeValued extends ScorePosNeg {
         str += "  Score: " + df.format(score) + "\n";
         str += "  Accuracy: " + df.format(accuracy*100) + "%\n";
         str += "  Accuracy on examples: " + df.format(accuracyOnExamples*100) + "%\n";
-        str += "  Accuracy on positive examples: " + df.format(accuracyOnPositiveExamples*100) + "%\n";        
+        str += "  Accuracy on positive examples: " + df.format(accuracyOnPositiveExamples*100) + "%\n";
         str += "  Error rate: " + df.format(errorRate*100) + "%\n";
         return str;
     }
 
-	public Set<OWLIndividual> getNegClassified() {
+	public Set<T> getNegClassified() {
 		return negClassified;
 	}
 
-	public Set<OWLIndividual> getPosClassified() {
+	public Set<T> getPosClassified() {
 		return posClassified;
 	}
 
 	@Override
-	public Set<OWLIndividual> getCoveredNegatives() {
+	public Set<T> getCoveredNegatives() {
 		return negAsPos;
 	}
 
 	@Override
-	public Set<OWLIndividual> getCoveredPositives() {
+	public Set<T> getCoveredPositives() {
 		return posAsPos;
 	}
 	
 	@Override
-	public Set<OWLIndividual> getNotCoveredPositives() {
+	public Set<T> getNotCoveredPositives() {
 		return posAsNeg;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
+	 */
+	@Override
+	public Set<T> getNotCoveredNegatives() {
+		return negAsNeg;
 	}
 
 	@Override
-	public ScorePosNeg getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
+		return new ScoreThreeValued<T>(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}
 
 	/* (non-Javadoc)
@@ -278,13 +287,4 @@ public class ScoreThreeValued extends ScorePosNeg {
 	public double getAccuracy() {
 		return accuracy;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.Score#getNotCoveredNegatives()
-	 */
-	@Override
-	public Set<OWLIndividual> getNotCoveredNegatives() {
-		return negAsNeg;
-	}	
-    
 }

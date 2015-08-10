@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -28,6 +29,7 @@ public class NaiveALLearner extends AbstractCELA{
     private Map<Integer, List<OWLClassExpression>> generatedDescriptions;
     
     private boolean running = false;
+    @ConfigOption(defaultValue = "4", description = "maximum length of class expression")
     private int maxLength = 4;
     
     private OWLClassExpression bestDescription;
@@ -36,7 +38,7 @@ public class NaiveALLearner extends AbstractCELA{
     public NaiveALLearner() {
     }
 
-    public NaiveALLearner(AbstractLearningProblem lp, AbstractReasonerComponent reasoner) {
+    public NaiveALLearner(AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent reasoner) {
         super(lp, reasoner);
     }
     @Override

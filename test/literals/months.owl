@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/months#"
+     xml:base="http://dl-learner.org/test/months"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/months"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#gMonth -->
+
+    <rdfs:Datatype rdf:about="&xsd;gMonth"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/months#monthNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://dl-learner.org/test/months#monthNumber">
+        <rdfs:domain rdf:resource="http://dl-learner.org/test/months#Month"/>
+        <rdfs:range rdf:resource="&xsd;gMonth"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/months#Month -->
+
+    <owl:Class rdf:about="http://dl-learner.org/test/months#Month"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/months#April -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#April">
+        <monthNumber rdf:datatype="&xsd;gMonth">--04</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#August -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#August">
+        <monthNumber rdf:datatype="&xsd;gMonth">--08</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#December -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#December">
+        <monthNumber rdf:datatype="&xsd;gMonth">--12</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#February -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#February">
+        <monthNumber rdf:datatype="&xsd;gMonth">--02</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#January -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#January">
+        <monthNumber rdf:datatype="&xsd;gMonth">--01</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#July -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#July">
+        <monthNumber rdf:datatype="&xsd;gMonth">--07</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#June -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#June">
+        <monthNumber rdf:datatype="&xsd;gMonth">--06</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#March -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#March">
+        <monthNumber rdf:datatype="&xsd;gMonth">--03</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#May -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#May">
+        <monthNumber rdf:datatype="&xsd;gMonth">--05Z</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#November -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#November">
+        <monthNumber rdf:datatype="&xsd;gMonth">--11+02:00</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#October -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#October">
+        <monthNumber rdf:datatype="&xsd;gMonth">--10</monthNumber>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/months#September -->
+
+    <owl:NamedIndividual rdf:about="http://dl-learner.org/test/months#September">
+        <monthNumber rdf:datatype="&xsd;gMonth">--09</monthNumber>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

@@ -42,16 +42,19 @@ public class Path {
 	public String asSPARQLQuery(Var targetVar) {
 		String query = "SELECT DISTINCT " + targetVar + " WHERE {";
 		query += targetVar + " a <" + cls.toStringID() + "> .";
-		Set<String> lastProperty = properties.get(properties.size() - 1);
+		Set<String> lastPropertyCluster = properties.get(properties.size() - 1);
 		Var joinVar = targetVar;
 		for (int i = 0; i < properties.size() - 1; i++) {
-			for (String property : properties.get(i)) {
+			Set<String> cluster = properties.get(i);
+			for (String property : cluster) {
 				Var joinVarTmp = Var.alloc("o" + i);
 				query += joinVar + " <" + property + "> " + joinVarTmp + " .";
 				joinVar = joinVarTmp;
 			}
 		}
-		query += joinVar + " <" + lastProperty + "> <" + object + "> .";
+		for (String lastProperty : lastPropertyCluster) {
+			query += joinVar + " <" + lastProperty + "> <" + object + "> .";
+		}
 
 		query += "}";
 		return query;
@@ -60,8 +63,12 @@ public class Path {
 	public String asSPARQLPathQuery(Var targetVar) {
 		String query = "SELECT DISTINCT " + targetVar + " WHERE {";
 		query += targetVar + " a <" + cls.toStringID() + "> ;";
-		Set<String> first = properties.get(0);
-		query += "<" + first + ">";
+		
+		Set<String> firstPropertyCluster = properties.get(0);
+		for (String firstProperty : firstPropertyCluster) {
+			query += " <" + firstProperty + "> ";
+		}
+		
 		for (int i = 1; i < properties.size(); i++) {
 			for (String p : properties.get(i)) {
 				query += "/" + "<" + p + ">";

@@ -21,6 +21,8 @@ package org.dllearner.algorithms.el;
 
 import java.util.Comparator;
 
+import org.dllearner.core.Heuristic;
+
 /**
  * Marker interface for heuristics in the EL learning
  * algorithms. A heuristic implements a method
@@ -30,6 +32,6 @@ import java.util.Comparator;
  * @author Jens Lehmann
  *
  */
-public interface ELHeuristic extends Comparator<SearchTreeNode> {
+public interface ELHeuristic extends Comparator<SearchTreeNode>, Heuristic {
 
 }

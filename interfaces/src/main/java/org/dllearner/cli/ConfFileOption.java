@@ -17,207 +17,118 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 package org.dllearner.cli;
 
-import java.util.List;
-import java.util.Set;
 
-import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.configuration.IConfigurationProperty;
 
 /**
- * Represents one configuration option in a conf file, e.g.
- * refinement.horizontalExpansionFactor = 0.6.
+ * Programmatic representation of an option setting in a conf file:
+ * bean.property = value;
  * 
  * @author Jens Lehmann
  *
  */
-public class ConfFileOption {
+public class ConfFileOption implements IConfigurationProperty{
 
-	private boolean containsSubOption = true;
-	private boolean isIntegerOption = false;
-	private boolean isDoubleOption = false;
-	private boolean isStringOption = false;
-	private boolean isSetOption = false;
-	private boolean isListOption = false;
-	private String option;
-	private String subOption;
-	private String stringValue;
-	private int intValue;
-	private double doubleValue;
-	private Set<String> setValues;
-	private List<StringTuple> listTuples;
-	
-	public ConfFileOption(String option, String value) {
-		this(option, null, value);
-		containsSubOption = false;
-	}
-	
-	public ConfFileOption(String option, String subOption, String value) {
-		this.option = option;
-		this.subOption = subOption;
-		stringValue = value;
-		isStringOption = true;
-	}
-	
-	public ConfFileOption(String option, int value) {
-		this(option, null, value);
-		containsSubOption = false;
-	}
-	
-	public ConfFileOption(String option, String subOption, int value) {
-		this.option = option;
-		this.subOption = subOption;
-		intValue = value;
-		isIntegerOption = true;
-	}
+	// a boolean flag which indicates whether it is a reference to a bean (or set/list of beans)
+	private boolean isBeanRef;
 
-	public ConfFileOption(String option, double value) {
-		this(option, null, value);
-		containsSubOption = false;
-	}
+    private boolean isBeanReferenceCollection;
 	
-	public ConfFileOption(String option, String subOption, double value) {
-		this.option = option;
-		this.subOption = subOption;
-		doubleValue = value;
-		isDoubleOption = true;
-	}
+	private String beanName;
 	
-	public ConfFileOption(String option, Set<String> values) {
-		this(option, null, values);
-		containsSubOption = false;
-	}
+	private String propertyName;
 	
-	public ConfFileOption(String option, String subOption, Set<String> values) {
-		this.option = option;
-		this.subOption = subOption;
-		isSetOption = true;
-		setValues = values;
-	}
+	private String propertyValue;
 	
-	public ConfFileOption(String option, List<StringTuple> tuples) {
-		this(option, null, tuples);
-		containsSubOption = false;
-	}
+	private Class<?> propertyType;
 	
-	public ConfFileOption(String option, String subOption, List<StringTuple> tuples) {
-		this.option = option;
-		this.subOption = subOption;
-		isListOption = true;
-		listTuples = tuples;
-	}	
+	// the object should be either a primitive, a Collection<String> or a Map<String,String>,
+	// the actual mapping from Strings to datatypes is later done e.g. by property editors
+	private Object valueObject;
 	
-	public boolean containsSubOption() {
-		return containsSubOption;
-	}
-
-	public int getIntValue() {
-		return intValue;
-	}
-	
-	public String getOption() {
-		return option;
-	}
-
-	public String getStringValue() {
-		return stringValue;
-	}
-
-	public String getSubOption() {
-		return subOption;
-	}
-	
-	public double getDoubleValue() {
-		return doubleValue;
-	}
-
-	public Set<String> getSetValues() {
-		return setValues;
-	}	
-	
-	public List<StringTuple> getListTuples() {
-		return listTuples;
-	}
-	
-	public Object getValue() {
-		if(isIntegerOption)
-			return intValue;
-		else if(isDoubleOption)
-			return doubleValue;
-		else if(isStringOption)
-			return stringValue;
-		else if(isSetOption)
-			return setValues;
-		else
-			return listTuples;
-	}
+	public ConfFileOption() {
 		
-	/**
-	 * 
-	 * @return The class of the value of the conf file option;
-	 */
-	public Class<?> getType() {
-		if(isIntegerOption)
-			return Integer.class;
-		else if(isDoubleOption)
-			return Double.class;
-		else if(isStringOption)
-			return String.class;
-		else
-			return Set.class;		
-	}
-	
-	public boolean isIntegerOption() {
-		return isIntegerOption;
 	}
 
-	public boolean isDoubleOption() {
-		return isDoubleOption;
-	}
-	
-	public boolean isNumeric() {
-		return (isIntegerOption || isDoubleOption);
-	}
-	
-	public boolean isStringOption() {
-		return isStringOption;
-	}	
-	
-	public boolean isSetOption() {
-		return isSetOption;
-	}	
-	
-	public boolean isListOption() {
-		return isListOption;
-	}	
-	
-	@Override
-	public String toString() {
-		String completeOption = "Configuration Option: ";
-		if(containsSubOption)
-			completeOption += option + "." + subOption;
-		else
-			completeOption += option;
-		if(isNumeric())
-			if(isIntegerOption)
-				return completeOption + "=" + intValue;
-			else
-				return completeOption + "=" + doubleValue;
-		else
-			if(isListOption)
-				return completeOption + "=" + listTuples;
-			else if(isSetOption)
-				return completeOption + "=" + setValues;
-			else
-				return completeOption + "=" + stringValue;
-	}
-	
-	public String getFullName() {
-		if(containsSubOption)
-			return option + "." + subOption;
-		else
-			return option;
+	public String getBeanName() {
+		return beanName;
 	}
 
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
+	}
+
+	public String getPropertyValue() {
+		return propertyValue;
+	}
+
+	public void setPropertyValue(String propertyValue) {
+		this.propertyValue = propertyValue;
+	}
+
+	public Class<?> getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Class<?> propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public Object getValueObject() {
+		return valueObject;
+	}
+
+	public void setValueObject(Object valueObject) {
+		this.valueObject = valueObject;
+	}
+
+	public boolean isBeanRef() {
+		return isBeanRef;
+	}
+
+	public void setBeanRef(boolean isBeanRef) {
+		this.isBeanRef = isBeanRef;
+	}
+
+    @Override
+    public String getName() {
+        return getPropertyName();
+    }
+
+    @Override
+    public Object getValue() {
+        return getValueObject();
+    }
+
+    @Override
+    public boolean isBeanReference() {
+        return isBeanRef();
+    }
+
+    @Override
+    public boolean isBeanReferenceCollection() {
+        return isBeanReferenceCollection;
+    }
+
+    public void setBeanReferenceCollection(boolean beanReferenceCollection) {
+        isBeanReferenceCollection = beanReferenceCollection;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return beanName + "." + propertyName + ";type:" + propertyType.getSimpleName() + ";value:" + propertyValue;
+    }
 }

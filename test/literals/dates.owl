@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dates "http://dl-learner.org/test/dates#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/dates#"
+     xml:base="http://dl-learner.org/test/dates"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dates="http://dl-learner.org/test/dates#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/dates"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="&xsd;date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/dates#value -->
+
+    <owl:DatatypeProperty rdf:about="&dates;value">
+        <rdfs:domain rdf:resource="&dates;Number"/>
+        <rdfs:range rdf:resource="&xsd;date"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/dates#Number -->
+
+    <owl:Class rdf:about="&dates;Number"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N1 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N1">
+        <value rdf:datatype="&xsd;date">1971-09-24</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N10 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N10">
+        <value rdf:datatype="&xsd;date">2001-09-24</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N100 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N100">
+        <value rdf:datatype="&xsd;date">1972-03-24</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N102 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N102">
+        <value rdf:datatype="&xsd;date">2002-09-27</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N104 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N104">
+        <value rdf:datatype="&xsd;date">1970-01-05</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N107 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N107">
+        <value rdf:datatype="&xsd;date">1999-03-03</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N109 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N109">
+        <value rdf:datatype="&xsd;date">1980-11-21</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N110 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N110">
+        <value rdf:datatype="&xsd;date">1970-01-22</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N2 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N2">
+        <value rdf:datatype="&xsd;date">1970-10-22</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N3 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N3">
+        <value rdf:datatype="&xsd;date">1970-11-27</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N4 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N4">
+        <value rdf:datatype="&xsd;date">1980-04-10</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N5 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N5">
+        <value rdf:datatype="&xsd;date">2015-06-06</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N6 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N6">
+        <value rdf:datatype="&xsd;date">1972-11-22</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N7 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N7">
+        <value rdf:datatype="&xsd;date">1976-11-29</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N8 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N8">
+        <value rdf:datatype="&xsd;date">1950-12-31</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/dates#N9 -->
+
+    <owl:NamedIndividual rdf:about="&dates;N9">
+        <value rdf:datatype="&xsd;date">1974-10-06</value>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

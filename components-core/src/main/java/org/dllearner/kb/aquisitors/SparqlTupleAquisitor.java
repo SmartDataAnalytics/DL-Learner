@@ -155,6 +155,7 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			assignIds( currentId,  rsw, lastDepth);
 		}catch (Exception e) {
 			logger.info("An error occurred while dissolving blanknodes");
+			logger.debug("Error was:", e);
 		}
 	}
 	
@@ -168,7 +169,7 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			vars.add("o"+i);
 		}
 		
-		final List<String> tmpVars = new ArrayList<String>(); 
+		final List<String> tmpVars = new ArrayList<String>();
 		
 		Map<String, Integer> lastNodes = new HashMap<String, Integer>();
 		// the resultset first variable is o0

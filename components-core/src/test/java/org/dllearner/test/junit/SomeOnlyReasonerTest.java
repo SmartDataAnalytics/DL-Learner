@@ -12,10 +12,11 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.junit.Ignore;
 import org.semanticweb.owlapi.model.ClassExpressionType;
@@ -50,7 +51,7 @@ public class SomeOnlyReasonerTest {
                 negExamples);
         
         SparqlSimpleExtractor ks = new SparqlSimpleExtractor();
-        ks.setInstances(new ArrayList<String>(Datastructures.individualSetToStringSet(examples
+        ks.setInstances(new ArrayList<String>(Helper.getStringSet(examples
                 .getCompleteSet())));
         // ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO:
         // probably the official endpoint is too slow?
@@ -68,7 +69,7 @@ public class SomeOnlyReasonerTest {
         
         ks.init();
         
-        AbstractReasonerComponent rc = new FastInstanceChecker(ks);
+        AbstractReasonerComponent rc = new ClosedWorldReasoner(ks);
 //        ((FastInstanceChecker)rc).setForAllSemantics(ForallSemantics.SomeOnly);
         rc.init();
        
@@ -76,7 +77,7 @@ public class SomeOnlyReasonerTest {
         PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
-        lp.setAccuracyMethod("fmeasure");
+        lp.setAccuracyMethod(HeuristicType.FMEASURE);
         lp.setUseApproximations(false);
         lp.init();
         

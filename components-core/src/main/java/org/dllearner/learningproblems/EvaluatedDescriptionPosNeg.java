@@ -34,20 +34,20 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * evaluated by the learning algorithm, i.e. it has been checked
  * which examples it covers. It can be used as return value for
  * learning algorithms to make it easier for applications to
- * assess how good an offered class OWLClassExpression is and how it
+ * assess how good an offered class description is and how it
  * classifies particular examples.
  * 
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
+public class EvaluatedDescriptionPosNeg extends EvaluatedDescription<ScorePosNeg> {
 	
 	private static final long serialVersionUID = -6962185910615506968L;
 	private ScorePosNeg score2;
 	
 	/**
-	 * Constructs an evaluated OWLClassExpression using its score.
-	 * @param OWLClassExpression The description, which was evaluated.
+	 * Constructs an evaluated description using its score.
+	 * @param description The description, which was evaluated.
 	 * @param score The score of the description.
 	 */
 	public EvaluatedDescriptionPosNeg(OWLClassExpression description, ScorePosNeg score) {
@@ -55,20 +55,6 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 		score2 = score;
 	}
 	
-	/**
-	 * Constructs an evaluated OWLClassExpression using example coverage.
-	 * @param OWLClassExpression The description, which was evaluated.
-	 * @param posAsPos Positive examples classified as positive by (i.e. instance of) the description.
-	 * @param posAsNeg Positive examples classified as negative by (i.e. not instance of) the description.
-	 * @param negAsPos Negative examples classified as positive by (i.e. instance of) the description.
-	 * @param negAsNeg Negative examples classified as negative by (i.e. not instance of) the description.
-	 */
-	public EvaluatedDescriptionPosNeg(OWLClassExpression description, Set<OWLIndividual> posAsPos, Set<OWLIndividual> posAsNeg, Set<OWLIndividual> negAsPos, Set<OWLIndividual> negAsNeg) {
-		// usually core methods should not depend on methods outside of the core package (except utilities)
-		// in this case, this is just a convenience constructor
-		super(description, new ScoreTwoValued(posAsPos, posAsNeg, negAsPos, negAsNeg));
-		score2 = (ScorePosNeg) score;
-	}
 	
 	/**
 	 * @see org.dllearner.learningproblems.ScorePosNeg#getAccuracy()
@@ -85,6 +71,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	 * @see org.dllearner.learningproblems.ScorePosNeg
 	 * @return The score object associated with this evaluated description.
 	 */
+	@Override
 	public ScorePosNeg getScore() {
 		return score2;
 	}
@@ -130,13 +117,13 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	public String asJSON() {
 		JSONObject object = new JSONObject();
 		try {
-			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(description));
-			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(description));
+			object.put("descriptionManchesterSyntax", OWLAPIRenderers.toManchesterOWLSyntax(hypothesis));
+			object.put("descriptionOWLXML", OWLAPIRenderers.toOWLXMLSyntax(hypothesis));
 			object.put("accuracy", score2.getAccuracy());
 			object.put("coveredPositives", getJSONArray(score2.getCoveredPositives()));
 			object.put("coveredNegatives", getJSONArray(score2.getCoveredNegatives()));
 			object.put("notCoveredPositives", getJSONArray(score2.getNotCoveredPositives()));
-			object.put("notCoveredNegatives", getJSONArray(score2.getNotCoveredNegatives()));			
+			object.put("notCoveredNegatives", getJSONArray(score2.getNotCoveredNegatives()));
 			return object.toString(3);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -146,7 +133,7 @@ public class EvaluatedDescriptionPosNeg extends EvaluatedDescription {
 	
 	@Override
 	public String toString() {
-		return description.toString() + "(accuracy: " + getAccuracy() + ")";
+		return hypothesis.toString() + "(accuracy: " + getAccuracy() + ")";
 	}
 	
 	// we need to use this method instead of the standard JSON array constructor,

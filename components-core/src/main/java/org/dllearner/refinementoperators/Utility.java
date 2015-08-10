@@ -27,7 +27,6 @@ import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -37,6 +36,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorFactory;
 
@@ -49,11 +49,11 @@ import com.jamonapi.MonitorFactory;
 public final class Utility {
 		
 	private AbstractReasonerComponent reasoner;
-	ClassHierarchy sh; 
+	ClassHierarchy sh;
 	
 	// specifies whether to do real disjoint tests or check that
 	// two named classes do not have common instances
-	private boolean instanceBasedDisjoints = true;	
+	private boolean instanceBasedDisjoints = true;
 	
 	// cache for reasoner queries
 	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
@@ -88,12 +88,12 @@ public final class Utility {
 	}
 	
 	/**
-	 * Compute the set of applicable object properties for a 
-	 * given description. 
+	 * Compute the set of applicable object properties for a
+	 * given description.
 	 * 
 	 * @param index The index is a OWLClassExpression which determines
 	 * which of the properties are applicable. Exactly those which
-	 * where the index and property domain are not disjoint are 
+	 * where the index and property domain are not disjoint are
 	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
 	 * 
 	 */
@@ -111,16 +111,16 @@ public final class Utility {
 			}
 			appOPCache.put(index, applicableObjectProperties);
 		}
-		return applicableObjectProperties;		
+		return applicableObjectProperties;
 	}
 	
 	/**
-	 * Compute the set of applicable data properties for a 
-	 * given description. 
+	 * Compute the set of applicable data properties for a
+	 * given description.
 	 * 
 	 * @param index The index is a OWLClassExpression which determines
 	 * which of the properties are applicable. Exactly those which
-	 * where the index and property domain are not disjoint are 
+	 * where the index and property domain are not disjoint are
 	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
 	 * 
 	 */
@@ -138,7 +138,7 @@ public final class Utility {
 			}
 			appDPCache.put(index, applicableDatatypeProperties);
 		}
-		return applicableDatatypeProperties;		
+		return applicableDatatypeProperties;
 	}
 	
 	/**
@@ -154,7 +154,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLObjectProperty> computeMgr(Set<OWLObjectProperty> applicableObjectProperties) {
-		return Helper.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
+		return Sets.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
 	}
 	
 	/**
@@ -170,7 +170,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLDataProperty> computeMgrDP(Set<OWLDataProperty> applicableDatatypeProperties) {
-		return Helper.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties);
+		return Sets.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties);
 	}
 	
 	public Set<OWLClass> getClassCandidates(OWLClassExpression index, Set<OWLClass> existingClasses) {
@@ -234,7 +234,7 @@ public final class Utility {
 				return false;
 		}
 		return true;
-	}	
+	}
 	
 	// returns false if any of the classes is disjoint with the new one; true otherwise
 	private boolean checkDisjoints(Set<OWLClass> existingClasses, OWLClass candidate) {
@@ -243,7 +243,7 @@ public final class Utility {
 				return false;
 		}
 		return true;
-	}	
+	}
 		
 	
 	public boolean isDisjoint(OWLClassExpression d1, OWLClassExpression d2) {
@@ -264,7 +264,7 @@ public final class Utility {
 			} else {
 				OWLClassExpression d = df.getOWLObjectIntersectionOf(d1, d2);
 				Monitor mon = MonitorFactory.start("disjointness reasoning");
-				result = reasoner.isSuperClassOf(df.getOWLNothing(), d);	
+				result = reasoner.isSuperClassOf(df.getOWLNothing(), d);
 				mon.stop();
 			}
 			// add the result to the cache (we add it twice such that
@@ -285,7 +285,7 @@ public final class Utility {
 		} else {
 			return tmp2;
 		}
-	}	
+	}
 	
 	private boolean isDisjointInstanceBased(OWLClassExpression d1, OWLClassExpression d2) {
 		SortedSet<OWLIndividual> d1Instances = reasoner.getIndividuals(d1);

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.Authenticator;
@@ -77,6 +78,7 @@ import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
+import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
@@ -91,8 +93,6 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigHelper;
-import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -169,9 +169,9 @@ public class Enrichment {
 		// since otherwise we run into memory problems for full enrichment
 		private Class<? extends LearningAlgorithm> algorithm;
 		private List<EvaluatedAxiom<OWLAxiom>> axioms;
-		private Map<ConfigOption,Object> parameters;
+		private Map<Field,Object> parameters;
 
-		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom<OWLAxiom>> axioms, Map<ConfigOption,Object> parameters) {
+		public AlgorithmRun(Class<? extends LearningAlgorithm> algorithm, List<EvaluatedAxiom<OWLAxiom>> axioms, Map<Field,Object> parameters) {
 			this.algorithm = algorithm;
 			this.axioms = axioms;
 			this.parameters = parameters;
@@ -185,7 +185,7 @@ public class Enrichment {
 			return axioms;
 		}
 
-		public Map<ConfigOption, Object> getParameters() {
+		public Map<Field, Object> getParameters() {
 			return parameters;
 		}
 	}
@@ -268,6 +268,12 @@ public class Enrichment {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 		this.omitExistingAxioms = omitExistingAxioms;
 
+		try {
+			ks.init();
+		} catch (ComponentInitException e1) {
+			e1.printStackTrace();
+		}
+		
 		if(ks.isRemote()){
 			try {
 				cacheDir = "cache" + File.separator + URLEncoder.encode(ks.getEndpoint().getURL().toString(), "UTF-8");
@@ -539,7 +545,7 @@ public class Enrichment {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setHeuristic(HeuristicType.FMEASURE);
+        lp.setAccuracyMethod(HeuristicType.FMEASURE);
         lp.setUseApproximations(false);
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
@@ -557,9 +563,9 @@ public class Enrichment {
         System.out.println("done in " + runTime + " ms");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
-        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom<OWLAxiom>> learnedAxioms = new LinkedList<EvaluatedAxiom<OWLAxiom>>();
-        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
         		axiom = dataFactory.getOWLEquivalentClassesAxiom(nc, learnedDescription.getDescription());
@@ -681,11 +687,11 @@ public class Enrichment {
 	/*
 	 * Generates list of OWL axioms.
 	 */
-	List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks){
+	List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<Field, Object> parameters, SparqlEndpointKS ks){
 		return toRDF(evalAxioms, algorithm, parameters, ks, null);
 	}
 
-	private List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<ConfigOption,Object> parameters, SparqlEndpointKS ks, String defaultNamespace){
+	private List<OWLAxiom> toRDF(List<EvaluatedAxiom<OWLAxiom>> evalAxioms, Class<? extends LearningAlgorithm> algorithm, Map<Field,Object> parameters, SparqlEndpointKS ks, String defaultNamespace){
 		if(defaultNamespace == null || defaultNamespace.isEmpty()){
 			defaultNamespace = DEFAULT_NS;
 		}
@@ -708,7 +714,7 @@ public class Enrichment {
 		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.AlgorithmRun, algorithmRunInd);
 		axioms.add(ax);
 		//generate instance for algorithm
-		String algorithmName = algorithm.getAnnotation(ComponentAnn.class).name();
+		String algorithmName = AnnComponentManager.getName(algorithm);
 		String algorithmID = "http://dl-learner.org#" + algorithmName.replace(" ", "_");
 		OWLIndividual algorithmInd = f.getOWLNamedIndividual(IRI.create(algorithmID));
 		//add label to algorithm instance
@@ -726,11 +732,11 @@ public class Enrichment {
 		axioms.add(ax);
 		//add Parameters to algorithm run instance
 		OWLIndividual paramInd;
-		for(Entry<ConfigOption, Object> entry : parameters.entrySet()){
+		for(Entry<Field, Object> entry : parameters.entrySet()){
 			paramInd = f.getOWLNamedIndividual(IRI.create(generateId()));
 			ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.Parameter, paramInd);
 			axioms.add(ax);
-			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterName, paramInd, entry.getKey().name());
+			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterName, paramInd, AnnComponentManager.getName(entry.getKey()));
 			axioms.add(ax);
 			ax = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.parameterValue, paramInd, entry.getValue().toString());
 			axioms.add(ax);
@@ -1139,6 +1145,7 @@ public class Enrichment {
 					String cacheDir = System.getProperty("java.io.tmpdir") + File.separator + "dl-learner";
 					ks = new SparqlEndpointKS(se, cacheDir);
 				}
+				ks.init();
 			} catch (URISyntaxException e2) {
 				e2.printStackTrace();
 			}
@@ -1180,7 +1187,7 @@ public class Enrichment {
 			// map resource to correct type
 			OWLEntity resource = null;
 			if(options.valueOf("resource") != null) {
-				resource = new SPARQLTasks(((SparqlEndpointKS)ks).getEndpoint()).guessResourceType(resourceURI.toString(), true);
+				resource = new SPARQLTasks(ks.getEndpoint()).guessResourceType(resourceURI.toString(), true);
 				if(resource == null) {
 					throw new IllegalArgumentException("Could not determine the type (class, object property or data property) of input resource " + options.valueOf("resource")
 							+ ". Enrichment only works for classes and properties.");

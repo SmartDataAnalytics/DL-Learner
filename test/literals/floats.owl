@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY floats "http://dl-learner.org/test/floats#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://dl-learner.org/test/floats#"
+     xml:base="http://dl-learner.org/test/floats"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:floats="http://dl-learner.org/test/floats#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://dl-learner.org/test/floats"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/floats#value -->
+
+    <owl:DatatypeProperty rdf:about="&floats;value">
+        <rdfs:domain rdf:resource="&floats;Number"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/floats#Number -->
+
+    <owl:Class rdf:about="&floats;Number"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N1 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N1">
+        <value rdf:datatype="&xsd;float">1</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N10 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N10">
+        <value rdf:datatype="&xsd;float">10</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N100 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N100">
+        <value rdf:datatype="&xsd;float">100</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N102 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N102">
+        <value rdf:datatype="&xsd;float">102</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N104 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N104">
+        <value rdf:datatype="&xsd;float">104</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N107 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N107">
+        <value rdf:datatype="&xsd;float">107</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N109 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N109">
+        <value rdf:datatype="&xsd;float">109</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N110 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N110">
+        <value rdf:datatype="&xsd;float">110</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N2 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N2">
+        <value rdf:datatype="&xsd;float">2</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N3 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N3">
+        <value rdf:datatype="&xsd;float">3</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N4 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N4">
+        <value rdf:datatype="&xsd;float">4</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N5 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N5">
+        <value rdf:datatype="&xsd;float">5</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N6 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N6">
+        <value rdf:datatype="&xsd;float">6</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N7 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N7">
+        <value rdf:datatype="&xsd;float">7</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N8 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N8">
+        <value rdf:datatype="&xsd;float">8</value>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://dl-learner.org/test/floats#N9 -->
+
+    <owl:NamedIndividual rdf:about="&floats;N9">
+        <value rdf:datatype="&xsd;float">9</value>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+

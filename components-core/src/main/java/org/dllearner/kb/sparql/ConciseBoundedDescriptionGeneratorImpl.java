@@ -98,7 +98,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		logger.trace("Computing CBD for {} ...", resourceURI);
 		long start = System.currentTimeMillis();
 		String query = generateQuery(resourceURI, depth, withTypesForLeafs);
-		System.out.println(query);
+//		System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query);
 		Model model = qe.execConstruct();
 		qe.close(); 

@@ -50,16 +50,21 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDataRange;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -133,6 +138,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected boolean precomputeDataPropertyHierarchy = true;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
+	
+	protected Multimap<OWLDatatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
+	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<OWLDataProperty, OWLDatatype>();
 
 	/**
 	 * The underlying knowledge sources.
@@ -166,10 +174,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return sources;
 	}
 
+	@Autowired
     public void setSources(Set<KnowledgeSource> sources){
         this.sources = sources;
     }
     
+	@Autowired
     public void setSources(KnowledgeSource... sources) {
     	this.sources = new HashSet<KnowledgeSource>(Arrays.asList(sources));
     }
@@ -691,8 +701,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Double> valuesDouble = new TreeSet<Double>();
 			for (OWLLiteral lit : values) {
-				if(lit.isDouble()){
-					valuesDouble.add(lit.parseDouble());
+				if(OWLAPIUtils.floatDatatypes.contains(lit.getDatatype())){
+					valuesDouble.add(Double.parseDouble(lit.getLiteral()));
 				}
 			}
 			ret.put(e.getKey(), valuesDouble);
@@ -754,9 +764,15 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 					numericValues.add((T) Integer.valueOf(lit.parseInteger()));
 				} else {
 					try {
-						Number number = numberFormat.parse(lit.getLiteral());
-						if(number instanceof Long) {
-							number = Double.valueOf(number.toString());
+						Number number;
+						String litStr = lit.getLiteral();
+						if(litStr.equalsIgnoreCase("NAN")) {
+							number = Double.NaN;
+						} else {
+							number = numberFormat.parse(litStr);
+							if(number instanceof Long) {
+								number = Double.valueOf(number.toString());
+							}
 						}
 						numericValues.add((T) (number) );
 					} catch (ParseException e) {
@@ -789,7 +805,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			SortedSet<OWLLiteral> values = e.getValue();
 			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
 			for (OWLLiteral lit : values) {
-				if(lit.isInteger()){
+				if(OWLAPIUtils.isIntegerDatatype(lit)){
 					valuesInt.add(lit.parseInteger());
 				}
 			}
@@ -1612,4 +1628,16 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	throws ReasoningMethodUnsupportedException {
 		throw new ReasoningMethodUnsupportedException();
 	}
+	
+	/**
+	 * @param dp
+	 * @return
+	 */
+	public abstract OWLDatatype getDatatype(OWLDataProperty dp);
+	
+	/**
+	 * Enabled a synchronized mode such that all reasoner methods are supposed
+	 * to be thread safe.
+	 */
+	public abstract void setSynchronized();
 }

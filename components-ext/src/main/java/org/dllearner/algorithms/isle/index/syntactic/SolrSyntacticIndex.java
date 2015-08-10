@@ -24,9 +24,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -58,7 +60,7 @@ public class SolrSyntacticIndex implements Index{
 	
 	private static final Logger logger = Logger.getLogger(SolrSyntacticIndex.class);
 	
-	private SolrServer solr;
+	private SolrClient solr;
 	private AnnotationEntityTextRetriever textRetriever;
 	private String searchField;
 	private String typesField = "types";
@@ -72,7 +74,7 @@ public class SolrSyntacticIndex implements Index{
 	public SolrSyntacticIndex(OWLOntology ontology, String solrServerURL, String searchField) {
 		this.ontology = ontology;
 		this.searchField = searchField;
-		solr = new HttpSolrServer(solrServerURL);
+		solr = new HttpSolrClient(solrServerURL);
 		textRetriever = new RDFSLabelEntityTextRetriever(ontology);
 	}
 	
@@ -191,6 +193,8 @@ public class SolrSyntacticIndex implements Index{
 					}
 				} catch (SolrServerException e) {
 					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
@@ -208,6 +212,8 @@ public class SolrSyntacticIndex implements Index{
 		    try {
 				totalNumberOfDocuments = solr.query(q).getResults().getNumFound();
 			} catch (SolrServerException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -242,7 +248,7 @@ public class SolrSyntacticIndex implements Index{
 			SolrDocumentList list = response.getResults();
 			cache.put(entitySet, list.getNumFound());
 			return list.getNumFound();
-		} catch (SolrServerException e) {
+		} catch (SolrServerException | IOException e) {
 			e.printStackTrace();
 		}
 		return -1;
@@ -285,7 +291,7 @@ public class SolrSyntacticIndex implements Index{
 			SolrDocumentList list = response.getResults();
 			cache.put(entitiesSet, list.getNumFound());
 			return list.getNumFound();
-		} catch (SolrServerException e) {
+		} catch (SolrServerException | IOException e) {
 			e.printStackTrace();
 		}
 		return -1;
@@ -316,7 +322,7 @@ public class SolrSyntacticIndex implements Index{
 			QueryResponse response = solr.query(query);
 			SolrDocumentList list = response.getResults();
 			return list.getNumFound();
-		} catch (SolrServerException e) {
+		} catch (SolrServerException | IOException e) {
 			e.printStackTrace();
 		}
 		return -1;

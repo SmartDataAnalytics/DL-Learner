@@ -37,7 +37,7 @@ public class SPARQLReasonerTest {
 		
 		Model model = RDFDataMgr.loadModel("../examples/swore/swore.rdf");
 		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(model, true);
-		ks.setEnableReasoning(true);
+//		ks.setEnableReasoning(true);
 		ks.init();
 		
 		AbstractReasonerComponent rc = new SPARQLReasoner(ks);

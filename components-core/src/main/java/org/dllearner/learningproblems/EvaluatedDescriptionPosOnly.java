@@ -41,7 +41,7 @@ public class EvaluatedDescriptionPosOnly extends EvaluatedDescription {
 
 	@Override
 	public String toString() {
-		return description.toString() + "(accuracy: " + getAccuracy() + ")";
+		return hypothesis.toString() + "(accuracy: " + getAccuracy() + ")";
 	}
 	
 	/**

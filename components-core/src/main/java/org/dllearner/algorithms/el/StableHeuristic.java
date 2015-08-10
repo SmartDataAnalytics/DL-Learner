@@ -19,6 +19,8 @@
 
 package org.dllearner.algorithms.el;
 
+import org.dllearner.core.ComponentInitException;
+
 
 /**
  * A stable comparator for search tree nodes. Stable means that the order
@@ -37,7 +39,7 @@ public class StableHeuristic implements ELHeuristic {
 	public int compare(SearchTreeNode o1, SearchTreeNode o2) {
 	
 		int diff = o2.getCoveredNegatives() - o1.getCoveredNegatives();
-		diff = Double.compare(o1.getScore(), o2.getScore());
+		diff = Double.compare(o1.getScore().getAccuracy(), o2.getScore().getAccuracy());
 		if(diff>0) {		
 			return 1;
 		} else if(diff<0) {
@@ -55,6 +57,13 @@ public class StableHeuristic implements ELHeuristic {
 			}
 			
 		}		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.Component#init()
+	 */
+	@Override
+	public void init() throws ComponentInitException {
 	}
 
 }

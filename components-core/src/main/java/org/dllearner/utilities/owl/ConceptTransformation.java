@@ -20,6 +20,7 @@
 package org.dllearner.utilities.owl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.NNF;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
@@ -39,6 +41,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLQuantifiedRestriction;
 import org.semanticweb.owlapi.model.OWLRestriction;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import com.google.common.collect.Sets;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -61,20 +65,67 @@ public class ConceptTransformation {
 	private static final OWLClassExpressionCleaner CLASS_EXPRESSION_CLEANER = new OWLClassExpressionCleaner(df);
 	
 	public static OWLClassExpression cleanConceptNonRecursive(OWLClassExpression concept) {
-		// cleaningTimeNsStart = System.nanoTime();
-		return concept.accept(CLASS_EXPRESSION_CLEANER);
-		// cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
+		return cleanConcept(concept);
 	}
 	
 	public static OWLClassExpression cleanConcept(OWLClassExpression concept) {
-		// cleaningTimeNsStart = System.nanoTime();
-		return concept.accept(CLASS_EXPRESSION_CLEANER);
-		// cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
+		cleaningTimeNsStart = System.nanoTime();
+		OWLClassExpression cleanedConcept = concept.accept(CLASS_EXPRESSION_CLEANER);
+		cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
+		return cleanedConcept;
 	}
 	
-	// wandelt ein Konzept in Negationsnormalform um
-	public static OWLClassExpression transformToNegationNormalForm(OWLClassExpression concept) {
-		return concept.getNNF();
+	/**
+	 * Returns the class expression in negation normal form.
+	 * @param ce the class expression
+	 * @return the class expression in negation normal form
+	 */
+	public static OWLClassExpression nnf(OWLClassExpression ce) {
+		NNF nnfGen = new NNF(new OWLDataFactoryImpl());
+		OWLClassExpression nnf = ce.accept(nnfGen);
+		return nnf;
+	}
+	
+	/**
+	 * Expand the class expression by adding \exists r.\top for all properties r
+	 * that are involved in some \forall r.C on the same modal depth. 
+	 * @param ce the class expression to expand
+	 * @return
+	 */
+	public static OWLClassExpression appendSomeValuesFrom(OWLClassExpression ce) {
+		// if forall semantics is someonly
+		if (ce instanceof OWLObjectIntersectionOf) {
+			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+			Set<OWLObjectPropertyExpression> universallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			Set<OWLObjectPropertyExpression> existentiallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
+				newOperands.add(appendSomeValuesFrom(operand));
+				if(operand instanceof OWLObjectAllValuesFrom) {
+					universallyQuantifiedProperties.add(((OWLObjectAllValuesFrom) operand).getProperty());
+				} else if(operand instanceof OWLObjectSomeValuesFrom) {
+					existentiallyQuantifiedProperties.add(((OWLObjectSomeValuesFrom) operand).getProperty());
+				}
+			}
+			for (OWLObjectPropertyExpression ope : Sets.difference(universallyQuantifiedProperties, existentiallyQuantifiedProperties)) {
+				newOperands.add(df.getOWLObjectSomeValuesFrom(ope, df.getOWLThing()));
+			}
+			return df.getOWLObjectIntersectionOf(newOperands);
+		} 
+//		else if(ce instanceof OWLObjectUnionOf) {
+//			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
+//			
+//			for (OWLClassExpression operand : ((OWLObjectUnionOf) ce).getOperands()) {
+//				OWLClassExpression newOperand = appendSomeValuesFrom(operand);
+//				if(newOperand instanceof OWLObjectAllValuesFrom) {
+//					newOperand = df.getOWLObjectIntersectionOf(ce,
+//							df.getOWLObjectSomeValuesFrom(((OWLObjectAllValuesFrom) newOperand).getProperty(), df.getOWLThing()));
+//				} 
+//				newOperands.add(newOperand);
+//			}
+//			
+//			return df.getOWLObjectUnionOf(newOperands);
+//		}
+		return ce.getNNF();
 	}
 	
 	// nimmt Konzept in Negationsnormalform und wendet äquivalenzerhaltende
@@ -82,207 +133,72 @@ public class ConceptTransformation {
 	public static OWLClassExpression applyEquivalenceRules(OWLClassExpression concept) {
 		
 		OWLClassExpression conceptClone = DUPLICATOR.duplicateObject(concept);
-//		conceptClone.getChildren().clear();
-//		
-//		for(OWLClassExpression c : OWLClassExpressionUtils.getChildren(concept.getChildren()) {
-//			conceptClone.addChild(applyEquivalenceRules(c));
-//		}		
 		
-		// return conceptClone;		
-		
-		// TOP, BOTTOM in Disjunktion entfernen
+		// remove \top and \bot from disjunction 
 		if(conceptClone instanceof OWLObjectUnionOf) {
-			List<OWLClassExpression> operands = ((OWLObjectUnionOf) conceptClone).getOperandsAsList();
-			Iterator<OWLClassExpression> it = operands.iterator();
-			while(it.hasNext()) {
-				OWLClassExpression c = it.next();
-			// for(Concept c : concept.getChildren()) {
-				// TOP in Disjunktion => ganze Disjunktion äquivalent zu Top
-				if(c.isOWLThing())
+			SortedSet<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
+			for (OWLClassExpression op : ((OWLObjectUnionOf) conceptClone).getOperandsAsList()) {
+				OWLClassExpression c = applyEquivalenceRules(op);
+				
+				if(c.isOWLThing()) {// \top in C => C \equiv \top
 					return df.getOWLThing();
-				// BOTTOM in Disjunktion => entfernen
-				else if(c.isOWLNothing())
-					it.remove();
+				} 
+				else if(c.isOWLNothing()) {// \bot in C => remove
 					
+				} else {
+					newOperands.add(c);
+				}
 			}
 			
-			// falls nur noch ein Kind übrig bleibt, dann entfällt
-			// MultiDisjunction
-			if(operands.size()==1)
-				return operands.get(0);
-			
-			// falls keine Kinder übrig bleiben, dann war das letzte Kind
-			// BOTTOM
-			if(operands.isEmpty())
+			// if there are no children the last child was \bot
+			if (newOperands.isEmpty()) {
 				return df.getOWLNothing();
-			
-		} else if(conceptClone instanceof OWLObjectIntersectionOf) {
-			List<OWLClassExpression> operands = ((OWLObjectUnionOf) conceptClone).getOperandsAsList();
-			Iterator<OWLClassExpression> it = operands.iterator();
-			while(it.hasNext()) {
-				OWLClassExpression c = it.next();
-				// TOP in Konjunktion => entfernen
-				if(c.isOWLThing())
-					it.remove();
-				// BOTTOM in Konjunktion => alles äquivalent zu BOTTOM
-				else if(c.isOWLNothing())
-					return df.getOWLNothing();							
+			}if (newOperands.size() == 1) {
+				return newOperands.first();
+			} else {
+				return df.getOWLObjectUnionOf(newOperands);
+			}
+		} else if(conceptClone instanceof OWLObjectIntersectionOf) {// remove \top and \bot from intersection 
+			SortedSet<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
+			for (OWLClassExpression op : ((OWLObjectIntersectionOf) conceptClone).getOperandsAsList()) {
+				OWLClassExpression c = applyEquivalenceRules(op);
+				
+				if(c.isOWLThing()) {// \top in C => remove
+					
+				} else if(c.isOWLNothing()) {// \bot in C => C \equiv \bot
+					return df.getOWLNothing();
+				} else {
+					newOperands.add(c);
+				}
 			}
 			
-			if(operands.size()==1)
-				return operands.get(0);
-			
-			// falls keine Kinder übrig bleiben, dann war das letzte Kind
-			// TOP
-			if(operands.isEmpty())
+			// if there are no children the last child was \top
+			if (newOperands.isEmpty()) {
 				return df.getOWLThing();
-			
-			return df.getOWLObjectIntersectionOf(new TreeSet<OWLClassExpression>(operands));
+			} else if (newOperands.size() == 1) {
+				return newOperands.first();
+			} else {
+				return df.getOWLObjectIntersectionOf(newOperands);
+			}
 		}		
 		
 		return conceptClone;
 	}
 	
-	// TODO: aus Effizienzgründen könnte man noch eine nicht-rekursive Methode entwickeln, die
-	// nur die obere Ebene umwandelt
-	public static void transformToOrderedNegationNormalFormNonRecursive(OWLClassExpression concept) {
-		// onnfTimeNsStart = System.nanoTime();
-		
-		// Liste der Kinder sortieren
-//		Collections.sort(concept.getChildren(), conceptComparator);
-		
-		// onnfTimeNs += System.nanoTime() - onnfTimeNsStart;
-	}
-	
-	// wandelt ein Konzept in geordnete Negationsnormalform um;
-	// es wird angenommen, dass das Eingabekonzept in Negationsnormalform und
-	// "sauber" ist
-	public static void transformToOrderedForm(OWLClassExpression concept) {
-		
-		/**
-		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
-		for(OWLClassExpression child : concept.getChildren()) {
-			transformToOrderedForm(child, conceptComparator);
-		}
-		
-		onnfTimeNsStart = System.nanoTime();
-		// Liste der Kinder sortieren
-		Collections.sort(concept.getChildren(), conceptComparator);
-		
-		// Konvertierung von Liste in Array => Array sortieren => Rekonvertierung in Liste
-		// List<Concept> childList = concept.getChildren();
-		// Concept[] childArray = (Concept[]) childList.toArray(); 
-		// Arrays.sort(childArray, conceptComparator);
-		// childList = Arrays.asList(childArray);
-		onnfTimeNs += System.nanoTime() - onnfTimeNsStart;
-		**/
-	}
-	/*
-	public static OWLClassExpression transformToMultiClean(OWLClassExpression concept) {
-		concept = transformToMulti(concept);
-		cleanConcept(concept);
-		return concept;
-	}
-	
-	// ersetzt einfache Disjunktionen/Konjunktionen durch Multi
-	public static OWLClassExpression transformToMulti(OWLClassExpression concept) {
-		// alle Kinderkonzepte in geordnete Negationsnormalform bringen
-		List<OWLClassExpression> multiChildren = new LinkedList<OWLClassExpression>();
-		
-		// es müssen veränderte Kinder entfernt und neu hinzugefügt werden
-		// (einfache Zuweisung mit = funktioniert nicht, da die Pointer die gleichen
-		// bleiben)
-		Iterator<OWLClassExpression> it = concept.getChildren().iterator();
-		while(it.hasNext()) {
-			Description child = it.next();
-			multiChildren.add(transformToMulti(child));
-			it.remove();
-		}
-		
-		for(OWLClassExpression multiChild : multiChildren)
-			concept.addChild(multiChild);
-			
-		if(concept instanceof Disjunction)
-			return new MultiDisjunction(concept.getChildren());
-		
-		if(concept instanceof Conjunction)
-			return new MultiConjunction(concept.getChildren());
-		
-		return concept;
-	}
-	*/
-	// liefert ein ev. verkürztes Konzept, wenn in Disjunktionen bzw.
-	// Konjunktionen Elemente mehrfach vorkommen
-	// (erstmal nicht-rekursiv implementiert)
-	public static OWLClassExpression getShortConceptNonRecursive(OWLClassExpression concept) {
-		return concept;
-	}
-	
 	/**
 	 * Tries to shorten a concept, e.g. male AND male is shortened to male. 
 	 * @param concept The input concepts.
-	 * @param conceptComparator A comparator for concepts.
 	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
 	 */
 	public static OWLClassExpression getShortConcept(OWLClassExpression concept) {
 		shorteningTimeNsStart = System.nanoTime();
-		// deep copy des Konzepts, da es nicht verändert werden darf
-		// (Nachteil ist, dass auch Konzepte kopiert werden, bei denen sich gar
-		// nichts ändert)
 		OWLClassExpression clone = DUPLICATOR.duplicateObject(concept);
-		clone = getShortConcept(clone, 0);
-		// return getShortConcept(concept, conceptComparator, 0);
 		shorteningTimeNs += System.nanoTime() - shorteningTimeNsStart;
 		return clone;
 	}
 	
-	// das Eingabekonzept darf nicht modifiziert werden
-	private static OWLClassExpression getShortConcept(OWLClassExpression concept, int recDepth) {
-		//probably no longer necessary as OWL API uses sets for class expressions
-		return concept;
-		/**
-		//if(recDepth==0)
-		//	System.out.println(concept);
-		
-		// Kinder schrittweise ersetzen
-		// TODO: effizienter wäre nur zu ersetzen, wenn sich etwas geändert hat
-		List<OWLClassExpression> tmp = new LinkedList<OWLClassExpression>(); 
-		Iterator<OWLClassExpression> it = concept.getChildren().iterator();
-		while(it.hasNext()) {
-			OWLClassExpression c = it.next();
-			// concept.addChild(getShortConcept(c, conceptComparator));
-			OWLClassExpression newChild = getShortConcept(c, recDepth+1);
-			// Vergleich, ob es sich genau um die gleichen Objekte handelt
-			// (es wird explizit == statt equals verwendet)
-			if(c != newChild) {
-				tmp.add(newChild);
-				it.remove();	
-			}
-		}
-		for(OWLClassExpression child : tmp)
-			concept.addChild(child);
-		
-		if(concept instanceof OWLNaryBooleanClassExpression) {
-			// Verkürzung geschieht einfach durch einfügen in eine geordnete Menge
-			SortedSet<OWLClassExpression> newChildren = new TreeSet<OWLClassExpression>();
-			newChildren.addAll(((OWLNaryBooleanClassExpression) concept).getOperands());
-			// falls sich Kinderliste auf ein Element reduziert hat, dann gebe nur
-			// dieses Element zurück (umschließende Konjunktion/Disjunktion entfällt)
-			if(newChildren.size()==1)
-				return newChildren.first();
-			// ev. geht das noch effizienter, wenn man keine neue Liste erstellen 
-			// muss(?) => Listen erstellen dürfte allerdings sehr schnell gehen
-			if(concept instanceof OWLObjectIntersectionOf)
-				return df.getOWLObjectIntersectionOf(newChildren);
-			else
-				return df.getOWLObjectUnionOf(newChildren);
-		} else
-			return concept;
-		**/
-	}	
-	
 	/**
-	 * Method to determine, whether a class OWLClassExpression is minimal,
+	 * Method to determine, whether a class expression is minimal,
 	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
 	 * minimal.	This method performs heuristic sanity checks (it will
 	 * not try to find semantically equivalent shorter descriptions).

@@ -27,16 +27,6 @@
 
 
     <servlet>
-        <servlet-name>NKEGeizhals</servlet-name>
-        <servlet-class>org.dllearner.server.NKEGeizhals</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>NKEGeizhals</servlet-name>
-        <url-pattern>/NKEGeizhals</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
         <servlet-name>Enrichment</servlet-name>
         <servlet-class>org.dllearner.server.EnrichmentServlet</servlet-class>
     </servlet>

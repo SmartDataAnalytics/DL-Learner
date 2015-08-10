@@ -4,7 +4,6 @@ import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,10 +20,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.TimeLimitingCollector.TimeExceededException;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -43,6 +42,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.Score;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
@@ -101,15 +101,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 
 	private List<EvaluatedRDFResourceTree> partialSolutions;
 	
-	private EvaluatedDescription currentBestSolution;
+	private EvaluatedDescription<? extends Score> currentBestSolution;
 	
 	private QueryTreeHeuristic heuristic;
 	
 	//Parameters
 	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
-	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = 60;
 	
 	private double coverageWeight = 0.8;
 	private double specifityWeight = 0.1;
@@ -136,7 +134,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	// the (approximated) value of noise within the examples
 	private double noise = 0.0;
 	
-	private long startTime;
 	private long partialSolutionStartTime;
 	
 	private double startPosExamplesSize;
@@ -304,7 +301,6 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	public void start() {
 		printSetup();
 		logger.info("Running...");
-		startTime = System.currentTimeMillis();
 		
 		reset();
 		
@@ -359,8 +355,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		postProcess();
 		
-		long endTime = System.currentTimeMillis();
-		logger.info("Finished in " + (endTime-startTime) + "ms.");
+		long nanoEndTime = System.nanoTime();
+		logger.info("Finished in " + TimeUnit.NANOSECONDS.toMillis(nanoEndTime - nanoStartTime) + "ms.");
 		logger.info(expressionTests +" descriptions tested");
 		if(currentBestSolution != null) {
 			logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
@@ -802,13 +798,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return evaluatedTrees;
 	}
 	
-	private EvaluatedDescription buildCombinedSolution(){
-		EvaluatedDescription bestCombinedSolution = null;
+	private EvaluatedDescription<? extends Score> buildCombinedSolution(){
+		EvaluatedDescription<? extends Score> bestCombinedSolution = null;
 		double bestScore = Double.NEGATIVE_INFINITY;
 		LiteralNodeConversionStrategy[] strategies = LiteralNodeConversionStrategy.values();
 		strategies = new LiteralNodeConversionStrategy[]{LiteralNodeConversionStrategy.DATATYPE};
 		for (LiteralNodeConversionStrategy strategy : strategies) {
-			EvaluatedDescription combinedSolution;
+			EvaluatedDescription<? extends Score> combinedSolution;
 			if(partialSolutions.size() == 1){
 				combinedSolution = partialSolutions.get(0).getEvaluatedDescription();
 			} else {
@@ -1009,15 +1005,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		return stop || todoList.isEmpty() || currentPosExampleTrees.isEmpty() || isPartialSolutionTimeExpired() || isTimeExpired();
 	}
 	
-	private boolean isTimeExpired(){
-		return maxExecutionTimeInSeconds > 0 && (System.currentTimeMillis() - startTime) / 1000d >= maxExecutionTimeInSeconds;
-	}
-	
 	private boolean isPartialSolutionTimeExpired(){
 		return maxTreeComputationTimeInSeconds <= 0 ? false : (System.currentTimeMillis() - partialSolutionStartTime)/1000d >= maxTreeComputationTimeInSeconds;
 	}
-	
-	
 	
 	/**
 	 * Shows the current setup of the algorithm.

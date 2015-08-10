@@ -19,24 +19,17 @@
 
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.options.BooleanConfigOption;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.StringConfigOption;
-import org.dllearner.core.options.StringSetConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -45,8 +38,8 @@ import com.google.common.collect.Sets.SetView;
  * @author Jens Lehmann
  *
  */
-public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
-	private static Logger logger = Logger.getLogger(PosNegLP.class);
+public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
+	protected static Logger logger = Logger.getLogger(PosNegLP.class);
 
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
@@ -54,7 +47,7 @@ public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
 
     @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;
-    @org.dllearner.core.config.ConfigOption(name = "useMultiInstanceChecks", description = "Use The Multi Instance Checks", defaultValue = "UseMultiInstanceChecks.TWOCHECKS", required = false, propertyEditorClass = StringTrimmerEditor.class)
+    @org.dllearner.core.config.ConfigOption(name = "useMultiInstanceChecks", description = "Use The Multi Instance Checks", defaultValue = "UseMultiInstanceChecks.TWOCHECKS", required = false)
     private UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
     @org.dllearner.core.config.ConfigOption(name = "percentPerLengthUnit", description = "Percent Per Length Unit", defaultValue = "0.05", required = false)
     private double percentPerLengthUnit = 0.05;
@@ -63,7 +56,7 @@ public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
     /**
 	 * If instance checks are used for testing concepts (e.g. no retrieval), then
 	 * there are several options to do this. The enumeration lists the supported
-	 * options. These options are only important if the reasoning mechanism 
+	 * options. These options are only important if the reasoning mechanism
 	 * supports sending several reasoning requests at once as it is the case for
 	 * DIG reasoners.
 	 * 
@@ -94,21 +87,6 @@ public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
 	public PosNegLP(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
-	
-	public static Collection<org.dllearner.core.options.ConfigOption<?>> createConfigOptions() {
-		Collection<org.dllearner.core.options.ConfigOption<?>> options = new LinkedList<org.dllearner.core.options.ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples",null, true, false));
-		options.add(new StringSetConfigOption("negativeExamples",
-				"negative examples",null, true, false));
-		options.add(new BooleanConfigOption("useRetrievalForClassficiation", 
-				"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.", false));
-		options.add(CommonConfigOptions.getPercentPerLenghtUnitOption(0.05));
-		StringConfigOption multiInstanceChecks = new StringConfigOption("useMultiInstanceChecks", "See UseMultiInstanceChecks enum. - NO LONGER FULLY SUPPORTED.","twoChecks");
-		multiInstanceChecks.setAllowedValues(new String[] {"never", "twoChecks", "oneCheck"});
-		options.add(multiInstanceChecks);
-		return options;
-	}	
 
 	/*
 	 * (non-Javadoc)
@@ -135,12 +113,12 @@ public abstract class PosNegLP extends AbstractLearningProblem<ScorePosNeg> {
 			logger.warn("You declared some individuals as both positive and negative examples.");
 		}
 		
-		allExamples = Helper.union(positiveExamples, negativeExamples);
+		allExamples = Sets.union(positiveExamples, negativeExamples);
 		
 		// sanity check whether examples are contained in KB
 		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
-            Set<OWLIndividual> missing = Helper.difference(allExamples, reasoner.getIndividuals());
-            double percentage = (double) (missing.size()/allExamples.size());
+            Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
+            double percentage = missing.size()/allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
 			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
 			str += missing.toString();

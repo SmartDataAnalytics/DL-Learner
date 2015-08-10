@@ -48,9 +48,9 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
 	/**
 	 * Computes a sample fragment of the knowledge base by using instances of the
-	 * given OWL class.
-	 * @param cls
-	 * @return
+	 * given OWL class and also, if enabled, use some instances that do not belong to the class.
+	 * @param cls the OWL class
+	 * @return a sample fragment
 	 */
 	public OWLOntology getSample(OWLClass cls) {
 		// get pos examples

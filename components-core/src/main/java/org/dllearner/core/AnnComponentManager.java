@@ -19,17 +19,31 @@
 
 package org.dllearner.core;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.apache.log4j.Level;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.refinementoperators.RefinementOperator;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
+
 
 /**
  * Component manager for the new (as of 2011) annotation based configuration
@@ -42,6 +56,7 @@ import org.dllearner.refinementoperators.RefinementOperator;
  *
  */
 public class AnnComponentManager {
+	private static Logger logger = LoggerFactory.getLogger(AnnComponentManager.class);
 
     // the list of annotation based components (note that we save them as string here
     // instead of class objects in order not to have dependencies on the implementation
@@ -49,68 +64,107 @@ public class AnnComponentManager {
     // objects are only created on invocation of the component manager);
     // components must be listed here if they should be supported in interfaces
     // (CLI, GUI, Web Service) and scripts (HTML documentation generator)
-    private static List<String> componentClassNames = new ArrayList<String>  ( Arrays.asList(new String[]{
-            "org.dllearner.algorithms.NaiveALLearner",
-            "org.dllearner.algorithms.celoe.CELOE",
-//            "org.dllearner.algorithms.celoe.PCELOE",
-            "org.dllearner.algorithms.el.ELLearningAlgorithm",
-            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
-//            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
-//            "org.dllearner.algorithms.BruteForceLearner",
-//            "org.dllearner.algorithms.RandomGuesser",
-            "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner",
-            "org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner",
-            "org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner",
-            "org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner",
-            "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
-            "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
-            "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
-            "org.dllearner.algorithms.DisjointClassesLearner",
-            "org.dllearner.algorithms.SimpleSubclassLearner",
-            "org.dllearner.algorithms.qtl.QTL2Disjunctive",
-            "org.dllearner.kb.KBFile",
-            "org.dllearner.kb.OWLFile",
-            "org.dllearner.kb.SparqlEndpointKS",
-            "org.dllearner.kb.LocalModelBasedSparqlEndpointKS",
-            "org.dllearner.kb.sparql.SparqlKnowledgeSource",
-            "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
-            "org.dllearner.learningproblems.PosNegLPStandard",
-//            "org.dllearner.learningproblems.PosNegLPStrict",
-//            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
-            "org.dllearner.learningproblems.PosOnlyLP",
-            "org.dllearner.learningproblems.ClassLearningProblem",
-            "org.dllearner.reasoning.FastInstanceChecker",
-            "org.dllearner.reasoning.ClosedWorldReasoner",
-            "org.dllearner.reasoning.OWLAPIReasoner",
-            "org.dllearner.reasoning.SPARQLReasoner",
-//            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
-            "org.dllearner.algorithms.ocel.OCEL",
-            "org.dllearner.algorithms.ocel.MultiHeuristic",
-            "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
-            "org.dllearner.refinementoperators.RhoDRDown",
-//            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
-            // just for testing
-            // "org.dllearner.refinementoperators.ExampleOperator",
-            "org.dllearner.utilities.semkernel.SemKernelWorkflow",
-            "org.dllearner.utilities.semkernel.MPSemKernelWorkflow",
-    } ));
+    private static List<String> componentClassNames;
+//    ;= new ArrayList<String>  ( Arrays.asList(new String[]{
+//            "org.dllearner.algorithms.NaiveALLearner",
+//            "org.dllearner.algorithms.celoe.CELOE",
+////            "org.dllearner.algorithms.celoe.PCELOE",
+//            "org.dllearner.algorithms.el.ELLearningAlgorithm",
+//            "org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive",
+////            "org.dllearner.algorithms.fuzzydll.FuzzyCELOE",
+////            "org.dllearner.algorithms.BruteForceLearner",
+////            "org.dllearner.algorithms.RandomGuesser",
+//            "org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.InverseFunctionalObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner",
+//            "org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner",
+//            "org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner",
+//            "org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner",
+//            "org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner",
+//            "org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner",
+//            "org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner",
+//            "org.dllearner.algorithms.DisjointClassesLearner",
+//            "org.dllearner.algorithms.SimpleSubclassLearner",
+//            "org.dllearner.algorithms.qtl.QTL2Disjunctive",
+//            "org.dllearner.kb.KBFile",
+//            "org.dllearner.kb.OWLFile",
+//            "org.dllearner.kb.SparqlEndpointKS",
+//            "org.dllearner.kb.LocalModelBasedSparqlEndpointKS",
+//            "org.dllearner.kb.sparql.SparqlKnowledgeSource",
+//            "org.dllearner.kb.sparql.simple.SparqlSimpleExtractor",
+//            "org.dllearner.learningproblems.PosNegLPStandard",
+////            "org.dllearner.learningproblems.PosNegLPStrict",
+////            "org.dllearner.learningproblems.FuzzyPosNegLPStandard",
+//            "org.dllearner.learningproblems.PosOnlyLP",
+//            "org.dllearner.learningproblems.ClassLearningProblem",
+//            "org.dllearner.learningproblems.PropertyAxiomLearningProblem",
+//            "org.dllearner.reasoning.ClosedWorldReasoner",
+//            "org.dllearner.reasoning.OWLAPIReasoner",
+//            "org.dllearner.reasoning.SPARQLReasoner",
+////            "org.dllearner.reasoning.fuzzydll.FuzzyOWLAPIReasoner",
+//            "org.dllearner.algorithms.ocel.OCEL",
+//            "org.dllearner.algorithms.ocel.MultiHeuristic",
+//            "org.dllearner.algorithms.celoe.OEHeuristicRuntime",
+//            "org.dllearner.algorithms.isle.NLPHeuristic",
+//            "org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex",
+//            "org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple",
+//            "org.dllearner.algorithms.el.DisjunctiveHeuristic",
+//            "org.dllearner.algorithms.isle.metrics.RelevanceWeightedStableHeuristic",
+//            "org.dllearner.algorithms.el.StableHeuristic",
+//            "org.dllearner.refinementoperators.RhoDRDown",
+////            "org.dllearner.refinementoperators.SynchronizedRhoDRDown",
+//            // just for testing
+//            // "org.dllearner.refinementoperators.ExampleOperator",
+//            "org.dllearner.utilities.semkernel.SemKernelWorkflow",
+//            "org.dllearner.utilities.semkernel.MPSemKernelWorkflow",
+//    } ));
     private static Collection<Class<? extends Component>> components;
     private static BidiMap<Class<? extends Component>, String> componentNames;
     private static BidiMap<Class<? extends Component>, String> componentNamesShort;
 
 	private static AnnComponentManager cm = null;
+	private static Reflections reflectionScanner = null;
 
 	private AnnComponentManager() {
+		if (componentClassNames == null) {
+			componentClassNames = new ArrayList<>();
+			if (reflectionScanner == null) {
+				org.apache.log4j.Logger.getLogger(Reflections.class).setLevel(Level.OFF);
+				reflectionScanner = new Reflections("org.dllearner");
+			}
+			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class);
+			for (Class<?> clazz
+					: Sets.intersection(
+							componentClasses,
+							componentAnnClasses
+					)
+				) {
+				if (!Modifier.isAbstract( clazz.getModifiers() ))
+					componentClassNames.add(clazz.getCanonicalName());
+			}
+			for (Class<?> clazz
+					: Sets.difference(componentClasses, componentAnnClasses)
+					) {
+				if (!Modifier.isAbstract( clazz.getModifiers() ))
+					logger.debug("Warning: " + clazz.getCanonicalName() + " implements Component but is not annotated, ignored");
+			}
+		}
 		// conversion of class strings to objects
-		components = new HashSet<Class<? extends Component>>();
+		components = new TreeSet<Class<? extends Component>>(new Comparator<Class<? extends Component>>() {
+
+			@Override
+			public int compare(Class<? extends Component> o1,
+					Class<? extends Component> o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 		componentNames = new DualHashBidiMap<Class<? extends Component>, String>();
 		componentNamesShort = new DualHashBidiMap<Class<? extends Component>, String>();
 		for (String componentClassName : componentClassNames) {
@@ -133,6 +187,11 @@ public class AnnComponentManager {
 		AnnComponentManager.componentClassNames = componentClassNames;
 		cm = null;
 	}
+	
+	public static void setReflectionScanner(Reflections ref) {
+		AnnComponentManager.reflectionScanner = ref;
+		setComponentClassNames(null);
+	}
 
 	/**
 	 * Gets the singleton instance of <code>ComponentManager</code>.
@@ -154,7 +213,55 @@ public class AnnComponentManager {
 	public Collection<Class<? extends Component>> getComponents() {
 		return components;
 	}
+	
+	/**
+	 * Returns a list of all available components in this instance
+	 * of <code>ComponentManager</code>.
+	 * @return the components A list of component classes available in this
+	 * instance of <code>ComponentManager</code>.
+	 */
+	public SortedSet<String> getComponentStrings() {
+		SortedSet<String> result = new TreeSet<>();
+        for (Class<? extends Component> component : getComponents()) {
+        	result.add(getShortName(component));
+        }
+		return result;
+	}
 
+    /**
+     * Get registered components which are of the specified type.
+     *
+     * @param type The super type.
+     * @return All sub classes of type.
+     */
+    public SortedSet<String> getComponentStringsOfType(Class type) {
+
+    	SortedSet<String> result = new TreeSet<>();
+        for (Class<? extends Component> component : getComponentsOfType(type)) {
+        	result.add(getShortName(component));
+        }
+
+        return result;
+    }
+    
+    /**
+     * Get the corresponding component class given the long or short name.
+     *
+     * @param componentName The long or short name of the component.
+     * @return The class of the component.
+     */
+    public Class<? extends Component> getComponentClass(String componentName) {
+    	// lookup by long name
+    	Class<? extends Component> componentClass = componentNames.getKey(componentName);
+    	
+    	// lookup by short name
+    	if(componentClass == null) {
+    		componentClass = componentNamesShort.getKey(componentName);
+    	}
+
+        return componentClass;
+    }
+    
     /**
      * Get registered components which are of the specified type.
      *
@@ -195,89 +302,60 @@ public class AnnComponentManager {
 		return componentNamesShort;
 	}
 
-	// gets all components which this component can be plugged into
-	@Deprecated
-	public Collection<Class<? extends Component>> getPluggableComponents(Class<? extends Component> component) {
-		Collection<Class<? extends Component>> pluggableComponents = new LinkedList<Class<? extends Component>>();
-		for(Class<? extends Component> comp : components) {
-			if(isPluggable(comp, component)) {
-				pluggableComponents.add(comp);
-			}
-		}
-		return pluggableComponents;
-	}
-
-	// should return true if there exists a constructor in "compound" which can take
-	// "component" as argument (in any argument positions)
-	@Deprecated
-	public boolean isPluggable(Class<? extends Component> compound, Class<? extends Component> argument) {
-		try {
-			Constructor<?>[] constructors = compound.getDeclaredConstructors();
-			for(Constructor<?> constructor : constructors) {
-				Class<?>[] paraTypes = constructor.getParameterTypes();
-				for(Class<?> paraType : paraTypes) {
-					if(org.springframework.util.ClassUtils.isAssignable(argument, paraType)) {
-						return true;
-					}
-				}
-			}
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	@Deprecated
-	public boolean isCompatible(Class<? extends Component> compound, Class<? extends Component>... arguments) {
-		if(areValidComponentConstructorArguments(arguments)) {
-			throw new Error("Please order arguments by their class names.");
-		}
-		return hasMatchingConstructor(compound, arguments);
-	}
-
-	@Deprecated
-	private boolean hasMatchingConstructor(Class<? extends Component> compound, Class<? extends Component>... arguments) {
-		try {
-			Constructor<?>[] constructors = compound.getDeclaredConstructors();
-			for(Constructor<?> constructor : constructors) {
-				// TODO: ClassUtils is no longer in the dependencies
-//				if(ClassUtils.isAssignable(arguments, constructor.getParameterTypes())) {
-					return true;
-//				}
-			}
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 	/**
-	 * Components in DL-Learner can be plugged together by invoking an appropriate
-	 * constructor. For efficiency reasons, they should be ordered by class
-	 * names. This method allows to test this convention.
-	 *
-	 * Please note that components may have additional further constructors, but
-	 * if a constructor has exclusively components as parameters, then it is
-	 * required that they are ordered by class name.
-	 *
-	 * TODO: Possibly, we can replace our naive constructor detection code with
-	 * a better implementation, which can detect whether an appropriate
-	 * constructor exists even without fixing the order of arguments. (E.g. checking
-	 * assignability for each parameter and argument; putting it into a matrix
-	 * and then checking whether there is a row/column with only 1s.)
-	 *
-	 * @param arguments Argument classes.
-	 * @return True of the order of arguments is correct and false otherwise.
+	 * Applies a config entry to a component. If the entry is not valid, the method
+	 * prints an exception and returns false.
+	 * @param <T> Type of the config option.
+	 * @param component A component object.
+	 * @param entry The configuration entry to set.
+	 * @return True if the config entry could be applied succesfully, otherwise false.
 	 */
 	@Deprecated
-	public boolean areValidComponentConstructorArguments(Class<? extends Component>... arguments) {
-		for(int i=0; i<arguments.length; i++) {
-			if(arguments[i].getName().compareTo(arguments[i+1].getName())<0) {
-				return false;
+	public static <T> boolean applyConfigEntry(AbstractComponent component, String optionName, T value) {
+		List<AbstractComponent> childComponents = new LinkedList<>();
+		for (Method m : component.getClass().getMethods()) {
+			if (m.getName().equals("set" + optionName.substring(0, 1).toUpperCase() + optionName.substring(1))) {
+				try {
+					m.invoke(component, value);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.debug("Error setting " + optionName + " to " + value + " on " + component + ": ", e);
+					return false;
+				}
+				return true;
+			} else if (m.getName().startsWith("get")
+					&& AbstractComponent.class.isAssignableFrom(m.getReturnType())) {
+				Object cc;
+				try {
+					cc = m.invoke(component);
+					childComponents.add((AbstractComponent) cc);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.trace("Error querying " + m.getName() + " for subcomponent in " + component, e);
+				}
 			}
 		}
-		return true;
+		for (AbstractComponent cc : childComponents) {
+			if (cc != null) {
+				boolean try_inv = applyConfigEntry(cc, optionName, value);
+				if (try_inv) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
+
+	public final static Class[] coreComponentClasses = {
+		KnowledgeSource.class,
+		LearningAlgorithm.class,
+		AxiomLearningAlgorithm.class,
+		ClassExpressionLearningAlgorithm.class,
+		LearningProblem.class,
+		ReasonerComponent.class,
+		RefinementOperator.class,
+		Heuristic.class
+	};
 
 	/**
 	 * Convenience method to retrieve core types of a component. The main use case for this
@@ -288,26 +366,10 @@ public class AnnComponentManager {
 	 */
 	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
 		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
-		if(KnowledgeSource.class.isAssignableFrom(component)) {
-			types.add(KnowledgeSource.class);
-		}
-		if(LearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(LearningAlgorithm.class);
-		}
-		if(AxiomLearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(AxiomLearningAlgorithm.class);
-		}
-		if(ClassExpressionLearningAlgorithm.class.isAssignableFrom(component)) {
-			types.add(ClassExpressionLearningAlgorithm.class);
-		}
-		if(LearningProblem.class.isAssignableFrom(component)) {
-			types.add(LearningProblem.class);
-		}
-		if(ReasonerComponent.class.isAssignableFrom(component)) {
-			types.add(ReasonerComponent.class);
-		}
-		if(RefinementOperator.class.isAssignableFrom(component)) {
-			types.add(RefinementOperator.class);
+		for(Class c : coreComponentClasses) {
+			if(c.isAssignableFrom(component)) {
+				types.add(c);
+			}
 		}
 		return types;
 	}
@@ -367,12 +429,31 @@ public class AnnComponentManager {
 	}
 
 	/**
-	 * Returns the OWLClassExpression of a DL-Learner component.
+	 * Returns the description of a DL-Learner component.
 	 * @param component
 	 * @return OWLClassExpression of the component.
 	 */
 	public static String getDescription(Component component){
 		return getDescription(component.getClass());
+	}
+	
+	/**
+	 * Returns the config options of a DL-Learner component.
+	 * @param component
+	 * @return OWLClassExpression of the component.
+	 */
+	public static Set<Field> getConfigOptions(Class<? extends Component> component){
+		Set<Field> set = new HashSet<>();
+	    Class<?> c = component;
+	    while (c != null) {
+	        for (Field field : c.getDeclaredFields()) {
+	            if (field.isAnnotationPresent(ConfigOption.class)) {
+	                set.add(field);
+	            }
+	        }
+	        c = c.getSuperclass();
+	    }
+	    return set;
 	}
 
 	/**
@@ -396,5 +477,15 @@ public class AnnComponentManager {
 
 	public static boolean addComponentClassName(String e) {
 		return componentClassNames.add(e);
+	}
+
+	/**
+	 * Returns the name of a config option
+	 * @param f the Reflection field of the option
+	 * @return name of the option
+	 */
+	public static String getName(Field f) {
+		f.getAnnotation(ConfigOption.class);
+		return f.getName();
 	}
 }

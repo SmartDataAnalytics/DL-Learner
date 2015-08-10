@@ -21,10 +21,13 @@ package org.dllearner.test.junit;
 
 import static org.junit.Assert.assertFalse;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 
 import org.dllearner.core.AbstractComponent;
-import org.dllearner.core.ComponentManager;
+import org.dllearner.core.AnnComponentManager;
+import org.dllearner.core.Component;
 import org.junit.Test;
 
 /**
@@ -39,14 +42,19 @@ public class ComponentTests {
 	 * Checks whether all components implement the getName() method. While it
 	 * cannot be enforced to implement a static method, it should be done (e.g.
 	 * to be used as label for the component in GUIs).
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void nameTest() {
+	public void nameTest() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		String defaultName = AbstractComponent.getName();
-		ComponentManager cm = ComponentManager.getInstance();
-		List<Class<? extends AbstractComponent>> components = cm.getComponents();
-		for (Class<? extends AbstractComponent> component : components) {
-			String componentName = cm.getComponentName(component);
+		AnnComponentManager cm = AnnComponentManager.getInstance();
+		Collection<Class<? extends Component>> components = cm.getComponents();
+		for (Class<? extends Component> component : components) {
+			String componentName = (String) component.getMethod("getName").invoke(null);
 			assertFalse(component + " does not overwrite getName().", componentName
 					.equals(defaultName));
 		}

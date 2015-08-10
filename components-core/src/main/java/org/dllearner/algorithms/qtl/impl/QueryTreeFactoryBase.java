@@ -19,6 +19,7 @@
  */
 package org.dllearner.algorithms.qtl.impl;
 
+import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,9 +45,11 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.util.NodeComparator;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.util.iterator.Filter;
@@ -122,7 +125,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 		fillMap(resource, model, resource2Statements);
 
-		RDFResourceTree tree = new RDFResourceTree();
+		RDFResourceTree tree = new RDFResourceTree(resource.asNode());
 		fillTree(resource, tree, resource2Statements, 0, maxDepth);
 
 		return tree;
@@ -194,11 +197,15 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 	}
 
 	class StatementComparator implements Comparator<Statement> {
+		
+		final NodeComparator nodeComparator = new NodeComparator();
 
 		@Override
 		public int compare(Statement s1, Statement s2) {
-			return ComparisonChain.start().compare(s1.getPredicate().getURI(), s2.getPredicate().getURI())
-					.compare(s1.getObject().toString(), s2.getObject().toString()).result();
+			return ComparisonChain.start()
+					.compare(s1.getPredicate().asNode(), s2.getPredicate().asNode(), nodeComparator)
+					.compare(s1.getObject().asNode(), s2.getObject().asNode(), nodeComparator)
+					.result();
 		}
 	}
 
@@ -240,6 +247,11 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	public static void main(String[] args) throws Exception {
 		QueryTreeFactory factory = new QueryTreeFactoryBase();
+		Model model = ModelFactory.createDefaultModel();
+		String lang = "RDF/XML";
+		model.read(new FileInputStream("someFile"), null, lang);
+		String exampleURI = "http://example.org/a";
+		RDFResourceTree tree = factory.getQueryTree(exampleURI, model);
 		factory.addDropFilters(
 				new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 				new PredicateDropStatementFilter(StopURIsRDFS.get()),

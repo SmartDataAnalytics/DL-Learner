@@ -19,14 +19,9 @@
 
 package org.dllearner.kb;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Collections;
 
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.OntologyFormat;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
 import org.semanticweb.owlapi.model.IRI;
@@ -74,30 +69,13 @@ public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntolo
 //        return converter.convert(ontologyBytes, manager);
     	return copy;
     }
-
-    @Override
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException 
-	{
-		
-	}
 	
 	@Override
 	public void init()
 	{
 		
 	}
-	
-	@Override
-	public void export(File file, OntologyFormat format)
-	{
-		
-	}
-	
-	@Override
-	public String toDIG(URI kbURI)
-	{
-		return null;
-	}
+
 
     /**
      * Get the OntologyToByteConverter associated with this object.

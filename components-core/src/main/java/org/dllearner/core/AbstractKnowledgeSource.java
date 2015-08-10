@@ -31,25 +31,5 @@ import java.net.URI;
  */
 public abstract class AbstractKnowledgeSource extends AbstractComponent implements KnowledgeSource {
 	
-	/**
-	 * Transforms this knowledge source to DIG 1.1 code according to
-	 * <a href="http://dl.kr.org/dig/">the specification</a>. DIG is used
-	 * for communicating with reasoners.
-	 * 
-	 * @param kbURI The URI which is assigned to the knowledge base. The URI 
-	 * is used to refer to the knowledge base in queries (DIG supports using
-	 * several knowledge bases).
-	 * @return The DIG XML code.
-	 */
-	public abstract String toDIG(URI kbURI);
-
-	/**
-	 * Export the knowledge source to the specified file in the specified format.
-	 * @param file File to store the knowledge base.
-	 * @param format Format of the knowledge base, e.g. N-Triples.
-	 * @throws OntologyFormatUnsupportedException Thrown if the conversion
-	 * to the specified format is not supported by this knowledge source.
-	 */
-	public abstract void export(File file, OntologyFormat format) throws OntologyFormatUnsupportedException;
 	
 }

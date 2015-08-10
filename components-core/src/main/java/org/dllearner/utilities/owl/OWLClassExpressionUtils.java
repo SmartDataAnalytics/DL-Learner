@@ -5,97 +5,69 @@ package org.dllearner.utilities.owl;
 
 import java.util.Set;
 
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataComplementOf;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataRangeVisitor;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectInverseOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
+ * A utility class for OWL class expressions.
+ * 
  * @author Lorenz Buehmann
- *
  */
-public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLDataRangeVisitor{
+public class OWLClassExpressionUtils {
 	
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 	private static OWLObjectDuplicator duplicator = new OWLObjectDuplicator(dataFactory);
-	private static final OWLClassExpressionUtils visitor = new OWLClassExpressionUtils();
-	private static int length = 0;
+	private static final OWLClassExpressionLengthCalculator LENGTH_CALCULATOR= new OWLClassExpressionLengthCalculator();
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();
 	private static final OWLClassExpressionChildrenCollector CHILDREN_COLLECTOR = new OWLClassExpressionChildrenCollector();
 	
-	
-	
 	/**
-	 * Returns the length of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
+	 * Returns the length of a given class expression. 
+	 * @param ce the class expression
 	 * @return the length of the class expression
 	 */
 	public static int getLength(OWLClassExpression ce){
-		length = 0;
-		ce.accept(visitor);
-		return length;
+		OWLClassExpressionLengthCalculator calculator = new OWLClassExpressionLengthCalculator();
+		return calculator.getLength(ce);
 	}
 	
 	/**
-	 * Returns the depth of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
+	 * Returns the depth of a class expression. 
+	 * @param ce the class expression
 	 * @return the depth of the class expression
 	 */
-	public static int getDepth(OWLClassExpression ce){
+	public static synchronized int getDepth(OWLClassExpression ce){
 		int depth = ce.accept(DEPTH_FINDER);
 		return depth;
 	}
 	
 	/**
-	 * Returns the arity of a given class expression. Note that the current implementation
-	 * is not thread-safe.
-	 * @param ce
-	 * @return the depth of the class expression
+	 * Returns the arity of a class expression. 
+	 * @param ce the class expression
+	 * @return the arity of the class expression
 	 */
-	public static int getArity(OWLClassExpression ce){
+	public static synchronized int getArity(OWLClassExpression ce){
 		return getChildren(ce).size();
 	}
 	
+	/**
+	 * Returns all direct child expressions of a class expression.
+	 * @param ce the class expression
+	 * @return the direct child expressions
+	 */
 	public static Set<OWLClassExpression> getChildren(OWLClassExpression ce){
 		return ce.accept(CHILDREN_COLLECTOR);
 	}
 	
+	/**
+	 * Returns a clone of the given class expression.
+	 * @param ce the class expression
+	 * @return a class expression clone
+	 */
 	public static OWLClassExpression clone(OWLClassExpression ce) {
 		return duplicator.duplicateObject(ce);
 	}
@@ -109,262 +81,5 @@ public class OWLClassExpressionUtils implements OWLClassExpressionVisitor, OWLPr
 	 */
 	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
 		return description.containsConjunct(cls);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLClass)
-	 */
-	@Override
-	public void visit(OWLClass ce) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectIntersectionOf)
-	 */
-	@Override
-	public void visit(OWLObjectIntersectionOf ce) {
-		Set<OWLClassExpression> operands = ce.getOperands();
-		for (OWLClassExpression op : operands) {
-			op.accept(visitor);
-		}
-		length += operands.size() - 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectUnionOf)
-	 */
-	@Override
-	public void visit(OWLObjectUnionOf ce) {
-		Set<OWLClassExpression> operands = ce.getOperands();
-		for (OWLClassExpression op : operands) {
-			op.accept(visitor);
-		}
-		length += operands.size() - 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectComplementOf)
-	 */
-	@Override
-	public void visit(OWLObjectComplementOf ce) {
-		ce.getOperand().accept(visitor);
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom)
-	 */
-	@Override
-	public void visit(OWLObjectSomeValuesFrom ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectAllValuesFrom)
-	 */
-	@Override
-	public void visit(OWLObjectAllValuesFrom ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectHasValue)
-	 */
-	@Override
-	public void visit(OWLObjectHasValue ce) {
-		ce.getProperty().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectMinCardinality)
-	 */
-	@Override
-	public void visit(OWLObjectMinCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectExactCardinality)
-	 */
-	@Override
-	public void visit(OWLObjectExactCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectMaxCardinality)
-	 */
-	@Override
-	public void visit(OWLObjectMaxCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectHasSelf)
-	 */
-	@Override
-	public void visit(OWLObjectHasSelf ce) {
-		ce.getProperty().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectOneOf)
-	 */
-	@Override
-	public void visit(OWLObjectOneOf ce) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataSomeValuesFrom)
-	 */
-	@Override
-	public void visit(OWLDataSomeValuesFrom ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataAllValuesFrom)
-	 */
-	@Override
-	public void visit(OWLDataAllValuesFrom ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataHasValue)
-	 */
-	@Override
-	public void visit(OWLDataHasValue ce) {
-		ce.getProperty().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataMinCardinality)
-	 */
-	@Override
-	public void visit(OWLDataMinCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataExactCardinality)
-	 */
-	@Override
-	public void visit(OWLDataExactCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataMaxCardinality)
-	 */
-	@Override
-	public void visit(OWLDataMaxCardinality ce) {
-		ce.getProperty().accept(visitor);
-		ce.getFiller().accept(visitor);
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectProperty)
-	 */
-	@Override
-	public void visit(OWLObjectProperty property) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLObjectInverseOf)
-	 */
-	@Override
-	public void visit(OWLObjectInverseOf property) {
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor#visit(org.semanticweb.owlapi.model.OWLDataProperty)
-	 */
-	@Override
-	public void visit(OWLDataProperty property) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDatatype)
-	 */
-	@Override
-	public void visit(OWLDatatype node) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDataOneOf)
-	 */
-	@Override
-	public void visit(OWLDataOneOf node) {
-		length++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDataComplementOf)
-	 */
-	@Override
-	public void visit(OWLDataComplementOf node) {
-		length += 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDataIntersectionOf)
-	 */
-	@Override
-	public void visit(OWLDataIntersectionOf node) {
-		Set<OWLDataRange> operands = node.getOperands();
-		for (OWLDataRange op : operands) {
-			op.accept(visitor);
-		}
-		length += operands.size() - 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDataUnionOf)
-	 */
-	@Override
-	public void visit(OWLDataUnionOf node) {
-		Set<OWLDataRange> operands = node.getOperands();
-		for (OWLDataRange op : operands) {
-			op.accept(visitor);
-		}
-		length += operands.size() - 1;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitor#visit(org.semanticweb.owlapi.model.OWLDatatypeRestriction)
-	 */
-	@Override
-	public void visit(OWLDatatypeRestriction node) {
-		Set<OWLFacetRestriction> facetRestrictions = node.getFacetRestrictions();
-		length += facetRestrictions.size();
 	}
 }

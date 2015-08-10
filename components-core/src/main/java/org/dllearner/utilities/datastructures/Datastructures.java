@@ -21,9 +21,7 @@ package org.dllearner.utilities.datastructures;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -99,21 +97,6 @@ public class Datastructures {
 		}
 		Arrays.sort(ret);
 		return ret;
-	}	
+	}
 	
-	public static Set<String> individualSetToStringSet(Set<OWLIndividual> individuals) {
-		Set<String> ret = new TreeSet<String>();
-		for(OWLIndividual ind : individuals) {
-			ret.add(ind.toStringID());
-		}
-		return ret;
-	}	
-	
-	public static Set<String> individualListToStringSet(List<OWLIndividual> individuals) {
-		Set<String> ret = new TreeSet<String>();
-		for(OWLIndividual ind : individuals) {
-			ret.add(ind.toStringID());
-		}
-		return ret;
-	}		
 }

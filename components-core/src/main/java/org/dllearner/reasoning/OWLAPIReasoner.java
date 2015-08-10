@@ -44,6 +44,7 @@ import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
@@ -97,12 +98,11 @@ import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 import uk.ac.manchester.cs.factplusplus.owlapiv3.FaCTPlusPlusReasonerFactory;
 import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.alternateimpls.ThreadSafeOWLReasoner;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
+import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
 import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
@@ -131,8 +131,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     SortedSet<OWLDataProperty> datatypeProperties = new TreeSet<OWLDataProperty>();
     SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
 
-    private Multimap<OWL2Datatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
-
     // namespaces
     private Map<String, String> prefixes = new TreeMap<String, String>();
     private String baseURI;
@@ -144,7 +142,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private OWLClassExpressionMinimizer minimizer;
 
     private OWLReasoner fallbackReasoner;
-
+    
+    
  // default reasoner is Pellet
     @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
@@ -245,7 +244,13 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         boolean inconsistentOntology = !reasoner.isConsistent();
 
         if (!inconsistentOntology) {
-            reasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
+            reasoner.precomputeInferences(
+            		InferenceType.CLASS_HIERARCHY, 
+            		InferenceType.CLASS_ASSERTIONS, 
+            		InferenceType.OBJECT_PROPERTY_HIERARCHY,
+            		InferenceType.DATA_PROPERTY_HIERARCHY,
+            		InferenceType.OBJECT_PROPERTY_ASSERTIONS,
+            		InferenceType.SAME_INDIVIDUAL);
         } else {
         	PelletExplanation expGen = new PelletExplanation(ontology);
         	System.out.println(expGen.getInconsistencyExplanation());
@@ -255,23 +260,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         df = manager.getOWLDataFactory();
 
-        Set<OWLDataProperty> numericDataProperties = new HashSet<OWLDataProperty>();
-        for (OWLDataProperty dataProperty : datatypeProperties) {
-            Collection<OWLDataRange> ranges = dataProperty.getRanges(owlAPIOntologies);
-			Iterator<OWLDataRange> it = ranges.iterator();
-			if (it.hasNext()) {
-				OWLDataRange range = it.next();
-				if (range.isDatatype() && range.asOWLDatatype().isBuiltIn()) {
-					datatype2Properties.put(range.asOWLDatatype().getBuiltInDatatype(), dataProperty);
-
-					if(isNumericDatatype(range.asOWLDatatype())) {
-						numericDataProperties.add(dataProperty);
-					}
-				}
-			} else {
-				datatype2Properties.put(OWL2Datatype.XSD_STRING, dataProperty);
-			}
-        }
+        initDatatypes();
 
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
@@ -289,6 +278,39 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
 		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
+    }
+    
+    private void initDatatypes() {
+    	Set<OWLDataProperty> numericDataProperties = new HashSet<OWLDataProperty>();
+        for (OWLDataProperty dataProperty : datatypeProperties) {
+            Collection<OWLDataRange> ranges = dataProperty.getRanges(owlAPIOntologies);
+			Iterator<OWLDataRange> it = ranges.iterator();
+			if (it.hasNext()) {
+				OWLDataRange range = it.next();
+				if (range.isDatatype()) {
+					OWLDatatype datatype = range.asOWLDatatype();
+					
+					if(datatype.isBuiltIn()) { // OWL 2 DL compliant datatypes
+						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+
+						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+						
+						if(OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
+							numericDataProperties.add(dataProperty);
+						}
+					} else if(OWLAPIUtils.dtDatatypes.contains(datatype)) { // support for other XSD datatypes, e.g. xsd:date
+						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+
+						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+					} else {
+						datatype2Properties.put(XSD.STRING, dataProperty);
+						dataproperty2datatype.put(dataProperty, XSD.STRING);
+					}
+				} else { // TODO handle complex data property ranges
+					
+				}
+			} 
+        }
     }
 
     private void initBaseReasoner() {
@@ -346,27 +368,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         if(useFallbackReasoner){
         	fallbackReasoner = new StructuralReasonerExtended(ontology, conf, BufferingMode.NON_BUFFERING);
         }
-    }
-
-    private boolean isNumericDatatype(OWLDatatype datatype){
-    	if(!datatype.isBuiltIn()){
-    		return false;
-    	}
-    	Set<OWL2Datatype> numericDatatypes = Sets.newHashSet(
-    			OWL2Datatype.XSD_BYTE,
-    			OWL2Datatype.XSD_SHORT,
-    			OWL2Datatype.XSD_INT,
-    			OWL2Datatype.XSD_INTEGER,
-    			OWL2Datatype.XSD_POSITIVE_INTEGER,
-    			OWL2Datatype.XSD_NEGATIVE_INTEGER,
-    			OWL2Datatype.XSD_NON_NEGATIVE_INTEGER,
-    			OWL2Datatype.XSD_NON_POSITIVE_INTEGER,
-    			OWL2Datatype.XSD_LONG,
-    			OWL2Datatype.XSD_DOUBLE,
-    			OWL2Datatype.XSD_FLOAT
-    			);
-    	OWL2Datatype builtInDatatype = datatype.getBuiltInDatatype();
-		return numericDatatypes.contains(builtInDatatype);
     }
 
     /* (non-Javadoc)
@@ -1184,38 +1185,43 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
     @Override
 	public Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_BOOLEAN);
+		return (Set<OWLDataProperty>) datatype2Properties.get(XSD.BOOLEAN);
 	}
 
 	@Override
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_DOUBLE);
+		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		
+		for (OWLDatatype dt:OWLAPIUtils.floatDatatypes) {
+			properties.addAll(datatype2Properties.get(dt));
+		}
+
+		return properties;
 	}
 
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_INT));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_POSITIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NEGATIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NON_POSITIVE_INTEGER));
-		properties.addAll(datatype2Properties.get(OWL2Datatype.XSD_NON_NEGATIVE_INTEGER));
+		
+		for (OWLDatatype dt:OWLAPIUtils.intDatatypes) {
+			properties.addAll(datatype2Properties.get(dt));
+		}
+
 		return properties;
 	}
 
 	@Override
 	public Set<OWLDataProperty> getStringDatatypePropertiesImpl() {
-		return (Set<OWLDataProperty>) datatype2Properties.get(OWL2Datatype.XSD_STRING);
+		return (Set<OWLDataProperty>) datatype2Properties.get(XSD.STRING);
 	}
 
-    /* (non-Javadoc)
-      * @see org.dllearner.core.Reasoner#getBaseURI()
-      */
-    @Override
-    public String getBaseURI() {
-        return baseURI;
-    }
+	/* (non-Javadoc)
+	  * @see org.dllearner.core.Reasoner#getBaseURI()
+	  */
+	@Override
+	public String getBaseURI() {
+		return baseURI;
+	}
 
     /* (non-Javadoc)
       * @see org.dllearner.core.Reasoner#getPrefixes()
@@ -1248,24 +1254,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
 	@Override
 	public Set<OWLClass> getInconsistentClassesImpl() {
-		Set<OWLClass> concepts = new HashSet<OWLClass>();
+		Set<OWLClass> unsatisfiableClasses;
 
-		Node<OWLClass> unsatClsNodes;
 		try {
-			unsatClsNodes = reasoner.getUnsatisfiableClasses();
+			unsatisfiableClasses = reasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 		} catch (UnsupportedOperationException e) {
 			if (useFallbackReasoner) {
-				unsatClsNodes = fallbackReasoner.getUnsatisfiableClasses();
+				unsatisfiableClasses = fallbackReasoner.getUnsatisfiableClasses().getEntitiesMinusBottom();
 			} else {
 				throw e;
 			}
 		}
 
-		for (OWLClass concept : unsatClsNodes.getEntities()) {
-			concepts.add(df.getOWLClass(IRI.create(concept.toStringID())));
-		}
-
-		return concepts;
+		return unsatisfiableClasses;
 	}
 
 	public Set<OWLClass> getInconsistentOWLClasses() {
@@ -1376,6 +1377,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         return owlLinkURL;
     }
 
+    /**
+     * set the URL of the remote OWLLink server
+     * @param owlLinkURL the URL of the remote OWLLink server
+     */
     public void setOwlLinkURL(String owlLinkURL) {
         this.owlLinkURL = owlLinkURL;
     }
@@ -1388,5 +1393,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	 */
 	public void setUseFallbackReasoner(boolean useFallbackReasoner) {
 		this.useFallbackReasoner = useFallbackReasoner;
+	}
+	
+	public OWLDatatype getDatatype(OWLDataProperty dp) {
+		return dataproperty2datatype.get(dp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
+	 */
+	@Override
+	public void setSynchronized() {
+		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
+			reasoner = new ThreadSafeOWLReasoner(reasoner);
+		}
 	}
 }

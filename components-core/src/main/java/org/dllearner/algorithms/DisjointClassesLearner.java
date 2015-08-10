@@ -20,7 +20,6 @@
 package org.dllearner.algorithms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,9 @@ import org.dllearner.core.ClassExpressionLearningAlgorithm;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.Score;
+import org.dllearner.core.annotations.Unused;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -56,9 +58,6 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
 import com.hp.hpl.jena.query.ResultSetRewindable;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Learns disjoint classes using SPARQL queries.
@@ -81,13 +80,16 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 					"SELECT (COUNT(?s) AS ?overlap) WHERE {?s a ?cls, ?cls_other . }");
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
-			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}");
+			"CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .} }");
 
-	private List<EvaluatedDescription> currentlyBestEvaluatedDescriptions;
+	private List<EvaluatedDescription<? extends Score>> currentlyBestEvaluatedDescriptions;
 	private SortedSet<OWLClassExpression> subClasses;
 
+	@Unused
 	private boolean useWordNetDistance = false;
+	@ConfigOption(description = "only keep most general classes in suggestions", defaultValue = "true")
 	private boolean suggestMostGeneralClasses = true;
+	@ConfigOption(description = "include instance count / popularity when computing scores", defaultValue = "true")
 	private boolean useClassPopularity = true;
 
 	private Set<OWLClass> allClasses;
@@ -162,13 +164,13 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
-							df.getOWLDisjointClassesAxiom(entityToDescribe, cls), 
+							df.getOWLDisjointClassesAxiom(entityToDescribe, cls),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
 	
 	/**
-	 * In this method we try to compute the overlap with each property in one single SPARQL query.
+	 * In this method we try to compute the overlap with each class in one single SPARQL query.
 	 * This method might be much slower as the query is much more complex.
 	 */
 	protected void runBatched() {
@@ -198,7 +200,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			
 			currentlyBestAxioms.add(
 					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
-							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate), 
+							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -210,7 +212,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	private SortedSet<OWLClass> getCandidates(){
 		SortedSet<OWLClass> candidates;
 		
-		if (strictOWLMode) { 
+		if (strictOWLMode) {
 			candidates = reasoner.getOWLClasses();
 		} else {
 			candidates = reasoner.getClasses();
@@ -253,6 +255,14 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		this.suggestMostGeneralClasses = suggestMostGeneralClasses;
 	}
 	
+	public boolean isUseClassPopularity() {
+		return useClassPopularity;
+	}
+
+	public void setUseClassPopularity(boolean useClassPopularity) {
+		this.useClassPopularity = useClassPopularity;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractAxiomLearningAlgorithm#getSampleQuery()
 	 */
@@ -283,176 +293,24 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		}
 	}
 
-	private void runSingleQueryMode() {
-		//compute the overlap if exist
-		Map<OWLClass, Integer> class2Overlap = new HashMap<OWLClass, Integer>();
-		String query = String.format("SELECT ?type (COUNT(*) AS ?cnt) WHERE {?s a <%s>. ?s a ?type.} GROUP BY ?type",
-				entityToDescribe.toStringID());
-		ResultSet rs = executeSelectQuery(query);
-		QuerySolution qs;
-		while (rs.hasNext()) {
-			qs = rs.next();
-			OWLClass cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-			int cnt = qs.getLiteral("cnt").getInt();
-			class2Overlap.put(cls, cnt);
-		}
-		//for each class in knowledge base
-		for (OWLClass cls : allClasses) {
-			//get the popularity
-			int otherPopularity = reasoner.getPopularity(cls);
-			if (otherPopularity == 0) {//skip empty properties
-				continue;
-			}
-			System.out.println(cls);
-			//get the overlap
-			int overlap = class2Overlap.containsKey(cls) ? class2Overlap.get(cls) : 0;
-			//compute the estimated precision
-			// compute the estimated precision
-			double precision = Heuristics.getConfidenceInterval95WaldAverage(otherPopularity, overlap);
-
-			// compute the estimated recall
-			double recall = Heuristics.getConfidenceInterval95WaldAverage(popularity, overlap);
-
-			// compute the final score
-			double score = 1 - Heuristics.getFScore(recall, precision);
-
-			currentlyBestEvaluatedDescriptions.add(new EvaluatedDescription(cls, new AxiomScore(score)));
-		}
-	}
-
-	private void runSPARQL1_0_Mode() {
-		Model model = ModelFactory.createDefaultModel();
-		int limit = 1000;
-		int offset = 0;
-		String baseQuery = "CONSTRUCT {?s a <%s>. ?s a ?type.} WHERE {?s a <%s>. ?s a ?type.} LIMIT %d OFFSET %d";
-		String query = String.format(baseQuery, entityToDescribe.toStringID(), entityToDescribe.toStringID(), limit,
-				offset);
-		Model newModel = executeConstructQuery(query);
-		Map<OWLClass, Integer> result = new HashMap<OWLClass, Integer>();
-		OWLClass cls;
-		while (!terminationCriteriaSatisfied() && newModel.size() != 0) {
-			model.add(newModel);
-			//get total number of distinct instances
-			query = "SELECT (COUNT(DISTINCT ?s) AS ?count) WHERE {?s a ?type.}";
-			ResultSet rs = executeSelectQuery(query, model);
-			int total = rs.next().getLiteral("count").getInt();
-
-			// get number of instances of s with <s p o>
-			query = "SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type.}" + " GROUP BY ?type";
-			rs = executeSelectQuery(query, model);
-			QuerySolution qs;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				if (qs.getResource("type") != null && !qs.getResource("type").isAnon()) {
-					cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-					int newCnt = qs.getLiteral("count").getInt();
-					result.put(cls, newCnt);
-				}
-
-			}
-
-			if (!result.isEmpty()) {
-				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses, total);
-			}
-
-			offset += limit;
-			query = String.format(baseQuery, entityToDescribe.toStringID(), entityToDescribe.toStringID(), limit, offset);
-			newModel = executeConstructQuery(query);
-		}
-
-	}
-
-	private void runSPARQL1_1_Mode() {
-		int limit = 1000;
-		int offset = 0;
-		String queryTemplate = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?type (COUNT(?s) AS ?count) WHERE {?s a ?type. ?type a owl:Class"
-				+ "{SELECT ?s WHERE {?s a <%s>.} LIMIT %d OFFSET %d} " + "} GROUP BY ?type";
-		String query;
-		Map<OWLClass, Integer> result = new HashMap<OWLClass, Integer>();
-		OWLClass cls;
-		Integer oldCnt;
-		boolean repeat = true;
-
-		while (!terminationCriteriaSatisfied() && repeat) {
-			query = String.format(queryTemplate, entityToDescribe, limit, offset);
-			ResultSet rs = executeSelectQuery(query);
-			QuerySolution qs;
-			repeat = false;
-			Resource res;
-			while (rs.hasNext()) {
-				qs = rs.next();
-				res = qs.getResource("type");
-				if (res != null && !res.isAnon()) {
-					cls = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
-					int newCnt = qs.getLiteral("count").getInt();
-					oldCnt = result.get(cls);
-					if (oldCnt == null) {
-						oldCnt = Integer.valueOf(newCnt);
-					} else {
-						oldCnt += newCnt;
-					}
-
-					result.put(cls, oldCnt);
-					repeat = true;
-				}
-
-			}
-			if (!result.isEmpty()) {
-				currentlyBestEvaluatedDescriptions = buildEvaluatedClassDescriptions(result, allClasses,
-						result.get(entityToDescribe));
-				offset += 1000;
-			}
-		}
-	}
-
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
-		for (EvaluatedDescription evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
+		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
 		return bestDescriptions;
 	}
 
 	@Override
-	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
+	public List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		int max = Math.min(currentlyBestEvaluatedDescriptions.size(), nrOfDescriptions);
 		return currentlyBestEvaluatedDescriptions.subList(0, max);
 	}
 
-	@Override
-	public List<OWLDisjointClassesAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<OWLDisjointClassesAxiom> bestAxioms = new ArrayList<OWLDisjointClassesAxiom>();
-
-		for (EvaluatedAxiom<OWLDisjointClassesAxiom> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)) {
-			bestAxioms.add(evAx.getAxiom());
-		}
-
-		return bestAxioms;
-	}
-
-	@Override
-	public List<EvaluatedAxiom<OWLDisjointClassesAxiom>> getCurrentlyBestEvaluatedAxioms() {
-		return getCurrentlyBestEvaluatedAxioms(currentlyBestEvaluatedDescriptions.size());
-	}
-
-	@Override
-	public List<EvaluatedAxiom<OWLDisjointClassesAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		List<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new ArrayList<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
-		Set<OWLClassExpression> descriptions;
-		for (EvaluatedDescription ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
-			descriptions = new TreeSet<OWLClassExpression>();
-			descriptions.add(entityToDescribe);
-			descriptions.add(ed.getDescription());
-			axioms.add(new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(descriptions),
-					new AxiomScore(ed.getAccuracy())));
-		}
-		return axioms;
-	}
-
-	private List<EvaluatedDescription> buildEvaluatedClassDescriptions(Map<OWLClass, Integer> class2Count,
+	private List<EvaluatedDescription<? extends Score>> buildEvaluatedClassDescriptions(Map<OWLClass, Integer> class2Count,
 			Set<OWLClass> allClasses, int total) {
-		List<EvaluatedDescription> evalDescs = new ArrayList<EvaluatedDescription>();
+		List<EvaluatedDescription<? extends Score>> evalDescs = new ArrayList<>();
 
 		//Remove temporarily entityToDescribe but keep track of their count
 		//				Integer all = class2Count.get(entityToDescribe);
@@ -473,7 +331,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			keepMostGeneralClasses(completeDisjointclasses);
 		}
 
-		EvaluatedDescription evalDesc;
+		EvaluatedDescription<? extends Score> evalDesc;
 		//firstly, create disjoint classexpressions which do not occur and give score of 1
 		for (OWLClass cls : completeDisjointclasses) {
 			if (useClassPopularity) {
@@ -506,7 +364,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			evalDescs.add(evalDesc);
 		}
 
-		//secondly, create disjoint classexpressions with score 1 - (#occurence/#all)
+		//secondly, create disjoint class expressions with score 1 - (#occurence/#all)
 		OWLClass cls;
 		for (Entry<OWLClass, Integer> entry : sortByValues(class2Count)) {
 			cls = entry.getKey();
@@ -560,11 +418,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//			Set<OWLClass> topClasses = new HashSet<OWLClass>();
 			//			for(OntClass cls : model.listOWLClasses().toSet()){
 			//				Set<OntClass> superClasses = cls.listSuperClasses().toSet();
-			//				if(superClasses.isEmpty() || 
+			//				if(superClasses.isEmpty() ||
 			//						(superClasses.size() == 1 && superClasses.contains(model.getOntClass(com.hp.hpl.jena.vocabulary.OWL.Thing.getURI())))){
 			//					topClasses.add(df.getOWLClass(IRI.create(cls.getURI()));
 			//				}
-			//				
+			//
 			//			}
 			//			classes.retainAll(topClasses);
 			for (OWLClass nc : new HashSet<OWLClass>(classes)) {//System.out.print(nc + "::");
@@ -639,7 +497,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		}
 		;
 
-		//if the classes are connected via subsumption we assume that they are not disjoint 
+		//if the classes are connected via subsumption we assume that they are not disjoint
 		if (reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)) {
 			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
 					new AxiomScore(0d, 1d));
@@ -714,10 +572,16 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	}
 	
 	public static void main(String[] args) throws Exception {
-		DisjointClassesLearner la = new DisjointClassesLearner(new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia()));
+		SparqlEndpointKS ks = new SparqlEndpointKS(SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org"));
+		ks.init();
+		
+		DisjointClassesLearner la = new DisjointClassesLearner(ks);
 		la.setEntityToDescribe(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Actor")));
 		la.setUseSampling(false);
 		la.init();
+		
 		la.start();
+		
+		la.getCurrentlyBestAxioms(10);
 	}
 }

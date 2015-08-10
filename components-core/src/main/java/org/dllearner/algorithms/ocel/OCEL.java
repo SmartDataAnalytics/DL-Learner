@@ -28,16 +28,11 @@ import java.util.TreeSet;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractLearningProblem;
+import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.options.BooleanConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.DoubleConfigOption;
-import org.dllearner.core.options.IntegerConfigOption;
-import org.dllearner.core.options.StringConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -59,7 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The DL-Learner learning algorithm component for the example
- * based refinement operator approach. It handles all 
+ * based refinement operator approach. It handles all
  * configuration options, creates the corresponding objects and
  * passes them to the actual refinement operator, heuristic, and
  * learning algorithm implementations.
@@ -93,10 +88,10 @@ public class OCEL extends AbstractCELA {
 	// actual algorithm
 	private ROLearner2 algorithm;
 	private static Logger logger = Logger.getLogger(OCEL.class);
-	private String logLevel = CommonConfigOptions.logLevelDefault;	
+	private String logLevel = CommonConfigOptions.logLevelDefault;
 	
 	// dependencies
-	private LengthLimitedRefinementOperator operator;	
+	private LengthLimitedRefinementOperator operator;
 	private ExampleBasedHeuristic heuristic;
 	
 	// configuration options
@@ -107,7 +102,7 @@ public class OCEL extends AbstractCELA {
 //	private String heuristicStr = "multi";
 	
 //	private boolean applyAllFilter = true;
-//	private boolean applyExistsFilter = true;	
+//	private boolean applyExistsFilter = true;
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
@@ -154,80 +149,26 @@ public class OCEL extends AbstractCELA {
 
 	// Konfiguration des Algorithmus
 	// Faktor für horizontale Erweiterung (notwendig für completeness)
-	// double horizontalExpansionFactor = 0.6;	
+	// double horizontalExpansionFactor = 0.6;
 
 
-    public OCEL(){
-    	
-    }
+    public OCEL(){}
+    
 	// soll später einen Operator und eine Heuristik entgegennehmen
 	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-//		this.configurator = new OCELConfigurator(this);
 	}
 	
 	public OCEL(PosOnlyLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
-//		this.configurator = new OCELConfigurator(this);
 	}
 	
-	public static Collection<Class<? extends AbstractLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractLearningProblem>> problems = new LinkedList<Class<? extends AbstractLearningProblem>>();
+	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
 		problems.add(PosNegLP.class);
 		problems.add(PosOnlyLP.class);
 		return problems;
-	}
-	
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new BooleanConfigOption("writeSearchTree", "specifies whether to write a search tree", false));
-		options.add(new StringConfigOption("searchTreeFile","file to use for the search tree", defaultSearchTreeFile));
-		options.add(new BooleanConfigOption("replaceSearchTree","specifies whether to replace the search tree in the log file after each run or append the new search tree", false));
-		StringConfigOption heuristicOption = new StringConfigOption("heuristic", "specifiy the heuristic to use", "lexicographic");
-		heuristicOption.setAllowedValues(new String[] {"lexicographic", "flexible"});
-		options.add(heuristicOption);
-		options.add(new BooleanConfigOption("applyAllFilter", "usage of equivalence ALL R.C AND ALL R.D = ALL R.(C AND D)", true));
-		options.add(new BooleanConfigOption("applyExistsFilter", "usage of equivalence EXISTS R.C OR EXISTS R.D = EXISTS R.(C OR D)", true));
-		options.add(new BooleanConfigOption("useTooWeakList", "try to filter out too weak concepts without sending them to the reasoner", true));
-		options.add(new BooleanConfigOption("useOverlyGeneralList", "try to find overly general concept without sending them to the reasoner", true));
-		options.add(new BooleanConfigOption("useShortConceptConstruction", "shorten concept to see whether they already exist", true));
-		DoubleConfigOption horizExp = new DoubleConfigOption("horizontalExpansionFactor", "horizontal expansion factor (see publication for description)", 0.6);
-		horizExp.setLowerLimit(0.0);
-		horizExp.setUpperLimit(1.0);
-		options.add(horizExp);
-		options.add(new BooleanConfigOption("improveSubsumptionHierarchy", "simplify subsumption hierarchy to reduce search space (see publication for description)", true));
-		options.add(CommonConfigOptions.allowedConcepts());
-		options.add(CommonConfigOptions.ignoredConcepts());
-		// allowed/ignored roles are an unstable/untested feature
-		options.add(CommonConfigOptions.allowedRoles());
-		options.add(CommonConfigOptions.ignoredRoles());
-		options.add(CommonConfigOptions.useAllConstructor());
-		options.add(CommonConfigOptions.useExistsConstructor());
-		options.add(CommonConfigOptions.useHasValueConstructor());
-		options.add(CommonConfigOptions.useDataHasValueConstructor());
-		options.add(CommonConfigOptions.valueFreqencyThreshold());
-		options.add(CommonConfigOptions.useCardinalityRestrictions());
-		options.add(CommonConfigOptions.cardinalityLimit());
-		options.add(CommonConfigOptions.useNegation());
-		options.add(CommonConfigOptions.useBooleanDatatypes());
-		options.add(CommonConfigOptions.useStringDatatypes());
-		options.add(CommonConfigOptions.maxExecutionTimeInSeconds());
-		options.add(CommonConfigOptions.minExecutionTimeInSeconds());
-		options.add(CommonConfigOptions.guaranteeXgoodDescriptions());
-		options.add(CommonConfigOptions.maxClassDescriptionTests());
-		options.add(CommonConfigOptions.getLogLevel());
-		options.add(new BooleanConfigOption("usePropernessChecks", "specifies whether to check for equivalence (i.e. discard equivalent refinements)",usePropernessChecksDefault));
-		options.add(CommonConfigOptions.getNoisePercentage());
-		options.add(CommonConfigOptions.getTerminateOnNoiseReached());
-		options.add(new StringConfigOption("startClass", "the named class which should be used to start the algorithm (GUI: needs a widget for selecting a class)"));
-		options.add(new BooleanConfigOption("forceRefinementLengthIncrease", "specifies whether nodes should be expanded until only longer refinements are reached"));
-		options.add(new DoubleConfigOption("negativeWeight", "Used to penalise errors on negative examples different from those of positive examples (lower = less importance for negatives).",1.0));
-		options.add(new DoubleConfigOption("startNodeBonus", "You can use this to give a heuristic bonus on the start node (= initially broader exploration of search space).",0.0));
-		options.add(new IntegerConfigOption("negationPenalty", "Penalty on negations (TODO: better explanation).", 0));
-		options.add(CommonConfigOptions.getExpansionPenaltyFactor(0.02));
-		options.add(CommonConfigOptions.getInstanceBasedDisjoints());
-		return options;
 	}
 	
 	/* (non-Javadoc)
@@ -259,9 +200,9 @@ public class OCEL extends AbstractCELA {
 //				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			} else {
 				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			}			
+			}
 			
-			// OLD CODE below: in the new framework we assume that the 
+			// OLD CODE below: in the new framework we assume that the
 			// heuristic is always injected as object (not as string)
 //			if(heuristicStr == "lexicographic")
 //				heuristic = new LexicographicHeuristic();
@@ -289,10 +230,10 @@ public class OCEL extends AbstractCELA {
 				int nrNegEx = ((PosNegLP) getLearningProblem()).getNegativeExamples().size();
 				if(mh.getNrOfExamples() == 0) {
 					mh.setNrOfExamples(nrPosEx + nrNegEx);
-				}				
+				}
 				if(mh.getNrOfNegativeExamples() == 0) {
 					mh.setNrOfNegativeExamples(nrNegEx);
-				}					
+				}
 			}
 		}
 		
@@ -359,7 +300,7 @@ public class OCEL extends AbstractCELA {
 				startClass,
 				// usedConcepts,
 				// usedRoles,
-				noisePercentage/(double)100,
+				noisePercentage/100,
 				writeSearchTree,
 				replaceSearchTree,
 				searchTreeFile,
@@ -374,9 +315,9 @@ public class OCEL extends AbstractCELA {
 				maxClassDescriptionTests,
 				forceRefinementLengthIncrease,
 				terminateOnNoiseReached,
-				negativeWeight, 
-				startNodeBonus, 
-				expansionPenaltyFactor, 
+				negativeWeight,
+				startNodeBonus,
+				expansionPenaltyFactor,
 				negationPenalty
 		);
 		// note: used concepts and roles do not need to be passed
@@ -411,7 +352,7 @@ public class OCEL extends AbstractCELA {
 	@Override
 	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return algorithm.getCurrentlyBestDescriptions();
-	}	
+	}
 	
 	@Override
 	public EvaluatedDescriptionPosNeg getCurrentlyBestEvaluatedDescription() {

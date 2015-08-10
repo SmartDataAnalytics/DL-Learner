@@ -48,6 +48,7 @@ import org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner;
 import org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner;
+import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.AnnComponentManager;
@@ -57,20 +58,17 @@ import org.dllearner.core.EvaluatedAxiom;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.core.Score;
-import org.dllearner.core.config.ConfigHelper;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ExtractionDBCache;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
-import org.dllearner.reasoning.FastInstanceChecker;
+import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SPARULTranslator;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.json.JSONArray;
@@ -206,9 +204,9 @@ public class EnrichmentServlet extends HttpServlet {
 		final boolean useInference = req.getParameter("use_inference") == null ? false : Boolean.valueOf(req
 				.getParameter("use_inference"));
 		
-		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms")); 
-		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time")); 
-		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold")); 
+		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms"));
+		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time"));
+		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold"));
 
 		String resourceURI = req.getParameter("resource_uri");
 		if (resourceURI == null) {
@@ -445,7 +443,7 @@ public class EnrichmentServlet extends HttpServlet {
         SparqlKnowledgeSource ks2;
 		AbstractReasonerComponent rc;
 		ks2 = new SparqlKnowledgeSource();
-		ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+		ks2.setInstances(Helper.getStringSet(examples.getCompleteSet()));
 		ks2.setUrl(ks.getEndpoint().getURL());
 		ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
 		ks2.setUseLits(false);
@@ -460,13 +458,13 @@ public class EnrichmentServlet extends HttpServlet {
 		ks2.init();
 		runTime = System.currentTimeMillis() - startTime;
 		System.out.println("done in " + runTime + " ms");
-		rc = new FastInstanceChecker(ks2);
+		rc = new ClosedWorldReasoner(ks2);
 		rc.init();
 
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setHeuristic(HeuristicType.FMEASURE);
+        lp.setAccuracyMethod(HeuristicType.FMEASURE);
         lp.setUseApproximations(false);
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
@@ -479,12 +477,12 @@ public class EnrichmentServlet extends HttpServlet {
         System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
         runTime = System.currentTimeMillis() - startTime;
-        System.out.println("done in " + runTime + " ms");	
+        System.out.println("done in " + runTime + " ms");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
-        List<? extends EvaluatedDescription> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
+        List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
         List<EvaluatedAxiom> learnedAxioms = new LinkedList<EvaluatedAxiom>();
-        for(EvaluatedDescription learnedDescription : learnedDescriptions) {
+        for(EvaluatedDescription<? extends Score> learnedDescription : learnedDescriptions) {
         	OWLAxiom axiom;
         	if(equivalence) {
         		axiom = dataFactory.getOWLEquivalentClassesAxiom(nc, learnedDescription.getDescription());
@@ -492,7 +490,7 @@ public class EnrichmentServlet extends HttpServlet {
         		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy()))); 
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy())));
         }
 		return learnedAxioms;
 	}

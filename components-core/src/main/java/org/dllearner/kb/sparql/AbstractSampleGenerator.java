@@ -70,8 +70,6 @@ public abstract class AbstractSampleGenerator {
 		return OwlApiJenaUtils.getOWLOntology(getSampleModel(individuals));
 	}
 	
-	//http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2
-	
 	/**
 	 * @param sampleDepth the maximum sample depth to set
 	 */
