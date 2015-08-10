@@ -28,6 +28,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.owl.NNF;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
@@ -72,6 +73,17 @@ public class ConceptTransformation {
 		OWLClassExpression cleanedConcept = concept.accept(CLASS_EXPRESSION_CLEANER);
 		cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
 		return cleanedConcept;
+	}
+	
+	/**
+	 * Returns the class expression in negation normal form.
+	 * @param ce the class expression
+	 * @return the class expression in negation normal form
+	 */
+	public static OWLClassExpression nnf(OWLClassExpression ce) {
+		NNF nnfGen = new NNF(new OWLDataFactoryImpl());
+		OWLClassExpression nnf = ce.accept(nnfGen);
+		return nnf;
 	}
 	
 	/**

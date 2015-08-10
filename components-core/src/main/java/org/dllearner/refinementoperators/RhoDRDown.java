@@ -614,7 +614,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						// clean concept and transform it to ordered negation normal form
 						// (non-recursive variant because only depth 1 was modified)
 						mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-//						mc = mc.getNNF();
+						mc = ConceptTransformation.nnf(mc);
 
 						// check whether the intersection is OK (sanity checks), then add it
 						if(checkIntersection((OWLObjectIntersectionOf) mc))
@@ -644,7 +644,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 					OWLClassExpression md = new OWLObjectUnionOfImplExt(newChildren);
 
 					// transform to ordered negation normal form
-//					md = md.getNNF();
+					md = ConceptTransformation.nnf(md);
 					// note that we do not have to call clean here because a disjunction will
 					// never be nested in another disjunction in this operator
 
@@ -883,7 +883,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 						// clean and transform to ordered negation normal form
 						mc = (OWLObjectIntersectionOf) ConceptTransformation.cleanConceptNonRecursive(mc);
-//						mc = (OWLObjectIntersectionOf) mc.getNNF();
+						mc = (OWLObjectIntersectionOf) ConceptTransformation.nnf(mc);
 
 						// last check before intersection is added
 						if(checkIntersection(mc))
@@ -1130,7 +1130,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						// convert all concepts in ordered negation normal form
 						Set<OWLObjectUnionOf> tmp = new HashSet<OWLObjectUnionOf>();
 						for(OWLClassExpression concept : baseSet) {
-							tmp.add((OWLObjectUnionOf) concept.getNNF());
+							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
 						}
 						baseSet = new TreeSet<OWLObjectUnionOf>(tmp);
 
