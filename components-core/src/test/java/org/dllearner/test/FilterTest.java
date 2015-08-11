@@ -24,7 +24,6 @@ import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
 
@@ -104,7 +103,7 @@ public class FilterTest {
 			tupleset = st.queryAsTuple(subject, true);
 			
 		}
-		SetManipulation.printSet("before", tupleset);
+		System.out.println("before ["+ tupleset.size()+"]: "+tupleset);
 	
 		sc.printAndSet("SHORT ");
 		
@@ -170,8 +169,8 @@ public class FilterTest {
 			//afterfilter = re.filterTuples(subject,tupleset);
 		}
 		sc.printAndSet("SHORT with filter");
-		SetManipulation.printSet("before", tupleset);
-		SetManipulation.printSet("after", afterfilter);
+		System.out.println("before ["+ tupleset.size()+"]: "+tupleset);
+		System.out.println("before ["+ afterfilter.size()+"]: "+afterfilter);
 	}
 
 }
