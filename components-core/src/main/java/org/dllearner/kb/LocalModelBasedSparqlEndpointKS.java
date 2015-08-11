@@ -18,48 +18,39 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	public LocalModelBasedSparqlEndpointKS() {
 	}
 	
-//	public LocalModelBasedSparqlEndpointKS(String ontologyURL) throws MalformedURLException {
-//		this(new URL(ontologyURL));
-//	}
-//
-//	public LocalModelBasedSparqlEndpointKS(URL ontologyURL) {
-//		this.fileName = ontologyURL.toString();
-//	}
-//
+	/**
+	 * Create new Sparql Endpoint based on Jena Ontology
+	 * @param model ontology model
+	 */
 	public LocalModelBasedSparqlEndpointKS(OntModel model) {
 		this.model = model;
 	}
 	
+	/**
+	 * Create new Sparql Endpoint based on Jena model
+	 * @param model rdf model
+	 * @param reasoningEnabled whether to use Jena RDFS inferencing
+	 */
 	public LocalModelBasedSparqlEndpointKS(Model model, boolean reasoningEnabled) {
 		this(model, reasoningEnabled ? OntModelSpec.OWL_MEM_RDFS_INF : OntModelSpec.OWL_MEM);
 	}
 	
+	/**
+	 * Create new Sparql Endpoint based on Jena Model and reasoning spec
+	 * @param model rdf model
+	 * @param reasoning type of reasoning
+	 */
 	public LocalModelBasedSparqlEndpointKS(Model model, OntModelSpec reasoning) {
 		this.model = ModelFactory.createOntologyModel(reasoning, model);
 	}
 	
 	/**
-	 * No reasoning enabled by default.
-	 * @param model
+	 * Create new Sparql Endpoint based on Jena Model. No reasoning enabled by default.
+	 * @param model rdf model
 	 */
 	public LocalModelBasedSparqlEndpointKS(Model model) {
 		this(model, false);
 	}
-	
-//	@Override
-//	public void init() throws ComponentInitException {
-//		Model baseModel = ModelFactory.createDefaultModel();
-//		 // use the FileManager to find the input file
-//		 InputStream in = FileManager.get().open(baseDir + File.separator + fileName);
-//		if (in == null) {
-//		    throw new IllegalArgumentException(
-//		                                 "File: " + fileName + " not found");
-//		}
-//		// read the RDF/XML file
-//		baseModel.read(in, null);
-//
-//		model = ModelFactory.createOntologyModel(enableReasoning ? OntModelSpec.OWL_MEM : OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
-//	}
 	
 	/* (non-Javadoc)
 	 * @see org.dllearner.kb.SparqlEndpointKS#buildQueryExecutionFactory()
@@ -73,30 +64,6 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 		
 		return qef;
 	}
-	
-//	public void setFileName(String fileName) {
-//		this.fileName = fileName;
-//	}
-//
-//	public String getFileName() {
-//		return fileName;
-//	}
-//
-//	public String getBaseDir() {
-//        return baseDir;
-//    }
-//
-//    public void setBaseDir(String baseDir) {
-//        this.baseDir = baseDir;
-//    }
-//
-//    public void setEnableReasoning(boolean enableReasoning) {
-//		this.enableReasoning = enableReasoning;
-//	}
-//
-//    public boolean isEnableReasoning() {
-//		return enableReasoning;
-//	}
 	
 	public OntModel getModel() {
 		return model;
