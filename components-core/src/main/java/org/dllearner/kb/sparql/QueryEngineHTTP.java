@@ -426,7 +426,7 @@ public class QueryEngineHTTP implements QueryExecution {
     private Model execModel(Model model) {
         checkNotClosed() ;
         HttpQuery httpQuery = makeHttpQuery();
-        httpQuery.setAccept(WebContent.contentTypeRDFXML);
+        httpQuery.setAccept(modelContentType);
         InputStream in = httpQuery.exec();
 
         // Don't assume the endpoint actually gives back the content type we
@@ -799,19 +799,19 @@ public class QueryEngineHTTP implements QueryExecution {
         // Or use WebContent.defaultGraphAcceptHeader which is slightly
         // narrower. Here, we have a tuned setting for SPARQL operations.
         StringBuilder sBuff = new StringBuilder() ;
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtle,       1.0);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriples,     1.0);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeRDFXML,       0.9);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt1,   0.8);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt2,   0.8);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3,           0.7);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt1,       0.6);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt2,       0.6);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriplesAlt,  0.5);
-        accumulateContentTypeString(sBuff, "*/*",                              0.1) ;
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtle,       1.0);
+        accumulateContentTypeString(sBuff, WebContent.contentTypeTextPlain,     1.0);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeRDFXML,       0.9);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt1,   0.8);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt2,   0.8);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3,           0.7);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt1,       0.6);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt2,       0.6);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriplesAlt,  0.5);
+//        accumulateContentTypeString(sBuff, "*/*",                              0.1) ;
 
         return sBuff.toString();
     }
