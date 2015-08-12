@@ -849,15 +849,16 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private void reset(){
-		currentBestSolution = null;
-		partialSolutions = new ArrayList<EvaluatedRDFResourceTree>();
-		
 		stop = false;
 		isRunning = true;
 		
-		MonitorFactory.getTimeMonitor("lgg").reset();
+		currentBestSolution = null;
+		partialSolutions = new ArrayList<EvaluatedRDFResourceTree>();
 		
 		bestCurrentScore = minimumTreeScore;
+		
+		MonitorFactory.getTimeMonitor("lgg").reset();
+		nanoStartTime = System.nanoTime();
 	}
 	
 	/* (non-Javadoc)

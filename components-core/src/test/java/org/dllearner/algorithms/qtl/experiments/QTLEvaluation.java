@@ -50,6 +50,8 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
+import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
@@ -70,9 +72,14 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Function;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
@@ -143,6 +150,10 @@ public class QTLEvaluation {
 	
 	enum NoiseMethod {
 		RANDOM, SIMILAR, SIMILARITY_PARAMETERIZED
+	}
+	
+	enum Baseline {
+		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG
 	}
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
@@ -245,6 +256,13 @@ public class QTLEvaluation {
 		                   "avg_fscore_best DOUBLE, " + 
 		                   "avg_precision_best DOUBLE, " + 
 		                   "avg_recall_best DOUBLE, " + 
+		                   "avg_predacc_best DOUBLE, " + 
+		                   "avg_mathcorr_best DOUBLE, " + 
+		                   "avg_fscore_baseline DOUBLE, " + 
+		                   "avg_precision_baseline DOUBLE, " + 
+		                   "avg_recall_baseline DOUBLE, " + 
+		                   "avg_predacc_baseline DOUBLE, " + 
+		                   "avg_mathcorr_baseline DOUBLE, " +
 		                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))"; 
 				
 				java.sql.Statement stmt = conn.createStatement();
@@ -265,21 +283,30 @@ public class QTLEvaluation {
 		                   "best_fscore DOUBLE, " + 
 		                   "best_precision DOUBLE, " + 
 		                   "best_recall DOUBLE, " + 
+		                   "baseline_query TEXT," +
+		                   "baseline_fscore DOUBLE, " + 
+		                   "baseline_precision DOUBLE, " + 
+		                   "baseline_recall DOUBLE, " + 
 		                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM"; 
 				stmt = conn.createStatement();
 				stmt.execute(sql);
 				
-				sql = "INSERT INTO eval_overall (heuristic, heuristic_measure, nrOfExamples, noise, "
+				sql = "INSERT INTO eval_overall ("
+						+ "heuristic, heuristic_measure, nrOfExamples, noise, "
 						+ "avg_fscore_best_returned, avg_precision_best_returned, avg_recall_best_returned,"
 						+ "avg_predacc_best_returned, avg_mathcorr_best_returned, "
-						+ "avg_position_best, avg_fscore_best, avg_precision_best, avg_recall_best)" + 
-						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+						+ "avg_position_best, avg_fscore_best, avg_precision_best, avg_recall_best, avg_predacc_best, avg_mathcorr_best,"
+						+ "avg_fscore_baseline, avg_precision_baseline, avg_recall_baseline, avg_predacc_baseline, avg_mathcorr_baseline"
+						+ ")" + 
+						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				psInsertOverallEval = conn.prepareStatement(sql);
 				
-				sql = "INSERT INTO eval_detailed (target_query, nrOfExamples, noise, heuristic, heuristic_measure, "
+				sql = "INSERT INTO eval_detailed ("
+						+ "target_query, nrOfExamples, noise, heuristic, heuristic_measure, "
 						+ "query_top, fscore_top, precision_top, recall_top,"
-						+ "best_query, best_rank, best_fscore, best_precision, best_recall)" + 
-						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+						+ "best_query, best_rank, best_fscore, best_precision, best_recall, "
+						+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
+						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 				psInsertDetailEval = conn.prepareStatement(sql);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -315,7 +342,7 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-//		sparqlQueries = sparqlQueries.subList(0, 20);
+		sparqlQueries = sparqlQueries.subList(0, 20);
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -330,9 +357,9 @@ public class QTLEvaluation {
 		
 		double[] noiseIntervals = {
 				0.0,
-				0.1,
+//				0.1,
 				0.2,
-				0.3,
+//				0.3,
 				0.4,
 //				0.6
 				};
@@ -344,8 +371,9 @@ public class QTLEvaluation {
 		
 		HeuristicType[] measures = {
 				HeuristicType.PRED_ACC, 
-				HeuristicType.FMEASURE, 
-				HeuristicType.MATTHEWS_CORRELATION};
+//				HeuristicType.FMEASURE, 
+//				HeuristicType.MATTHEWS_CORRELATION
+				};
 		
 		// loop over heuristics
 		for(final QueryTreeHeuristic heuristic : heuristics) {
@@ -386,6 +414,12 @@ public class QTLEvaluation {
 						
 						final DescriptiveStatistics nrOfReturnedSolutionsStats = new SynchronizedDescriptiveStatistics();
 						
+						final DescriptiveStatistics baselinePrecisionStats = new SynchronizedDescriptiveStatistics();
+						final DescriptiveStatistics baselineRecallStats = new SynchronizedDescriptiveStatistics();
+						final DescriptiveStatistics baselineFMeasureStats = new SynchronizedDescriptiveStatistics();
+						final DescriptiveStatistics baselinePredAccStats = new SynchronizedDescriptiveStatistics();
+						final DescriptiveStatistics baselineMathCorrStats = new SynchronizedDescriptiveStatistics();
+						
 						final DescriptiveStatistics bestReturnedSolutionPrecisionStats = new SynchronizedDescriptiveStatistics();
 						final DescriptiveStatistics bestReturnedSolutionRecallStats = new SynchronizedDescriptiveStatistics();
 						final DescriptiveStatistics bestReturnedSolutionFMeasureStats = new SynchronizedDescriptiveStatistics();
@@ -395,7 +429,6 @@ public class QTLEvaluation {
 						final DescriptiveStatistics bestSolutionPrecisionStats = new SynchronizedDescriptiveStatistics();
 						final DescriptiveStatistics bestSolutionRecallStats = new SynchronizedDescriptiveStatistics();
 						final DescriptiveStatistics bestSolutionFMeasureStats = new SynchronizedDescriptiveStatistics();
-						
 						final DescriptiveStatistics bestSolutionPredAccStats = new SynchronizedDescriptiveStatistics();
 						final DescriptiveStatistics bestSolutionMathCorrStats = new SynchronizedDescriptiveStatistics();
 						
@@ -404,14 +437,14 @@ public class QTLEvaluation {
 						MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).reset();
 						MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).reset();
 						
-						ExecutorService tp = Executors.newFixedThreadPool(4);
+						ExecutorService tp = Executors.newFixedThreadPool(1);
 						failed = false;
 		//				if(nrOfExamples != 7) continue;
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
+//							if(!sparqlQuery.contains("Canal"))continue;
 							
-	//						if(!sparqlQuery.contains("PrimeMinister"))continue;
 							tp.submit(new Runnable(){
 	
 								@Override
@@ -424,6 +457,21 @@ public class QTLEvaluation {
 									
 									try {
 										ExamplesWrapper examples = generateExamples(sparqlQuery, possibleNrOfExamples, noise);
+										
+										// compute baseline
+										logger.info("Computing baseline...");
+										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_FREQUENT_TYPE_IN_EXAMPLES);
+										logger.info("done. \nBaseline solution:\n" + QueryTreeUtils.toOWLClassExpression(baselineSolution));
+										logger.info("Evaluating baseline...");
+										Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
+										logger.info("Baseline score:\n" + baselineScore);
+										String baseLineQuery = QueryTreeUtils.toSPARQLQueryString(
+												baselineSolution, dataset.getBaseIRI(), dataset.getPrefixMapping());
+										baselinePrecisionStats.addValue(baselineScore.getPrecision());
+										baselineRecallStats.addValue(baselineScore.getRecall());
+										baselineFMeasureStats.addValue(baselineScore.getFmeasure());
+										baselinePredAccStats.addValue(baselineScore.getPredAcc());
+										baselineMathCorrStats.addValue(baselineScore.getMathCorr());
 										
 										// compute or load cached solutions
 										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
@@ -456,17 +504,14 @@ public class QTLEvaluation {
 										Score bestMatchingScore = bestMatchingTreeWithScore.getSecond();
 										
 										// position of best tree in list of solutions
-										int position = solutions.indexOf(bestMatchingTree);
-										bestSolutionPositionStats.addValue(position);
+										int positionBestScore = solutions.indexOf(bestMatchingTree);
+										bestSolutionPositionStats.addValue(positionBestScore);
 				
 										Score bestScore = score;
-										if (position > 0) {
-											logger.info("Position of best covering tree in list: " + position);
+										if (positionBestScore > 0) {
+											logger.info("Position of best covering tree in list: " + positionBestScore);
 											logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
 											logger.info("Tree score: " + bestMatchingTree.getTreeScore());
-											String bestLearnedSPARQLQuery = QueryTreeUtils.toSPARQLQueryString(
-													filter.filter(bestMatchingTree.getTree()), 
-													dataset.getBaseIRI(), dataset.getPrefixMapping());
 											bestScore = bestMatchingScore;
 											logger.info(bestMatchingScore);
 										} else {
@@ -482,16 +527,20 @@ public class QTLEvaluation {
 												filter.filter(bestMatchingTree.getTree()), 
 												dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 										
-										write2DB(sparqlQuery, nrOfExamples, examples, noise, heuristicName, measureName,
-												QueryFactory.create(learnedSPARQLQuery).toString(), score.getFmeasure(), score.getPrecision(), score.getRecall(), 
-												bestQuery, position, bestScore.getFmeasure(), bestScore.getPrecision(), bestScore.getRecall());
+										write2DB(sparqlQuery, nrOfExamples, examples, noise, 
+												baseLineQuery, baselineScore, 
+												heuristicName, measureName,
+												QueryFactory.create(learnedSPARQLQuery).toString(), score, 
+												bestQuery, positionBestScore, bestScore);
 				
 									} catch (Exception e) {
 										failed = true;
 										logger.error("Error occured.", e);
 //										System.exit(0);
 									}
-								}});
+								}
+						});
+						
 						}
 						
 						tp.shutdown();
@@ -501,19 +550,25 @@ public class QTLEvaluation {
 						
 						if(!failed) {
 							String result = "";
+							result += "\nBaseline Precision:\n" + baselinePrecisionStats;
+							result += "\nBaseline Recall:\n" + baselineRecallStats;
+							result += "\nBaseline F-measure:\n" + baselineFMeasureStats;
+							result += "\nBaseline PredAcc:\n" + baselinePredAccStats;
+							result += "\nBaseline MathCorr:\n" + baselineMathCorrStats;
+							
 							result += "#Returned solutions:\n" + nrOfReturnedSolutionsStats;
 							
 							result += "\nOverall Precision:\n" + bestReturnedSolutionPrecisionStats;
 							result += "\nOverall Recall:\n" + bestReturnedSolutionRecallStats;
-							result += "\nOverall FMeasure:\n" + bestReturnedSolutionFMeasureStats;
+							result += "\nOverall F-measure:\n" + bestReturnedSolutionFMeasureStats;
 							result += "\nOverall PredAcc:\n" + bestReturnedSolutionPredAccStats;
 							result += "\nOverall MathCorr:\n" + bestReturnedSolutionMathCorrStats;
+							
 							result += "\nPositions of best solution:\n" + Arrays.toString(bestSolutionPositionStats.getValues());
 							result += "\nPosition of best solution stats:\n" + bestSolutionPositionStats;
-							
 							result += "\nOverall Precision of best solution:\n" + bestSolutionPrecisionStats;
 							result += "\nOverall Recall of best solution:\n" + bestSolutionRecallStats;
-							result += "\nOverall FMeasure of best solution:\n" + bestSolutionFMeasureStats;
+							result += "\nOverall F-measure of best solution:\n" + bestSolutionFMeasureStats;
 							
 							result += "\nCBD generation time(total):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getTotal() + "\n";
 							result += "CBD generation time(avg):\t" + MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).getAvg() + "\n";
@@ -540,7 +595,14 @@ public class QTLEvaluation {
 										bestSolutionPositionStats.getMean(),
 										bestSolutionFMeasureStats.getMean(),
 										bestSolutionPrecisionStats.getMean(),
-										bestSolutionRecallStats.getMean()
+										bestSolutionRecallStats.getMean(),
+										bestSolutionPredAccStats.getMean(),
+										bestSolutionMathCorrStats.getMean(),
+										baselineFMeasureStats.getMean(), 
+										baselinePrecisionStats.getMean(), 
+										baselineRecallStats.getMean(),
+										baselinePredAccStats.getMean(),
+										baselineMathCorrStats.getMean()
 										);
 							}
 						}
@@ -570,6 +632,74 @@ public class QTLEvaluation {
 				}
 			}
 		}
+	}
+	
+	/*
+	 * Compute a baseline solution.
+	 * 
+	 * From simple to more complex:
+	 * 
+	 * 1. random type
+	 * 2. most popular type in KB
+	 * 3. most frequent type in pos. examples
+	 * 4. most informative edge, e.g. based on information gain
+	 * 5. LGG of all pos. examples
+	 * 
+	 */
+	private RDFResourceTree applyBaseLine(ExamplesWrapper examples, Baseline baselineApproach) {
+		Collection<RDFResourceTree> posExamples = examples.posExamplesMapping.values();
+		
+		switch (baselineApproach) {
+		case RANDOM:// 1.
+			String query = "SELECT ?cls WHERE {?cls a owl:Class .} ORDER BY RAND() LIMIT 1";
+			QueryExecution qe = qef.createQueryExecution(query);
+			ResultSet rs = qe.execSelect();
+			if(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				Resource cls = qs.getResource("cls");
+				RDFResourceTree solution = new RDFResourceTree();
+				solution.addChild(new RDFResourceTree(cls.asNode()), RDF.type.asNode());
+				return solution;
+			}
+		case MOST_POPULAR_TYPE_IN_KB:// 2.
+			query = "SELECT ?cls WHERE {?cls a owl:Class . ?s a ?cls .} ORDER BY DESC(COUNT(?s)) LIMIT 1";
+			qe = qef.createQueryExecution(query);
+			rs = qe.execSelect();
+			if(rs.hasNext()) {
+				QuerySolution qs = rs.next();
+				Resource cls = qs.getResource("cls");
+				RDFResourceTree solution = new RDFResourceTree();
+				solution.addChild(new RDFResourceTree(cls.asNode()), RDF.type.asNode());
+				return solution;
+			}
+		case MOST_FREQUENT_TYPE_IN_EXAMPLES:// 3.
+			Multiset<Node> types = HashMultiset.create();
+			for (RDFResourceTree ex : posExamples) {
+				List<RDFResourceTree> children = ex.getChildren(RDF.type.asNode());
+				for (RDFResourceTree child : children) {
+					types.add(child.getData());
+				}
+			}
+			Node mostFrequentType = Ordering.natural().onResultOf(new Function<Multiset.Entry<Node>, Integer>() {
+				  public Integer apply(Multiset.Entry<Node> entry) {
+				    return entry.getCount();
+				  }
+				}).max(types.entrySet()).getElement();
+			RDFResourceTree solution = new RDFResourceTree();
+			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
+			return solution;
+		case MOST_INFORMATIVE_EDGE_IN_EXAMPLES:
+			break;
+		case LGG:
+			LGGGenerator lggGenerator = new LGGGeneratorSimple();
+			RDFResourceTree lgg = lggGenerator.getLGG(Lists.newArrayList(posExamples));
+			return lgg;
+		
+		default:
+			break;
+		
+		}
+		return null;
 	}
 	
 	private List<EvaluatedRDFResourceTree> generateSolutions(ExamplesWrapper examples, double noise, QueryTreeHeuristic heuristic) throws ComponentInitException {
@@ -988,6 +1118,8 @@ public class QTLEvaluation {
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).start();
 		Model cbd = cbdGen.getConciseBoundedDescription(resource);
 		MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).stop();
+		
+		// rewrite NAN to NaN to avoid parse exception
 		try(ByteArrayOutputStream baos = new ByteArrayOutputStream()){
 			cbd.write(baos, "N-TRIPLES", null);
 			String modelAsString = new String(baos.toByteArray());
@@ -1493,33 +1625,13 @@ public class QTLEvaluation {
 
 		// if query is most general one P=|TARGET|/|KB| R=1
 		if (learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
-			double precision = referenceResources.size() / (double) kbSize;
-			if(Double.isNaN(precision)){
-				System.err.println("ERROR!!!" + learnedSPARQLQuery);
-				throw new Exception("Precision not a number.");
-			}
-			double recall = 1.0;
-			double fMeasure = Heuristics.getFScore(recall, precision);
 			
 			int tp = referenceResources.size();
 			int fp = kbSize - tp;
 			int tn = 0;
 			int fn = 0;
 			
-			double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
-			BigDecimal denominator = BigDecimal.valueOf(tp + fp).
-					multiply(BigDecimal.valueOf(tp + fn)).
-					multiply(BigDecimal.valueOf(tn + fp)).
-					multiply(BigDecimal.valueOf(tn + fn));
-			double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
-			
-			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
-				System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-				throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
-			}
-			
-			return new Score(precision, recall, fMeasure, predAcc, mathCorr);
+			return score(tp, fp, tn, fn);
 		}
 
 		// get the learned resources
@@ -1532,33 +1644,12 @@ public class QTLEvaluation {
 		// get the overlapping resources
 		int overlap = Sets.intersection(Sets.newHashSet(referenceResources), Sets.newHashSet(learnedResources)).size();
 
-		double precision = overlap / (double) learnedResources.size();
-		if(Double.isNaN(precision)){
-			System.err.println("ERROR!!!Precision not a number" + learnedSPARQLQuery);
-			throw new Exception("Precision not a number.");
-		}
-		double recall = overlap / (double) referenceResources.size();
-		double fMeasure = Heuristics.getFScore(recall, precision);
-		
 		int tp = overlap;
 		int fp = Sets.difference(Sets.newHashSet(learnedResources), Sets.newHashSet(referenceResources)).size();
 		int fn = Sets.difference(Sets.newHashSet(referenceResources), Sets.newHashSet(learnedResources)).size();
 		int tn = kbSize - tp - fp - fn;
 		
-		double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
-		BigDecimal denominator = BigDecimal.valueOf(tp + fp).
-				multiply(BigDecimal.valueOf(tp + fn)).
-				multiply(BigDecimal.valueOf(tn + fp)).
-				multiply(BigDecimal.valueOf(tn + fn));
-		double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
-		
-		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-			System.err.println("ERROR!!!Precision not a number\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
-			System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-			throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
-		}
-		
-		return new Score(precision, recall, fMeasure, predAcc, mathCorr);
+		return score(tp, fp, tn, fn);
 	}
 	
 	private Score computeScoreBySparqlCount(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
@@ -1582,33 +1673,13 @@ public class QTLEvaluation {
 				
 		// if query is most general one P=|TARGET|/|KB| R=1
 		if (learnedSPARQLQuery.equals(QueryTreeUtils.EMPTY_QUERY_TREE_QUERY)) {
-			double precision = referenceCnt / (double) kbSize;
-			if(Double.isNaN(precision)){
-				System.err.println("ERROR!!!Precision not a number" + learnedSPARQLQuery);
-				throw new Exception("Precision not a number.");
-			}
-			double recall = 1.0;
-			double fMeasure = Heuristics.getFScore(recall, precision);
 			
 			int tp = referenceCnt;
 			int fp = kbSize - tp;
 			int tn = 0;
 			int fn = 0;
 			
-			double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
-			BigDecimal denominator = BigDecimal.valueOf(tp + fp).
-					multiply(BigDecimal.valueOf(tp + fn)).
-					multiply(BigDecimal.valueOf(tn + fp)).
-					multiply(BigDecimal.valueOf(tn + fn));
-			double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
-			
-			if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-				System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
-				System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-				throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
-			}
-			
-			return new Score(precision, recall, fMeasure, predAcc, mathCorr);
+			return score(tp, fp, tn, fn);
 		}
 				
 		// Q2
@@ -1628,7 +1699,7 @@ public class QTLEvaluation {
 		
 		// Q1 ∪ Q2
 		// if noise = 0 then Q1 ∪ Q2 = Q2
-		int overlap = learnedCnt;
+		int overlap = Math.min(learnedCnt, referenceCnt);
 		if(noise > 0) {
 			Query q12 = QueryFactory.create();
 			q12.setQuerySelectType();
@@ -1650,79 +1721,106 @@ public class QTLEvaluation {
 			qe.close();
 		}
 		
-		double precision = overlap / (double) learnedCnt;
-		if(Double.isNaN(precision)){
-			System.err.println("ERRORPrecision not a number!!!" + learnedSPARQLQuery);
-			throw new Exception("Precision not a number.");
-		}
-		double recall = overlap / (double) referenceCnt;
-		double fMeasure = Heuristics.getFScore(recall, precision);
-		
 		int tp = overlap;
 		int fp = learnedCnt - overlap;
 		int fn = referenceCnt - overlap;
 		int tn = kbSize - tp - fp - fn;
 		
+		return score(tp, fp, tn, fn);
+	}
+	
+	private Score score(int tp, int fp, int tn, int fn) throws Exception {
+		// P
+		double precision = (tp == 0 && fp == 0) ? 1.0 : (double) tp / (tp + fp);
+		
+		// R
+		double recall = (tp == 0 && fn == 0) ? 1.0 : (double) tp / (tp + fn);
+		
+		//F_1
+		double fMeasure = Heuristics.getFScore(recall, precision);
+		
+		// pred. acc
 		double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
 		BigDecimal denominator = BigDecimal.valueOf(tp + fp).
 				multiply(BigDecimal.valueOf(tp + fn)).
 				multiply(BigDecimal.valueOf(tn + fp)).
 				multiply(BigDecimal.valueOf(tn + fn));
+		
+		// Mathews CC
 		double mathCorr = denominator.doubleValue() == 0 ? 0 : (tp * tn - fp * fn) / Math.sqrt(denominator.doubleValue());
 		
 		if(Double.isNaN(predAcc) || Double.isNaN(mathCorr)){
-			System.err.println("ERROR!!!\n" + learnedSPARQLQuery + "\n" + (Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number."));
-			System.err.println(tp + "|" + fp + "|" + fn + "|" + tn);
-			throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + "Not a number.");
+			throw new Exception(Double.isNaN(predAcc) ? ("PredAcc") : ("MC") + " not a number.");
 		}
 		
 		return new Score(precision, recall, fMeasure, predAcc, mathCorr);
 	}
 	
-	private synchronized void write2DB(String targetQuery, int nrOfExamples, ExamplesWrapper examples, double noise, String heuristic, String heuristicMeasure,
-			String queryTop, double fmeasureTop, double precisionTop, double recallTop,
-			String bestQuery, int bestRank, double bestFmeasure, double bestPrecision, double bestRecall
-			) {
-	try {
+	private void write2DB(String targetQuery, int nrOfExamples, ExamplesWrapper examples,
+			double noise, String baseLineQuery, Score baselineScore, String heuristicName, String heuristicMeasure,
+			String returnedQuery, Score returnedQueryScore, String bestQuery, int bestQueryPosition,
+			Score bestQueryScore) {
+		
+		try {
 			psInsertDetailEval.setString(1, targetQuery);
 			psInsertDetailEval.setInt(2, nrOfExamples);
 			psInsertDetailEval.setDouble(3, noise);
-			psInsertDetailEval.setString(4, heuristic);
+			psInsertDetailEval.setString(4, heuristicName);
 			psInsertDetailEval.setString(5, heuristicMeasure);
-			psInsertDetailEval.setString(6, queryTop);
-			psInsertDetailEval.setDouble(7, fmeasureTop);
-			psInsertDetailEval.setDouble(8, precisionTop);
-			psInsertDetailEval.setDouble(9, recallTop);
+			
+			psInsertDetailEval.setString(6, returnedQuery);
+			psInsertDetailEval.setDouble(7, returnedQueryScore.fmeasure);
+			psInsertDetailEval.setDouble(8, returnedQueryScore.precision);
+			psInsertDetailEval.setDouble(9, returnedQueryScore.recall);
+			
 			psInsertDetailEval.setString(10, bestQuery);
-			psInsertDetailEval.setInt(11, bestRank);
-			psInsertDetailEval.setDouble(12, bestFmeasure);
-			psInsertDetailEval.setDouble(13, bestPrecision);
-			psInsertDetailEval.setDouble(14, bestRecall);
+			psInsertDetailEval.setInt(11, bestQueryPosition);
+			psInsertDetailEval.setDouble(12, bestQueryScore.fmeasure);
+			psInsertDetailEval.setDouble(13, bestQueryScore.precision);
+			psInsertDetailEval.setDouble(14, bestQueryScore.recall);
+			
+			psInsertDetailEval.setString(15, baseLineQuery);
+			psInsertDetailEval.setDouble(16, baselineScore.fmeasure);
+			psInsertDetailEval.setDouble(17, baselineScore.precision);
+			psInsertDetailEval.setDouble(18, baselineScore.recall);
 			System.out.println(psInsertDetailEval);
 			psInsertDetailEval.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 	
-	private synchronized void write2DB(String heuristic, String heuristicMeasure, int nrOfExamples, double noise, 
+	private synchronized void write2DB(
+			String heuristic, String heuristicMeasure, int nrOfExamples, double noise, 
 			double fmeasure, double precision, double recall, double predAcc, double mathCorr,
-			double bestSolutionPosition, double bestSolutionFmeasure, double bestSolutionPrecision, double bestSolutionRecall
+			double bestSolutionPosition, double bestSolutionFmeasure, double bestSolutionPrecision, double bestSolutionRecall, double bestSolutionPredAcc, double bestSolutionMathCorr,
+			double baselineFmeasure, double baselinePrecision, double baselineRecall, double baselinePredAcc, double baselineMathCorr
 			) {
 		try {
 			psInsertOverallEval.setString(1, heuristic);
 			psInsertOverallEval.setString(2, heuristicMeasure);
 			psInsertOverallEval.setInt(3, nrOfExamples);
 			psInsertOverallEval.setDouble(4, noise);
+			
 			psInsertOverallEval.setDouble(5, fmeasure);
 			psInsertOverallEval.setDouble(6, precision);
 			psInsertOverallEval.setDouble(7, recall);
 			psInsertOverallEval.setDouble(8, predAcc);
 			psInsertOverallEval.setDouble(9, mathCorr);
+			
 			psInsertOverallEval.setDouble(10, bestSolutionPosition);
 			psInsertOverallEval.setDouble(11, bestSolutionFmeasure);
 			psInsertOverallEval.setDouble(12, bestSolutionPrecision);
 			psInsertOverallEval.setDouble(13, bestSolutionRecall);
+			psInsertOverallEval.setDouble(14, bestSolutionPredAcc);
+			psInsertOverallEval.setDouble(15, bestSolutionMathCorr);
+			
+			psInsertOverallEval.setDouble(16, baselineFmeasure);
+			psInsertOverallEval.setDouble(17, baselinePrecision);
+			psInsertOverallEval.setDouble(18, baselineRecall);
+			psInsertOverallEval.setDouble(19, baselinePredAcc);
+			psInsertOverallEval.setDouble(20, baselineMathCorr);
 			
 			System.out.println(psInsertOverallEval);
 			psInsertOverallEval.executeUpdate();
@@ -1755,6 +1853,7 @@ public class QTLEvaluation {
 	}
 	
 	class Score {
+		int tp, fp, tn, fn = 0;
 		double precision, recall, fmeasure, predAcc, mathCorr = 0;
 
 		public Score() {}
