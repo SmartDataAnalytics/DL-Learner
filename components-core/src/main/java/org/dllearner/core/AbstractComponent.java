@@ -38,18 +38,6 @@ public abstract class AbstractComponent implements Component {
 		return initialized;
 	}
 	
-//	protected Configurator configurator;
-	
-	/**
-	 * For each component, a configurator class is generated in package
-	 * org.dllearner.core.configurators using the script
-	 * { org.dllearner.scripts.ConfigJavaGenerator}. The configurator
-	 * provides set and get methods for the configuration options of
-	 * a component.
-	 * @return An object allowing to configure this component.
-	 */
-//	public abstract Configurator getConfigurator();
-	
 	/**
 	 * Returns the name of this component. By default, "unnamed
 	 * component" is returned, but all implementations of components
