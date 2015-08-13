@@ -75,45 +75,36 @@ public class OEHeuristicRuntime extends AbstractHeuristic{
 		return score;
 	}
 
-	@Override
 	public double getExpansionPenaltyFactor() {
 		return expansionPenaltyFactor;
 	}
 
-	@Override
 	public double getGainBonusFactor() {
 		return gainBonusFactor;
 	}
 
-	@Override
 	public void setGainBonusFactor(double gainBonusFactor) {
 		this.gainBonusFactor = gainBonusFactor;
 	}
 
-	@Override
 	public double getNodeRefinementPenalty() {
 		return nodeRefinementPenalty;
 	}
 
-	@Override
 	public void setNodeRefinementPenalty(double nodeRefinementPenalty) {
 		this.nodeRefinementPenalty = nodeRefinementPenalty;
 	}
 
-	@Override
 	public void setExpansionPenaltyFactor(double expansionPenaltyFactor) {
 		this.expansionPenaltyFactor = expansionPenaltyFactor;
 	}
 
-	@Override
 	public double getStartNodeBonus() {
 		return startNodeBonus;
 	}
 
-	@Override
 	public void setStartNodeBonus(double startNodeBonus) {
 		this.startNodeBonus = startNodeBonus;
 	}
-
 
 }
