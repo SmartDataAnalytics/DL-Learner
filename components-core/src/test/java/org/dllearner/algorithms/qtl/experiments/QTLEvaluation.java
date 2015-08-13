@@ -209,11 +209,16 @@ public class QTLEvaluation {
 
 	private boolean failed;
 
+	private int maxExecutionTimeInSeconds = 20;
+
+	private boolean override = false;
+
 	
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB) throws ComponentInitException {
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
+		this.override = override;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxDepth);
@@ -347,18 +352,18 @@ public class QTLEvaluation {
 		
 		// parameters
 		int[] nrOfExamplesIntervals = {
-				5,
-				10,
+//				5,
+//				10,
 //				15,
-				20, 
+//				20, 
 //				25,
 				30
 				}; 
 		
 		double[] noiseIntervals = {
-				0.0,
+//				0.0,
 //				0.1,
-				0.2,
+//				0.2,
 //				0.3,
 				0.4,
 //				0.6
@@ -379,6 +384,7 @@ public class QTLEvaluation {
 		for(final QueryTreeHeuristic heuristic : heuristics) {
 			final String heuristicName = heuristic.getClass().getAnnotation(ComponentAnn.class).shortName();
 			
+			// loop over heuristics measures
 			for (HeuristicType measure : measures) {
 				final String measureName = measure.toString();
 			
@@ -396,7 +402,7 @@ public class QTLEvaluation {
 						File logFile = new File(benchmarkDirectory, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".log");
 						File statsFile = new File(benchmarkDirectory, "qtl2-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".stats");
 						
-						if(logFile.exists() && statsFile.exists()) {
+						if(!override && logFile.exists() && statsFile.exists()) {
 							logger.info("Eval config already processed. For re-running please remove corresponding output files.");
 							continue;
 						}
@@ -443,7 +449,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-//							if(!sparqlQuery.contains("Canal"))continue;
+							if(!sparqlQuery.contains("FilmFestival"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -467,11 +473,11 @@ public class QTLEvaluation {
 										logger.info("Baseline score:\n" + baselineScore);
 										String baseLineQuery = QueryTreeUtils.toSPARQLQueryString(
 												baselineSolution, dataset.getBaseIRI(), dataset.getPrefixMapping());
-										baselinePrecisionStats.addValue(baselineScore.getPrecision());
-										baselineRecallStats.addValue(baselineScore.getRecall());
-										baselineFMeasureStats.addValue(baselineScore.getFmeasure());
-										baselinePredAccStats.addValue(baselineScore.getPredAcc());
-										baselineMathCorrStats.addValue(baselineScore.getMathCorr());
+										baselinePrecisionStats.addValue(baselineScore.precision);
+										baselineRecallStats.addValue(baselineScore.recall);
+										baselineFMeasureStats.addValue(baselineScore.fmeasure);
+										baselinePredAccStats.addValue(baselineScore.predAcc);
+										baselineMathCorrStats.addValue(baselineScore.mathCorr);
 										
 										// compute or load cached solutions
 										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
@@ -491,11 +497,11 @@ public class QTLEvaluation {
 				
 										// compute score
 										Score score = computeScore(sparqlQuery, tree, noise);
-										bestReturnedSolutionPrecisionStats.addValue(score.getPrecision());
-										bestReturnedSolutionRecallStats.addValue(score.getRecall());
-										bestReturnedSolutionFMeasureStats.addValue(score.getFmeasure());
-										bestReturnedSolutionPredAccStats.addValue(score.getPredAcc());
-										bestReturnedSolutionMathCorrStats.addValue(score.getMathCorr());
+										bestReturnedSolutionPrecisionStats.addValue(score.precision);
+										bestReturnedSolutionRecallStats.addValue(score.recall);
+										bestReturnedSolutionFMeasureStats.addValue(score.fmeasure);
+										bestReturnedSolutionPredAccStats.addValue(score.predAcc);
+										bestReturnedSolutionMathCorrStats.addValue(score.mathCorr);
 										logger.info(score);
 				
 										// find the extensionally best matching tree in the list
@@ -517,21 +523,23 @@ public class QTLEvaluation {
 										} else {
 											logger.info("Best returned solution was also the best covering solution.");
 										}
-										bestSolutionRecallStats.addValue(bestScore.getRecall());
-										bestSolutionPrecisionStats.addValue(bestScore.getPrecision());
-										bestSolutionFMeasureStats.addValue(bestScore.getFmeasure());
-										bestSolutionPredAccStats.addValue(bestScore.getPredAcc());
-										bestSolutionMathCorrStats.addValue(bestScore.getMathCorr());
+										bestSolutionRecallStats.addValue(bestScore.recall);
+										bestSolutionPrecisionStats.addValue(bestScore.precision);
+										bestSolutionFMeasureStats.addValue(bestScore.fmeasure);
+										bestSolutionPredAccStats.addValue(bestScore.predAcc);
+										bestSolutionMathCorrStats.addValue(bestScore.mathCorr);
 										
 										String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
 												filter.filter(bestMatchingTree.getTree()), 
 												dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
 										
-										write2DB(sparqlQuery, nrOfExamples, examples, noise, 
-												baseLineQuery, baselineScore, 
-												heuristicName, measureName,
-												QueryFactory.create(learnedSPARQLQuery).toString(), score, 
-												bestQuery, positionBestScore, bestScore);
+										if(write2DB) {
+											write2DB(sparqlQuery, nrOfExamples, examples, noise, 
+													baseLineQuery, baselineScore, 
+													heuristicName, measureName,
+													QueryFactory.create(learnedSPARQLQuery).toString(), score, 
+													bestQuery, positionBestScore, bestScore);
+										}
 				
 									} catch (Exception e) {
 										failed = true;
@@ -717,6 +725,7 @@ public class QTLEvaluation {
 		la.setNegativeExampleTrees(examples.negExamplesMapping);
 		la.setNoise(noise);
 		la.setHeuristic(heuristic);
+		la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
 		la.init();
 		la.start();
 
@@ -751,7 +760,7 @@ public class QTLEvaluation {
 			
 			// compute score
 			Score score = computeScore(targetSPARQLQuery, tree, noise);
-			double fMeasure = score.getFmeasure();
+			double fMeasure = score.fmeasure;
 			
 			// we can stop if f-score is 1
 			if(fMeasure == 1.0){
@@ -1838,16 +1847,17 @@ public class QTLEvaluation {
 		Logger.getLogger(QTLEvaluation.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-		if(args.length < 2) {
-			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <path/to/benchmark-queries> <write2Database>");
+		if(args.length < 4) {
+			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <path/to/benchmark-queries> <write2Database> <overrideLocalResults>");
 			System.exit(0);
 		}
 		
 		File benchmarkDirectory = new File(args[0]);
 		File queries = new File(args[1]);
 		boolean write2DB = Boolean.valueOf(args[2]);
+		boolean override = Boolean.valueOf(args[3]);
 		
-		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB).run(queries);
+		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB, override).run(queries);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
@@ -1864,22 +1874,6 @@ public class QTLEvaluation {
 			this.fmeasure = fmeasure;
 			this.predAcc = predAcc;
 			this.mathCorr = mathCorr;
-		}
-		
-		public double getPrecision() {
-			return precision;
-		}
-		public double getRecall() {
-			return recall;
-		}
-		public double getFmeasure() {
-			return fmeasure;
-		}
-		public double getPredAcc() {
-			return predAcc;
-		}
-		public double getMathCorr() {
-			return mathCorr;
 		}
 		
 		/* (non-Javadoc)
