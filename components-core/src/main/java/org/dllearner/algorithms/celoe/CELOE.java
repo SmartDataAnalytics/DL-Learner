@@ -60,6 +60,8 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.TreeUtils;
+import org.dllearner.utilities.datastructures.SearchTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -109,13 +111,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
-	
-	// all nodes in the search tree (used for selecting most promising node)
-	private TreeSet<OENode> nodes;
+
+	private SearchTree<OENode> searchTree;
 	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic; // = new OEHeuristicRuntime();
-	// root of search tree
-	private OENode startNode;
 	// the class with which we start the refinement process
 	@ConfigOption(
 			name = "startClass",
@@ -512,9 +511,9 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
-		Iterator<OENode> it = nodes.descendingIterator();
+		Iterator<OENode> it = searchTree.descendingIterator();
 		if (logger.isDebugEnabled()) {
-			for (OENode N:nodes) {
+			for (OENode N:searchTree.getNodeSet()) {
 				logger.debug(sparql_debug,"`getnext:"+N);
 			}
 		}
@@ -543,14 +542,14 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		nodes.remove(node);
+		searchTree.updatePrepare(node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
 //		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 //		System.out.println("refined node: " + node);
-		nodes.add(node);
+		searchTree.updateDone(node);
 		MonitorFactory.getTimeMonitor("refineNode").stop();
 		return refinements;
 	}
@@ -597,15 +596,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			return false;
 		}
 		
-		OENode node = new OENode(parentNode, description, accuracy);
-			
-		// link to parent (unless start node)
-		if(parentNode == null) {
-			startNode = node;
-		} else {
-			parentNode.addChild(node);
-		}
-		nodes.add(node);
+		OENode node = new OENode(description, accuracy);
+		searchTree.addNode(parentNode, node);
 		
 		// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
@@ -815,7 +807,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private void reset() {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
-		nodes = new TreeSet<OENode>(heuristic);
+		searchTree = new SearchTree<OENode>(heuristic);
 		descriptions = new TreeSet<OWLClassExpression>();
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
@@ -823,10 +815,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	private void printAlgorithmRunStats() {
 		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
 		} else {
 			totalRuntimeNs = System.nanoTime()-nanoStartTime;
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 	}
@@ -850,7 +842,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(startNode.toTreeString(baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -873,7 +865,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 			
-			for(OENode n : nodes.descendingSet()) {
+			for(OENode n : searchTree.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
 						// we can stop instantly when another node with min.
@@ -926,14 +918,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Override
 	public void stop() {
 		stop = true;
-	}
-
-	public OENode getSearchTreeRoot() {
-		return startNode;
-	}
-	
-	public TreeSet<OENode> getNodes() {
-		return nodes;
 	}
 
 	public int getMaximumHorizontalExpansion() {
