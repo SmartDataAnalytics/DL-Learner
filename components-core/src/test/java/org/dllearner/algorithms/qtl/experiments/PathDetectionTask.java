@@ -83,7 +83,7 @@ public class PathDetectionTask implements Callable<Path> {
 						
 						for (String clusterString : split) {
 							Set<String> cluster = new TreeSet<String>();
-							for (String property : Splitter.on(",").split(clusterString)) {
+							for (String property : Splitter.on(",").trimResults().split(clusterString)) {
 								cluster.add(property.replace("[", "").replace("]", ""));
 							}
 							propertyClusters.add(cluster);
@@ -265,7 +265,7 @@ public class PathDetectionTask implements Callable<Path> {
 				List<List<Set<String>>> pathsNew = new ArrayList<List<Set<String>>>();
 				for (List<Set<String>> path : paths) {
 					int clusterSize = rndGen.nextInt(3) + 1;
-					List<Set<String>> propertyClusters = getCooccuringPropertiesOnPath(model, cls, path, depth == 1 ? clusterSize : 1);
+					List<Set<String>> propertyClusters = getCooccuringPropertiesOnPath(model, cls, path, depth == 1 ? 2 : 1);
 					for (Set<String> propertyCluster : propertyClusters) {
 						List<Set<String>> newPath = new ArrayList<Set<String>>(path);
 						newPath.add(propertyCluster);

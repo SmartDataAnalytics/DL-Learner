@@ -209,7 +209,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. runtime for each QTL
-	private int maxExecutionTimeInSeconds = 40;
+	private int maxExecutionTimeInSeconds = 60;
 
 	// whether to override existing results
 	private boolean override = false;
@@ -369,7 +369,7 @@ public class QTLEvaluation {
 		double[] noiseIntervals = {
 				0.0,
 //				0.1,
-//				0.2,
+				0.2,
 //				0.3,
 				0.4,
 //				0.6
