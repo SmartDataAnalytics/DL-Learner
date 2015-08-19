@@ -173,8 +173,9 @@ public class DBpediaLearningProblemsGenerator {
 			System.out.println(path);
 			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 		}
+		File file = new File(benchmarkDirectory, "queries_" + nrOfSPARQLQueries + "_" + minDepth + "-" + maxDepth + "_" + minNrOfExamples+ ".txt");
 		try {
-			Files.write(queries, new File(benchmarkDirectory, "queries.txt"), Charsets.UTF_8);
+			Files.write(queries, file, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -27,11 +27,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
@@ -126,6 +128,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.sparql.syntax.ElementWalker;
+import com.hp.hpl.jena.sparql.util.TripleComparator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.MonitorFactory;
@@ -153,7 +156,7 @@ public class QTLEvaluation {
 	}
 	
 	enum Baseline {
-		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG
+		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
 	}
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
@@ -175,7 +178,7 @@ public class QTLEvaluation {
 	String cacheDirectory = "./cache/qtl";
 	
 	int minNrOfPositiveExamples = 9;
-	int maxDepth = 2;
+	int maxDepth = 3;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -196,22 +199,22 @@ public class QTLEvaluation {
 //	private Map<OWLIndividual, RDFResourceTree> generatedExamples;
 //	private List<String> correctExamples;
 
-
-	private Connection conn;
-	
+	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
 
+	// whether to write eval results to a database
 	private boolean write2DB;
-
+	private Connection conn;
 	private PreparedStatement psInsertOverallEval;
-
 	private PreparedStatement psInsertDetailEval;
 
-	private boolean failed;
-
+	// max. runtime for each QTL
 	private int maxExecutionTimeInSeconds = 40;
 
+	// whether to override existing results
 	private boolean override = false;
+	
+	private boolean failed;
 
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
@@ -235,87 +238,90 @@ public class QTLEvaluation {
 		
 		kbSize = getKBSize();
 		
-		
 		if(write2DB) {
-			try {
-				Properties config = new Properties();
-				config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/qtl-eval-config.properties"));
+			setupDatabase();
+		}
+	}
+	
+	private void setupDatabase() {
+		try {
+			Properties config = new Properties();
+			config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/qtl-eval-config.properties"));
 
-				String url = config.getProperty("url");
-				String username = config.getProperty("username");
-				String password = config.getProperty("password");
-				Class.forName("com.mysql.jdbc.Driver").newInstance();
-				conn = DriverManager.getConnection(url, username, password);
-				
-				String sql = "CREATE TABLE IF NOT EXISTS eval_overall (" +
-						   "heuristic VARCHAR(100), " + 
-						   "heuristic_measure VARCHAR(100), " +
-						   "nrOfExamples TINYINT, " +
-		                   "noise DOUBLE, " + 
-		                   "avg_fscore_best_returned DOUBLE, " + 
-		                   "avg_precision_best_returned DOUBLE, " + 
-		                   "avg_recall_best_returned DOUBLE, " + 
-		                   "avg_predacc_best_returned DOUBLE, " + 
-		                   "avg_mathcorr_best_returned DOUBLE, " + 
-		                   "avg_position_best DOUBLE, " +
-		                   "avg_fscore_best DOUBLE, " + 
-		                   "avg_precision_best DOUBLE, " + 
-		                   "avg_recall_best DOUBLE, " + 
-		                   "avg_predacc_best DOUBLE, " + 
-		                   "avg_mathcorr_best DOUBLE, " + 
-		                   "avg_fscore_baseline DOUBLE, " + 
-		                   "avg_precision_baseline DOUBLE, " + 
-		                   "avg_recall_baseline DOUBLE, " + 
-		                   "avg_predacc_baseline DOUBLE, " + 
-		                   "avg_mathcorr_baseline DOUBLE, " +
-		                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))"; 
-				
-				java.sql.Statement stmt = conn.createStatement();
-				stmt.execute(sql);
-				
-				sql = "CREATE TABLE IF NOT EXISTS eval_detailed (" +
-						   "target_query VARCHAR(500)," +
-						   "nrOfExamples TINYINT, " +
-		                   "noise DOUBLE, " + 
-		                   "heuristic VARCHAR(100), " +
-		                   "heuristic_measure VARCHAR(100), " +
-		                   "query_top VARCHAR(5000), " + 
-		                   "fscore_top DOUBLE, " + 
-		                   "precision_top DOUBLE, " + 
-		                   "recall_top DOUBLE, " + 
-		                   "best_query TEXT," +
-		                   "best_rank TINYINT, " + 
-		                   "best_fscore DOUBLE, " + 
-		                   "best_precision DOUBLE, " + 
-		                   "best_recall DOUBLE, " + 
-		                   "baseline_query TEXT," +
-		                   "baseline_fscore DOUBLE, " + 
-		                   "baseline_precision DOUBLE, " + 
-		                   "baseline_recall DOUBLE, " + 
-		                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM"; 
-				stmt = conn.createStatement();
-				stmt.execute(sql);
-				
-				sql = "INSERT INTO eval_overall ("
-						+ "heuristic, heuristic_measure, nrOfExamples, noise, "
-						+ "avg_fscore_best_returned, avg_precision_best_returned, avg_recall_best_returned,"
-						+ "avg_predacc_best_returned, avg_mathcorr_best_returned, "
-						+ "avg_position_best, avg_fscore_best, avg_precision_best, avg_recall_best, avg_predacc_best, avg_mathcorr_best,"
-						+ "avg_fscore_baseline, avg_precision_baseline, avg_recall_baseline, avg_predacc_baseline, avg_mathcorr_baseline"
-						+ ")" + 
-						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-				psInsertOverallEval = conn.prepareStatement(sql);
-				
-				sql = "INSERT INTO eval_detailed ("
-						+ "target_query, nrOfExamples, noise, heuristic, heuristic_measure, "
-						+ "query_top, fscore_top, precision_top, recall_top,"
-						+ "best_query, best_rank, best_fscore, best_precision, best_recall, "
-						+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
-						"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-				psInsertDetailEval = conn.prepareStatement(sql);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			String url = config.getProperty("url");
+			String username = config.getProperty("username");
+			String password = config.getProperty("password");
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			conn = DriverManager.getConnection(url, username, password);
+			
+			String sql = "CREATE TABLE IF NOT EXISTS eval_overall (" +
+					   "heuristic VARCHAR(100), " + 
+					   "heuristic_measure VARCHAR(100), " +
+					   "nrOfExamples TINYINT, " +
+	                   "noise DOUBLE, " + 
+	                   "avg_fscore_best_returned DOUBLE, " + 
+	                   "avg_precision_best_returned DOUBLE, " + 
+	                   "avg_recall_best_returned DOUBLE, " + 
+	                   "avg_predacc_best_returned DOUBLE, " + 
+	                   "avg_mathcorr_best_returned DOUBLE, " + 
+	                   "avg_position_best DOUBLE, " +
+	                   "avg_fscore_best DOUBLE, " + 
+	                   "avg_precision_best DOUBLE, " + 
+	                   "avg_recall_best DOUBLE, " + 
+	                   "avg_predacc_best DOUBLE, " + 
+	                   "avg_mathcorr_best DOUBLE, " + 
+	                   "avg_fscore_baseline DOUBLE, " + 
+	                   "avg_precision_baseline DOUBLE, " + 
+	                   "avg_recall_baseline DOUBLE, " + 
+	                   "avg_predacc_baseline DOUBLE, " + 
+	                   "avg_mathcorr_baseline DOUBLE, " +
+	                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))"; 
+			
+			java.sql.Statement stmt = conn.createStatement();
+			stmt.execute(sql);
+			
+			sql = "CREATE TABLE IF NOT EXISTS eval_detailed (" +
+					   "target_query VARCHAR(500)," +
+					   "nrOfExamples TINYINT, " +
+	                   "noise DOUBLE, " + 
+	                   "heuristic VARCHAR(100), " +
+	                   "heuristic_measure VARCHAR(100), " +
+	                   "query_top VARCHAR(5000), " + 
+	                   "fscore_top DOUBLE, " + 
+	                   "precision_top DOUBLE, " + 
+	                   "recall_top DOUBLE, " + 
+	                   "best_query TEXT," +
+	                   "best_rank TINYINT, " + 
+	                   "best_fscore DOUBLE, " + 
+	                   "best_precision DOUBLE, " + 
+	                   "best_recall DOUBLE, " + 
+	                   "baseline_query TEXT," +
+	                   "baseline_fscore DOUBLE, " + 
+	                   "baseline_precision DOUBLE, " + 
+	                   "baseline_recall DOUBLE, " + 
+	                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM"; 
+			stmt = conn.createStatement();
+			stmt.execute(sql);
+			
+			sql = "INSERT INTO eval_overall ("
+					+ "heuristic, heuristic_measure, nrOfExamples, noise, "
+					+ "avg_fscore_best_returned, avg_precision_best_returned, avg_recall_best_returned,"
+					+ "avg_predacc_best_returned, avg_mathcorr_best_returned, "
+					+ "avg_position_best, avg_fscore_best, avg_precision_best, avg_recall_best, avg_predacc_best, avg_mathcorr_best,"
+					+ "avg_fscore_baseline, avg_precision_baseline, avg_recall_baseline, avg_predacc_baseline, avg_mathcorr_baseline"
+					+ ")" + 
+					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			psInsertOverallEval = conn.prepareStatement(sql);
+			
+			sql = "INSERT INTO eval_detailed ("
+					+ "target_query, nrOfExamples, noise, heuristic, heuristic_measure, "
+					+ "query_top, fscore_top, precision_top, recall_top,"
+					+ "best_query, best_rank, best_fscore, best_precision, best_recall, "
+					+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
+					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			psInsertDetailEval = conn.prepareStatement(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -444,7 +450,10 @@ public class QTLEvaluation {
 						MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).reset();
 						
 						ExecutorService tp = Executors.newFixedThreadPool(1);
-						failed = false;
+						
+						// indicates if the execution for some of the queries failed
+						final AtomicBoolean failed = new AtomicBoolean(false);
+						
 		//				if(nrOfExamples != 7) continue;
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
@@ -542,7 +551,7 @@ public class QTLEvaluation {
 										}
 				
 									} catch (Exception e) {
-										failed = true;
+										failed.set(true);
 										logger.error("Error occured.", e);
 //										System.exit(0);
 									}
@@ -556,7 +565,7 @@ public class QTLEvaluation {
 					
 						Logger.getRootLogger().removeAppender(appender);
 						
-						if(!failed) {
+						if(!failed.get()) {
 							String result = "";
 							result += "\nBaseline Precision:\n" + baselinePrecisionStats;
 							result += "\nBaseline Recall:\n" + baselineRecallStats;
@@ -695,6 +704,25 @@ public class QTLEvaluation {
 				}).max(types.entrySet()).getElement();
 			RDFResourceTree solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
+			return solution;
+		case MOST_FREQUENT_EDGE_IN_EXAMPLES:// 4.
+			Multiset<Pair<Node, Node>> pairs = HashMultiset.create();
+			for (RDFResourceTree ex : posExamples) {
+				SortedSet<Node> edges = ex.getEdges();
+				for (Node edge : edges) {
+					List<RDFResourceTree> children = ex.getChildren(edge);
+					for (RDFResourceTree child : children) {
+						pairs.add(new Pair<Node, Node>(edge, child.getData()));
+					}
+				}
+			}
+			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(new Function<Multiset.Entry<Pair<Node, Node>>, Integer>() {
+				  public Integer apply(Multiset.Entry<Pair<Node, Node>> entry) {
+				    return entry.getCount();
+				  }
+				}).max(pairs.entrySet()).getElement();
+			solution = new RDFResourceTree();
+			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
 			return solution;
 		case MOST_INFORMATIVE_EDGE_IN_EXAMPLES:
 			break;
@@ -959,7 +987,7 @@ public class QTLEvaluation {
 	}
 	
 	/**
-	 * Randomly pick {@code n} instances from KB that do not belong to given examples {@code examples}.
+	 * Randomly pick {@code n} instances from KB that do not belong to given positive examples {@code examples}.
 	 * @param examples the examples that must not be contained in the returned list
 	 * @param n the number of random examples
 	 * @return
@@ -967,6 +995,7 @@ public class QTLEvaluation {
 	private List<String> generateNoiseCandidatesRandom(List<String> examples, int n) {
 		List<String> noiseExamples = new ArrayList<>();
 		
+		rnd.reSeed(123);
 		// get max number of instances in KB
 		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
 		QueryExecution qe = qef.createQueryExecution(query);
@@ -1209,7 +1238,7 @@ public class QTLEvaluation {
 		
 		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
-		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
+		final Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
 		for (Triple tp : triplePatterns) {
 			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
 		}
@@ -1283,18 +1312,18 @@ public class QTLEvaluation {
 				}
 			}
 		}
+		
 		for (Set<Triple> cluster : newClusters) {
-			
 			for(int i = 1; i < maxDepth; i++) {
 				Set<Triple> additionalTriples = new HashSet<Triple>();
 				for (Triple triple : cluster) {
 					if(triple.getObject().isVariable()){
-						additionalTriples.addAll(var2TriplePatterns.get(Var.alloc(triple.getObject())));
+						Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
+						additionalTriples.addAll(triples);
 					}
 				}
 				cluster.addAll(additionalTriples);
 			}
-			
 		}
 //		clusters = newClusters;
 		
@@ -1303,6 +1332,25 @@ public class QTLEvaluation {
 		Set<String> resources = null;
 		// 3. run query for each cluster
 		for (Set<Triple> cluster : clusters) {
+			// remove redundant edges
+			SortedSet<Triple> tmp = new TreeSet<Triple>(new Comparator<Triple>() {
+				
+				TripleComparator comp = new TripleComparator();
+				
+				@Override
+				public int compare(Triple o1, Triple o2) {
+					boolean same = o1.subjectMatches(o2.getSubject()) 
+							&& o2.predicateMatches(o2.getPredicate()) 
+							&& o1.getObject().isVariable() && o2.getObject().isVariable();
+//							&& !var2TriplePatterns.containsKey(o1.getObject());
+					if(same) return 0;
+					return comp.compare(o1, o2);
+				}
+			});
+			tmp.addAll(cluster);
+			cluster = tmp;
+			
+			// build query
 			Query q = new Query();
 			q.addProjectVars(Collections.singleton(targetVar));
 			ElementTriplesBlock el = new ElementTriplesBlock();

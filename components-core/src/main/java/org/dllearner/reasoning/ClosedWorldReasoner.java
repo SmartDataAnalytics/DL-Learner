@@ -243,6 +243,11 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
         super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
     }
     
+    public ClosedWorldReasoner(OWLAPIReasoner baseReasoner) {
+    	super(baseReasoner.getSources());
+        this.baseReasoner = baseReasoner;
+    }
+    
     /**
 	 * @return The name of this component.
 	 */

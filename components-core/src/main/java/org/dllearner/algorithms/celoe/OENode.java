@@ -20,11 +20,10 @@
 package org.dllearner.algorithms.celoe;
 
 import java.text.DecimalFormat;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import org.dllearner.algorithms.SearchTreeNode;
+import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -38,23 +37,20 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * - only evaluated nodes are stored
  * - too weak nodes are not stored
  * - redundant nodes are not stored (?)
- * - only accuracy is stored to make the node structure reusable for different 
+ * - only accuracy is stored to make the node structure reusable for different
  *   learning problems and -algorithms
  * 
  * @author Jens Lehmann
  *
  */
-public class OENode implements SearchTreeNode {
+public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTreeNode {
 
 	protected OWLClassExpression description;
 	
 	protected double accuracy;
 	
 	protected int horizontalExpansion;
-	
-	protected OENode parent;
-	protected List<OENode> children = new LinkedList<OENode>();
-	
+		
 	// the refinement count corresponds to the number of refinements of the
 	// OWLClassExpression in this node - it is a better heuristic indicator than child count
 	// (and avoids the problem that adding children changes the heuristic value)
@@ -62,16 +58,16 @@ public class OENode implements SearchTreeNode {
 	
 	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	
-	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
-		this.parent = parentNode;
+	public OENode(OWLClassExpression description, double accuracy) {
 		this.description = description;
 		this.accuracy = accuracy;
-		horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
+		this.horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 	}
-
-	public void addChild(OENode node) {
-		children.add(node);
-	}
+	
+//	public OENode(OENode parentNode, OWLClassExpression description, double accuracy) {
+//		this(description, accuracy);
+//		this.setParent(parentNode);
+//	}
 
 	public void incHorizontalExpansion() {
 		horizontalExpansion++;
@@ -88,29 +84,16 @@ public class OENode implements SearchTreeNode {
 		return description;
 	}
 
+	@Override
 	public OWLClassExpression getExpression() {
 		return getDescription();
-	}	
+	}
 	
 	/**
 	 * @return the accuracy
 	 */
 	public double getAccuracy() {
 		return accuracy;
-	}
-
-	/**
-	 * @return the parent
-	 */
-	public OENode getParent() {
-		return parent;
-	}
-
-	/**
-	 * @return the children
-	 */
-	public List<OENode> getChildren() {
-		return children;
 	}
 
 	/**
@@ -138,44 +121,6 @@ public class OENode implements SearchTreeNode {
 	@Override
 	public String toString() {
 		return getShortDescription(null);
-	}
-	
-	public String toTreeString() {
-		return toTreeString(0, null).toString();
-	}
-	
-	public String toTreeString(String baseURI) {
-		return toTreeString(0, baseURI).toString();
-	}	
-	
-	public String toTreeString(String baseURI, Map<String, String> prefixes) {
-		return toTreeString(0, baseURI, prefixes).toString();
-	}	
-	
-	private StringBuilder toTreeString(int depth, String baseURI) {
-		StringBuilder treeString = new StringBuilder();
-		for(int i=0; i<depth-1; i++)
-			treeString.append("  ");
-		if(depth!=0)
-			treeString.append("|--> ");
-		treeString.append(getShortDescription(baseURI)+"\n");
-		for(OENode child : children) {
-			treeString.append(child.toTreeString(depth+1,baseURI));
-		}
-		return treeString;
-	}
-	
-	private StringBuilder toTreeString(int depth, String baseURI, Map<String, String> prefixes) {
-		StringBuilder treeString = new StringBuilder();
-		for(int i=0; i<depth-1; i++)
-			treeString.append("  ");
-		if(depth!=0)
-			treeString.append("|--> ");
-		treeString.append(getShortDescription(baseURI, prefixes)+"\n");
-		for(OENode child : children) {
-			treeString.append(child.toTreeString(depth+1,baseURI,prefixes));
-		}
-		return treeString;
 	}
 
 	/**

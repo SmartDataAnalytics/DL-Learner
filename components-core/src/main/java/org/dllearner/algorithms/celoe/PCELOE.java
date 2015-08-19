@@ -69,6 +69,8 @@ import org.dllearner.refinementoperators.SynchronizedRefinementOperator;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
+import org.dllearner.utilities.TreeUtils;
+import org.dllearner.utilities.datastructures.SynchronizedSearchTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -105,13 +107,9 @@ public class PCELOE extends AbstractCELA {
 	@ConfigOption(description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 
-	// all nodes in the search tree (used for selecting most promising node)
-	private NavigableSet<OENode> nodes;
-//	private TreeSet<OENode> nodes;
+	private SynchronizedSearchTree<OENode> searchTree;
 	@ConfigOption(name="heuristic", defaultValue="celoe_heuristic")
 	private AbstractHeuristic heuristic;
-	// root of search tree
-	private OENode startNode;
 	// the class with which we start the refinement process
 	@ConfigOption(name = "startClass", defaultValue="owl:Thing", description="You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.")
 	private OWLClassExpression startClass;
@@ -439,9 +437,9 @@ public class PCELOE extends AbstractCELA {
 		}
 
 		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
 		} else {
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(System.nanoTime()-nanoStartTime) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 
@@ -544,8 +542,8 @@ public class PCELOE extends AbstractCELA {
 		// we expand the best node of those, which have not achieved 100% accuracy
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
-		synchronized (nodes) {
-			Iterator<OENode> it = nodes.descendingIterator();
+		synchronized (searchTree) {
+			Iterator<OENode> it = searchTree.descendingIterator();
 
 			while(it.hasNext()) {
 				OENode node = it.next();
@@ -574,14 +572,14 @@ public class PCELOE extends AbstractCELA {
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
 		// otherwise you may see rarely occurring but critical false ordering in the nodes set)
-		nodes.remove(node);
+		searchTree.updatePrepare(node);
 		int horizExp = node.getHorizontalExpansion();
 		TreeSet<OWLClassExpression> refinements = (TreeSet<OWLClassExpression>) operator.refine(node.getDescription(), horizExp+1);
 //		System.out.println("refinements: " + refinements);
 		node.incHorizontalExpansion();
 		node.setRefinementCount(refinements.size());
 //		System.out.println("refined node: " + node);
-		nodes.add(node);
+		searchTree.updateDone(node);
 		MonitorFactory.getTimeMonitor("refineNode").stop();
 		return refinements;
 	}
@@ -622,15 +620,10 @@ public class PCELOE extends AbstractCELA {
 			return false;
 		}
 
-		OENode node = new OENode(parentNode, description, accuracy);
+		OENode node = new OENode(description, accuracy);
 
 		// link to parent (unless start node)
-		if(parentNode == null) {
-			startNode = node;
-		} else {
-			parentNode.addChild(node);
-		}
-		nodes.add(node);
+		searchTree.addNode(parentNode, node);
 
 		// in some cases (e.g. mutation) fully evaluating even a single class expression is too expensive
 		// due to the high number of examples -- so we just stick to the approximate accuracy
@@ -842,7 +835,8 @@ public class PCELOE extends AbstractCELA {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
 //		nodes = new TreeSet<OENode>(heuristic);
-		nodes = Sets.synchronizedNavigableSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
+		searchTree = new SynchronizedSearchTree(heuristic);
+		//Sets.synchronizedNavigableSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
 		descriptions = Collections.synchronizedSortedSet(new TreeSet<OWLClassExpression>());
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
@@ -851,10 +845,10 @@ public class PCELOE extends AbstractCELA {
 
 	private void printAlgorithmRunStats() {
 		if (stop) {
-			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + nodes.size() + " nodes in the search tree.\n");
+			logger.info("Algorithm stopped ("+expressionTests+" descriptions tested). " + searchTree.size() + " nodes in the search tree.\n");
 		} else {
 			totalRuntimeNs = System.nanoTime()-nanoStartTime;
-			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + nodes.size() + " nodes in the search tree).\n");
+			logger.info("Algorithm terminated successfully (time: " + Helper.prettyPrintNanoSeconds(totalRuntimeNs) + ", "+expressionTests+" descriptions tested, "  + searchTree.size() + " nodes in the search tree).\n");
             logger.info(reasoner.toString());
 		}
 	}
@@ -878,7 +872,7 @@ public class PCELOE extends AbstractCELA {
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(startNode.toTreeString(baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -901,7 +895,7 @@ public class PCELOE extends AbstractCELA {
 			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 
-			for(OENode n : nodes.descendingSet()) {
+			for(OENode n : searchTree.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
 						// we can stop instantly when another node with min.
@@ -954,14 +948,6 @@ public class PCELOE extends AbstractCELA {
 	@Override
 	public void stop() {
 		stop = true;
-	}
-
-	public OENode getSearchTreeRoot() {
-		return startNode;
-	}
-
-	public NavigableSet<OENode> getNodes() {
-		return nodes;
 	}
 
 	public int getMaximumHorizontalExpansion() {

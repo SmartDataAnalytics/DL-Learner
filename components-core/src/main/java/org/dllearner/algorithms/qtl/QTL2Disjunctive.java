@@ -432,7 +432,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			}
 			
 			Iterator<RDFResourceTree> it = falseNegatives.iterator();
-			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
+			while (it.hasNext() && !(useDisjunction && isPartialSolutionTimeExpired()) && !isTimeExpired()) {
 				RDFResourceTree uncoveredTree = it.next();
 //				logger.info("Uncovered tree: "  + uncoveredTree.getStringRepresentation());
 				

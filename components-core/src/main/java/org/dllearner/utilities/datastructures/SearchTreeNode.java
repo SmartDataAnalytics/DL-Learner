@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.dllearner.algorithms;
+package org.dllearner.utilities.datastructures;
 
 import java.util.Collection;
 

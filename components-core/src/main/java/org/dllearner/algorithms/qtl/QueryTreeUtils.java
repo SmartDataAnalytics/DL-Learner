@@ -3,6 +3,9 @@
  */
 package org.dllearner.algorithms.qtl;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,21 +16,32 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.transform.TransformerConfigurationException;
+
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
+import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.dllearner.utilities.PrefixCCMap;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.ext.EdgeNameProvider;
+import org.jgrapht.ext.GraphMLExporter;
+import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -708,6 +722,81 @@ public class QueryTreeUtils {
     	query.setPrefixMapping(pm);
     	
     	return query.toString();
+	}
+	
+	private static int buildGraph(Integer parentId, DirectedGraph<Vertex, Edge> graph, RDFResourceTree tree, SerializationContext context){
+    	Vertex parent = new Vertex(parentId, FmtUtils.stringForNode(tree.getData(), context));
+    	graph.addVertex(parent);
+    	
+    	int childId = parentId;
+    	
+    	for (Node edgeNode : tree.getEdges()) {
+    		String edgeLabel = FmtUtils.stringForNode(edgeNode, context);
+	    	for (RDFResourceTree child : tree.getChildren(edgeNode)) {
+	    		childId++;
+	    		String childLabel = FmtUtils.stringForNode(child.getData(), context);
+	    		
+	    		Vertex childVertex = new Vertex(childId, childLabel);
+	    		graph.addVertex(childVertex);
+	    		
+	    		Edge edge = new Edge(Long.valueOf(parentId + "0" + childId), edgeLabel);
+				graph.addEdge(parent, childVertex, edge);
+				System.err.println(edgeLabel);
+				System.err.println(graph.getEdgeSource(edge).getId());
+				System.err.println(graph.getEdgeTarget(edge).getId());
+				System.err.println(childId + "::" + childLabel);
+				
+				childId = buildGraph(childId, graph, child, context);
+			}
+    	}
+    	
+    	return childId;
+    }
+	
+	public static void asGraph(RDFResourceTree tree, String baseIRI, PrefixMapping pm, File outputFile) {
+		SerializationContext context = new SerializationContext(pm);
+		context.setBaseIRI(baseIRI);
+		
+		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<Vertex, Edge>(Edge.class);
+		buildGraph(0, graph, tree, context);
+		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
+			@Override
+			public String getVertexName(Vertex vertex) {
+				return String.valueOf(vertex.getId());
+			}
+		};
+
+		VertexNameProvider<Vertex> vertexNameProvider = new VertexNameProvider<Vertex>() {
+			@Override
+			public String getVertexName(Vertex vertex) {
+				return vertex.getLabel();
+			}
+		};
+
+		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
+			@Override
+			public String getEdgeName(Edge edge) {
+				return String.valueOf(edge.getId());
+			}
+		};
+
+		EdgeNameProvider<Edge> edgeLabelProvider = new EdgeNameProvider<Edge>() {
+			@Override
+			public String getEdgeName(Edge edge) {
+				return edge.getLabel();
+			}
+		};
+		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<Vertex, Edge>(vertexIDProvider,
+				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
+		try {
+			exporter.export(new FileWriter(outputFile), graph);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
     
 	private static void buildSPARQLQueryString(RDFResourceTree tree,
