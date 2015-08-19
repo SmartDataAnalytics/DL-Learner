@@ -209,7 +209,7 @@ public class QTLEvaluation {
 
 	private boolean failed;
 
-	private int maxExecutionTimeInSeconds = 20;
+	private int maxExecutionTimeInSeconds = 40;
 
 	private boolean override = false;
 
@@ -347,21 +347,21 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, 20);
+		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 50));
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
 		int[] nrOfExamplesIntervals = {
 //				5,
-//				10,
+				10,
 //				15,
-//				20, 
+				20, 
 //				25,
-				30
+//				30
 				}; 
 		
 		double[] noiseIntervals = {
-//				0.0,
+				0.0,
 //				0.1,
 //				0.2,
 //				0.3,
@@ -449,7 +449,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-							if(!sparqlQuery.contains("FilmFestival"))continue;
+//							if(!sparqlQuery.contains("FilmFestival"))continue;
 							
 							tp.submit(new Runnable(){
 	
