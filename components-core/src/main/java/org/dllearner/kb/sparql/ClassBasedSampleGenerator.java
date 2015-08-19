@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -40,8 +41,8 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
 	private Random rnd = new Random(12345);
 
-	public ClassBasedSampleGenerator(QueryExecutionFactory qef) {
-		super(qef);
+	public ClassBasedSampleGenerator(SparqlEndpointKS ks) {
+		super(ks);
 		
 		negExamplesFinder = new AutomaticNegativeExampleFinderSPARQL2(qef);
 	}

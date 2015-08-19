@@ -32,6 +32,7 @@ import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -87,11 +88,18 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	protected QueryExecutionFactory qef;
 
 	private long pageSize = 10000;
+	
+	private KnowledgeSource schema;
 
 	public SparqlEndpointKS() {}
 
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
+	}
+	
+	public SparqlEndpointKS(SparqlEndpoint endpoint, KnowledgeSource schema) {
+		this.endpoint = endpoint;
+		this.schema = schema;
 	}
 
 	public SparqlEndpointKS(QueryExecutionFactory qef) {
@@ -246,6 +254,13 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	 */
 	public void setCacheTTL(long cacheTTL) {
 		this.cacheTTL = cacheTTL;
+	}
+	
+	/**
+	 * @return if exists, a knowledge source which contains the schema
+	 */
+	public KnowledgeSource getSchema() {
+		return schema;
 	}
 
 	@Override

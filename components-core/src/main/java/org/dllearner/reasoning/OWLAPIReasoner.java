@@ -46,6 +46,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -341,6 +342,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			break;
 		case HERMIT:
 			reasonerFactory = new ReasonerFactory();
+			Configuration c = new Configuration();
+			c.ignoreUnsupportedDatatypes = true;
+//			c.throwInconsistentOntologyException = false;
+			conf = c;
 			break;
 		case TROWL:
 			reasonerFactory = new RELReasonerFactory();

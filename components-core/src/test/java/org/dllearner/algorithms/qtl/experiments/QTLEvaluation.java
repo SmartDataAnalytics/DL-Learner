@@ -128,6 +128,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.sparql.syntax.ElementWalker;
+import com.hp.hpl.jena.sparql.util.TripleComparator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.MonitorFactory;
@@ -208,7 +209,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. runtime for each QTL
-	private int maxExecutionTimeInSeconds = 30;
+	private int maxExecutionTimeInSeconds = 40;
 
 	// whether to override existing results
 	private boolean override = false;
@@ -352,7 +353,7 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, 10);
+		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(),50));
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -360,15 +361,15 @@ public class QTLEvaluation {
 //				5,
 				10,
 //				15,
-//				20, 
+				20, 
 //				25,
-				30
+//				30
 				}; 
 		
 		double[] noiseIntervals = {
-				0.0,
+//				0.0,
 //				0.1,
-				0.2,
+//				0.2,
 //				0.3,
 				0.4,
 //				0.6
@@ -457,7 +458,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-//							if(!sparqlQuery.contains("MilitaryPerson"))continue;
+//							if(!sparqlQuery.contains("MilitaryConflict"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -1237,7 +1238,7 @@ public class QTLEvaluation {
 		
 		Var targetVar = query.getProjectVars().get(0); // should be ?x0
 		
-		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
+		final Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
 		for (Triple tp : triplePatterns) {
 			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
 		}
@@ -1311,18 +1312,18 @@ public class QTLEvaluation {
 				}
 			}
 		}
+		
 		for (Set<Triple> cluster : newClusters) {
-			
 			for(int i = 1; i < maxDepth; i++) {
 				Set<Triple> additionalTriples = new HashSet<Triple>();
 				for (Triple triple : cluster) {
 					if(triple.getObject().isVariable()){
-						additionalTriples.addAll(var2TriplePatterns.get(Var.alloc(triple.getObject())));
+						Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
+						additionalTriples.addAll(triples);
 					}
 				}
 				cluster.addAll(additionalTriples);
 			}
-			
 		}
 //		clusters = newClusters;
 		
@@ -1331,6 +1332,25 @@ public class QTLEvaluation {
 		Set<String> resources = null;
 		// 3. run query for each cluster
 		for (Set<Triple> cluster : clusters) {
+			// remove redundant edges
+			SortedSet<Triple> tmp = new TreeSet<Triple>(new Comparator<Triple>() {
+				
+				TripleComparator comp = new TripleComparator();
+				
+				@Override
+				public int compare(Triple o1, Triple o2) {
+					boolean same = o1.subjectMatches(o2.getSubject()) 
+							&& o2.predicateMatches(o2.getPredicate()) 
+							&& o1.getObject().isVariable() && o2.getObject().isVariable();
+//							&& !var2TriplePatterns.containsKey(o1.getObject());
+					if(same) return 0;
+					return comp.compare(o1, o2);
+				}
+			});
+			tmp.addAll(cluster);
+			cluster = tmp;
+			
+			// build query
 			Query q = new Query();
 			q.addProjectVars(Collections.singleton(targetVar));
 			ElementTriplesBlock el = new ElementTriplesBlock();
