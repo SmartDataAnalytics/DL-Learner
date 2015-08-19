@@ -162,9 +162,6 @@ public class ROLearner2 {
 	// utility variables
 	private DecimalFormat df = new DecimalFormat();
 
-	// new nodes found during a run of the algorithm
-	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
-
 	// all concepts which have been evaluated as being proper refinements
 	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<OWLClassExpression>();
 
@@ -282,7 +279,6 @@ public class ROLearner2 {
 		// reset values (algorithms may be started several times)
 		searchTree = new SearchTreeNonWeakPartialSet<>(heuristic);
 		searchTreeStable = new SearchTreeNonWeak<>(nodeComparatorStable);
-		newCandidates.clear();
 		solutions.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
@@ -435,14 +431,11 @@ public class ROLearner2 {
 
 			// chose best node according to heuristics
 			bestNode = searchTree.best();
-			// extend best node
-			newCandidates.clear();
 			// best node is removed temporarily, because extending it can
 			// change its evaluation
 			searchTree.updatePrepare(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
 			searchTree.updateDone(bestNode);
-			// newCandidates has been filled during node expansion
 
 			// System.out.println("done");
 
@@ -787,8 +780,6 @@ public class ROLearner2 {
 					if (quality >= 0 && quality <= allowedMisclassifications) {
 						solutions.add(newNode);
 					}
-
-					newCandidates.add(newNode);
 
 					// we need to make sure that all positives are covered
 					// before adding something to the overly general list
