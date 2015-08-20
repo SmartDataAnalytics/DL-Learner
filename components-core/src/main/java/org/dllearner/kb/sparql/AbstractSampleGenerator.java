@@ -16,9 +16,12 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
@@ -93,12 +96,23 @@ public abstract class AbstractSampleGenerator {
 			model.add(cbd);
 		}
 		
+		StmtIterator iterator = model.listStatements();
+		while(iterator.hasNext()) {
+			Statement st = iterator.next();
+			if(st.getObject().isLiteral() && st.getObject().asLiteral().getDatatype() != null
+					&& st.getObject().asLiteral().getDatatype().equals(XSDDatatype.XSDdouble) 
+					&& st.getObject().asLiteral().getLexicalForm().equals("NAN")) {
+				
+				iterator.remove();
+			}
+		}
+		
 		// infer entity types, e.g. object or data property
 		OWLEntityTypeAdder.addEntityTypes(model);
 		
 		// load related schema information
 		if(loadRelatedSchema) {
-			loadRelatedSchema(model);
+//			loadRelatedSchema(model);
 		}
 		
 		return model;

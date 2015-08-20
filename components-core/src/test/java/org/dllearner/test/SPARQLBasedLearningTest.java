@@ -53,7 +53,7 @@ public class SPARQLBasedLearningTest {
 		OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/SoccerClub"));
 		
 		// (optionally) provide the schema
-		String ontologyURL = "http://downloads.dbpedia.org/2015-04/dbpedia_2015-04.owl";
+		String ontologyURL = "http://mappings.dbpedia.org/server/ontology/dbpedia.owl";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLOntology schemaOntology = man.loadOntology(IRI.create(ontologyURL));
 		KnowledgeSource schemaKS = new OWLAPIOntology(schemaOntology);

@@ -256,7 +256,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 					throw new UnsupportedOperationException("Currently it's not possible to get random examples for unknown class to describe.");
 				}
 				
-				query += "} ORDER BY RAND() LIMIT " + maxNrOfReturnedInstances;
+				query += "} LIMIT " + maxNrOfReturnedInstances;
 				
 				QueryExecution qe = qef.createQueryExecution(query);
 				ResultSet rs = qe.execSelect();
