@@ -3,11 +3,12 @@
  */
 package org.dllearner.test;
 
+import java.util.HashSet;
 import java.util.NavigableSet;
+import java.util.Set;
 
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
@@ -20,19 +21,19 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
+import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
-import org.semanticweb.owlapi.util.OWLOntologyMerger;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.collect.Sets;
 
 /**
@@ -49,13 +50,37 @@ public class SPARQLBasedLearningTest {
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = new SparqlEndpoint(new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), "http://dbpedia.org");
 		
+		Set<String> ignoredProperties = Sets.newHashSet(
+				"http://dbpedia.org/ontology/wikiPageRevisionID",
+				"http://dbpedia.org/ontology/wikiPageID",
+				"http://dbpedia.org/ontology/abstract",
+				"http://dbpedia.org/ontology/alias"
+				,"http://dbpedia.org/ontology/number"
+				,"http://dbpedia.org/ontology/endowment"
+				);
+		
 		// the class to describe
-		OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/SoccerClub"));
+		OWLClass cls = new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/SoccerPlayer"));
 		
 		// (optionally) provide the schema
 		String ontologyURL = "http://mappings.dbpedia.org/server/ontology/dbpedia.owl";
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
 		OWLOntology schemaOntology = man.loadOntology(IRI.create(ontologyURL));
+		// OWL API does not support rdf:langString so far
+		Set<OWLDataPropertyRangeAxiom> rangeAxioms = schemaOntology.getAxioms(AxiomType.DATA_PROPERTY_RANGE);
+		Set<OWLAxiom> toRemove = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>();
+		for (OWLDataPropertyRangeAxiom ax : rangeAxioms) {
+			OWLDatatype datatype = ax.getRange().asOWLDatatype();
+			if(datatype.equals(df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")))) {
+				toRemove.add(ax);
+				toAdd.add(df.getOWLDataPropertyRangeAxiom(ax.getProperty(), df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"))));
+			}
+		}
+		man.removeAxioms(schemaOntology, toRemove);
+		man.addAxioms(schemaOntology, toAdd);
+		
 		KnowledgeSource schemaKS = new OWLAPIOntology(schemaOntology);
 		schemaKS.init();
 		
@@ -66,6 +91,7 @@ public class SPARQLBasedLearningTest {
 		// extract sample of the knowledge base
 		ClassBasedSampleGenerator sampleGen = new ClassBasedSampleGenerator(ks);
 		sampleGen.addAllowedPropertyNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/"));
+		sampleGen.addIgnoredProperties(ignoredProperties);
 		sampleGen.addAllowedObjectNamespaces(Sets.newHashSet("http://dbpedia.org/ontology/", "http://dbpedia.org/resource/"));
 		OWLOntology sampleOntology = sampleGen.getSample(cls);
 		
@@ -91,6 +117,7 @@ public class SPARQLBasedLearningTest {
 		
 		// setup refinement operator
 		RhoDRDown op = new RhoDRDown();
+		op.setUseTimeDatatypes(false);
 		op.setReasoner(reasoner);
 		op.setUseNegation(false);
 		op.init();

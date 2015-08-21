@@ -3,6 +3,7 @@
  */
 package org.dllearner.kb.sparql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,8 +17,10 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -62,6 +65,10 @@ public abstract class AbstractSampleGenerator {
 		cbdGen.addAllowedObjectNamespaces(namespaces);
 	}
 	
+	public void addIgnoredProperties(Set<String> ignoredProperties) {
+		cbdGen.addPropertiesToIgnore(ignoredProperties);
+	}
+	
 	/**
 	 * Computes a sample of the knowledge base, i.e. it contains only facts
 	 * about the positive and negative individuals.
@@ -97,15 +104,25 @@ public abstract class AbstractSampleGenerator {
 		}
 		
 		StmtIterator iterator = model.listStatements();
+		List<Statement> toAdd = new ArrayList<Statement>();
 		while(iterator.hasNext()) {
 			Statement st = iterator.next();
-			if(st.getObject().isLiteral() && st.getObject().asLiteral().getDatatype() != null
-					&& st.getObject().asLiteral().getDatatype().equals(XSDDatatype.XSDdouble) 
-					&& st.getObject().asLiteral().getLexicalForm().equals("NAN")) {
+			if(st.getObject().isLiteral()) {
+				Literal lit = st.getObject().asLiteral();
+				RDFDatatype datatype = lit.getDatatype();
 				
-				iterator.remove();
+				if(datatype != null) {
+					if(datatype.equals(XSDDatatype.XSDdouble) && lit.getLexicalForm().equals("NAN")) {
+						iterator.remove();
+						toAdd.add(model.createLiteralStatement(st.getSubject(), st.getPredicate(), Double.NaN));
+					} else if(datatype.equals(XSDDatatype.XSDgYear) && st.getPredicate().getURI().equals("http://dbpedia.org/ontology/birthDate")) {
+						iterator.remove();
+						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
+					}
+				}
 			}
 		}
+		model.add(toAdd);
 		
 		// infer entity types, e.g. object or data property
 		OWLEntityTypeAdder.addEntityTypes(model);
