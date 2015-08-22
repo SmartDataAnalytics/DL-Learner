@@ -123,7 +123,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private Set<OWLIndividual> currentPosExamples;
 	private Set<OWLIndividual> currentNegExamples;
 	private SearchTreeNode bestCurrentNode;
-	private Score bestCurrentScore = ScoreSimple.MIN;
+	private Score bestCurrentScore = new ScoreSimple(0);
 	private long treeStartTime;
 	// minimum score a tree must have to be part of the solution
 	private double minimumTreeScore = -1;
@@ -191,7 +191,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 			ELDescriptionTree startTree = new ELDescriptionTree(reasoner, startClass);
 			addDescriptionTree(startTree, null);
 //			bestCurrentTree = top;
-			bestCurrentScore = ScoreSimple.MIN;
+			bestCurrentScore = new ScoreSimple(0);//ScoreSimple.MIN;
 			
 			// main loop
 			int loop = 0;
