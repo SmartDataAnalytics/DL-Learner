@@ -209,7 +209,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. runtime for each QTL
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 20;
 
 	// whether to override existing results
 	private boolean override = false;
@@ -353,13 +353,13 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 50));
+		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 5));
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
 		int[] nrOfExamplesIntervals = {
 //				5,
-				10,
+//				10,
 //				15,
 				20, 
 //				25,
@@ -458,7 +458,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-//							if(!sparqlQuery.contains("FilmFestival"))continue;
+							if(!sparqlQuery.contains("Prince_(musician)"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -475,7 +475,7 @@ public class QTLEvaluation {
 										
 										// compute baseline
 										logger.info("Computing baseline...");
-										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_FREQUENT_TYPE_IN_EXAMPLES);
+										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
 										logger.info("done. \nBaseline solution:\n" + QueryTreeUtils.toOWLClassExpression(baselineSolution));
 										logger.info("Evaluating baseline...");
 										Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
@@ -665,6 +665,7 @@ public class QTLEvaluation {
 	 */
 	private RDFResourceTree applyBaseLine(ExamplesWrapper examples, Baseline baselineApproach) {
 		Collection<RDFResourceTree> posExamples = examples.posExamplesMapping.values();
+		Collection<RDFResourceTree> negExamples = examples.negExamplesMapping.values();
 		
 		switch (baselineApproach) {
 		case RANDOM:// 1.
@@ -706,7 +707,7 @@ public class QTLEvaluation {
 			solution.addChild(new RDFResourceTree(mostFrequentType), RDF.type.asNode());
 			return solution;
 		case MOST_FREQUENT_EDGE_IN_EXAMPLES:// 4.
-			Multiset<Pair<Node, Node>> pairs = HashMultiset.create();
+			{Multiset<Pair<Node, Node>> pairs = HashMultiset.create();
 			for (RDFResourceTree ex : posExamples) {
 				SortedSet<Node> edges = ex.getEdges();
 				for (Node edge : edges) {
@@ -723,9 +724,58 @@ public class QTLEvaluation {
 				}).max(pairs.entrySet()).getElement();
 			solution = new RDFResourceTree();
 			solution.addChild(new RDFResourceTree(mostFrequentPair.getValue()), mostFrequentPair.getKey());
-			return solution;
+			return solution;}
 		case MOST_INFORMATIVE_EDGE_IN_EXAMPLES:
-			break;
+			// get all p-o in pos examples
+			Multiset<Pair<Node, Node>> edgeObjectPairs = HashMultiset.create();
+			for (RDFResourceTree ex : posExamples) {
+				SortedSet<Node> edges = ex.getEdges();
+				for (Node edge : edges) {
+					List<RDFResourceTree> children = ex.getChildren(edge);
+					for (RDFResourceTree child : children) {
+						edgeObjectPairs.add(new Pair<Node, Node>(edge, child.getData()));
+					}
+				}
+			}
+			
+			double bestAccuracy = -1;
+			solution = new RDFResourceTree();
+			
+			for (Pair<Node, Node> pair : edgeObjectPairs.elementSet()) {
+				Node edge = pair.getKey();
+				Node childValue = pair.getValue();
+				
+				// compute accuracy
+				int tp = edgeObjectPairs.count(pair);
+				int fn = posExamples.size() - tp;
+				int fp = 0;
+				for (RDFResourceTree ex : negExamples) { // compute false positives
+					List<RDFResourceTree> children = ex.getChildren(edge);
+					if(children != null) {
+						for (RDFResourceTree child : children) {
+							if(child.getData().equals(childValue)) {
+								fp++;
+								break;
+							}
+						}
+					}
+				}
+				int tn = negExamples.size() - fp;
+				
+				double accuracy = Heuristics.getPredictiveAccuracy(
+						posExamples.size(), 
+						negExamples.size(), 
+						tp, 
+						tn, 
+						1.0);
+				// update best solution
+				if(accuracy >= bestAccuracy) {
+					solution = new RDFResourceTree();
+					solution.addChild(new RDFResourceTree(childValue), edge);
+					bestAccuracy = accuracy;
+				}
+			}
+			return solution;
 		case LGG:
 			LGGGenerator lggGenerator = new LGGGeneratorSimple();
 			RDFResourceTree lgg = lggGenerator.getLGG(Lists.newArrayList(posExamples));
