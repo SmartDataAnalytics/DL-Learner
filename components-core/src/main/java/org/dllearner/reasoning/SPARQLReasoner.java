@@ -85,6 +85,7 @@ import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -1934,7 +1935,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		} else if(description.isOWLThing()) {
-			return ImmutableSortedSet.of();
+			return Sets.newTreeSet();
 		} else if(description.isOWLNothing()) {
 			query = String.format(
 					SPARQLQueryUtils.SELECT_LEAF_CLASSES_OWL,

@@ -312,7 +312,10 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 					if(allowed.contains(d)) {
 						newChildren.add(d);
 					} else {
-						children.addAll(hierarchyDown.get(d));
+						SortedSet<T> tmp = hierarchyDown.get(d);
+						if(tmp != null) {
+							children.addAll(tmp);
+						}
 					}
 				}
 				
