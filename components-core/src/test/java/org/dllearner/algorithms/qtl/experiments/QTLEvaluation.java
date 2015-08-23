@@ -161,24 +161,11 @@ public class QTLEvaluation {
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
 	
-	static Map<String, String> prefixes = new HashMap<String, String>();
-	static {
-		prefixes.put("sider", "http://www4.wiwiss.fu-berlin.de/sider/resource/sider/");
-		prefixes.put("side_effects", "http://www4.wiwiss.fu-berlin.de/sider/resource/side_effects/");
-		prefixes.put("drug", "http://www4.wiwiss.fu-berlin.de/drugbank/resource/drugbank/");
-		prefixes.put("diseasome", "http://www4.wiwiss.fu-berlin.de/diseasome/resource/diseasome/");
-		
-		prefixes.put("dbo", "http://dbpedia.org/ontology/");
-		prefixes.put("dbpedia", "http://dbpedia.org/resource/");
-	}
-	
-	
-	List<String> questionFiles;
 	QueryExecutionFactory qef;
 	String cacheDirectory = "./cache/qtl";
 	
 	int minNrOfPositiveExamples = 9;
-	int maxDepth = 3;
+	int maxTreeDepth = 2;
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -195,27 +182,23 @@ public class QTLEvaluation {
 	
 	PredicateExistenceFilter filter = new PredicateExistenceFilterDBpedia(null);
 	
-//	List<String> noiseExamples = new ArrayList<String>();
-//	private Map<OWLIndividual, RDFResourceTree> generatedExamples;
-//	private List<String> correctExamples;
-
 	// the directory where all files, results etc. are maintained
 	private File benchmarkDirectory;
 
 	// whether to write eval results to a database
 	private boolean write2DB;
+	
+	// DB related objects
 	private Connection conn;
 	private PreparedStatement psInsertOverallEval;
 	private PreparedStatement psInsertDetailEval;
 
-	// max. runtime for each QTL
-	private int maxExecutionTimeInSeconds = 20;
+	// max. time for each QTL run
+	private int maxExecutionTimeInSeconds = 60;
 
 	// whether to override existing results
 	private boolean override = false;
 	
-	private boolean failed;
-
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
 		this.dataset = dataset;
@@ -224,7 +207,7 @@ public class QTLEvaluation {
 		this.override = override;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
-		queryTreeFactory.setMaxDepth(maxDepth);
+		queryTreeFactory.setMaxDepth(maxTreeDepth);
 		
 		// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
 		queryTreeFactory.addDropFilters((Filter<Statement>[]) dataset.getQueryTreeFilters().toArray(new Filter[]{}));
@@ -232,7 +215,7 @@ public class QTLEvaluation {
 		qef = dataset.getKS().getQueryExecutionFactory();
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(qef);
-		cbdGen.setRecursionDepth(maxDepth);
+		cbdGen.setRecursionDepth(maxTreeDepth);
 		
 		rnd.reSeed(123);
 		
@@ -343,7 +326,7 @@ public class QTLEvaluation {
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 			Query q = QueryFactory.create(queryString);
 			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-			if(subjectObjectJoinDepth < maxDepth) {
+			if(subjectObjectJoinDepth < maxTreeDepth) {
 				sparqlQueries.add(queryString);
 			}
 		}
@@ -359,11 +342,11 @@ public class QTLEvaluation {
 		// parameters
 		int[] nrOfExamplesIntervals = {
 //				5,
-//				10,
+				10,
 //				15,
 				20, 
 //				25,
-//				30
+				30
 				}; 
 		
 		double[] noiseIntervals = {
@@ -458,7 +441,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-							if(!sparqlQuery.contains("Prince_(musician)"))continue;
+//							if(!sparqlQuery.contains("Prince_(musician)"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -1364,7 +1347,7 @@ public class QTLEvaluation {
 		}
 		
 		for (Set<Triple> cluster : newClusters) {
-			for(int i = 1; i < maxDepth; i++) {
+			for(int i = 1; i < maxTreeDepth; i++) {
 				Set<Triple> additionalTriples = new HashSet<Triple>();
 				for (Triple triple : cluster) {
 					if(triple.getObject().isVariable()){
