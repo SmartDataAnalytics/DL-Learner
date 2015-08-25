@@ -4,10 +4,15 @@
 package org.dllearner.test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.el.ELLearningAlgorithm;
+import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
@@ -16,11 +21,15 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ClassBasedSampleGenerator;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.PosNegLP;
+import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -32,9 +41,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import com.google.common.collect.Sets;
+import com.google.gson.internal.bind.TimeTypeAdapter;
 
 /**
  * @author Lorenz Buehmann
@@ -46,6 +55,7 @@ public class SPARQLBasedLearningTest {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 //		endpoint = new SparqlEndpoint(new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), "http://dbpedia.org");
@@ -75,11 +85,15 @@ public class SPARQLBasedLearningTest {
 			OWLDatatype datatype = ax.getRange().asOWLDatatype();
 			if(datatype.equals(df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")))) {
 				toRemove.add(ax);
-				toAdd.add(df.getOWLDataPropertyRangeAxiom(ax.getProperty(), df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"))));
+//				toAdd.add(df.getOWLDataPropertyRangeAxiom(ax.getProperty(), df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"))));
 			}
+			toRemove.add(ax);
 		}
 		man.removeAxioms(schemaOntology, toRemove);
 		man.addAxioms(schemaOntology, toAdd);
+		// remove functionality axioms because otherwise inconsistency can occur
+		man.removeAxioms(schemaOntology, schemaOntology.getAxioms(AxiomType.FUNCTIONAL_DATA_PROPERTY));
+		man.removeAxioms(schemaOntology, schemaOntology.getAxioms(AxiomType.DISJOINT_CLASSES));
 		
 		KnowledgeSource schemaKS = new OWLAPIOntology(schemaOntology);
 		schemaKS.init();
@@ -105,7 +119,7 @@ public class SPARQLBasedLearningTest {
 		// setup reasoner
 //		SPARQLReasoner reasoner = new SPARQLReasoner(ks);
 		OWLAPIReasoner baseReasoner = new OWLAPIReasoner(sampleKS);
-		baseReasoner.setReasonerImplementation(ReasonerImplementation.HERMIT);
+		baseReasoner.setReasonerImplementation(ReasonerImplementation.PELLET);
 		baseReasoner.init();
 		ClosedWorldReasoner reasoner = new ClosedWorldReasoner(baseReasoner);
 		reasoner.init();
@@ -123,25 +137,51 @@ public class SPARQLBasedLearningTest {
 		op.init();
 		
 		// setup learning algorithm
-		CELOE celoe = new CELOE(lp, reasoner);
-		celoe.setOperator(op);
-		celoe.setWriteSearchTree(true);
-		celoe.setSearchTreeFile("/tmp/searchtree-celoe.txt");
-		celoe.setReplaceSearchTree(true);
-		celoe.setMaxExecutionTimeInSeconds(10);
-		celoe.setNoisePercentage(0);
-		celoe.init();
+//		final AbstractCELA alg;
+//		
+//		CELOE celoe = new CELOE(lp, reasoner);
+//		celoe.setOperator(op);
+//		celoe.setWriteSearchTree(true);
+//		celoe.setSearchTreeFile("/tmp/searchtree-celoe.txt");
+//		celoe.setReplaceSearchTree(true);
+//		celoe.setMaxExecutionTimeInSeconds(10);
+//		celoe.setNoisePercentage(60);
+//		celoe.init();
+//		alg = celoe;
+		
+		PosNegLP lp2 = new PosNegLPStandard(reasoner);
+		lp2.setPositiveExamples(sampleGen.getPositiveExamples());
+		lp2.setNegativeExamples(sampleGen.getNegativeExamples());
+		lp2.init();
+		ELLearningAlgorithm el = new ELLearningAlgorithm(lp2, reasoner);
+		el.setMaxExecutionTimeInSeconds(10);
+//		el.setStartClass(cls);
+		el.setClassToDescribe(cls);
+		el.setNoisePercentage(70);
+		el.init();
+		final AbstractCELA alg = el;
+		
+		TimerTask t = new TimerTask() {
+			
+			@Override
+			public void run() {
+				System.out.println("T:" + alg.getCurrentlyBestEvaluatedDescriptions(10, 0.5, true));
+				
+			}
+		};
+		Timer timer = new Timer();
+		timer.schedule(t, 1000, 1000);
 		
 		// run
-		celoe.start();
+		alg.start();
 		
 //		Set<OWLClassExpression> refinements = op.refine(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Work")), 5);
 //		for (OWLClassExpression ref : refinements) {
 //			System.out.println(ref + ":" + lp.getAccuracy(ref, 1.0));
 //		}
 		
-		
-		NavigableSet<? extends EvaluatedDescription> solutions = celoe.getCurrentlyBestEvaluatedDescriptions();
+		timer.cancel();
+		List<? extends EvaluatedDescription> solutions = alg.getCurrentlyBestEvaluatedDescriptions(10, 0.5, true);
 		
 		System.out.println(solutions);
 	}
