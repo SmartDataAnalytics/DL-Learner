@@ -73,10 +73,52 @@ public class BenchmarkDescriptionGeneratorHTML {
 	String style2 = 
 			"<head>\n" + 
 			"<link rel=\"stylesheet\" href=\"https://rawgit.com/twbs/bootstrap/master/dist/css/bootstrap.min.css\">\n" + 
-			"<link rel=\"stylesheet\" href=\"https://rawgit.com/wenzhixin/bootstrap-table/master/dist/bootstrap-table.css\">" +
+			"<link rel=\"stylesheet\" href=\"https://rawgit.com/wenzhixin/bootstrap-table/1.8.0/dist/bootstrap-table.css\">\n" +
+			"<style type=\"text/css\">\n" + 
+			"   pre {\n" + 
+			"	border: 0; \n" + 
+			"	background-color: transparent\n"
+			+ "font-family: monospace;" + 
+			"	}\n"
+			+ "table {\n" + 
+			"    border-collapse: separate;\n" + 
+			"    border-spacing: 0 5px;\n" + 
+			"}\n" + 
+			"\n" + 
+			"thead th {\n" + 
+			"    background-color: #006DCC;\n" + 
+			"    color: white;\n" + 
+			"}\n" + 
+			"\n" + 
+			"tbody td {\n" + 
+			"    background-color: #EEEEEE;\n" + 
+			"}\n" + 
+			"\n" + 
+			"tr td:first-child,\n" + 
+			"tr th:first-child {\n" + 
+			"    border-top-left-radius: 6px;\n" + 
+			"    border-bottom-left-radius: 6px;\n" + 
+			"}\n" + 
+			"\n" + 
+			"tr td:last-child,\n" + 
+			"tr th:last-child {\n" + 
+			"    border-top-right-radius: 6px;\n" + 
+			"    border-bottom-right-radius: 6px;\n" + 
+			"}\n" + 
+			".fixed-table-container tbody td {\n" + 
+			"    border: none;\n" + 
+			"}\n" + 
+			".fixed-table-container thead th {\n" + 
+			"    border: none;\n" + 
+			"}\n" + 
+			"\n" + 
+			".bootstrap-table .table {\n" + 
+			"	border-collapse: inherit !important;\n" + 
+			"}" + 
+			"</style>\n" +
 			"<script src=\"http://code.jquery.com/jquery-1.11.3.min.js\"></script>\n" + 
 			"<script src=\"https://rawgit.com/twbs/bootstrap/master/dist/js/bootstrap.min.js\"></script>\n" + 
-			"<script src=\"https://rawgit.com/wenzhixin/bootstrap-table/master/dist/bootstrap-table-all.min.js\"></script>\n" +
+			"<script src=\"https://rawgit.com/wenzhixin/bootstrap-table/1.8.0/dist/bootstrap-table-all.min.js\"></script>\n" +
 			"</head>\n";  
 			
 	
