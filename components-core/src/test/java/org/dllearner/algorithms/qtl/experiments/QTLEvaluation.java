@@ -194,7 +194,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 10;
 
 	// whether to override existing results
 	private boolean override = false;
@@ -336,7 +336,7 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 5));
+		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 1));
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
@@ -346,7 +346,7 @@ public class QTLEvaluation {
 //				15,
 				20, 
 //				25,
-				30
+//				30
 				}; 
 		
 		double[] noiseIntervals = {
@@ -354,7 +354,7 @@ public class QTLEvaluation {
 //				0.1,
 				0.2,
 //				0.3,
-				0.4,
+//				0.4,
 //				0.6
 				};
 		
@@ -365,7 +365,7 @@ public class QTLEvaluation {
 		
 		HeuristicType[] measures = {
 				HeuristicType.PRED_ACC, 
-//				HeuristicType.FMEASURE, 
+				HeuristicType.FMEASURE, 
 //				HeuristicType.MATTHEWS_CORRELATION
 				};
 		
@@ -376,6 +376,7 @@ public class QTLEvaluation {
 			// loop over heuristics measures
 			for (HeuristicType measure : measures) {
 				final String measureName = measure.toString();
+				heuristic.setHeuristicType(measure);
 			
 				double[][] data = new double[nrOfExamplesIntervals.length][noiseIntervals.length];
 				
