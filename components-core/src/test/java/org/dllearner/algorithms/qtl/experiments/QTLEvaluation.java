@@ -164,8 +164,7 @@ public class QTLEvaluation {
 	QueryExecutionFactory qef;
 	String cacheDirectory = "./cache/qtl";
 	
-	int minNrOfPositiveExamples = 9;
-	int maxTreeDepth = 2;
+	
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -194,8 +193,12 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 300;
 
+	int minNrOfPositiveExamples = 9;
+	
+	int maxTreeDepth = 3;
+	
 	// whether to override existing results
 	private boolean override = false;
 	
@@ -336,24 +339,24 @@ public class QTLEvaluation {
 	public void run(File queriesFile) throws Exception{
 		
 		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 1));
+		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 10));
 		logger.info("Total number of queries: " + sparqlQueries.size());
 		
 		// parameters
 		int[] nrOfExamplesIntervals = {
 //				5,
-				10,
+//				10,
 //				15,
-				20, 
+//				20, 
 //				25,
-//				30
+				30
 				}; 
 		
 		double[] noiseIntervals = {
-				0.0,
+//				0.0,
 //				0.1,
-				0.2,
-//				0.3,
+//				0.2,
+				0.3,
 //				0.4,
 //				0.6
 				};
@@ -442,7 +445,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : sparqlQueries) {
 							
-//							if(!sparqlQuery.contains("Prince_(musician)"))continue;
+							if(!sparqlQuery.contains("TennisTournament"))continue;
 							
 							tp.submit(new Runnable(){
 	
