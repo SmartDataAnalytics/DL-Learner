@@ -23,7 +23,6 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.log4j.Logger;
 import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -56,6 +55,8 @@ import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
@@ -68,7 +69,7 @@ import com.jamonapi.MonitorFactory;
 @ComponentAnn(name="query tree learner with noise (disjunctive)", shortName="qtl2dis", version=0.8)
 public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
-	private static final Logger logger = Logger.getLogger(QTL2Disjunctive.class);
+	private static final Logger logger = LoggerFactory.getLogger(QTL2Disjunctive.class);
 	private final DecimalFormat dFormat = new DecimalFormat("0.00"); 
 	
 	private SparqlEndpointKS ks;
@@ -265,7 +266,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					tree2Individual.put(queryTree, ind);
 					currentPosExampleTrees.add(queryTree);
 					currentPosExamples.add(ind);
-					logger.debug(ind);
+					logger.debug(ind.toStringID());
 					logger.debug(queryTree.getStringRepresentation());
 				} catch (Exception e) {
 					logger.error("Failed to generate tree for resource " + ind, e);
@@ -283,7 +284,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					tree2Individual.put(queryTree, ind);
 					currentNegExampleTrees.add(queryTree);
 					currentNegExamples.add(ind);
-					logger.debug(ind);
+					logger.debug(ind.toStringID());
 					logger.debug(queryTree.getStringRepresentation());
 				} catch (Exception e) {
 					logger.error("Failed to generate tree for resource " + ind, e);
@@ -360,7 +361,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		logger.info(expressionTests +" descriptions tested");
 		if(currentBestSolution != null) {
 			logger.info("Combined solution:" + currentBestSolution.getDescription().toString().replace("\n", ""));
-			logger.info(currentBestSolution.getScore());
+			logger.info(currentBestSolution.getScore().toString());
 		} else {
 			logger.info("Could not find a solution in the given time.");
 		}
@@ -472,7 +473,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					
 					if(score >= bestCurrentScore){
 						if(score > bestCurrentScore){
-							logger.info("\tGot better solution:" + solution.getTreeScore());
+							
+							logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), getCurrentRuntimeInMilliSeconds());
 							logger.info("\t" + solutionAsString(solution.getEvaluatedDescription()));
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
