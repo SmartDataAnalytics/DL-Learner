@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.collections15.ListUtils;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
@@ -202,6 +204,36 @@ public class QTLEvaluation {
 	// whether to override existing results
 	private boolean override = false;
 	
+	// parameters
+	int[] nrOfExamplesIntervals = {
+//					5,
+//					10,
+//					15,
+//					20, 
+//					25,
+					30
+					}; 
+			
+	double[] noiseIntervals = {
+//					0.0,
+//					0.1,
+//					0.2,
+					0.3,
+//					0.4,
+//					0.6
+					};
+			
+	QueryTreeHeuristic[] heuristics = {
+					new QueryTreeHeuristicSimple(),
+//					new QueryTreeHeuristicComplex(qef)
+			};
+			
+	HeuristicType[] measures = {
+					HeuristicType.PRED_ACC, 
+					HeuristicType.FMEASURE, 
+//					HeuristicType.MATTHEWS_CORRELATION
+					};
+	
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
 		this.dataset = dataset;
@@ -338,39 +370,15 @@ public class QTLEvaluation {
 	
 	public void run(File queriesFile) throws Exception{
 		
-		List<String> sparqlQueries = getSparqlQueries(queriesFile);
-		sparqlQueries = sparqlQueries.subList(0, Math.min(sparqlQueries.size(), 10));
-		logger.info("Total number of queries: " + sparqlQueries.size());
+		List<String> queries = getSparqlQueries(queriesFile);
+		queries = queries.subList(0, Math.min(queries.size(), 10));
+		logger.info("Total number of queries: " + queries.size());
 		
-		// parameters
-		int[] nrOfExamplesIntervals = {
-//				5,
-//				10,
-//				15,
-//				20, 
-//				25,
-				30
-				}; 
-		
-		double[] noiseIntervals = {
-//				0.0,
-//				0.1,
-//				0.2,
-				0.3,
-//				0.4,
-//				0.6
-				};
-		
-		QueryTreeHeuristic[] heuristics = {
-				new QueryTreeHeuristicSimple(),
-//				new QueryTreeHeuristicComplex(qef)
-		};
-		
-		HeuristicType[] measures = {
-				HeuristicType.PRED_ACC, 
-				HeuristicType.FMEASURE, 
-//				HeuristicType.MATTHEWS_CORRELATION
-				};
+		// generate examples for each query
+		final Map<String, ExamplesWrapper> query2Examples = new HashMap<>();
+		for (String query : queries) {
+			generateExamples(query);
+		}
 		
 		// loop over heuristics
 		for(final QueryTreeHeuristic heuristic : heuristics) {
@@ -443,7 +451,7 @@ public class QTLEvaluation {
 						
 		//				if(nrOfExamples != 7) continue;
 						// loop over SPARQL queries
-						for (final String sparqlQuery : sparqlQueries) {
+						for (final String sparqlQuery : queries) {
 							
 							if(!sparqlQuery.contains("TennisTournament"))continue;
 							
@@ -904,6 +912,25 @@ public class QTLEvaluation {
 		return new Pair<>(bestTree, score);
 	}
 	
+	private ExamplesWrapper generateExamples(String sparqlQuery) throws Exception{
+		Random randomGen = new Random(123);
+		
+		// get all pos. examples, i.e. resources returned by the query 
+		List<String> posExamples = getResult(sparqlQuery, false);
+		Collections.sort(posExamples);
+		logger.info("#Pos. examples: " + posExamples.size());
+		
+		// get some neg. examples, i.e. resources not returned by the query
+		int maxNrOfNegExamples = 100;
+		List<String> negExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
+		Collections.sort(negExamples);
+		
+		// get some noise candidates, i.e. resources used as false pos. examples
+		List<String> noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), 100);
+		
+		return new ExamplesWrapper(posExamples, negExamples, noiseCandidates);
+	}
+	
 	private ExamplesWrapper generateExamples(String sparqlQuery, int maxNrOfExamples, double noise) throws Exception{
 		Random randomGen = new Random(123);
 		
@@ -965,13 +992,37 @@ public class QTLEvaluation {
 		return null;
 	}
 	
+	/**
+	 * Generates a list of candidates that are not contained in the given set of examples.
+	 * @param sparqlQuery
+	 * @param posExamples
+	 * @param negExamples
+	 * @return
+	 */
+	private List<String> generateNoiseCandidates(String sparqlQuery, NoiseMethod noiseMethod, List<String> examples, int limit) {
+		List<String> noiseCandidates = new ArrayList<>();
+		
+		switch(noiseMethod) {
+		case RANDOM: noiseCandidates = generateNoiseCandidatesRandom(examples, limit);
+			break;
+		case SIMILAR:noiseCandidates = generateNoiseCandidatesSimilar(examples, sparqlQuery, limit);
+			break;
+		case SIMILARITY_PARAMETERIZED://TODO implement configurable noise method
+			break;
+		default:noiseCandidates = generateNoiseCandidatesRandom(examples, limit);
+			break;
+		}
+		
+		return noiseCandidates;
+	}
+	
 	private Pair<List<String>, List<String>> generateNoise(List<String> examples, String sparqlQuery, double noise, Random randomGen) {
 		// generate noise example candidates
 		List<String> noiseCandidateExamples = null;
 		switch(noiseMethod) {
 		case RANDOM: noiseCandidateExamples = generateNoiseCandidatesRandom(examples, 20);
 			break;
-		case SIMILAR:noiseCandidateExamples = generateNoiseCandidatesSimilar(examples, sparqlQuery);
+		case SIMILAR:noiseCandidateExamples = generateNoiseCandidatesSimilar(examples, sparqlQuery, 20);
 			break;
 		case SIMILARITY_PARAMETERIZED://TODO implement configurable noise method
 			break;
@@ -1024,9 +1075,9 @@ public class QTLEvaluation {
 	}
 	
 	/**
-	 * Randomly pick {@code n} instances from KB that do not belong to given positive examples {@code examples}.
-	 * @param examples the examples that must not be contained in the returned list
-	 * @param n the number of random examples
+	 * Randomly pick {@code n} instances from KB that do not belong to given set of instances {@code examples}.
+	 * @param examples the instances that must not be contained in the returned list
+	 * @param n the number of random instances
 	 * @return
 	 */
 	private List<String> generateNoiseCandidatesRandom(List<String> examples, int n) {
@@ -1058,14 +1109,16 @@ public class QTLEvaluation {
 		return noiseExamples;
 	}
 	
-	private List<String> generateNoiseCandidatesSimilar(List<String> examples, String queryString){
+	private List<String> generateNoiseCandidatesSimilar(List<String> examples, String queryString, int limit){
+		List<String> negExamples = new ArrayList<>();
+		
 		Query query = QueryFactory.create(queryString);
 		
 		QueryUtils queryUtils = new QueryUtils();
 		
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<String> negExamples = new HashSet<String>();
+		Set<String> negExamplesSet = new TreeSet<String>();
 		
 		if(triplePatterns.size() == 1){
 			Triple tp = triplePatterns.iterator().next();
@@ -1090,7 +1143,7 @@ public class QTLEvaluation {
 //			System.out.println(q);
 			
 			List<String> result = getResult(q.toString());
-			negExamples.addAll(result);
+			negExamplesSet.addAll(result);
 		} else {
 			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
 			Set<Set<Triple>> powerSet = new TreeSet<>(new Comparator<Set<Triple>>() {
@@ -1165,17 +1218,18 @@ public class QTLEvaluation {
 						result = getResult(q.toString());
 						result.removeAll(examples);
 					}
-					negExamples.addAll(result);
+					negExamplesSet.addAll(result);
 				}
 			}
 		}
 		
-		negExamples.removeAll(examples);
+		negExamplesSet.removeAll(examples);
 		if(negExamples.isEmpty()){
 			logger.error("Found no negative example.");
 			System.exit(0);
 		}
-		return new ArrayList<>(negExamples);
+		negExamples.addAll(negExamplesSet);
+		return new ArrayList<>(negExamples).subList(0, Math.min(negExamples.size(), limit));
 	}
 	
 	private List<RDFResourceTree> getQueryTrees(List<String> resources){
@@ -2203,12 +2257,90 @@ public class QTLEvaluation {
 		
 		public ExamplesWrapper(List<String> correctPosExamples, List<String> noisePosExamples,List<String> correctNegExamples,
 				Map<OWLIndividual, RDFResourceTree> posExamplesMapping, Map<OWLIndividual, RDFResourceTree> negExamplesMapping) {
-			super();
 			this.correctPosExamples = correctPosExamples;
 			this.noisePosExamples = noisePosExamples;
 			this.correctNegExamples = correctNegExamples;
 			this.posExamplesMapping = posExamplesMapping;
 			this.negExamplesMapping = negExamplesMapping;
+		}
+		
+		public ExamplesWrapper(List<String> correctPosExamples, List<String> correctNegExamples, List<String> noisePosExamples) {
+			this.correctPosExamples = correctPosExamples;
+			this.noisePosExamples = noisePosExamples;
+			this.correctNegExamples = correctNegExamples;
+		}
+		
+		public ExamplesWrapper get(int nrOfPosExamples, int nrOfNegExamples, double noise) {
+			Random rnd = new Random(123);
+			
+			List<String> posExamples = new ArrayList<>(correctPosExamples);
+			Collections.shuffle(posExamples, rnd);
+			posExamples = new ArrayList<>(posExamples.subList(0, Math.min(posExamples.size(), nrOfPosExamples)));
+			
+			List<String> negExamples = new ArrayList<>(correctNegExamples);
+			Collections.shuffle(negExamples, rnd);
+			negExamples = negExamples.subList(0, Math.min(negExamples.size(), nrOfNegExamples));
+			
+			List<String> falsePosExamples = new ArrayList<>(noisePosExamples);
+			Collections.shuffle(falsePosExamples, rnd);
+			
+			// add some noise by using instances close to the positive examples
+			// we have two ways of adding noise t_n
+			// 1: iterate over pos. examples and if random number is below t_n, replace the example
+			// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
+			boolean probabilityBased = false;
+
+			if (probabilityBased) {
+				// 1. way
+				List<String> newPosExamples = new ArrayList<String>();
+				for (Iterator<String> iterator = posExamples.iterator(); iterator.hasNext();) {
+					String posExample = iterator.next();
+					double rndVal = rnd.nextDouble();
+					if (rndVal <= noise) {
+						// remove the positive example
+						iterator.remove();
+						
+						// add one of the negative examples
+						String negExample = falsePosExamples.remove(0);
+						newPosExamples.add(negExample);
+						logger.info("Replacing " + posExample + " by " + negExample);
+					}
+				}
+				posExamples.addAll(newPosExamples);
+				
+				return null;
+			} else {
+				// 2. way
+				// replace at least 1 but not more than half of the examples
+				int upperBound = posExamples.size() / 2;
+				int nrOfPosExamples2Replace = Math.min((int) Math.ceil(noise * posExamples.size()), upperBound);
+				
+				logger.info("replacing " + nrOfPosExamples2Replace + "/" + posExamples.size() + " examples to introduce noise");
+				List<String> posExamples2Replace = new ArrayList<>(posExamples.subList(0, nrOfPosExamples2Replace));
+				posExamples.removeAll(posExamples2Replace);
+				
+				List<String> negExamples4Replacement = falsePosExamples.subList(0, nrOfPosExamples2Replace);
+				posExamples.addAll(negExamples4Replacement);
+				logger.info("replaced " + posExamples2Replace + " by " + negExamples4Replacement);
+			}
+			
+			// ensure determinism
+			Collections.sort(posExamples);
+			Collections.sort(negExamples);
+			Collections.sort(falsePosExamples);
+			
+			// generate trees
+			Map<OWLIndividual, RDFResourceTree> posExamplesMapping = new TreeMap<>();
+			for (String ex : ListUtils.union(posExamples,  falsePosExamples)) {
+				posExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
+			}
+			
+			Map<OWLIndividual, RDFResourceTree> negExamplesMapping = new TreeMap<>();
+			for (String ex : negExamples) {
+				negExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
+			}
+			
+			return new ExamplesWrapper(posExamples, falsePosExamples, negExamples, posExamplesMapping, negExamplesMapping);
 		}
 		
 		
