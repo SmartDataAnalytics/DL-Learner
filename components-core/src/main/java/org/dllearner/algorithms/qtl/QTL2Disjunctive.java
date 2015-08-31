@@ -422,7 +422,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			currentElement = todoList.poll();
 			currentTree = currentElement.getTree();
 			
-			logger.info("Next tree:" + currentElement.getBaseQueryTrees()+ "(" + currentElement.getTreeScore().getAccuracy() + ")");
+			logger.trace("Next tree:" + currentElement.getBaseQueryTrees()+ "(" + currentElement.getTreeScore().getAccuracy() + ")");
 			
 //			logger.info("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
 			
