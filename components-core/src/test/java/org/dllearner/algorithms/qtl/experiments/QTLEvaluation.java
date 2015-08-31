@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeMap;
@@ -196,7 +197,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 60;
+	private int maxExecutionTimeInSeconds = 10;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -957,7 +958,7 @@ public class QTLEvaluation {
 		}
 		
 		// build query trees
-		Map<OWLIndividual, RDFResourceTree> posQueryTrees = new HashMap<>();
+		SortedMap<OWLIndividual, RDFResourceTree> posQueryTrees = new TreeMap<>();
 		for (String ex : examples) {
 			try {
 				RDFResourceTree queryTree = getQueryTree(ex);
@@ -968,7 +969,7 @@ public class QTLEvaluation {
 		}
 		
 		List<String> negativeExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfExamples);
-		Map<OWLIndividual, RDFResourceTree> negQueryTrees = new HashMap<>();
+		SortedMap<OWLIndividual, RDFResourceTree> negQueryTrees = new TreeMap<>();
 		for (String ex : negativeExamples) {
 			try {
 				RDFResourceTree queryTree = getQueryTree(ex);
@@ -2270,11 +2271,13 @@ public class QTLEvaluation {
 			
 			// random sublist of the pos. examples
 			List<String> posExamples = new ArrayList<>(correctPosExamples);
+			Collections.sort(posExamples);
 			Collections.shuffle(posExamples, rnd);
 			posExamples = new ArrayList<>(posExamples.subList(0, Math.min(posExamples.size(), nrOfPosExamples)));
 			
 			// random sublist of the neg. examples
 			List<String> negExamples = new ArrayList<>(correctNegExamples);
+			Collections.sort(negExamples);
 			Collections.shuffle(negExamples, rnd);
 			negExamples = new ArrayList<>(negExamples.subList(0, Math.min(negExamples.size(), nrOfNegExamples)));
 			
@@ -2282,14 +2285,16 @@ public class QTLEvaluation {
 			// 2 options
 			// 1: iterate over pos. examples and if random number is below t_n, replace the example
 			// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
-			List<String> falsePosExamples = new ArrayList<>(falsePosExampleCandidates);
-			Collections.shuffle(falsePosExamples, rnd);
+			List<String> falsePosExampleCandidates = new ArrayList<>(this.falsePosExampleCandidates);
+			Collections.sort(falsePosExampleCandidates);
+			Collections.shuffle(falsePosExampleCandidates, rnd);
+			
+			List<String> falsePosExamples = new ArrayList<>();
 			
 			boolean probabilityBased = false;
-
+			
 			if (probabilityBased) {
 				// 1. way
-				List<String> newPosExamples = new ArrayList<String>();
 				for (Iterator<String> iterator = posExamples.iterator(); iterator.hasNext();) {
 					String posExample = iterator.next();
 					double rndVal = rnd.nextDouble();
@@ -2298,14 +2303,12 @@ public class QTLEvaluation {
 						iterator.remove();
 						
 						// add one of the negative examples
-						String negExample = falsePosExamples.remove(0);
-						newPosExamples.add(negExample);
-						logger.info("Replacing " + posExample + " by " + negExample);
+						String falsePosExample = falsePosExampleCandidates.remove(0);
+						falsePosExamples.add(falsePosExample);
+						logger.info("Replacing " + posExample + " by " + falsePosExample);
 					}
 				}
-				posExamples.addAll(newPosExamples);
-				
-				return null;
+				posExamples.addAll(falsePosExamples);
 			} else {
 				// 2. way
 				// replace at least 1 but not more than half of the examples
@@ -2316,9 +2319,9 @@ public class QTLEvaluation {
 				List<String> posExamples2Replace = new ArrayList<>(posExamples.subList(0, nrOfPosExamples2Replace));
 				posExamples.removeAll(posExamples2Replace);
 				
-				List<String> negExamples4Replacement = falsePosExamples.subList(0, nrOfPosExamples2Replace);
-				posExamples.addAll(negExamples4Replacement);
-				logger.info("replaced " + posExamples2Replace + "\nby\n" + negExamples4Replacement);
+				falsePosExamples = falsePosExampleCandidates.subList(0, nrOfPosExamples2Replace);
+				posExamples.addAll(falsePosExamples);
+				logger.info("replaced " + posExamples2Replace + "\nby\n" + falsePosExamples);
 			}
 			
 			// ensure determinism
@@ -2327,11 +2330,11 @@ public class QTLEvaluation {
 			Collections.sort(falsePosExamples);
 			
 			// generate trees
-			Map<OWLIndividual, RDFResourceTree> posExamplesMapping = new TreeMap<>();
+			SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping = new TreeMap<>();
 			for (String ex : posExamples) {
 				posExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
 			}
-			Map<OWLIndividual, RDFResourceTree> negExamplesMapping = new TreeMap<>();
+			SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping = new TreeMap<>();
 			for (String ex : negExamples) {
 				negExamplesMapping.put(new OWLNamedIndividualImpl(IRI.create(ex)), getQueryTree(ex));
 			}
@@ -2344,11 +2347,11 @@ public class QTLEvaluation {
 		List<String> correctPosExamples;
 		List<String> noisePosExamples;
 		List<String> correctNegExamples;
-		Map<OWLIndividual, RDFResourceTree> posExamplesMapping;
-		Map<OWLIndividual, RDFResourceTree> negExamplesMapping;
+		SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping;
+		SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping;
 		
 		public ExamplesWrapper(List<String> correctPosExamples, List<String> noisePosExamples,List<String> correctNegExamples,
-				Map<OWLIndividual, RDFResourceTree> posExamplesMapping, Map<OWLIndividual, RDFResourceTree> negExamplesMapping) {
+				SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping, SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping) {
 			this.correctPosExamples = correctPosExamples;
 			this.noisePosExamples = noisePosExamples;
 			this.correctNegExamples = correctNegExamples;
