@@ -76,6 +76,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
@@ -85,6 +86,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -162,13 +164,8 @@ public class QTLEvaluation {
 	enum Baseline {
 		RANDOM, MOST_POPULAR_TYPE_IN_KB, MOST_FREQUENT_TYPE_IN_EXAMPLES, MOST_INFORMATIVE_EDGE_IN_EXAMPLES, LGG, MOST_FREQUENT_EDGE_IN_EXAMPLES
 	}
-	
-	
-	
+
 	QueryExecutionFactory qef;
-	String cacheDirectory = "./cache/qtl";
-	
-	
 	
 	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory queryTreeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
@@ -197,7 +194,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 10;
+	private int maxExecutionTimeInSeconds = 20;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -234,10 +231,12 @@ public class QTLEvaluation {
 			
 	HeuristicType[] measures = {
 					HeuristicType.PRED_ACC, 
-					HeuristicType.FMEASURE, 
+//					HeuristicType.FMEASURE,
 //					HeuristicType.MATTHEWS_CORRELATION
 					};
-	
+
+	private File cacheDirectory;
+
 	
 	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
 		this.dataset = dataset;
@@ -263,6 +262,8 @@ public class QTLEvaluation {
 		if(write2DB) {
 			setupDatabase();
 		}
+
+		cacheDirectory = new File(benchmarkDirectory, "cache");
 	}
 	
 	private void setupDatabase() {
@@ -918,21 +919,49 @@ public class QTLEvaluation {
 	
 	private ExampleCandidates generateExamples(String sparqlQuery) throws Exception{
 		logger.info("Generating examples for query ..." + sparqlQuery);
-		Random randomGen = new Random(123);
+		HashFunction hf = Hashing.md5();
+
+		File examplesDirectory = new File(cacheDirectory, "examples");
+		examplesDirectory.mkdirs();
 		
 		// get all pos. examples, i.e. resources returned by the query 
-		List<String> posExamples = getResult(sparqlQuery, false);
+		List<String> posExamples;
+		String hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).toString();
+		File file = new File(examplesDirectory, hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).toString() + ".tp");
+		if(file.exists()) {
+			posExamples = Files.readLines(file, Charsets.UTF_8);
+		} else {
+			posExamples = getResult(sparqlQuery, false);
+			Files.write(Joiner.on("\n").join(posExamples), file, Charsets.UTF_8);
+		}
 		Collections.sort(posExamples);
 		logger.info("#Pos. examples: " + posExamples.size());
 		
 		// get some neg. examples, i.e. resources not returned by the query
 		int maxNrOfNegExamples = 100;
-		List<String> negExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
+		List<String> negExamples;
+		hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).putInt(maxNrOfNegExamples).toString();
+		file = new File(examplesDirectory,  hash + ".tn");
+		if(file.exists()) {
+			negExamples = Files.readLines(file, Charsets.UTF_8);
+		} else {
+			negExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
+			Files.write(Joiner.on("\n").join(negExamples), file, Charsets.UTF_8);
+		}
 		Collections.sort(negExamples);
 		logger.info("#Neg. examples: " + negExamples.size());
 		
 		// get some noise candidates, i.e. resources used as false pos. examples
-		List<String> noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), 100);
+		int maxNrOfNoiseCandidates = 100;
+		List<String> noiseCandidates;
+		hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).putInt(maxNrOfNoiseCandidates).toString();
+		file = new File(examplesDirectory, hash + ".fp");
+		if(file.exists()) {
+			noiseCandidates = Files.readLines(file, Charsets.UTF_8);
+		} else {
+			noiseCandidates = generateNoiseCandidates(sparqlQuery, noiseMethod, ListUtils.union(posExamples, negExamples), maxNrOfNoiseCandidates);
+			Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
+		}
 		logger.info("#False pos. example candidates: " + noiseCandidates.size());
 		
 		return new ExampleCandidates(posExamples, negExamples, noiseCandidates);
@@ -2288,11 +2317,11 @@ public class QTLEvaluation {
 			List<String> falsePosExampleCandidates = new ArrayList<>(this.falsePosExampleCandidates);
 			Collections.sort(falsePosExampleCandidates);
 			Collections.shuffle(falsePosExampleCandidates, rnd);
-			
+
 			List<String> falsePosExamples = new ArrayList<>();
 			
 			boolean probabilityBased = false;
-			
+
 			if (probabilityBased) {
 				// 1. way
 				for (Iterator<String> iterator = posExamples.iterator(); iterator.hasNext();) {

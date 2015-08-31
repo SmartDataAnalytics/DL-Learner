@@ -18,10 +18,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -39,7 +41,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable, Comparable<RDFResourceTree>{
 	
 	public enum Rendering {
 		INDENTED, BRACES
@@ -443,5 +445,17 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			}
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(RDFResourceTree other) {
+		return ComparisonChain.start().
+			compare(this.getData(), other.getData(), new NodeComparator()). // root node
+			compare(this.getNumberOfChildren(), other.getNumberOfChildren()). // number of direct children
+			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
+			result();
 	}
 }

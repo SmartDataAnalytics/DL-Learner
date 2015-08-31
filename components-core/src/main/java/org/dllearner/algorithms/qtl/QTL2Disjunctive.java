@@ -422,6 +422,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			currentElement = todoList.poll();
 			currentTree = currentElement.getTree();
 			
+			logger.info("Next tree:" + currentElement.getBaseQueryTrees()+ "(" + currentElement.getTreeScore().getAccuracy() + ")");
+			
 //			logger.info("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
 			
 			// generate the LGG between the chosen tree and each false negative resp. uncovered positive example
@@ -438,7 +440,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //				logger.info("Uncovered tree: "  + uncoveredTree.getStringRepresentation());
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
-				Set<RDFResourceTree> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
+				SortedSet<RDFResourceTree> baseQueryTrees = Sets.newTreeSet(currentElement.getBaseQueryTrees());
 				baseQueryTrees.add(uncoveredTree);
 //				String s = "";
 //				for (RDFResourceTree queryTree : baseQueryTrees) {
@@ -475,7 +477,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 						if(score > bestCurrentScore){
 							
 							logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), getCurrentRuntimeInMilliSeconds());
-							logger.info("\t" + solutionAsString(solution.getEvaluatedDescription()));
+							logger.info("\t" + solutionAsString(solution.asEvaluatedDescription()));
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
 						}
@@ -501,7 +503,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		long endTime = System.currentTimeMillis();
 		logger.info("...finished computing best partial solution in " + (endTime-partialSolutionStartTime) + "ms.");
-		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.getEvaluatedDescription();
+		EvaluatedDescription bestPartialSolution = bestPartialSolutionTree.asEvaluatedDescription();
 		
 		logger.info("Best partial solution: " + solutionAsString(bestPartialSolution) + "\n(" + bestPartialSolution.getScore() + ")");
 		
@@ -579,7 +581,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		for (EvaluatedRDFResourceTree evTree : todoList) {
 			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
 //			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
-			boolean sameTree = evTree.getEvaluatedDescription().getDescription().toString()
+			boolean sameTree = evTree.asEvaluatedDescription().getDescription().toString()
 			.equals(ce.toString());
 			if(sameTree){
 				logger.trace("Not added to TODO list: Already contained in.");
@@ -827,7 +829,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		for (LiteralNodeConversionStrategy strategy : strategies) {
 			EvaluatedDescription<? extends Score> combinedSolution;
 			if(partialSolutions.size() == 1){
-				combinedSolution = partialSolutions.get(0).getEvaluatedDescription();
+				combinedSolution = partialSolutions.get(0).asEvaluatedDescription();
 			} else {
 				Set<OWLClassExpression> disjuncts = new TreeSet<>();
 				
@@ -837,7 +839,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				//build the union of all class expressions
 				OWLClassExpression partialDescription;
 				for (EvaluatedRDFResourceTree partialSolution : partialSolutions) {
-					partialDescription = partialSolution.getEvaluatedDescription().getDescription();
+					partialDescription = partialSolution.asEvaluatedDescription().getDescription();
 					disjuncts.add(partialDescription);
 					posCovered.addAll(partialSolution.getTreeScore().getCoveredPositives());
 					negCovered.addAll(partialSolution.getTreeScore().getCoveredNegatives());
