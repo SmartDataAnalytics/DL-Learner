@@ -42,7 +42,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.Score;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
@@ -156,7 +155,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	public QTL2Disjunctive() {}
 	
-	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) throws LearningProblemUnsupportedException{
+	public QTL2Disjunctive(PosNegLP learningProblem, AbstractReasonerComponent reasoner) {
 		super(learningProblem, reasoner);
 		loadModel();
 	}
@@ -982,10 +981,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 
 	/**
-	 * Return all trees from the given list {@code allTrees} which are not already subsumed by {@code tree}.
 	 * @param tree
-	 * @param trees
-	 * @return
+	 * @param allTrees
+	 * @return all trees from the given list {@code allTrees} which are not subsumed by {@code tree}.
 	 */
 	private List<RDFResourceTree> getUncoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
 		List<RDFResourceTree> uncoveredTrees = new ArrayList<>();
@@ -1060,7 +1058,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @param maxExecutionTimeInSeconds the maxExecutionTimeInSeconds to set
+	 * @param maxExecutionTimeInSeconds the maximum execution time in seconds until the
+	 * algorithm will terminate gracefully
 	 */
 	@Override
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
@@ -1112,9 +1111,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	public List<EvaluatedRDFResourceTree> getSolutionsAsList(){
-		ArrayList<EvaluatedRDFResourceTree> list = new ArrayList<>(currentPartialSolutions);
-//		Collections.sort(list, Collections.reverseOrder());
-		return list;
+		//		Collections.sort(list, Collections.reverseOrder());
+		return new ArrayList<>(currentPartialSolutions);
 	}
 	
 	/**
@@ -1154,7 +1152,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @param maxTreeDepth the maxTreeDepth to set
+	 * @param maxTreeDepth the maximum depth of the trees, if those have to be generated
+	 * first. The default depth is 2.
 	 */
 	public void setMaxTreeDepth(int maxTreeDepth) {
 		this.maxTreeDepth = maxTreeDepth;
@@ -1165,6 +1164,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	@Override
 	public Object clone() throws CloneNotSupportedException {
+		super.clone();
 		return new QTL2Disjunctive(this);
 	}
 }
