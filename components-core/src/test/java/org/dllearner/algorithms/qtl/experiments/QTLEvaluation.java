@@ -58,6 +58,7 @@ import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
+import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
@@ -193,10 +194,10 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertOverallEval;
 	private PreparedStatement psInsertDetailEval;
 
-	private final int nrOfProcessedQueries = 1;
+	private final int nrOfProcessedQueries = 10;
 	
 	// max. time for each QTL run
-	private final int maxExecutionTimeInSeconds = 10;
+	private final int maxExecutionTimeInSeconds = 60;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -460,7 +461,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!sparqlQuery.contains("TennisTournament"))continue;
+							if(!sparqlQuery.contains("TennisTournament"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -540,6 +541,13 @@ public class QTLEvaluation {
 										bestSolutionPredAccStats.addValue(bestScore.predAcc);
 										bestSolutionMathCorrStats.addValue(bestScore.mathCorr);
 										
+										for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
+											if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
+												System.out.println(negTree.getStringRepresentation(true, null, null, PrefixCCPrefixMapping.Full));
+												System.exit(0);
+											}
+										}
+
 										String bestQuery = QueryFactory.create(QueryTreeUtils.toSPARQLQueryString(
 												filter.filter(bestMatchingTree.getTree()), 
 												dataset.getBaseIRI(), dataset.getPrefixMapping())).toString();
@@ -929,8 +937,8 @@ public class QTLEvaluation {
 		
 		// get all pos. examples, i.e. resources returned by the query 
 		List<String> posExamples;
-		String hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).toString();
-		File file = new File(examplesDirectory, hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).toString() + ".tp");
+		String hash = hf.newHasher().putString(sparqlQuery, Charsets.UTF_8).hash().toString();
+		File file = new File(examplesDirectory, hash + ".tp");
 		if(file.exists()) {
 			posExamples = Files.readLines(file, Charsets.UTF_8);
 		} else {
@@ -1004,7 +1012,7 @@ public class QTLEvaluation {
 		default:noiseCandidates = generateNoiseCandidatesRandom(examples, limit);
 			break;
 		}
-		
+		Collections.sort(noiseCandidates);
 		return noiseCandidates;
 	}
 	
@@ -1073,7 +1081,7 @@ public class QTLEvaluation {
 	 * @return
 	 */
 	private List<String> generateNoiseCandidatesRandom(List<String> examples, int n) {
-		List<String> noiseExamples = new ArrayList<>();
+		List<String> noiseExampleCandidates = new ArrayList<>();
 		
 		rnd.reSeed(123);
 		// get max number of instances in KB
@@ -1083,9 +1091,9 @@ public class QTLEvaluation {
 		int max = rs.next().get("cnt").asLiteral().getInt();
 		
 		// generate random instances
-		while(noiseExamples.size() < n) {
+		while(noiseExampleCandidates.size() < n) {
 			int offset = rnd.nextInt(0, max);
-			query = "SELECT ?s WHERE {?s a [] .} LIMIT 1 OFFSET " + offset;
+			query = "SELECT ?s WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .} LIMIT 1 OFFSET " + offset;
 			
 			qe = qef.createQueryExecution(query);
 			rs = qe.execSelect();
@@ -1093,12 +1101,12 @@ public class QTLEvaluation {
 			String resource = rs.next().getResource("s").getURI();
 			
 			if(!examples.contains(resource) && !resource.contains("__")) {
-				noiseExamples.add(resource);
+				noiseExampleCandidates.add(resource);
 			}
 			qe.close();
 		}
 		
-		return noiseExamples;
+		return noiseExampleCandidates;
 	}
 	
 	private List<String> generateNoiseCandidatesSimilar(List<String> examples, String queryString, int limit){
@@ -2026,6 +2034,7 @@ public class QTLEvaluation {
 		Random randomGen = new Random(123);
 		
 		public List<String> getNegativeExamples(String targetQuery, int size) {
+			logger.trace("Generating neg. examples...");
 			List<String> negExamples = new ArrayList<String>();
 			
 			// remove triple patterns as long as enough neg examples have been found
@@ -2037,7 +2046,7 @@ public class QTLEvaluation {
 				
 				Query q = queries.remove(0);
 				q.setLimit(size);
-//				System.err.println(q);
+				logger.trace("Trying query\n" + q);
 				QueryExecution qe = qef.createQueryExecution(q);
 				ResultSet rs = qe.execSelect();
 				while(rs.hasNext()) {
@@ -2047,7 +2056,7 @@ public class QTLEvaluation {
 				}
 				qe.close();
 			}
-			
+			logger.trace("...finished generating neg. examples.");
 			return negExamples;
 		}
 		
@@ -2076,11 +2085,12 @@ public class QTLEvaluation {
 				// remove last edge
 				ElementGroup eg = new ElementGroup();
 				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-				existsBlock.addTriple(path1.get(0));
+//				existsBlock.addTriple(path1.get(0));
 				existsBlock.addTriple(typePath.get(0));
 				eg.addElement(existsBlock);
 				
 				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
+				notExistsBlock.addTriple(path1.get(0));
 				notExistsBlock.addTriple(path1.get(1));
 				ElementGroup notExistsGroup = new ElementGroup();
 				notExistsGroup.addElement(notExistsBlock);
