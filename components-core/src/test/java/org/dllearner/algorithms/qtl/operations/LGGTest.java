@@ -4,6 +4,7 @@
 package org.dllearner.algorithms.qtl.operations;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
@@ -146,7 +147,7 @@ private static final String baseIRI = "http://test.org/";
 //	@Test
 	public void correctness() {
 		treeFactory.setMaxDepth(2);
-		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset().getQueryTreeFilters().toArray(new Filter[]{}));
+		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset(new File("/tmp/qtl")).getQueryTreeFilters().toArray(new Filter[]{}));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(

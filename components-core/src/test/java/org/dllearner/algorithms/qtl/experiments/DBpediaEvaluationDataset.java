@@ -49,11 +49,12 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 	}
 
 	
-	public DBpediaEvaluationDataset() {
+	public DBpediaEvaluationDataset(File benchmarkDirectory) {
 		// set KS
+		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
 			ks = new SparqlEndpointKS(endpoint);
-			ks.setCacheDir("./cache-qtl/qtl-qald-iswc2015-cache;mv_store=false");
+			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
 			ks.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();

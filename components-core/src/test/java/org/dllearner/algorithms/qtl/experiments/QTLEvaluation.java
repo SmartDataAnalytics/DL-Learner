@@ -194,10 +194,10 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertOverallEval;
 	private PreparedStatement psInsertDetailEval;
 
-	private final int nrOfProcessedQueries = 10;
+	private final int nrOfProcessedQueries = 30;
 	
 	// max. time for each QTL run
-	private final int maxExecutionTimeInSeconds = 60;
+	private final int maxExecutionTimeInSeconds = 30;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -211,17 +211,17 @@ public class QTLEvaluation {
 	// parameters
 	int[] nrOfExamplesIntervals = {
 //					5,
-//					10,
+					10,
 //					15,
-//					20, 
+					20, 
 //					25,
 					30
 					}; 
 			
 	double[] noiseIntervals = {
-//					0.0,
-//					0.1,
-//					0.2,
+					0.0,
+					0.1,
+					0.2,
 					0.3,
 //					0.4,
 //					0.6
@@ -280,7 +280,18 @@ public class QTLEvaluation {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conn = DriverManager.getConnection(url, username, password);
 			
-			String sql = "CREATE TABLE IF NOT EXISTS eval_overall (" +
+			String sql;
+			java.sql.Statement stmt = conn.createStatement();
+			
+//			// empty tables if override
+//			if(override) {
+//				sql = "DROP TABLE IF EXISTS eval_overall,eval_detailed;";
+//				sql = "ALTER TABLE IF EXISTS eval_overall DROP PRIMARY KEY;";
+//				stmt.execute(sql);
+//			}
+			
+			// create tables if not exist
+			sql = "CREATE TABLE IF NOT EXISTS eval_overall (" +
 					   "heuristic VARCHAR(100), " + 
 					   "heuristic_measure VARCHAR(100), " +
 					   "nrOfExamples TINYINT, " +
@@ -302,8 +313,6 @@ public class QTLEvaluation {
 	                   "avg_predacc_baseline DOUBLE, " + 
 	                   "avg_mathcorr_baseline DOUBLE, " +
 	                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))"; 
-			
-			java.sql.Statement stmt = conn.createStatement();
 			stmt.execute(sql);
 			
 			sql = "CREATE TABLE IF NOT EXISTS eval_detailed (" +
@@ -326,7 +335,6 @@ public class QTLEvaluation {
 	                   "baseline_precision DOUBLE, " + 
 	                   "baseline_recall DOUBLE, " + 
 	                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM"; 
-			stmt = conn.createStatement();
 			stmt.execute(sql);
 			
 			sql = "INSERT INTO eval_overall ("
@@ -346,6 +354,35 @@ public class QTLEvaluation {
 					+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
 					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			psInsertDetailEval = conn.prepareStatement(sql);
+			
+			// remove primary keys
+			if (override) {
+				try {
+					sql = "ALTER TABLE eval_overall DROP PRIMARY KEY;";
+					stmt.execute(sql);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					sql = "ALTER TABLE eval_detailed DROP PRIMARY KEY;";
+					stmt.execute(sql);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					sql = "ALTER TABLE eval_overall ADD PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise);";
+					stmt.execute(sql);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					sql = "ALTER TABLE eval_detailed ADD PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure);";
+					stmt.execute(sql);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -461,7 +498,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-							if(!sparqlQuery.contains("TennisTournament"))continue;
+							if(!sparqlQuery.contains("Cricketer"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -1908,7 +1945,7 @@ public class QTLEvaluation {
 			double noise, String baseLineQuery, Score baselineScore, String heuristicName, String heuristicMeasure,
 			String returnedQuery, Score returnedQueryScore, String bestQuery, int bestQueryPosition,
 			Score bestQueryScore) {
-		
+		logger.trace("Writing to DB...");
 		try {
 			psInsertDetailEval.setString(1, targetQuery);
 			psInsertDetailEval.setInt(2, nrOfExamples);
@@ -1931,10 +1968,12 @@ public class QTLEvaluation {
 			psInsertDetailEval.setDouble(16, baselineScore.fmeasure);
 			psInsertDetailEval.setDouble(17, baselineScore.precision);
 			psInsertDetailEval.setDouble(18, baselineScore.recall);
-			System.out.println(psInsertDetailEval);
+			
+			logger.trace(psInsertDetailEval);
 			psInsertDetailEval.executeUpdate();
+			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Writing to DB failed.", e);
 		}
 		
 	}
@@ -1945,6 +1984,7 @@ public class QTLEvaluation {
 			double bestSolutionPosition, double bestSolutionFmeasure, double bestSolutionPrecision, double bestSolutionRecall, double bestSolutionPredAcc, double bestSolutionMathCorr,
 			double baselineFmeasure, double baselinePrecision, double baselineRecall, double baselinePredAcc, double baselineMathCorr
 			) {
+		logger.trace("Writing to DB...");
 		try {
 			psInsertOverallEval.setString(1, heuristic);
 			psInsertOverallEval.setString(2, heuristicMeasure);
@@ -1970,10 +2010,11 @@ public class QTLEvaluation {
 			psInsertOverallEval.setDouble(19, baselinePredAcc);
 			psInsertOverallEval.setDouble(20, baselineMathCorr);
 			
-			System.out.println(psInsertOverallEval);
+			logger.trace(psInsertOverallEval);
 			psInsertOverallEval.executeUpdate();
+			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Writing to DB failed.", e);
 		}
 	}
 	
@@ -1996,7 +2037,7 @@ public class QTLEvaluation {
 		boolean write2DB = Boolean.valueOf(args[2]);
 		boolean override = Boolean.valueOf(args[3]);
 		
-		new QTLEvaluation(new DBpediaEvaluationDataset(), benchmarkDirectory, write2DB, override).run(queries);
+		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory), benchmarkDirectory, write2DB, override).run(queries);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
