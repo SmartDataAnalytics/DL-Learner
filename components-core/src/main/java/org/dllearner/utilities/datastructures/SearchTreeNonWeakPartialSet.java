@@ -1,12 +1,9 @@
-package org.dllearner.algorithms.qtl.datastructures;
+package org.dllearner.utilities.datastructures;
 
 import java.util.Collection;
 import java.util.Comparator;
 
 import org.dllearner.core.AbstractSearchTreeNode;
-import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
-import org.dllearner.utilities.datastructures.SearchTreePartialSet;
-import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
 
 public class SearchTreeNonWeakPartialSet<T extends AbstractSearchTreeNode & WeakSearchTreeNode>
 	extends SearchTreeNonWeak<T> implements SearchTreePartialSet<T> {

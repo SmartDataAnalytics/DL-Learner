@@ -31,7 +31,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.qtl.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -43,6 +42,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
+import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
