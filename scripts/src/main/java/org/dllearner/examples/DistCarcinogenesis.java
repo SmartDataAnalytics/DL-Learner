@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.distributed.DistOEHeuristicRuntime;
+import org.dllearner.algorithms.distributed.DistOEHeuristicRuntime2;
 import org.dllearner.algorithms.distributed.amqp.DistCELOEAMQP;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
@@ -188,13 +188,14 @@ public class DistCarcinogenesis {
         logger.info("-Done-");
 
         logger.info("initializing learning algorithm...");
-        DistOEHeuristicRuntime heuristic = new DistOEHeuristicRuntime();
+        DistOEHeuristicRuntime2 heuristic = new DistOEHeuristicRuntime2();
         heuristic.setExpansionPenaltyFactor(0.01);
         DistCELOEAMQP celoe = new DistCELOEAMQP(lp, rc);
         celoe.setHeuristic(heuristic);
         celoe.setOperator(op);
         celoe.setNoisePercentage(20);
         celoe.updateAMQPSettings("amqp.properties");
+//        celoe.updateAMQPSettings("/tests/amqp/dist_celoe/amqp.properties");
 //        celoe.updateAMQPSettings("/tests/dllearner_amqp/dist_score_and_refinement/amqp.properties");
         int id = Integer.parseInt(args[1]);
         boolean isMaster = (Integer.parseInt(args[2]) > 0);
