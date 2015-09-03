@@ -34,12 +34,20 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public class DistOENode implements SearchTreeNode, Serializable {
 
-	// <----------------------------- attributes ----------------------------->
 	private static final long serialVersionUID = 6036273870961849912L;
-	protected final UUID uuid;
+	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
 
-	protected OWLClassExpression description;
+	// <----------------------------- attributes ----------------------------->
 	protected double accuracy;
+	protected List<DistOENode> children = new LinkedList<DistOENode>();
+	protected OWLClassExpression description;
+
+	/**
+	 * A DistOENode object is in the 'disabled' state if it is blocked because
+	 * it is known that its refinements will all be redundant or too weak
+	 */
+	private boolean disabled;
+
 	protected int horizontalExpansion;
 
 	/**
@@ -49,21 +57,17 @@ public class DistOENode implements SearchTreeNode, Serializable {
 	 * its results */
 	private boolean inUse;
 
-	/**
-	 * A DistOENode object is in the 'disabled' state if it is blocked because
-	 * it is known that its refinements will all be redundant or too weak
-	 */
-	private boolean disabled;
-
 	protected DistOENode parent;
-	protected List<DistOENode> children = new LinkedList<DistOENode>();
 
-	// the refinement count corresponds to the number of refinements of the
-	// OWLClassExpression in this node - it is a better heuristic indicator than child count
-	// (and avoids the problem that adding children changes the heuristic value)
-	private int refinementCount = 0;
+	/**
+	 * the refinement count corresponds to the number of refinements of the
+	 * OWLClassExpression in this node - it is a better heuristic indicator
+	 * than child count (and avoids the problem that adding children changes
+	 * the heuristic value) */
+	protected int refinementCount = 0;
 
-	private static DecimalFormat dfPercent = new DecimalFormat("0.00%");
+	private DistOENodeTree tree;
+	protected final UUID uuid;
 	// </---------------------------- attributes ----------------------------->
 
 
@@ -80,6 +84,18 @@ public class DistOENode implements SearchTreeNode, Serializable {
 		horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 		inUse = false;
 		disabled = false;
+	}
+
+	public DistOENode(DistOENode nodeToCopy) {
+		parent = nodeToCopy.getParent();
+		description = nodeToCopy.getDescription();
+		accuracy = nodeToCopy.getAccuracy();
+		uuid = nodeToCopy.getUUID();
+		horizontalExpansion = nodeToCopy.getHorizontalExpansion();
+		inUse = nodeToCopy.isInUse();
+		disabled = nodeToCopy.isDisabled();
+		children = nodeToCopy.getChildren();
+		refinementCount = nodeToCopy.getRefinementCount();
 	}
 	// </--------------------------- constructors ---------------------------->
 
@@ -104,19 +120,27 @@ public class DistOENode implements SearchTreeNode, Serializable {
 
 	// <---------------------------- misc methods ---------------------------->
 	public void addChild(DistOENode node) {
-		children.add(node);
-		// this is evil since it may cause problems in the DistOENodeTree
+		// just in case the node is already contained in the tree
+		if (tree != null) ((TreeSet<DistOENode>) tree).remove(node);
+
 		node.setParent(this);
+		if (tree != null) tree.add(node);
+
+		if (tree != null) tree.remove(this);
+		children.add(node);
+		if (tree != null) tree.add(this);
 	}
 
 	public DistOENode copyTo(DistOENode newParent) {
-		DistOENode copiedNode = new DistOENode(newParent, description, accuracy, uuid);
-		copiedNode.setRefinementCount(refinementCount);
-		copiedNode.setDisabled(disabled);
-		copiedNode.setInUse(inUse);
-		copiedNode.horizontalExpansion = horizontalExpansion;
+		DistOENode copiedNode = new DistOENode(this);
+//		copiedNode.resetChildren();
+		copiedNode.setParent(newParent);
 
 		newParent.addChild(copiedNode);
+
+		for (DistOENode child : children) {
+			child.copyTo(copiedNode);
+		}
 
 		return copiedNode;
 	}
@@ -124,8 +148,11 @@ public class DistOENode implements SearchTreeNode, Serializable {
 	public boolean equals(DistOENode other) {
 		if (other == null) return false;
 
-		return uuid.equals(other.getUUID()) &&
-				description.equals(other.getDescription());
+		return uuid.equals(other.getUUID());
+	}
+
+	protected void setTree(DistOENodeTree tree) {
+		this.tree = tree;
 	}
 
 	/**
@@ -149,23 +176,24 @@ public class DistOENode implements SearchTreeNode, Serializable {
 		return null;
 	}
 
-	public TreeSet<DistOENode> getNodeAndDescendantsAndSetUsed() {
-		return getNodeAndDescendants(true);
+	public TreeSet<DistOENode> copyNodeAndDescendantsAndSetUsed() {
+		return copyNodeAndDescendants(true);
 	}
 
-	public TreeSet<DistOENode> getNodeAndDescendants() {
-		return getNodeAndDescendants(false);
+	public TreeSet<DistOENode> copyNodeAndDescendants() {
+		return copyNodeAndDescendants(false);
 	}
 
-	private TreeSet<DistOENode> getNodeAndDescendants(boolean setUsed) {
+	private TreeSet<DistOENode> copyNodeAndDescendants(boolean setUsed) {
 		// FIXME: there should be a mechanism to get the heuristic used in
 		// the node tree this node belongs to
 		TreeSet<DistOENode> subTree = new TreeSet<DistOENode>(new DistOEHeuristicRuntime());
+		DistOENode nodeCopy = new DistOENode(this);
 		subTree.add(this);
 		if (setUsed) inUse = true;
 
 		for (DistOENode child : children) {
-			subTree.addAll(child.getNodeAndDescendants(setUsed));
+			subTree.addAll(child.copyNodeAndDescendants(setUsed));
 		}
 
 		return subTree;
@@ -244,6 +272,13 @@ public class DistOENode implements SearchTreeNode, Serializable {
 	public void updateWithDescriptionScoreValsFrom(DistOENode other) {
 		accuracy = other.getAccuracy();
 		horizontalExpansion = other.horizontalExpansion;
+	}
+
+	public int resetChildren() {
+		int numChildren = this.children.size();
+		this.children.clear();
+
+		return numChildren;
 	}
 	// </--------------------------- misc methods ---------------------------->
 

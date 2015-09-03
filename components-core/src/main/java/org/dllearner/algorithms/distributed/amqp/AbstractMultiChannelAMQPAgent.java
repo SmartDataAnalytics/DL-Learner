@@ -1,8 +1,10 @@
 package org.dllearner.algorithms.distributed.amqp;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Random;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
+import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -24,6 +27,7 @@ import javax.jms.TopicSubscriber;
 import org.apache.qpid.AMQException;
 import org.apache.qpid.client.AMQConnection;
 import org.apache.qpid.client.AMQQueue;
+import org.apache.qpid.client.AMQSession;
 import org.apache.qpid.client.AMQTopic;
 import org.apache.qpid.url.URLSyntaxException;
 import org.dllearner.algorithms.distributed.MultiChannelMessagingAgent;
@@ -38,6 +42,8 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 		implements MultiChannelMessagingAgent{
 
 	private Logger logger = LoggerFactory.getLogger(AbstractMultiChannelAMQPAgent.class);
+	private static String sessionClosedErrMsg = "Seems the session was closed. Retrying.";
+	private static String sessionReEstablishedMsg = "Re-created session";
 
 	// default AMPQ values
 	private String user = "admin";
@@ -119,6 +125,15 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 			producer.send(msg);
 			producer.close();
 
+		} catch (IllegalStateException e) {
+			try {
+				checkAndRestoreSession();
+			} catch (URLSyntaxException | AMQException | JMSException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			blockingSend(msgContainer, queueID);
+
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -132,6 +147,18 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 		Message msg;
 		try {
 			msg = ((org.apache.qpid.jms.Session) session).createObjectMessage(msgContainer);
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			try {
+				ObjectOutputStream oout = new ObjectOutputStream(bout);
+				oout.writeObject(msgContainer);
+				oout.flush();
+				logger.info("######### MSG CONTAINER SIZE: " + bout.size());
+				oout.close();
+				bout.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 	//        CompletionListener completionListener = new DummyCompletionListener();
 			/* FIXME: asynchronous sending is not implemented in the default message
 			 * producers:
@@ -149,6 +176,15 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 			producer.send(msg);
 			producer.close();
+
+		} catch (IllegalStateException e) {
+			try {
+				checkAndRestoreSession();
+			} catch (URLSyntaxException | AMQException | JMSException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			nonBlockingSend(msgContainer, queueID);
 
 		} catch (JMSException e) {
 			e.printStackTrace();
@@ -170,6 +206,16 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 			if (msg == null) return null;
 
 			msgContainer = (MessageContainer) msg.getObject();
+
+		} catch (IllegalStateException e) {
+			try {
+				checkAndRestoreSession();
+			} catch (URLSyntaxException | AMQException | JMSException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			return blockingReceive(queueID);
+
 		} catch (JMSException e) {
 			e.printStackTrace();
 			return null;
@@ -188,19 +234,32 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 		ObjectMessage msg;
 		try {
 			MessageConsumer recver = session.createConsumer(queues.get(queueID));
-			msg = (ObjectMessage) recver.receiveNoWait();
-			recver.close();
+			// FIXME: seems nowait makes trouble the way I use it; replaced for now
+//			msg = (ObjectMessage) recver.receiveNoWait();
+			msg = (ObjectMessage) recver.receive(1000); // just wait one second
 
 			if (msg == null) {
+				recver.close();
 				return null;
 
 			} else {
 				MessageContainer msgContainer = (MessageContainer) msg.getObject();
+				recver.close();
 				receivedMessagesCount++;
 
 				logReceived(msgContainer.toString(), queueID);
 				return msgContainer;
 			}
+
+		} catch (IllegalStateException e) {
+			try {
+				checkAndRestoreSession();
+			} catch (URLSyntaxException | AMQException | JMSException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			return nonBlockingReceive(queueID);
+
 		} catch (JMSException e) {
 			e.printStackTrace();
 			return null;
@@ -214,10 +273,31 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 
 	@Override
 	public boolean checkTerminateMsg() {
+		int failCntr = 0;
+
 		while (true) {
 			Message msg;
 			try {
-				msg = termMsgSubscriber.receiveNoWait();
+				// FIXME
+//				msg = termMsgSubscriber.receiveNoWait();
+				msg = termMsgSubscriber.receive(1000);
+			} catch (IllegalStateException e) {
+				try {
+					checkAndRestoreSession();
+				} catch (URLSyntaxException | AMQException | JMSException e1) {
+					e1.printStackTrace();
+
+					// terminate if error cannot be fixed here
+					return true;
+				}
+				failCntr++;
+				if (failCntr > 100) {
+					logger.error("Terminating due to error:");
+					e.printStackTrace();
+					return true;
+				}
+				else continue;
+
 			} catch (JMSException e) {
 				e.printStackTrace();
 				continue;
@@ -273,6 +353,27 @@ public abstract class AbstractMultiChannelAMQPAgent extends AbstractCELA
 		port = props.getProperty("port") == null ? port : Integer.parseInt(
 				props.getProperty("port"));
 		return true;
+	}
+
+	/**
+	 * FIXME: Seems this case should never happen, but does. So the cause need
+	 * to be found
+	 * @throws AMQException
+	 * @throws URLSyntaxException
+	 * @throws JMSException
+	 */
+	private void checkAndRestoreSession() throws URLSyntaxException, AMQException, JMSException {
+		logger.error(sessionClosedErrMsg);
+		if (((AMQConnection) connection).isClosed()) {
+			AMQConfiguration url = new AMQConfiguration(user, password, clientId, virtualHost, host, port);
+			connection = new AMQConnection(url.getURL());
+		}
+
+		if (((AMQSession) session).isClosed()) {
+			session = connection.createSession(transactional, Session.AUTO_ACKNOWLEDGE);
+			logger.info(sessionReEstablishedMsg);
+		}
+
 	}
 
 	public void addTopic(String topicIdentifier) {

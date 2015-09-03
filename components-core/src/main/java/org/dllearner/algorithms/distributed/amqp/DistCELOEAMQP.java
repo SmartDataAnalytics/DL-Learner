@@ -1,6 +1,9 @@
 package org.dllearner.algorithms.distributed.amqp;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -11,11 +14,11 @@ import javax.jms.JMSException;
 
 import org.apache.qpid.AMQException;
 import org.apache.qpid.url.URLSyntaxException;
-import org.dllearner.algorithms.distributed.AbstractDistHeuristic;
-import org.dllearner.algorithms.distributed.DistOEHeuristicRuntime;
-import org.dllearner.algorithms.distributed.DistOENode;
-import org.dllearner.algorithms.distributed.DistOENodeTree;
-import org.dllearner.algorithms.distributed.containers.NodeTreeContainer;
+import org.dllearner.algorithms.distributed.AbstractDistHeuristic2;
+import org.dllearner.algorithms.distributed.DistOEHeuristicRuntime2;
+import org.dllearner.algorithms.distributed.DistOENode2;
+import org.dllearner.algorithms.distributed.DistOENodeTree2;
+import org.dllearner.algorithms.distributed.containers.NodeTreeContainer2;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -65,6 +68,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 
 public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	private static Logger logger = LoggerFactory.getLogger(DistCELOEAMQP.class);
@@ -179,17 +184,19 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	 */
 	private boolean forceMutualDifference = false;
 
-	private AbstractDistHeuristic heuristic;
+	private AbstractDistHeuristic2 heuristic;
 	private boolean isClassLearningProblem;
 	private boolean isEquivalenceProblem;
 	private OWLClassExpressionMinimizer minimizer;
 	private int minHorizExp = 0;
 	private int maxHorizExp = 0;
+	private int maxPendingRequests = 60;
 
 	/** all nodes in the search tree (used for selecting most promising node) */
-	private DistOENodeTree nodeTree;
+	private DistOENodeTree2 nodeTree;
 
 	private double noise;
+	private int pendingRequests;
 	private String processedTreesQueue = "processedTreesQ";
 	private long timeLastImprovement = 0;
 	private String treesToProcessQueue = "treesToProcessQ";
@@ -197,7 +204,11 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	/**
 	 * The runtime of one single task a worker processes is determined by the
 	 * size of the node tree and a base factor (in seconds) */
-	private int workerRuntimeBase = 10;
+	private int workerRuntimeBase = 6;
+
+
+	// FIXME: remove
+	BufferedWriter mergeStats;
 	// </--------------------- non-component attributes ---------------------->
 
 	// <---------------------------- constructors ----------------------------->
@@ -207,6 +218,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	public DistCELOEAMQP(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
+	// </--------------------------- constructors ----------------------------->
 
 	// <------------------------- interface methods ------------------------->
 	@Override
@@ -226,7 +238,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
-			heuristic = new DistOEHeuristicRuntime();
+			heuristic = new DistOEHeuristicRuntime2();
 		}
 
 		minimizer = new OWLClassExpressionMinimizer(dataFactory, reasoner);
@@ -331,7 +343,6 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 					}
 
 				} else {
-					// XXX
 					Set<OWLClassExpression> superClasses =
 							reasoner.getClassHierarchy().getSuperClasses(classToDescribe, true);
 
@@ -404,7 +415,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	 * ONLY CALLED BY WORKER PROCESSES
 	 * @return TRUE if node was added and FALSE otherwise
 	 */
-	private boolean addNode(OWLClassExpression description, DistOENode parentNode) {
+	private boolean addNode(OWLClassExpression description, DistOENode2 parentNode) {
 
 		// redundancy check
 		boolean nonRedundant = descriptions.add(description);
@@ -433,10 +444,15 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 
 		if (accuracy == -1) return false;
 
-		DistOENode node = new DistOENode(parentNode, description, accuracy);
+		DistOENode2 node = new DistOENode2(description, accuracy);
 
-		parentNode.addChild(node);
-		nodeTree.add(node);
+		// TODO: remove commented out stuff
+//		DistOENode2 node = new DistOENode2(parentNode, description, accuracy);
+
+//		parentNode.addChild(node);
+//		nodeTree.add(node);
+
+		nodeTree.add(node, parentNode);
 
 		/* in some cases (e.g. mutation) fully evaluating even a single class
 		 * expression is too expensive due to the high number of examples -- so
@@ -517,15 +533,15 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	 * (rationale: further extension is likely to add irrelevant syntactical
 	 * constructs)
 	 */
-	private DistOENode getNextNodeToExpand() {
-		Iterator<DistOENode> it = nodeTree.descendingIterator();
+	private DistOENode2 getNextNodeToExpand() {
+		Iterator<DistOENode2> it = nodeTree.descendingIterator();
 
 		while(it.hasNext()) {
-			DistOENode node = it.next();
+			DistOENode2 node = it.next();
 			boolean horizExpLtDescLen = node.getHorizontalExpansion() <
 					OWLClassExpressionUtils.getLength(node.getDescription());
 
-			if (node.isInUse() || node.isDisabled()) continue;
+			if (nodeTree.isInUse(node)) continue;
 
 			if (expandAccuracy100Nodes && horizExpLtDescLen) {
 					return node;
@@ -544,13 +560,11 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	 * (rationale: further extension is likely to add irrelevant syntactical
 	 * constructs)
 	 */
-	private DistOENode getNextNodeToExpandWorker() {
-		Iterator<DistOENode> it = nodeTree.descendingIterator();
+	private DistOENode2 getNextNodeToExpandWorker() {
+		Iterator<DistOENode2> it = nodeTree.descendingIterator();
 
-		int trials = 0;
 		while(it.hasNext()) {
-			trials++;
-			DistOENode node = it.next();
+			DistOENode2 node = it.next();
 			boolean horizExpLtDescLen = node.getHorizontalExpansion() <
 					OWLClassExpressionUtils.getLength(node.getDescription());
 
@@ -566,7 +580,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		return null;
 	}
 
-	private boolean isDescriptionAllowed(OWLClassExpression description, DistOENode parentNode) {
+	private boolean isDescriptionAllowed(OWLClassExpression description, DistOENode2 parentNode) {
 		if (isClassLearningProblem) {
 			if (isEquivalenceProblem) {
 				// the class to learn must not appear on the outermost property level
@@ -672,9 +686,28 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		}
 	}
 
-	private void processRecvdTreeMaster(NodeTreeContainer treeContainer) {
-		DistOENodeTree remoteTree = treeContainer.getTree();
+	private void processRecvdTreeMaster(NodeTreeContainer2 treeContainer) {
+		pendingRequests--;
+		DistOENodeTree2 remoteTree = treeContainer.getTree();
+		Monitor mon = MonitorFactory.getTimeMonitor("treemerge");
+		mon.start();
 		nodeTree.mergeWithAndUnblock(remoteTree);
+		mon.stop();
+		double duration = mon.getLastValue();
+		String line = nodeTree.size() + "\t" + duration;
+		try {
+			mergeStats.write(line);
+			mergeStats.newLine();
+			mergeStats.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			try {
+				terminateAgents();
+			} catch (JMSException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(1);
+		}
 
 		double remoteBestAcc = treeContainer.getBestAccuracy();
 		OWLClassExpression remoteBestDescription = treeContainer.getBestDescription();
@@ -693,7 +726,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		}
 	}
 
-	private void processRecvdTreeWorker(NodeTreeContainer treeContainer) {
+	private void processRecvdTreeWorker(NodeTreeContainer2 treeContainer) {
 		nodeTree = treeContainer.getTree();
 		startClass = nodeTree.getRoot().getDescription();
 
@@ -715,7 +748,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	}
 
 	/** expand node horizontically */
-	private TreeSet<OWLClassExpression> refineNode(DistOENode node) {
+	private TreeSet<OWLClassExpression> refineNode(DistOENode2 node) {
 		/* we have to remove and add the node since its heuristic evaluation
 		 * changes through the expansion (you *must not* include any criteria
 		 * in the heuristic which are modified outside of this method,
@@ -746,7 +779,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		minHorizExp = 0;
 		maxHorizExp = 0;
 
-		if (nodeTree == null) nodeTree = new DistOENodeTree();
+		if (nodeTree == null) nodeTree = new DistOENodeTree2();
 		else nodeTree.reset();
 
 		timeLastImprovement = 0;
@@ -754,7 +787,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	}
 
 	/** checks whether the node is a potential solution candidate */
-	private OWLClassExpression rewriteNode(DistOENode node) {
+	private OWLClassExpression rewriteNode(DistOENode2 node) {
 		OWLClassExpression description = node.getDescription();
 		OWLClassExpression niceDescription;
 
@@ -781,14 +814,26 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	private void startMaster() throws JMSException {
 		nanoStartTime = System.nanoTime();
 		currentHighestAccuracy = 0.0;
-		DistOENode nextNode;
+		pendingRequests = 0;
+		DistOENode2 nextNode;
+
+		// TODO: remove
+		try {
+			mergeStats = new BufferedWriter(new FileWriter(new File("mergeStats.txt")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		logger.info("start class:" + startClass);
 
 		// <addNode replacement>
 		double accuracy = learningProblem.getAccuracyOrTooWeak(startClass, noise);
-		DistOENode node = new DistOENode(null, startClass, accuracy);
+
+		DistOENode2 node = new DistOENode2(startClass, accuracy);
 		nodeTree.setRoot(node);
+
+
+
 		bestAccuracy = accuracy;
 		bestDescription = startClass;
 		if(!filterFollowsFromKB ||
@@ -797,26 +842,37 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		}
 		// </addNode replacement>
 
-		NodeTreeContainer treeRecvContainer;
+		NodeTreeContainer2 treeRecvContainer;
 
 		while (!terminationCriteriaSatisfied()) {
-			treeRecvContainer = (NodeTreeContainer) nonBlockingReceive(processedTreesQueue);
-			if (treeRecvContainer != null) processRecvdTreeMaster(treeRecvContainer);
+
+			if (Math.random() <= 0.66) {
+				treeRecvContainer = (NodeTreeContainer2) nonBlockingReceive(processedTreesQueue);
+				if (treeRecvContainer != null) processRecvdTreeMaster(treeRecvContainer);
+			}
+
+			if (pendingRequests > maxPendingRequests) continue;
 
 			nextNode = getNextNodeToExpand();
 
 			if (nextNode == null) continue;
 
-			DistOENodeTree subTree = nodeTree.getSubTreeAndSetUsed(nextNode);
-			NodeTreeContainer treeSendContainer = new NodeTreeContainer(subTree);
+			DistOENodeTree2 subTree = nodeTree.getSubTreeCopyAndSetInUse(nextNode);
+			NodeTreeContainer2 treeSendContainer = new NodeTreeContainer2(subTree);
 
 			nonBlockingSend(treeSendContainer, treesToProcessQueue);
+			pendingRequests++;
 		}
 
 		terminateAgents();
 
 		printAlgorithmRunStats();
 		logger.info("solutions:\n" + getSolutionString());
+		try {
+			mergeStats.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void startWorker() {
@@ -826,13 +882,14 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 			reset();
 			currentHighestAccuracy = 0.0;
 
-			NodeTreeContainer treeContainer = (NodeTreeContainer) blockingReceive(treesToProcessQueue);
+			NodeTreeContainer2 treeContainer =
+					(NodeTreeContainer2) blockingReceive(treesToProcessQueue);
 			if (treeContainer == null) continue;
 
 			processRecvdTreeWorker(treeContainer);
 
-			NodeTreeContainer resultsTreeContainer =
-					new NodeTreeContainer(nodeTree, bestAccuracy,
+			NodeTreeContainer2 resultsTreeContainer =
+					new NodeTreeContainer2(nodeTree, bestAccuracy,
 							bestDescription, bestEvaluatedDescriptions);
 			nonBlockingSend(resultsTreeContainer, processedTreesQueue);
 		}
@@ -851,7 +908,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		nanoStartTime = System.nanoTime();
 
 		currentHighestAccuracy = 0.0;
-		DistOENode nextNode;
+		DistOENode2 nextNode;
 
 		while (!terminationCriteriaSatisfied()) {
 			showIfBetterSolutionsFound();
@@ -913,7 +970,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 	}
 
 
-	private void updateMinMaxHorizExp(DistOENode node) {
+	private void updateMinMaxHorizExp(DistOENode2 node) {
 		int newHorizExp = node.getHorizontalExpansion();
 
 		// update maximum value
@@ -926,7 +983,7 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 
-			for(DistOENode n : nodeTree.descendingSet()) {
+			for(DistOENode2 n : nodeTree.descendingSet()) {
 				if(n != node) {
 					if(n.getHorizontalExpansion() == minHorizExp) {
 						// we can stop instantly when another node with min.
@@ -1065,11 +1122,11 @@ public class DistCELOEAMQP extends AbstractMultiChannelAMQPAgent {
 		this.useMinimizer = useMinimizer;
 	}
 
-	public AbstractDistHeuristic getHeuristic() {
+	public AbstractDistHeuristic2 getHeuristic() {
 		return heuristic;
 	}
 
-	public void setHeuristic(AbstractDistHeuristic heuristic) {
+	public void setHeuristic(AbstractDistHeuristic2 heuristic) {
 		this.heuristic = heuristic;
 	}
 

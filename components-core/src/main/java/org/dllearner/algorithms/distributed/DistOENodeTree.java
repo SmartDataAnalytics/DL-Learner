@@ -1,8 +1,14 @@
 package org.dllearner.algorithms.distributed;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.TreeSet;
 
-public class DistOENodeTree extends TreeSet<DistOENode> {
+public class DistOENodeTree extends TreeSet<DistOENode> implements Serializable {
 
 	private static final long serialVersionUID = -1621872429008871002L;
 
@@ -25,19 +31,75 @@ public class DistOENodeTree extends TreeSet<DistOENode> {
 	public void add(DistOENode nodeToAdd, DistOENode parentNode) {
 		remove(parentNode);
 		parentNode.addChild(nodeToAdd);
+		nodeToAdd.setTree(this);
 		add(parentNode);
 		add(nodeToAdd);
 	}
+
+	public boolean remove(DistOENode node) {
+		boolean res = ((TreeSet<DistOENode>) this).remove(node);
+		node.setTree(null);
+
+		return res;
+	}
+
 	public DistOENode getCorrespondingLocalNode(DistOENode nonLocalNodeToFind) {
 		return root.findCorrespondingLocalNode(nonLocalNodeToFind);
 	}
 
-	public DistOENodeTree getSubTreeAndSetUsed(DistOENode subTreeRoot) {
-		DistOENodeTree subTree = new DistOENodeTree(subTreeRoot);
+	public DistOENodeTree getSubTreeCopyAndSetUsed(DistOENode subTreeRoot) {
+		DistOENode subTreeRootCopy = new DistOENode(subTreeRoot);
+		subTreeRoot.setParent(null);
 		subTreeRoot.setInUse(true);
+		DistOENodeTree subTree = new DistOENodeTree(subTreeRootCopy);
 
-		TreeSet<DistOENode> descendants = subTreeRoot.getNodeAndDescendantsAndSetUsed();
+		TreeSet<DistOENode> descendants = subTreeRoot.copyNodeAndDescendantsAndSetUsed();
 		subTree.addAll(descendants);
+
+		return subTree;
+	}
+
+	public DistOENodeTree getSubTreeParanoidCopyAndSetUsed(DistOENode subTreeRoot) {
+		remove(subTreeRoot);
+		subTreeRoot.setInUse(true);
+		add(subTreeRoot);
+
+		DistOENodeTree subTree = new DistOENodeTree(subTreeRoot);
+
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try {
+			ObjectOutputStream oout = new ObjectOutputStream(bout);
+			oout.writeObject(subTreeRoot);
+			oout.flush();
+			oout.close();
+			ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+			DistOENode subTreeRootCopy = (DistOENode) oin.readObject();
+			subTree.add(subTreeRootCopy);
+			oin.close();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		TreeSet<DistOENode> descendants = subTreeRoot.copyNodeAndDescendants();
+		for (DistOENode desc : descendants) {
+			remove(desc);
+			desc.setInUse(true);
+			add(desc);
+
+			bout = new ByteArrayOutputStream();
+			try {
+				ObjectOutputStream oout = new ObjectOutputStream(bout);
+				oout.writeObject(desc);
+				oout.flush();
+				oout.close();
+				ObjectInputStream oin = new ObjectInputStream(new ByteArrayInputStream(bout.toByteArray()));
+				DistOENode node = (DistOENode) oin.readObject();
+
+				subTree.add(node);
+				oin.close();
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 
 		return subTree;
 	}
@@ -50,7 +112,7 @@ public class DistOENodeTree extends TreeSet<DistOENode> {
 		DistOENodeTree subTree = new DistOENodeTree(subTreeRoot);
 		if (setUsed) subTreeRoot.setInUse(true);
 
-		TreeSet<DistOENode> descendants = subTreeRoot.getNodeAndDescendants();
+		TreeSet<DistOENode> descendants = subTreeRoot.copyNodeAndDescendants();
 		subTree.addAll(descendants);
 
 		return subTree;

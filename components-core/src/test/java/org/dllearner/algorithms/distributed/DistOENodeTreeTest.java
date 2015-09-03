@@ -8,9 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
@@ -20,7 +18,6 @@ public class DistOENodeTreeTest {
 
 	@Test
 	public void testConstructor01() {
-		OWLClass owlThing = OWLManager.getOWLDataFactory().getOWLThing();
 		DistOENodeTree tree = new DistOENodeTree();
 
 		assertNull(tree.root);
@@ -362,7 +359,7 @@ public class DistOENodeTreeTest {
 		tree.add(node4, node2);
 		tree.add(node5, node3);
 
-		DistOENodeTree subTree = tree.getSubTreeAndSetUsed(root);
+		DistOENodeTree subTree = tree.getSubTreeCopyAndSetUsed(root);
 
 		assertFalse(subTree == tree);
 		assertEquals(6, subTree.size());
@@ -425,7 +422,7 @@ public class DistOENodeTreeTest {
 		tree.add(node4, node2);
 		tree.add(node5, node3);
 
-		DistOENodeTree subTree = tree.getSubTreeAndSetUsed(node2);
+		DistOENodeTree subTree = tree.getSubTreeCopyAndSetUsed(node2);
 
 		assertFalse(subTree == tree);
 		assertEquals(4, subTree.size());
@@ -486,7 +483,7 @@ public class DistOENodeTreeTest {
 		tree.add(node4, node2);
 		tree.add(node5, node3);
 
-		DistOENodeTree subTree = tree.getSubTreeAndSetUsed(node4);
+		DistOENodeTree subTree = tree.getSubTreeCopyAndSetUsed(node4);
 
 		assertFalse(subTree == tree);
 		assertEquals(1, subTree.size());
