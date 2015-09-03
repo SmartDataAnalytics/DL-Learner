@@ -25,7 +25,9 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.SearchTreeNode;
+import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.utilities.datastructures.SearchTreeNode;
+import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -35,12 +37,12 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * Represents a node in the search tree. A node consists of
  * the following parts:
  * 
- * ... (see paper) ... 
+ * ... (see paper) ...
  * 
  * @author Jens Lehmann
  *
  */
-public class ExampleBasedNode implements SearchTreeNode {
+public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> implements SearchTreeNode, WeakSearchTreeNode {
 
 //	public static long exampleMemoryCounter = 0;
 	
@@ -76,7 +78,6 @@ public class ExampleBasedNode implements SearchTreeNode {
 	
 	// link to parent in search tree
 	private ExampleBasedNode parent = null;
-	private SortedSet<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
 	// apart from the child nodes, we also keep child concepts
 	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
 	
@@ -109,11 +110,10 @@ public class ExampleBasedNode implements SearchTreeNode {
 		isQualityEvaluated = true;
 	}
 
-    public boolean addChild(ExampleBasedNode child) {
-        // child.setParent(this);
-        child.parent = this;
+    @Override
+	public void addChild(ExampleBasedNode child) {
+    	super.addChild(child);
         childConcepts.add(child.concept);
-        return children.add(child);
     }
 	
 	public void setQualityEvaluationMethod(QualityEvaluationMethod qualityEvaluationMethod) {
@@ -128,7 +128,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 //		exampleMemoryCounter += coveredNegatives.size() * 4;
 	}
 
-	@Override		
+	@Override
 	public String toString() {
 //		System.out.println(concept);
 		String ret = concept.toString() + " [q:";
@@ -149,7 +149,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		} else {
 			return concept.toString();
 		}
-	}	
+	}
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null, null).toString();
@@ -157,11 +157,11 @@ public class ExampleBasedNode implements SearchTreeNode {
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, null).toString();
-	}	
+	}
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String,String> prefixes) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, prefixes).toString();
-	}	
+	}
 	
 	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI, Map<String,String> prefixes) {
 		StringBuilder treeString = new StringBuilder();
@@ -184,7 +184,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "q:tw";
 		else {
 			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "acc:" + df.format(accuracy) + "% ";			
+			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -207,7 +207,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "q:tw";
 		else {
 			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "<b>acc: " + df.format(accuracy) + "% </b>";			
+			ret += "<b>acc: " + df.format(accuracy) + "% </b>";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -221,7 +221,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		ret += " c:" + children.size() + "]";
 		
 		return ret + "</i></nobr></html>";
-	}	
+	}
 	
 	//TODO integrate this method with the one above
 	public String getStats(int nrOfPositiveExamples, int nrOfNegativeExamples) {
@@ -231,7 +231,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 			ret += "q:tw";
 		else {
 			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "acc:" + df.format(accuracy) + "% ";			
+			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -262,14 +262,10 @@ public class ExampleBasedNode implements SearchTreeNode {
 	
 	public Set<OWLIndividual> getCoveredPositives() {
 		return coveredPositives;
-	}	
+	}
 	
 	public Set<OWLIndividual> getCoveredNegatives() {
 		return coveredNegatives;
-	}
-	
-	public SortedSet<ExampleBasedNode> getChildren() {
-		return children;
 	}
 
 	public SortedSet<OWLClassExpression> getChildConcepts() {
@@ -278,15 +274,16 @@ public class ExampleBasedNode implements SearchTreeNode {
 
 	public OWLClassExpression getConcept() {
 		return concept;
-	}	
+	}
 	
+	@Override
 	public OWLClassExpression getExpression() {
 		return getConcept();
-	}	
+	}
 	
 	public QualityEvaluationMethod getQualityEvaluationMethod() {
 		return qualityEvaluationMethod;
-	}	
+	}
 	
 	public int getHorizontalExpansion() {
 		return horizontalExpansion;
@@ -297,6 +294,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	public boolean isRedundant() {
 		return isRedundant;
 	}
+	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
 	}
@@ -304,6 +302,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 	/**
 	 * @return the parent
 	 */
+	@Override
 	public ExampleBasedNode getParent() {
 		return parent;
 	}

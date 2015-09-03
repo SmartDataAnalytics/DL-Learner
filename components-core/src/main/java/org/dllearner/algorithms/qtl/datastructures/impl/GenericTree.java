@@ -22,14 +22,24 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
 		this.parent = parent;
 	}
     
+	/**
+	 * @return the parent node of this tree, or <code>null</code> if this
+	 * tree is the root node
+	 */
 	public V getParent() {
 		return parent;
 	}
 
+	/**
+	 * @return all direct children of this tree
+	 */
     public List<V> getChildren() {
         return this.children;
     }
     
+    /**
+     * @return all leaf nodes of this tree
+     */
     public List<V> getLeafs() {
     	List<V> leafs = new ArrayList<V>();
     	for(V child : children) {
@@ -42,10 +52,16 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
         return leafs;
     }
     
+    /**
+     * @return whether this is the root node
+     */
     public boolean isRoot() {
     	return parent == null;
     }
     
+    /**
+     * @return whether this is a leaf node
+     */
     public boolean isLeaf() {
     	return children.isEmpty();
     }

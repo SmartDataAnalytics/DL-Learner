@@ -163,6 +163,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				this.startClass = dataFactory.getOWLThing();
 			}
 		}
+		logger.info("Start class: " + startClass);
 
 		ELDescriptionTree top = new ELDescriptionTree(reasoner, startClass);
 		addDescriptionTree(top, null);
@@ -217,7 +218,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		// convert tree to standard class expression
 		OWLClassExpression classExpression = descriptionTree.transformToClassExpression();
 		
-		if(isDescriptionAllowed(classExpression)){
+		if(classExpression.equals(startClass) || isDescriptionAllowed(classExpression)){
 			// rewrite class expression
 			classExpression = getNiceDescription(classExpression);
 			
@@ -251,13 +252,15 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// the class expression has a chance to make it in the set if it has
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
-				if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
-					EvaluatedDescription<Score> ed = new EvaluatedDescription<Score>(classExpression, score);
-					bestEvaluatedDescriptions.add(ed);
-//					System.out.println("Add " + ed);
-				} else {
-//					EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(classExpression, score);
-//					System.out.println("reject " + ed);
+				if(classToDescribe != null && !classToDescribe.equals(classExpression)) {
+					if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
+						EvaluatedDescription<Score> ed = new EvaluatedDescription<Score>(classExpression, score);
+						bestEvaluatedDescriptions.add(ed);
+//						System.out.println("Add " + ed);
+					} else {
+//						EvaluatedDescriptionPosNeg ed = new EvaluatedDescriptionPosNeg(classExpression, score);
+//						System.out.println("reject " + ed);
+					}
 				}
 			}
 		}
@@ -333,6 +336,11 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				}
 			}	
 			return true;
+		} else {
+			// the class to learn must not appear on the outermost property level
+			if(OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
+				return false;
+			}
 		}
 		
 		return true;

@@ -17,5 +17,6 @@ public enum ReasonerImplementation {
 	CEL,
 	TROWL,
 	OWLLINK,
-	FACT
+	FACT,
+	STRUCTURAL
 }

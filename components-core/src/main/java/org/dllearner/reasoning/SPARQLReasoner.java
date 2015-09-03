@@ -35,6 +35,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
@@ -84,6 +85,7 @@ import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -211,6 +213,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 					logger.debug(sparql_debug, "file reasoning: " + ((owl_file.getReasoning() == null || owl_file.getReasoning().getReasonerFactory() == null) ? "(none)"
 							: owl_file.getReasoning().getReasonerFactory().getURI()));
 					ks = new LocalModelBasedSparqlEndpointKS(model, owl_file.getReasoning());
+				}
+				if (sources.size() > 1) {
+					throw new ComponentInitException("SPARQLReasoner only supports a single knowledge source");
 				}
 			}
 			if(ks.isRemote()){
@@ -1930,7 +1935,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(description.isAnonymous()){
 			throw new IllegalArgumentException("Only named classes are supported.");
 		} else if(description.isOWLThing()) {
-			return ImmutableSortedSet.of();
+			return Sets.newTreeSet();
 		} else if(description.isOWLNothing()) {
 			query = String.format(
 					SPARQLQueryUtils.SELECT_LEAF_CLASSES_OWL,
@@ -2399,7 +2404,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	public void setSynchronized() {
-		logger.warn("Method setSynchronized() not implemented yet!"); 
+		throw new NotImplementedException("Method setSynchronized() not implemented yet!");
 	}
 
 }

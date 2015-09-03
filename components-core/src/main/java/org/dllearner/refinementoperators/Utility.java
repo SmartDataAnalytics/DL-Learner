@@ -19,6 +19,7 @@
 
 package org.dllearner.refinementoperators;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -154,7 +155,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLObjectProperty> computeMgr(Set<OWLObjectProperty> applicableObjectProperties) {
-		return Sets.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties);
+		return new HashSet<OWLObjectProperty>(Sets.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties));
 	}
 	
 	/**
@@ -170,7 +171,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLDataProperty> computeMgrDP(Set<OWLDataProperty> applicableDatatypeProperties) {
-		return Sets.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties);
+		return new HashSet<OWLDataProperty>(Sets.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties));
 	}
 	
 	public Set<OWLClass> getClassCandidates(OWLClassExpression index, Set<OWLClass> existingClasses) {

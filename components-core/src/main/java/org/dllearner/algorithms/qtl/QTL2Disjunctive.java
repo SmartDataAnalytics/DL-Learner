@@ -421,19 +421,20 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			currentElement = todoList.poll();
 			currentTree = currentElement.getTree();
 			
-			logger.trace("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
+//			logger.info("Next tree: "  + currentElement.getTreeScore() + "\n" + solutionAsString(currentElement.getEvaluatedDescription()));
 			
-			// generate the LGG between the chosen tree and each uncovered positive example
+			// generate the LGG between the chosen tree and each false negative resp. uncovered positive example
 			Collection<RDFResourceTree> falseNegatives = currentElement.getFalseNegatives();
 			
 			if(falseNegatives.isEmpty()) { // if the current solution covers already all pos examples
-				bestPartialSolutionTree = currentElement;
-				addToSolutions(bestPartialSolutionTree);
+//				addToSolutions(bestPartialSolutionTree);
+//				bestPartialSolutionTree = currentElement;
 			}
 			
 			Iterator<RDFResourceTree> it = falseNegatives.iterator();
-			while (it.hasNext() && !isPartialSolutionTimeExpired() && !isTimeExpired()) {
+			while (it.hasNext() && !(useDisjunction && isPartialSolutionTimeExpired()) && !isTimeExpired()) {
 				RDFResourceTree uncoveredTree = it.next();
+//				logger.info("Uncovered tree: "  + uncoveredTree.getStringRepresentation());
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
 				Set<RDFResourceTree> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
@@ -452,6 +453,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				MonitorFactory.getTimeMonitor("lgg").start();
 				RDFResourceTree lgg = lggGenerator.getLGG(currentTree, uncoveredTree);
 				MonitorFactory.getTimeMonitor("lgg").stop();
+//				logger.info("LGG: "  + lgg.getStringRepresentation());
+				
+				// redundancy check
+				boolean redundant = isRedundant(lgg);
+				if(redundant) {
+					continue;
+				}
 				
 				// evaluate the LGG
 				Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
@@ -559,28 +567,39 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * Add tree to ToDo list if not already contained in that list or the solutions.
-	 * @param solution
+	 * @return TRUE if the query tree is already contained in the solutions or 
+	 * todo list, otherwise FALSE
 	 */
-	private void todo(EvaluatedRDFResourceTree solution){
-		// check if not already contained in ToDo list
+	private boolean isRedundant(RDFResourceTree tree) {
+		OWLClassExpression ce = QueryTreeUtils.toOWLClassExpression(tree);
+		
+		//check if not already contained in todo list
 		for (EvaluatedRDFResourceTree evTree : todoList) {
 			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
 //			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
 			boolean sameTree = evTree.getEvaluatedDescription().getDescription().toString()
-			.equals(solution.getEvaluatedDescription().getDescription().toString());
+			.equals(ce.toString());
 			if(sameTree){
 				logger.trace("Not added to TODO list: Already contained in.");
-				return;
+				return true;
 			}
 		}
+		
 		//check if not already contained in solutions
 		for (EvaluatedRDFResourceTree evTree : currentPartialSolutions) {
-			if(QueryTreeUtils.sameTrees(solution.getTree(), evTree.getTree())){
+			if(QueryTreeUtils.sameTrees(tree, evTree.getTree())){
 				logger.trace("Not added to partial solutions list: Already contained in.");
-				return;
+				return true;
 			}
 		}
+		return false;
+	}
+	
+	/**
+	 * Add tree to ToDo list if not already contained in that list or the solutions.
+	 * @param solution
+	 */
+	private void todo(EvaluatedRDFResourceTree solution){
 		logger.trace("Added to TODO list.");
 		todoList.add(solution);
 	}
@@ -849,15 +868,16 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private void reset(){
-		currentBestSolution = null;
-		partialSolutions = new ArrayList<EvaluatedRDFResourceTree>();
-		
 		stop = false;
 		isRunning = true;
 		
-		MonitorFactory.getTimeMonitor("lgg").reset();
+		currentBestSolution = null;
+		partialSolutions = new ArrayList<EvaluatedRDFResourceTree>();
 		
 		bestCurrentScore = minimumTreeScore;
+		
+		MonitorFactory.getTimeMonitor("lgg").reset();
+		nanoStartTime = System.nanoTime();
 	}
 	
 	/* (non-Javadoc)
@@ -1002,7 +1022,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean partialSolutionTerminationCriteriaSatisfied(){
-		return stop || todoList.isEmpty() || currentPosExampleTrees.isEmpty() || isPartialSolutionTimeExpired() || isTimeExpired();
+		return stop || todoList.isEmpty() || currentPosExampleTrees.isEmpty() || (useDisjunction && isPartialSolutionTimeExpired()) || isTimeExpired();
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){

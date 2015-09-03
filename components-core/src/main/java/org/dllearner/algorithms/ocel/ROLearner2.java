@@ -26,11 +26,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
@@ -43,6 +41,8 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
+import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
+import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -135,16 +135,13 @@ public class ROLearner2 {
 	private boolean stop = false;
 	private boolean isRunning = false;
 
-	// node from which algorithm has started
-	private ExampleBasedNode startNode;
-
 	// solution protocol
 	private List<ExampleBasedNode> solutions = new LinkedList<ExampleBasedNode>();
 
 	// used refinement operator and heuristic (exchangeable)
 	private RhoDRDown operator;
 	// private RefinementOperator operator;
-	// private ExampleBasedHeuristic heuristic;
+	private ExampleBasedHeuristic heuristic;
 
 	// specifies whether to compute and log benchmark information
 	private boolean computeBenchmarkInformation = false;
@@ -152,12 +149,10 @@ public class ROLearner2 {
 	// comparator used to maintain a stable ordering of nodes, i.e.
 	// an ordering which does not change during the run of the algorithm
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
-	// stable candidate set; it has no functional part in the algorithm,
-	// but is a list of the currently best concepts found;
-	// it is very important to use a concurrent set here as other threads will
-	// access it (usual iterating is likely to throw a ConcurrentModificationException)
-	private NavigableSet<ExampleBasedNode> candidatesStable = new ConcurrentSkipListSet<ExampleBasedNode>(
-			nodeComparatorStable);
+	// node from which algorithm has started
+	private SearchTreeNonWeak<ExampleBasedNode> searchTreeStable;
+	private SearchTreeNonWeakPartialSet<ExampleBasedNode> searchTree;
+
 	// evaluated descriptions
 //	private EvaluatedDescriptionSet evaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
@@ -166,13 +161,6 @@ public class ROLearner2 {
 
 	// utility variables
 	private DecimalFormat df = new DecimalFormat();
-
-	// candidates for refinement (used for directly accessing
-	// nodes in the search tree)
-	private TreeSet<ExampleBasedNode> candidates;
-
-	// new nodes found during a run of the algorithm
-	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
 
 	// all concepts which have been evaluated as being proper refinements
 	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<OWLClassExpression>();
@@ -263,8 +251,7 @@ public class ROLearner2 {
 		this.rs = rs;
 		this.operator = (RhoDRDown) operator;
 		this.startDescription = startDescription;
-		// initialise candidate set with heuristic as ordering
-		candidates = new TreeSet<ExampleBasedNode>(heuristic);
+		this.heuristic = heuristic;
 		this.noise = noise;
 		this.writeSearchTree = writeSearchTree;
 		this.replaceSearchTree = replaceSearchTree;
@@ -290,9 +277,8 @@ public class ROLearner2 {
 		runtime = System.currentTimeMillis();
 		
 		// reset values (algorithms may be started several times)
-		candidates.clear();
-		candidatesStable.clear();
-		newCandidates.clear();
+		searchTree = new SearchTreeNonWeakPartialSet<>(heuristic);
+		searchTreeStable = new SearchTreeNonWeak<>(nodeComparatorStable);
 		solutions.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
@@ -372,6 +358,7 @@ public class ROLearner2 {
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 
 		// start search with start class
+		ExampleBasedNode startNode;
 		if (startDescription == null) {
 			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
@@ -382,8 +369,8 @@ public class ROLearner2 {
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
 		}
 
-		candidates.add(startNode);
-		candidatesStable.add(startNode);
+		searchTree.addNode(null, startNode);
+		searchTreeStable.addNode(null, startNode);
 
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
@@ -427,37 +414,28 @@ public class ROLearner2 {
 				// Logger.getRootLogger().setLevel(Level.TRACE);
 			}
 
-			// System.out.println("next expanded: " +
-			// candidates.last().getShortDescription(nrOfPositiveExamples,
-			// nrOfNegativeExamples, baseURI));
-
 			// we record when a more accurate node is found and log it
-			if (bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last()
+			if (bestNodeStable.getCovPosMinusCovNeg() < searchTreeStable.best()
 					.getCovPosMinusCovNeg()) {
-				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
+				String acc = new DecimalFormat( ".00%" ).format((searchTreeStable.best().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
-				logger.info("more accurate ("+acc+") class expression found: " + OWLAPIRenderers.toManchesterOWLSyntax(candidatesStable.last().getConcept()));
+				logger.info("more accurate ("+acc+") class expression found: " + OWLAPIRenderers.toManchesterOWLSyntax(searchTreeStable.best().getConcept()));
 				if(logger.isTraceEnabled()){
 					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
 					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
 				}
 				printBestSolutions(5, false);
 				printStatistics(false);
-				bestNodeStable = candidatesStable.last();
+				bestNodeStable = searchTreeStable.best();
 			}
 
 			// chose best node according to heuristics
-			bestNode = candidates.last();
-			// extend best node
-			newCandidates.clear();
+			bestNode = searchTree.best();
 			// best node is removed temporarily, because extending it can
 			// change its evaluation
-			candidates.remove(bestNode);
+			searchTree.updatePrepare(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
-			candidates.add(bestNode);
-			// newCandidates has been filled during node expansion
-			candidates.addAll(newCandidates);
-			candidatesStable.addAll(newCandidates);
+			searchTree.updateDone(bestNode);
 
 			// System.out.println("done");
 
@@ -511,7 +489,7 @@ public class ROLearner2 {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
 
-		logger.debug("size of candidate set: " + candidates.size());
+		logger.debug("size of candidate set: " + searchTree.size());
 		boolean showOrderedSolutions = false;
 		printBestSolutions(20, showOrderedSolutions);
 
@@ -803,8 +781,6 @@ public class ROLearner2 {
 						solutions.add(newNode);
 					}
 
-					newCandidates.add(newNode);
-
 					// we need to make sure that all positives are covered
 					// before adding something to the overly general list
 					if ((newNode.getCoveredPositives().size() == nrOfPositiveExamples)
@@ -880,7 +856,7 @@ public class ROLearner2 {
 
 		if (!finalStats) {
 
-			ExampleBasedNode bestNode = candidatesStable.last();
+			ExampleBasedNode bestNode = searchTreeStable.best();
 			// double accuracy = 100 * ((bestNode.getCoveredPositives().size()
 			// + nrOfNegativeExamples -
 			// bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
@@ -888,7 +864,7 @@ public class ROLearner2 {
 			// String bestNodeString = "currently best node: " + bestNode + "
 			// accuracy: " + df.format(accuracy) + "%";
 			logger.debug("start node: "
-					+ startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
+					+ searchTreeStable.getRoot().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
 							baseURI, prefixes));
 			String bestNodeString = "currently best node: "
 					+ bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
@@ -900,12 +876,12 @@ public class ROLearner2 {
 			if (bestNode.getCoveredNegatives().size() <= 5)
 				logger.trace("covered negs: " + bestNode.getCoveredNegatives());
 			String expandedNodeString = "next expanded node: "
-					+ candidates.last().getShortDescription(nrOfPositiveExamples,
+					+ searchTree.best().getShortDescription(nrOfPositiveExamples,
 							nrOfNegativeExamples, baseURI, prefixes);
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);
 			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
-			logger.debug("size of candidate set: " + candidates.size());
+			logger.debug("size of candidate set: " + searchTree.size());
 			// System.out.println("properness max recursion depth: " +
 			// maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " +
@@ -1034,7 +1010,7 @@ public class ROLearner2 {
 		logger.debug("tree traversal start accuracy: " + currentAccuracy);
 		int i = 0;
 		// start from the most promising nodes
-		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode currNode : reverseView) {
 			// compute covered positives and negatives
 			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<OWLIndividual>(currentCoveredPos);
@@ -1106,7 +1082,7 @@ public class ROLearner2 {
 		int currScore = 0;
 		int i = 0;
 		ExampleBasedNode currNode = null;
-		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode node : reverseView) {
 			int score = 2 * node.getCoveredPositives().size()
 					+ (nrOfNegativeExamples - node.getCoveredNegatives().size());
@@ -1123,7 +1099,7 @@ public class ROLearner2 {
 	}
 
 	private void reduceCandidates() {
-		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
+		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
 		Set<ExampleBasedNode> promisingNodes = new HashSet<ExampleBasedNode>();
 		int i = 0;
 		while (it.hasNext() && promisingNodes.size() < candidatePostReductionSize) {
@@ -1152,11 +1128,13 @@ public class ROLearner2 {
 			}
 			i++;
 		}
-		candidates.retainAll(promisingNodes);
+		searchTree.retainAll(promisingNodes);
 		logger.debug("searched " + i + " nodes and picked the following promising descriptions:");
-		for (ExampleBasedNode node : promisingNodes)
-			logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-					baseURI, prefixes));
+		if (logger.isDebugEnabled()) {
+			for (ExampleBasedNode node : promisingNodes)
+				logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
+						baseURI, prefixes));
+		}
 	}
 
 	/*
@@ -1174,14 +1152,14 @@ public class ROLearner2 {
 	}
 
 	public OWLClassExpression getBestSolution() {
-		return candidatesStable.last().getConcept();
+		return searchTreeStable.best().getConcept();
 	}
 
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		List<OWLClassExpression> best = new LinkedList<OWLClassExpression>();
 		int i = 0;
 		int nrOfSolutions = 200;
-		for (ExampleBasedNode n : candidatesStable.descendingSet()) {
+		for (ExampleBasedNode n : searchTreeStable.descendingSet()) {
 			best.add(n.getConcept());
 			if (i == nrOfSolutions)
 				return best;
@@ -1191,7 +1169,7 @@ public class ROLearner2 {
 	}
 	
 	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
-		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
+		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
 		int count = 0;
 		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
 		while(it.hasNext()) {
@@ -1214,9 +1192,9 @@ public class ROLearner2 {
 		}
 		// if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if (nrOfSolutions == 0)
-			nrOfSolutions = candidatesStable.size();
+			nrOfSolutions = searchTreeStable.size();
 		int i = 0;
-		for (ExampleBasedNode n : candidatesStable.descendingSet()) {
+		for (ExampleBasedNode n : searchTreeStable.descendingSet()) {
 			if (n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples) < 1)
 				break;
 			logger.trace("best: "
@@ -1251,7 +1229,7 @@ public class ROLearner2 {
 	}
 
 	public ExampleBasedNode getStartNode() {
-		return startNode;
+		return searchTreeStable.getRoot();
 	}
 	
 	/**

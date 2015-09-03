@@ -1,5 +1,6 @@
 package org.dllearner.algorithms.qtl;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +16,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.util.Entailment;
+import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
 import org.dllearner.algorithms.qtl.util.StopURIsOWL;
 import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
@@ -175,6 +177,8 @@ public class QTLTest {
 		PredicateExistenceFilterDBpedia filter = new PredicateExistenceFilterDBpedia(null);
 		System.out.println(filter.filter(bestSolution).getStringRepresentation());
 		System.out.println(QueryTreeUtils.toSPARQLQueryString(filter.filter(bestSolution)));
+		
+		QueryTreeUtils.asGraph(bestSolution, null, PrefixCCPrefixMapping.Full, new File("/tmp/tree.graphml"));
 	}
 
 }

@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -31,6 +32,8 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
+	private Random rnd = new Random(12345);
+	
 	private int maxNrOfPosExamples = 20;
 	private int maxNrOfNegExamples = 20;
 	
@@ -38,13 +41,15 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
 	private AutomaticNegativeExampleFinderSPARQL2 negExamplesFinder;
 	
-	private Random rnd = new Random(12345);
+	private Set<OWLIndividual> posExamples;
+	private Set<OWLIndividual> negExamples;
 
-	public ClassBasedSampleGenerator(QueryExecutionFactory qef) {
-		super(qef);
+	public ClassBasedSampleGenerator(SparqlEndpointKS ks) {
+		super(ks);
 		
 		negExamplesFinder = new AutomaticNegativeExampleFinderSPARQL2(qef);
 	}
+	
 	
 	/**
 	 * Computes a sample fragment of the knowledge base by using instances of the
@@ -53,12 +58,13 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	 * @return a sample fragment
 	 */
 	public OWLOntology getSample(OWLClass cls) {
-		// get pos examples
-		Set<OWLIndividual> posExamples = computePosExamples(cls);
+		// get positive examples
+		posExamples = computePosExamples(cls);
 		
-		// get neg examples if enabled
-		Set<OWLIndividual> negExamples = computeNegExamples(cls, posExamples);
+		// get negative examples if enabled
+		negExamples = computeNegExamples(cls, posExamples);
 		
+		// compute sample based on positive (and negative) examples
 		return getSample(Sets.union(posExamples, negExamples));
 	}
 	
@@ -67,6 +73,22 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	 */
 	public void setUseNegExamples(boolean useNegExamples) {
 		this.useNegExamples = useNegExamples;
+	}
+	
+	/**
+	 * @return the positive examples, i.e. instances of the class, used to
+	 * generate the sample
+	 */
+	public Set<OWLIndividual> getPositiveExamples() {
+		return posExamples;
+	}
+	
+	/**
+	 * @return the negative examples, i.e. individuals that do not belong to the class, used to
+	 * generate the sample
+	 */
+	public Set<OWLIndividual> getNegativeExamples() {
+		return negExamples;
 	}
 	
 	private Set<OWLIndividual> computePosExamples(OWLClass cls) {

@@ -65,7 +65,6 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -100,6 +99,79 @@ public class DLLearnerWS {
 	private Random rand=new Random();
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
 
+	/**
+	 * Conversion between different data structures.
+	 * 
+	 * @author Jens Lehmann
+	 * @author Sebastian Hellmann
+	 *
+	 */
+	public static class Datastructures {
+
+		public static boolean strToBool(String str) {
+			if (str.equals("true"))
+				return true;
+			else if (str.equals("false"))
+				return false;
+			else
+				throw new Error("Cannot convert to boolean.");
+		}
+
+		/**
+		 * easy conversion
+		 * 
+		 * @param s
+		 */
+		public static String[] setToArray(Set<String> s) {
+			if(s==null)return null;
+			String[] ret=new String[s.size()];
+			int i=0;
+			for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
+				ret[i] = iter.next();
+				i++;
+
+			}
+			return ret;
+
+		}
+
+		public static String[] sortedSet2StringListIndividuals(Set<OWLIndividual> individuals){
+
+			String[] ret=new String[individuals.size()];
+			Iterator<OWLIndividual> i=individuals.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
+		public static String[] sortedSet2StringListRoles(Set<OWLObjectProperty> s){
+
+			String[] ret=new String[s.size()];
+			Iterator<OWLObjectProperty> i=s.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
+		public static String[] sortedSet2StringListConcepts(Set<OWLClass> s){
+
+			String[] ret=new String[s.size()];
+			Iterator<OWLClass> i=s.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
+	}
 //	/**
 //	 * Returns the DL-Learner version this web service is based on.
 //	 * @return DL-Learner-Build.

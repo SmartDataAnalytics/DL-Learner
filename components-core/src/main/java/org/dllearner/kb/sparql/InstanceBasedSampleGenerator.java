@@ -3,7 +3,7 @@
  */
 package org.dllearner.kb.sparql;
 
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.dllearner.kb.SparqlEndpointKS;
 
 /**
  * @author Lorenz Buehmann
@@ -11,7 +11,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
  */
 public class InstanceBasedSampleGenerator extends AbstractSampleGenerator{
 
-	public InstanceBasedSampleGenerator(QueryExecutionFactory qef) {
-		super(qef);
+	public InstanceBasedSampleGenerator(SparqlEndpointKS ks) {
+		super(ks);
 	}
 }

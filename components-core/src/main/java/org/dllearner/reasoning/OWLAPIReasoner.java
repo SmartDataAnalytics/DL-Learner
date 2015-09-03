@@ -46,6 +46,7 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
+import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -92,6 +93,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasoner;
+import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.PrefixOWLOntologyFormat;
 
@@ -341,6 +344,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			break;
 		case HERMIT:
 			reasonerFactory = new ReasonerFactory();
+			Configuration c = new Configuration();
+			c.ignoreUnsupportedDatatypes = true;
+//			c.throwInconsistentOntologyException = false;
+			conf = c;
 			break;
 		case TROWL:
 			reasonerFactory = new RELReasonerFactory();
@@ -357,6 +364,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			} catch (MalformedURLException e) {
 				logger.error("Illegal URL <" + url + "> for OWL Link HTTP reasoner", e);
 			}
+		case STRUCTURAL : 
+			reasonerFactory = new StructuralReasonerFactory();
+			break;
 		default:
 			reasonerFactory = PelletReasonerFactory.getInstance();
 		}

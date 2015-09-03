@@ -28,13 +28,9 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
 import com.google.common.base.Charsets;
-import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -168,13 +164,15 @@ public class DBpediaLearningProblemsGenerator {
 //			e.printStackTrace();
 //		}
 		
+		// write queries to disk
 		String queries = "";
 		for (Path path : paths) {
 			System.out.println(path);
 			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 		}
+		File file = new File(benchmarkDirectory, "queries_" + nrOfSPARQLQueries + "_" + minDepth + "-" + maxDepth + "_" + minNrOfExamples+ ".txt");
 		try {
-			Files.write(queries, new File(benchmarkDirectory, "queries.txt"), Charsets.UTF_8);
+			Files.write(queries, file, Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

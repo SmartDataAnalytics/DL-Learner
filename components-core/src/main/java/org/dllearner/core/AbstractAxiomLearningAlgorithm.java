@@ -724,10 +724,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		values.addAll(newValues);
 	}
 	
-	private void adaptChunkCount(){
-		
-	}
-	
 	@Autowired
 	public void setKs(SparqlEndpointKS ks) {
 		this.ks = ks;

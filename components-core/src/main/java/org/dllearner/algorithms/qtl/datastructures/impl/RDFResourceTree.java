@@ -179,10 +179,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		child2Edge.remove(child);
 	}
 	
+	@Override
 	public List<RDFResourceTree> getChildren() {
 		return super.getChildren();
 	}
 	
+	/**
+	 * @param edge
+	 * @return all children for the specified edge, or <code>null</code> if
+	 * there is no child for the edge
+	 */
 	public List<RDFResourceTree> getChildren(Node edge) {
 		return edge2Children.get(edge);
 	}
@@ -192,16 +198,14 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
-	 * Returns all outgoing different edges.
-	 * @return
+	 * @return all distinct outgoing edges.
 	 */
 	public SortedSet<Node> getEdges() {
 		return edge2Children.navigableKeySet();
 	}
 	
 	/**
-	 * Returns all outgoing different edges.
-	 * @return
+	 * @return all distinct outgoing edges to children of the given node type
 	 */
 	public SortedSet<Node> getEdges(NodeType nodeType) {
 		SortedSet<Node> edges = new TreeSet<Node>(new NodeComparator());
