@@ -97,11 +97,12 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("CloneDoesntCallSuperClone")
 @ComponentAnn(name="CELOE", shortName="celoe", version=1.0, description="CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.")
 public class CELOE extends AbstractCELA implements Cloneable{
 
-	private static Logger logger = LoggerFactory.getLogger(CELOE.class);
-	private static Marker sparql_debug = MarkerFactory.getMarker("SD");
+	private static final Logger logger = LoggerFactory.getLogger(CELOE.class);
+	private static final Marker sparql_debug = MarkerFactory.getMarker("SD");
 	
 	private boolean isRunning = false;
 	private boolean stop = false;
@@ -740,14 +741,10 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 	// (it can still be at higher depth, e.g. if intersections are nested in unions)
 	private boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
-		if(cls.isOWLThing()) {
-			return false;
-		}
-		return (description instanceof OWLNaryBooleanClassExpression &&
-				((OWLNaryBooleanClassExpression)description).getOperands().contains(cls));
+		return !cls.isOWLThing() && (description instanceof OWLNaryBooleanClassExpression && ((OWLNaryBooleanClassExpression) description).getOperands().contains(cls));
 //        return description.containsConjunct(cls) ||
 //                (description instanceof OWLObjectUnionOf && ((OWLObjectUnionOf) description).getOperands().contains(cls));
-    }
+	}
 	
 	// determine whether a named class occurs on the outermost level, i.e. property depth 0
 		// (it can still be at higher depth, e.g. if intersections are nested in unions)
