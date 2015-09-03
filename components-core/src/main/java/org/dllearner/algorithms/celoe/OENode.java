@@ -49,7 +49,7 @@ public class OENode implements SearchTreeNode, Serializable {
 
     private static final long serialVersionUID = 6517812961459157908L;
 
-    protected OWLClassExpression description;
+    protected final OWLClassExpression description;
 
 	protected double accuracy;
 
