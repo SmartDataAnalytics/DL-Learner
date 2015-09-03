@@ -142,8 +142,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     private OWLClassExpressionMinimizer minimizer;
 
     private OWLReasoner fallbackReasoner;
-    
-    
+
+
  // default reasoner is Pellet
     @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
@@ -245,8 +245,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 
         if (!inconsistentOntology) {
             reasoner.precomputeInferences(
-            		InferenceType.CLASS_HIERARCHY, 
-            		InferenceType.CLASS_ASSERTIONS, 
+            		InferenceType.CLASS_HIERARCHY,
+            		InferenceType.CLASS_ASSERTIONS,
             		InferenceType.OBJECT_PROPERTY_HIERARCHY,
             		InferenceType.DATA_PROPERTY_HIERARCHY,
             		InferenceType.OBJECT_PROPERTY_ASSERTIONS,
@@ -279,7 +279,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		 minimizer = new OWLClassExpressionMinimizer(df, this);
 		 logger.info("Loaded reasoner: " + reasoner.getReasonerName() + " (" + reasoner.getClass().getName() + ")");
     }
-    
+
     private void initDatatypes() {
     	Set<OWLDataProperty> numericDataProperties = new HashSet<OWLDataProperty>();
         for (OWLDataProperty dataProperty : datatypeProperties) {
@@ -289,12 +289,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 				OWLDataRange range = it.next();
 				if (range.isDatatype()) {
 					OWLDatatype datatype = range.asOWLDatatype();
-					
+
 					if(datatype.isBuiltIn()) { // OWL 2 DL compliant datatypes
 						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
 
 						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
-						
+
 						if(OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
 							numericDataProperties.add(dataProperty);
 						}
@@ -307,9 +307,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 						dataproperty2datatype.put(dataProperty, XSD.STRING);
 					}
 				} else { // TODO handle complex data property ranges
-					
+
 				}
-			} 
+			}
         }
     }
 
@@ -1191,7 +1191,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	@Override
 	public Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
-		
+
 		for (OWLDatatype dt:OWLAPIUtils.floatDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
@@ -1202,7 +1202,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	@Override
 	public Set<OWLDataProperty> getIntDatatypePropertiesImpl() {
 		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
-		
+
 		for (OWLDatatype dt:OWLAPIUtils.intDatatypes) {
 			properties.addAll(datatype2Properties.get(dt));
 		}
@@ -1373,6 +1373,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		this.reasonerImplementation = reasonerImplementation;
 	}
 
+	public ReasonerImplementation getReasonerImplementation() {
+		return reasonerImplementation;
+	}
+
     public String getOwlLinkURL() {
         return owlLinkURL;
     }
@@ -1394,7 +1398,8 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	public void setUseFallbackReasoner(boolean useFallbackReasoner) {
 		this.useFallbackReasoner = useFallbackReasoner;
 	}
-	
+
+	@Override
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		return dataproperty2datatype.get(dp);
 	}
