@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,11 +17,9 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,7 +30,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -97,8 +93,6 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
-import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Triple;
@@ -113,15 +107,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.expr.E_Equals;
 import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
-import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
 import com.hp.hpl.jena.sparql.expr.E_NotEquals;
 import com.hp.hpl.jena.sparql.expr.E_NotExists;
 import com.hp.hpl.jena.sparql.expr.E_NumAbs;
-import com.hp.hpl.jena.sparql.expr.E_Str;
 import com.hp.hpl.jena.sparql.expr.E_Subtract;
 import com.hp.hpl.jena.sparql.expr.Expr;
 import com.hp.hpl.jena.sparql.expr.ExprAggregator;
@@ -131,18 +121,12 @@ import com.hp.hpl.jena.sparql.expr.aggregate.AggCountVarDistinct;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.sparql.syntax.ElementWalker;
 import com.hp.hpl.jena.sparql.util.TripleComparator;
 import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.MonitorFactory;
 
-import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -1018,7 +1002,7 @@ public class QTLEvaluation {
 		if(file.exists()) {
 			negExamples = Files.readLines(file, Charsets.UTF_8);
 		} else {
-			negExamples = new NegativeExampleSPARQLQueryGenerator().getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
+			negExamples = new NegativeExampleSPARQLQueryGenerator(qef).getNegativeExamples(sparqlQuery, maxNrOfNegExamples);
 			Files.write(Joiner.on("\n").join(negExamples), file, Charsets.UTF_8);
 		}
 		Collections.sort(negExamples);
@@ -1514,7 +1498,7 @@ public class QTLEvaluation {
 			q.setDistinct(true);
 			q.setQueryPattern(el);
 			
-			q = rewriteForVirtuosoDateLiteralBug(q);
+			q = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q);
 //			q = rewriteForVirtuosoFloatingPointIssue(q);
 			logger.trace(q);
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
@@ -1700,120 +1684,7 @@ public class QTLEvaluation {
 		return q;
 	}
 	
-	private Query rewriteForVirtuosoDateLiteralBug(Query query){
-		final Query copy = QueryFactory.create(query);
-		final Element queryPattern = copy.getQueryPattern();
-		final List<ElementFilter> filters = new ArrayList<>();
-		ElementWalker.walk(queryPattern, new ElementVisitorBase() {
-			
-			int cnt = 0;
-			
-			@Override
-			public void visit(ElementGroup el) {
-				super.visit(el);
-			}
-			
-			@Override
-			public void visit(ElementTriplesBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
-					@Override
-					public int compare(Triple o1, Triple o2) {
-						return ComparisonChain.start().compare(o1.getSubject().toString(), o2.getSubject().toString())
-								.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-								.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-					}
-				});
 
-				Iterator<Triple> iterator = el.patternElts();
-				while (iterator.hasNext()) {
-					Triple tp = iterator.next();
-
-					if (tp.getObject().isLiteral()) {
-						RDFDatatype dt = tp.getObject().getLiteralDatatype();
-						if (dt != null && dt instanceof XSDAbstractDateTimeType) {
-							iterator.remove();
-							// new triple pattern <s p ?var> 
-							Node objectVar = NodeFactory.createVariable("date" + cnt++);
-							newTriplePatterns.add(Triple.create(tp.getSubject(), tp.getPredicate(), objectVar));
-
-							String lit = tp.getObject().getLiteralLexicalForm();
-							Object literalValue = tp.getObject().getLiteralValue();
-							Expr filterExpr = new E_Equals(new E_Str(new ExprVar(objectVar)), NodeValue.makeString(lit));
-							if (literalValue instanceof XSDDateTime) {
-								Calendar calendar = ((XSDDateTime) literalValue).asCalendar();
-								Date date = new Date(calendar.getTimeInMillis() + TimeUnit.HOURS.toMillis(2));
-								SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-								String inActiveDate = format1.format(date);
-								filterExpr = new E_LogicalOr(filterExpr, new E_Equals(
-										new E_Str(new ExprVar(objectVar)), NodeValue.makeString(inActiveDate)));
-							}
-							ElementFilter filter = new ElementFilter(filterExpr);
-							filters.add(filter);
-						}
-					}
-				}
-				
-				for (Triple tp : newTriplePatterns) {
-					el.addTriple(tp);
-				}
-				
-				for (ElementFilter filter : filters) {
-					((ElementGroup)queryPattern).addElementFilter(filter);
-				}
-			}
-			
-			@Override
-			public void visit(ElementPathBlock el) {
-				Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
-					@Override
-					public int compare(Triple o1, Triple o2) {
-						return ComparisonChain.start().compare(o1.getSubject().toString(), o2.getSubject().toString())
-								.compare(o1.getPredicate().toString(), o2.getPredicate().toString())
-								.compare(o1.getObject().toString(), o2.getObject().toString()).result();
-					}
-				});
-
-				Iterator<TriplePath> iterator = el.patternElts();
-				while (iterator.hasNext()) {
-					Triple tp = iterator.next().asTriple();
-
-					if (tp.getObject().isLiteral()) {
-						RDFDatatype dt = tp.getObject().getLiteralDatatype();
-						if (dt != null && dt instanceof XSDAbstractDateTimeType) {
-							iterator.remove();
-							// new triple pattern <s p ?var> 
-							Node objectVar = NodeFactory.createVariable("date" + cnt++);
-							newTriplePatterns.add(Triple.create(tp.getSubject(), tp.getPredicate(), objectVar));
-
-							String lit = tp.getObject().getLiteralLexicalForm();
-							Object literalValue = tp.getObject().getLiteralValue();
-							Expr filterExpr = new E_Equals(new E_Str(new ExprVar(objectVar)), NodeValue.makeString(lit));
-							if (literalValue instanceof XSDDateTime) {
-								Calendar calendar = ((XSDDateTime) literalValue).asCalendar();
-								Date date = new Date(calendar.getTimeInMillis() + TimeUnit.HOURS.toMillis(2));
-								SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
-								String inActiveDate = format1.format(date);
-								filterExpr = new E_LogicalOr(filterExpr, new E_Equals(
-										new E_Str(new ExprVar(objectVar)), NodeValue.makeString(inActiveDate)));
-							}
-							ElementFilter filter = new ElementFilter(filterExpr);
-							filters.add(filter);
-						}
-
-					}
-				}
-				
-				for (Triple tp : newTriplePatterns) {
-					el.addTriple(tp);
-				}
-				
-			}
-		});
-		for (ElementFilter filter : filters) {
-			((ElementGroup)queryPattern).addElementFilter(filter);
-		}
-		return copy;
-	}
 	
 	private Score computeScore(String referenceSparqlQuery, RDFResourceTree tree, double noise) throws Exception{
 		// apply some filters
@@ -1899,7 +1770,7 @@ public class QTLEvaluation {
 		q2Count.getProject().add(cntVar, new ExprAggregator(s.asVar(), new AggCountVarDistinct(s)));
 		q2Count.setQueryPattern(q2.getQueryPattern());
 		logger.info("Learned query:\n" + q2Count);
-		q2Count = rewriteForVirtuosoDateLiteralBug(q2Count);
+		q2Count = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q2Count);
 		qe = qef.createQueryExecution(q2Count);
 		rs = qe.execSelect();
 		qs = rs.next();
@@ -1923,7 +1794,7 @@ public class QTLEvaluation {
 			}
 			q12.setQueryPattern(whereClause);
 			logger.info("Combined query:\n" + q12);
-			q12 = rewriteForVirtuosoDateLiteralBug(q12);
+			q12 = VirtuosoUtils.rewriteForVirtuosoDateLiteralBug(q12);
 			qe = qef.createQueryExecution(q12);
 			rs = qe.execSelect();
 			qs = rs.next();
@@ -2107,232 +1978,10 @@ public class QTLEvaluation {
 		
 	}
 	
-	class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
-		
-		private boolean inOptionalClause;
-		private Stack<ElementGroup> parentGroup = new Stack<>();
-		private QueryUtils triplePatternExtractor = new QueryUtils();
-		private Triple triple;
-		Random randomGen = new Random(123);
-		
-		public List<String> getNegativeExamples(String targetQuery, int size) {
-			logger.trace("Generating neg. examples...");
-			List<String> negExamples = new ArrayList<String>();
-			
-			// remove triple patterns as long as enough neg examples have been found
-			Query query = QueryFactory.create(targetQuery);
-			
-			List<Query> queries = generateQueries(query);
-			
-			while(negExamples.size() < size && !queries.isEmpty()) {
-				
-				Query q = queries.remove(0);
-				q.setLimit(size);
-				logger.trace("Trying query\n" + q);
-				QueryExecution qe = qef.createQueryExecution(q);
-				ResultSet rs = qe.execSelect();
-				while(rs.hasNext()) {
-					QuerySolution qs = rs.next();
-					String example = qs.getResource(query.getProjectVars().get(0).getName()).getURI();
-					negExamples.add(example);
-				}
-				qe.close();
-			}
-			logger.trace("...finished generating neg. examples.");
-			return negExamples;
-		}
-		
-		private ElementFilter getNotExistsFilter(Element el){
-			return new ElementFilter(new E_NotExists(el));
-		}
-		
-		private List<Query> generateQueries(Query query) {
-			List<Query> queries = new ArrayList<Query>();
-			
-			// extract paths
-			Node source = query.getProjectVars().get(0).asNode();
-			List<List<Triple>> paths = getPaths(new ArrayList<Triple>(), query, source);
-			
-			int index = 0;
-			for (List<Triple> path : paths) {
-				if(path.size() == 1 && path.get(0).getPredicate().equals(RDF.type.asNode())) {
-					index = paths.indexOf(path);
-				}
-			}
-			List<Triple> path1 = paths.get(index == 0 ? 1 : 0);
-			List<Triple> typePath = paths.get(index);
-			
-			// get last tp first
-			if(path1.size() == 2) {
-				// remove last edge
-				ElementGroup eg = new ElementGroup();
-				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-//				existsBlock.addTriple(path1.get(0));
-				existsBlock.addTriple(typePath.get(0));
-				eg.addElement(existsBlock);
-				
-				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
-				notExistsBlock.addTriple(path1.get(1));
-				ElementGroup notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				Query newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
-				
-				//remove both edges
-				eg = new ElementGroup();
-				existsBlock = new ElementTriplesBlock();
-				existsBlock.addTriple(typePath.get(0));
-				eg.addElement(existsBlock);
-				
-				notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
-				notExistsBlock.addTriple(path1.get(1));
-				notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
-				
-			} else {
-				//remove both edges
-				ElementGroup eg = new ElementGroup();
-				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-				existsBlock.addTriple(typePath.get(0));
-				eg.addElement(existsBlock);
-				
-				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
-				ElementGroup notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				Query newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
-			}
-			
-			return queries;
-		}
-		
-		private List<List<Triple>> getPaths(List<Triple> path, Query query, Node source) {
-			List<List<Triple>> paths = new ArrayList<List<Triple>>();
-			Set<Triple> outgoingTriplePatterns = QueryUtils.getOutgoingTriplePatterns(query, source);
-			for (Triple tp : outgoingTriplePatterns) {
-				List<Triple> newPath = new ArrayList<Triple>(path);
-				newPath.add(tp);
-				if(tp.getObject().isVariable()) {
-					paths.addAll(getPaths(newPath, query, tp.getObject()));
-				} else {
-					paths.add(newPath);
-				}
-			}
-			return paths;
-		}
 
-		/**
-		 * Returns a modified SPARQL query such that it is similar but different by choosing one of the triple patterns and use
-		 * the negation of its existence.
-		 * @param query
-		 */
-		public Query generateSPARQLQuery(Query query){
-			//choose a random triple for the modification
-			List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(query));
-			Collections.shuffle(triplePatterns, randomGen);
-			triple = triplePatterns.get(0);
-			
-			Query modifiedQuery = query.cloneQuery();
-			modifiedQuery.getQueryPattern().visit(this);
-			logger.info("Negative examples query:\n" + modifiedQuery.toString());
-			return modifiedQuery;
-		}
-		
-		@Override
-		public void visit(ElementGroup el) {
-			parentGroup.push(el);
-			for (Iterator<Element> iterator = new ArrayList<Element>(el.getElements()).iterator(); iterator.hasNext();) {
-				Element e = iterator.next();
-				e.visit(this);
-			}
-			parentGroup.pop();
-		}
-
-		@Override
-		public void visit(ElementOptional el) {
-			inOptionalClause = true;
-			el.getOptionalElement().visit(this);
-			inOptionalClause = false;
-		}
-
-		@Override
-		public void visit(ElementTriplesBlock el) {
-			for (Iterator<Triple> iterator = el.patternElts(); iterator.hasNext();) {
-				Triple t = iterator.next();
-				if(inOptionalClause){
-					
-				} else {
-					if(t.equals(triple)){
-						ElementGroup parent = parentGroup.peek();
-						ElementTriplesBlock elementTriplesBlock = new ElementTriplesBlock();
-						elementTriplesBlock.addTriple(t);
-						ElementGroup eg = new ElementGroup();
-						eg.addElement(elementTriplesBlock);
-						parent.addElement(new ElementFilter(new E_NotExists(eg)));
-						iterator.remove();
-					}
-				}
-			}
-		}
-
-		@Override
-		public void visit(ElementPathBlock el) {
-			for (Iterator<TriplePath> iterator = el.patternElts(); iterator.hasNext();) {
-				TriplePath tp = iterator.next();
-				if(inOptionalClause){
-					
-				} else {
-					if(tp.asTriple().equals(triple)){
-						ElementGroup parent = parentGroup.peek();
-						ElementPathBlock elementTriplesBlock = new ElementPathBlock();
-						elementTriplesBlock.addTriple(tp);
-						ElementGroup eg = new ElementGroup();
-						eg.addElement(elementTriplesBlock);
-						parent.addElement(new ElementFilter(new E_NotExists(eg)));
-						iterator.remove();
-					}
-				}
-			}
-		}
-
-		@Override
-		public void visit(ElementUnion el) {
-			for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-				Element e = iterator.next();
-				e.visit(this);
-			}
-		}
-		
-		@Override
-		public void visit(ElementFilter el) {
-		}
-
-	}
 	
 	class ExampleCandidates {
+
 		List<String> correctPosExampleCandidates;
 		List<String> falsePosExampleCandidates;
 		List<String> correctNegExampleCandidates;
@@ -2423,24 +2072,4 @@ public class QTLEvaluation {
 			return new ExamplesWrapper(correctPosExamples, falsePosExamples, negExamples, posExamplesMapping, negExamplesMapping);
 		}
 	}
-	
-	class ExamplesWrapper {
-		List<String> correctPosExamples;
-		List<String> falsePosExamples;
-		List<String> correctNegExamples;
-		SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping;
-		SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping;
-		
-		public ExamplesWrapper(List<String> correctPosExamples,
-				List<String> falsePosExamples, List<String> correctNegExamples,
-				SortedMap<OWLIndividual, RDFResourceTree> posExamplesMapping,
-				SortedMap<OWLIndividual, RDFResourceTree> negExamplesMapping) {
-			this.correctPosExamples = correctPosExamples;
-			this.falsePosExamples = falsePosExamples;
-			this.correctNegExamples = correctNegExamples;
-			this.posExamplesMapping = posExamplesMapping;
-			this.negExamplesMapping = negExamplesMapping;
-		}
-	}
-
 }
