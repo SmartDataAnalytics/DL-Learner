@@ -34,23 +34,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
  */
 public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
-	static SparqlEndpoint endpoint;
-	
-	static {
-		try {
-			endpoint = SparqlEndpoint.getEndpointDBpedia();
-			endpoint = new SparqlEndpoint(
-//			new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
-					"http://dbpedia.org");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	
 	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
-		this.endpoint = endpoint;
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
@@ -85,6 +69,7 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
 		return Lists.<Filter<Statement>>newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),

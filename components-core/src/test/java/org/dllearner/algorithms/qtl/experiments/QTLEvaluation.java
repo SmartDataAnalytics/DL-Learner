@@ -507,7 +507,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-							if(!sparqlQuery.contains("Cricketer"))continue;
+//							if(!sparqlQuery.contains("Cricketer"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -516,8 +516,6 @@ public class QTLEvaluation {
 							
 									logger.info("##############################################################");
 									logger.info("Processing query\n" + sparqlQuery);
-									// some queries can return less examples
-									int possibleNrOfExamples = Math.min(getResultCount(sparqlQuery), nrOfExamples);
 									
 									try {
 										ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
@@ -617,7 +615,7 @@ public class QTLEvaluation {
 						}
 						
 						tp.shutdown();
-						tp.awaitTermination(1, TimeUnit.HOURS);
+						tp.awaitTermination(12, TimeUnit.HOURS);
 					
 						Logger.getRootLogger().removeAppender(appender);
 						
@@ -701,7 +699,7 @@ public class QTLEvaluation {
 				try {
 					Files.write(content, examplesVsNoise, Charsets.UTF_8);
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error(e);
 				}
 			}
 		}
