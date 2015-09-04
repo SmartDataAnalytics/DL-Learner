@@ -13,6 +13,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
@@ -200,10 +203,8 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertOverallEval;
 	private PreparedStatement psInsertDetailEval;
 
-	private final int nrOfProcessedQueries = 30;
-	
 	// max. time for each QTL run
-	private final int maxExecutionTimeInSeconds = 30;
+	private int maxExecutionTimeInSeconds = 30;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -247,11 +248,12 @@ public class QTLEvaluation {
 	private File cacheDirectory;
 
 	
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override) throws ComponentInitException {
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime) throws ComponentInitException {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
 		this.override = override;
+		this.maxExecutionTimeInSeconds = maxQTLRuntime;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
@@ -349,46 +351,51 @@ public class QTLEvaluation {
 					+ "avg_predacc_best_returned, avg_mathcorr_best_returned, "
 					+ "avg_position_best, avg_fscore_best, avg_precision_best, avg_recall_best, avg_predacc_best, avg_mathcorr_best,"
 					+ "avg_fscore_baseline, avg_precision_baseline, avg_recall_baseline, avg_predacc_baseline, avg_mathcorr_baseline"
-					+ ")" + 
-					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			if(override) {
+				sql += " ON DUPLICATE KEY UPDATE ";
+				sql += "avg_fscore_best_returned = VALUES(avg_fscore_best_returned),";
+				sql += "avg_precision_best_returned = VALUES(avg_precision_best_returned),";
+				sql += "avg_recall_best_returned = VALUES(avg_recall_best_returned),";
+				sql += "avg_predacc_best_returned = VALUES(avg_predacc_best_returned),";
+				sql += "avg_mathcorr_best_returned = VALUES(avg_mathcorr_best_returned),";
+				sql += "avg_position_best = VALUES(avg_position_best),";
+				sql += "avg_fscore_best = VALUES(avg_fscore_best),";
+				sql += "avg_precision_best = VALUES(avg_precision_best),";
+				sql += "avg_recall_best = VALUES(avg_recall_best),";
+				sql += "avg_predacc_best = VALUES(avg_predacc_best),";
+				sql += "avg_mathcorr_best = VALUES(avg_mathcorr_best),";
+				sql += "avg_fscore_baseline = VALUES(avg_fscore_baseline),";
+				sql += "avg_precision_baseline = VALUES(avg_precision_baseline),";
+				sql += "avg_recall_baseline = VALUES(avg_recall_baseline),";
+				sql += "avg_predacc_baseline = VALUES(avg_predacc_baseline),";
+				sql += "avg_mathcorr_baseline = VALUES(avg_mathcorr_baseline)";
+			}
 			psInsertOverallEval = conn.prepareStatement(sql);
 			
 			sql = "INSERT INTO eval_detailed ("
 					+ "target_query, nrOfExamples, noise, heuristic, heuristic_measure, "
 					+ "query_top, fscore_top, precision_top, recall_top,"
 					+ "best_query, best_rank, best_fscore, best_precision, best_recall, "
-					+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
-					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			psInsertDetailEval = conn.prepareStatement(sql);
-
-			// remove primary keys
-			if (override) {
-				try {
-					sql = "ALTER TABLE eval_overall DROP PRIMARY KEY;";
-					stmt.execute(sql);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				try {
-					sql = "ALTER TABLE eval_detailed DROP PRIMARY KEY;";
-					stmt.execute(sql);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					sql = "ALTER TABLE eval_overall ADD PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise);";
-					stmt.execute(sql);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				try {
-					sql = "ALTER TABLE eval_detailed ADD PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure);";
-					stmt.execute(sql);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall"
+					+ ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			if(override) {
+				sql += " ON DUPLICATE KEY UPDATE ";
+				sql += "query_top = VALUES(query_top),";
+				sql += "fscore_top = VALUES(fscore_top),";
+				sql += "precision_top = VALUES(precision_top),";
+				sql += "recall_top = VALUES(recall_top),";
+				sql += "best_query = VALUES(best_query),";
+				sql += "best_rank = VALUES(best_rank),";
+				sql += "best_fscore = VALUES(best_fscore),";
+				sql += "best_precision = VALUES(best_precision),";
+				sql += "best_recall = VALUES(best_recall),";
+				sql += "baseline_query = VALUES(baseline_query),";
+				sql += "baseline_fscore = VALUES(baseline_fscore),";
+				sql += "baseline_precision = VALUES(baseline_precision),";
+				sql += "baseline_recall = VALUES(baseline_recall)";
 			}
+			psInsertDetailEval = conn.prepareStatement(sql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -434,6 +441,11 @@ public class QTLEvaluation {
 			query2Examples.put(query, generateExamples(query));
 		}
 		
+		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * queries.size();
+		logger.info("#QTL runs: " + totalNrOfQTLRuns);
+
+		final AtomicInteger currentNrOfFinishedRuns = new AtomicInteger(0);
+
 		// loop over heuristics
 		for(final QueryTreeHeuristic heuristic : heuristics) {
 			final String heuristicName = heuristic.getClass().getAnnotation(ComponentAnn.class).shortName();
@@ -608,6 +620,12 @@ public class QTLEvaluation {
 										failed.set(true);
 										logger.error("Error occured.", e);
 //										System.exit(0);
+									} finally {
+										int cnt = currentNrOfFinishedRuns.incrementAndGet();
+										logger.info("***********Evaluation Progress:"
+												+ NumberFormat.getPercentInstance().format((double)cnt / totalNrOfQTLRuns)
+												+ "(" + cnt + "/" + totalNrOfQTLRuns + ")"
+												+ "***********");
 									}
 								}
 						});
@@ -1980,7 +1998,7 @@ public class QTLEvaluation {
 			psInsertDetailEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
-			logger.error("Writing to DB failed.", e);
+			logger.error("Writing to DB failed with " + psInsertDetailEval, e);
 		}
 		
 	}
@@ -2021,7 +2039,7 @@ public class QTLEvaluation {
 			psInsertOverallEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
 		} catch (Exception e) {
-			logger.error("Writing to DB failed.", e);
+			logger.error("Writing to DB failed with " + psInsertOverallEval, e);
 		}
 	}
 	
@@ -2043,6 +2061,7 @@ public class QTLEvaluation {
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
+		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
 
 		
 
@@ -2057,8 +2076,9 @@ public class QTLEvaluation {
 		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraph);
 		int maxNrOfQueries = options.valueOf(maxNrOfQueriesSpec);
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
+		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
 
-		new QTLEvaluation(new DBpediaEvaluationDataset(endpoint), benchmarkDirectory, write2DB, override).run(queriesFile, maxNrOfQueries, maxTreeDepth);
+		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime).run(queriesFile, maxNrOfQueries, maxTreeDepth);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
@@ -2340,45 +2360,49 @@ public class QTLEvaluation {
 			Collections.shuffle(negExamples, rnd);
 			negExamples = new ArrayList<>(negExamples.subList(0, Math.min(negExamples.size(), nrOfNegExamples)));
 			
-			// randomly replace some of the pos. examples by false examples
-			// 2 options
-			// 1: iterate over pos. examples and if random number is below t_n, replace the example
-			// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
-			List<String> falsePosExampleCandidates = new ArrayList<>(this.falsePosExampleCandidates);
-			Collections.sort(falsePosExampleCandidates);
-			Collections.shuffle(falsePosExampleCandidates, rnd);
 
 			List<String> falsePosExamples = new ArrayList<>();
-			
-			boolean probabilityBased = false;
+			if(noise > 0) {
+				// randomly replace some of the pos. examples by false examples
+				// 2 options
+				// 1: iterate over pos. examples and if random number is below t_n, replace the example
+				// 2: replace the (#posExamples * t_n) randomly chosen pos. examples by randomly chosen negative examples
+				List<String> falsePosExampleCandidates = new ArrayList<>(this.falsePosExampleCandidates);
+				Collections.sort(falsePosExampleCandidates);
+				Collections.shuffle(falsePosExampleCandidates, rnd);
 
-			if (probabilityBased) {
-				// 1. way
-				for (Iterator<String> iterator = correctPosExamples.iterator(); iterator.hasNext();) {
-					String posExample = iterator.next();
-					double rndVal = rnd.nextDouble();
-					if (rndVal <= noise) {
-						// remove the positive example
-						iterator.remove();
-						
-						// add one of the negative examples
-						String falsePosExample = falsePosExampleCandidates.remove(0);
-						falsePosExamples.add(falsePosExample);
-						logger.info("Replacing " + posExample + " by " + falsePosExample);
+
+
+				boolean probabilityBased = false;
+
+				if (probabilityBased) {
+					// 1. way
+					for (Iterator<String> iterator = correctPosExamples.iterator(); iterator.hasNext();) {
+						String posExample = iterator.next();
+						double rndVal = rnd.nextDouble();
+						if (rndVal <= noise) {
+							// remove the positive example
+							iterator.remove();
+
+							// add one of the negative examples
+							String falsePosExample = falsePosExampleCandidates.remove(0);
+							falsePosExamples.add(falsePosExample);
+							logger.info("Replacing " + posExample + " by " + falsePosExample);
+						}
 					}
+				} else {
+					// 2. way
+					// replace at least 1 but not more than half of the examples
+					int upperBound = correctPosExamples.size() / 2;
+					int nrOfPosExamples2Replace = Math.min((int) Math.ceil(noise * correctPosExamples.size()), upperBound);
+
+					logger.info("replacing " + nrOfPosExamples2Replace + "/" + correctPosExamples.size() + " examples to introduce noise");
+					List<String> posExamples2Replace = new ArrayList<>(correctPosExamples.subList(0, nrOfPosExamples2Replace));
+					correctPosExamples.removeAll(posExamples2Replace);
+
+					falsePosExamples = falsePosExampleCandidates.subList(0, nrOfPosExamples2Replace);
+					logger.info("replaced " + posExamples2Replace + "\nby\n" + falsePosExamples);
 				}
-			} else {
-				// 2. way
-				// replace at least 1 but not more than half of the examples
-				int upperBound = correctPosExamples.size() / 2;
-				int nrOfPosExamples2Replace = Math.min((int) Math.ceil(noise * correctPosExamples.size()), upperBound);
-				
-				logger.info("replacing " + nrOfPosExamples2Replace + "/" + correctPosExamples.size() + " examples to introduce noise");
-				List<String> posExamples2Replace = new ArrayList<>(correctPosExamples.subList(0, nrOfPosExamples2Replace));
-				correctPosExamples.removeAll(posExamples2Replace);
-				
-				falsePosExamples = falsePosExampleCandidates.subList(0, nrOfPosExamples2Replace);
-				logger.info("replaced " + posExamples2Replace + "\nby\n" + falsePosExamples);
 			}
 			
 			// ensure determinism
