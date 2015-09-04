@@ -503,7 +503,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-							if(!sparqlQuery.contains("Single"))continue;
+//							if(!sparqlQuery.contains("Single"))continue;
 							
 							tp.submit(new Runnable(){
 	
