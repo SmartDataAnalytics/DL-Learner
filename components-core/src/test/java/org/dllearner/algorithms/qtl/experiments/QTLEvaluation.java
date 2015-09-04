@@ -240,7 +240,7 @@ public class QTLEvaluation {
 			
 	HeuristicType[] measures = {
 					HeuristicType.PRED_ACC, 
-//					HeuristicType.FMEASURE,
+					HeuristicType.FMEASURE,
 //					HeuristicType.MATTHEWS_CORRELATION
 					};
 
