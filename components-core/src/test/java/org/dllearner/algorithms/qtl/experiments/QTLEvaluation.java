@@ -188,7 +188,7 @@ public class QTLEvaluation {
 	private PreparedStatement psInsertDetailEval;
 
 	// max. time for each QTL run
-	private int maxExecutionTimeInSeconds = 30;
+	private int maxExecutionTimeInSeconds = 60;
 
 	int minNrOfPositiveExamples = 9;
 	
@@ -503,7 +503,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!sparqlQuery.contains("Cricketer"))continue;
+							if(!sparqlQuery.contains("Single"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -515,7 +515,10 @@ public class QTLEvaluation {
 									
 									try {
 										ExamplesWrapper examples = query2Examples.get(sparqlQuery).get(nrOfExamples, nrOfExamples, noise);
-										
+										logger.info("pos. examples:\n" + Joiner.on("\n").join(examples.correctPosExamples));
+										logger.info("neg. examples:\n" + Joiner.on("\n").join(examples.correctNegExamples));
+
+
 										// compute baseline
 										logger.info("Computing baseline...");
 										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
@@ -860,6 +863,7 @@ public class QTLEvaluation {
 		la.setNoise(noise);
 		la.setHeuristic(heuristic);
 		la.setMaxExecutionTimeInSeconds(maxExecutionTimeInSeconds);
+		la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
 		la.init();
 		la.start();
 
@@ -1932,8 +1936,8 @@ public class QTLEvaluation {
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
-		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10);
-
+		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
+		
 		
 
         OptionSet options = parser.parse(args);
