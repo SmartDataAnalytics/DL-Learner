@@ -233,13 +233,16 @@ public class QTLEvaluation {
 
 	private File cacheDirectory;
 
+	private boolean useEmailNotification = false;
 	
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime) throws ComponentInitException {
+
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification) throws ComponentInitException {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
 		this.override = override;
 		this.maxExecutionTimeInSeconds = maxQTLRuntime;
+		this.useEmailNotification = useEmailNotification;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
@@ -505,7 +508,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!sparqlQuery.contains("Single"))continue;
+//							if(!sparqlQuery.contains("MilitaryConflict"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -711,7 +714,9 @@ public class QTLEvaluation {
 			}
 		}
 		
-		sendFinishedMail();
+		if(useEmailNotification) {
+			sendFinishedMail();
+		}
 	}
 	
 	private void sendFinishedMail() throws EmailException, IOException {
@@ -1954,6 +1959,7 @@ public class QTLEvaluation {
 		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
 		OptionSpec<Boolean> overrideSpec = parser.accepts("o", "override previous results").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
+		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
@@ -1966,14 +1972,15 @@ public class QTLEvaluation {
 		File queriesFile = options.valueOf(queriesFileSpec);
 		boolean write2DB = options.valueOf(write2DBSpec);
 		boolean override = options.valueOf(overrideSpec);
+		boolean useEmailNotification = options.valueOf(emailNotificationSpec);
 		URL endpointURL = options.valueOf(endpointURLSpec);
 		String defaultGraph = options.has(defaultGraphSpec) ? options.valueOf(defaultGraphSpec) : null;
 		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraph);
 		int maxNrOfQueries = options.valueOf(maxNrOfQueriesSpec);
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
-
-		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime).run(queriesFile, maxNrOfQueries, maxTreeDepth);
+		
+		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification).run(queriesFile, maxNrOfQueries, maxTreeDepth);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

@@ -443,5 +443,12 @@
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>com.panayotis.gnuplot</groupId>
+				<artifactId>javaplot</artifactId>
+				<version>0.5.0</version>
+				<scope>test</scope>
+			</dependency>
+
 	</dependencies>
 </project>
