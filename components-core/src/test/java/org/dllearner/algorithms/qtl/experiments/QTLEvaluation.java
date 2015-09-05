@@ -12,9 +12,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +39,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
@@ -708,8 +710,26 @@ public class QTLEvaluation {
 				}
 			}
 		}
+		
+		sendFinishedMail();
 	}
 	
+	private void sendFinishedMail() throws EmailException, IOException {
+		Properties config = new Properties();
+		config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/qtl-mail.properties"));
+
+		Email email = new SimpleEmail();
+		email.setHostName(config.getProperty("hostname"));
+		email.setSmtpPort(465);
+		email.setAuthenticator(new DefaultAuthenticator(config.getProperty("username"), config.getProperty("password")));
+		email.setSSLOnConnect(true);
+		email.setFrom(config.getProperty("from"));
+		email.setSubject("QTL evaluation finished.");
+		email.setMsg("QTL evaluation finished.");
+		email.addTo(config.getProperty("to"));
+		email.send();
+	}
+
 	/*
 	 * Compute a baseline solution.
 	 * 
