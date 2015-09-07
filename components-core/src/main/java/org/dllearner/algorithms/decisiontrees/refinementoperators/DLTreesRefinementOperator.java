@@ -297,7 +297,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 					rho.setUseExistsConstructor(true);
 					rho.setUseHasValueConstructor(false);
 					rho.setUseCardinalityRestrictions(false);
-					rho.setUseNegation(true); // false for mutagenesis
+					rho.setUseNegation(false); // false for mutagenesis
 					rho.setUseBooleanDatatypes(true);
 					rho.setUseDoubleDatatypes(true);
 					rho.setUseStringDatatypes(false);
@@ -342,7 +342,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		}else 
 			return (generateNewConcepts(posExs, negExs, false));
 		
-		return null;
+		return new TreeSet<OWLClassExpression>();
 
 
 	}
