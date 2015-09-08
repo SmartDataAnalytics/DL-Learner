@@ -194,6 +194,7 @@ public class QTLEvaluation {
 
 	int minNrOfPositiveExamples = 9;
 	
+	int minTreeDepth = 3;
 	int maxTreeDepth = 3;
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
@@ -212,10 +213,10 @@ public class QTLEvaluation {
 					}; 
 			
 	double[] noiseIntervals = {
-//					0.0,
-					0.1,
+					0.0,
+//					0.1,
 					0.2,
-					0.3,
+//					0.3,
 //					0.4,
 //					0.6
 					};
@@ -418,13 +419,32 @@ public class QTLEvaluation {
 		return sparqlQueries;
 	}
 	
+	private List<String> filter(List<String> queries, int nrOfQueriesPerDepth) {
+		List<String> subset = new ArrayList<>();
+		for(int depth = 1; depth <= maxTreeDepth; depth++) {
+			List<String> tmp = new ArrayList<>();
+			Iterator<String> iterator = queries.iterator();
+			while(iterator.hasNext() && tmp.size() < nrOfQueriesPerDepth) {
+				String queryString = iterator.next();
+				Query q = QueryFactory.create(queryString);
+				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
+				if(subjectObjectJoinDepth < depth) {
+					tmp.add(queryString);
+				}
+			}
+			subset.addAll(tmp);
+		}
+		return subset;
+	}
+
 	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		
 		List<String> queries = getSparqlQueries(queriesFile);
 		logger.info("#loaded queries: " + queries.size());
-
-		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
+		
+		queries = filter(queries, maxNrOfProcessedQueries / 3);
+//		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
 		
 		// generate examples for each query
@@ -511,7 +531,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!sparqlQuery.contains("MilitaryConflict"))continue;
+//							if(!sparqlQuery.contains("Band"))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -594,7 +614,7 @@ public class QTLEvaluation {
 										
 										for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 											if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-												Files.append(sparqlQuery + "\n", new File(benchmarkDirectory, "negCoveredQueries-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+												Files.append(sparqlQuery + "\n", new File("/tmp/negCovered.txt"), Charsets.UTF_8);
 												break;
 											}
 										}

@@ -90,6 +90,8 @@ public class DBpediaLearningProblemsGenerator {
 		classes = classesList;
 //		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/PokerPlayer")));
 		
+
+		
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		List<Future<Path>> futures = new ArrayList<Future<Path>>();
 		List<Path> allPaths = new ArrayList<Path>();
@@ -107,12 +109,12 @@ public class DBpediaLearningProblemsGenerator {
 		// for each depth <= maxDepth
 		for(int depth = minDepth; depth <= maxDepth; depth++) {
 			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
-			
+
 			Iterator<OWLClass> iterator = classes.iterator();
-			
-			List<Path> paths = new ArrayList<Path>();
-			
-			while(paths.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
+
+			List<Path> pathsForDepth = new ArrayList<Path>();
+			// generate paths of depths <= maxDepth
+			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
 				
 				// pick next class
 				OWLClass cls = iterator.next();
@@ -168,8 +170,9 @@ public class DBpediaLearningProblemsGenerator {
 		
 		// write queries to disk
 		String queries = "";
-		for (Path path : allPaths) {
-			System.out.println(path);
+		int i = 1;
+		for (Path path : paths) {
+			System.out.println(i++ + ":" + path);
 			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 		}
 		File file = new File(benchmarkDirectory, "queries_" + nrOfSPARQLQueries + "_" + minDepth + "-" + maxDepth + "_" + minNrOfExamples+ ".txt");
