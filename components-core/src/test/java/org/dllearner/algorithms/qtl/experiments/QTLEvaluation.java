@@ -213,7 +213,7 @@ public class QTLEvaluation {
 					}; 
 			
 	double[] noiseIntervals = {
-					0.0,
+//					0.0,
 //					0.1,
 					0.2,
 //					0.3,
@@ -412,7 +412,7 @@ public class QTLEvaluation {
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 			Query q = QueryFactory.create(queryString);
 			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-			if(subjectObjectJoinDepth == 2 && subjectObjectJoinDepth < maxTreeDepth) {
+			if(subjectObjectJoinDepth < maxTreeDepth) {
 				sparqlQueries.add(queryString);
 			}
 		}
@@ -428,7 +428,7 @@ public class QTLEvaluation {
 				String queryString = iterator.next();
 				Query q = QueryFactory.create(queryString);
 				int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-				if(subjectObjectJoinDepth < depth) {
+				if(subjectObjectJoinDepth == (depth - 1)) {
 					tmp.add(queryString);
 				}
 			}
@@ -527,11 +527,10 @@ public class QTLEvaluation {
 						// indicates if the execution for some of the queries failed
 						final AtomicBoolean failed = new AtomicBoolean(false);
 						
-		//				if(nrOfExamples != 7) continue;
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!sparqlQuery.contains("Band"))continue;
+//							if(!(sparqlQuery.contains("WineRegion") && sparqlQuery.contains("France")))continue;
 							
 							tp.submit(new Runnable(){
 	

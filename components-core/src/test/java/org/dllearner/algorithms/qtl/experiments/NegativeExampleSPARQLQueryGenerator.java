@@ -63,7 +63,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 				
 				Query q = queries.remove(0);
 				q.setLimit(size);
-				logger.trace("Trying query\n" + q);
+				logger.info("Trying query\n" + q);
 				QueryExecution qe = qef.createQueryExecution(q);
 				ResultSet rs = qe.execSelect();
 				while(rs.hasNext()) {
@@ -97,58 +97,24 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 			List<Triple> path1 = paths.get(index == 0 ? 1 : 0);
 			List<Triple> typePath = paths.get(index);
 			
-			// get last tp first
-			if(path1.size() == 2) {
-				// remove last edge
+			for(int i = path1.size() - 1; i >= 0; i--) {
 				ElementGroup eg = new ElementGroup();
 				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-//				existsBlock.addTriple(path1.get(0));
-				existsBlock.addTriple(typePath.get(0));
 				eg.addElement(existsBlock);
+
+				// keep type edge
+				existsBlock.addTriple(typePath.get(0));
 				
+				// keep part of path
+				for(int j = 0; j < i; j++) {
+					existsBlock.addTriple(path1.get(j));
+				}
+				
+				// avoid rest of path
 				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
-				notExistsBlock.addTriple(path1.get(1));
-				ElementGroup notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				Query newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
-				
-				//remove both edges
-				eg = new ElementGroup();
-				existsBlock = new ElementTriplesBlock();
-				existsBlock.addTriple(typePath.get(0));
-				eg.addElement(existsBlock);
-				
-				notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
-				notExistsBlock.addTriple(path1.get(1));
-				notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
-				
-			} else {
-				//remove both edges
-				ElementGroup eg = new ElementGroup();
-				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-				existsBlock.addTriple(typePath.get(0));
-				eg.addElement(existsBlock);
-				
-				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
-				notExistsBlock.addTriple(path1.get(0));
+				for(int j = i; j < path1.size(); j++) {
+					notExistsBlock.addTriple(path1.get(j));
+				}
 				ElementGroup notExistsGroup = new ElementGroup();
 				notExistsGroup.addElement(notExistsBlock);
 				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
