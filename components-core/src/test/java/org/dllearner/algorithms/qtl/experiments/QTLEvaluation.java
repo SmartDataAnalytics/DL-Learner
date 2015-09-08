@@ -204,15 +204,15 @@ public class QTLEvaluation {
 	// parameters
 	int[] nrOfExamplesIntervals = {
 //					5,
-					10,
+//					10,
 //					15,
 					20,
 //					25,
-					30
+//					30
 					}; 
 			
 	double[] noiseIntervals = {
-					0.0,
+//					0.0,
 					0.1,
 					0.2,
 					0.3,
@@ -234,15 +234,18 @@ public class QTLEvaluation {
 	private File cacheDirectory;
 
 	private boolean useEmailNotification = false;
-	
 
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification) throws ComponentInitException {
+	private int nrOfThreads;
+
+
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) throws ComponentInitException {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
 		this.override = override;
 		this.maxExecutionTimeInSeconds = maxQTLRuntime;
 		this.useEmailNotification = useEmailNotification;
+		this.nrOfThreads = nrOfThreads;
 
 		queryTreeFactory = new QueryTreeFactoryBase();
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
@@ -408,7 +411,7 @@ public class QTLEvaluation {
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 			Query q = QueryFactory.create(queryString);
 			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-			if(subjectObjectJoinDepth < maxTreeDepth) {
+			if(subjectObjectJoinDepth == 2 && subjectObjectJoinDepth < maxTreeDepth) {
 				sparqlQueries.add(queryString);
 			}
 		}
@@ -430,7 +433,7 @@ public class QTLEvaluation {
 			query2Examples.put(query, generateExamples(query));
 		}
 		
-		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * queries.size();
+		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
 
 		final AtomicInteger currentNrOfFinishedRuns = new AtomicInteger(0);
@@ -499,7 +502,7 @@ public class QTLEvaluation {
 						MonitorFactory.getTimeMonitor(TimeMonitors.CBD_RETRIEVAL.name()).reset();
 						MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).reset();
 						
-						ExecutorService tp = Executors.newFixedThreadPool(1);
+						ExecutorService tp = Executors.newFixedThreadPool(nrOfThreads);
 						
 						// indicates if the execution for some of the queries failed
 						final AtomicBoolean failed = new AtomicBoolean(false);
@@ -591,8 +594,8 @@ public class QTLEvaluation {
 										
 										for ( RDFResourceTree negTree : examples.negExamplesMapping.values()) {
 											if(QueryTreeUtils.isSubsumedBy(negTree, bestMatchingTree.getTree())) {
-												System.out.println(negTree.getStringRepresentation(true, null, null, PrefixCCPrefixMapping.Full));
-												System.exit(0);
+												Files.append(sparqlQuery + "\n", new File(benchmarkDirectory, "negCoveredQueries-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+												break;
 											}
 										}
 
@@ -611,7 +614,11 @@ public class QTLEvaluation {
 									} catch (Exception e) {
 										failed.set(true);
 										logger.error("Error occured.", e);
-//										System.exit(0);
+										try {
+											Files.append(sparqlQuery, new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+										} catch (IOException e1) {
+											e1.printStackTrace();
+										}
 									} finally {
 										int cnt = currentNrOfFinishedRuns.incrementAndGet();
 										logger.info("***********Evaluation Progress:"
@@ -1963,7 +1970,8 @@ public class QTLEvaluation {
 		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
-		
+		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
+
 		
 
         OptionSet options = parser.parse(args);
@@ -1979,8 +1987,9 @@ public class QTLEvaluation {
 		int maxNrOfQueries = options.valueOf(maxNrOfQueriesSpec);
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
-		
-		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification).run(queriesFile, maxNrOfQueries, maxTreeDepth);
+		int nrOfThreads = options.valueOf(nrOfThreadsSpec);
+
+		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads).run(queriesFile, maxNrOfQueries, maxTreeDepth);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

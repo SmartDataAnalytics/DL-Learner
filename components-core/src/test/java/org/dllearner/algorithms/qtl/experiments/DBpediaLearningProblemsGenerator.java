@@ -90,11 +90,9 @@ public class DBpediaLearningProblemsGenerator {
 		classes = classesList;
 //		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/PokerPlayer")));
 		
-		Iterator<OWLClass> iterator = classes.iterator();
-		
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		List<Future<Path>> futures = new ArrayList<Future<Path>>();
-		List<Path> paths = new ArrayList<Path>();
+		List<Path> allPaths = new ArrayList<Path>();
 		
 		ThreadPoolExecutor tp = new CustomFutureReturningExecutor(
 				threadCount, threadCount,
@@ -106,11 +104,15 @@ public class DBpediaLearningProblemsGenerator {
 		
 		int nrOfQueriesPerDepth = nrOfSPARQLQueries / (maxDepth - minDepth + 1);
 		
+		// for each depth <= maxDepth
 		for(int depth = minDepth; depth <= maxDepth; depth++) {
 			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
-			List<Path> pathsForDepth = new ArrayList<Path>();
-			// generate paths of depths <= maxDepth
-			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
+			
+			Iterator<OWLClass> iterator = classes.iterator();
+			
+			List<Path> paths = new ArrayList<Path>();
+			
+			while(paths.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
 				
 				// pick next class
 				OWLClass cls = iterator.next();
@@ -122,13 +124,13 @@ public class DBpediaLearningProblemsGenerator {
 				try {
 					 Path path = future.get();
 			    	  if(path != null) {
-			    		  pathsForDepth.add(path);
+			    		  paths.add(path);
 			    	  }
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
-			paths.addAll(pathsForDepth);
+			allPaths.addAll(paths);
 		}
 		
 		
@@ -166,7 +168,7 @@ public class DBpediaLearningProblemsGenerator {
 		
 		// write queries to disk
 		String queries = "";
-		for (Path path : paths) {
+		for (Path path : allPaths) {
 			System.out.println(path);
 			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 		}
