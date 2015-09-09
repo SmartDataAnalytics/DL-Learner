@@ -438,6 +438,8 @@ public class QTLEvaluation {
 	
 	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
+		queryTreeFactory.setMaxDepth(maxTreeDepth);
+		
 		if(exampleInterval != null) {
 			nrOfExamplesIntervals = exampleInterval;
 		}
@@ -543,7 +545,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("BeautyQueen")))continue;
+//							if(!(sparqlQuery.contains("WineRegion")))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -1381,6 +1383,7 @@ public class QTLEvaluation {
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
+		System.err.println(tree.getStringRepresentation());
 		return tree;
 	}
 	
