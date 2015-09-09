@@ -193,8 +193,7 @@ public class QTLEvaluation {
 	private int maxExecutionTimeInSeconds = 60;
 
 	int minNrOfPositiveExamples = 9;
-	
-	int minTreeDepth = 3;
+
 	int maxTreeDepth = 3;
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
@@ -205,18 +204,18 @@ public class QTLEvaluation {
 	// parameters
 	int[] nrOfExamplesIntervals = {
 //					5,
-//					10,
+					10,
 //					15,
 					20,
 //					25,
-//					30
+					30
 					}; 
 			
 	double[] noiseIntervals = {
-//					0.0,
-//					0.1,
+					0.0,
+					0.1,
 					0.2,
-//					0.3,
+					0.3,
 //					0.4,
 //					0.6
 					};
@@ -229,7 +228,7 @@ public class QTLEvaluation {
 	HeuristicType[] measures = {
 					HeuristicType.PRED_ACC, 
 					HeuristicType.FMEASURE,
-//					HeuristicType.MATTHEWS_CORRELATION
+					HeuristicType.MATTHEWS_CORRELATION
 					};
 
 	private File cacheDirectory;
@@ -410,11 +409,11 @@ public class QTLEvaluation {
 		List<String> sparqlQueries = new ArrayList<String>();
 		
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
-			Query q = QueryFactory.create(queryString);
-			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
-			if(subjectObjectJoinDepth < maxTreeDepth) {
+//			Query q = QueryFactory.create(queryString);
+//			int subjectObjectJoinDepth = QueryUtils.getSubjectObjectJoinDepth(q, q.getProjectVars().get(0));
+//			if(subjectObjectJoinDepth < maxTreeDepth) {
 				sparqlQueries.add(queryString);
-			}
+//			}
 		}
 		return sparqlQueries;
 	}
@@ -436,17 +435,26 @@ public class QTLEvaluation {
 		}
 		return subset;
 	}
-
-	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth) throws Exception{
+	
+	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
-		
+		if(exampleInterval != null) {
+			nrOfExamplesIntervals = exampleInterval;
+		}
+		if(noiseInterval != null) {
+			this.noiseIntervals = noiseInterval;
+		}
+		if(measures != null) {
+			this.measures = measures;
+		}
+
 		logger.info("Started QTL evaluation...");
 		long t1 = System.currentTimeMillis();
 		
 		List<String> queries = getSparqlQueries(queriesFile);
 		logger.info("#loaded queries: " + queries.size());
 		
-		queries = filter(queries, maxNrOfProcessedQueries / 3);
+		queries = filter(queries, maxNrOfProcessedQueries / maxTreeDepth);
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
 		
@@ -736,7 +744,7 @@ public class QTLEvaluation {
 					content += "\n";
 				}
 				
-				File examplesVsNoise = new File(benchmarkDirectory, "examplesVsNoise-" + heuristicName + "-" + measureName + ".txt");
+				File examplesVsNoise = new File(benchmarkDirectory, "examplesVsNoise-" + heuristicName + "-" + measureName + ".tsv");
 				try {
 					Files.write(content, examplesVsNoise, Charsets.UTF_8);
 				} catch (IOException e) {
@@ -1999,6 +2007,10 @@ public class QTLEvaluation {
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
 
+		OptionSpec<String> exampleIntervalsSpec = parser.accepts("examples", "comma-separated list of number of examples used in evaluation").withRequiredArg().ofType(String.class);
+		OptionSpec<String> noiseIntervalsSpec = parser.accepts("noise", "comma-separated list of noise values used in evaluation").withRequiredArg().ofType(String.class);
+		OptionSpec<String> measuresSpec = parser.accepts("measures", "comma-separated list of measures used in evaluation").withRequiredArg().ofType(String.class);
+
 		
 
         OptionSet options = parser.parse(args);
@@ -2015,8 +2027,40 @@ public class QTLEvaluation {
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
 		int nrOfThreads = options.valueOf(nrOfThreadsSpec);
+		
+		int[] exampleInterval = null;
+		if(options.has(exampleIntervalsSpec)) {
+			String s = options.valueOf(exampleIntervalsSpec);
+			String[] split = s.split(",");
+			exampleInterval = new int[split.length];
+			for(int i = 0; i < split.length; i++) {
+				exampleInterval[i] = Integer.valueOf(split[i]);
+			}
+		}
 
-		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory, endpoint), benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads).run(queriesFile, maxNrOfQueries, maxTreeDepth);
+		double[] noiseInterval = null;
+		if(options.has(noiseIntervalsSpec)) {
+			String s = options.valueOf(noiseIntervalsSpec);
+			String[] split = s.split(",");
+			noiseInterval = new double[split.length];
+			for(int i = 0; i < split.length; i++) {
+				noiseInterval[i] = Double.valueOf(split[i]);
+			}
+		}
+
+		HeuristicType[] measures = null;
+		if(options.has(measuresSpec)) {
+			String s = options.valueOf(measuresSpec);
+			String[] split = s.split(",");
+			measures = new HeuristicType[split.length];
+			for(int i = 0; i < split.length; i++) {
+				measures[i] = HeuristicType.valueOf(split[i].toUpperCase());
+			}
+		}
+
+		EvaluationDataset dataset = new DBpediaEvaluationDataset(benchmarkDirectory, endpoint);
+		QTLEvaluation eval = new QTLEvaluation(dataset, benchmarkDirectory, write2DB, override, maxQTLRuntime, useEmailNotification, nrOfThreads);
+		eval.run(queriesFile, maxNrOfQueries, maxTreeDepth, exampleInterval, noiseInterval, measures);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}
