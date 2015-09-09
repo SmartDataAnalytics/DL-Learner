@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -61,7 +62,6 @@ import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
 import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
 import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
@@ -322,12 +322,12 @@ public class QTLEvaluation {
 	                   "noise DOUBLE, " + 
 	                   "heuristic VARCHAR(100), " +
 	                   "heuristic_measure VARCHAR(100), " +
-	                   "query_top VARCHAR(5000), " + 
+	                   "query_top LONGTEXT, " + 
 	                   "fscore_top DOUBLE, " + 
 	                   "precision_top DOUBLE, " + 
 	                   "recall_top DOUBLE, " + 
-	                   "best_query TEXT," +
-	                   "best_rank TINYINT, " + 
+	                   "best_query LONGTEXT," +
+	                   "best_rank SMALLINT, " + 
 	                   "best_fscore DOUBLE, " + 
 	                   "best_precision DOUBLE, " + 
 	                   "best_recall DOUBLE, " + 
@@ -440,6 +440,9 @@ public class QTLEvaluation {
 	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		
+		logger.info("Started QTL evaluation...");
+		long t1 = System.currentTimeMillis();
+		
 		List<String> queries = getSparqlQueries(queriesFile);
 		logger.info("#loaded queries: " + queries.size());
 		
@@ -448,10 +451,12 @@ public class QTLEvaluation {
 		logger.info("#queries to process: " + queries.size());
 		
 		// generate examples for each query
+		logger.info("precomputing pos. and neg. examples...");
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
 		for (String query : queries) {
 			query2Examples.put(query, generateExamples(query));
 		}
+		logger.info("precomputing pos. and neg. examples finished.");
 		
 		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
@@ -530,7 +535,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("WineRegion") && sparqlQuery.contains("France")))continue;
+//							if(!(sparqlQuery.contains("BeautyQueen")))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -743,6 +748,9 @@ public class QTLEvaluation {
 		if(useEmailNotification) {
 			sendFinishedMail();
 		}
+		long t2 = System.currentTimeMillis();
+		long duration = t2 - t1;
+		logger.info("QTL evaluation finished in " + DurationFormatUtils.formatDurationHMS(duration) + "ms.");
 	}
 	
 	private void sendFinishedMail() throws EmailException, IOException {
