@@ -1383,7 +1383,7 @@ public class QTLEvaluation {
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
-		System.err.println(tree.getStringRepresentation());
+		
 		return tree;
 	}
 	
