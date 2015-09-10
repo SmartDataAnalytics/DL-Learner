@@ -439,7 +439,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //				logger.info("Uncovered tree: "  + uncoveredTree.getStringRepresentation());
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
-				SortedSet<RDFResourceTree> baseQueryTrees = Sets.newTreeSet(currentElement.getBaseQueryTrees());
+				Set<RDFResourceTree> baseQueryTrees = Sets.newHashSet(currentElement.getBaseQueryTrees());
 				baseQueryTrees.add(uncoveredTree);
 //				String s = "";
 //				for (RDFResourceTree queryTree : baseQueryTrees) {
