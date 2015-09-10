@@ -2057,7 +2057,11 @@ public class QTLEvaluation {
 			String[] split = s.split(",");
 			measures = new HeuristicType[split.length];
 			for(int i = 0; i < split.length; i++) {
-				measures[i] = HeuristicType.valueOf(split[i].toUpperCase());
+				if(split[i].equalsIgnoreCase("mcc")) {
+					measures[i] = HeuristicType.MATTHEWS_CORRELATION;
+				} else {
+					measures[i] = HeuristicType.valueOf(split[i].toUpperCase());
+				}
 			}
 		}
 
