@@ -651,6 +651,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
+	
+	/**
+	 * @param renderer the renderer of OWL objects to set
+	 */
+	public void setRenderer(OWLObjectRenderer renderer) {
+		this.renderer = renderer;
+	}
     
     /**
 	 * The goal of this method is to rewrite the class expression CE, to get a more informative one by e.g.

@@ -12,6 +12,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +68,7 @@ import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia
 import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -152,7 +154,9 @@ public class QTLEvaluation {
 			"PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 			+ "SELECT ?sup WHERE {"
 			+ "?sub (rdfs:subClassOf|owl:equivalentClass)+ ?sup .}");
-	
+
+	private static final DecimalFormat dfPercent = new DecimalFormat("0.00%");
+
 	enum NoiseMethod {
 		RANDOM, SIMILAR, SIMILARITY_PARAMETERIZED
 	}
@@ -545,7 +549,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("WineRegion")))continue;
+//							if(!(sparqlQuery.contains("NetballPlayer")))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -564,7 +568,7 @@ public class QTLEvaluation {
 										// compute baseline
 										logger.info("Computing baseline...");
 										RDFResourceTree baselineSolution = applyBaseLine(examples, Baseline.MOST_INFORMATIVE_EDGE_IN_EXAMPLES);
-										logger.info("done. \nBaseline solution:\n" + QueryTreeUtils.toOWLClassExpression(baselineSolution));
+										logger.info("done. \nBaseline solution:\n" + owlRenderer.render(QueryTreeUtils.toOWLClassExpression(baselineSolution)));
 										logger.info("Evaluating baseline...");
 										Score baselineScore = computeScore(sparqlQuery, baselineSolution, noise);
 										logger.info("Baseline score:\n" + baselineScore);
@@ -583,7 +587,7 @@ public class QTLEvaluation {
 										// the best returned solution by QTL
 										EvaluatedRDFResourceTree bestSolution = solutions.get(0);
 										logger.info("Got " + solutions.size() + " query trees.");
-										logger.info("Best computed solution:\n" + bestSolution.asEvaluatedDescription());
+										logger.info("Best computed solution:\n" + render(bestSolution.asEvaluatedDescription()));
 										logger.info("QTL Score:\n" + bestSolution.getTreeScore());
 				
 										// convert to SPARQL query
@@ -613,7 +617,7 @@ public class QTLEvaluation {
 										Score bestScore = score;
 										if (positionBestScore > 0) {
 											logger.info("Position of best covering tree in list: " + positionBestScore);
-											logger.info("Best covering solution:\n" + bestMatchingTree.asEvaluatedDescription());
+											logger.info("Best covering solution:\n" + render(bestMatchingTree.asEvaluatedDescription()));
 											logger.info("Tree score: " + bestMatchingTree.getTreeScore());
 											bestScore = bestMatchingScore;
 											logger.info(bestMatchingScore);
@@ -763,6 +767,10 @@ public class QTLEvaluation {
 		logger.info("QTL evaluation finished in " + DurationFormatUtils.formatDurationHMS(duration) + "ms.");
 	}
 	
+	private String render(EvaluatedDescription ed) {
+		return owlRenderer.render(ed.getDescription()) + dfPercent.format(ed.getAccuracy());
+	}
+
 	private void sendFinishedMail() throws EmailException, IOException {
 		Properties config = new Properties();
 		config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/dllearner/algorithms/qtl/qtl-mail.properties"));
@@ -924,6 +932,7 @@ public class QTLEvaluation {
 //		lp.init();
 
 		QTL2Disjunctive la = new QTL2Disjunctive(lp, qef);
+		la.setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
 		la.setReasoner(dataset.getReasoner());
 		la.setEntailment(Entailment.RDFS);
 		la.setTreeFactory(queryTreeFactory);

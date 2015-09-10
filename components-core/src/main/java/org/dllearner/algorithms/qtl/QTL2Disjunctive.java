@@ -518,7 +518,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private String solutionAsString(EvaluatedDescription ed) {
-		return ed.getDescription().toString().replace("\n", "").replaceAll("\\\\s{2,}", " ");
+		return renderer.render(ed.getDescription()).replace("\n", "").replaceAll("\\\\s{2,}", " ");
 	}
 	
 	private boolean addToSolutions(EvaluatedRDFResourceTree solution) {
@@ -578,11 +578,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		//check if not already contained in todo list
 		for (EvaluatedRDFResourceTree evTree : todoList) {
-			//this is a workaround as we have currently no equals method for trees based on the literal conversion strategy
-//			boolean sameTree = sameTrees(solution.getTree(), evTree.getTree());
-			boolean sameTree = evTree.asEvaluatedDescription().getDescription().toString()
-			.equals(ce.toString());
-			if(sameTree){
+			if(QueryTreeUtils.sameTrees(tree, evTree.getTree())){
 				logger.trace("Not added to TODO list: Already contained in.");
 				return true;
 			}
@@ -926,7 +922,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		super.setReasoner(reasoner);
 //		loadModel();
 	}
-	
+
 	private void loadModel(){
 		model = ModelFactory.createDefaultModel();
 		for (KnowledgeSource ks : reasoner.getSources()) {

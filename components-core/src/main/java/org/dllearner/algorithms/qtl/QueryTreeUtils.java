@@ -505,7 +505,7 @@ public class QueryTreeUtils {
           	}
           	
           	if(typeNode) {
-          		return isSubsumedBy(tree1, tree2, Entailment.RDFS);
+//          		return isSubsumedBy(tree1, tree2, Entailment.RDFS);
           	}
           	
           	// 2. compare the children
@@ -562,7 +562,10 @@ public class QueryTreeUtils {
 	}
 	
 	public static <N> boolean sameTrees(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1);
+		return 
+				tree1.getData().equals(tree2.getData()) && // root(t1) == root(t2)
+				tree1.getNumberOfChildren() == tree2.getNumberOfChildren() && // #children(t1) == #children(t2)
+				isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1); // t1 <= t2 && t2 <= t1
 	}
 	
 	public static Model toModel(RDFResourceTree tree) {
