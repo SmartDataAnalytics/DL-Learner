@@ -2,7 +2,9 @@ package org.dllearner.algorithms.qtl.experiments;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -13,6 +15,8 @@ import org.dllearner.utilities.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
@@ -52,16 +56,16 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		
 		public List<String> getNegativeExamples(String targetQuery, int size) {
 			logger.trace("Generating neg. examples...");
-			List<String> negExamples = new ArrayList<String>();
+			Set<String> negExamples = new HashSet<>();
 			
-			// remove triple patterns as long as enough neg examples have been found
+			// remove triple patterns as long as enough neg. examples have been found
 			Query query = QueryFactory.create(targetQuery);
 			
+			// generate queries that return neg. examples
 			List<Query> queries = generateQueries(query);
 			
-			while(negExamples.size() < size && !queries.isEmpty()) {
-				
-				Query q = queries.remove(0);
+			// get a list of resources for each query
+			for (Query q : queries) {
 				q.setLimit(size);
 				logger.info("Trying query\n" + q);
 				QueryExecution qe = qef.createQueryExecution(q);
@@ -74,7 +78,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 				qe.close();
 			}
 			logger.trace("...finished generating neg. examples.");
-			return negExamples;
+			return new ArrayList<>(negExamples);
 		}
 		
 		private ElementFilter getNotExistsFilter(Element el){
@@ -86,52 +90,51 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 			
 			// extract paths
 			Node source = query.getProjectVars().get(0).asNode();
-			List<List<Triple>> paths = getPaths(new ArrayList<Triple>(), query, source);
+			Set<List<Triple>> paths = getPaths(new ArrayList<Triple>(), query, source);
 			
-			int index = 0;
-			for (List<Triple> path : paths) {
-				if(path.size() == 1 && path.get(0).getPredicate().equals(RDF.type.asNode())) {
-					index = paths.indexOf(path);
-				}
-			}
-			List<Triple> path1 = paths.get(index == 0 ? 1 : 0);
-			List<Triple> typePath = paths.get(index);
+			// for each path create query which excludes the path by FILTER NOT EXISTS
+			Set<Set<List<Triple>>> pathSubsets = Sets.powerSet(paths);
 			
-			for(int i = path1.size() - 1; i >= 0; i--) {
-				ElementGroup eg = new ElementGroup();
-				ElementTriplesBlock existsBlock = new ElementTriplesBlock();
-				eg.addElement(existsBlock);
-
-				// keep type edge
-				existsBlock.addTriple(typePath.get(0));
-				
-				// keep part of path
-				for(int j = 0; j < i; j++) {
-					existsBlock.addTriple(path1.get(j));
+			for (Set<List<Triple>> pathSubset : pathSubsets) {
+				if(!pathSubset.isEmpty() && pathSubset.size() < paths.size()) {
+					
+					ElementGroup eg = new ElementGroup();
+					
+					// keep other paths
+					ElementTriplesBlock existsBlock = new ElementTriplesBlock();
+					eg.addElement(existsBlock);
+					SetView<List<Triple>> difference = Sets.difference(paths, pathSubset);
+					for(List<Triple> otherPath : difference) {
+						for (Triple tp : otherPath) {
+							existsBlock.addTriple(tp);
+						}
+					}
+					
+					// not exists current path
+					ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
+					for(List<Triple> path : pathSubset) {
+						for (Triple tp : path) {
+							notExistsBlock.addTriple(tp);
+						}
+					}
+					ElementGroup notExistsGroup = new ElementGroup();
+					notExistsGroup.addElement(notExistsBlock);
+					eg.addElementFilter(getNotExistsFilter(notExistsGroup));
+					
+					Query newQuery = QueryFactory.create();
+					newQuery.setQuerySelectType();
+					newQuery.setQueryPattern(eg);
+					newQuery.addProjectVars(query.getProjectVars());
+					newQuery.setDistinct(true);
+					queries.add(newQuery);
 				}
-				
-				// avoid rest of path
-				ElementTriplesBlock notExistsBlock = new ElementTriplesBlock();
-				for(int j = i; j < path1.size(); j++) {
-					notExistsBlock.addTriple(path1.get(j));
-				}
-				ElementGroup notExistsGroup = new ElementGroup();
-				notExistsGroup.addElement(notExistsBlock);
-				eg.addElementFilter(getNotExistsFilter(notExistsGroup));
-				
-				Query newQuery = QueryFactory.create();
-				newQuery.setQuerySelectType();
-				newQuery.setQueryPattern(eg);
-				newQuery.addProjectVars(query.getProjectVars());
-				newQuery.setDistinct(true);
-				queries.add(newQuery);
 			}
 			
 			return queries;
 		}
 		
-		private List<List<Triple>> getPaths(List<Triple> path, Query query, Node source) {
-			List<List<Triple>> paths = new ArrayList<List<Triple>>();
+		private Set<List<Triple>> getPaths(List<Triple> path, Query query, Node source) {
+			Set<List<Triple>> paths = new LinkedHashSet<List<Triple>>();
 			Set<Triple> outgoingTriplePatterns = QueryUtils.getOutgoingTriplePatterns(query, source);
 			for (Triple tp : outgoingTriplePatterns) {
 				List<Triple> newPath = new ArrayList<Triple>(path);
