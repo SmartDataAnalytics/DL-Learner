@@ -139,6 +139,9 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private double startPosExamplesSize;
 	private int expressionTests = 0;
 	
+	// the time needed until the best solution was found
+	private long timeBestSolutionFound = -1;
+	
 	LiteralNodeConversionStrategy[] strategies = new LiteralNodeConversionStrategy[]{
 			LiteralNodeConversionStrategy.MIN,
 			LiteralNodeConversionStrategy.MAX,
@@ -474,8 +477,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					
 					if(score >= bestCurrentScore){
 						if(score > bestCurrentScore){
-							
-							logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), getCurrentRuntimeInMilliSeconds());
+							timeBestSolutionFound = getCurrentRuntimeInMilliSeconds();
+							logger.info("\tGot better solution after {}ms:" + solution.getTreeScore(), timeBestSolutionFound);
 							logger.info("\t" + solutionAsString(solution.asEvaluatedDescription()));
 							bestCurrentScore = score;
 							bestPartialSolutionTree = solution;
@@ -1153,6 +1156,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setMaxTreeDepth(int maxTreeDepth) {
 		this.maxTreeDepth = maxTreeDepth;
+	}
+	
+	/**
+	 * @return the runtime until the best solution was found
+	 */
+	public long getTimeBestSolutionFound() {
+		return timeBestSolutionFound;
 	}
 	
 	/* (non-Javadoc)

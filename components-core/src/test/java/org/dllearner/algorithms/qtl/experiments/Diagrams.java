@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -23,6 +24,11 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Ints;
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.JavaPlot.Key;
+import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.panayotis.gnuplot.style.PlotStyle;
+import com.panayotis.gnuplot.style.Style;
 
 /**
  * @author Lorenz Buehmann
@@ -157,57 +163,57 @@ public class Diagrams {
 			Files.write(gnuplot.trim(), new File(dir, "noiseVsFscore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
 		}
 		if(!input.isEmpty()) {
-//			plotNoiseVsFscore(input);
+			plotNoiseVsFscore(input);
 		}
 		
 	}
 	
-//	public static void plotNoiseVsFscore(NavigableMap<Integer, Map<HeuristicType, double[][]>> input) {
-//		JavaPlot p = new JavaPlot();
-//		p.set("xlabel", "'Noise'");
-//		p.set("ylabel", "'Objective Function'");
-//		p.set("xtics", "0,.1,.4");
-//		p.set("ytics", "0,.2,1");
-//		p.set("xrange", "[0:.4]");
-//        
-//        // last element 
-//        Entry<Integer, Map<HeuristicType, double[][]>> lastEntry = input.lastEntry();
-//        
-//        
-//		for (Entry<Integer, Map<HeuristicType, double[][]>> entry : input.entrySet()) {
-//			Integer nrOfExamples = entry.getKey();
-//			
-//			Map<HeuristicType, double[][]> h2data = entry.getValue();
-//			int pointStyle = 5;
-//			for (Entry<HeuristicType, double[][]> entry2 : h2data.entrySet()) {
-//				HeuristicType heuristic = entry2.getKey();
-//				double[][] data = entry2.getValue();
-//				
-//				PlotStyle myPlotStyle = new PlotStyle();
-//		        myPlotStyle.setStyle(Style.LINESPOINTS);
-//		        myPlotStyle.setLineWidth(1);
-//		        myPlotStyle.setPointType(pointStyle);
-//		        pointStyle += 2;
-//		        
-//				DataSetPlot s = new DataSetPlot(data);
-//				s.setPlotStyle(myPlotStyle);
-//				s.setTitle(heuristic.name());
-//				p.addPlot(s);
-//				
-//			}
-//			
-//			if(entry.equals(lastEntry)) {
-//				p.setKey(Key.OUTSIDE);
-//			} else {
-//				p.setKey(Key.OFF);
-//			}
-//			p.setTitle(nrOfExamples.toString());
-//			p.newGraph();
-//		}
-//		
-//		p.newGraph();
-//       
-//        p.plot();
-//	}
+	public static void plotNoiseVsFscore(NavigableMap<Integer, Map<HeuristicType, double[][]>> input) {
+		JavaPlot p = new JavaPlot();
+		p.set("xlabel", "'Noise'");
+		p.set("ylabel", "'Objective Function'");
+		p.set("xtics", "0,.1,.4");
+		p.set("ytics", "0,.2,1");
+		p.set("xrange", "[0:.4]");
+        
+        // last element 
+        Entry<Integer, Map<HeuristicType, double[][]>> lastEntry = input.lastEntry();
+        
+        
+		for (Entry<Integer, Map<HeuristicType, double[][]>> entry : input.entrySet()) {
+			Integer nrOfExamples = entry.getKey();
+			
+			Map<HeuristicType, double[][]> h2data = entry.getValue();
+			int pointStyle = 5;
+			for (Entry<HeuristicType, double[][]> entry2 : h2data.entrySet()) {
+				HeuristicType heuristic = entry2.getKey();
+				double[][] data = entry2.getValue();
+				
+				PlotStyle myPlotStyle = new PlotStyle();
+		        myPlotStyle.setStyle(Style.LINESPOINTS);
+		        myPlotStyle.setLineWidth(1);
+		        myPlotStyle.setPointType(pointStyle);
+		        pointStyle += 2;
+		        
+				DataSetPlot s = new DataSetPlot(data);
+				s.setPlotStyle(myPlotStyle);
+				s.setTitle(heuristic.name());
+				p.addPlot(s);
+				
+			}
+			
+			if(entry.equals(lastEntry)) {
+				p.setKey(Key.OUTSIDE);
+			} else {
+				p.setKey(Key.OFF);
+			}
+			p.setTitle(nrOfExamples.toString());
+			p.newGraph();
+		}
+		
+		p.newGraph();
+       
+        p.plot();
+	}
 
 }
