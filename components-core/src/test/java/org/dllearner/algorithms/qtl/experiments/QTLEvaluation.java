@@ -6,7 +6,9 @@ package org.dllearner.algorithms.qtl.experiments;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
@@ -682,7 +684,10 @@ public class QTLEvaluation {
 										failed.set(true);
 										logger.error("Error occured.", e);
 										try {
-											Files.append(sparqlQuery, new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
+											StringWriter sw = new StringWriter();
+											PrintWriter pw = new PrintWriter(sw);
+											e.printStackTrace(pw);
+											Files.append(sparqlQuery + "\n" + sw.toString(), new File(benchmarkDirectory, "failed-" + nrOfExamples + "-" + noise + "-" + heuristicName + "-" + measureName + ".txt"), Charsets.UTF_8);
 										} catch (IOException e1) {
 											e1.printStackTrace();
 										}
@@ -700,7 +705,7 @@ public class QTLEvaluation {
 						
 						tp.shutdown();
 						tp.awaitTermination(12, TimeUnit.HOURS);
-					
+						
 						Logger.getRootLogger().removeAppender(appender);
 						
 						if(!failed.get()) {
@@ -790,6 +795,8 @@ public class QTLEvaluation {
 				}
 			}
 		}
+		
+		conn.close();
 		
 		if(useEmailNotification) {
 			sendFinishedMail();
