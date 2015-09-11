@@ -50,6 +50,9 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLProperty;
 
@@ -151,7 +154,18 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 							} 
 						}
 						if(add){
-							lgg.addChild(lggChild, edge1);
+							Node edge;
+							// get the more general edge
+							if (reasoner.isSubPropertyOf(
+									OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+									OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+								edge = edge2;
+							} else {
+								edge = edge1;
+							}
+
+							lgg.addChild(lggChild, edge);
 							addedChildren.add(lggChild);
 //							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 						} 
@@ -174,10 +188,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			if(tree2.getEdges().contains(edge1)) {
 				relatedEdges.put(edge1, edge1);
 			}
-			// check if it's not a built-in properties
-			if (!edge1.getNameSpace().equals(RDF.getURI()) 
-					&& !edge1.getNameSpace().equals(RDFS.getURI())
-					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+
+			// check if it's a built-in property
+			boolean builtIn = edge1.getNameSpace().equals(RDF.getURI())
+					&& edge1.getNameSpace().equals(RDFS.getURI())
+					&& edge1.getNameSpace().equals(OWL.getURI());
+
+			if (!builtIn) {
 				
 				// get related edges by subsumption
 				OWLProperty prop;

@@ -41,12 +41,17 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLProperty;
 import org.xml.sax.SAXException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -72,6 +77,7 @@ import com.hp.hpl.jena.sparql.expr.ExprVar;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.serializer.SerializationContext;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -1038,5 +1044,106 @@ public class QueryTreeUtils {
     		
     	}
     	return false;
+	}
+
+	/**
+	 * @param posTree
+	 * @param tree
+	 * @param entailment
+	 * @param strategy
+	 * @return
+	 */
+	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment,
+			AbstractReasonerComponent reasoner) {
+		
+		if(entailment == Entailment.SIMPLE) {
+			return isSubsumedBy(tree1, tree2);
+		}
+
+		// 1.compare the root nodes
+
+		// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
+		if (!tree1.isVarNode() && !tree2.isVarNode()) {
+			if (tree1.isResourceNode() && tree2.isResourceNode()) {
+
+			}
+			return tree1.getData().equals(tree2.getData());
+		}
+
+		// (T_1 = ?) and (T_2 != ?) --> FALSE
+		if (tree1.isVarNode() && !tree2.isVarNode()) {
+			return false;
+		}
+
+		// 2. compare the children
+		for (Node edge2 : tree2.getEdges()) {
+			List<RDFResourceTree> children1 = tree1.getChildren(edge2);
+			
+			if (children1 != null) {
+				
+				// get super properties
+				SortedSet<OWLObjectProperty> superProperties = reasoner.getSuperProperties(new OWLObjectPropertyImpl(IRI.create(edge2.getURI())));
+				
+				for (OWLObjectProperty supProp : superProperties) {
+					for (RDFResourceTree child2 : tree2.getChildren(NodeFactory.createURI(supProp.toStringID()))) {
+						boolean isSubsumed = false;
+	
+						for (RDFResourceTree child1 : children1) {
+							if (QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))) {
+								isSubsumed = true;
+								break;
+							}
+						}
+						if (!isSubsumed) {
+							return false;
+						}
+					}
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/*
+	 * For each edge in tree 1 we compute the related edges in tree 2. 
+	 */
+	private static Multimap<Node, Node> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2, AbstractReasonerComponent reasoner) {
+		Multimap<Node, Node> relatedEdges = HashMultimap.create();
+		
+		for(Node edge1 : tree1.getEdges()) {
+			// trivial
+			if(tree2.getEdges().contains(edge1)) {
+				relatedEdges.put(edge1, edge1);
+			}
+			// check if it's not a built-in properties
+			if (!edge1.getNameSpace().equals(RDF.getURI()) 
+					&& !edge1.getNameSpace().equals(RDFS.getURI())
+					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+				
+				// get related edges by subsumption
+				OWLProperty prop;
+				if(tree1.isObjectPropertyEdge(edge1)) {
+					prop = new OWLObjectPropertyImpl(IRI.create(edge1.getURI()));
+				} else {
+					prop = new OWLDataPropertyImpl(IRI.create(edge1.getURI()));
+				}
+				
+				for (OWLProperty p : reasoner.getSuperProperties(prop)) {
+					Node edge = NodeFactory.createURI(p.toStringID());
+					if(tree2.getEdges().contains(edge)) {
+						relatedEdges.put(edge1, edge);
+					}
+				}
+				for (OWLProperty p : reasoner.getSubProperties(prop)) {
+					Node edge = NodeFactory.createURI(p.toStringID());
+					if(tree2.getEdges().contains(edge)) {
+						relatedEdges.put(edge1, edge);
+					}
+				}
+			}
+		}
+		return relatedEdges;
 	}
 }
