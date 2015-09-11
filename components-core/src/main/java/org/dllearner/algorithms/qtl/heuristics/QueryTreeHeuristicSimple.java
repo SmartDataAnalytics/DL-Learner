@@ -52,8 +52,13 @@ public class QueryTreeHeuristicSimple extends QueryTreeHeuristic {
 				double pn = fn / total;
 				score = pp * Math.log(pp) + pn * Math.log(pn);
 				break;}
-			case MATTHEWS_CORRELATION  :
-				score = (tp * tn - fp * fn) / Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));break;
+			case MATTHEWS_CORRELATION  : // a measure between -1 and 1
+				double denominator = Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));
+				if(denominator == 0) { // 0 means not better than random prediction
+					return 0;
+//					denominator = 1;
+				}
+				score = (tp * tn - fp * fn) / denominator;break;
 			case YOUDEN_INDEX : score = tp / (tp + fn) + tn / (fp + tn) - 1;break;
 		default:
 			break;
