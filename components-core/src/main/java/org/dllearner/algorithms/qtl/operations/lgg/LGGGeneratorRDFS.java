@@ -133,6 +133,17 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 						// compute the LGG
 						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 						
+						Node moreGeneralEdge;
+						// get the more general edge
+						if (reasoner.isSubPropertyOf(
+								OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+								OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+							moreGeneralEdge = edge2;
+						} else {
+							moreGeneralEdge = edge1;
+						}
+
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
 						boolean add = true;
@@ -149,7 +160,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
 //										lggChild.getStringRepresentation(),
 //										addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, edge1);
+								lgg.removeChild(addedChild, moreGeneralEdge);
 								it.remove();
 							} 
 						}

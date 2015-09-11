@@ -690,12 +690,14 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //					System.out.println("TRUE");
 				}
 			}
+			
 			// compute negative examples which are covered by LGG
 			for (RDFResourceTree negTree : currentNegExampleTrees) {
 				if(QueryTreeUtils.isSubsumedBy(negTree, tree, entailment, reasoner)){
 					coveredNegativeExampleTrees.add(negTree);
 				}
 			}
+			
 			// convert to individuals
 			Set<OWLIndividual> uncoveredPosExamples = asIndividuals(uncoveredPositiveExampleTrees);
 			Set<OWLIndividual> coveredNegExamples = asIndividuals(coveredNegativeExampleTrees);

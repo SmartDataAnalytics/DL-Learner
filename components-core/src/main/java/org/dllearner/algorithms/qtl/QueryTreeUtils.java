@@ -36,6 +36,7 @@ import org.jgrapht.ext.EdgeNameProvider;
 import org.jgrapht.ext.GraphMLExporter;
 import org.jgrapht.ext.VertexNameProvider;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -1059,47 +1060,80 @@ public class QueryTreeUtils {
 		if(entailment == Entailment.SIMPLE) {
 			return isSubsumedBy(tree1, tree2);
 		}
-
+		
 		// 1.compare the root nodes
 
 		// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
 		if (!tree1.isVarNode() && !tree2.isVarNode()) {
 			if (tree1.isResourceNode() && tree2.isResourceNode()) {
-
-			}
-			return tree1.getData().equals(tree2.getData());
+				return tree1.getData().equals(tree2.getData());
+			} else if(tree1.isLiteralNode() && tree2.isLiteralNode()) {
+	    		if(tree1.isLiteralValueNode()) {
+	    			if(tree2.isLiteralValueNode()) {
+	    				return tree1.getData().equals(tree2.getData());
+	    			} else {
+	    				RDFDatatype d1 = tree1.getData().getLiteralDatatype();
+	    				return tree2.getDatatype().equals(d1);
+	    			}
+	    		} else {
+	    			if(tree2.isLiteralValueNode()) {
+	    				return false;
+	    			} else {
+	    				RDFDatatype d1 = tree1.getDatatype();
+	    				return tree2.getDatatype().equals(d1);
+	    			}
+	    		}
+	    		
+	    	}
 		}
 
 		// (T_1 = ?) and (T_2 != ?) --> FALSE
 		if (tree1.isVarNode() && !tree2.isVarNode()) {
 			return false;
 		}
-
+		
 		// 2. compare the children
 		for (Node edge2 : tree2.getEdges()) {
-			List<RDFResourceTree> children1 = tree1.getChildren(edge2);
 			
-			if (children1 != null) {
+			// get sub properties
+			OWLObjectProperty prop2 = OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY);
+			SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(prop2);
+			subProperties.add(prop2);
+			
+			boolean edgeSubsumed = false;
+			
+			Iterator<OWLObjectProperty> iterator = subProperties.iterator();
+			while (!edgeSubsumed && iterator.hasNext()) {
+				OWLObjectProperty subProp  = iterator.next();
 				
-				// get super properties
-				SortedSet<OWLObjectProperty> superProperties = reasoner.getSuperProperties(new OWLObjectPropertyImpl(IRI.create(edge2.getURI())));
+				Node edge1 = OwlApiJenaUtils.asNode(subProp);
 				
-				for (OWLObjectProperty supProp : superProperties) {
-					for (RDFResourceTree child2 : tree2.getChildren(NodeFactory.createURI(supProp.toStringID()))) {
-						boolean isSubsumed = false;
-	
+				List<RDFResourceTree> children1 = tree1.getChildren(edge1);
+				
+				if (children1 != null) {
+				
+					boolean childrenSubsumed = true;
+					for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
+						boolean childSubsumed = false;
+						
 						for (RDFResourceTree child1 : children1) {
-							if (QueryTreeUtils.isSubsumedBy(child1, child2, reasoner, edge2.equals(RDF.type.asNode()))) {
-								isSubsumed = true;
+							if (QueryTreeUtils.isSubsumedBy(child1, child2, entailment, reasoner)) {
+								childSubsumed = true;
 								break;
 							}
 						}
-						if (!isSubsumed) {
-							return false;
+						if(!childSubsumed) {
+							childrenSubsumed = false;
 						}
 					}
+					
+					if(childrenSubsumed) {
+						edgeSubsumed = true;
+					}
 				}
-			} else {
+			}
+			
+			if(!edgeSubsumed) {
 				return false;
 			}
 		}
