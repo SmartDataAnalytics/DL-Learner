@@ -118,18 +118,17 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		// get edges of tree 2 connected via subsumption
 		Multimap<Node, Node> relatedEdges = getRelatedEdges(tree1, tree2);
 		for (Entry<Node, Collection<Node>> entry : relatedEdges.asMap().entrySet()){
-			Node edge1 = entry.getKey();
+			Node edge1 = entry.getKey();//System.out.println("e1:" + edge1);
 			Collection<Node> edges2 = entry.getValue();
 			
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
-		
-			
+
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
 				// for all related edges of tree 2
-				for (Node edge2 : edges2) {
+				for (Node edge2 : edges2) {//System.out.println("e2:" + edge2);
 					// loop over children of second tree
-					for(RDFResourceTree child2 : tree2.getChildren(edge2)){
+					for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
 						// compute the LGG
 						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 						
@@ -143,6 +142,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 						} else {
 							moreGeneralEdge = edge1;
 						}
+//						System.out.println("e_gen:" + moreGeneralEdge);
 
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
@@ -160,7 +160,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
 //										lggChild.getStringRepresentation(),
 //										addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, moreGeneralEdge);
+								lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 								it.remove();
 							} 
 						}
