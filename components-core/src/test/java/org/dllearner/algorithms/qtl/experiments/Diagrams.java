@@ -55,9 +55,9 @@ public class Diagrams {
 		int[] nrOfExamplesIntervals = {
 				5,
 				10,
-				15,
+//				15,
 				20, 
-				25,
+//				25,
 				30
 				}; 
 		
@@ -66,7 +66,7 @@ public class Diagrams {
 				0.1,
 				0.2,
 				0.3,
-				0.4,
+//				0.4,
 //				0.6
 				};
 		
@@ -102,7 +102,7 @@ public class Diagrams {
 				}
 				 s += "\n";
 			}
-			Files.write(s, new File(dir, "examplesVsFscore-" + noise + ".tsv"), Charsets.UTF_8);
+			Files.write(s, new File(dir, "examplesVsScore-" + noise + ".tsv"), Charsets.UTF_8);
 		}
 		
 		// noise vs fscore
@@ -159,8 +159,8 @@ public class Diagrams {
 				input.put(nrOfExamples, h2data);
 			}
 			
-			Files.write(s, new File(dir, "noiseVsFscore-" + nrOfExamples + ".tsv"), Charsets.UTF_8);
-			Files.write(gnuplot.trim(), new File(dir, "noiseVsFscore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
+			Files.write(s, new File(dir, "noiseVsScore-" + nrOfExamples + ".tsv"), Charsets.UTF_8);
+			Files.write(gnuplot.trim(), new File(dir, "noiseVsScore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
 		}
 		if(!input.isEmpty()) {
 			plotNoiseVsFscore(input);
@@ -210,7 +210,6 @@ public class Diagrams {
 			p.setTitle(nrOfExamples.toString());
 			p.newGraph();
 		}
-		
 		p.newGraph();
        
         p.plot();
