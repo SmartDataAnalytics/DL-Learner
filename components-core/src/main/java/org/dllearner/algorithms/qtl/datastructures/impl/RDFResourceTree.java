@@ -200,6 +200,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
+	 * @param edge
+	 *            the edge from the root node to the possible child nodes
+	 * @return TRUE if there is at least one child connected by the given edge,
+	 *         otherwise FALSE
+	 */
+	public boolean hasChildren(Node edge) {
+		return edge2Children.get(edge) != null;
+	}
+	
+	/**
 	 * @return all distinct outgoing edges.
 	 */
 	public SortedSet<Node> getEdges() {
@@ -275,6 +285,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public String getStringRepresentation(Rendering syntax, String baseIRI, PrefixMapping pm) {
 		return getStringRepresentation(false, syntax, baseIRI, pm);
+	}
+	
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 * 
+	 * @param stopWhenLeafNode
+	 * @return
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
+		return getStringRepresentation(stopIfChildIsResourceNode, null, null, PrefixCCPrefixMapping.Full);
 	}
 	    
 	/**

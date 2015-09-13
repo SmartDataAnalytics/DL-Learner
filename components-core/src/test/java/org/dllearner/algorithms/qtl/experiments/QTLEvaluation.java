@@ -560,7 +560,7 @@ public class QTLEvaluation {
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
-//							if(!(sparqlQuery.contains("NetballPlayer")))continue;
+//							if(!(sparqlQuery.contains("VideoGame")))continue;
 							
 							tp.submit(new Runnable(){
 	
@@ -682,7 +682,7 @@ public class QTLEvaluation {
 				
 									} catch (Exception e) {
 										failed.set(true);
-										logger.error("Error occured.", e);
+										logger.error("Error occured for query\n" + sparqlQuery, e);
 										try {
 											StringWriter sw = new StringWriter();
 											PrintWriter pw = new PrintWriter(sw);

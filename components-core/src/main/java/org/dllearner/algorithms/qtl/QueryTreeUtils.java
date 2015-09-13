@@ -1100,43 +1100,83 @@ public class QueryTreeUtils {
 			SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(prop2);
 			subProperties.add(prop2);
 			
-			boolean edgeSubsumed = false;
-			
-			Iterator<OWLObjectProperty> iterator = subProperties.iterator();
-			while (!edgeSubsumed && iterator.hasNext()) {
-				OWLObjectProperty subProp  = iterator.next();
+			// for each subtree T2_sub in T2
+			for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
+				boolean childSubsumed = false;
 				
-				Node edge1 = OwlApiJenaUtils.asNode(subProp);
-				
-				List<RDFResourceTree> children1 = tree1.getChildren(edge1);
-				
-				if (children1 != null) {
-				
-					boolean childrenSubsumed = true;
-					for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
-						boolean childSubsumed = false;
-						
+				// for each sub edge
+				for(OWLObjectProperty subProp : subProperties) {
+					// check if there is a child in T_1 that is subsumed by
+					Node edge1 = OwlApiJenaUtils.asNode(subProp);
+					List<RDFResourceTree> children1 = tree1.getChildren(edge1);
+					
+					if(children1 != null) {
 						for (RDFResourceTree child1 : children1) {
 							if (QueryTreeUtils.isSubsumedBy(child1, child2, entailment, reasoner)) {
 								childSubsumed = true;
 								break;
 							}
 						}
-						if(!childSubsumed) {
-							childrenSubsumed = false;
-						}
 					}
-					
-					if(childrenSubsumed) {
-						edgeSubsumed = true;
+					if(childSubsumed) {
+						break;
 					}
 				}
-			}
-			
-			if(!edgeSubsumed) {
-				return false;
+				
+				// we found no subtree in T1 that is subsumed by t2_sub
+				if(!childSubsumed) {
+					return false;
+				}
 			}
 		}
+			
+		
+		// 2. compare the children
+//		for (Node edge2 : tree2.getEdges()) {
+//			
+//			// get sub properties
+//			OWLObjectProperty prop2 = OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY);
+//			SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(prop2);
+//			subProperties.add(prop2);
+//			
+//			boolean edgeSubsumed = false;
+//			
+//			Iterator<OWLObjectProperty> iterator = subProperties.iterator();
+//			while (!edgeSubsumed && iterator.hasNext()) {
+//				OWLObjectProperty subProp  = iterator.next();
+//				
+//				Node edge1 = OwlApiJenaUtils.asNode(subProp);
+//				
+//				List<RDFResourceTree> children1 = tree1.getChildren(edge1);
+//				
+//				if (children1 != null) {
+//				
+//					boolean childrenSubsumed = true;
+//					for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
+//						boolean childSubsumed = false;
+//						
+//						for (RDFResourceTree child1 : children1) {
+//							if (QueryTreeUtils.isSubsumedBy(child1, child2, entailment, reasoner)) {
+//								childSubsumed = true;
+//								break;
+//							}
+//						}
+//						if(!childSubsumed) {
+//							childrenSubsumed = false;
+//						}
+//					}
+//					
+//					if(childrenSubsumed) {
+//						edgeSubsumed = true;
+//					}
+//				}
+//			}
+//			
+//			if(!edgeSubsumed) {
+//				System.err.println("edge not subsumed");
+//				return false;
+//			}
+//		}
 		return true;
 	}
 	

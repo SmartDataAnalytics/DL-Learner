@@ -424,7 +424,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			currentElement = todoList.poll();
 			currentTree = currentElement.getTree();
 			
-			logger.trace("Next tree: {} ({})", currentElement.getBaseQueryTrees(), currentElement.getTreeScore().getAccuracy());
+			logger.trace("Next tree: {} ({})", currentElement.getBaseQueryTrees(), currentElement.getTreeScore());
 			
 			// generate the LGG between the chosen tree and each false negative resp. uncovered positive example
 			Collection<RDFResourceTree> falseNegatives = currentElement.getFalseNegatives();
@@ -437,7 +437,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			Iterator<RDFResourceTree> it = falseNegatives.iterator();
 			while (it.hasNext() && !(useDisjunction && isPartialSolutionTimeExpired()) && !isTimeExpired()) {
 				RDFResourceTree uncoveredTree = it.next();
-//				logger.info("Uncovered tree: "  + uncoveredTree.getStringRepresentation());
+				logger.trace("Uncovered tree: "  + uncoveredTree);
 				
 				// we should avoid the computation of lgg(t2,t1) if we already did lgg(t1,t2)
 				Set<RDFResourceTree> baseQueryTrees = Sets.newTreeSet(currentElement.getBaseQueryTrees());
@@ -461,6 +461,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				// redundancy check
 				boolean redundant = isRedundant(lgg);
 				if(redundant) {
+					logger.trace("redundant");
 					continue;
 				}
 				
@@ -468,7 +469,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				Set<EvaluatedRDFResourceTree> solutions = evaluate(lgg, true);
 				for (EvaluatedRDFResourceTree solution : solutions) {
 					solution.setBaseQueryTrees(baseQueryTrees);
-					
+					logger.trace("solution: {} ({})", solution.getBaseQueryTrees(), solution.getTreeScore());
 					expressionTests++;
 					double score = solution.getScore();
 					double mas = heuristic.getMaximumAchievableScore(solution);
@@ -488,7 +489,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 					} else if(bestCurrentScore == 1.0 || mas >= bestCurrentScore){ // add to ToDo list if max. achievable score is higher
 //						todo(solution);
 					} else {
-						logger.trace("Too weak:" + solution.getTreeScore());
+						logger.trace("Too weak: {}", solution.getTreeScore());
 //						System.err.println(solution.getEvaluatedDescription());
 //						System.out.println("Too general");
 //						System.out.println("MAS=" + mas + "\nBest=" + bestCurrentScore);
@@ -579,6 +580,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		for (EvaluatedRDFResourceTree evTree : todoList) {
 			if(QueryTreeUtils.sameTrees(tree, evTree.getTree())){
 				logger.trace("Not added to TODO list: Already contained in.");
+//				logger.trace(evTree.getBaseQueryTrees().toString());
 				return true;
 			}
 		}
@@ -684,6 +686,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			for (RDFResourceTree posTree : currentPosExampleTrees) {
 //				System.out.print(currentPosExampleTrees.indexOf(posTree) + ":");
 				if(!QueryTreeUtils.isSubsumedBy(posTree, tree, entailment, reasoner)){
+//					System.err.println(posTree.getStringRepresentation(true));System.err.println(tree.getStringRepresentation(true));
 //					System.out.println("FALSE");
 					uncoveredPositiveExampleTrees.add(posTree);
 				} else {
