@@ -175,6 +175,30 @@ public class Diagrams {
 				gnuplot += noise + "," + avgFscore + "\n";
 			}
 			
+			// precision
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement("SELECT noise,avg_precision_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"P\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
+			// recall
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement("SELECT noise,avg_recall_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"R\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
 			if(!h2data.isEmpty()) {
 				input.put(nrOfExamples, h2data);
 			}
