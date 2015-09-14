@@ -406,7 +406,7 @@ public class QTLEvaluation {
 	}
 	
 	private int getKBSize() {
-		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {[] a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
+		String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {?s a ?type . ?type a <http://www.w3.org/2002/07/owl#Class> .}";
 		
 		QueryExecution qe = qef.createQueryExecution(query);
 		ResultSet rs = qe.execSelect();
@@ -1944,6 +1944,7 @@ public class QTLEvaluation {
 		
 		// pred. acc
 		double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
+		
 		BigDecimal denominator = BigDecimal.valueOf(tp + fp).
 				multiply(BigDecimal.valueOf(tp + fn)).
 				multiply(BigDecimal.valueOf(tn + fp)).
