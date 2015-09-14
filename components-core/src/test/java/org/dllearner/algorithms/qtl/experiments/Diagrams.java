@@ -74,10 +74,16 @@ public class Diagrams {
 		measure2ColumnName.put(HeuristicType.FMEASURE, "avg_fscore_best_returned");
 		measure2ColumnName.put(HeuristicType.PRED_ACC, "avg_predacc_best_returned");
 		measure2ColumnName.put(HeuristicType.MATTHEWS_CORRELATION, "avg_mathcorr_best_returned");
+		
 		HeuristicType[] measures = {
 				HeuristicType.PRED_ACC, 
 				HeuristicType.FMEASURE, 
 				HeuristicType.MATTHEWS_CORRELATION};
+		
+		String[] labels = {
+				"A_1", 
+				"F_1", 
+				"MCC"};
 		
 		// get distinct noise intervals
 		
@@ -118,7 +124,9 @@ public class Diagrams {
 			String gnuplot = "";
 			
 			Map<HeuristicType, double[][]> h2data = new TreeMap<>();
-			for (HeuristicType measure : measures) {
+			for(int i = 0; i < measures.length; i++) {
+				HeuristicType measure = measures[i];
+				
 				ps = conn.prepareStatement(String.format(sql, measure2ColumnName.get(measure)));
 				ps.setString(1, measure.toString());
 				ps.setInt(2, nrOfExamples);
@@ -145,7 +153,7 @@ public class Diagrams {
 						row++;
 					}
 					
-					gnuplot += "\"" + measure.name() + "\"" + "\n";
+					gnuplot += "\"" + labels[i] + "\"" + "\n";
 					for (double[] line : data) {
 						gnuplot += Joiner.on(",").join(Arrays.asList(ArrayUtils.toObject(line)));
 						gnuplot += "\n";
@@ -155,6 +163,18 @@ public class Diagrams {
 					 s += "\n";
 				}
 			}
+			
+			// baseline
+			ps = conn.prepareStatement("SELECT noise,avg_fscore_baseline from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			ResultSet rs = ps.executeQuery();
+			gnuplot += "\"baseline\"\n";
+			while(rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
 			if(!h2data.isEmpty()) {
 				input.put(nrOfExamples, h2data);
 			}
@@ -163,7 +183,7 @@ public class Diagrams {
 			Files.write(gnuplot.trim(), new File(dir, "noiseVsScore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
 		}
 		if(!input.isEmpty()) {
-			plotNoiseVsFscore(input);
+//			plotNoiseVsFscore(input);
 		}
 		
 	}
