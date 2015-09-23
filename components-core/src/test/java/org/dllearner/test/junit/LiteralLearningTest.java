@@ -73,7 +73,7 @@ public final class LiteralLearningTest {
 //			org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
 //			ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-			ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//			ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 
 			File file = new File(owlfile);
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
@@ -175,7 +175,7 @@ public final class LiteralLearningTest {
 	
 	@Test
 	public void numericTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "9");
+		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "55");
 	}
 
 	@Test
