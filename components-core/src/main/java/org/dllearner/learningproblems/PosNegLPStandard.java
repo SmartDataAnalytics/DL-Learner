@@ -112,7 +112,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		return getReasoningUtil().getAccuracyOrTooWeak(accuracyMethod, description, positiveExamples, negativeExamples, noise);
+		return getReasoningUtil().getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
 	/* (non-Javadoc)

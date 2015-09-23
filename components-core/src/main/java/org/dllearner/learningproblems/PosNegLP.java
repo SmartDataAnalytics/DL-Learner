@@ -30,6 +30,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -151,6 +152,7 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 	    return accuracyMethod;
 	}
 
+	@Autowired(required=false)
 	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
 	    this.accuracyMethod = accuracyMethod;
 	}

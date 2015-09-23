@@ -102,7 +102,7 @@ public class ReasoningUtils implements Component {
 		return rv;
 	}
 
-	public double getAccuracyOrTooWeak(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> positiveExamples,
+	public double getAccuracyOrTooWeak2(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> positiveExamples,
 			Set<OWLIndividual> negativeExamples, double noise) {
 		CoverageCount[] cc = this.getCoverageCount(description, positiveExamples, negativeExamples);
 		return accuracyMethod.compute2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);

@@ -37,8 +37,9 @@ public class ConfParserConfiguration implements IConfiguration {
     private final String typeProperty = "type";
 
     enum Rendering {
-    	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()), 
-    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, false));
+    	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()),
+    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, false)),
+    	MANCHESTER_SYNTAX_NL("manchester_nl", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, true));
     	
     	String name;
     	OWLObjectRenderer renderer;
@@ -121,7 +122,7 @@ public class ConfParserConfiguration implements IConfiguration {
         		return entry.getKey();
         	}
         }
-        // second option: use short name of @ComponentAnn annotation 
+        // second option: use short name of @ComponentAnn annotation
         // by convention, short names should always be lower case, but we still do it case insensitive
         BidiMap<Class<? extends Component>, String> componentsNamedShort = AnnComponentManager.getInstance().getComponentsNamedShort();
         for(Entry<Class<? extends Component>, String> entry : componentsNamedShort.entrySet()) {

@@ -36,6 +36,7 @@ import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.AccMethodPredAcc;
+import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.ReasoningUtils;
@@ -49,6 +50,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -384,9 +386,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				ReasoningUtils reasoningUtil = ((PosNegLP)learningProblem).getReasoningUtil();
 				
 				str += current + ": " + descriptionString + " (pred. acc.: "
-						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
-						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1))
-						+ ")\n";
+						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
+						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1));
+
+				AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
+				if ( !(accuracyMethod instanceof AccMethodPredAcc)
+						&& !(accuracyMethod instanceof AccMethodFMeasure) ) {
+					str += ", " + AnnComponentManager.getName(accuracyMethod) + ": " + dfPercent.format(ed.getAccuracy());
+				}
+				str += ")\n";
 			} else {
 				str += current + ": " + descriptionString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
