@@ -19,48 +19,10 @@
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-apibinding</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-api</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-impl</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-ext</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>interfaces</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>owlapi</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.secondstring</groupId>
@@ -124,10 +86,6 @@
 			<groupId>weka</groupId>
 			<artifactId>weka</artifactId>
 			<version>3.6.5</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
 		</dependency>
 		<dependency>
 		    <groupId>org.semanticweb.elk</groupId>
