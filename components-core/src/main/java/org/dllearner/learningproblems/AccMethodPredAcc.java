@@ -17,7 +17,7 @@ public class AccMethodPredAcc implements AccMethodTwoValued {
 	}
 
 	@Override
-	public double compute2(int tp, int fn, int fp, int tn, double noise) {
+	public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
 		int posExamples = tp + fn;
 		int allExamples = posExamples + fp + tn;
 		

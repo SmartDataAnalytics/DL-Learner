@@ -17,7 +17,7 @@ public class AccMethodFMeasure implements AccMethodTwoValued {
 	}
 
 	@Override
-	public double compute2(int tp, int fn, int fp, int tn, double noise) {
+	public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
 		double recall = Heuristics.divideOrZero( tp , tp+fn );
 
 		if(recall == 0 || recall < 1 - noise) {

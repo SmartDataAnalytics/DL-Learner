@@ -100,7 +100,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 		Coverage[] cc = getReasoningUtil().getCoverage(concept, positiveExamples, negativeExamples);
 
 		// TODO: this computes accuracy twice - more elegant method should be implemented
-		double accuracy = accuracyMethod.compute2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
+		double accuracy = accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
 
 		return new ScoreTwoValued(
 				OWLClassExpressionUtils.getLength(concept),

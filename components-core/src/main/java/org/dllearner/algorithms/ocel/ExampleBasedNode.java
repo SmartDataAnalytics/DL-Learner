@@ -255,7 +255,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		int fp = coveredNegatives.size();
 		int tn = nrOfNegativeExamples - fp;
 		int fn = nrOfPositiveExamples - tp;
-		return this.accuracyMethod.compute2(tp, fn, fp, tn, 1);
+		return this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
 	}
 	
 	/**

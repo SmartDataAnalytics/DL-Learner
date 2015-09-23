@@ -12,5 +12,5 @@ public interface AccMethodTwoValued extends Component {
 	 * @param noise Noise
 	 * @return accuracy value or -1 if too weak
 	 */
-	double compute2(int tp, int fn, int fp, int tn, double noise);
+	double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise);
 }
