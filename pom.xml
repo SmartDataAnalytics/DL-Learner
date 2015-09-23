@@ -18,7 +18,7 @@
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
         <solr.version>5.2.1</solr.version>
-        <owlapi.version>3.5.1</owlapi.version>
+        <owlapi.version>3.5.3</owlapi.version>
         <spring.version>3.2.13.RELEASE</spring.version>
         <jena.sparql.api.version>2.12.1-8</jena.sparql.api.version>
 	</properties>
@@ -387,6 +387,12 @@
 				<artifactId>commons-pool2</artifactId>
 				<version>2.4.1</version>
 			</dependency>
+			
+			<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.2</version>
+		</dependency>
 
 			<dependency>
 				<groupId>org.aksw.jena-sparql-api</groupId>
@@ -461,7 +467,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.4.187</version>
+				<version>1.4.189</version>
 			</dependency>
 
 			<dependency>
@@ -470,11 +476,16 @@
 				<version>5.1.36</version>
 			</dependency>
 
-			<!--GWT Dependencies -->
 			<dependency>
-				<groupId>postgresql</groupId>
+				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>8.4-701.jdbc4</version>
+				<version>9.4-1203-jdbc42</version>
+			</dependency>
+
+			<dependency>
+				<groupId>weka</groupId>
+				<artifactId>weka</artifactId>
+				<version>3.6.5</version>
 			</dependency>
 
 			<dependency>
