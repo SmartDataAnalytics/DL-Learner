@@ -60,7 +60,8 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.w3c.dom.DOMException;
@@ -1263,7 +1264,7 @@ public class QALDExperiment {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);

@@ -12,7 +12,8 @@ import java.util.Stack;
 import java.util.TreeSet;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -672,7 +673,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();

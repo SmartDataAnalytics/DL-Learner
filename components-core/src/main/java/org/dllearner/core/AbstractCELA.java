@@ -42,15 +42,12 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -91,7 +88,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCELA.class);
 	
-	protected OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();// DLSyntaxObjectRenderer();
+	protected OWLObjectRenderer renderer = StringRenderer.getRenderer();
 	
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
@@ -369,7 +366,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	// central function for printing description
 	protected String descriptionToString(OWLClassExpression description) {
-		return renderer.render(description);//OWLAPIRenderers.toManchesterOWLSyntax(description);
+		return renderer.render(description);
 	}
 		
 	

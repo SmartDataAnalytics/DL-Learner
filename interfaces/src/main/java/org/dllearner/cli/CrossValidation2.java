@@ -18,14 +18,15 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.StringRenderer;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -33,7 +34,6 @@ import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import com.google.common.collect.Sets;
 
@@ -56,9 +56,9 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 	public CrossValidation2(AbstractCELA la, AbstractClassExpressionLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
 		super();
-		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		ToStringRenderer.getInstance().setRenderer(renderer);
-		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
+		StringRenderer.setRenderer(renderer);
+		StringRenderer.setShortFormProvider(new SimpleShortFormProvider());
 
 		// the training and test sets used later on
 		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();

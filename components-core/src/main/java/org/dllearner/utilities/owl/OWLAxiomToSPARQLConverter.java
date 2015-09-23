@@ -2,7 +2,8 @@ package org.dllearner.utilities.owl;
 
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
@@ -248,7 +249,7 @@ public class OWLAxiomToSPARQLConverter implements OWLAxiomVisitor{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLAxiomToSPARQLConverter converter = new OWLAxiomToSPARQLConverter();
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();

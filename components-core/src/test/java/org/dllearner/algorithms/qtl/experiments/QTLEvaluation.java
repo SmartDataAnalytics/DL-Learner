@@ -68,7 +68,8 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -1978,7 +1979,7 @@ public class QTLEvaluation {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(QTLEvaluation.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);

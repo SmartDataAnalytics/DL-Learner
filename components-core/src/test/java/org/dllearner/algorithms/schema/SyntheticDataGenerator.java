@@ -8,7 +8,8 @@ import java.util.List;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
@@ -131,7 +132,7 @@ public class SyntheticDataGenerator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		SyntheticDataGenerator dataGenerator = new SyntheticDataGenerator();
 		
 		OWLOntology ontology = dataGenerator.createData(3, 10);

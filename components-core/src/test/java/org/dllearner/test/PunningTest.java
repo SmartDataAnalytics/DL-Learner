@@ -21,7 +21,8 @@ import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -73,7 +74,7 @@ public class PunningTest {
 	
 	@Test
 	public void testPunning() throws OWLOntologyCreationException, ComponentInitException{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLOntology ontology = loadExample();
 		OWLDataFactory df = new OWLDataFactoryImpl();
 		

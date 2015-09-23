@@ -32,7 +32,8 @@ import org.dllearner.scripts.MouseDiabetesCBD;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -227,7 +228,7 @@ public class MouseDiabetes2 {
     private static void setUp() {
         logger.setLevel(Level.DEBUG);
         Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
-        ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+        StringRenderer.setRenderer(Rendering.DL_SYNTAX);
     }
 
     public static OWLOntology readCBD() {

@@ -19,7 +19,8 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -72,8 +73,8 @@ public final class LiteralLearningTest {
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
 //			org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
-//			ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-//			ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//			StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
+//			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 
 			File file = new File(owlfile);
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);

@@ -48,7 +48,8 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLProperty;
 
@@ -204,7 +205,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
 		QueryExecutionFactory qef = FluentQueryExecutionFactory

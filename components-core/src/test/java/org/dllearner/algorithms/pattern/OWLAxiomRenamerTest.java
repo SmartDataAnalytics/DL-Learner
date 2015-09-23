@@ -5,7 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -57,7 +58,7 @@ public class OWLAxiomRenamerTest {
 
 	@Test
 	public void testRename() {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLAxiom ax1 = df.getOWLSubClassOfAxiom(clsA, clsB);
 		OWLAxiom ax2 = df.getOWLSubClassOfAxiom(clsB, clsC);
 		

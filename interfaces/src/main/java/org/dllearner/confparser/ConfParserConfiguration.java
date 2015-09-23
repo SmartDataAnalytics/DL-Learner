@@ -15,10 +15,8 @@ import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
-import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
@@ -36,28 +34,6 @@ public class ConfParserConfiguration implements IConfiguration {
     private final String baseDir;
     private final String typeProperty = "type";
 
-    enum Rendering {
-    	DL_SYNTAX("dlsyntax", new DLSyntaxObjectRenderer()),
-    	MANCHESTER_SYNTAX("manchester", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, false)),
-    	MANCHESTER_SYNTAX_NL("manchester_nl", new ManchesterOWLSyntaxOWLObjectRendererImplExt(true, true));
-    	
-    	String name;
-    	OWLObjectRenderer renderer;
-    	
-    	Rendering(String name, OWLObjectRenderer render) {
-    		this.name = name;
-    		this.renderer = render;
-    	}
-    	
-		public String getName() {
-			return name;
-		}
-    	
-    	public OWLObjectRenderer getRenderer() {
-    		return renderer;
-    	}
-    }
-
     public ConfParserConfiguration(Resource source) {
         try {
 //          baseDir = source.getFile().getAbsoluteFile().getParent();
@@ -70,17 +46,12 @@ public class ConfParserConfiguration implements IConfiguration {
             parser.Start();
             
             // setup rendering TODO put it into CLI
-            Rendering rendering = Rendering.MANCHESTER_SYNTAX;
             ConfFileOption renderingOption = parser.getConfOptionsByProperty("rendering");
             if(renderingOption != null) {
-            	String syntax = renderingOption.getPropertyValue();
-                for (Rendering r : Rendering.values()) {
-    				if(syntax.equals(r.getName())) {
-    					rendering = r;
-    				}
-    			}
+            	StringRenderer.setRenderer(renderingOption.getPropertyValue());
+            } else {
+            	StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
             }
-            ToStringRenderer.getInstance().setRenderer(rendering.getRenderer());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {

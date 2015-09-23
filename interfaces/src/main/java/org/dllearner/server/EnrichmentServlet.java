@@ -90,7 +90,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 public class EnrichmentServlet extends HttpServlet {
 
@@ -277,7 +277,7 @@ public class EnrichmentServlet extends HttpServlet {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		List<Future<JSONObject>> list = new ArrayList<Future<JSONObject>>();
 		
-		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 //		renderer.setShortFormProvider(new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
 		
 

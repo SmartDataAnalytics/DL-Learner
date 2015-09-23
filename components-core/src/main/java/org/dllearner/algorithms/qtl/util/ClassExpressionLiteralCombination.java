@@ -6,7 +6,8 @@ package org.dllearner.algorithms.qtl.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -44,7 +45,7 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 /**
  * @author Lorenz Buehmann
@@ -314,7 +315,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
 		OWLDataFactoryImpl df = new OWLDataFactoryImpl();
 		PrefixManager pm = new DefaultPrefixManager(":");
 		OWLClass A = df.getOWLClass("A", pm );

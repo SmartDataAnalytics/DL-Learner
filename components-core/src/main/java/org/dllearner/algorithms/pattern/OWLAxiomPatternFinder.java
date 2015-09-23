@@ -42,7 +42,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyLoaderConfiguration;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -80,7 +80,7 @@ public class OWLAxiomPatternFinder {
 	private PreparedStatement insertPatternIdPs;
 	private PreparedStatement insertOntologyPatternPs;
 	
-	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+	private OWLObjectRenderer axiomRenderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 	
 	private boolean randomOrder = false;
 

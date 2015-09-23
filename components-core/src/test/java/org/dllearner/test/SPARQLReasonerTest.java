@@ -16,7 +16,8 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -33,7 +34,7 @@ public class SPARQLReasonerTest {
 
 
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		
 		Model model = RDFDataMgr.loadModel("../examples/swore/swore.rdf");
 		LocalModelBasedSparqlEndpointKS ks = new LocalModelBasedSparqlEndpointKS(model, true);

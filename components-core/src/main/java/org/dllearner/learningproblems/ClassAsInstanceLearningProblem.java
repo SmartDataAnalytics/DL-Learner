@@ -21,7 +21,8 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -228,7 +229,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	}
 	
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		File file = new File("../examples/father.owl");
 		OWLClass cls1 = new OWLClassImpl(IRI.create("http://example.com/father#male"));
 		OWLClass cls2 = new OWLClassImpl(IRI.create("http://example.com/father#female"));

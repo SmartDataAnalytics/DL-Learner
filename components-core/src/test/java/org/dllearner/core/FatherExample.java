@@ -10,13 +10,14 @@ import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 /**
  * A basic example how to use DL-Learner.
@@ -33,7 +34,7 @@ public class FatherExample {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
 		
 		// setup the knowledge base
 		File file = new File("../examples/father.owl");

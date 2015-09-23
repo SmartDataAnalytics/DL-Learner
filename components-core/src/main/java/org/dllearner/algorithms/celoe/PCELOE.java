@@ -1228,7 +1228,7 @@ public class PCELOE extends AbstractCELA {
 	}
 
 	public static void main(String[] args) throws Exception{
-//		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getRootLogger().setLevel(Level.INFO);
 		Logger.getLogger(PCELOE.class).setLevel(Level.DEBUG);
 		Logger.getLogger(PCELOE.class).addAppender(new FileAppender(new PatternLayout( "[%t] %c: %m%n" ), "log/parallel_run.txt", false));

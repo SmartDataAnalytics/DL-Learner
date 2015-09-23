@@ -25,7 +25,8 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -3253,7 +3254,7 @@ public class Reactome {
         logger.setLevel(Level.DEBUG);
         Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
         Logger.getLogger(ELDown.class).setLevel(Level.TRACE);
-        ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+        StringRenderer.setRenderer(Rendering.DL_SYNTAX);
     }
     
     private static Set<OWLIndividual> makeIndividuals(List<String> uris) {

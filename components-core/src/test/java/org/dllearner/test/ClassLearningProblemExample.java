@@ -18,7 +18,8 @@ import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.EvaluatedDescriptionClass;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -34,7 +35,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 public class ClassLearningProblemExample {
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		
 		// load a knowledge base
 		String ontologyPath = "../examples/swore/swore.rdf";

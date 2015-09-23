@@ -16,7 +16,8 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -511,7 +512,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
 		PrefixManager pm = new DefaultPrefixManager("http://example.org/");

@@ -42,6 +42,8 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.core.Score;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLFile;
@@ -51,15 +53,12 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.QueryTreeScore;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -70,7 +69,7 @@ import com.jamonapi.MonitorFactory;
 public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private static final Logger logger = LoggerFactory.getLogger(QTL2Disjunctive.class);
-	private final DecimalFormat dFormat = new DecimalFormat("0.00"); 
+	private final DecimalFormat dFormat = new DecimalFormat("0.00");
 	
 	private SparqlEndpointKS ks;
 	
@@ -231,8 +230,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		startPosExamplesSize = currentPosExampleTrees.size();
 		
 		//console rendering of class expressions
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
+		StringRenderer.setShortFormProvider(new SimpleShortFormProvider());
 		
 		//compute the LGG for all examples
 		//this allows us to prune all other trees because we can omit paths in trees which are contained in all positive
@@ -372,7 +371,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	private void postProcess() {
 		logger.trace("Post processing ...");
-		// pick solutions with same accuracy, i.e. in the pos only case 
+		// pick solutions with same accuracy, i.e. in the pos only case
 		// covering the same number of positive examples
 		SortedSet<EvaluatedRDFResourceTree> solutions = getSolutions();
 		// pick solutions with accuracy above
@@ -414,7 +413,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		for (RDFResourceTree posTree : currentPosExampleTrees) {
 			index.put(posTree, id++);
 		}
-		Set<Set<RDFResourceTree>> processedCombinations = new HashSet<>(); 
+		Set<Set<RDFResourceTree>> processedCombinations = new HashSet<>();
 		
 		while(!partialSolutionTerminationCriteriaSatisfied()){
 			logger.trace("ToDo list size: " + todoList.size());
@@ -569,7 +568,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * @return TRUE if the query tree is already contained in the solutions or 
+	 * @return TRUE if the query tree is already contained in the solutions or
 	 * todo list, otherwise FALSE
 	 */
 	private boolean isRedundant(RDFResourceTree tree) {
@@ -623,8 +622,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		//compute score
 		int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
 		double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
-		double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
-						? 0 
+		double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0)
+						? 0
 						: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExampleTrees.size());
 		
 		double coverageScore = Heuristics.getFScore(recall, precision, beta);
@@ -644,12 +643,12 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		//3.compute the total score
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
-		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
+		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
 				new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
 				coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
 				specifityScore, nrOfSpecificNodes);
 		
-//		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
+//		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
 //				null,null,null,null,
 //				specifityScore, nrOfSpecificNodes);
 		
@@ -674,8 +673,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
 		strategies = new LiteralNodeSubsumptionStrategy[]{
-				LiteralNodeSubsumptionStrategy.DATATYPE, 
-//				LiteralNodeSubsumptionStrategy.INTERVAL, 
+				LiteralNodeSubsumptionStrategy.DATATYPE,
+//				LiteralNodeSubsumptionStrategy.INTERVAL,
 //				LiteralNodeSubsumptionStrategy.MIN,
 //				LiteralNodeSubsumptionStrategy.MAX,
 				};
@@ -707,8 +706,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			// compute score
 			int coveredPositiveExamples = currentPosExampleTrees.size() - uncoveredPositiveExampleTrees.size();
 			double recall = coveredPositiveExamples / (double)currentPosExampleTrees.size();
-			double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0) 
-							? 0 
+			double precision = (coveredNegativeExampleTrees.size() + coveredPositiveExamples == 0)
+							? 0
 							: coveredPositiveExamples / (double)(coveredPositiveExamples + coveredNegativeExampleTrees.size());
 			
 			double coverageScore = Heuristics.getFScore(recall, precision, beta);
@@ -728,7 +727,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			// 3.compute the total score
 			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 			
-			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore, 
+			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
 					new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
 					coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
 					specifityScore, nrOfSpecificNodes);
@@ -775,8 +774,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			
 			//compute score
 			double recall = coveredPosExamples.size() / (double)currentPosExamples.size();
-			double precision = (coveredNegExamples.size() + coveredPosExamples.size() == 0) 
-							? 0 
+			double precision = (coveredNegExamples.size() + coveredPosExamples.size() == 0)
+							? 0
 							: coveredPosExamples.size() / (double)(coveredPosExamples.size() + coveredNegExamples.size());
 			
 			double coverageScore = Heuristics.getFScore(recall, precision, beta);
@@ -797,13 +796,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 			
 			QueryTreeScore queryTreeScore = new QueryTreeScore(
-					score, coverageScore, 
+					score, coverageScore,
 					coveredPosExamples, uncoveredPosExamples,
 					coveredNegExamples, uncoveredNegExamples,
 					specifityScore, nrOfSpecificNodes);
 			
 			//TODO use only the heuristic to compute the score
-			EvaluatedRDFResourceTree evaluatedTree = new EvaluatedRDFResourceTree(tree, 
+			EvaluatedRDFResourceTree evaluatedTree = new EvaluatedRDFResourceTree(tree,
 					asQueryTrees(uncoveredPosExamples), asQueryTrees(coveredNegExamples), queryTreeScore);
 			score = heuristic.getScore(evaluatedTree);
 			queryTreeScore.setScore(score);
@@ -849,8 +848,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				
 				//compute the coverage
 				double recall = posCovered.size() / (double)lp.getPositiveExamples().size();
-				double precision = (posCovered.size() + negCovered.size() == 0) 
-								? 0 
+				double precision = (posCovered.size() + negCovered.size() == 0)
+								? 0
 								: posCovered.size() / (double)(posCovered.size() + negCovered.size());
 				
 				double coverageScore = Heuristics.getFScore(recall, precision, beta);
@@ -920,6 +919,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //	}
 	
 //	@Autowired
+	@Override
 	public void setReasoner(AbstractReasonerComponent reasoner){
 		super.setReasoner(reasoner);
 //		loadModel();
@@ -1061,6 +1061,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	/**
 	 * @param maxExecutionTimeInSeconds the maxExecutionTimeInSeconds to set
 	 */
+	@Override
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}

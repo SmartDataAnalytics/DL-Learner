@@ -9,7 +9,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.junit.Test;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -32,7 +33,7 @@ public class SchemaGeneratorTest extends TestCase{
 	 */
 	@Override
 	protected void setUp() throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(SimpleSchemaGenerator.class).setLevel(Level.TRACE);
 	}
 	

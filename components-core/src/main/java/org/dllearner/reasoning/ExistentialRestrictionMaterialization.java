@@ -13,7 +13,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -293,7 +294,7 @@ public class ExistentialRestrictionMaterialization {
 
 	
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		String s = "@prefix : <http://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
 				+ "@prefix owl: <http://www.w3.org/2002/07/owl#> ."

@@ -46,7 +46,8 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -110,7 +111,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.EPC_OE);
 		reasoner.init();
 		baseURI = reasoner.getBaseURI();
@@ -265,7 +266,7 @@ public class RefinementOperatorTests {
 	
 	@Test
 	public void rhoDownTestPellet() throws ComponentInitException {
-		ToStringRenderer.getInstance().setRenderer(new org.dllearner.utilities.owl.DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getRootLogger().setLevel(Level.TRACE);
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
 		reasoner.init();
