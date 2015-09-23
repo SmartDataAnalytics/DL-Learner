@@ -83,7 +83,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -144,6 +143,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@ConfigOption(name = "useGenericSplitsCode", description = "Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended", defaultValue = "false")
 	private boolean useGenericSplitsCode = false;
 	
+	@ConfigOption(description = "Whether to use SPARQL1.1 Value Lists", defaultValue = "false")
+	private boolean useValueLists = false;
+
 	private QueryExecutionFactory qef;
 
 	private SparqlEndpointKS ks;
@@ -459,56 +461,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		if(precomputeClassHierarchy) {
 			if(!prepared){
 				hierarchy = prepareSubsumptionHierarchyFast();
-//				logger.info("Preparing class subsumption hierarchy ...");
-//				long startTime = System.currentTimeMillis();
-//				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-//						);
-//				TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-//						);
-//
-//				// parents/children of top ...
-//				SortedSet<OWLClassExpression> topClasses = getSubClassesImpl(df.getOWLThing());
-//				subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
-//				subsumptionHierarchyDown.put(df.getOWLThing(), topClasses);
-//
-//				// ... bottom ...
-//				SortedSet<OWLClassExpression> leafClasses = getSuperClassesImpl(df.getOWLNothing());
-//				subsumptionHierarchyUp.put(df.getOWLNothing(), leafClasses);
-//				subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
-//
-//				// ... and named classes
-//				Set<OWLClass> atomicConcepts;
-//				if(ks.isRemote()){
-//					atomicConcepts = new SPARQLTasks(ks.getEndpoint()).getAllClasses();
-//				} else {
-//					atomicConcepts = new TreeSet<OWLClass>();
-//					for(OntClass cls :  ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().toList()){
-//						if(!cls.isAnon()){
-//							atomicConcepts.add(df.getOWLClass(IRI.create(cls.getURI())));
-//						}
-//					}
-//				}
-//
-//				SortedSet<OWLClassExpression> tmp;
-//				for (OWLClass cls : atomicConcepts) {
-//					tmp = getSubClassesImpl(cls);
-//					subsumptionHierarchyDown.put(cls, tmp);
-//
-//					// put to super classes of owl:Nothing if class has no children
-//					if(tmp.isEmpty()) {
-//						leafClasses.add(cls);
-//					}
-//
-//					tmp = getSuperClassesImpl(cls);
-//					subsumptionHierarchyUp.put(cls, tmp);
-//
-//					// put to sub classes of owl:Thing if class has no parents
-//					if(tmp.isEmpty()) {
-//						topClasses.add(cls);
-//					}
-//				}
-//				logger.info("... done in {}ms", (System.currentTimeMillis()-startTime));
-//				hierarchy = new ClassHierarchy(subsumptionHierarchyUp, subsumptionHierarchyDown);
+
 				prepared = true;
 			}
 		} else {
@@ -1232,21 +1185,19 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			return result;
 		} else { // complex class expressions
 			//TODO use ASK queries
-			SortedSet<OWLIndividual> individuals = getIndividuals(description);
+			SortedSet<OWLIndividual> individuals = getIndividuals(description, Collections.singleton(individual));
 			return individuals.contains(individual);
 //			String queryBody = converter.convert("?ind", description);
 //			queryBody = queryBody.replace("?ind", "<" + individual.toStringID() + ">");
 //			String query = "ASK {" + queryBody + "}";
 //			// FIXME universal and cardinality restrictions do not work with ASK queries
-//			boolean result = executeAskQuery(query);
-//			return result;
 		}
 	}
 
 	@Override
 	public SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression description, Set<OWLIndividual> individuals) {
-		SortedSet<OWLIndividual> allIndividuals = getIndividuals(description);
-		allIndividuals.retainAll(individuals);
+		SortedSet<OWLIndividual> allIndividuals = getIndividuals(description, individuals);
+		//allIndividuals.retainAll(individuals);
 		return allIndividuals;
 	}
 
@@ -1255,12 +1206,16 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return getIndividuals(description, 0);
 	}
 
-	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit) {
+	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
 		// we need to copy it to get something like A AND B from A AND A AND B
 		description = duplicator.duplicateObject(description);
 		
 		SortedSet<OWLIndividual> individuals = new TreeSet<OWLIndividual>();
 		String query = converter.asQuery("?ind", description, false).toString();//System.out.println(query);
+		if (indValues != null) {
+			System.err.println(query);
+			System.exit(1); // XXX
+		}
 		if(limit != 0) {
 			query += " LIMIT " + limit;
 		}
@@ -1275,6 +1230,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		logger.debug(sparql_debug, "get individuals result: " + individuals);
 		return individuals;
+	}
+	
+	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, int limit) {
+		return getIndividuals(description, limit, null);
+	}
+	
+	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description, Set<OWLIndividual> indValues) {
+		return getIndividuals(description, 0, indValues);
 	}
 
 	/**
@@ -2405,6 +2368,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public void setSynchronized() {
 		throw new NotImplementedException("Method setSynchronized() not implemented yet!");
+	}
+
+	public boolean isUseValueLists() {
+		return useValueLists;
+	}
+
+	public void setUseValueLists(boolean useValueLists) {
+		this.useValueLists = useValueLists;
 	}
 
 }

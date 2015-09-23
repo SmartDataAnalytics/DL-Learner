@@ -19,6 +19,7 @@
 
 package org.dllearner.core;
 
+import org.dllearner.utilities.ReasoningUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
@@ -32,14 +33,29 @@ public abstract class AbstractClassExpressionLearningProblem<T extends Score>  e
 	public AbstractClassExpressionLearningProblem(){
 
     }
+
+	private ReasoningUtils reasoningUtil;
+
 	/**
 	 * Constructs a learning problem using a reasoning service for
-	 * querying the background knowledge. It can be used for 
+	 * querying the background knowledge. It can be used for
 	 * evaluating solution candidates.
-	 * @param reasoner The reasoning service used as 
+	 * @param reasoner The reasoning service used as
 	 * background knowledge.
 	 */
 	public AbstractClassExpressionLearningProblem(AbstractReasonerComponent reasoner) {
+		if (this.reasoner != reasoner) {
+			this.reasoningUtil = new ReasoningUtils(reasoner);
+			this.reasoningUtil.init();
+		}
 		this.reasoner = reasoner;
+	}
+
+	public ReasoningUtils getReasoningUtil() {
+		return reasoningUtil;
+	}
+
+	public void setReasoningUtil(ReasoningUtils reasoningUtil) {
+		this.reasoningUtil = reasoningUtil;
 	}
 }

@@ -34,8 +34,11 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.AccMethodFMeasure;
+import org.dllearner.learningproblems.AccMethodPredAcc;
+import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.ReasoningUtils;
 import org.dllearner.utilities.datastructures.DescriptionSubsumptionTree;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
@@ -50,6 +53,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
@@ -153,15 +157,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractClassExpressionLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-//		
+//
 //		baseURI = reasoner.getBaseURI();
-//		prefixes = reasoner.getPrefixes();	
+//		prefixes = reasoner.getPrefixes();
 	}
 	
 	/**
 	 * Call this when you want to change the learning problem, but
 	 * leave everything else as is. Method can be used to apply
-	 * a configured algorithm to different learning problems. 
+	 * a configured algorithm to different learning problems.
 	 * Implementations, which do not only use the provided learning
 	 * algorithm variable, must make sure that a call to this method
 	 * indeed changes the learning problem.
@@ -174,7 +178,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	/**
 	 * Call this when you want to change the reasoning service, but
 	 * leave everything else as is. Method can be used to use
-	 * a configured algorithm with different reasoners. 
+	 * a configured algorithm with different reasoners.
 	 * Implementations, which do not only use the provided reasoning
 	 * service class variable, must make sure that a call to this method
 	 * indeed changes the reasoning service.
@@ -186,9 +190,9 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	/**
 	 * This is the maximum number of results, which the learning
-	 * algorithms are asked to store. (Note, that algorithms are not 
+	 * algorithms are asked to store. (Note, that algorithms are not
 	 * required to store any results except the best one, so this limit
-	 * is used to limit the performance cost for those which 
+	 * is used to limit the performance cost for those which
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
@@ -224,6 +228,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
+	@Override
 	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestDescriptions(nrOfDescriptions, false);
 	}
@@ -231,7 +236,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int,double,boolean)
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
-	 * @param filterNonMinimalDescriptions Remove non-minimal descriptions (e.g. those which can be shortened 
+	 * @param filterNonMinimalDescriptions Remove non-minimal descriptions (e.g. those which can be shortened
 	 * to an equivalent concept) from the returned set.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
@@ -249,7 +254,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			
 		}
 		return returnList;
-	}	
+	}
 	
 	/**
 	 * Returns the best descriptions obtained so far.
@@ -277,10 +282,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * 
 	 * @param accuracyThreshold Minimum accuracy. All class descriptions with lower
 	 * accuracy are disregarded. Specify a value between 0.0 and 1.0. Use 0.0 if
-	 * you do not want this filter to be active. 
+	 * you do not want this filter to be active.
 	 * 
-	 * @param filterNonMinimalDescriptions If true, non-minimal descriptions are 
-	 * filtered, e.g. ALL r.TOP (being equivalent to TOP), male AND male (can be 
+	 * @param filterNonMinimalDescriptions If true, non-minimal descriptions are
+	 * filtered, e.g. ALL r.TOP (being equivalent to TOP), male AND male (can be
 	 * shortened to male). Currently, non-minimal descriptions are just skipped,
 	 * i.e. they are completely omitted from the return list. Later, implementation
 	 * might be changed to return shortened versions of those descriptions.
@@ -329,6 +334,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @param nrOfDescriptions Maximum number of descriptions returned.
 	 * @return Return value is getCurrentlyBestDescriptions(nrOfDescriptions, 0.0, false).
 	 */
+	@Override
 	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, 0.0, false);
 	}
@@ -351,7 +357,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		
 	/**
 	 * Returns all learning problems supported by this component. This can be used to indicate that, e.g.
-	 * an algorithm is only suitable for positive only learning. 
+	 * an algorithm is only suitable for positive only learning.
 	 * @return All classes implementing learning problems, which are supported by this learning algorithm.
 	 */
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
@@ -371,8 +377,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
 			String descriptionString = descriptionToString(description);
-			if(learningProblem instanceof PosNegLPStandard) {
-				str += current + ": " + descriptionString + " (pred. acc.: " + dfPercent.format(((PosNegLPStandard)learningProblem).getPredAccuracyOrTooWeakExact(description,1)) + ", F-measure: "+ dfPercent.format(((PosNegLPStandard)learningProblem).getFMeasureOrTooWeakExact(description,1)) + ")\n";
+			if(learningProblem instanceof PosNegLP) {
+				Set<OWLIndividual> positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
+				Set<OWLIndividual> negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
+				ReasoningUtils reasoningUtil = ((PosNegLP)learningProblem).getReasoningUtil();
+				
+				str += current + ": " + descriptionString + " (pred. acc.: "
+						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
+						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1))
+						+ ")\n";
 			} else {
 				str += current + ": " + descriptionString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
 //				System.out.println(ed);
@@ -417,7 +430,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
 	
 	/**
-	 * Computes an internal object property hierarchy that only contains 
+	 * Computes an internal object property hierarchy that only contains
 	 * object properties that are allowed.
 	 * @return optimized object property hierarchy
 	 */
@@ -440,7 +453,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
 	
 	/**
-	 * Computes an internal data property hierarchy that only contains 
+	 * Computes an internal data property hierarchy that only contains
 	 * data properties that are allowed.
 	 * @return optimized data property hierarchy
 	 */
@@ -538,7 +551,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	@Override
 	public boolean isRunning() {
 		return isRunning;
-	}	
+	}
 	
 	public Set<OWLClass> getAllowedConcepts() {
 		return allowedConcepts;

@@ -31,6 +31,9 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
+import org.dllearner.learningproblems.AccMethodFMeasure;
+import org.dllearner.learningproblems.AccMethodFMeasureApprox;
+import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -216,7 +219,7 @@ public class HeuristicTests {
 		OWLIndividual[] neg1 = new OWLIndividual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
 		
 		// F-Measure and no approximations
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, HeuristicType.FMEASURE, false);
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, new AccMethodFMeasure(true));
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -224,7 +227,10 @@ public class HeuristicTests {
 //		System.out.println(problem.getFMeasureOrTooWeakExact(nc[1], 1));
 		
 		// F-Measure and approximations
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, HeuristicType.FMEASURE, true);
+		AccMethodFMeasureApprox accMethodFMeasureApprox = new AccMethodFMeasureApprox();
+		accMethodFMeasureApprox.setReasoner(reasoner);
+		accMethodFMeasureApprox.init();
+		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, accMethodFMeasureApprox);
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -299,18 +305,17 @@ public class HeuristicTests {
 	}
 	
 //	@SuppressWarnings("unchecked")
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, HeuristicType accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
 		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
 		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
-		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod, useApproximations);
+		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod);
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<OWLIndividual> positiveExamples, Set<OWLIndividual> negativeExamples, HeuristicType accuracyMethod, boolean useApproximations) throws ComponentInitException {
+	private static void configurePosNegStandardLP(PosNegLPStandard problem, Set<OWLIndividual> positiveExamples, Set<OWLIndividual> negativeExamples, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
 		problem.setPositiveExamples(positiveExamples);
 		problem.setNegativeExamples(negativeExamples);
 		problem.setAccuracyMethod(accuracyMethod);
-		problem.setUseApproximations(useApproximations);
 		problem.init();
 	}
 }
