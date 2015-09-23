@@ -300,5 +300,9 @@ public class Heuristics {
 		ret[1] = diff;
 		return ret;
 	}
+
+	public static double divideOrZero(int numerator, int denominator) {
+		return denominator == 0 ? 0 : numerator / (double)denominator;
+	}
 	
 }

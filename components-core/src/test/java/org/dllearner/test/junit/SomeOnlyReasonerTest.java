@@ -12,7 +12,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -77,8 +77,7 @@ public class SomeOnlyReasonerTest {
         PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
-        lp.setAccuracyMethod(HeuristicType.FMEASURE);
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.init();
         
         CELOE la = new CELOE(lp, rc);

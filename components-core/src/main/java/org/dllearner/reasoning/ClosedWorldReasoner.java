@@ -1038,7 +1038,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
@@ -1072,7 +1072,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
@@ -1100,7 +1100,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLClassExpression filler = ((OWLObjectMinCardinality) description).getFiller();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
@@ -1147,7 +1147,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			int number = ((OWLObjectMaxCardinality) description).getCardinality();
 			
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 						+ description + " unsupported. Inverse object properties not supported.");
 			}
 			
@@ -1208,26 +1208,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				}
 			}
 			return returnSet;
-		}
-//		else if (description instanceof BooleanValueRestriction) {
-//			DatatypeProperty dp = ((BooleanValueRestriction) description)
-//					.getRestrictedPropertyExpression();
-//			boolean value = ((BooleanValueRestriction) description).getBooleanValue();
-//
-//			if (value) {
-//				return (TreeSet<OWLIndividual>) bdPos.get(dp).clone();
-//			} else {
-//				return (TreeSet<OWLIndividual>) bdNeg.get(dp).clone();
-//			}
-//		}
-		else if (description instanceof OWLDataSomeValuesFrom) {
+		} else if (description instanceof OWLDataSomeValuesFrom) {
 			OWLDataPropertyExpression property = ((OWLDataSomeValuesFrom) description).getProperty();
 			OWLDataRange filler = ((OWLDataSomeValuesFrom) description).getFiller();
-			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
 			
 			if(filler.isDatatype()){
 				//we assume that the values are of the given datatype
@@ -1273,16 +1256,27 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 					}
 					return returnSet;
+				} 
+			} else if(filler.getDataRangeType() == DataRangeType.DATA_ONE_OF) {
+				OWLDataOneOf dataOneOf = (OWLDataOneOf) filler;
+				Set<OWLLiteral> values = dataOneOf.getValues();
+				
+				Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
+				SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+				
+				for(Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
+					OWLIndividual ind = entry.getKey();
+					SortedSet<OWLLiteral> indValues = entry.getValue();
+					
+					if(!Sets.intersection(values, indValues).isEmpty()) {
+						returnSet.add(ind);
+					}
 				}
+				return returnSet;
 			}
 		} else if (description instanceof OWLDataHasValue){
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
 			OWLLiteral value = ((OWLDataHasValue) description).getValue();
-			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
 			
 			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
 			
@@ -1297,7 +1291,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			return returnSet;
 		}
 			
-		throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
+		throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
 					+ description + " unsupported.");
 			
 	}

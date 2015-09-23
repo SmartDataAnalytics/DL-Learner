@@ -51,7 +51,7 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	public void setFuzzyEx(Map<OWLIndividual, Double> fuzzyEx) {
 		fuzzyExamples = new TreeSet<FuzzyIndividual>();
 		
-		Iterator<OWLIndividual> it = fuzzyEx.keySet().iterator();		
+		Iterator<OWLIndividual> it = fuzzyEx.keySet().iterator();
 		
 		while (it.hasNext()) {
 			OWLIndividual i = it.next();
@@ -60,35 +60,8 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	}
 
 	protected boolean useRetrievalForClassification = false;
-	protected UseMultiInstanceChecks useMultiInstanceChecks = UseMultiInstanceChecks.TWOCHECKS;
 	protected double percentPerLengthUnit = 0.05;
 	protected double totalTruth = 0;
-
-	/**
-	 * If instance checks are used for testing concepts (e.g. no retrieval), then
-	 * there are several options to do this. The enumeration lists the supported
-	 * options. These options are only important if the reasoning mechanism 
-	 * supports sending several reasoning requests at once as it is the case for
-	 * DIG reasoners.
-	 * 
-	 * @author Jens Lehmann
-	 *
-	 */
-	public enum UseMultiInstanceChecks {
-		/**
-		 * Perform a separate instance check for each example.
-		 */
-		NEVER,
-		/**
-		 * Perform one instance check for all positive and one instance check
-		 * for all negative examples.
-		 */
-		TWOCHECKS,
-		/**
-		 * Perform all instance checks at once.
-		 */
-		ONECHECK
-	};
 	
 	public FuzzyPosNegLP() {}
 	
@@ -122,8 +95,6 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	public void setPositiveExamples(SortedSet<OWLIndividual> set) {
 		this.positiveExamples=set;
 	}
-	
-	public abstract int coveredNegativeExamplesOrTooWeak(org.semanticweb.owlapi.model.OWLClassExpression concept);
 
 	public double getPercentPerLengthUnit() {
 		return percentPerLengthUnit;

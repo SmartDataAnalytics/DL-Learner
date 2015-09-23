@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -83,6 +84,8 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
+
+	private AccMethodTwoValued accuracyMethod;
 	
 	public ExampleBasedNode(OWLClassExpression concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
 //		this.configurator = configurator;
@@ -183,7 +186,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
@@ -206,7 +209,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "<b>acc: " + df.format(accuracy) + "% </b>";
 			
 			// comment this out to display the heuristic score with default parameters
@@ -230,7 +233,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
 			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
@@ -248,7 +251,11 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	}
 	
 	public double getAccuracy(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		return (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+		int tp = coveredPositives.size();
+		int fp = coveredNegatives.size();
+		int tn = nrOfNegativeExamples - fp;
+		int fn = nrOfPositiveExamples - tp;
+		return this.accuracyMethod.compute2(tp, fn, fp, tn, 1);
 	}
 	
 	/**
@@ -313,6 +320,10 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 
 	public void setPosOnlyCandidate(boolean isPosOnlyCandidate) {
 		this.isPosOnlyCandidate = isPosOnlyCandidate;
+	}
+
+	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
+		this.accuracyMethod = accuracyMethod;
 	}
 
 }

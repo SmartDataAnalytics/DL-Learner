@@ -31,7 +31,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.dllearner.algorithms.qtl.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
@@ -43,6 +42,7 @@ import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
+import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -362,11 +362,13 @@ public class ROLearner2 {
 		if (startDescription == null) {
 			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
+			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 		} else {
 			startNode = new ExampleBasedNode(startDescription,  negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			Set<OWLIndividual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
 			Set<OWLIndividual> coveredPositives = rs.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
+			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 		}
 
 		searchTree.addNode(null, startNode);
@@ -702,6 +704,7 @@ public class ROLearner2 {
 						newNode
 								.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
 						newNode.setCoveredExamples(positiveExamples, negativeExamples);
+						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 					}
 
 				}
@@ -767,6 +770,7 @@ public class ROLearner2 {
 						quality = (nrOfPositiveExamples - newlyCoveredPositives.size())
 								+ newlyCoveredNegatives.size();
 						newNode.setCoveredExamples(newlyCoveredPositives, newlyCoveredNegatives);
+						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 					}
 
 				}

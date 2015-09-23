@@ -27,7 +27,6 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.core.fuzzydll.FuzzyUnsupportedCodeException;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -60,7 +59,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	// and class instances to positive examples)
 	private double approxDelta = 0.05;
 	private boolean useApproximations;
-//	private boolean useFMeasure;	
+//	private boolean useFMeasure;
 	private boolean useOldDIGOptions = false;
 	
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
@@ -100,95 +99,12 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	public static String getName() {
 		return "fuzzy pos neg learning problem";
 	}
-	
-	/**
-	 * This method computes (using the reasoner) whether a concept is too weak.
-	 * If it is not weak, it returns the number of covered negative examples. It
-	 * can use retrieval or instance checks for classification.
-	 * 
-	 * @see org.dllearner.learningproblems.PosNegLP.UseMultiInstanceChecks
-	 * TODO: Performance could be slightly improved by counting the number of
-	 *       covers instead of using sets and counting their size.
-	 * @param concept
-	 *            The concept to test.
-	 * @return -1 if concept is too weak and the number of covered negative
-	 *         examples otherwise.
-	 */
-	@Override
-	public int coveredNegativeExamplesOrTooWeak(OWLClassExpression concept) {
-		try {
-			throw new FuzzyUnsupportedCodeException();
-		} catch (FuzzyUnsupportedCodeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.exit(0);
-		}
-//		if (useRetrievalForClassification) {
-//			SortedSet<OWLIndividual> posClassified = reasoner.getIndividuals(concept);
-//			SortedSet<OWLIndividual> negAsPos = Helper.intersection(negativeExamples, posClassified);
-//			SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
-//
-//			// the set is constructed piecewise to avoid expensive set
-//			// operations
-//			// on a large number of individuals
-//			for (OWLIndividual posExample : positiveExamples) {
-//				if (!posClassified.contains(posExample))
-//					posAsNeg.add(posExample);
-//			}
-//
-//			// too weak
-//			if (posAsNeg.size() > 0)
-//				return -1;
-//			// number of covered negatives
-//			else
-//				return negAsPos.size();
-//		} else {
-//			if (useMultiInstanceChecks != UseMultiInstanceChecks.NEVER) {
-//				// two checks
-//				if (useMultiInstanceChecks == UseMultiInstanceChecks.TWOCHECKS) {
-//					Set<OWLIndividual> s = reasoner.hasTypeFuzzyMembership(concept, positiveExamples);
-//					// if the concept is too weak, then do not query negative
-//					// examples
-//					if (s.size() != positiveExamples.size())
-//						return -1;
-//					else {
-//						s = reasoner.hasTypeFuzzyMembership(concept, negativeExamples);
-//						return s.size();
-//					}
-//					// one check
-//				} else {
-//					Set<OWLIndividual> s = reasoner.hasTypeFuzzyMembership(concept, allExamples);
-//					// test whether all positive examples are covered
-//					if (s.containsAll(positiveExamples))
-//						return s.size() - positiveExamples.size();
-//					else
-//						return -1;
-//				}
-//			} else {
-//				// SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
-//				SortedSet<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
-//
-//				for (OWLIndividual example : positiveExamples) {
-//					if (!reasoner.hasType(concept, example))
-//						return -1;
-//					// posAsNeg.add(example);
-//				}
-//				for (OWLIndividual example : negativeExamples) {
-//					if (reasoner.hasType(concept, example))
-//						negAsPos.add(example);
-//				}
-//
-//				return negAsPos.size();
-//			}
-//		}
-		return -1;
-	}
 
 	@Override
-	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {	
+	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
 		// delegates to the appropriate methods
-		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);				
-	}	
+		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
+	}
 	
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 		if(heuristic.equals(HeuristicType.PRED_ACC)) {
@@ -265,7 +181,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 						return -1;
 					}
 				}
-			}	
+			}
 			
 			double recall = instancesCovered/(double)positiveExamples.size();
 			
@@ -285,14 +201,14 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 					return approx[0];
 				}
 				
-			}		
+			}
 			
 			// standard computation (no approximation)
 			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
 //			if(instancesCovered + instancesDescription == 0) {
 //				precision = 0;
 //			}
-			return Heuristics.getFScore(recall, precision, 1);			
+			return Heuristics.getFScore(recall, precision, 1);
 		} else {
 			throw new Error("Approximation for " + heuristic + " not implemented.");
 		}
@@ -321,13 +237,13 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			}
 			
 			double recall = coveredInstances/(double)positiveExamples.size();
-			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);			
+			double precision = (additionalInstances + coveredInstances == 0) ? 0 : coveredInstances / (double) (coveredInstances + additionalInstances);
 			
 			return Heuristics.getFScore(recall, precision);
 			*/
 		} else {
 			throw new Error("Heuristic " + heuristic + " not implemented.");
-		}		
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -370,7 +286,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 		}
 		
-		double fuzzyAccuracy = descriptionMembership / (double)fuzzyExamples.size();
+		double fuzzyAccuracy = descriptionMembership / fuzzyExamples.size();
 		
 //		System.err.println("crispAccuracy = fuzzyAccuracy");
 //		crispAccuracy = fuzzyAccuracy;
@@ -401,13 +317,13 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				if(notCoveredPos >= maxNotCovered) {
 					return -1;
 				}
-			} 
+			}
 		}
 		for (OWLIndividual example : negativeExamples) {
 			if (!getReasoner().hasType(description, example)) {
 				notCoveredNeg++;
 			}
-		}		
+		}
 		return (positiveExamples.size() - notCoveredPos + notCoveredNeg) / (double) allExamples.size();
 	}
 	
@@ -460,7 +376,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			return -1;
 		}
 		double fuzzyPrecision = (coveredMembershipDegree + invertedCoveredMembershipDegree) == 0 ? 0: coveredMembershipDegree / (coveredMembershipDegree + invertedCoveredMembershipDegree);
-		double fuzzyFmeasure = Heuristics.getFScore(fuzzyRecall, fuzzyPrecision);		
+		double fuzzyFmeasure = Heuristics.getFScore(fuzzyRecall, fuzzyPrecision);
 
 		// double crispFmeasure = crispfMeasure(description, noise);
 		
@@ -537,9 +453,9 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 					if(upperBorderA + 0.1 < 1-noise) {
 						return -1;
 					}
-				}				
+				}
 			}
-		}	
+		}
 		
 		double recall = instancesCovered/(double)positiveExamples.size();
 		
@@ -577,7 +493,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				
 				double size;
 				if(estimatedA) {
-					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));					
+					size = getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate));
 				} else {
 					size = getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate));
 				}
@@ -592,7 +508,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
 		if(instancesCovered + instancesDescription == 0) {
 			precision = 0;
-		}	
+		}
 
 //		System.out.println("description: " + description);
 //		System.out.println("recall: " + recall);
@@ -707,6 +623,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 				getPercentPerLengthUnit(),
 				posAsPos, posAsNeg, negAsPos, negAsNeg,
 				accuracy);
-	}	
+	}
 	
 }
