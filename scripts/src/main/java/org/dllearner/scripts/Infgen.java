@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +15,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
-import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -29,34 +27,22 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredDataPropertyAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredDataPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredDisjointClassesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEntityAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentDataPropertiesAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredIndividualAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredInverseObjectPropertiesAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredObjectPropertyAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredObjectPropertyCharacteristicAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
 import org.semanticweb.owlapi.util.InferredPropertyAssertionGenerator;
 import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredSubDataPropertyAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredSubObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-//import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.ReasonerRegistry;
-import com.hp.hpl.jena.util.FileManager;
 
 
 public class Infgen {
@@ -149,7 +135,7 @@ public class Infgen {
 
 	private static void loadThroughJena(String in, String out) throws OWLOntologyCreationException, FileNotFoundException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create("file:///"+in));
+		OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File(in));
 		Model model = OwlApiJenaUtils.getModel(ontology);
 		System.out.println("ltj; size:"+model.size());
 		model.write(new FileOutputStream(out));
@@ -163,11 +149,7 @@ public class Infgen {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		System.out.println("Hallo welt!");
-
-		//String in = "DL-Learner/examples/family-benchmark/family-benchmark.owl";
-		String in = args.length > 0 ? args[0] : "DL-Learner/examples/carcinogenesis/carcinogenesis.owl";
+		String in = args.length > 0 ? args[0] : "../examples/carcinogenesis/carcinogenesis.owl";
 		if (args.length <= 1) {
 			loadThroughJena(in, in+".jena1");
 			reasonWithHermit(in, in+".her0");
