@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -127,10 +127,10 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	public static void main(String[] args) throws Exception {
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QueryExecutionFactory qef = SparqlServiceBuilder
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
-				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 		
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);

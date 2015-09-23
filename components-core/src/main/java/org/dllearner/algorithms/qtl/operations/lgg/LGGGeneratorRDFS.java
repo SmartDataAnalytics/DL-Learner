@@ -29,8 +29,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -50,12 +50,7 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -70,6 +65,10 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
  * 
@@ -208,10 +207,10 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QueryExecutionFactory qef = SparqlServiceBuilder
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
-				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
