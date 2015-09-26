@@ -91,15 +91,15 @@ public class ReasoningUtils implements Component {
 		if(reasoner instanceof SPARQLReasoner &&
 				!((SPARQLReasoner)reasoner).isUseSingleTypeChecks()) {
 			if (((SPARQLReasoner)reasoner).isUseValueLists()) {
-				System.err.println("Todo:count values");
+
 				for (int i = 0; i < sets.length; ++i) {
-					SortedSet<OWLIndividual> trueSet = reasoner.hasType(concept, sets[i]);
+					int trueCount = ((SPARQLReasoner) reasoner).getIndividualsCount(concept, sets[i]);
 
 					rv[i] = new CoverageCount();
 					rv[i].total = sets[i].size();
 
-					rv[i].trueCount = trueSet.size();
-					rv[i].falseCount = Sets.difference(sets[i], trueSet).size();
+					rv[i].trueCount = trueCount;
+					rv[i].falseCount = sets[i].size()- trueCount;
 				}
 			} else {
 				SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(concept);

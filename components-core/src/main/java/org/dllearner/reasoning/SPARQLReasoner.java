@@ -1253,6 +1253,49 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		return getIndividuals(description, 0, indValues);
 	}
 
+	public int getIndividualsCount(OWLClassExpression description, int limit, Set<OWLIndividual> indValues) {
+		description = duplicator.duplicateObject(description);
+		
+		String query;
+		
+		if (indValues != null) {
+			String tp = converter.convert("?ind", description);
+			query = "SELECT (COUNT(DISTINCT ?ind) as ?cnt) WHERE { \n"
+					+ "VALUES ?ind { \n";
+			for (OWLIndividual x:indValues) {
+				query += "<" + x.toStringID() + "> ";
+			}
+			query += "}. \n " + tp + "\n}";
+		} else {
+			query = converter.asQuery("?ind", description, true).toString();
+			System.err.println(query);
+			System.exit(1);
+		}
+		if(limit != 0) {
+			query += " LIMIT " + limit;
+		}
+		if(logger.isDebugEnabled()){
+			logger.debug(sparql_debug, "get individuals query: " + query);
+		}
+		ResultSet rs = executeSelectQuery(query);
+		while(rs.hasNext()){
+			QuerySolution qs = rs.next();
+			if(qs.get("cnt").isLiteral()){
+				int ret = qs.get("cnt").asLiteral().getInt();logger.debug(sparql_debug, "result: "+ret);
+				return ret;
+			}
+		}
+		throw new Error("no result");
+	}
+
+	public int getIndividualsCount(OWLClassExpression description, int limit) {
+		return getIndividualsCount(description, limit, null);
+	}
+	
+	public int getIndividualsCount(OWLClassExpression description, Set<OWLIndividual> indValues) {
+		return getIndividualsCount(description, 0, indValues);
+	}
+
 	/**
 	 * @param wantedClass
 	 * @param excludeClass
