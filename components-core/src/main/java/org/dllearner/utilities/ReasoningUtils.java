@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.Component;
 import org.dllearner.learningproblems.AccMethodTwoValued;
+import org.dllearner.learningproblems.AccMethodTwoValuedApproximate;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -129,8 +130,12 @@ public class ReasoningUtils implements Component {
 
 	public double getAccuracyOrTooWeak2(AccMethodTwoValued accuracyMethod, OWLClassExpression description, Set<OWLIndividual> positiveExamples,
 			Set<OWLIndividual> negativeExamples, double noise) {
-		CoverageCount[] cc = this.getCoverageCount(description, positiveExamples, negativeExamples);
-		return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
+		if (accuracyMethod instanceof AccMethodTwoValuedApproximate) {
+			return ((AccMethodTwoValuedApproximate) accuracyMethod).getAccApprox2(description, positiveExamples, negativeExamples, noise);
+		} else {
+			CoverageCount[] cc = this.getCoverageCount(description, positiveExamples, negativeExamples);
+			return accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
+		}
 	}
 
 	@Override
