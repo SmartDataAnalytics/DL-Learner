@@ -11,7 +11,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 @ComponentAnn(name = "Predictive Accuracy Approximate", shortName = "approx.prec_acc", version = 0)
-public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate {
+public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate, AccMethodCLPApproximate {
 	final static Logger logger = Logger.getLogger(AccMethodPredAccApprox.class);
 	@Override
 	public void init() {
@@ -23,6 +23,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
     @ConfigOption(description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
 	private Reasoner reasoner;
+	
     
 	@Override
 	public double getAccApprox2(OWLClassExpression description, Collection<OWLIndividual> positiveExamples, Collection<OWLIndividual> negativeExamples, double noise) {
@@ -81,6 +82,14 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 		double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 		return ret;
+	}
+
+	@Override
+	public double getAccApproxCLP(OWLClassExpression description,
+			Collection<OWLIndividual> classInstances,
+			Collection<OWLIndividual> superClassInstances,
+			double coverageFactor, double noise) {
+		return getAccApprox2(description, classInstances, superClassInstances, noise);
 	}
 
 	@Override

@@ -114,10 +114,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 	}
 	
-//	public ClassLearningProblemConfigurator getConfigurator(){
-//		return configurator;
-//	}
-	
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
 	}
@@ -205,7 +201,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		int additionalInstancesCnt = 0;
 		int coveredInstancesCnt = 0;
 		
-		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner instanceof SPARQLReasoner) {
 			// R(C)
 			String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 					+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
@@ -575,7 +571,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			int additionalInstances = 0;
 			int coveredInstances = 0;
 			
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			if(reasoner instanceof SPARQLReasoner) {
 				// R(C)
 				String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 						+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
