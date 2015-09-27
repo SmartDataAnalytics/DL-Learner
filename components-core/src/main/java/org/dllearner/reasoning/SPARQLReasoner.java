@@ -924,13 +924,19 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 
 	public Set<OWLClass> getTypes(String namespace) {
+		return getTypes(namespace, false);
+	}
+	
+	public Set<OWLClass> getTypes(String namespace, boolean omitEmptyTypes) {
 		Set<OWLClass> types = new TreeSet<OWLClass>();
-		String query = String.format("SELECT DISTINCT ?class WHERE {[] a ?class." + (namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}");
+		String query = 	"SELECT DISTINCT ?class WHERE {[] a ?cls ." + 
+		(omitEmptyTypes ? "[] a ?cls ." : "" ) + 
+		(namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			types.add(df.getOWLClass(IRI.create(qs.getResource("class").getURI())));
+			types.add(df.getOWLClass(IRI.create(qs.getResource("cls").getURI())));
 		}
 		return types;
 	}
