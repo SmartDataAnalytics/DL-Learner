@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -369,6 +368,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			} else {
 				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
+				if (logger.isDebugEnabled()) {
+					logger.debug( sparql_debug, "Numeric Splits: {}", splits);
+				}
 			}
 		}
 

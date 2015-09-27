@@ -30,13 +30,7 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.AccMethodFMeasure;
-import org.dllearner.learningproblems.AccMethodFMeasureApprox;
-import org.dllearner.learningproblems.AccMethodTwoValued;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -115,21 +109,21 @@ public class HeuristicTest {
 		//// equivalent classes, no noise, no approximations ////
 		
 		// evaluate A2 wrt. A1 using Jaccard
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.JACCARD);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodJaccard(true));
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.PRED_ACC);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodPredAcc(true));
 		// the value should be the sum of 10 (correct positives) and 970 (correct negatives) divided by 1000
 		assertEqualsClassLP(problem, nc[1], (10+70)/(double)100);
 		assertEqualsClassLP(problem, nc[2], (10+50)/(double)100);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.AMEASURE);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodAMeasure(true));
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.375);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.FMEASURE);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasure(true));
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F1-score = 0.33...
@@ -141,20 +135,20 @@ public class HeuristicTest {
 		// beta = 3.0
 		
 		// Jaccard
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.JACCARD, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodJaccard(true), false, 0.05);
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.PRED_ACC, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodPredAcc(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 5/(double)7);
 		assertEqualsClassLP(problem, nc[2], 4/(double)7);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.AMEASURE, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodAMeasure(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.4375);
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasure(true), false, 0.05);
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F_beta-score = 5/11...
@@ -164,7 +158,7 @@ public class HeuristicTest {
 		
 		//// noise tests ////
 		
-		HeuristicTest.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, true, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasureApprox(), false, 0.05);
 		assertEquals(problem.getAccuracyOrTooWeak(nc[3], 0.5),-1,delta);
 		
 		// TODO: test approximations
@@ -286,22 +280,22 @@ public class HeuristicTest {
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 		problem.setAccuracyMethod(accuracyMethod);
-		problem.setUseApproximations(false);
 		problem.init();
 		
 	}
 	
 	// convencience method to set the learning problem to a desired configuration
-	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, AccMethodTwoValued accuracyMethod, boolean equivalenceLearning, double approxAccuracy) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 //		problem.getConfigurator().setType("superClass");
 		problem.setEquivalence(equivalenceLearning);
 		problem.setAccuracyMethod(accuracyMethod);
-		problem.setUseApproximations(useApproximations);
-		problem.setApproxDelta(approxAccuracy);
+		if (accuracyMethod instanceof AccMethodApproximate) {
+			((AccMethodApproximate) accuracyMethod).setApproxDelta(approxAccuracy);
+		}
 		problem.init();
 	}
 	
