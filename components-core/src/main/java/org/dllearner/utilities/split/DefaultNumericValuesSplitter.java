@@ -61,7 +61,6 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		List<OWLLiteral> splitLiterals = new ArrayList<>();
 		
 		List<? extends Number> splitValues = computeSplitValues(dp);
-		
 		for (Number value : splitValues) {
 			OWLLiteral literal = dataFactory.getOWLLiteral(value.toString(), reasoner.getDatatype(dp));
 			splitLiterals.add(literal);
@@ -74,10 +73,14 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		Set<T> valuesSet = new TreeSet<T>();
 
 		Map<OWLIndividual, SortedSet<T>> ind2Values = reasoner.getNumericDatatypeMembers(dp);
-
 		// add all values to the set
 		for(Entry<OWLIndividual, SortedSet<T>> e : ind2Values.entrySet()){
-			valuesSet.addAll(e.getValue());
+			try {
+				valuesSet.addAll(e.getValue());
+			} catch(ClassCastException ce) {
+				System.err.println("Mixed datatypes in "+dp.toStringID());
+				throw ce;
+			}
 		}
 
 		return simpleListSplitter(valuesSet, maxNrOfSplits);

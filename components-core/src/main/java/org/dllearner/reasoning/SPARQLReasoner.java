@@ -55,6 +55,7 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLQueryUtils;
 import org.dllearner.kb.sparql.SparqlEndpoint;
+import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
@@ -82,7 +83,10 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -930,8 +934,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public Set<OWLClass> getTypes(String namespace, boolean omitEmptyTypes) {
 		Set<OWLClass> types = new TreeSet<OWLClass>();
-		String query = 	"SELECT DISTINCT ?class WHERE {[] a ?cls ." + 
-		(omitEmptyTypes ? "[] a ?cls ." : "" ) + 
+		String query = 	"SELECT DISTINCT ?class WHERE {[] a ?cls ." +
+		(omitEmptyTypes ? "[] a ?cls ." : "" ) +
 		(namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -1032,20 +1036,29 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	}
 	
 	public Set<OWLDataProperty> getDataPropertiesByRange(XSDVocabulary xsdType) {
-		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, xsdType.getIRI().toString());
+		return getDataPropertiesByRange(xsdType.getIRI());
+	}
+	public Set<OWLDataProperty> getDataPropertiesByRange(Set<OWLDatatype> dts) {
+		Set<OWLDataProperty> r = new TreeSet<>();
+		for (OWLDatatype dt:dts) {
+			r.addAll(getDataPropertiesByRange(dt.getIRI()));
+		}
+		return r;
+	}
+	public Set<OWLDataProperty> getDataPropertiesByRange(IRI iri) {
+		String query = String.format(SPARQLQueryUtils.SELECT_DATA_PROPERTIES_BY_RANGE_QUERY, iri.toString());
 		logger.debug(sparql_debug, "get properties by range query: " + query);
 		ResultSet rs = executeSelectQuery(query);
 		
 		SortedSet<OWLDataProperty> properties = asOWLEntities(EntityType.DATA_PROPERTY, rs, "var1");
 		return properties;
 	}
-	
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#getIntDatatypePropertiesImpl()
 	 */
 	@Override
 	protected Set<OWLDataProperty> getIntDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
-		return getDataPropertiesByRange(XSDVocabulary.INT);
+		return getDataPropertiesByRange(OWLAPIUtils.intDatatypes);
 	}
 	
 	/* (non-Javadoc)
@@ -1053,7 +1066,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	protected Set<OWLDataProperty> getDoubleDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
-		return getDataPropertiesByRange(XSDVocabulary.DOUBLE);
+		return getDataPropertiesByRange(OWLAPIUtils.floatDatatypes);
 	}
 	
 	/* (non-Javadoc)
@@ -1061,7 +1074,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	 */
 	@Override
 	protected Set<OWLDataProperty> getBooleanDatatypePropertiesImpl() throws ReasoningMethodUnsupportedException {
-		return getDataPropertiesByRange(XSDVocabulary.BOOLEAN);
+		return getDataPropertiesByRange(OWLAPIUtils.fixedDatatypes);
 	}
 	
 	/* (non-Javadoc)
@@ -1531,14 +1544,24 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		}
 		return subject2objects;
 	}
+	
+	private String datatypeSparqlFilter(Iterable<OWLDatatype> dts) {
+		return Joiner.on(" || ").join(
+				Iterables.transform(dts, new Function<OWLDatatype,String>(){
+					@Override
+					public String apply(OWLDatatype input) {
+						return "DATATYPE(?o) = <" + input.toStringID() + ">";
+					}}
+						)
+				);
+	}
 
 	@Override
 	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		Map<OWLIndividual, SortedSet<Double>> subject2objects = new HashMap<OWLIndividual, SortedSet<Double>>();
-		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s <%s> ?o." +
-				" FILTER(DATATYPE(?o) = <%s>)}",
-				datatypeProperty.toStringID(), XSD.DOUBLE.toStringID());
+		String query = "SELECT ?s ?o WHERE {" +
+				String.format("?s <%s> ?o.", datatypeProperty.toStringID()) +
+				" FILTER(" + datatypeSparqlFilter(OWLAPIUtils.floatDatatypes) + ")}";
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -1570,10 +1593,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		Map<OWLIndividual, SortedSet<Integer>> subject2objects = new HashMap<OWLIndividual, SortedSet<Integer>>();
-		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s <%s> ?o." +
-				" FILTER(DATATYPE(?o) = <%s>)}",
-				datatypeProperty.toStringID(), XSD.INT.toStringID());
+		String query = "SELECT ?s ?o WHERE {" +
+				String.format("?s <%s> ?o.", datatypeProperty.toStringID()) +
+				" FILTER(" + datatypeSparqlFilter(OWLAPIUtils.intDatatypes) + ")}";
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
@@ -1598,10 +1620,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(OWLDataProperty datatypeProperty) {
 		Map<OWLIndividual, SortedSet<Boolean>> subject2objects = new HashMap<OWLIndividual, SortedSet<Boolean>>();
-		String query = String.format("SELECT ?s ?o WHERE {" +
-				"?s <%s> ?o." +
-				" FILTER(DATATYPE(?o) = <%s>)}",
-				datatypeProperty.toStringID(), XSD.BOOLEAN.toStringID());
+		String query = "SELECT ?s ?o WHERE {" +
+				String.format("?s <%s> ?o.", datatypeProperty.toStringID()) +
+				" FILTER(" + datatypeSparqlFilter(OWLAPIUtils.fixedDatatypes) + ")}";
 
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
