@@ -123,53 +123,13 @@ public class Diagrams {
 			
 			String gnuplot = "";
 			
-			Map<HeuristicType, double[][]> h2data = new TreeMap<>();
-			for(int i = 0; i < measures.length; i++) {
-				HeuristicType measure = measures[i];
-				
-				ps = conn.prepareStatement(String.format(sql, measure2ColumnName.get(measure)));
-				ps.setString(1, measure.toString());
-				ps.setInt(2, nrOfExamples);
-				ResultSet rs = ps.executeQuery();
-				s+= measure;
-				 
-				int length = 0;
-				if (rs != null) {
-					rs.beforeFirst();
-					rs.last();
-					length = rs.getRow();
-				}
-				if(length > 0) {
-					double[][] data = new double[length][2];
-					rs.beforeFirst();
-					int row = 0;
-					while(rs.next()) {
-						double noise = rs.getDouble(1);
-						double avgFscore = rs.getDouble(2);
-						s += "\t" + avgFscore;
-						
-						data[row][0] = noise;
-						data[row][1] = avgFscore;
-						row++;
-					}
-					
-					gnuplot += "\"" + labels[i] + "\"" + "\n";
-					for (double[] line : data) {
-						gnuplot += Joiner.on(",").join(Arrays.asList(ArrayUtils.toObject(line)));
-						gnuplot += "\n";
-					}
-					gnuplot += "\n\n";
-					h2data.put(measure, data);
-					 s += "\n";
-				}
-			}
-			
-			// baseline
-			ps = conn.prepareStatement("SELECT noise,avg_fscore_baseline from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			// F-score
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_fscore_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
 			ps.setInt(1, nrOfExamples);
 			ResultSet rs = ps.executeQuery();
-			gnuplot += "\"baseline\"\n";
-			while(rs.next()) {
+			gnuplot += "\"F_1\"\n";
+			while (rs.next()) {
 				double noise = rs.getDouble(1);
 				double avgFscore = rs.getDouble(2);
 				gnuplot += noise + "," + avgFscore + "\n";
@@ -177,33 +137,69 @@ public class Diagrams {
 			
 			// precision
 			gnuplot += "\n\n";
-			ps = conn.prepareStatement("SELECT noise,avg_precision_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_precision_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
 			ps.setInt(1, nrOfExamples);
 			rs = ps.executeQuery();
-			gnuplot += "\"P\"\n";
+			gnuplot += "\"precision\"\n";
 			while (rs.next()) {
 				double noise = rs.getDouble(1);
 				double avgFscore = rs.getDouble(2);
 				gnuplot += noise + "," + avgFscore + "\n";
 			}
-			
+
 			// recall
 			gnuplot += "\n\n";
-			ps = conn.prepareStatement("SELECT noise,avg_recall_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_recall_best_returned from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
 			ps.setInt(1, nrOfExamples);
 			rs = ps.executeQuery();
-			gnuplot += "\"R\"\n";
+			gnuplot += "\"recall\"\n";
 			while (rs.next()) {
 				double noise = rs.getDouble(1);
 				double avgFscore = rs.getDouble(2);
 				gnuplot += noise + "," + avgFscore + "\n";
 			}
 			
-			if(!h2data.isEmpty()) {
-				input.put(nrOfExamples, h2data);
+			// MCC
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_mathcorr_best_returned from eval_overall WHERE heuristic_measure = 'MATTHEWS_CORRELATION' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"MCC\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+		
+			
+			// baseline F-score
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement("SELECT noise,avg_fscore_baseline from eval_overall WHERE heuristic_measure = 'FMEASURE' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"baseline F_1\"\n";
+			while(rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
 			}
 			
-			Files.write(s, new File(dir, "noiseVsScore-" + nrOfExamples + ".tsv"), Charsets.UTF_8);
+			// baseline MCC
+			gnuplot += "\n\n";
+			ps = conn.prepareStatement(
+					"SELECT noise,avg_mathcorr_baseline from eval_overall WHERE heuristic_measure = 'MATTHEWS_CORRELATION' && nrOfExamples = ?");
+			ps.setInt(1, nrOfExamples);
+			rs = ps.executeQuery();
+			gnuplot += "\"baseline MCC\"\n";
+			while (rs.next()) {
+				double noise = rs.getDouble(1);
+				double avgFscore = rs.getDouble(2);
+				gnuplot += noise + "," + avgFscore + "\n";
+			}
+			
 			Files.write(gnuplot.trim(), new File(dir, "noiseVsScore-" + nrOfExamples + ".dat"), Charsets.UTF_8);
 		}
 		if(!input.isEmpty()) {

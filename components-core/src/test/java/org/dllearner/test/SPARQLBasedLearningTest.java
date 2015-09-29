@@ -3,14 +3,13 @@
  */
 package org.dllearner.test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NavigableSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.el.ELLearningAlgorithm;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -41,10 +40,10 @@ import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
 import com.google.common.collect.Sets;
-import com.google.gson.internal.bind.TimeTypeAdapter;
+import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * @author Lorenz Buehmann
