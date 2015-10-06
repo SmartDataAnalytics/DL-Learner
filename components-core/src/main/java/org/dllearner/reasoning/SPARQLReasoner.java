@@ -888,14 +888,20 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public Set<OWLClass> getMostSpecificTypes(OWLIndividual individual) {
 		Set<OWLClass> types = new HashSet<OWLClass>();
 		String query = String.format(
-				"SELECT ?type WHERE {<%s> a ?type . "
+				"SELECT ?type WHERE {<%s> a ?type ."
 				+ "FILTER NOT EXISTS{<%s> a ?moreSpecificType ."
-				+ "?moreSpecificType <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?type.}}", individual.toStringID(), individual.toStringID());
+				+ "?moreSpecificType <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?type ."
+				+ "FILTER((?type != ?moreSpecificType) && (?moreSpecificType!= <http://www.w3.org/2002/07/owl#Nothing>))}}",
+				individual.toStringID(), individual.toStringID());
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			types.add(df.getOWLClass(IRI.create(qs.getResource("type").getURI())));
+			IRI iri = IRI.create(qs.getResource("type").getURI());
+			if(!iri.isReservedVocabulary()) {
+				types.add(df.getOWLClass(iri));
+			}
+			
 		}
 		return types;
 	}
