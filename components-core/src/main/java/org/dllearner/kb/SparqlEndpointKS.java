@@ -28,6 +28,7 @@ import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -166,7 +167,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		}
 
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
+		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 
 		return qef;
 	}

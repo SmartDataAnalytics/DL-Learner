@@ -15,8 +15,7 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	
 	private OntModel model;
 	
-	public LocalModelBasedSparqlEndpointKS() {
-	}
+	public LocalModelBasedSparqlEndpointKS() {}
 	
 	/**
 	 * Create new Sparql Endpoint based on Jena Ontology
@@ -77,5 +76,12 @@ public class LocalModelBasedSparqlEndpointKS extends SparqlEndpointKS {
 	@Override
 	public boolean supportsSPARQL_1_1() {
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		String out = String.format("%-15s %-25s%n", "Endpoint:", "in-memory model");
+		out += String.format("%-15s %-25s%n", "Profile:", model.getProfile());
+		return out;
 	}
 }
