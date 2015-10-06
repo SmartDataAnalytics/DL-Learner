@@ -11,10 +11,12 @@ import java.util.Set;
 
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -23,6 +25,7 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -129,5 +132,23 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Conversion of axioms failed.", e);
 		}
 	}
-
+	
+	/**
+	 * Convert an OWL entity into a JENA Node.
+	 * @param axioms the OWL entity
+	 * @return the JENA Node
+	 */
+	public static Node asNode(OWLEntity entity) {
+		return NodeFactory.createURI(entity.toStringID());
+	}
+	
+	/**
+	 * Convert a JENA Node into an OWL entity of the given type.
+	 * @param node the JENA node
+	 * @param entityType the type of the OWL entity, e.g. class, property, etc.
+	 * @return the OWL entity
+	 */
+	public static <T extends OWLEntity> T asOWLEntity(Node node, EntityType<T> entityType) {
+		return dataFactory.getOWLEntity(entityType, IRI.create(node.getURI()));
+	}
 }
