@@ -32,7 +32,7 @@ public class TableColumn implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 	private String header;
-	private List<String> entries = new ArrayList<String>();
+	private List<String> entries = new ArrayList<>();
 
 public TableColumn() {
 	super();

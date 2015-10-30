@@ -163,7 +163,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
+					new EvaluatedAxiom<>(
 							df.getOWLDisjointClassesAxiom(entityToDescribe, cls),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
@@ -199,7 +199,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<OWLDisjointClassesAxiom>(
+					new EvaluatedAxiom<>(
 							df.getOWLDisjointClassesAxiom(entityToDescribe, candidate),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
@@ -295,7 +295,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
-		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> bestDescriptions = new ArrayList<>();
 		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
@@ -317,7 +317,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		class2Count.remove(entityToDescribe);
 
 		//get complete disjoint classes
-		Set<OWLClass> completeDisjointclasses = new TreeSet<OWLClass>(allClasses);
+		Set<OWLClass> completeDisjointclasses = new TreeSet<>(allClasses);
 		completeDisjointclasses.removeAll(class2Count.keySet());
 
 		// we remove the asserted subclasses here
@@ -408,7 +408,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		if (ks.isRemote()) {
 			if (reasoner.isPrepared()) {
 				ClassHierarchy h = reasoner.getClassHierarchy();
-				for (OWLClass nc : new HashSet<OWLClass>(classes)) {
+				for (OWLClass nc : new HashSet<>(classes)) {
 					classes.removeAll(h.getSubClasses(nc));
 				}
 			}
@@ -425,7 +425,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 			//
 			//			}
 			//			classes.retainAll(topClasses);
-			for (OWLClass nc : new HashSet<OWLClass>(classes)) {//System.out.print(nc + "::");
+			for (OWLClass nc : new HashSet<>(classes)) {//System.out.print(nc + "::");
 				for (OntClass cls : model.getOntClass(nc.toStringID()).listSubClasses().toSet()) {//System.out.print(cls + "|");
 					classes.remove(df.getOWLClass(IRI.create(cls.getURI())));
 				}
@@ -452,7 +452,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	}
 
 	private Set<EvaluatedDescription> computeDisjointessOfSiblings(OWLClass cls) {
-		Set<EvaluatedDescription> evaluatedDescriptions = new HashSet<EvaluatedDescription>();
+		Set<EvaluatedDescription> evaluatedDescriptions = new HashSet<>();
 
 		//get number of instances of A
 		int instanceCountA = reasoner.getPopularity(cls);
@@ -492,17 +492,15 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 
 		//if clsA = clsB
 		if (clsA.equals(clsB)) {
-			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
+			return new EvaluatedAxiom<>(df.getOWLDisjointClassesAxiom(clsA, clsB),
 					new AxiomScore(0d, 1d));
 		}
-		;
 
 		//if the classes are connected via subsumption we assume that they are not disjoint
 		if (reasoner.isSuperClassOf(clsA, clsB) || reasoner.isSuperClassOf(clsB, clsA)) {
-			return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB),
+			return new EvaluatedAxiom<>(df.getOWLDisjointClassesAxiom(clsA, clsB),
 					new AxiomScore(0d, 1d));
 		}
-		;
 
 		double scoreValue = 0;
 
@@ -529,11 +527,11 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 
 		AxiomScore score = new AxiomScore(scoreValue);
 
-		return new EvaluatedAxiom<OWLDisjointClassesAxiom>(df.getOWLDisjointClassesAxiom(clsA, clsB), score);
+		return new EvaluatedAxiom<>(df.getOWLDisjointClassesAxiom(clsA, clsB), score);
 	}
 
 	public Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> computeSchemaDisjointness() {
-		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
+		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<>();
 
 		Set<OWLClass> classes = reasoner.getOWLClasses("http://dbpedia.org/ontology/");
 		computeDisjointness(classes);
@@ -550,7 +548,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	}
 
 	public Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> computeDisjointness(Set<OWLClass> classes) {
-		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<EvaluatedAxiom<OWLDisjointClassesAxiom>>();
+		Set<EvaluatedAxiom<OWLDisjointClassesAxiom>> axioms = new HashSet<>();
 
 		for (OWLClass clsA : classes) {
 			for (OWLClass clsB : classes) {
@@ -562,7 +560,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	}
 
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> descriptions) {
-		Set<OWLClass> classes = new TreeSet<OWLClass>();
+		Set<OWLClass> classes = new TreeSet<>();
 		for (OWLClassExpression description : descriptions) {
 			if (!description.isAnonymous()) {
 				classes.add(description.asOWLClass());

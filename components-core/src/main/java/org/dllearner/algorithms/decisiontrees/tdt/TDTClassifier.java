@@ -83,15 +83,15 @@ public class TDTClassifier extends AbstractTDTClassifier {
 		
 		DLTreesRefinementOperator dlTreesRefinementOperator = (DLTreesRefinementOperator)operator;
 		
-		Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> examples = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExs, negExs, undExs, 10, prPos, prNeg);
+		Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> examples = new Npla<>(posExs, negExs, undExs, 10, prPos, prNeg);
 		DLTree tree = new DLTree(); // new (sub)tree
-		Stack<Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>> stack= new Stack<Couple<DLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>>();
-		Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> toInduce= new Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+		Stack<Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>> stack= new Stack<>();
+		Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> toInduce= new Couple<>();
 		toInduce.setFirstElement(tree);
 		toInduce.setSecondElement(examples);
 		stack.push(toInduce);
 		
-		Stack<DLTree> lastTrees= new Stack<DLTree>(); // for refine hierarchically a concept 
+		Stack<DLTree> lastTrees= new Stack<>(); // for refine hierarchically a concept
 
 		while(!stack.isEmpty()){
 			//System.out.printf("Stack: %d \n",stack.size());
@@ -142,7 +142,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 					
 						
 						
-						ArrayList<OWLClassExpression> cConceptsL = new ArrayList<OWLClassExpression>(refine); 
+						ArrayList<OWLClassExpression> cConceptsL = new ArrayList<>(refine);
 						//						cConceptsL= getRandomSelection(cConceptsL); // random selection of feature set
 
 						
@@ -155,12 +155,12 @@ public class TDTClassifier extends AbstractTDTClassifier {
 										newRootConcept= ccp?heuristic.selectBestConceptCCP(cConcepts, posExs, negExs, undExs, prPos, prNeg):(heuristic.selectBestConcept(cConcepts, posExs, negExs, undExs, prPos, prNeg));
 										else
 											newRootConcept= heuristic.selectWorstConcept(cConcepts, posExs, negExs, undExs, perPos, perNeg);
-						SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> negExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> undExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> posExsF = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> negExsF = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> undExsF = new TreeSet<OWLIndividual>();
+						SortedSet<OWLIndividual> posExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> posExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
 						Split.split(newRootConcept, dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
 						// select node concept
@@ -172,14 +172,14 @@ public class TDTClassifier extends AbstractTDTClassifier {
 						DLTree negTree= new DLTree(); // recursive calls simulation
 						currentTree.setPosTree(posTree);
 						currentTree.setNegTree(negTree);
-						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsT, negExsT, undExsT, 10, perPos, perNeg);
-						Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsF, negExsF, undExsF, 10, perPos, perNeg);
-						Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<>(posExsT, negExsT, undExsT, 10, perPos, perNeg);
+						Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<>(posExsF, negExsF, undExsF, 10, perPos, perNeg);
+						Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<>();
 						pos.setFirstElement(posTree);
 						pos.setSecondElement(npla1);
 
 						// negative branch
-						Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Couple<DLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<>();
 						neg.setFirstElement(negTree);
 						neg.setSecondElement(npla2);
 						stack.push(neg);
@@ -223,7 +223,7 @@ public void start() {
 	System.out.println(negExs.size());
 	System.out.println(undExs.size());
 	if (binaryClassification){
-	SortedSet<OWLIndividual> allExamples= new TreeSet<OWLIndividual>();
+	SortedSet<OWLIndividual> allExamples= new TreeSet<>();
 	allExamples.addAll(posExs);
 	allExamples.addAll(negExs);
 	allExamples.addAll(undExs);

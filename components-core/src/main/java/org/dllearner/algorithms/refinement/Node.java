@@ -27,8 +27,8 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 public class Node {
 
 	// TOP ist einfach das TOP-Konzept, also das einzige welches nicht evaluiert wird
-	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
-	
+	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
+
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
 	
 	// alle Eigenschaften eines Knotens im Suchbaum
@@ -44,9 +44,9 @@ public class Node {
 	// Einbettung in Suchbaum
 	private Node parent = null;
 	// private Set<Node> children = new HashSet<Node>();
-	private Set<Node> children = new TreeSet<Node>(nodeComparator);
+	private Set<Node> children = new TreeSet<>(nodeComparator);
 	// es wird auch eine Liste von Kindern gehalten
-	private Set<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
+	private Set<OWLClassExpression> childConcepts = new TreeSet<>();
 	
 	// verwendeter Operator für Expansion des Knotens
 	// private RefinementOperator operator;

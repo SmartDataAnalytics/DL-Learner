@@ -58,9 +58,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	private int optionalCount = 0;
 	private int filterCount = 0;
 	
-	private Map<Triple, ElementGroup> triple2Parent = new HashMap<Triple, ElementGroup>();
+	private Map<Triple, ElementGroup> triple2Parent = new HashMap<>();
 	
-	Stack<ElementGroup> parents = new Stack<ElementGroup>();
+	Stack<ElementGroup> parents = new Stack<>();
 	
 	public static String addPrefix(String queryString, Map<String, String> prefix2Namespace){
 		Query query = QueryFactory.create(queryString);
@@ -84,7 +84,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -107,7 +107,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getSubjectVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -126,7 +126,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public static Set<Var> getSubjectVars(Query query){
-		final Set<Var> vars = new HashSet<Var>();
+		final Set<Var> vars = new HashSet<>();
 		
 		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
 			@Override
@@ -276,7 +276,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public static Set<Var> getObjectVars(Query query){
-		final Set<Var> vars = new HashSet<Var>();
+		final Set<Var> vars = new HashSet<>();
 		
 		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
 			@Override
@@ -311,7 +311,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getObjectVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -389,7 +389,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<Triple>();
+		Set<Triple> triplePatterns = new HashSet<>();
 		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		return triplePatterns;
@@ -426,7 +426,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Triple> extractNonOptionalTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<Triple>();
+		Set<Triple> triplePatterns = new HashSet<>();
 		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		triplePatterns.removeAll(optionalTriplePattern);
@@ -440,9 +440,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
@@ -457,9 +457,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractOutgoingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -480,9 +480,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIncomingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -496,9 +496,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIngoingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -510,8 +510,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	public Set<Triple> extractTriplePattern(Query query, boolean ignoreOptionals){
-		triplePattern = new HashSet<Triple>();
-		optionalTriplePattern = new HashSet<Triple>();
+		triplePattern = new HashSet<>();
+		optionalTriplePattern = new HashSet<>();
 		
 		query.getQueryPattern().visit(this);
 		
@@ -519,7 +519,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		if(!ignoreOptionals){
 			if(query.isSelectType()){
 				for(Triple t : optionalTriplePattern){
-					if(!ListUtils.intersection(new ArrayList<Var>(VarUtils.getVars(t)), query.getProjectVars()).isEmpty()){
+					if(!ListUtils.intersection(new ArrayList<>(VarUtils.getVars(t)), query.getProjectVars()).isEmpty()){
 						triplePattern.add(t);
 					}
 				}
@@ -537,8 +537,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	public Set<Triple> extractTriplePattern(ElementGroup group, boolean ignoreOptionals){
-		triplePattern = new HashSet<Triple>();
-		optionalTriplePattern = new HashSet<Triple>();
+		triplePattern = new HashSet<>();
+		optionalTriplePattern = new HashSet<>();
 		
 		group.visit(this);
 		
@@ -603,7 +603,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		// keep the most specific types for each subject
 		for (Node subject : subject2TriplePatterns.keySet()) {
 			Collection<Triple> triplePatterns = subject2TriplePatterns.get(subject);
-			Collection<Triple> triplesPatterns2Remove = new HashSet<Triple>();
+			Collection<Triple> triplesPatterns2Remove = new HashSet<>();
 			
 			for (Triple tp : triplePatterns) {
 				if(!triplesPatterns2Remove.contains(tp)) {
@@ -625,7 +625,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
-		Set<Node> superClasses = new HashSet<Node>();
+		Set<Node> superClasses = new HashSet<>();
 		
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
@@ -649,8 +649,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	@Override
 	public void visit(ElementGroup el) {
 		parents.push(el);
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 		parents.pop();
@@ -705,8 +704,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	@Override
 	public void visit(ElementUnion el) {
 		unionCount++;
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}

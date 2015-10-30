@@ -47,7 +47,7 @@ public class SetManipulation {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -77,7 +77,7 @@ public class SetManipulation {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -107,7 +107,7 @@ public class SetManipulation {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 
 		for (T oneInd : set) {
 			ret.add(oneInd);
@@ -128,7 +128,7 @@ public class SetManipulation {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 
 		for (OWLIndividual oneInd : set) {
 			ret.add(oneInd);

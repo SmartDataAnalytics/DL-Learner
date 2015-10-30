@@ -23,8 +23,8 @@ public class ReasoningUtils implements Component {
 	};
 	
 	public class Coverage extends CoverageCount {
-		public SortedSet<OWLIndividual> trueSet = new TreeSet<OWLIndividual>();
-		public SortedSet<OWLIndividual> falseSet = new TreeSet<OWLIndividual>();
+		public SortedSet<OWLIndividual> trueSet = new TreeSet<>();
+		public SortedSet<OWLIndividual> falseSet = new TreeSet<>();
 	}
 
 	private AbstractReasonerComponent reasoner;
@@ -33,7 +33,8 @@ public class ReasoningUtils implements Component {
 		this.reasoner = reasoner;
 	}
 	
-	public Coverage[] getCoverage(OWLClassExpression concept, Set<OWLIndividual> ...sets) {
+	@SafeVarargs
+	public final Coverage[] getCoverage(OWLClassExpression concept, Set<OWLIndividual>... sets) {
 		Coverage[] rv = new Coverage [ sets.length ];
 
 		if(reasoner instanceof SPARQLReasoner &&
@@ -84,8 +85,9 @@ public class ReasoningUtils implements Component {
 		return rv;
 	}
 
-	public CoverageCount[] getCoverageCount(OWLClassExpression concept,
-			Set<OWLIndividual> ...sets) {
+	@SafeVarargs
+	public final CoverageCount[] getCoverageCount(OWLClassExpression concept,
+												  Set<OWLIndividual>... sets) {
 		CoverageCount[] rv = new CoverageCount [ sets.length ];
 
 		if(reasoner instanceof SPARQLReasoner &&

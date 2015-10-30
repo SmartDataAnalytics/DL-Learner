@@ -65,9 +65,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	private OWLObject renamedOWLObject;
 //	private OWLClassExpressionOrderingComparator comparator = new OWLClassExpressionOrderingComparator();
 	private OWLObjectComparator comparator = new OWLObjectComparator();
-	private Queue<String> classVarQueue = new LinkedList<String>();
-	private Queue<String> propertyVarQueue = new LinkedList<String>();
-	private Queue<String> individualVarQueue = new LinkedList<String>();
+	private Queue<String> classVarQueue = new LinkedList<>();
+	private Queue<String> propertyVarQueue = new LinkedList<>();
+	private Queue<String> individualVarQueue = new LinkedList<>();
 	
 	private OWLLiteralRenamer literalRenamer;
 	
@@ -131,7 +131,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectIntersectionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
 		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<OWLClassExpression>(comparator);
+		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -142,7 +142,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectUnionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
 		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<OWLClassExpression>(comparator);
+		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -241,7 +241,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLObjectOneOf desc) {
 		Set<OWLIndividual> individuals = desc.getIndividuals();
-		Set<OWLIndividual> renamedIndividuals = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> renamedIndividuals = new TreeSet<>();
 		for (OWLIndividual ind : individuals) {
 			renamedIndividuals.add(rename(ind));
 		}
@@ -386,7 +386,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLDataOneOf desc) {
 		Set<OWLLiteral> literals = desc.getValues();
-		Set<OWLLiteral> renamedLiterals = new TreeSet<OWLLiteral>();
+		Set<OWLLiteral> renamedLiterals = new TreeSet<>();
 		for (OWLLiteral lit : literals) {
 			renamedLiterals.add(rename(lit));
 		}
@@ -402,9 +402,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDataIntersectionOf desc) {
-		List<OWLDataRange> operands = new ArrayList<OWLDataRange>(desc.getOperands());
+		List<OWLDataRange> operands = new ArrayList<>(desc.getOperands());
 		Collections.sort(operands, comparator);
-		SortedSet<OWLDataRange> renamedOperands = new TreeSet<OWLDataRange>(comparator);
+		SortedSet<OWLDataRange> renamedOperands = new TreeSet<>(comparator);
 		for(OWLDataRange expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -413,9 +413,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDataUnionOf desc) {
-		List<OWLDataRange> operands = new ArrayList<OWLDataRange>(desc.getOperands());
+		List<OWLDataRange> operands = new ArrayList<>(desc.getOperands());
 		Collections.sort(operands, comparator);
-		SortedSet<OWLDataRange> renamedOperands = new TreeSet<OWLDataRange>(comparator);
+		SortedSet<OWLDataRange> renamedOperands = new TreeSet<>(comparator);
 		for(OWLDataRange expr : operands){
 			renamedOperands.add(rename(expr));
 		}

@@ -65,7 +65,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 		mon.start();
 		
 		RDFResourceTree nbr = new RDFResourceTree(posExampleTree);
-		Map<RDFResourceTree, List<Integer>> matrix = new HashMap<RDFResourceTree, List<Integer>>();
+		Map<RDFResourceTree, List<Integer>> matrix = new HashMap<>();
 		
 		for(int i = 0; i < negExampleTrees.size(); i++){
 			checkTree(matrix, nbr, negExampleTrees.get(i), i);
@@ -73,7 +73,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 		
 		
 		int negTreeSize = negExampleTrees.size();
-		Map<RDFResourceTree, Double> rowValues = new HashMap<RDFResourceTree, Double>();
+		Map<RDFResourceTree, Double> rowValues = new HashMap<>();
 		double value;
 		for(Entry<RDFResourceTree, List<Integer>> entry : matrix.entrySet()){
 			value = (sum(entry.getValue())+1.0)/(negTreeSize+2.0);
@@ -81,7 +81,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 		}
 
 		
-		List<RDFResourceTree> candidates2Remove = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> candidates2Remove = new ArrayList<>();
 		if(useWeakGeneralisation){
 			for(Entry<RDFResourceTree, Double> entry : rowValues.entrySet()){
 				if(random.nextDouble() < entry.getValue()){
@@ -159,7 +159,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 	}
 	
 	private void removeLeafs(RDFResourceTree nbr, List<RDFResourceTree> candidates2Remove){
-		for(RDFResourceTree leaf : new ArrayList<RDFResourceTree>(nbr.getLeafs())){
+		for(RDFResourceTree leaf : new ArrayList<>(nbr.getLeafs())){
 			if(candidates2Remove.contains(leaf)){
 				logger.info("REMOVE " + leaf);
 				leaf.getParent().removeChild(leaf);
@@ -282,7 +282,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
 	private void setMatrixEntry(Map<RDFResourceTree, List<Integer>> matrix, RDFResourceTree row, int column, int entry){
 		List<Integer> list = matrix.get(row);
 		if(list == null){
-			list = new ArrayList<Integer>();
+			list = new ArrayList<>();
 			matrix.put(row, list);
 		}
 		try {

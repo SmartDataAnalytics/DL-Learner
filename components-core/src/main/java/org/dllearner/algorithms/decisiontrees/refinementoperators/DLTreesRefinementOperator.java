@@ -89,9 +89,9 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		// TODO Auto-generated constructor stub
 		this.reasoner=reasoner;
 		//System.out.println("is Reasoner null? "+reasoner==null);
-		allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+		allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
-		allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+		allRoles= new ArrayList<>(reasoner.getObjectProperties());
 		//this.beam=beam; // set the maximum number of candidates that can be generated
 		this.lp=lp;
 		generator= new Random(2);
@@ -196,7 +196,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	public SortedSet<OWLClassExpression>generateNewConcepts(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, boolean seed) {
 
 		logger.info("Generating node concepts ");
-		TreeSet<OWLClassExpression> rConcepts = new TreeSet<OWLClassExpression>();
+		TreeSet<OWLClassExpression> rConcepts = new TreeSet<>();
 
 		OWLClassExpression newConcept=null;
 		boolean emptyIntersection;
@@ -216,7 +216,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 				while (emptyIntersection && instIterator.hasNext()) {
 					Node<OWLNamedIndividual> nextInd = (Node<OWLNamedIndividual>) instIterator.next();
 					int index = -1;
-					ArrayList<OWLIndividual> individuals2 = new ArrayList<OWLIndividual>(reasoner.getIndividuals());
+					ArrayList<OWLIndividual> individuals2 = new ArrayList<>(reasoner.getIndividuals());
 					for (int i=0; index<0 && i<individuals2.size(); ++i)
 						if (nextInd.equals(individuals2)) index = i;
 					if (posExs.contains(index))
@@ -286,10 +286,10 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		// TODO Auto-generated method stub
 		this.reasoner= reasoner;
 		if (allConcepts==null)
-			allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+			allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
 		if (allRoles==null)
-			allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+			allRoles= new ArrayList<>(reasoner.getObjectProperties());
 
 
 	}
@@ -300,10 +300,10 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		// TODO Auto-generated method stub
 		this.reasoner= reasoner;
 		if (allConcepts==null)
-			allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+			allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
 		if (allRoles==null)
-			allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+			allRoles= new ArrayList<>(reasoner.getObjectProperties());
 
 
 	}
@@ -317,7 +317,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 		Set<OWLClassExpression> children;
 		int n=-1; // initialization
-		ArrayList<OWLClassExpression> childrenList=new ArrayList<OWLClassExpression>();;
+		ArrayList<OWLClassExpression> childrenList= new ArrayList<>();
 		OWLClassExpression def= definition;
 		
 		if ((!definition.isOWLThing())&&(!definition.isOWLNothing())){
@@ -327,7 +327,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 			if (children.size()>0){
 				n= rg.nextInt(children.size());
-				childrenList=new ArrayList<OWLClassExpression>(children);
+				childrenList= new ArrayList<>(children);
 
 			}
 		}

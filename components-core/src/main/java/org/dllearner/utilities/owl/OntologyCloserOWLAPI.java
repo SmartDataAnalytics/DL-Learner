@@ -56,7 +56,7 @@ public class OntologyCloserOWLAPI {
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
 		this.rs = reasoner;
-		this.indToRestr = new HashMap<OWLIndividual, Set<OWLObjectExactCardinality>>();
+		this.indToRestr = new HashMap<>();
 //		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
@@ -127,7 +127,7 @@ public class OntologyCloserOWLAPI {
 			}
 		}// end for
 
-		Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> target = new HashSet<>();
 		Set<OWLObjectExactCardinality> s = null;
 
 		for (OWLIndividual oneInd : indToRestr.keySet()) {
@@ -138,7 +138,7 @@ public class OntologyCloserOWLAPI {
 			// collect everything in an intersection
 			OWLObjectIntersectionOf intersection = factory.getOWLObjectIntersectionOf(target);
 			s = null;
-			target = new HashSet<OWLClassExpression>();
+			target = new HashSet<>();
 
 			OWLAxiom axiom = factory.getOWLClassAssertionAxiom(intersection, factory
 					.getOWLNamedIndividual(IRI.create(oneInd.toStringID())));

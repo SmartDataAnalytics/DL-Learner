@@ -60,7 +60,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLClass ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>(1);
+		Set<OWLClassExpression> expressions = new HashSet<>(1);
 		expressions.add(ce);
 		return expressions;
 	}
@@ -70,18 +70,18 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectIntersectionOf ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
-		Set<Set<OWLClassExpression>> combinations = new HashSet<Set<OWLClassExpression>>();
+		Set<OWLClassExpression> expressions = new HashSet<>();
+		Set<Set<OWLClassExpression>> combinations = new HashSet<>();
 		for (int i = 0; i < ce.getOperands().size(); i++) {
-			Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> tmp = new HashSet<>();
 			combinations.add(tmp);
 		}
 		for (OWLClassExpression operand : ce.getOperands()) {
-			Set<Set<OWLClassExpression>> combinationsTmp = new HashSet<Set<OWLClassExpression>>();
+			Set<Set<OWLClassExpression>> combinationsTmp = new HashSet<>();
 			Set<OWLClassExpression> newOperands = operand.accept(this);
 			for (Set<OWLClassExpression> set : combinations) {
 				for (OWLClassExpression newOp : newOperands) {
-					Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+					Set<OWLClassExpression> tmp = new HashSet<>();
 					tmp.addAll(set);
 					tmp.add(newOp);
 					combinationsTmp.add(tmp);
@@ -116,7 +116,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectSomeValuesFrom ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		Set<OWLClassExpression> newFillers = ce.getFiller().accept(this);
 		for (OWLClassExpression newFiller : newFillers) {
 			expressions.add(df.getOWLObjectSomeValuesFrom(ce.getProperty(), newFiller));
@@ -137,7 +137,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		expressions.add(ce);
 		return expressions;
 	}
@@ -187,7 +187,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLDataSomeValuesFrom ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		Set<OWLDataRange> newDataRanges = ce.getFiller().accept(this);
 		for (OWLDataRange newDataRange : newDataRanges) {
 			expressions.add(df.getOWLDataSomeValuesFrom(ce.getProperty(), newDataRange));
@@ -208,7 +208,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLDataHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		expressions.add(ce);
 		return expressions;
 	}
@@ -242,7 +242,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDatatype dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -252,7 +252,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDataOneOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -262,7 +262,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDataComplementOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -272,7 +272,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDataIntersectionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -282,7 +282,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDataUnionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -292,7 +292,7 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	 */
 	@Override
 	public Set<OWLDataRange> visit(OWLDatatypeRestriction dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		Set<OWLFacetRestriction> facetRestrictions = dr.getFacetRestrictions();
 		OWLLiteral min = null;
 		OWLLiteral max = null;

@@ -224,7 +224,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		//int length = testConcepts!=null?testConcepts.length:1;
 		//for (int c=0; c < length; c++) {
 			if (missingValueTreatmentForTDT){
-				ArrayList<Integer> list= new ArrayList<Integer>();
+				ArrayList<Integer> list= new ArrayList<>();
 				return  classifyExample(list,indTestEx, trees);
 
 			}
@@ -241,7 +241,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	public int classifyExample(OWLIndividual indTestEx, DLTree tree) {
 
 
-		Stack<DLTree> stack= new Stack<DLTree>();
+		Stack<DLTree> stack= new Stack<>();
 		//OWLDataFactory dataFactory = kb.getDataFactory();
 		stack.add(tree);
 		int result=0;
@@ -309,7 +309,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
  * @return
  */
 public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree tree) {
-	Stack<DLTree> stack= new Stack<DLTree>();
+	Stack<DLTree> stack= new Stack<>();
 	//OWLDataFactory dataFactory = kb.getDataFactory();
 	stack.add(tree);
 	int result=0;
@@ -341,7 +341,7 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 			stack.push(currentTree.getNegSubTree());
 
 		}
-	};
+	}
 
 	int posFr= Collections.frequency(list, +1);
 	int negFr= Collections.frequency(list, -1);

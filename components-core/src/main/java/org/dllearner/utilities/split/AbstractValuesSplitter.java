@@ -73,14 +73,14 @@ public abstract class AbstractValuesSplitter implements ValuesSplitter{
 	protected <T extends Comparable<? super T>> List<T> simpleListSplitter(
 			Collection<T> allValues, int maxNrOfSplits) {
 		// convert set to a list where values are sorted
-		List<T> values = new LinkedList<T>(allValues);
+		List<T> values = new LinkedList<>(allValues);
 		Collections.sort(values);
 
 		int nrOfValues = values.size();
 		int nrOfSplits = Math.min(maxNrOfSplits, nrOfValues + 1);
 
 		// create split set
-		Set<T> splitsDP = new TreeSet<T>();
+		Set<T> splitsDP = new TreeSet<>();
 
 		// add the first element
 		if (nrOfValues > 0) {

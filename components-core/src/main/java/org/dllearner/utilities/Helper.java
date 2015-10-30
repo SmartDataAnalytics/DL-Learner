@@ -111,7 +111,7 @@ public class Helper {
 	
 	// Umwandlung von Menge von Individuals auf Menge von Strings
 	public static SortedSet<OWLIndividual> getIndividualSet(Set<String> individuals) {
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		for (String s : individuals) {
 			ret.add(df.getOWLNamedIndividual(IRI.create(s)));
 		}
@@ -119,18 +119,18 @@ public class Helper {
 	}
 
 	public static SortedSetTuple<OWLIndividual> getIndividualTuple(SortedSetTuple<String> tuple) {
-		return new SortedSetTuple<OWLIndividual>(getIndividualSet(tuple.getPosSet()),
+		return new SortedSetTuple<>(getIndividualSet(tuple.getPosSet()),
 				getIndividualSet(tuple.getNegSet()));
 	}
 
 	public static SortedSetTuple<String> getStringTuple(SortedSetTuple<OWLIndividual> tuple) {
-		return new SortedSetTuple<String>(getStringSet(tuple.getPosSet()), getStringSet(tuple
+		return new SortedSetTuple<>(getStringSet(tuple.getPosSet()), getStringSet(tuple
 				.getNegSet()));
 	}
 
 	// Umwandlung von Menge von Individuals auf Menge von Strings
 	public static SortedSet<String> getStringSet(Set<OWLIndividual> individuals) {
-		SortedSet<String> ret = new TreeSet<String>();
+		SortedSet<String> ret = new TreeSet<>();
 		for (OWLIndividual i : individuals) {
 			ret.add(i.toStringID());
 		}
@@ -139,7 +139,7 @@ public class Helper {
 
 	public static Map<String, SortedSet<String>> getStringMap(
 			Map<OWLIndividual, SortedSet<OWLIndividual>> roleMembers) {
-		Map<String, SortedSet<String>> ret = new TreeMap<String, SortedSet<String>>();
+		Map<String, SortedSet<String>> ret = new TreeMap<>();
 		for (OWLIndividual i : roleMembers.keySet()) {
 			ret.put(i.toStringID(), getStringSet(roleMembers.get(i)));
 		}
@@ -195,7 +195,7 @@ public class Helper {
 	
 	// concepts case 2: ignore list
 	public static Set<OWLClass> computeConceptsUsingIgnoreList(AbstractReasonerComponent rs, Set<OWLClass> ignoredConcepts) {
-		Set<OWLClass> concepts = new TreeSet<OWLClass>(rs.getClasses());
+		Set<OWLClass> concepts = new TreeSet<>(rs.getClasses());
 //		Helper.removeUninterestingConcepts(concepts);
 		for (OWLClass ac : ignoredConcepts) {
 			boolean success = concepts.remove(ac);

@@ -19,7 +19,7 @@ public class MapToStringTupleListConverter implements Converter<Map<String,Strin
 
     @Override
     public List<StringTuple> convert(Map<String,String> source) {
-        List<StringTuple> result = new ArrayList<StringTuple>();
+        List<StringTuple> result = new ArrayList<>();
 
         Set<String> keys = source.keySet();
 

@@ -85,9 +85,7 @@ public class OwlApiJenaUtils {
 					try {
 						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
 						os.close();
-					} catch (OWLOntologyStorageException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
 					}
 				}

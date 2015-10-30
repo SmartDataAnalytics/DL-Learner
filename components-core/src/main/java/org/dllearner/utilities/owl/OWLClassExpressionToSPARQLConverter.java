@@ -76,12 +76,12 @@ import com.hp.hpl.jena.query.Syntax;
 public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLDataRangeVisitor{
 	
 	private String sparql = "";
-	private Stack<String> variables = new Stack<String>();
+	private Stack<String> variables = new Stack<>();
 	
 	private Multimap<Integer, OWLEntity> properties = HashMultimap.create();
 	
 	private Map<Integer, Boolean> intersection;
-	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
+	private Set<? extends OWLEntity> variableEntities = new HashSet<>();
 	
 	private VariablesMapping mapping;
 	private boolean ignoreGenericTypeStatements = true;
@@ -91,11 +91,11 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String outerGroupBy;
 	
-	private Map<OWLClassExpression, Set<String>> groupingVars = new HashMap<OWLClassExpression, Set<String>>();
-	private Map<OWLClassExpression, Set<String>> havingConditions = new HashMap<OWLClassExpression, Set<String>>();
+	private Map<OWLClassExpression, Set<String>> groupingVars = new HashMap<>();
+	private Map<OWLClassExpression, Set<String>> havingConditions = new HashMap<>();
 	
-	Stack<String> parentVar = new Stack<String>();
-	Stack<OWLClassExpression> parent = new Stack<OWLClassExpression>();
+	Stack<String> parentVar = new Stack<>();
+	Stack<OWLClassExpression> parent = new Stack<>();
 	
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
@@ -209,7 +209,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		variables.clear();
 		properties.clear();
 		sparql = "";
-		intersection = new HashMap<Integer, Boolean>();
+		intersection = new HashMap<>();
 		mapping.reset();
 		cnt = 1;
 	}
@@ -321,14 +321,14 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		Collection<OWLEntity> props = properties.get(modalDepth());
 		if(props.size() > 1){
-			Collection<String> vars = new TreeSet<String>();
+			Collection<String> vars = new TreeSet<>();
 			for (OWLEntity p : props) {
 				if(mapping.containsKey(p)){
 					vars.add(mapping.get(p));
 				}
 			}
 			if(vars.size() == 2){
-				List<String> varList = new ArrayList<String>(vars);
+				List<String> varList = new ArrayList<>(vars);
 				sparql += "FILTER(" + varList.get(0) + "!=" + varList.get(1) + ")";
 			}
 		}

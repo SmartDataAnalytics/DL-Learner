@@ -23,7 +23,7 @@ public class TreeUtils {
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(node.getShortDescription(baseURI, prefixes)+"\n");
+		treeString.append(node.getShortDescription(baseURI, prefixes)).append("\n");
 		for(OENode child : node.getChildren()) {
 			treeString.append(TreeUtils.toTreeString(child, depth+1, baseURI, prefixes));
 		}

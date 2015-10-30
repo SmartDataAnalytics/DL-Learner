@@ -99,7 +99,7 @@ public class QueryTreeUtils {
 		if(node.isRoot()) {
 			return Collections.singletonList(node);
 		}
-		List<RDFResourceTree> path = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> path = new ArrayList<>();
 		
 		// add node itself
 		path.add(node);
@@ -283,7 +283,7 @@ public class QueryTreeUtils {
      * @return
      */
     public static List<RDFResourceTree> getNodes(RDFResourceTree tree) {
-		List<RDFResourceTree> nodes = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> nodes = new ArrayList<>();
 		nodes.add(tree);
 		
 		for (RDFResourceTree child : tree.getChildren()) {
@@ -299,7 +299,7 @@ public class QueryTreeUtils {
      * @return
      */
     public static List<RDFResourceTree> getLeafs(RDFResourceTree tree) {
-		List<RDFResourceTree> leafs = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> leafs = new ArrayList<>();
 		
 		for (RDFResourceTree node : getNodes(tree)) {
 			if(node.isLeaf()) {
@@ -599,7 +599,7 @@ public class QueryTreeUtils {
 	}
 	
 	private static OWLClassExpression buildOWLClassExpression(RDFResourceTree tree, LiteralNodeConversionStrategy literalConversion) {
-		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> classExpressions = new HashSet<>();
 		for(Node edge : tree.getEdges()) {
 			for (RDFResourceTree child : tree.getChildren(edge)) {
 				if(edge.equals(RDF.type.asNode()) || edge.equals(RDFS.subClassOf.asNode())) {
@@ -757,7 +757,7 @@ public class QueryTreeUtils {
 		SerializationContext context = new SerializationContext(pm);
 		context.setBaseIRI(baseIRI);
 		
-		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<Vertex, Edge>(Edge.class);
+		final DirectedGraph<Vertex, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
 		buildGraph(0, graph, tree, context);
 		VertexNameProvider<Vertex> vertexIDProvider = new VertexNameProvider<Vertex>() {
 			@Override
@@ -786,7 +786,7 @@ public class QueryTreeUtils {
 				return edge.getLabel();
 			}
 		};
-		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<Vertex, Edge>(vertexIDProvider,
+		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
 				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
 		try {
 			exporter.export(new FileWriter(outputFile), graph);
@@ -860,9 +860,9 @@ public class QueryTreeUtils {
 	public static void prune(RDFResourceTree tree, AbstractReasonerComponent reasoner, Entailment entailment) {
 		
 		// remove trivial statements
-		for(Node edge : new TreeSet<Node>(tree.getEdges())) {
+		for(Node edge : new TreeSet<>(tree.getEdges())) {
 			if(edge.equals(RDF.type.asNode())) { // check outgoing rdf:type edges
-				List<RDFResourceTree> children = new ArrayList<RDFResourceTree>(tree.getChildren(edge));
+				List<RDFResourceTree> children = new ArrayList<>(tree.getChildren(edge));
 				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
 					RDFResourceTree child = iterator.next();
 					if(!isNonTrivial(child, entailment)) {
@@ -935,7 +935,7 @@ public class QueryTreeUtils {
 		
 		// we have to run the subsumption check one more time to prune the tree
 		for (Node edge : tree.getEdges()) {
-			Set<RDFResourceTree> children2Remove = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> children2Remove = new HashSet<>();
 			List<RDFResourceTree> children = tree.getChildren(edge);
 			for(int i = 0; i < children.size(); i++) {
 				RDFResourceTree child1 = children.get(i);

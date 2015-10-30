@@ -94,7 +94,7 @@ public class AxiomAlgorithms {
     public static final Set<AxiomType<? extends OWLAxiom>> TBoxAndRBoxAxiomTypes = tboxAndRbox();
 
     private static final Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
-        Set<AxiomType<?>> axioms = new HashSet<AxiomType<?>>(TBoxAxiomTypes);
+        Set<AxiomType<?>> axioms = new HashSet<>(TBoxAxiomTypes);
         axioms.addAll(RBoxAxiomTypes);
         return axioms;
     }
@@ -176,8 +176,8 @@ public class AxiomAlgorithms {
 				new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}"));
 	}
 
-	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes = 
-			new HashMap<EntityType, Set<AxiomType<? extends OWLAxiom>>>();
+	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes =
+			new HashMap<>();
 
 	static {
 		// class axiom types
@@ -198,8 +198,8 @@ public class AxiomAlgorithms {
 				FUNCTIONAL_DATA_PROPERTY, DATA_PROPERTY_DOMAIN, DATA_PROPERTY_RANGE));
 	}
 	
-	private static final Map<EntityType, Set<AxiomTypeCluster>> sameSampleCluster = 
-			new HashMap<EntityType, Set<AxiomTypeCluster>>();
+	private static final Map<EntityType, Set<AxiomTypeCluster>> sameSampleCluster =
+			new HashMap<>();
 	
 	static {
 		// object properties

@@ -144,8 +144,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			AxiomScore score = computeScore(popularity, cntB, cntAB);
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-							df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate), 
+					new EvaluatedAxiom<>(
+							df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate),
 							score));
 		}
 	}
@@ -210,8 +210,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 				double score = Heuristics.getFScore(recall, precision, beta);
 				
 				currentlyBestAxioms.add(
-						new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-								df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate), 
+						new EvaluatedAxiom<>(
+								df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate),
 								new AxiomScore(score, useSampling)));
 				
 			}

@@ -127,7 +127,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
 
     protected List<? extends OWLObject> sort(
             Collection<? extends OWLObject> objects) {
-        List<? extends OWLObject> sortedObjects = new ArrayList<OWLObject>(
+        List<? extends OWLObject> sortedObjects = new ArrayList<>(
                 objects);
         sortOptionally(sortedObjects);
         return sortedObjects;
@@ -163,7 +163,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     }
 
     protected void writeCommaSeparatedList(Set<? extends OWLObject> objects) {
-        for (Iterator<OWLObject> it = new TreeSet<OWLObject>(objects)
+        for (Iterator<OWLObject> it = new TreeSet<>(objects)
                 .iterator(); it.hasNext();) {
             it.next().accept(this);
             if (it.hasNext()) {
@@ -175,9 +175,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     protected void write(Set<? extends OWLClassExpression> objects,
             boolean newline) {
         boolean first = true;
-        for (Iterator<? extends OWLObject> it = sort(objects).iterator(); it
-                .hasNext();) {
-            OWLObject desc = it.next();
+        for (OWLObject desc : sort(objects)) {
             if (!first) {
                 if (newline && isUseWrapping()) {
                     writeNewLine();
@@ -273,9 +271,7 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     @Override
     public void visit(OWLObjectUnionOf desc) {
         boolean first = true;
-        for (Iterator<? extends OWLClassExpression> it = desc.getOperands()
-                .iterator(); it.hasNext();) {
-            OWLClassExpression op = it.next();
+        for (OWLClassExpression op : desc.getOperands()) {
             if (!first) {
                 // if (isUseWrapping()) {
                 // writeNewLine();

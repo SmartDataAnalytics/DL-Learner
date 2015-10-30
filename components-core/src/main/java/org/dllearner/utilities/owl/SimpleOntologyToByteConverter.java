@@ -28,9 +28,7 @@ public class SimpleOntologyToByteConverter implements OntologyToByteConverter {
         try {
             manager.saveOntology(ontology, baos);
             baos.close();
-        } catch (OWLOntologyStorageException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (OWLOntologyStorageException | IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -46,9 +44,7 @@ public class SimpleOntologyToByteConverter implements OntologyToByteConverter {
             OWLOntology ontology = manager.loadOntologyFromOntologyDocument(bais);
             bais.close();
             return ontology;
-        } catch (OWLOntologyCreationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (OWLOntologyCreationException | IOException e) {
             throw new RuntimeException(e);
         }
     }

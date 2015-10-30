@@ -54,12 +54,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class ConceptTransformation {
 
 	public static long cleaningTimeNs = 0;
-	private static long cleaningTimeNsStart = 0;	
 	public static long onnfTimeNs = 0;
 	private static long onnfTimeNsStart = 0;
 	public static long shorteningTimeNs = 0;
-	private static long shorteningTimeNsStart = 0;
-	
+
 	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	private static final OWLObjectDuplicator DUPLICATOR = new OWLObjectDuplicator(df);
 	private static final OWLClassExpressionCleaner CLASS_EXPRESSION_CLEANER = new OWLClassExpressionCleaner(df);
@@ -69,7 +67,7 @@ public class ConceptTransformation {
 	}
 	
 	public static OWLClassExpression cleanConcept(OWLClassExpression concept) {
-		cleaningTimeNsStart = System.nanoTime();
+		long cleaningTimeNsStart = System.nanoTime();
 		OWLClassExpression cleanedConcept = concept.accept(CLASS_EXPRESSION_CLEANER);
 		cleaningTimeNs += System.nanoTime() - cleaningTimeNsStart;
 		return cleanedConcept;
@@ -95,9 +93,9 @@ public class ConceptTransformation {
 	public static OWLClassExpression appendSomeValuesFrom(OWLClassExpression ce) {
 		// if forall semantics is someonly
 		if (ce instanceof OWLObjectIntersectionOf) {
-			Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>();
-			Set<OWLObjectPropertyExpression> universallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
-			Set<OWLObjectPropertyExpression> existentiallyQuantifiedProperties = new HashSet<OWLObjectPropertyExpression>();
+			Set<OWLClassExpression> newOperands = new HashSet<>();
+			Set<OWLObjectPropertyExpression> universallyQuantifiedProperties = new HashSet<>();
+			Set<OWLObjectPropertyExpression> existentiallyQuantifiedProperties = new HashSet<>();
 			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
 				newOperands.add(appendSomeValuesFrom(operand));
 				if(operand instanceof OWLObjectAllValuesFrom) {
@@ -136,7 +134,7 @@ public class ConceptTransformation {
 		
 		// remove \top and \bot from disjunction 
 		if(conceptClone instanceof OWLObjectUnionOf) {
-			SortedSet<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
+			SortedSet<OWLClassExpression> newOperands = new TreeSet<>();
 			for (OWLClassExpression op : ((OWLObjectUnionOf) conceptClone).getOperandsAsList()) {
 				OWLClassExpression c = applyEquivalenceRules(op);
 				
@@ -159,7 +157,7 @@ public class ConceptTransformation {
 				return df.getOWLObjectUnionOf(newOperands);
 			}
 		} else if(conceptClone instanceof OWLObjectIntersectionOf) {// remove \top and \bot from intersection 
-			SortedSet<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
+			SortedSet<OWLClassExpression> newOperands = new TreeSet<>();
 			for (OWLClassExpression op : ((OWLObjectIntersectionOf) conceptClone).getOperandsAsList()) {
 				OWLClassExpression c = applyEquivalenceRules(op);
 				
@@ -191,7 +189,7 @@ public class ConceptTransformation {
 	 * @return A shortened version of the concept (equal to the input concept if it cannot be shortened).
 	 */
 	public static OWLClassExpression getShortConcept(OWLClassExpression concept) {
-		shorteningTimeNsStart = System.nanoTime();
+		long shorteningTimeNsStart = System.nanoTime();
 		OWLClassExpression clone = DUPLICATOR.duplicateObject(concept);
 		shorteningTimeNs += System.nanoTime() - shorteningTimeNsStart;
 		return clone;
@@ -235,7 +233,7 @@ public class ConceptTransformation {
 	public static OWLClassExpression replaceRange(OWLClassExpression description, AbstractReasonerComponent rs) {
 		OWLClassExpression rewrittenClassExpression = description;
 		if(description instanceof OWLNaryBooleanClassExpression){
-			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>();
+			Set<OWLClassExpression> newOperands = new TreeSet<>();
 			for (OWLClassExpression operand : ((OWLNaryBooleanClassExpression) description).getOperands()) {
 				newOperands.add(replaceRange(operand, rs));
 			}
@@ -289,8 +287,8 @@ public class ConceptTransformation {
 //			return ((subDescription instanceof NamedClass) && (((NamedClass)description).toStringID().equals(((NamedClass)subDescription).toStringID())));
 //		}
 		
-		List<OWLClassExpression> children = new ArrayList<OWLClassExpression>(OWLClassExpressionUtils.getChildren(description));
-		List<OWLClassExpression> subChildren = new ArrayList<OWLClassExpression>(OWLClassExpressionUtils.getChildren(subDescription));
+		List<OWLClassExpression> children = new ArrayList<>(OWLClassExpressionUtils.getChildren(description));
+		List<OWLClassExpression> subChildren = new ArrayList<>(OWLClassExpressionUtils.getChildren(subDescription));
 
 		// no children: both have to be equal
 		if(children.size()==0) {
@@ -393,7 +391,7 @@ public class ConceptTransformation {
 					OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
 					currentContextCopy.add(op);
 //					System.out.println("cc: " + currentContext);
-					TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
+					TreeSet<PropertyContext> contexts = new TreeSet<>();
 					contexts.add(currentContextCopy);
 					contexts.addAll(getForallContexts(filler, currentContextCopy));
 					return contexts;
@@ -404,14 +402,14 @@ public class ConceptTransformation {
 					return getForallContexts(filler, currentContextCopy);
 				// restrictions without a child (has value)
 				} else {
-					return new TreeSet<PropertyContext>();
+					return new TreeSet<>();
 				}
 			} else {
-				return new TreeSet<PropertyContext>();
+				return new TreeSet<>();
 			}
 		// for non-restrictions, we collect contexts over all children
 		} else {
-			TreeSet<PropertyContext> contexts = new TreeSet<PropertyContext>();
+			TreeSet<PropertyContext> contexts = new TreeSet<>();
 			if(description instanceof OWLNaryBooleanClassExpression){
 				for(OWLClassExpression child : ((OWLNaryBooleanClassExpression) description).getOperands()) {
 //					System.out.println("testing child " + child + " " + currentContext);

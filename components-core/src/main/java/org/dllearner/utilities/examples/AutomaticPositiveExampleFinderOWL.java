@@ -40,7 +40,7 @@ public class AutomaticPositiveExampleFinderOWL {
 	
 	public AutomaticPositiveExampleFinderOWL(AbstractReasonerComponent reasoningService) {
 	
-		this.posExamples = new TreeSet<OWLIndividual>();
+		this.posExamples = new TreeSet<>();
 		this.reasoningService = reasoningService;
 	}
 	

@@ -22,8 +22,8 @@ public class OWLEntityTypeAdder {
 	 */
 	public static void addEntityTypes(Model model){
 		StmtIterator iterator = model.listStatements();
-		Set<Property> objectPropertyPredicates = new HashSet<Property>();
-		Set<Property> dataPropertyPredicates = new HashSet<Property>();
+		Set<Property> objectPropertyPredicates = new HashSet<>();
+		Set<Property> dataPropertyPredicates = new HashSet<>();
 		while(iterator.hasNext()){
 			Statement st = iterator.next();
 			Property predicate = st.getPredicate();

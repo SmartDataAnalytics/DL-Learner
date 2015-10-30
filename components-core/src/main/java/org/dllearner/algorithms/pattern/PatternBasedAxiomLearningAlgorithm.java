@@ -136,7 +136,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	}
 	
 	private Set<OWLAxiom> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
-		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
+		Map<OWLAxiom, Score> axioms2Score = new HashMap<>();
 		
 		OWLClassExpression patternSubClass = null;
 		OWLClassExpression patternSuperClass = null;
@@ -165,13 +165,13 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
-		Set<String> resources = new HashSet<String>();
+		Set<String> resources = new HashSet<>();
 		Multiset<OWLAxiom> instantiations = HashMultiset.create();
 		while (rs.hasNext()) {
 			qs = rs.next();
 			resources.add(qs.getResource("x").getURI());
 			// get the IRIs for each variable
-			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
+			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<>();
 			entity2IRIMap.put(patternSubClass.asOWLClass(), cls.getIRI());
 			boolean skip = false;
 			for (OWLEntity entity : signature) {
@@ -212,7 +212,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	}
 	
 	private Set<OWLAxiom> asAnnotatedAxioms(Map<OWLAxiom, Score> axioms2Score){
-		Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> annotatedAxioms = new HashSet<>();
 		for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
 			Score score = entry.getValue();

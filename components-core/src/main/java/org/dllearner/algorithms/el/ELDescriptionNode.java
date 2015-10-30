@@ -61,9 +61,9 @@ public class ELDescriptionNode {
 	// the reference tree for storing values, must not be null
 	protected ELDescriptionTree tree;
 	
-	protected TreeSet<OWLClass> label = new TreeSet<OWLClass>();
+	protected TreeSet<OWLClass> label = new TreeSet<>();
 	
-	protected List<ELDescriptionEdge> edges = new LinkedList<ELDescriptionEdge>();
+	protected List<ELDescriptionEdge> edges = new LinkedList<>();
 
 	protected int level;
 	
@@ -72,12 +72,12 @@ public class ELDescriptionNode {
 	protected ELDescriptionNode parent = null;
 		
 	// simulation information (list or set?)
-	protected Set<ELDescriptionNode> in = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> inSC1 = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> inSC2 = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> out = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> outSC1 = new HashSet<ELDescriptionNode>();
-	protected Set<ELDescriptionNode> outSC2 = new HashSet<ELDescriptionNode>();
+	protected Set<ELDescriptionNode> in = new HashSet<>();
+	protected Set<ELDescriptionNode> inSC1 = new HashSet<>();
+	protected Set<ELDescriptionNode> inSC2 = new HashSet<>();
+	protected Set<ELDescriptionNode> out = new HashSet<>();
+	protected Set<ELDescriptionNode> outSC1 = new HashSet<>();
+	protected Set<ELDescriptionNode> outSC2 = new HashSet<>();
 	
 	protected boolean isClassNode;
 	protected OWLDataRange dataRange;
@@ -100,7 +100,7 @@ public class ELDescriptionNode {
 	
 	// convenience constructor
 	public ELDescriptionNode(ELDescriptionTree tree, OWLClass... label) {
-		this(tree, new TreeSet<OWLClass>(Arrays.asList(label)));
+		this(tree, new TreeSet<>(Arrays.asList(label)));
 	}	
 	
 	/**
@@ -109,7 +109,7 @@ public class ELDescriptionNode {
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree, TreeSet<OWLClass> label) {
 		this.label = label;
-		this.edges = new LinkedList<ELDescriptionEdge>();	
+		this.edges = new LinkedList<>();
 		this.tree = tree;
 		level = 1;
 		parent = null;
@@ -127,7 +127,7 @@ public class ELDescriptionNode {
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree, OWLDataRange dataRange) {
 		this.dataRange = dataRange;
-		this.edges = new LinkedList<ELDescriptionEdge>();	
+		this.edges = new LinkedList<>();
 		this.tree = tree;
 		level = 1;
 		parent = null;
@@ -141,14 +141,14 @@ public class ELDescriptionNode {
 	
 	// convenience constructor
 	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, OWLClass... label) {
-		this(parentNode, parentProperty, new TreeSet<OWLClass>(Arrays.asList(label)));
+		this(parentNode, parentProperty, new TreeSet<>(Arrays.asList(label)));
 	}
 	
 	public ELDescriptionNode(ELDescriptionNode parentNode, OWLProperty parentProperty, Set<OWLClass> label) {
 //		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
-		this.edges = new LinkedList<ELDescriptionEdge>();
+		this.edges = new LinkedList<>();
 		parent = parentNode;
 		// the reference tree is the same as for the parent tree
 		tree = parentNode.tree;
@@ -163,7 +163,7 @@ public class ELDescriptionNode {
 		// simulation update
 //		Monitor mon = MonitorFactory.start("simulation update");
 		// the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		Set<ELDescriptionNode> update = new HashSet<>();
 		
 		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
@@ -230,7 +230,7 @@ public class ELDescriptionNode {
 		//		this.label = label;
 		// we first need to add the edge and update the simulation and then add
 		// all classes iteratively to the label (each time updating the simulation again)
-		this.edges = new LinkedList<ELDescriptionEdge>();
+		this.edges = new LinkedList<>();
 		parent = parentNode;
 		// the reference tree is the same as for the parent tree
 		tree = parentNode.tree;
@@ -245,7 +245,7 @@ public class ELDescriptionNode {
 		// simulation update
 //		Monitor mon = MonitorFactory.start("simulation update");
 		// the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		Set<ELDescriptionNode> update = new HashSet<>();
 		
 		// loop over all nodes on the same level, which are not in the in set
 		Set<ELDescriptionNode> nodes = tree.getNodesOnLevel(level);
@@ -404,7 +404,7 @@ public class ELDescriptionNode {
 			}
 		// return an intersection of labels and edges
 		} else {
-			Set<OWLClassExpression> operands = new TreeSet<OWLClassExpression>();
+			Set<OWLClassExpression> operands = new TreeSet<>();
 			for(OWLClass nc : label) {
 				operands.add(nc);
 			}
@@ -485,7 +485,7 @@ public class ELDescriptionNode {
 	private void labelSimulationUpdate() {
 //		Monitor mon = MonitorFactory.start("simulation update");
 		// compute the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		Set<ELDescriptionNode> update = new HashSet<>();
 		
 		Set<ELDescriptionNode> tmp = tree.getNodesOnLevel(level);
 		for(ELDescriptionNode w : tmp) {
@@ -552,7 +552,7 @@ public class ELDescriptionNode {
 		
 //		Monitor mon = MonitorFactory.start("simulation update");
 		// compute the nodes, which need to be updated
-		Set<ELDescriptionNode> update = new HashSet<ELDescriptionNode>();
+		Set<ELDescriptionNode> update = new HashSet<>();
 		update.add(this);
 		
 		/*

@@ -57,7 +57,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 	
 	private boolean beautify = true;
 	
-	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedSubclassOf = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();	
+	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedSubclassOf = new TreeMap<>();
 
 	public OWLClassExpressionMinimizer(OWLDataFactory dataFactory, AbstractReasonerComponent reasoner) {
 		this.df = dataFactory;
@@ -127,7 +127,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			Collection<OWLDataSomeValuesFrom> datapropertyRestrictions = entry.getValue();
 			
 			if(datapropertyRestrictions.size() > 1) {
-				Set<OWLFacetRestriction> facetRestrictions = new TreeSet<OWLFacetRestriction>();
+				Set<OWLFacetRestriction> facetRestrictions = new TreeSet<>();
 				for (OWLDataSomeValuesFrom restriction : datapropertyRestrictions) {
 					OWLDataRange dataRange = restriction.getFiller();
 					if(dataRange instanceof OWLDatatypeRestriction) {
@@ -170,7 +170,7 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
-		List<OWLClassExpression> newOperands = new ArrayList<OWLClassExpression>(operands);
+		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);

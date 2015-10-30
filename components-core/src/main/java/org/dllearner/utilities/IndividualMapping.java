@@ -14,7 +14,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  */
 public class IndividualMapping {
 	
-	private TObjectIntMap<OWLIndividual> mapping = new TObjectIntCustomHashMap<OWLIndividual>();
+	private TObjectIntMap<OWLIndividual> mapping = new TObjectIntCustomHashMap<>();
 	
 	private volatile int value = 0;
 	

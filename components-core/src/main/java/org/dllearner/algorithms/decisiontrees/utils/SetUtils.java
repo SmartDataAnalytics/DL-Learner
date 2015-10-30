@@ -38,7 +38,7 @@ public class SetUtils{
 	public  static <T> List<T> intersection(List<T> list1, List<T> list2){
 		// check the maximum lenght between list1 and  list1
 		if(list1.size()<=list2.size()){
-			List<T> intersection= new ArrayList<T>();
+			List<T> intersection= new ArrayList<>();
 			// if  the element of list2 are contained in lista 2, list2 is the intersection
 			for(Object elem: list2){
 				if(isIn((T)elem, list1)){
@@ -152,7 +152,7 @@ public class SetUtils{
 		if(cardinality>Math.log10(powerSet.length)/Math.log10(2))
 			throw new RuntimeException("La cardinalit� � maggiore di"+(Math.log10(powerSet.length)/Math.log10(2)));
 		
-		List<List<T>> sottoinsiemi= new ArrayList<List<T>>();
+		List<List<T>> sottoinsiemi= new ArrayList<>();
 		for(List<T> elem:powerSet){
 			if(elem.size()==cardinality)
 				sottoinsiemi.add(elem);

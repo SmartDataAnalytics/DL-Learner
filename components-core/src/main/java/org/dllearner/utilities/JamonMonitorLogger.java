@@ -51,7 +51,7 @@ public class JamonMonitorLogger {
 	
 	public static List<Monitor> getMonitors(){
 		//MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
-		LinkedList<Monitor> l=new LinkedList<Monitor>();
+		LinkedList<Monitor> l= new LinkedList<>();
 		
 		@SuppressWarnings("unchecked")
 		Iterator<Monitor> it = MonitorFactory.getFactory().iterator();
@@ -75,15 +75,15 @@ public class JamonMonitorLogger {
 	
 	public static String getStringForAllSortedByLabel() {
 		List<Monitor> l= getMonitors();
-		SortedSet<String> sset = new TreeSet<String>();
-		StringBuffer sbuf = new StringBuffer();
+		SortedSet<String> sset = new TreeSet<>();
+		StringBuilder sbuf = new StringBuilder();
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
 			
 			sset.add(monitor.toString());
 		}
 		for (String onemon : sset) {
-			sbuf.append(onemon+"\n");
+			sbuf.append(onemon).append("\n");
 		}
 		return sbuf.toString();
 	}

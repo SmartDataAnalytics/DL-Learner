@@ -386,15 +386,13 @@ public class PCELOE extends AbstractCELA {
 		}
 		ExecutorService service = Executors.newFixedThreadPool(nrOfWorkers);
 
-		List<Runnable> tasks = new ArrayList<Runnable>();
+		List<Runnable> tasks = new ArrayList<>();
 
 		boolean shareRefinementOperator = false;
 		
 		for(int i = 0; i < nrOfWorkers; i++){
-			PCELOEWorker worker = new PCELOEWorker();
+			PCELOEWorker worker;
 			if(shareRefinementOperator) {
-				 worker = new PCELOEWorker();
-			} else {
 				ClosedWorldReasoner reasonerCopy = new ClosedWorldReasoner();
 				reasonerCopy.setSources(reasoner.getSources());
 				try {
@@ -403,7 +401,7 @@ public class PCELOE extends AbstractCELA {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				if(operator instanceof SynchronizedRefinementOperator) {
 					operator = ((SynchronizedRefinementOperator) operator).getDelegate();
 				}
@@ -416,22 +414,23 @@ public class PCELOE extends AbstractCELA {
 					e.printStackTrace();
 				}
 				worker = new PCELOEWorker(op);
+			} else {
+				worker = new PCELOEWorker();
+
 			}
 			tasks.add(worker);
 		}
 		nanoStartTime = System.nanoTime();
 
 		//needed to block until all threads have been finished, because otherwise the main thread outputs the result to early
-		List<Future> futures = new ArrayList<Future>();
+		List<Future> futures = new ArrayList<>();
 		for(Runnable task : tasks){
 			futures.add(service.submit(task));
 		}
 		for(Future future : futures){
 			try {
 				future.get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
@@ -483,7 +482,7 @@ public class PCELOE extends AbstractCELA {
 						}
 					}
 
-					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<OWLClassExpression>();
+					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<>();
 					startClassCandidates.add(existingDefinition);
 					// hack for RhoDRDown
 					if(operator instanceof RhoDRDown) {
@@ -500,7 +499,7 @@ public class PCELOE extends AbstractCELA {
 							// add upward refinements to list
 							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, OWLClassExpressionUtils.getLength(candidate));
 //							System.out.println("ref: " + refinements);
-							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
+							LinkedList<OWLClassExpression> refinementList = new LinkedList<>(refinements);
 //							Collections.reverse(refinementList);
 //							System.out.println("list: " + refinementList);
 							startClassCandidates.addAll(refinementList);
@@ -707,7 +706,7 @@ public class PCELOE extends AbstractCELA {
 				} else {
 					// none of the superclasses of the class to learn must appear on the
 					// outermost property level
-					TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+					TreeSet<OWLClassExpression> toTest = new TreeSet<>();
 					toTest.add(classToDescribe);
 					while(!toTest.isEmpty()) {
 						OWLClassExpression d = toTest.pollFirst();
@@ -1190,7 +1189,7 @@ public class PCELOE extends AbstractCELA {
 		public void run() {
 			OENode nextNode;
 			while (!terminationCriteriaSatisfied()) {
-				String threadName = Thread.currentThread().getName();
+//				String threadName = Thread.currentThread().getName();
 
 				nextNode = getNextNodeToExpand();
 //				System.out.println(threadName + " processing " + nextNode);

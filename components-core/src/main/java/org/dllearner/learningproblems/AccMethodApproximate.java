@@ -5,10 +5,10 @@ import org.dllearner.core.Reasoner;
 
 
 public interface AccMethodApproximate extends Component {
-	public double getApproxDelta();
+	double getApproxDelta();
 
-	public void setApproxDelta(double approxDelta);
+	void setApproxDelta(double approxDelta);
 
-	public void setReasoner(Reasoner reasoner);
+	void setReasoner(Reasoner reasoner);
 
 }

@@ -114,7 +114,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	private OWLClassExpression startClass;
 	
 //	private double noise = 0;
-	private List<ELDescriptionTree> currentSolution = new LinkedList<ELDescriptionTree>();
+	private List<ELDescriptionTree> currentSolution = new LinkedList<>();
 	private EvaluatedDescription<? extends Score> bestEvaluatedDescription;
 	// how important not to cover negatives
 	private double posWeight = 1.2; // 2;
@@ -144,7 +144,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	}	
 	
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
 		problems.add(PosNegLP.class);
 		return problems;
 	}
@@ -152,8 +152,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		heuristic = new DisjunctiveHeuristic();
-		candidates = new TreeSet<SearchTreeNode>(heuristic);
-		trees = new TreeSet<ELDescriptionTree>(new ELDescriptionTreeComparator());
+		candidates = new TreeSet<>(heuristic);
+		trees = new TreeSet<>(new ELDescriptionTreeComparator());
 		
 		if(startClass == null) {
 			startClass = dataFactory.getOWLThing();
@@ -421,8 +421,8 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		currentSolution.clear();
 		bestEvaluatedDescription = learningProblem.evaluate(dataFactory.getOWLThing());
 		// we need to clone in order not to modify the learning problem
-		currentPosExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getPositiveExamples());
-		currentNegExamples = new TreeSet<OWLIndividual>(((PosNegLP)getLearningProblem()).getNegativeExamples());
+		currentPosExamples = new TreeSet<>(((PosNegLP) getLearningProblem()).getPositiveExamples());
+		currentNegExamples = new TreeSet<>(((PosNegLP) getLearningProblem()).getNegativeExamples());
 		startPosExamplesSize = currentPosExamples.size();
 //		startNegExamplesSize = currentNegExamples.size();
 	}

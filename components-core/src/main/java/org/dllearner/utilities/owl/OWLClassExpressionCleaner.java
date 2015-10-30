@@ -57,7 +57,7 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 	 */
 	@Override
 	public OWLClassExpression visit(OWLObjectIntersectionOf ce) {
-		List<OWLClassExpression> operands = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> operands = new ArrayList<>();
 		for (OWLClassExpression operand : ce.getOperands()) {
 			OWLClassExpression newOperand = operand.accept(this);
 			if(newOperand instanceof OWLObjectIntersectionOf){
@@ -75,7 +75,7 @@ public class OWLClassExpressionCleaner implements OWLClassExpressionVisitorEx<OW
 	 */
 	@Override
 	public OWLClassExpression visit(OWLObjectUnionOf ce) {
-		List<OWLClassExpression> operands = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> operands = new ArrayList<>();
 		for (OWLClassExpression operand : ce.getOperands()) {
 			OWLClassExpression newOperand = operand.accept(this);
 			if(newOperand instanceof OWLObjectUnionOf){

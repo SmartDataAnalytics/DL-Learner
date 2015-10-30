@@ -254,15 +254,15 @@ public class FuzzyOwl2
 	 */
 	public FuzzyOwl2(String input, String output)
 	{
-		definedConcepts = new Hashtable<String, FuzzyConcept> ();
-		definedProperties = new Hashtable<String, FuzzyProperty> ();
-		fuzzyDatatypes = new Hashtable<String, FuzzyDatatype> ();
-		fuzzyModifiers = new Hashtable<String, FuzzyModifier> ();
+		definedConcepts = new Hashtable<>();
+		definedProperties = new Hashtable<>();
+		fuzzyDatatypes = new Hashtable<>();
+		fuzzyModifiers = new Hashtable<>();
 		manager = OWLManager.createOWLOntologyManager();
 		ontologyPath = input;
 
 		loadOntology(ontologyPath);
-		ontologies = new HashSet<OWLOntology>();
+		ontologies = new HashSet<>();
 		ontologies.add(ontology);
 
 		// Imported ontologies
@@ -618,7 +618,7 @@ public class FuzzyOwl2
 	
 								case WEIGHTED_MAX:
 									List<ConceptDefinition> sourceList = c.getWeightedConcepts();
-									ArrayList<WeightedConcept> list = new ArrayList<WeightedConcept>();
+									ArrayList<WeightedConcept> list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedMaxConcept wmax = new WeightedMaxConcept(list);
@@ -628,7 +628,7 @@ public class FuzzyOwl2
 									
 								case WEIGHTED_MIN:
 									sourceList = c.getWeightedConcepts();
-									list = new ArrayList<WeightedConcept>();
+									list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedMinConcept wmin = new WeightedMinConcept(list);
@@ -638,7 +638,7 @@ public class FuzzyOwl2
 	
 								case WEIGHTED_SUM:
 									sourceList = c.getWeightedConcepts();
-									list = new ArrayList<WeightedConcept>();
+									list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedSumConcept wsum = new WeightedSumConcept(list);

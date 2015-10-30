@@ -35,7 +35,7 @@ public class KeywordBasedQueryTreeFilter implements QueryTreeFilter{
 	
 	@Override
 	public QueryTree<String> getFilteredQueryTree(QueryTree<String> tree){
-		QueryTree<String> copy = new QueryTreeImpl<String>(tree);
+		QueryTree<String> copy = new QueryTreeImpl<>(tree);
 		filterTree(copy);
 		return copy;
 	}
@@ -77,7 +77,7 @@ public class KeywordBasedQueryTreeFilter implements QueryTreeFilter{
 	}
 	
 	private boolean isSimlarWithSubstringMetrik(String s){
-		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		SortedSet<Double> values = new TreeSet<>(Collections.reverseOrder());
 		for(String word : questionWords){
 			double v = substringMetric.score(word, s, true);
 			if(v >= threshold){
@@ -97,7 +97,7 @@ public class KeywordBasedQueryTreeFilter implements QueryTreeFilter{
 	}
 	
 	private Set<Double> getTopK(SortedSet<Double> values){
-		Set<Double> top = new HashSet<Double>();
+		Set<Double> top = new HashSet<>();
 		int k = 0;
 		for(Double v : values){
 			if(k == topK){

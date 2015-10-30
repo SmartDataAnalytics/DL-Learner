@@ -9,7 +9,7 @@ public class SearchTree<T extends AbstractSearchTreeNode> extends AbstractSearch
 
 	public SearchTree(Comparator<T> comparator) {
 		super(comparator);
-		nodes = new TreeSet<T>(sortOrderComp);
+		nodes = new TreeSet<>(sortOrderComp);
 	}
 	
 }

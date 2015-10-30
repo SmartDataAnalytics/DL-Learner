@@ -77,7 +77,7 @@ public class AbstractRenderer {
     public AbstractRenderer(Writer writer, ShortFormProvider shortFormProvider) {
         this.writer = writer;
         this.shortFormProvider = shortFormProvider;
-        tabs = new ArrayList<Integer>();
+        tabs = new ArrayList<>();
         pushTab(0);
     }
 

@@ -158,7 +158,7 @@ public class DLTree extends AbstractTree {
 //			return root.concept.toString() + " ["+root.pos.toString()+" "+root.neg.toString()+"]";
 		
 		String string="";
-		Stack<DLTree> stack= new Stack<DLTree>();
+		Stack<DLTree> stack= new Stack<>();
 		stack.push(this);
 		DLTree currenttree=null;
 		while(!stack.isEmpty()){
@@ -194,7 +194,7 @@ public class DLTree extends AbstractTree {
 
 	private double getNodes(){
 
-		ArrayList<DLNode> list = new ArrayList<DLNode>();
+		ArrayList<DLNode> list = new ArrayList<>();
 		double  num=0;
 		if(root!=null){
 			list.add(root);
@@ -230,9 +230,9 @@ public class DLTree extends AbstractTree {
 
 
 	public List<DLTree> getLeaves(){
-		ArrayList<DLTree> leaves= new ArrayList<DLTree>();
+		ArrayList<DLTree> leaves= new ArrayList<>();
 
-		ArrayList<DLTree> list = new ArrayList<DLTree>();
+		ArrayList<DLTree> list = new ArrayList<>();
 
 		if(root!=null){
 			list.add(this);
@@ -285,7 +285,7 @@ public class DLTree extends AbstractTree {
 	 */
 	public static OWLClassExpression deriveDefinition(DLTree tree, boolean conceptFromPositiveIstances){
 	
-    HashSet<OWLClassExpression> exp= new HashSet<OWLClassExpression>();
+    HashSet<OWLClassExpression> exp= new HashSet<>();
 
     OWLDataFactory dataFactory = new OWLDataFactoryImpl();
     if (conceptFromPositiveIstances)

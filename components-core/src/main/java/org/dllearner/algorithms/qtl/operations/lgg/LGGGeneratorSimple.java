@@ -84,7 +84,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 		// 2. compare the edges
 		// we only have to compare edges contained in both trees
 		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
-			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
 				// loop over children of second tree
@@ -154,7 +154,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 								)
 								)
 				);
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Dresden");
 		for(String resource : resources){
 			try {

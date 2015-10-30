@@ -106,7 +106,7 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 			
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyRangeAxiom>(
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(
 					df.getOWLDataPropertyRangeAxiom(entityToDescribe, df.getOWLDatatype(IRI.create(datatypeURI))),
 					new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 

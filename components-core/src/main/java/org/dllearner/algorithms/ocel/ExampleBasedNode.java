@@ -58,7 +58,8 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 //	private int coveredNegativeSize;
 	
 	// the method by which quality was evaluated in this node
-	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
+	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
+
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.START;
 	
 	// all properties of a node in the search tree
@@ -80,7 +81,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	// link to parent in search tree
 	private ExampleBasedNode parent = null;
 	// apart from the child nodes, we also keep child concepts
-	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<>();
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;

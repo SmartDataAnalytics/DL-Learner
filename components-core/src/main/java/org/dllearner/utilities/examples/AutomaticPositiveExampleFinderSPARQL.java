@@ -39,7 +39,7 @@ public class AutomaticPositiveExampleFinderSPARQL {
 	public AutomaticPositiveExampleFinderSPARQL(SPARQLTasks st) {
 		super();
 		
-		this.posExamples = new TreeSet<String>();
+		this.posExamples = new TreeSet<>();
 		this.sparqltasks = st;
 	}
 	

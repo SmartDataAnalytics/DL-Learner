@@ -207,16 +207,16 @@ public class DSTTDTClassifier extends AbstractCELA{
 	(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,	SortedSet<OWLIndividual> undExs) {
 		
 
-		Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> examples = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExs, negExs, undExs, beam, prPos, prNeg);
+		Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> examples = new Npla<>(posExs, negExs, undExs, beam, prPos, prNeg);
 		DSTDLTree tree = new DSTDLTree(); // new (sub)tree
-		Stack<Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>> stack= new Stack<Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>>();
-		Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> toInduce= new Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+		Stack<Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>> stack= new Stack<>();
+		Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> toInduce= new Couple<>();
 		toInduce.setFirstElement(tree);
 		toInduce.setSecondElement(examples);
 		stack.push(toInduce);
 
 
-		Stack<DSTDLTree> lastTrees= new Stack<DSTDLTree>(); // for refine hierarchically a concept
+		Stack<DSTDLTree> lastTrees= new Stack<>(); // for refine hierarchically a concept
 		while (!stack.isEmpty()){
 
 
@@ -238,18 +238,18 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 
 			//build the BBA for the current node
-			ArrayList<Integer> frame = new ArrayList<Integer>();
+			ArrayList<Integer> frame = new ArrayList<>();
 			frame.add(-1);
 			frame.add(1);
 			MassFunction mass= new MassFunction(frame);
-			ArrayList<Integer> positive= new ArrayList<Integer>();
+			ArrayList<Integer> positive= new ArrayList<>();
 			positive.add(1);
 			double positiveValue = (double)psize/(psize+ nsize+usize);
 			if( (psize+ nsize+usize)==0){
 				positiveValue= prPos;
 			}
 			mass.setValues(positive, positiveValue);
-			ArrayList<Integer> negative= new ArrayList<Integer>();
+			ArrayList<Integer> negative= new ArrayList<>();
 			negative.add(-1);
 			double negativeValue = (double)nsize/(psize+ nsize+usize);
 			if( (psize+ nsize+usize)==0){
@@ -312,7 +312,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 							//	dlTreesRefinementOperator.refine(dataFactory.getOWLThing(), posExs, negExs);
 								System.out.println("Refinement:"+refine);
 								
-							ArrayList<OWLClassExpression> generateNewConcepts = new ArrayList<OWLClassExpression>(refine); // a generic refinement operator
+							ArrayList<OWLClassExpression> generateNewConcepts = new ArrayList<>(refine); // a generic refinement operator
 							OWLClassExpression[] cConcepts = new OWLClassExpression[generateNewConcepts.size()];
 							
 							cConcepts= generateNewConcepts.toArray(cConcepts);
@@ -327,12 +327,12 @@ public class DSTTDTClassifier extends AbstractCELA{
 							newRootConcept= heuristic.selectWorstConceptDST(cConcepts, posExs, negExs, undExs, prPos, prNeg);			MassFunction refinementMass = newRootConcept.getSecondElement();
 
 						//System.out.println(newRootConcept.getFirstElement()+"----"+refinementMass);
-						SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();;
-						SortedSet<OWLIndividual> negExsT =new  TreeSet<OWLIndividual>();;
-						SortedSet<OWLIndividual> undExsT =new  TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> posExsF =new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> negExsF =new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> undExsF = new TreeSet<OWLIndividual>();
+						SortedSet<OWLIndividual> posExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> posExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
 
 						Split.split(newRootConcept.getFirstElement(), dataFactory, reasoner, posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
@@ -348,13 +348,13 @@ public class DSTTDTClassifier extends AbstractCELA{
 						DSTDLTree negTree= new DSTDLTree(); // recursive calls simulation
 						currentTree.setPosTree(posTree);
 						currentTree.setNegTree(negTree);
-						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsT, negExsT, undExsT, beam, perPos, perNeg);
-						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsF, negExsF, undExsF, beam, perPos, perNeg);
-						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<>(posExsT, negExsT, undExsT, beam, perPos, perNeg);
+						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<>(posExsF, negExsF, undExsF, beam, perPos, perNeg);
+						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<>();
 						pos.setFirstElement(posTree);
 						pos.setSecondElement(npla1);
 						// negative branch
-						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<>();
 						neg.setFirstElement(negTree);
 						neg.setSecondElement(npla2);
 						stack.push(neg);
@@ -393,12 +393,12 @@ public class DSTTDTClassifier extends AbstractCELA{
 						MassFunction refinementMass = newRootConcept.getSecondElement();
 
 						//logger.debug(newRootConcept.getFirstElement()+"----"+refinementMass);
-						SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> negExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> undExsT = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> posExsF = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> negExsF = new TreeSet<OWLIndividual>();
-						SortedSet<OWLIndividual> undExsF = new  TreeSet<OWLIndividual>();
+						SortedSet<OWLIndividual> posExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsT = new TreeSet<>();
+						SortedSet<OWLIndividual> posExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> negExsF = new TreeSet<>();
+						SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
 
 						//split(newRootConcept.getFirstElement(), posExs, negExs, undExs, posExsT, negExsT, undExsT, posExsF, negExsF, undExsF);
@@ -418,13 +418,13 @@ public class DSTTDTClassifier extends AbstractCELA{
 						
 						currentTree.setPosTree(posTree);
 						currentTree.setNegTree(negTree);
-						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsT, negExsT, undExsT, beam, perPos, perNeg);
-						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>(posExsF, negExsF, undExsF, beam, perPos, perNeg);
-						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla1 = new Npla<>(posExsT, negExsT, undExsT, beam, perPos, perNeg);
+						Npla<SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, SortedSet<OWLIndividual>, Integer, Double, Double> npla2 = new Npla<>(posExsF, negExsF, undExsF, beam, perPos, perNeg);
+						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> pos= new Couple<>();
 						pos.setFirstElement(posTree);
 						pos.setSecondElement(npla1);
 						// negative branch
-						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>>();
+						Couple<DSTDLTree,Npla<SortedSet<OWLIndividual>,SortedSet<OWLIndividual>,SortedSet<OWLIndividual>, Integer, Double, Double>> neg= new Couple<>();
 						neg.setFirstElement(negTree);
 						neg.setSecondElement(npla2);
 						stack.push(neg);
@@ -464,7 +464,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		
 		//	System.out.println("BBA "+m);
 
-		Stack<DSTDLTree> stack= new Stack<DSTDLTree>();
+		Stack<DSTDLTree> stack= new Stack<>();
 		stack.push(tree);
 		
 		
@@ -476,7 +476,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 			MassFunction m= currenttree.getRootBBA();
 		if (rootClass.equals(dataFactory.getOWLThing())){
 			//		System.out.println("Caso 1");
-			Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+			Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 			result.setFirstElement(+1);
 			result.setSecondElement(m);
 			list.add(result);
@@ -493,7 +493,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		}
 		else if (rootClass.equals(dataFactory.getOWLNothing())){
 			//		System.out.println("Caso 2");
-			Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+			Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 			result.setFirstElement(-1);
 			result.setSecondElement(m);
 			list.add(result);
@@ -509,7 +509,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 			}
 			else{
 				//			System.out.println("Caso 4");
-				Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+				Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 				result.setFirstElement(+1);
 				result.setSecondElement(m);
 				list.add(result);
@@ -525,7 +525,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 				}
 				else{
 					//				System.out.println("Caso 6"+ tree);
-					Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+					Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 					result.setFirstElement(-1);
 					result.setSecondElement(m);
 					list.add(result);
@@ -543,7 +543,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 				}
 				else{
 					//				System.out.println("Caso 8");
-					Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+					Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 					result.setFirstElement(+1);
 					result.setSecondElement(m);
 					list.add(result);
@@ -556,7 +556,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 					stack.push(currenttree.getNegSubTree());
 				}
 				else{
-					Couple<Integer,MassFunction<Integer>> result=new Couple<Integer,MassFunction<Integer>>();
+					Couple<Integer,MassFunction<Integer>> result= new Couple<>();
 					result.setFirstElement(-1);
 					result.setSecondElement(m);
 					list.add(result);
@@ -603,7 +603,7 @@ public class DSTTDTClassifier extends AbstractCELA{
 		DSTDLTree model= (DSTDLTree) tree; // only classification with DST trees are supported for now
 		ArrayList<Couple<Integer, MassFunction<Integer>>> list;
 //		System.out.println("Tree \n"+ model);
-		list= new  ArrayList<Couple<Integer,MassFunction<Integer>>>();
+		list= new ArrayList<>();
 		classifyExampleDST(list,indTestEx, model);
 		// BBA from the reached leaves
 //		System.out.println("Lista di foglie");
@@ -631,21 +631,19 @@ public class DSTTDTClassifier extends AbstractCELA{
 
 	/**
 	 * Implementation of forcing criterion for the final class assignement
-	 * @param results
-	 * @param c
 	 * @param bba
 	 */
 	private int predict(MassFunction<Integer> bba) {
-		ArrayList<Integer> hypothesis= new ArrayList<Integer>();
+		ArrayList<Integer> hypothesis= new ArrayList<>();
 		hypothesis.add(+1);
 		double confirmationFunctionValuePos = bba.getConfirmationFunctionValue(hypothesis);
 		//			double confirmationFunctionValuePos = bba.calcolaBeliefFunction(ipotesi);
 		// not concept
-		ArrayList<Integer> hypothesis2= new ArrayList<Integer>();
+		ArrayList<Integer> hypothesis2= new ArrayList<>();
 		hypothesis2.add(-1);
 		double confirmationFunctionValueNeg = bba.getConfirmationFunctionValue(hypothesis2);
 		//			double confirmationFunctionValueNeg = bba.calcolaBeliefFunction(ipotesi2);
-		ArrayList<Integer> hypothesis3= new ArrayList<Integer>();
+		ArrayList<Integer> hypothesis3= new ArrayList<>();
 		hypothesis3.add(-1);
 		hypothesis3.add(+1);
 		double confirmationFunctionValueUnc = bba.getConfirmationFunctionValue(hypothesis3);

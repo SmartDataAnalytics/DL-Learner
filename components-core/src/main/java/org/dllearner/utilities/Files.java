@@ -61,10 +61,10 @@ public class Files {
 	public static String readFile(URL file) throws IOException {
 		 BufferedReader in = new BufferedReader(new InputStreamReader(file.openStream()));
 
-		StringBuffer input = new StringBuffer();
+		StringBuilder input = new StringBuilder();
 		String inputLine;
 		while ((inputLine = in.readLine()) != null) {
-		    input.append(inputLine + "\n");
+		    input.append(inputLine).append("\n");
 		}
 		in.close();
 			    
@@ -79,17 +79,16 @@ public class Files {
 	 * @return Content of the file.
 	 */
 	public static String readFile(File file) throws FileNotFoundException, IOException {
-			
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		StringBuffer content = new StringBuffer();
-		try{
-		String line;
-		
-		while ((line = br.readLine()) != null) {
-			content.append(line);
-			content.append(System.getProperty("line.separator"));
+
+		StringBuilder content = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				content.append(line);
+				content.append(System.getProperty("line.separator"));
+			}
 		}
-		}finally{br.close();}
 		return content.toString();
 		
 	}
@@ -104,7 +103,7 @@ public class Files {
 	public static String[] readFileAsArray(File file) throws FileNotFoundException, IOException {
 		String content = readFile(file);
 		StringTokenizer st = new StringTokenizer(content, System.getProperty("line.separator"));
-		List<String> l = new ArrayList<String>();
+		List<String> l = new ArrayList<>();
 		while (st.hasMoreTokens()) {
 			l.add(st.nextToken());
 			

@@ -27,7 +27,7 @@ public class MapUtils {
 	 * @return
 	 */
 	public static <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map, final boolean ascending){
-		List<Entry<K, V>> entries = new ArrayList<Entry<K, V>>(map.entrySet());
+		List<Entry<K, V>> entries = new ArrayList<>(map.entrySet());
         Collections.sort(entries, new Comparator<Entry<K, V>>() {
 
 			@Override

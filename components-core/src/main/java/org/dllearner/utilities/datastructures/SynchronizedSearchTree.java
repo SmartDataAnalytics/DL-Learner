@@ -11,7 +11,7 @@ public class SynchronizedSearchTree<T extends AbstractSearchTreeNode> extends Ab
 
 	public SynchronizedSearchTree(Comparator<T> comparator) {
 		super(comparator);
-		nodes = Sets.synchronizedNavigableSet(new TreeSet<T>(sortOrderComp));
+		nodes = Sets.synchronizedNavigableSet(new TreeSet<>(sortOrderComp));
 	}
 
 }

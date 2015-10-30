@@ -33,7 +33,7 @@ public class EntityDependencyMatrix<T> {
 		
 	}
 	
-	public static void EntityDependencyMatrix(OWLOntology ontology) {
+	public static void getEntityDependencyMatrix(OWLOntology ontology) {
 		OWLReasoner reasoner = new StructuralReasonerFactory().createNonBufferingReasoner(ontology);
 		
 		// how often are individuals of class A related to individuals of class B
@@ -44,7 +44,7 @@ public class EntityDependencyMatrix<T> {
 					Set<OWLNamedIndividual> instancesA = reasoner.getInstances(clsA, false).getFlattened();
 					Set<OWLNamedIndividual> instancesB = reasoner.getInstances(clsB, false).getFlattened();
 					
-					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesA) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
 						for (OWLObjectPropertyAssertionAxiom axiom : axioms) {
@@ -52,7 +52,7 @@ public class EntityDependencyMatrix<T> {
 						}
 					}
 					
-					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesB) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
 						for (OWLObjectPropertyAssertionAxiom axiom : axioms) {

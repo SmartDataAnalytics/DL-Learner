@@ -22,9 +22,9 @@ public class Split {
 			SortedSet<OWLIndividual> posExsT, SortedSet<OWLIndividual> negExsT, SortedSet<OWLIndividual> undExsT, SortedSet<OWLIndividual> posExsF, SortedSet<OWLIndividual> negExsF,
 			SortedSet<OWLIndividual> undExsF) {
 
-		SortedSet<OWLIndividual> posExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> undExsU = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> negExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> undExsU = new TreeSet<>();
 
 		splitGroup(concept,df, reasoner, posExs,posExsT,posExsF,posExsU);
 		splitGroup(concept,df, reasoner, negExs,negExsT,negExsF,negExsU);

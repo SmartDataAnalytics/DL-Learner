@@ -33,9 +33,9 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	private Map<Statement, Double> statement2Similarity = new HashMap<Statement, Double>();
+	private Map<Statement, Double> statement2Similarity = new HashMap<>();
 	
-	private Map<RDFNode, Boolean> cache = new HashMap<RDFNode, Boolean>();
+	private Map<RDFNode, Boolean> cache = new HashMap<>();
 	
 	int cnt = 0;
 	
@@ -63,7 +63,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	}
 	
 	private boolean isSimlarWithSubstringMetrik(String s){
-		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		SortedSet<Double> values = new TreeSet<>(Collections.reverseOrder());
 		for(String word : questionWords){
 			double v = substringMetric.score(word, s, true);
 			if(v >= threshold){
@@ -83,7 +83,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	}
 	
 	private Set<Double> getTopK(SortedSet<Double> values){
-		Set<Double> top = new HashSet<Double>();
+		Set<Double> top = new HashSet<>();
 		int k = 0;
 		for(Double v : values){
 			if(k == topK){
@@ -190,7 +190,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	}
 	
 	public Set<Statement> getStatementsBelowThreshold(double threshold){
-		Set<Statement> statements = new HashSet<Statement>();
+		Set<Statement> statements = new HashSet<>();
 		for(Entry<Statement, Double> entry : statement2Similarity.entrySet()){
 			if(entry.getValue().doubleValue() < threshold){
 				statements.add(entry.getKey());
