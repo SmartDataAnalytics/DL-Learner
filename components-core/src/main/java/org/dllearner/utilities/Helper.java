@@ -223,7 +223,7 @@ public class Helper {
 	
 	/**
 	 * Checks whether the entities exist in background knowledge
-	 * @param entites The entities to check.
+	 * @param entities The entities to check.
 	 * @return The first non-existing entity or null if they are all in the
 	 * background knowledge.
 	 */

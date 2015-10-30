@@ -31,7 +31,7 @@ public class StringFormatter {
 	/**
 	 * formats a double value between 0 and 100 to a percentage
 	 * ex: 0.7854684  will be return 78.5%
-	 * @param d
+	 * @param d the double value
 	 */
 	public static String doubleToPercent(double d){
 		return doubleToPercent( d,  1,  true);

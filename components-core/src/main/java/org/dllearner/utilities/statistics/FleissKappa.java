@@ -59,7 +59,6 @@ public class FleissKappa
  
     /**
      * Computes the Kappa value
-     * @param n Number of rating per subjects (number of human raters)
      * @param mat Matrix[subjects][categories]
      * @return The Kappa value
      */

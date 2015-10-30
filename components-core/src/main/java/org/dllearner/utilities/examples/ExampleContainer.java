@@ -60,7 +60,8 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	public static boolean add(ExampleContainer e){
 		return exampleSets.add(e);
 	}
-	
+
+	@Override
 	public int compareTo(ExampleContainer e){
 		
 		if(getNegativeExamples().equals(e.getNegativeExamples())

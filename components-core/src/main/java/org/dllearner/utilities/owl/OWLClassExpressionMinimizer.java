@@ -151,11 +151,6 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		return df.getOWLObjectIntersectionOf(new HashSet<>(newOperands));
 	}
 
-	/**
-	 * @param op1
-	 * @param op2
-	 * @return
-	 */
 	private boolean isSubClassOf(OWLClassExpression subClass, OWLClassExpression superClass) {
 		return superClass.isOWLThing() || reasoner.isSuperClassOf(superClass, subClass);
 	}

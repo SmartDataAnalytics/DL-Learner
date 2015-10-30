@@ -89,7 +89,7 @@ public class OWLAPIRenderers {
 	/**
 	 * Converts an OWL API OWLClassExpression to an OWL/XML syntax string.
 	 * 
-	 * @param OWLClassExpression Input OWLDescription.
+	 * @param description Input OWLDescription.
 	 * @return OWL/XML syntax string.
 	 */
 	public static String toOWLXMLSyntax(OWLClassExpression description) {
@@ -125,9 +125,7 @@ public class OWLAPIRenderers {
 			manager.applyChange(new AddAxiom(ontology, axiom));
 			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), out);
 			str = new String(out.toByteArray(), "UTF-8");
-		} catch (OWLOntologyCreationException | OWLOntologyStorageException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (OWLOntologyCreationException | OWLOntologyStorageException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return str;

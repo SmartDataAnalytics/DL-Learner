@@ -31,9 +31,6 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 	private PosNegLP lp;
 //	private Class<T> clazz;
 
-	/**
-	 * @param reasoner
-	 */
 	public OptimizedNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, PosNegLP lp) {
 		super(reasoner, dataFactory);
 		this.lp = lp;

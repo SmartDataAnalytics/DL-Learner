@@ -195,7 +195,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			try{
 				fromNearbyClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
 						+ oneClass + "\"", sparqlResultLimit));
-			} catch (Exception e){}
+			} catch (Exception e){e.printStackTrace();}
 		}
 		
 		this.fromNearbyClasses.removeAll(fullPositiveSet);

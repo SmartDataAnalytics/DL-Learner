@@ -13,18 +13,18 @@ import com.google.common.collect.Multimap;
 public class MapUtils {
 
 	/**
-	 * Returns a list of entries sorted by the values descending.
-	 * @param map
-	 * @return
+	 * Returns a list of entries sorted by the map values descending.
+	 * @param map the map
+	 * @return a list of entries sorted by the map values descending.
 	 */
 	public static <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
 		return sortByValues(map, false);
 	}
 	
 	/**
-	 * Returns a list of entries sorted by the values either ascending or descending.
-	 * @param map
-	 * @return
+	 * Returns a list of entries sorted by the map values either ascending or descending.
+	 * @param map the map
+	 * @return a list of entries sorted by the map values either ascending or descending.
 	 */
 	public static <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map, final boolean ascending){
 		List<Entry<K, V>> entries = new ArrayList<>(map.entrySet());

@@ -6,7 +6,6 @@ package org.dllearner.utilities.sparql;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -52,7 +51,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	/**
 	 * Returns a pruned copy of the given query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Query pruneQuery(Query query) {

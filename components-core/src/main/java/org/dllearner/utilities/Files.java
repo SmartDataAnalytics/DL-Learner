@@ -115,8 +115,8 @@ public class Files {
 	
 	/**
 	 * writes a serializable Object to a File.
-	 * @param obj
-	 * @param file
+	 * @param obj the object
+	 * @param file the file
 	 */
 	public static void writeObjectToFile(Object obj, File file){
 		

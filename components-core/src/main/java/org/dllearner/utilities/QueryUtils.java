@@ -80,7 +80,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getVariables(Query query){
@@ -103,7 +103,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getSubjectVariables(Query query){
@@ -122,7 +122,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public static Set<Var> getSubjectVars(Query query){
@@ -186,7 +186,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Given a SPARQL query and a start node, return the outgoing
 	 * triple patterns.
-	 * @param query
+	 * @param query the query
+	 * @param source the start node
 	 * @return
 	 */
 	public static Set<Triple> getOutgoingTriplePatterns(Query query, final Node source){
@@ -227,7 +228,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Given a SPARQL query and a start node, return the maximum subject-object
 	 * join depth.
-	 * @param query
+	 * @param query the query
+	 * @param source the start node
 	 * @return
 	 */
 	public static int getSubjectObjectJoinDepth(Query query, final Node source){
@@ -272,7 +274,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as object in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public static Set<Var> getObjectVars(Query query){
@@ -307,7 +309,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getObjectVariables(Query query){
@@ -328,7 +330,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in subject position, i.e. the outgoing
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractOutgoingTriplePatterns(Query query, Node node){
@@ -347,7 +349,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the incoming
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractIncomingTriplePatterns(Query query, Node node){
@@ -366,7 +368,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the ingoing
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractIngoingTriplePatterns(Query query, Node node){
@@ -385,7 +387,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the ingoing and outgoing triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractTriplePatterns(Query query, Node node){
@@ -422,7 +424,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the incoming and outgoing triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractNonOptionalTriplePatterns(Query query, Node node){
@@ -436,7 +438,6 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is either in subject or object position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractTriplePatternsForProjectionVars(Query query){
@@ -453,7 +454,6 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in subject position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractOutgoingTriplePatternsForProjectionVars(Query query){
@@ -476,7 +476,6 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in subject position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIncomingTriplePatternsForProjectionVars(Query query){
@@ -492,7 +491,6 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in object position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIngoingTriplePatternsForProjectionVars(Query query){
@@ -587,8 +585,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Removes triple patterns of form (s rdf:type A) if there exists a
 	 * triple pattern (s rdf:type B) such that the underlying
 	 * knowledge base entails (B rdfs:subClassOf A).
-	 * @param qef
-	 * @param query
+	 * @param qef the query execution factory
+	 * @param query the query
 	 */
 	public void filterOutGeneralTypes(QueryExecutionFactory qef, Query query){
 		// extract all rdf:type triple patterns
@@ -728,7 +726,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns the ElementGroup object containing the triple pattern.
-	 * @param triple
+	 * @param triple the triple patterm
 	 * @return
 	 */
 	public ElementGroup getElementGroup(Triple triple){

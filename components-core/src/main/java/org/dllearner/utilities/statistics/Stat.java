@@ -62,8 +62,7 @@ public class Stat {
      * Creates a new stat object by merging several stat objects. The result is the same as if
      * the numbers, which have been added to each stat would have been added to this
      * stat object.
-     * @param stat1 Statistical object 1.
-     * @param stat2 Statistical object 2.
+     * @param stats the stats
      */
     public Stat(Set<Stat> stats) {
     	for(Stat stat : stats){

@@ -6,14 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.semkernel.SemKernel;
@@ -493,7 +486,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
 
             if (goId.trim().length() == 0) continue;  // skip lines not containing a GO ID
 
-            if (evidenceCode != "ND" && !qualifier.contains("NOT")) {
+            if (!Objects.equals(evidenceCode, "ND") && !qualifier.contains("NOT")) {
                 String goUriStr = oboPrefix + goId.replace(":", "_");
 
                 if (!mgi2go.containsKey(mgiId)) {

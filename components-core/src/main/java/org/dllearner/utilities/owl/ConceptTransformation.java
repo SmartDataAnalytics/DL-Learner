@@ -21,7 +21,6 @@ package org.dllearner.utilities.owl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -200,7 +199,7 @@ public class ConceptTransformation {
 	 * e.g. \forall r.\top (\equiv \top) or male \sqcup male are not
 	 * minimal.	This method performs heuristic sanity checks (it will
 	 * not try to find semantically equivalent shorter descriptions).
-	 * @param OWLClassExpression Input description.
+	 * @param description Input description.
 	 * @return True if a superfluous construct has been found.
 	 */
 	public static boolean isDescriptionMinimal(OWLClassExpression description) {
@@ -353,7 +352,7 @@ public class ConceptTransformation {
 	
 	/**
 	 * Counts occurrences of \forall in description.
-	 * @param OWLClassExpression A description.
+	 * @param description A description.
 	 * @return Number of \forall occurrences.
 	 */
 	public static int getForallOccurences(OWLClassExpression description) {
@@ -370,7 +369,7 @@ public class ConceptTransformation {
 	 * Gets the "contexts" of all \forall occurrences in a description. A context
 	 * is a set of properties, i.e. in \exists hasChild.\exists hasBrother.\forall hasChild.male,
 	 * the context of the only \forall occurrence is [hasChild, hasBrother, hasChild]. 
-	 * @param OWLClassExpression A description.
+	 * @param description A description.
 	 * @return Set of property contexts.
 	 */
 	public static SortedSet<PropertyContext> getForallContexts(OWLClassExpression description) {

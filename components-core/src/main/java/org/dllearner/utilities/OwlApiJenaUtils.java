@@ -65,9 +65,9 @@ public class OwlApiJenaUtils {
 	}
 	
 	/**
-	 * Convert JENA API OWL statements into OWL API axioms.
-	 * @param axioms the JENA API statements
-	 * @return
+	 * Convert statements from JENA API  into OWL API axioms.
+	 * @param statements the JENA API statements
+	 * @return the set of axioms
 	 */
 	public static Set<OWLAxiom> asOWLAxioms(List<Statement> statements) {
 		Model model = ModelFactory.createDefaultModel();
@@ -117,9 +117,9 @@ public class OwlApiJenaUtils {
 	}
 	
 	/**
-	 * Convert OWL API OWL axioms into JENA API statements.
+	 * Convert OWL axioms from OWL API into JENA API statements.
 	 * @param axioms the OWL API axioms
-	 * @return
+	 * @return the JENA statements
 	 */
 	public static Set<Statement> asStatements(Set<OWLAxiom> axioms) {
 		try {
@@ -133,7 +133,7 @@ public class OwlApiJenaUtils {
 	
 	/**
 	 * Convert an OWL entity into a JENA Node.
-	 * @param axioms the OWL entity
+	 * @param entity the OWL entity
 	 * @return the JENA Node
 	 */
 	public static Node asNode(OWLEntity entity) {

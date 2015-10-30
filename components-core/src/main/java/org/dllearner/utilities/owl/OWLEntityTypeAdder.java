@@ -18,7 +18,7 @@ public class OWLEntityTypeAdder {
 	 * Infers the type of predicates p_i by analyzing the object of the triples using p_i and adds the
 	 * entity type assertion to the model, i.e. for a data property dp <dp a owl:DatatypeProperty>
 	 * will be added.
-	 * @param model
+	 * @param model the model
 	 */
 	public static void addEntityTypes(Model model){
 		StmtIterator iterator = model.listStatements();
