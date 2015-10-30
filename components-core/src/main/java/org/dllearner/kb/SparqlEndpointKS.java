@@ -147,7 +147,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	}
 
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
+		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 
@@ -156,7 +156,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
 			// use in-memory cache
-//			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
 
 		// add some delay

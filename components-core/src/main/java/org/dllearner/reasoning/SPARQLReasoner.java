@@ -108,12 +108,13 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * A reasoner implementation that provides inference services by the execution
  * of SPARQL queries on
  * <ul>
- * <li> local files (usually in forms of JENA API models)
- * <li> remote SPARQL endpoints
+ * <li> local files (usually in forms of JENA API models)</li>
+ * <li> remote SPARQL endpoints </li>
  * </ul>
+ * <p>
  * Compared to other reasoner implementations, it doesn't do any pre-computation
  * by default because it might be too expensive on very large knowledge bases.
- * 
+ * </p>
  * @author Lorenz Buehmann
  *
  */
@@ -125,7 +126,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	
 	public enum PopularityType {
-		CLASS, OBJECT_PROPERTY, DATA_PROPERTY;
+		CLASS, OBJECT_PROPERTY, DATA_PROPERTY
 	}
 	
 	private static final ParameterizedSparqlString CLASS_POPULARITY_QUERY = new ParameterizedSparqlString(

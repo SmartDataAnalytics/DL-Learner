@@ -18,6 +18,10 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 import com.hp.hpl.jena.query.QueryExecution;
 
 /**
+ * Contains a set of measures to compute the informativeness of a triple based on the work proposed in 
+ * REWOrD: Semantic Relatedness, AAAI 2012.
+ * 
+ * 
  * @author Lorenz Buehmann
  *
  */
@@ -30,6 +34,23 @@ public class InformativenessMeasures {
 		this.qef = qef;
 	}
 	
+	/**
+	 * <p>
+	 * The inverse triple frequency ITF(p), considers how many times a predicate
+	 * is used in some RDF triple w.r.t. the total number of triples, and is
+	 * defined as: 
+	 * </p>
+	 * 
+	 * <p><code>log(|T|/|T(p)|)</code></p>
+	 * 
+	 * <p>
+	 * where |T| is the total number of triples in the knowledge base and |T(p)|
+	 * the total number of triples having p as a predicate.
+	 * </p>
+	 * 
+	 * @param property
+	 * @return
+	 */
 	public double getInverseTripleFrequency(OWLProperty property) {
 		// total number of triples
 		String query = "SELECT (COUNT(*) AS ?cnt) WHERE {?s ?p ?o .}";
@@ -43,11 +64,22 @@ public class InformativenessMeasures {
 		int frequency = qe.execSelect().next().getLiteral("cnt").getInt();
 		qe.close();
 		
+		
 		double itf = Math.log(total / (double) frequency);
 		
 		return itf;
 	}
 	
+	/**
+	 * Predicate Frequency(PF) quantifies the informativeness of a predicate p
+	 * in the context of a URI u. With context we mean the RDF triples where p
+	 * and u appear together.
+	 * 
+	 * @param individual
+	 * @param property
+	 * @param outgoing
+	 * @return
+	 */
 	public double getPredicateFrequency(OWLIndividual individual, OWLProperty property, boolean outgoing) {
 		String query = outgoing ? "SELECT (COUNT(*) AS ?cnt) WHERE {<%s> <%s> ?o .}" : "SELECT (COUNT(*) AS ?cnt) WHERE {?s <%s> <%s> .}";
 		query = String.format(query, individual.toStringID(), property.toStringID());
@@ -66,7 +98,7 @@ public class InformativenessMeasures {
 	
 	public static void main(String[] args) throws Exception {
 		SparqlEndpointKS ks = new SparqlEndpointKS(new SparqlEndpoint(
-					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
+					new URL("http://dbpedia.org/sparql"), 
 					"http://dbpedia.org"));
 		ks.init();
 		
