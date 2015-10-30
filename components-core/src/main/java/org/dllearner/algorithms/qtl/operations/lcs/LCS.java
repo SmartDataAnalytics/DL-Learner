@@ -26,7 +26,7 @@ import com.hp.hpl.jena.graph.Triple;
  */
 public class LCS {
 	
-	private Map<Set<Node>, RootedRDFGraph> cache = new HashMap<Set<Node>, LCS.RootedRDFGraph>();
+	private Map<Set<Node>, RootedRDFGraph> cache = new HashMap<>();
 	
 	public RootedRDFGraph computeLCS(RootedRDFGraph g1, RootedRDFGraph g2) throws LCSException{
 		
@@ -45,7 +45,7 @@ public class LCS {
 				x = NodeFactory.createAnon();
 				
 				// a new set of triples
-				Set<Triple> triples = new HashSet<Triple>();
+				Set<Triple> triples = new HashSet<>();
 				
 				// add to result to avoid recomputation
 				RootedRDFGraph g = new RootedRDFGraph(x, triples);
@@ -69,7 +69,7 @@ public class LCS {
 	}
 	
 	private Set<Triple> connectedTriples(Node node, Set<Triple> triples) {
-		Set<Triple> connectedTriples = new HashSet<Triple>();
+		Set<Triple> connectedTriples = new HashSet<>();
 		
 		for (Triple triple : triples) {
 			if(isRDFConnected(node, triple, triples)) {

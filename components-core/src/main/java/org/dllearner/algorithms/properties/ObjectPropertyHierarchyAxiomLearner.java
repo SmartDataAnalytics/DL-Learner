@@ -117,8 +117,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, p), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, p),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -168,8 +168,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, candidate), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, candidate),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -195,7 +195,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	 */
 	protected SortedSet<OWLObjectProperty> getCandidates(){
 		// get the candidates
-		SortedSet<OWLObjectProperty> candidates = new TreeSet<OWLObjectProperty>();
+		SortedSet<OWLObjectProperty> candidates = new TreeSet<>();
 
 		if (strictMode) { // that have the same domain and range 
 			// get rdfs:domain of the property
@@ -242,7 +242,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		}
 		posExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
@@ -270,7 +270,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		}
 		negExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

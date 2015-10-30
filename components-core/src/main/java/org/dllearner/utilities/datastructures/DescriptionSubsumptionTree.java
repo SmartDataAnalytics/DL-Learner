@@ -77,7 +77,7 @@ public class DescriptionSubsumptionTree {
 		 * holds the nodes that are subclasses of this node.
 		 * ordered by accuracy
 		 */
-		public SortedSet<Node> subClasses = new TreeSet<Node>();
+		public SortedSet<Node> subClasses = new TreeSet<>();
 		
 		public Node(EvaluatedDescription<? extends Score> ed, boolean root) {
 			this.root = root;
@@ -105,7 +105,7 @@ public class DescriptionSubsumptionTree {
 				logger.warn("Adding " + node.getEvalDesc() + "\n\t as subclass of " + this.getEvalDesc());
 				subClasses.add(node);
 			} else {
-				SortedSet<Node> subClassesTmp = new TreeSet<Node>(subClasses);
+				SortedSet<Node> subClassesTmp = new TreeSet<>(subClasses);
 				for (Node sub : subClassesTmp) {
 					logger.warn("Testing relation between: " + node.getEvalDesc() + "\n\t and "
 							+ sub.getEvalDesc());
@@ -172,7 +172,7 @@ public class DescriptionSubsumptionTree {
 		 * @return
 		 */
 		public String _toString(String tab) {
-			StringBuffer ret = new StringBuffer();
+			StringBuilder ret = new StringBuilder();
 			ret.append((root) ? "Thing\n" : tab + getEvalDesc() + "\n");
 			tab += "  ";
 			for (Node sub : subClasses) {
@@ -279,7 +279,7 @@ public class DescriptionSubsumptionTree {
 	public void insertEdPosNeg(Collection<EvaluatedDescriptionPosNeg> evaluatedDescriptions, int limit,
 			double accuracyThreshold) {
 		
-		List<EvaluatedDescription> newSet = new ArrayList<EvaluatedDescription>();
+		List<EvaluatedDescription> newSet = new ArrayList<>();
 		int i = 0;
 		for (EvaluatedDescriptionPosNeg evaluatedDescription : evaluatedDescriptions) {
 			if (i >= evaluatedDescriptions.size() || newSet.size() >= limit) {

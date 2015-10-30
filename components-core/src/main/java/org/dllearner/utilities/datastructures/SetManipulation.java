@@ -19,15 +19,10 @@
 
 package org.dllearner.utilities.datastructures;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -40,14 +35,14 @@ public class SetManipulation {
 	 * shrinks a set to the limit fuzzy here means the elements will be randomly
 	 * picked
 	 * 
-	 * @param set
-	 * @param limit
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static <T> SortedSet<T> fuzzyShrink(SortedSet<T> set, int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -69,15 +64,15 @@ public class SetManipulation {
 	/**
 	 * shrinks a set to the limit fuzzy here means the elements will be randomly
 	 * picked
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static SortedSet<OWLIndividual> fuzzyShrinkInd(SortedSet<OWLIndividual> set, int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -98,16 +93,16 @@ public class SetManipulation {
 	
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static <T> SortedSet<T> stableShrink(SortedSet<T> set,
 			int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 
 		for (T oneInd : set) {
 			ret.add(oneInd);
@@ -119,16 +114,16 @@ public class SetManipulation {
 	
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static SortedSet<OWLIndividual> stableShrinkInd(SortedSet<OWLIndividual> set,
 			int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 
 		for (OWLIndividual oneInd : set) {
 			ret.add(oneInd);

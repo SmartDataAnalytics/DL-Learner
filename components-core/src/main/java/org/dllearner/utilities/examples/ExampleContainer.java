@@ -38,10 +38,10 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 public class ExampleContainer implements Comparable<ExampleContainer>{
 
 	
-	private static SortedSet<ExampleContainer> exampleSets = new TreeSet<ExampleContainer>();
+	private static SortedSet<ExampleContainer> exampleSets = new TreeSet<>();
 
-	private SortedSet<OWLIndividual> positiveExamples  = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> positiveExamples  = new TreeSet<>();
+	private SortedSet<OWLIndividual> negativeExamples = new TreeSet<>();
 	
 	
 	public ExampleContainer(SortedSet<OWLIndividual> positiveExamples, SortedSet<OWLIndividual> negativeExamples) {
@@ -60,7 +60,8 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	public static boolean add(ExampleContainer e){
 		return exampleSets.add(e);
 	}
-	
+
+	@Override
 	public int compareTo(ExampleContainer e){
 		
 		if(getNegativeExamples().equals(e.getNegativeExamples())

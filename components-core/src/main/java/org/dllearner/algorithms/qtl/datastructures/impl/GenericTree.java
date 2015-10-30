@@ -10,7 +10,7 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
 
     protected T data;
     protected V parent;
-    protected List<V> children = new ArrayList<V>();
+    protected List<V> children = new ArrayList<>();
 
     public GenericTree() {}
     
@@ -41,7 +41,7 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
      * @return all leaf nodes of this tree
      */
     public List<V> getLeafs() {
-    	List<V> leafs = new ArrayList<V>();
+    	List<V> leafs = new ArrayList<>();
     	for(V child : children) {
     		if(child.isLeaf()) {
     			leafs.add(child);
@@ -100,7 +100,7 @@ public class GenericTree<T, V extends GenericTree<T, V>> {
     }
 
     public void removeChildren() {
-        this.children = new ArrayList<V>();
+        this.children = new ArrayList<>();
     }
 
     public void removeChildAt(int index) throws IndexOutOfBoundsException {

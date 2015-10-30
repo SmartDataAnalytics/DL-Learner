@@ -70,7 +70,7 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 	}
 	
 	private <T extends Number & Comparable<T>> List<T> computeSplitValues(OWLDataProperty dp) {
-		Set<T> valuesSet = new TreeSet<T>();
+		Set<T> valuesSet = new TreeSet<>();
 
 		Map<OWLIndividual, SortedSet<T>> ind2Values = reasoner.getNumericDatatypeMembers(dp);
 		// add all values to the set

@@ -7,7 +7,7 @@ public class Prefixes {
 	
 	public static Map<String,String> getPrefixes(){
 		
-		Map<String,String> prefixes = new HashMap<String,String>();
+		Map<String,String> prefixes = new HashMap<>();
 		prefixes.put("dbo","http://dbpedia.org/ontology/");
 		prefixes.put("dbprop","http://dbpedia.org/property/");
 		prefixes.put("rdfs","http://www.w3.org/2000/01/rdf-schema#");

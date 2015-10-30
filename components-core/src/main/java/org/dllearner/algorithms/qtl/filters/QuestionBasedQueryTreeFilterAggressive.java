@@ -26,7 +26,7 @@ private Set<String> questionWords;
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	private Set<Integer> numbers = new HashSet<Integer>();
+	private Set<Integer> numbers = new HashSet<>();
 	
 	public QuestionBasedQueryTreeFilterAggressive(Set<String> questionWords){
 		this.questionWords = questionWords;
@@ -42,7 +42,7 @@ private Set<String> questionWords;
 		if(tree.getChildren().isEmpty()){
 			return tree;
 		}
-		QueryTree<String> copy = new QueryTreeImpl<String>(tree);
+		QueryTree<String> copy = new QueryTreeImpl<>(tree);
 		filterTree(copy);
 		return copy;
 	}
@@ -158,7 +158,7 @@ private Set<String> questionWords;
 	}
 	
 	private boolean isSimlarWithSubstringMetrik(String s){
-		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		SortedSet<Double> values = new TreeSet<>(Collections.reverseOrder());
 		for(String word : questionWords){
 			double v = substringMetric.score(word, s, true);
 			if(v >= threshold){
@@ -178,7 +178,7 @@ private Set<String> questionWords;
 	}
 	
 	private Set<Double> getTopK(SortedSet<Double> values){
-		Set<Double> top = new HashSet<Double>();
+		Set<Double> top = new HashSet<>();
 		int k = 0;
 		for(Double v : values){
 			if(k == topK){

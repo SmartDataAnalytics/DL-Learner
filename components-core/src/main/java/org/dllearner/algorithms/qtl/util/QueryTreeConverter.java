@@ -77,7 +77,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
 	
-	Stack<QueryTree<String>> stack = new Stack<QueryTree<String>>();
+	Stack<QueryTree<String>> stack = new Stack<>();
 	int id = 0;
 	
 	/**
@@ -102,11 +102,11 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	 * @param queryTrees
 	 */
 	public Set<OWLClassExpression> asOWLClassExpressions(QueryTree<String> tree){
-		Set<OWLClassExpression> classExpressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> classExpressions = new HashSet<>();
     	
     	List<QueryTree<String>> children = tree.getChildren();
     	for(QueryTree<String> child : children){
-    		String childLabel = (String) child.getUserObject();
+    		String childLabel = child.getUserObject();
     		String predicateString = (String) tree.getEdge(child);
     		if(predicateString.equals(RDF.type.getURI()) || predicateString.equals(RDFS.subClassOf.getURI())){//A
     			if(child.isVarNode()){
@@ -224,7 +224,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
     }
     
     private Set<OWLLiteral> asOWLLiterals(OWLDataFactory df, Set<Literal> literals){
-    	Set<OWLLiteral> owlLiterals = new HashSet<OWLLiteral>(literals.size());
+    	Set<OWLLiteral> owlLiterals = new HashSet<>(literals.size());
     	for (Literal literal : literals) {
 			owlLiterals.add(asOWLLiteral(df, literal));
 		}
@@ -312,7 +312,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	 */
 	@Override
 	public void visit(OWLClass cls) {
-		stack.peek().addChild(new QueryTreeImpl<String>(cls.toStringID(), NodeType.RESOURCE, id++), RDF.type.getURI());
+		stack.peek().addChild(new QueryTreeImpl<>(cls.toStringID(), NodeType.RESOURCE, id++), RDF.type.getURI());
 	}
 
 	/* (non-Javadoc)
@@ -321,7 +321,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	@Override
 	public void visit(OWLObjectIntersectionOf expr) {
 		boolean root = stack.isEmpty();
-		stack.push(new QueryTreeImpl<String>("?", NodeType.VARIABLE, id++));
+		stack.push(new QueryTreeImpl<>("?", NodeType.VARIABLE, id++));
 		for (OWLClassExpression op : expr.getOperandsAsList()) {
 			op.accept(this);
 		}
@@ -354,12 +354,12 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 		OWLClassExpression filler = expr.getFiller();
 		if(filler.isAnonymous()){
 			if(!(filler instanceof OWLObjectIntersectionOf)){
-				stack.push(new QueryTreeImpl<String>("?", NodeType.VARIABLE, id++));
+				stack.push(new QueryTreeImpl<>("?", NodeType.VARIABLE, id++));
 			}
 			expr.getFiller().accept(this);
 			child = stack.pop();
 		} else {
-			child = new QueryTreeImpl<String>(filler.asOWLClass().toStringID(), NodeType.RESOURCE, id++);
+			child = new QueryTreeImpl<>(filler.asOWLClass().toStringID(), NodeType.RESOURCE, id++);
 		}
 		parent.addChild(child, expr.getProperty().asOWLObjectProperty().toStringID());
 	}
@@ -378,7 +378,7 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	@Override
 	public void visit(OWLObjectHasValue expr) {
 		QueryTree<String> tree = stack.peek();
-		tree.addChild(new QueryTreeImpl<String>(expr.getValue().asOWLNamedIndividual().toStringID(), NodeType.RESOURCE, id++), expr.getProperty().asOWLObjectProperty().toStringID());
+		tree.addChild(new QueryTreeImpl<>(expr.getValue().asOWLNamedIndividual().toStringID(), NodeType.RESOURCE, id++), expr.getProperty().asOWLObjectProperty().toStringID());
 	}
 
 	/* (non-Javadoc)

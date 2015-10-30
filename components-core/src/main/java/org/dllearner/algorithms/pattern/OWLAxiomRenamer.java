@@ -75,7 +75,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	}
 	
 	public OWLAxiom rename(OWLAxiom axiom){
-		Map<OWLEntity, OWLEntity> renaming = new HashMap<OWLEntity, OWLEntity>();
+		Map<OWLEntity, OWLEntity> renaming = new HashMap<>();
 		expressionRenamer = new OWLClassExpressionRenamer(df, renaming);
 		axiom.accept(this);
 		return renamedAxiom;
@@ -118,7 +118,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom) {
 		Set<OWLClassExpression> classExpressions = axiom.getClassExpressions();
-		Set<OWLClassExpression> renamedClassExpressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> renamedClassExpressions = new HashSet<>();
 		for (OWLClassExpression classExpression : classExpressions) {
 			renamedClassExpressions.add(expressionRenamer.rename(classExpression));
 		}
@@ -146,7 +146,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
 		Set<OWLObjectPropertyExpression> properties = axiom.getProperties();
-		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<OWLObjectPropertyExpression>();
+		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<>();
 		for (OWLObjectPropertyExpression property : properties) {
 			renamedProperties.add(expressionRenamer.rename(property));
 		}
@@ -166,7 +166,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLDifferentIndividualsAxiom axiom) {
-		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> renamedIndividuals = new HashSet<>();
 		if(normalizeABoxAxioms){
 			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/a")));
 			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/b")));
@@ -181,7 +181,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
 		Set<OWLDataPropertyExpression> properties = axiom.getProperties();
-		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<OWLDataPropertyExpression>();
+		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<>();
 		for (OWLDataPropertyExpression property : properties) {
 			renamedProperties.add(expressionRenamer.rename(property));
 		}
@@ -191,7 +191,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
 		Set<OWLObjectPropertyExpression> properties = axiom.getProperties();
-		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<OWLObjectPropertyExpression>();
+		Set<OWLObjectPropertyExpression> renamedProperties = new HashSet<>();
 		for (OWLObjectPropertyExpression property : properties) {
 			renamedProperties.add(expressionRenamer.rename(property));
 		}
@@ -239,7 +239,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 		OWLClass cls = axiom.getOWLClass();
 		cls = expressionRenamer.rename(cls).asOWLClass();
 		Set<OWLClassExpression> classExpressions = axiom.getClassExpressions();
-		Set<OWLClassExpression> renamedClassExpressions = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> renamedClassExpressions = new HashSet<>();
 		for (OWLClassExpression classExpression : classExpressions) {
 			renamedClassExpressions.add(expressionRenamer.rename(classExpression));
 		}
@@ -272,7 +272,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
 		Set<OWLDataPropertyExpression> properties = axiom.getProperties();
-		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<OWLDataPropertyExpression>();
+		Set<OWLDataPropertyExpression> renamedProperties = new HashSet<>();
 		for (OWLDataPropertyExpression property : properties) {
 			renamedProperties.add(expressionRenamer.rename(property));
 		}
@@ -291,11 +291,11 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 	@Override
 	public void visit(OWLEquivalentClassesAxiom axiom) {
 		List<OWLClassExpression> classExpressions = axiom.getClassExpressionsAsList();
-		List<OWLClassExpression> renamedClassExpressions = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> renamedClassExpressions = new ArrayList<>();
 		for (OWLClassExpression expr : classExpressions) {
 			renamedClassExpressions.add(expressionRenamer.rename(expr));
 		}
-		renamedAxiom = df.getOWLEquivalentClassesAxiom(new TreeSet<OWLClassExpression>(renamedClassExpressions));
+		renamedAxiom = df.getOWLEquivalentClassesAxiom(new TreeSet<>(renamedClassExpressions));
 	}
 
 	@Override
@@ -341,7 +341,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLSameIndividualAxiom axiom) {
-		Set<OWLIndividual> renamedIndividuals = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> renamedIndividuals = new HashSet<>();
 		if(normalizeABoxAxioms){
 			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/a")));
 			renamedIndividuals.add(df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/pattern/b")));
@@ -355,7 +355,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 
 	@Override
 	public void visit(OWLSubPropertyChainOfAxiom axiom) {
-		List<OWLObjectPropertyExpression> renamedSubPropertyChain = new ArrayList<OWLObjectPropertyExpression>();
+		List<OWLObjectPropertyExpression> renamedSubPropertyChain = new ArrayList<>();
 		for (OWLObjectPropertyExpression owlObjectPropertyExpression : axiom.getPropertyChain()) {
 			renamedSubPropertyChain.add(expressionRenamer.rename(owlObjectPropertyExpression));
 		}
@@ -378,7 +378,7 @@ public class OWLAxiomRenamer implements OWLAxiomVisitor {
 		OWLClassExpression classExpression = axiom.getClassExpression();
 		classExpression = expressionRenamer.rename(classExpression);
 		Set<OWLPropertyExpression<?, ?>> propertyExpressions = axiom.getPropertyExpressions();
-		Set<OWLPropertyExpression<?, ?>> renamedPropertyExpressions = new HashSet<OWLPropertyExpression<?, ?>>();
+		Set<OWLPropertyExpression<?, ?>> renamedPropertyExpressions = new HashSet<>();
 		for (OWLPropertyExpression<?, ?> owlPropertyExpression : propertyExpressions) {
 			renamedPropertyExpressions.add(expressionRenamer.rename(owlPropertyExpression));
 		}

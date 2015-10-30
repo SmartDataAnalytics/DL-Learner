@@ -118,7 +118,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			Node edge1 = entry.getKey();
 			Collection<Node> edges2 = entry.getValue();
 			
-			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
 		
 			
 			// loop over children of first tree
@@ -230,7 +230,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 				new NamespaceDropStatementFilter(Sets.newHashSet("http://dbpedia.org/property/",
 						"http://purl.org/dc/terms/", "http://dbpedia.org/class/yago/",
 						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig",
 				"http://dbpedia.org/resource/Dresden");
 		for (String resource : resources) {

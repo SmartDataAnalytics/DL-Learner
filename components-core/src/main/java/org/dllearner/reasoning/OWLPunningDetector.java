@@ -41,9 +41,9 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the OWL ontology
+	 * @param cls the OWL class
+	 * @return TRUE if the class IRI is used also as individual, otherwise FALSE
 	 */
 	public static boolean hasPunning(OWLOntology ontology, OWLClass cls){
 		return hasPunning(ontology, cls.getIRI());
@@ -51,20 +51,19 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Checks whether the ontology contains punning, i.e. entities declared as both, class and individual.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the OWL ontology
+	 * @return TRUE if there is at least one entity that is both, class and individual, otherwise FALSE
 	 */
 	public static boolean hasPunning(OWLOntology ontology){
 		Set<OWLClass> classes = ontology.getClassesInSignature(true);
 		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(true);
 		
-		Set<IRI> classIRIs = new HashSet<IRI>(classes.size());
+		Set<IRI> classIRIs = new HashSet<>(classes.size());
 		for (OWLClass cls : classes) {
 			classIRIs.add(cls.getIRI());
 		}
 		
-		Set<IRI> individualIRIs = new HashSet<IRI>(classes.size());
+		Set<IRI> individualIRIs = new HashSet<>(classes.size());
 		for (OWLNamedIndividual ind : individuals) {
 			individualIRIs.add(ind.getIRI());
 		}
@@ -74,24 +73,13 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the OWL ontology
+	 * @param iri the entity IRI
+	 * @return TRUE if the IRI is used as both, class and individual, otherwise FALSE
 	 */
 	public static boolean hasPunning(OWLOntology ontology, IRI iri){
 		boolean isClass = ontology.getClassesInSignature().contains(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLClass(iri));
 		boolean isIndividual = ontology.getIndividualsInSignature().contains(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLNamedIndividual(iri));
 		return isClass && isIndividual;
 	}
-	
-	/**
-	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
-	 */
-	public static boolean hasPunning(OWLOntology ontology, String iri){
-		return hasPunning(ontology, IRI.create(iri));
-	}
-
 }

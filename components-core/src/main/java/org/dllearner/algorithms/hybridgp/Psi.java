@@ -44,12 +44,12 @@ public class Psi implements GeneticRefinementOperator {
 	Random random;
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
-	public SortedMap<OWLClassExpression,ScorePosNeg> evalCache = new TreeMap<OWLClassExpression,ScorePosNeg>();
+	public SortedMap<OWLClassExpression,ScorePosNeg> evalCache = new TreeMap<>();
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
-	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> pdCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
-	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> puCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> pdCache = new TreeMap<>();
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> puCache = new TreeMap<>();
 	
 	// Statistiken
 	int conceptCacheHits = 0;

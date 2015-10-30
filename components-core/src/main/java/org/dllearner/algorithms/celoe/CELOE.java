@@ -268,7 +268,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	}
 
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
 		problems.add(AbstractClassExpressionLearningProblem.class);
 		return problems;
 	}
@@ -349,12 +349,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		if (operator == null) {
 			// we use a default operator and inject the class hierarchy for now
 			operator = new RhoDRDown();
-			if (operator instanceof CustomStartRefinementOperator) {
-				((CustomStartRefinementOperator) operator).setStartClass(startClass);
-			}
-			if (operator instanceof ReasoningBasedRefinementOperator) {
-				((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
-			}
+			((CustomStartRefinementOperator) operator).setStartClass(startClass);
+			((ReasoningBasedRefinementOperator) operator).setReasoner(reasoner);
 			operator.init();
 		}
 		if (operator instanceof CustomHierarchyRefinementOperator) {
@@ -452,7 +448,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 						}
 					}
 					
-					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<OWLClassExpression>();
+					LinkedList<OWLClassExpression> startClassCandidates = new LinkedList<>();
 					startClassCandidates.add(existingDefinition);
 					// hack for RhoDRDown
 					if(operator instanceof RhoDRDown) {
@@ -469,7 +465,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 							// add upward refinements to list
 							Set<OWLClassExpression> refinements = upwardOperator.refine(candidate, OWLClassExpressionUtils.getLength(candidate));
 //							System.out.println("ref: " + refinements);
-							LinkedList<OWLClassExpression> refinementList = new LinkedList<OWLClassExpression>(refinements);
+							LinkedList<OWLClassExpression> refinementList = new LinkedList<>(refinements);
 //							Collections.reverse(refinementList);
 //							System.out.println("list: " + refinementList);
 							startClassCandidates.addAll(refinementList);
@@ -681,7 +677,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			} else {
 				// none of the superclasses of the class to learn must appear on the
 				// outermost property level
-				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				TreeSet<OWLClassExpression> toTest = new TreeSet<>();
 				toTest.add(classToDescribe);
 				while(!toTest.isEmpty()) {
 					OWLClassExpression d = toTest.pollFirst();
@@ -807,8 +803,8 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	private void reset() {
 		// set all values back to their default values (used for running
 		// the algorithm more than once)
-		searchTree = new SearchTree<OENode>(heuristic);
-		descriptions = new TreeSet<OWLClassExpression>();
+		searchTree = new SearchTree<>(heuristic);
+		descriptions = new TreeSet<>();
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 	}

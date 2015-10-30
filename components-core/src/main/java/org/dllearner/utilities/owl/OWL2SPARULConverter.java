@@ -33,6 +33,8 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.util.IndividualAppearance;
+import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
 public class OWL2SPARULConverter
 		extends
@@ -40,12 +42,12 @@ public class OWL2SPARULConverter
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
-			OWLOntology ontology, boolean useStrongTyping) {
-		super(manager, ontology, useStrongTyping);
+			OWLOntology ontology, boolean useStrongTyping, IndividualAppearance individualAppearance) {
+		super(manager, ontology, useStrongTyping, individualAppearance);
 	}
 	
 	public OWL2SPARULConverter(OWLOntology ontology, boolean useStrongTyping) {
-		super(ontology.getOWLOntologyManager(), ontology, useStrongTyping);
+		this(ontology.getOWLOntologyManager(), ontology, useStrongTyping, new OWLAnonymousIndividualsWithMultipleOccurrences());
 	}
 	
 	public String convert(OWLOntology ontology) {
@@ -95,7 +97,7 @@ public class OWL2SPARULConverter
 
 	@Override
 	protected RDFResourceNode getAnonymousNode(Object key) {
-		return new RDFResourceNode(System.identityHashCode(key));
+		return new RDFResourceNode(System.identityHashCode(key), false, false);
 	}
 
 	@Override

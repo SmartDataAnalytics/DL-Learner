@@ -13,14 +13,14 @@ public class DSTUtils {
 	
 	
 	public static MassFunction<Integer> getBBA(int posExs, int negExs,int undExs) {
-		ArrayList<Integer> set = new ArrayList<Integer>();
+		ArrayList<Integer> set = new ArrayList<>();
 		set.add(-1);
 		set.add(1);
-		MassFunction<Integer> mass= new MassFunction<Integer>(set);
-		ArrayList<Integer> positive= new ArrayList<Integer>();
+		MassFunction<Integer> mass= new MassFunction<>(set);
+		ArrayList<Integer> positive= new ArrayList<>();
 		positive.add(1);
 		mass.setValues(positive,(double) posExs/(posExs+ negExs+undExs));
-		ArrayList<Integer> negative= new ArrayList<Integer>();
+		ArrayList<Integer> negative= new ArrayList<>();
 		negative.add(-1);
 		mass.setValues(negative, (double)negExs/(posExs+ negExs+undExs));
 		mass.setValues(set, (double)undExs/(posExs+ negExs+undExs));

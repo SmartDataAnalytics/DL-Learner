@@ -23,7 +23,6 @@ import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPA
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
 import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,14 +32,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
-import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -86,12 +78,10 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		SUPERCLASS, SIBLING, RANDOM;
 	}
 
-	
 	// for re-using existing queries
 	private SPARQLReasoner sr;
 
 	private String namespace;
-	private String cacheDirectory = "cache";
 	private QueryExecutionFactory qef;
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se, SPARQLReasoner reasoner) {
@@ -103,11 +93,6 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 		this.namespace = namespace;
 		
 		qef = new QueryExecutionFactoryHttp(se.getURL().toString(), se.getDefaultGraphURIs());
-		if(cacheDirectory != null){
-				long timeToLive = TimeUnit.DAYS.toMillis(30);
-				CacheFrontend cacheFrontend = CacheUtilsH2.createCacheFrontend(cacheDirectory, true, timeToLive);
-				qef = new QueryExecutionFactoryCacheEx(qef, cacheFrontend);
-		}
 	}
 	
 	public AutomaticNegativeExampleFinderSPARQL2(SparqlEndpoint se) {
@@ -159,7 +144,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	}
 	
 	public SortedSet<OWLIndividual> getNegativeExamples(Set<OWLIndividual> positiveExamples, Collection<Strategy> strategies, int limit) {
-		Map<Strategy, Double> strategiesWithWeight = new HashMap<Strategy, Double>();
+		Map<Strategy, Double> strategiesWithWeight = new HashMap<>();
 		double weight = 1d/strategies.size();
 		for (Strategy strategy : strategies) {
 			strategiesWithWeight.put(strategy, weight);
@@ -183,7 +168,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	}
 	
 	private SortedSet<OWLIndividual> computeNegativeExamples(OWLClass classToDescribe, Multiset<OWLClass> positiveExamplesTypes, Map<Strategy, Double> strategiesWithWeight, int maxNrOfReturnedInstances) {
-		SortedSet<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> negativeExamples = new TreeSet<>();
 		
 		for (Entry<Strategy, Double> entry : strategiesWithWeight.entrySet()) {
 			Strategy strategy = entry.getKey();
@@ -195,7 +180,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 			
 			if(strategy == SIBLING){//get sibling class based examples
 				logger.info("Applying sibling classes strategy...");
-				SortedSet<OWLIndividual> siblingNegativeExamples = new TreeSet<OWLIndividual>();
+				SortedSet<OWLIndividual> siblingNegativeExamples = new TreeSet<>();
 				//for each type of the positive examples
 				for (OWLClass nc : positiveExamplesTypes.elementSet()) {
 					int frequency = positiveExamplesTypes.count(nc);
@@ -218,7 +203,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				negativeExamples.addAll(siblingNegativeExamples);
 			} else if(strategy == SUPERCLASS){//get super class based examples
 				logger.info("Applying super class strategy...");
-				SortedSet<OWLIndividual> superClassNegativeExamples = new TreeSet<OWLIndividual>();
+				SortedSet<OWLIndividual> superClassNegativeExamples = new TreeSet<>();
 				//for each type of the positive examples
 				for (OWLClass nc : positiveExamplesTypes.elementSet()) {
 					int frequency = positiveExamplesTypes.count(nc);
@@ -245,7 +230,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				negativeExamples.addAll(superClassNegativeExamples);
 			} else if(strategy == RANDOM){//get some random examples
 				logger.info("Applying random strategy...");
-				SortedSet<OWLIndividual> randomNegativeExamples = new TreeSet<OWLIndividual>();
+				SortedSet<OWLIndividual> randomNegativeExamples = new TreeSet<>();
 				String query = "SELECT DISTINCT ?s WHERE {?s a ?type. ?type a owl:Class .";
 				if(classToDescribe != null){
 					query += "FILTER NOT EXISTS{?s a <" + classToDescribe.toStringID() + "> }";
@@ -258,12 +243,12 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 				
 				query += "} LIMIT " + maxNrOfReturnedInstances;
 				
-				QueryExecution qe = qef.createQueryExecution(query);
-				ResultSet rs = qe.execSelect();
-				QuerySolution qs;
-				while(rs.hasNext()){
-					qs = rs.next();
-					randomNegativeExamples.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI())));
+				try(QueryExecution qe = qef.createQueryExecution(query)) {
+					ResultSet rs = qe.execSelect();
+					while (rs.hasNext()) {
+						QuerySolution qs = rs.next();
+						randomNegativeExamples.add(df.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI())));
+					}
 				}
 				randomNegativeExamples.removeAll(negativeExamples);
 				negativeExamples.addAll(new ArrayList<>(randomNegativeExamples).subList(0, Math.min(randomNegativeExamples.size(), maxNrOfReturnedInstances - negativeExamples.size())));

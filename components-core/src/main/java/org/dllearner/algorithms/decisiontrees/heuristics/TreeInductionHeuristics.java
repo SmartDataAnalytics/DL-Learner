@@ -239,17 +239,17 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 			SortedSet<OWLIndividual> undExs) {
 		
 		int[] counts = new int[9];
-		SortedSet<OWLIndividual> posExsT = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negExsT = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> undExsT = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posExsT = new TreeSet<>();
+		SortedSet<OWLIndividual> negExsT = new TreeSet<>();
+		SortedSet<OWLIndividual> undExsT = new TreeSet<>();
 
-		SortedSet<OWLIndividual> posExsF = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negExsF = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> undExsF = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posExsF = new TreeSet<>();
+		SortedSet<OWLIndividual> negExsF = new TreeSet<>();
+		SortedSet<OWLIndividual> undExsF = new TreeSet<>();
 
-		SortedSet<OWLIndividual> posExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> undExsU = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> negExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> undExsU = new TreeSet<>();
 
 		splitGroup(concept,posExs,posExsT,posExsF,posExsU);
 		splitGroup(concept,negExs,negExsT,negExsF,negExsU);	
@@ -275,9 +275,9 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 			SortedSet<OWLIndividual> posExsT, SortedSet<OWLIndividual> negExsT, SortedSet<OWLIndividual> undExsT, SortedSet<OWLIndividual> posExsF, SortedSet<OWLIndividual> negExsF,
 			SortedSet<OWLIndividual> undExsF) {
 
-		SortedSet<OWLIndividual> posExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negExsU = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> undExsU = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> negExsU = new TreeSet<>();
+		SortedSet<OWLIndividual> undExsU = new TreeSet<>();
 
 		splitGroup(concept,posExs,posExsT,posExsF,posExsU);
 		splitGroup(concept,negExs,negExsT,negExsF,negExsU);
@@ -363,7 +363,7 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		}
 
 		logger.debug("best gain: %f \t split #%d\n", bestNonSpecificity, bestConceptIndex);
-		Couple<OWLClassExpression,MassFunction> name = new Couple<OWLClassExpression,MassFunction>();
+		Couple<OWLClassExpression,MassFunction> name = new Couple<>();
 		name.setFirstElement(concepts[bestConceptIndex]);
 		name.setSecondElement(bestBba);
 		return name;
@@ -429,7 +429,7 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		}
 
 		logger.debug("best gain: %f \t split #%d\n", bestNonSpecificity, bestConceptIndex);
-		Couple<OWLClassExpression,MassFunction> name = new Couple<OWLClassExpression,MassFunction>();
+		Couple<OWLClassExpression,MassFunction> name = new Couple<>();
 		name.setFirstElement(concepts[bestConceptIndex]);
 		name.setSecondElement(bestBba);
 		return name;

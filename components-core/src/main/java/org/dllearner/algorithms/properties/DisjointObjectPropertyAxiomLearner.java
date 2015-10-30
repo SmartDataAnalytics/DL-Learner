@@ -70,5 +70,5 @@ public class DisjointObjectPropertyAxiomLearner extends ObjectPropertyHierarchyA
 	
 	public double computeScore(int candidatePopularity, int popularity, int overlap) {
 		return 1 - super.computeScore(candidatePopularity, popularity, overlap);
-	};
+	}
 }

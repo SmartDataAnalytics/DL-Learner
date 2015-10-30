@@ -36,7 +36,7 @@ public class SearchTreeNode {
 
 	private ELDescriptionTree descriptionTree;
 	
-	private List<SearchTreeNode> children = new LinkedList<SearchTreeNode>();
+	private List<SearchTreeNode> children = new LinkedList<>();
 	
 	private int coveredPositives;
 	private int coveredNegatives;

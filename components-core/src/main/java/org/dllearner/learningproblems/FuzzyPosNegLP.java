@@ -49,12 +49,9 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	}
 
 	public void setFuzzyEx(Map<OWLIndividual, Double> fuzzyEx) {
-		fuzzyExamples = new TreeSet<FuzzyIndividual>();
-		
-		Iterator<OWLIndividual> it = fuzzyEx.keySet().iterator();
-		
-		while (it.hasNext()) {
-			OWLIndividual i = it.next();
+		fuzzyExamples = new TreeSet<>();
+
+		for (OWLIndividual i : fuzzyEx.keySet()) {
 			this.fuzzyExamples.add(new FuzzyIndividual(i.toStringID(), fuzzyEx.get(i).doubleValue()));
 		}
 	}

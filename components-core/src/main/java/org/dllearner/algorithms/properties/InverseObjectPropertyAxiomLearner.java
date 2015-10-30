@@ -111,9 +111,9 @@ public class InverseObjectPropertyAxiomLearner extends
 			// score
 			AxiomScore score = computeScore(popularity, frequency, useSampling);
 			
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLInverseObjectPropertiesAxiom>(df
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(df
 					.getOWLInverseObjectPropertiesAxiom(entityToDescribe, candidate), score
-					));
+			));
 		}
 	}
 

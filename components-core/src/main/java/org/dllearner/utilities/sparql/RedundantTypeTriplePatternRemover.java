@@ -6,7 +6,6 @@ package org.dllearner.utilities.sparql;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -52,7 +51,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	/**
 	 * Returns a pruned copy of the given query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Query pruneQuery(Query query) {
@@ -62,7 +61,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	}
 	
 	private Set<Node> getSuperClasses(Node cls){
-		Set<Node> superClasses = new HashSet<Node>();
+		Set<Node> superClasses = new HashSet<>();
 		
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
@@ -103,12 +102,12 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 		}
 		
 		// check for semantically redundant triple patterns
-		Set<Triple> redundantTriples = new HashSet<Triple>();
+		Set<Triple> redundantTriples = new HashSet<>();
 		for (Entry<Node, Collection<Triple>> entry : subject2TypeTriples.asMap().entrySet()) {
 			Collection<Triple> triples = entry.getValue();
 			
 			// get all super classes
-			Set<Node> superClasses = new HashSet<Node>();
+			Set<Node> superClasses = new HashSet<>();
 			for (Triple triple : triples) {
 				Node cls = triple.getObject();
 				superClasses.addAll(getSuperClasses(cls));
@@ -143,12 +142,12 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 		}
 
 		// check for semantically redundant triple patterns
-		Set<Triple> redundantTriples = new HashSet<Triple>();
+		Set<Triple> redundantTriples = new HashSet<>();
 		for (Entry<Node, Collection<Triple>> entry : subject2TypeTriples.asMap().entrySet()) {
 			Collection<Triple> triples = entry.getValue();
 
 			// get all super classes
-			Set<Node> superClasses = new HashSet<Node>();
+			Set<Node> superClasses = new HashSet<>();
 			for (Triple triple : triples) {
 				Node cls = triple.getObject();
 				superClasses.addAll(getSuperClasses(cls));

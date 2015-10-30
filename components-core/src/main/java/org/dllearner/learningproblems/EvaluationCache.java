@@ -53,7 +53,7 @@ public class EvaluationCache {
 	
 	public EvaluationCache(SortedSet<OWLIndividual> examples) {
 		this.examples = examples;
-		cache = new TreeMap<OWLClassExpression,SortedSet<OWLIndividual>>();
+		cache = new TreeMap<>();
 	}
 	
 	public void put(OWLClassExpression concept, SortedSet<OWLIndividual> individuals) {
@@ -62,7 +62,7 @@ public class EvaluationCache {
 
 	/**
 	 * Determines which examples are instances of a concept.
-	 * @param concept
+	 * @param concept the concept
 	 * @return A tuple of two sets, where the first element is the
 	 * set of individuals belonging to the class and the second element
 	 * is the set of individuals not belonging to the class. For all
@@ -73,7 +73,7 @@ public class EvaluationCache {
 		if(checkForEqualConcepts) {
 			Set<OWLIndividual> pos = cache.get(concept);
 			Set<OWLIndividual> neg = Sets.difference(examples, pos);
-			return new SortedSetTuple<OWLIndividual>(pos,neg);
+			return new SortedSetTuple<>(pos, neg);
 		} else {
 			// for a negation NOT C we can only say which concepts are not in it
 			// (those in C), but we cannot say which ones are in NOT C
@@ -94,7 +94,7 @@ public class EvaluationCache {
 			// in all other cases we cannot infer anything, so we return an
 			// empty tuple
 			} else {
-				return new SortedSetTuple<OWLIndividual>();
+				return new SortedSetTuple<>();
 			}
 		}
 		

@@ -27,7 +27,7 @@ public abstract class AbstractDateTimeValuesSplitter extends AbstractValuesSplit
 	 */
 	@Override
 	public Set<OWLDataProperty> getDataProperties() {
-		Set<OWLDataProperty> dataProperties = new HashSet<OWLDataProperty>();
+		Set<OWLDataProperty> dataProperties = new HashSet<>();
 		for (OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 			OWLDatatype datatype = reasoner.getDatatype(dp);
 			if(datatype != null && getDatatypes().contains(datatype)) {

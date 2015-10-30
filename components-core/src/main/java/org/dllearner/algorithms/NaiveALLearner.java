@@ -62,7 +62,7 @@ public class NaiveALLearner extends AbstractCELA{
 
     @Override
     public void init() throws ComponentInitException {
-        generatedDescriptions = new HashMap<Integer, List<OWLClassExpression>>();
+        generatedDescriptions = new HashMap<>();
         
         // start with owl:Thing
         bestDescription = OWL_THING;

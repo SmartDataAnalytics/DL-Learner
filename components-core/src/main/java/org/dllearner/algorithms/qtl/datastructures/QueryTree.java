@@ -133,7 +133,7 @@ public interface QueryTree<N> {
     
     void dump();
     
-    public String getStringRepresentation();
+    String getStringRepresentation();
 
     void dump(PrintWriter writer);
 

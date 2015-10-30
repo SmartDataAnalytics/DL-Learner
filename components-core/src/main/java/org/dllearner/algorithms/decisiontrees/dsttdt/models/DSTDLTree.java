@@ -138,7 +138,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 	private double getNodes(){
 	
 		
-		ArrayList<DLNode> list = new ArrayList<DLNode>();
+		ArrayList<DLNode> list = new ArrayList<>();
 		double  num=0;
 		if(root!=null){
 			list.add(root);
@@ -199,7 +199,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 	 */
 	public static OWLClassExpression deriveDefinition(DSTDLTree tree, boolean conceptFromPositiveIstances){
 	
-    HashSet<OWLClassExpression> exp= new HashSet<OWLClassExpression>();
+    HashSet<OWLClassExpression> exp= new HashSet<>();
 
     OWLDataFactory dataFactory = new OWLDataFactoryImpl();
     if (conceptFromPositiveIstances)

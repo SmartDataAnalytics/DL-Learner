@@ -86,7 +86,7 @@ public class IndividualBasedFragmentExtractor implements FragmentExtractor{
 	}
 	
 	private Set<OWLIndividual> getRandomIndividuals(OWLClass cls){
-		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> individuals = new HashSet<>();
 		
 		String query = "SELECT ?s WHERE {?s a <" + cls.toStringID() + ">} LIMIT " + maxNrOfIndividuals;
 		QueryExecution qe = qef.createQueryExecution(query);

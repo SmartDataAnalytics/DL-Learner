@@ -105,8 +105,7 @@ public class SimpleClock {
 	}
 
 	/**
-	 * returns the needed time up to now in ms
-	 * @return
+	 * @return the needed time up to now in ms
 	 */
 	public long getTime() {
 		long now = System.currentTimeMillis();

@@ -188,7 +188,7 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType) {
-		return new ArrayList<EvaluatedAxiom<OWLAxiom>>(results.get(axiomType));
+		return new ArrayList<>(results.get(axiomType));
 	}
 
 	public List<EvaluatedAxiom<OWLAxiom>> getCurrentlyBestEvaluatedAxioms(AxiomType<? extends OWLAxiom> axiomType, double accuracyThreshold) {
@@ -201,7 +201,7 @@ public class MultiPropertyAxiomLearner {
 		}
 		
 		// get all axioms above threshold
-		List<EvaluatedAxiom<OWLAxiom>> bestAxioms = new ArrayList<EvaluatedAxiom<OWLAxiom>>();
+		List<EvaluatedAxiom<OWLAxiom>> bestAxioms = new ArrayList<>();
 		for (EvaluatedAxiom<OWLAxiom> axiom : result) {
 			if(axiom.getScore().getAccuracy() >= accuracyThreshold){
 				bestAxioms.add(axiom);

@@ -31,7 +31,7 @@ public class StringFormatter {
 	/**
 	 * formats a double value between 0 and 100 to a percentage
 	 * ex: 0.7854684  will be return 78.5%
-	 * @param d
+	 * @param d the double value
 	 */
 	public static String doubleToPercent(double d){
 		return doubleToPercent( d,  1,  true);
@@ -54,11 +54,11 @@ public class StringFormatter {
 	public static String myReplaceAll(String s, char search, String replacement ){
 		String ret ="";
 		char[] arr = s.toCharArray();
-		for (int i = 0; i < arr.length; i++) {
-			if(arr[i]==search){
-				ret+=replacement;
-			}else{
-				ret+=arr[i];
+		for (char anArr : arr) {
+			if (anArr == search) {
+				ret += replacement;
+			} else {
+				ret += anArr;
 			}
 		}
 		return ret;

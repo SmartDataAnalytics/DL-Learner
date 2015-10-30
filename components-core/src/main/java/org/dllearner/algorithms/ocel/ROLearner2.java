@@ -136,7 +136,7 @@ public class ROLearner2 {
 	private boolean isRunning = false;
 
 	// solution protocol
-	private List<ExampleBasedNode> solutions = new LinkedList<ExampleBasedNode>();
+	private List<ExampleBasedNode> solutions = new LinkedList<>();
 
 	// used refinement operator and heuristic (exchangeable)
 	private RhoDRDown operator;
@@ -163,14 +163,14 @@ public class ROLearner2 {
 	private DecimalFormat df = new DecimalFormat();
 
 	// all concepts which have been evaluated as being proper refinements
-	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<>();
 
 	// blacklists
-	private SortedSet<OWLClassExpression> tooWeakList = new TreeSet<OWLClassExpression>();
-	private SortedSet<OWLClassExpression> overlyGeneralList = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> tooWeakList = new TreeSet<>();
+	private SortedSet<OWLClassExpression> overlyGeneralList = new TreeSet<>();
 
 	// set of expanded nodes (TODO: better explanation)
-	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
+	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<>(nodeComparatorStable);
 
 	// statistic variables
 	private int maxRecDepth = 0;
@@ -563,7 +563,7 @@ public class ROLearner2 {
 
 		// evaluate all concepts whose length is bigger than the horizontal expansion of the node
 		long evaluateSetCreationTimeNsStart = System.nanoTime();
-		Set<OWLClassExpression> toEvaluateConcepts = new TreeSet<OWLClassExpression>();
+		Set<OWLClassExpression> toEvaluateConcepts = new TreeSet<>();
 		Iterator<OWLClassExpression> it = refinements.iterator();
 		
 		while (it.hasNext()) {
@@ -719,7 +719,7 @@ public class ROLearner2 {
 					// determine individuals which have not been covered yet
 					// (more efficient than full retrieval)
 					Set<OWLIndividual> coveredPositives = node.getCoveredPositives();
-					Set<OWLIndividual> newlyCoveredPositives = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> newlyCoveredPositives = new HashSet<>();
 
 					// calculate how many pos. examples are not covered by the
 					// parent node of the refinement
@@ -752,7 +752,7 @@ public class ROLearner2 {
 					Set<OWLIndividual> newlyCoveredNegatives = null;
 					if (quality != -1) {
 						Set<OWLIndividual> coveredNegatives = node.getCoveredNegatives();
-						newlyCoveredNegatives = new HashSet<OWLIndividual>();
+						newlyCoveredNegatives = new HashSet<>();
 
 						for (OWLIndividual i : coveredNegatives) {
 							boolean covered = rs.hasType(refinement, i);
@@ -1017,9 +1017,9 @@ public class ROLearner2 {
 		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode currNode : reverseView) {
 			// compute covered positives and negatives
-			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<OWLIndividual>(currentCoveredPos);
+			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<>(currentCoveredPos);
 			newCoveredPositives.retainAll(currNode.getCoveredPositives());
-			SortedSet<OWLIndividual> newCoveredNegatives = new TreeSet<OWLIndividual>(currentCoveredNeg);
+			SortedSet<OWLIndividual> newCoveredNegatives = new TreeSet<>(currentCoveredNeg);
 			newCoveredNegatives.retainAll(currNode.getCoveredNegatives());
 
 			// compute the accuracy we would get by adding this node
@@ -1104,7 +1104,7 @@ public class ROLearner2 {
 
 	private void reduceCandidates() {
 		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
-		Set<ExampleBasedNode> promisingNodes = new HashSet<ExampleBasedNode>();
+		Set<ExampleBasedNode> promisingNodes = new HashSet<>();
 		int i = 0;
 		while (it.hasNext() && promisingNodes.size() < candidatePostReductionSize) {
 			ExampleBasedNode node = it.next();
@@ -1160,7 +1160,7 @@ public class ROLearner2 {
 	}
 
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		List<OWLClassExpression> best = new LinkedList<OWLClassExpression>();
+		List<OWLClassExpression> best = new LinkedList<>();
 		int i = 0;
 		int nrOfSolutions = 200;
 		for (ExampleBasedNode n : searchTreeStable.descendingSet()) {
@@ -1175,7 +1175,7 @@ public class ROLearner2 {
 	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
 		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
 		int count = 0;
-		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
+		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<>(edComparator);
 		while(it.hasNext()) {
 			ExampleBasedNode eb = it.next();
 			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getScore(eb.getConcept())));
@@ -1211,7 +1211,7 @@ public class ROLearner2 {
 		if (showOrderedSolutions) {
 			logger.trace("ordered by generality (most special solutions first):");
 			SubsumptionComparator sc = new SubsumptionComparator(rs);
-			SortedSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<OWLClassExpression>(sc);
+			SortedSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<>(sc);
 //			solutionsOrderedBySubsumption.addAll(solutions);
 			for (OWLClassExpression d : solutionsOrderedBySubsumption)
 				logger.trace("special: " + d);

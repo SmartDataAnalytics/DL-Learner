@@ -57,7 +57,7 @@ public class DefaultDateTimeValuesSplitter extends AbstractDateTimeValuesSplitte
 		DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
 		DateTimeFormatter formatter = OWLAPIUtils.dateTimeFormatters.get(datatype);
 		
-		List<DateTime> values = new LinkedList<DateTime>();
+		List<DateTime> values = new LinkedList<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : ind2Values.entrySet()) {
 			
 			for (OWLLiteral value : entry.getValue()) {

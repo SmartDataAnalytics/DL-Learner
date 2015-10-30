@@ -82,8 +82,8 @@ public class FunctionalDataPropertyAxiomLearner extends DataPropertyAxiomLearner
 		
 		int frequency = getCountValue(POS_FREQUENCY_QUERY.toString());
 
-		currentlyBestAxioms.add(new EvaluatedAxiom<OWLFunctionalDataPropertyAxiom>(
-				df.getOWLFunctionalDataPropertyAxiom(entityToDescribe), 
+		currentlyBestAxioms.add(new EvaluatedAxiom<>(
+				df.getOWLFunctionalDataPropertyAxiom(entityToDescribe),
 				computeScore(popularity, frequency, useSampling),
 				declared));
 	}

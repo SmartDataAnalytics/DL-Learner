@@ -6,7 +6,7 @@ public class QueryTreeChange {
 	
 	public enum ChangeType{
 		REPLACE_LABEL,
-		REMOVE_NODE;
+		REMOVE_NODE
 	}
 	
 	private int nodeId;

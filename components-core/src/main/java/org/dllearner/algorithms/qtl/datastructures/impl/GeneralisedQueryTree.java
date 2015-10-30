@@ -13,7 +13,7 @@ public class GeneralisedQueryTree<N> {
 	
 	public GeneralisedQueryTree(QueryTree<N> tree){
 		this.tree = tree;
-		changes = new ArrayList<QueryTreeChange>();
+		changes = new ArrayList<>();
 	}
 	
 	public GeneralisedQueryTree(QueryTree<N> tree, List<QueryTreeChange> changes){

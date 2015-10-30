@@ -50,10 +50,10 @@ import com.google.common.collect.Multiset;
 
 public class OWLAxiomPatternFinder {
 	
-	private static Queue<String> classVarQueue = new LinkedList<String>();
-	private static Queue<String> propertyVarQueue = new LinkedList<String>();
-	private static Queue<String> individualVarQueue = new LinkedList<String>();
-	private static Queue<String> datatypeVarQueue = new LinkedList<String>();
+	private static Queue<String> classVarQueue = new LinkedList<>();
+	private static Queue<String> propertyVarQueue = new LinkedList<>();
+	private static Queue<String> individualVarQueue = new LinkedList<>();
+	private static Queue<String> datatypeVarQueue = new LinkedList<>();
 	
 	static{
 		for(int i = 65; i <= 90; i++){
@@ -66,8 +66,8 @@ public class OWLAxiomPatternFinder {
 			propertyVarQueue.add(String.valueOf((char)i));
 		}
 		
-	};
-	
+	}
+
 	private OntologyRepository repository;
 	private OWLOntologyManager manager;
 	private OWLDataFactory dataFactory;
@@ -355,7 +355,7 @@ public class OWLAxiomPatternFinder {
 		OWLAxiomRenamer renamer = new OWLAxiomRenamer(dataFactory);
 		Collection<OntologyRepositoryEntry> entries = repository.getEntries();
 		if(randomOrder){
-			List<OntologyRepositoryEntry> entryList = new ArrayList<OntologyRepositoryEntry>(repository.getEntries());
+			List<OntologyRepositoryEntry> entryList = new ArrayList<>(repository.getEntries());
 			Collections.shuffle(entryList);
 			entries = entryList;
 		}
@@ -371,7 +371,7 @@ public class OWLAxiomPatternFinder {
 					manager = OWLManager.createOWLOntologyManager();
 					OWLOntology ontology = manager.loadOntology(IRI.create(uri));
 					Multiset<OWLAxiom> axiomPatterns = HashMultiset.create();
-					Set<OWLAxiom> logicalAxioms = new HashSet<OWLAxiom>();
+					Set<OWLAxiom> logicalAxioms = new HashSet<>();
 					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
 						if(type.isLogical()){
 							logicalAxioms.addAll(ontology.getAxioms(type, true));

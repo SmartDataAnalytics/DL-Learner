@@ -124,10 +124,10 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 	public Set<OWLAxiom> getCBD(OWLIndividual ind, int maxDepth){
 		this.maxDepth = maxDepth;
 		
-		cbdAxioms = new HashSet<OWLAxiom>();
-		visitedClasses = new HashSet<OWLClass>();
-		visitedProperties = new HashSet<OWLProperty>();
-		visitedIndividuals = new HashSet<OWLIndividual>();
+		cbdAxioms = new HashSet<>();
+		visitedClasses = new HashSet<>();
+		visitedProperties = new HashSet<>();
+		visitedIndividuals = new HashSet<>();
 		
 		// we start with the directly related axioms
 		currentDepth = 0;
@@ -175,7 +175,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 			visitedClasses.add(cls);
 			
 			currentDepth++;
-			Set<OWLClassAxiom> axioms = new HashSet<OWLClassAxiom>();//.getAxioms(cls);
+			Set<OWLClassAxiom> axioms = new HashSet<>();//.getAxioms(cls);
 			if(subsumptionDown){
 				axioms.addAll(ontology.getSubClassAxiomsForSuperClass(cls));
 			} else {

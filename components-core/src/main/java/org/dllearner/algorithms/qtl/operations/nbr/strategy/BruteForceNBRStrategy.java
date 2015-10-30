@@ -55,7 +55,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 			return nbr;
 		}
 		
-		Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
+		Set<RDFResourceTree> tested = new HashSet<>();
 		Node edge;
 		RDFResourceTree parent;
 		while(!(tested.size() == nbr.getLeafs().size()) ){
@@ -98,7 +98,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 			return Collections.singletonList(posExampleTree);
 		}
 		
-		List<RDFResourceTree> nbrs = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> nbrs = new ArrayList<>();
 		
 		compute(posExampleTree, negExampleTrees, nbrs);
 		
@@ -119,7 +119,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 		}
 		
 		if(!subsumesTrees(nbr, negExampleTrees)){
-			Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> tested = new HashSet<>();
 			Node edge;
 			RDFResourceTree parent;
 			while(!(tested.size() == nbr.getLeafs().size()) ){

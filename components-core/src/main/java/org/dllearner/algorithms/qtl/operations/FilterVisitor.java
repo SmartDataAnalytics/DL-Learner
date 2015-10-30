@@ -13,7 +13,7 @@ import com.hp.hpl.jena.sparql.algebra.op.OpTriple;
 
 public class FilterVisitor extends OpVisitorBase {
 	
-	private List<Op> ops = new ArrayList<Op>();
+	private List<Op> ops = new ArrayList<>();
 	
 	
 	

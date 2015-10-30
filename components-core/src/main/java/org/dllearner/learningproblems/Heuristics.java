@@ -29,7 +29,7 @@ package org.dllearner.learningproblems;
  */
 public class Heuristics {
 
-	public static enum HeuristicType { PRED_ACC, AMEASURE, JACCARD, FMEASURE, GEN_FMEASURE, ENTROPY, MATTHEWS_CORRELATION, YOUDEN_INDEX };
+	public enum HeuristicType { PRED_ACC, AMEASURE, JACCARD, FMEASURE, GEN_FMEASURE, ENTROPY, MATTHEWS_CORRELATION, YOUDEN_INDEX };
 	
 	/**
 	 * Computes F1-Score.

@@ -72,7 +72,7 @@ public class Combination extends Object
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T extends Comparable<? super T>> List<List<T>> findCombinations(Collection elements)
     {
-        List<List<T>> result = new ArrayList<List<T>>();
+        List<List<T>> result = new ArrayList<>();
         
         for (int i = 0; i <= elements.size(); i++)
             result.addAll(findCombinations(elements, i));
@@ -98,7 +98,7 @@ public class Combination extends Object
     
     public static <T extends Comparable<? super T>> List<List<T>> findCombinations(Collection<T> elements, int n)
     {
-        List<List<T>> result = new ArrayList<List<T>>();
+        List<List<T>> result = new ArrayList<>();
         
         if (n == 0)
         {
@@ -117,7 +117,7 @@ public class Combination extends Object
                     continue;
                 }
                 
-                List<T> list = new ArrayList<T>();
+                List<T> list = new ArrayList<>();
 
                 list.addAll(combination);
                 

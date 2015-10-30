@@ -33,7 +33,7 @@ public class PredicateExistenceFilterDBpedia extends PredicateExistenceFilter{
 	
 	public PredicateExistenceFilterDBpedia(SparqlEndpointKS ks) {
 		this.ks = ks;
-		Set<Node> existentialMeaninglessProperties = new TreeSet<Node>(new NodeComparator());
+		Set<Node> existentialMeaninglessProperties = new TreeSet<>(new NodeComparator());
 		
 		try {
 			List<String> lines = Files.readLines(new File(this.getClass().getClassLoader().getResource(PATH).toURI()), Charsets.UTF_8);
@@ -49,7 +49,7 @@ public class PredicateExistenceFilterDBpedia extends PredicateExistenceFilter{
 	}
 	
 	private void analyze() {
-		Set<Node> existentialMeaninglessProperties = new TreeSet<Node>(new NodeComparator());
+		Set<Node> existentialMeaninglessProperties = new TreeSet<>(new NodeComparator());
 		
 		StringBuilder sb = new StringBuilder();
 		// check data properties

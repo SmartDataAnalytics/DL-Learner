@@ -53,7 +53,7 @@ public class OWLPunningDetector {
 	 * @return
 	 */
 	public static Set<OWLClass> getPunningClasses(OWLOntology ontology){
-		Set<OWLClass> classes = new HashSet<OWLClass>();
+		Set<OWLClass> classes = new HashSet<>();
 		Set<OWLNamedIndividual> individualsInSignature = ontology.getIndividualsInSignature();
 		for (OWLClass cls : ontology.getClassesInSignature()) {
 			if(individualsInSignature.contains(new OWLNamedIndividualImpl(cls.getIRI()))){
@@ -76,7 +76,7 @@ public class OWLPunningDetector {
 	 * @return
 	 */
 	public static Set<IRI> getPunningIRIs(OWLOntology ontology){
-		Set<IRI> classes = new HashSet<IRI>();
+		Set<IRI> classes = new HashSet<>();
 		Set<OWLNamedIndividual> individualsInSignature = ontology.getIndividualsInSignature();
 		for (OWLClass cls : ontology.getClassesInSignature()) {
 			if(individualsInSignature.contains(new OWLNamedIndividualImpl(cls.getIRI()))){

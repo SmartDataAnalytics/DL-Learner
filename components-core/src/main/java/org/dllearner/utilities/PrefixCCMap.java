@@ -2,7 +2,6 @@ package org.dllearner.utilities;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -44,8 +43,6 @@ public class PrefixCCMap extends HashMap<String, String>{
 					put(key, value);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -90,7 +87,7 @@ public class PrefixCCMap extends HashMap<String, String>{
 	    PrintWriter pw = new PrintWriter(new FileWriter(tmpFile));
 	    BufferedReader br = new BufferedReader(new FileReader(inFile));
 		String line = null;
-		Set<String> values = new HashSet<String>();
+		Set<String> values = new HashSet<>();
 		while ((line = br.readLine()) != null) {
 			String[] entry = line.split(",");
 			if(entry.length == 2){

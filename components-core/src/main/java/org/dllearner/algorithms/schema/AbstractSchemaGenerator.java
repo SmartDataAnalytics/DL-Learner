@@ -123,7 +123,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	 */
 	protected SortedSet<OWLEntity> getEntities(){
 		if(entities == null){
-			entities = new TreeSet<OWLEntity>();
+			entities = new TreeSet<>();
 			for (EntityType<? extends OWLEntity> entityType : entityTypes) {
 				if(entityType == EntityType.CLASS){
 					entities.addAll(reasoner.getOWLClasses());
@@ -180,11 +180,11 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	
 	/**
 	 * Add the axioms to the running knowledge base.
-	 * @param axioms
+	 * @param axioms the axioms
 	 */
 	protected void addToKnowledgebase(Set<OWLAxiom> axioms) {
 		Set<Statement> statements = OwlApiJenaUtils.asStatements(axioms);
-		model.add(new ArrayList<Statement>(statements));
+		model.add(new ArrayList<>(statements));
 	}
 
 }

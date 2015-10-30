@@ -27,10 +27,10 @@ public class TypeOntology {
 
 	private int addTypes(OntModel model) {
 		int changes=0;
-		Set<String> dataProperties = new HashSet<String>();
-		Set<String> objectProperties = new HashSet<String>();
-		Set<String> classes = new HashSet<String>();
-		Set<String> individuals = new HashSet<String>();
+		Set<String> dataProperties = new HashSet<>();
+		Set<String> objectProperties = new HashSet<>();
+		Set<String> classes = new HashSet<>();
+		Set<String> individuals = new HashSet<>();
 		Set<Triple> triples = model.getGraph().find(Triple.ANY).toSet();
 
 
@@ -187,7 +187,7 @@ public class TypeOntology {
 				+ " ! regex(str(?o), '^http://dbpedia.org/resource/Category') &&"
 				+ " ! regex(str(?o), '^http://dbpedia.org/resource/Template')  ) . }";
 		OntModel model = ModelFactory.createOntologyModel();
-		List<String> individuals = new ArrayList<String>(7);
+		List<String> individuals = new ArrayList<>(7);
 		individuals.add("http://dbpedia.org/resource/Philolaus");
 		individuals.add("http://dbpedia.org/resource/Zeno_of_Elea");
 		individuals.add("http://dbpedia.org/resource/Socrates");

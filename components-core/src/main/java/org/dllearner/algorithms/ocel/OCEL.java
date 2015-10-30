@@ -165,7 +165,7 @@ public class OCEL extends AbstractCELA {
 	}
 	
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
 		problems.add(PosNegLP.class);
 		problems.add(PosOnlyLP.class);
 		return problems;

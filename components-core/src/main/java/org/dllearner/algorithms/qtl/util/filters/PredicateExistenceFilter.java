@@ -21,7 +21,7 @@ import com.hp.hpl.jena.graph.Node;
 public class PredicateExistenceFilter {
 	
 
-	private Set<Node> existentialMeaninglessProperties = new HashSet<Node>();
+	private Set<Node> existentialMeaninglessProperties = new HashSet<>();
 	
 	public PredicateExistenceFilter() {
 	}

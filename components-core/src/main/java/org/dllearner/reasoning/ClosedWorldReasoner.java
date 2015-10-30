@@ -119,26 +119,26 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	private TreeSet<OWLIndividual> individuals;
 
 	// instances of classes
-	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
-	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<OWLClass, TreeSet<OWLIndividual>>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos = new TreeMap<>();
+	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<>();
 	// object property mappings
-	private Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>>();
+	private Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<>();
 	// data property mappings
-	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>> dpPos = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>> dpPos = new TreeMap<>();
 		
 	
 	// datatype property mappings
 	// we have one mapping for true and false for efficiency reasons
-	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
-	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg = new TreeMap<OWLDataProperty, TreeSet<OWLIndividual>>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos = new TreeMap<>();
+	private Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg = new TreeMap<>();
 	// for int and double we assume that a property can have several values,
 	// althoug this should be rare,
 	// e.g. hasValue(object,2) and hasValue(object,3)
-	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>> dd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>>();
-	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>>();
-	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>> sd = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Double>>> dd = new TreeMap<>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Integer>>> id = new TreeMap<>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<String>>> sd = new TreeMap<>();
 	
-	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Number>>> numericValueMappings = new TreeMap<OWLDataProperty, Map<OWLIndividual, SortedSet<Number>>>();
+	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<Number>>> numericValueMappings = new TreeMap<>();
 	
 	
 	
@@ -191,7 +191,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdPos,
 			Map<OWLDataProperty, TreeSet<OWLIndividual>> bdNeg,
 			KnowledgeSource... sources) {
-		super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
+		super(new HashSet<>(Arrays.asList(sources)));
 		this.individuals = individuals;
 		this.classInstancesPos = classInstancesPos;
 		this.opPos = opPos;
@@ -200,7 +200,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		this.bdNeg = bdNeg;
 		
 		if(baseReasoner == null){
-            baseReasoner = new OWLAPIReasoner(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
+            baseReasoner = new OWLAPIReasoner(new HashSet<>(Arrays.asList(sources)));
             try {
 				baseReasoner.init();
 			} catch (ComponentInitException e) {
@@ -211,7 +211,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		for (OWLClass atomicConcept : baseReasoner.getClasses()) {
 			TreeSet<OWLIndividual> pos = classInstancesPos.get(atomicConcept);
 			if(pos != null){
-				classInstancesNeg.put(atomicConcept, new TreeSet<OWLIndividual>(Sets.difference(individuals, pos)));
+				classInstancesNeg.put(atomicConcept, new TreeSet<>(Sets.difference(individuals, pos)));
 			} else {
 				classInstancesPos.put(atomicConcept, new TreeSet<OWLIndividual>());
 				classInstancesNeg.put(atomicConcept, individuals);
@@ -240,7 +240,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     }
 
     public ClosedWorldReasoner(KnowledgeSource... sources) {
-        super(new HashSet<KnowledgeSource>(Arrays.asList(sources)));
+        super(new HashSet<>(Arrays.asList(sources)));
     }
     
     public ClosedWorldReasoner(OWLAPIReasoner baseReasoner) {
@@ -348,7 +348,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					 *  for A(x) and return the inverse.
 					 */
 					if(precomputeNegations) {
-						classInstancesNeg.put(cls, new TreeSet<OWLIndividual>(Sets.difference(individuals, pos)));
+						classInstancesNeg.put(cls, new TreeSet<>(Sets.difference(individuals, pos)));
 					}
 				} else {
 					OWLObjectComplementOf negatedClass = df.getOWLObjectComplementOf(cls);
@@ -407,9 +407,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					OWLOntology ontology = baseReasoner.getReasoner().getRootOntology();
 					
 					OWLIndividual genericIndividual = df.getOWLNamedIndividual(IRI.create("http://dl-learner.org/punning#genInd"));
-					Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<OWLIndividual, SortedSet<OWLIndividual>>();
+					Map<OWLIndividual, SortedSet<OWLIndividual>> map = new HashMap<>();
 					for (OWLIndividual individual : individuals) {
-						SortedSet<OWLIndividual> objects = new TreeSet<OWLIndividual>();
+						SortedSet<OWLIndividual> objects = new TreeSet<>();
 						objects.add(genericIndividual);
 						map.put(individual, objects);
 					}
@@ -422,7 +422,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 							for (OWLIndividual individual : individuals) {
 								SortedSet<OWLIndividual> objects = map.get(individual);
 								if(objects == null){
-									objects = new TreeSet<OWLIndividual>();
+									objects = new TreeSet<>();
 									map.put(individual, objects);
 								}
 								objects.add(clsAsInd);
@@ -431,7 +431,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 					}
 					opPos.put(OWLPunningDetector.punningProperty, map);
-					objectProperties = new TreeSet<OWLObjectProperty>(objectProperties);
+					objectProperties = new TreeSet<>(objectProperties);
 					objectProperties.add(OWLPunningDetector.punningProperty);
 					objectProperties = Collections.unmodifiableSet(objectProperties);
 //					individuals.add(genericIndividual);
@@ -443,7 +443,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	
 	private void fill(SortedSet<OWLIndividual> individuals, OWLClassExpression d){
 		if(!d.isAnonymous()){
-			classInstancesPos.get(d).addAll(individuals);
+			classInstancesPos.get(d.asOWLClass()).addAll(individuals);
 		} else if(d instanceof OWLObjectIntersectionOf){
 			Set<OWLClassExpression> operands = ((OWLObjectIntersectionOf) d).getOperands();
 			for (OWLClassExpression operand : operands) {
@@ -454,14 +454,14 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
 			Map<OWLIndividual, SortedSet<OWLIndividual>> map = opPos.get(role);
 			//create new individual as object value for each individual
-			SortedSet<OWLIndividual> newIndividuals = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> newIndividuals = new TreeSet<>();
 			int i = 0;
 			for (OWLIndividual individual : individuals) {
 				OWLIndividual newIndividual = df.getOWLNamedIndividual(IRI.create("http://dllearner.org#genInd_" + i++));
 				newIndividuals.add(newIndividual);
 				SortedSet<OWLIndividual> values = map.get(individual);
 				if(values == null){
-					values = new TreeSet<OWLIndividual>();
+					values = new TreeSet<>();
 					map.put(individual, values);
 				}
 				values.add(newIndividual);
@@ -482,7 +482,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		} else if (description.isOWLNothing()) {
 			return false;
 		} else if (!description.isAnonymous()) {
-			return classInstancesPos.get(description).contains(individual);
+			return classInstancesPos.get(description.asOWLClass()).contains(individual);
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
 			if(!operand.isAnonymous()) {
@@ -565,7 +565,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			if (property.isAnonymous()) {// \forall r^{-1}.C
 				Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
 				
-				Set<OWLIndividual> values = new HashSet<OWLIndividual>();
+				Set<OWLIndividual> values = new HashSet<>();
 				
 				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 					OWLIndividual subject = entry.getKey();
@@ -963,8 +963,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		return getIndividualsImplFast(concept);
 	}
 	
-	public SortedSet<OWLIndividual> getIndividualsImplStandard(OWLClassExpression concept)
-		throws ReasoningMethodUnsupportedException {
+	public SortedSet<OWLIndividual> getIndividualsImplStandard(OWLClassExpression concept) {
 		if (!concept.isAnonymous()) {
 	 		return classInstancesPos.get(concept);
 	 	} else if (concept instanceof OWLObjectComplementOf){
@@ -975,7 +974,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	 	}
 	 
 	 	// return rs.retrieval(concept);
-	 	SortedSet<OWLIndividual> inds = new TreeSet<OWLIndividual>();
+	 	SortedSet<OWLIndividual> inds = new TreeSet<>();
 	 	for (OWLIndividual i : individuals) {
 	 		if (hasType(concept, i)) {
 	 			inds.add(i);
@@ -992,12 +991,12 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		if (description.isOWLThing()) {
 			return (TreeSet<OWLIndividual>) individuals.clone();
 		} else if (description.isOWLNothing()) {
-			return new TreeSet<OWLIndividual>();
+			return new TreeSet<>();
 		} else if (!description.isAnonymous()) {
 			if(classInstancesPos.containsKey(description.asOWLClass())){
 				return (TreeSet<OWLIndividual>) classInstancesPos.get(description).clone();
 			} else {
-				return new TreeSet<OWLIndividual>();
+				return new TreeSet<>();
 			}
 		} else if (description instanceof OWLObjectComplementOf) {
 			OWLClassExpression operand = ((OWLObjectComplementOf) description).getOperand();
@@ -1007,7 +1006,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
 					}
 					SetView<OWLIndividual> diff = Sets.difference(individuals, classInstancesPos.get(operand));
-					return new TreeSet<OWLIndividual>(diff);
+					return new TreeSet<>(diff);
 				} else {
 					return (TreeSet<OWLIndividual>) classInstancesNeg.get(operand).clone();
 				}
@@ -1015,7 +1014,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			// implement retrieval as default negation
 			return new TreeSet<>(Sets.difference(individuals, getIndividualsImpl(operand)));
 		} else if (description instanceof OWLObjectUnionOf) {
-			SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> ret = new TreeSet<>();
 			for (OWLClassExpression operand : ((OWLObjectUnionOf) description).getOperands()) {
 				ret.addAll(getIndividualsImpl(operand));
 			}
@@ -1029,7 +1028,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			}
 			return ret;
 		} else if (description instanceof OWLObjectSomeValuesFrom) {
-			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			
 			OWLObjectPropertyExpression property = ((OWLObjectSomeValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) description).getFiller();
@@ -1109,7 +1108,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
 			
-			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 
 			int number = ((OWLObjectMinCardinality) description).getCardinality();
 
@@ -1200,7 +1199,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
 			
-			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			
 			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
 				if(entry.getValue().contains(value)) {
@@ -1214,7 +1213,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			if(filler.isDatatype()){
 				//we assume that the values are of the given datatype
-				return new TreeSet<OWLIndividual>(dpPos.get(property).keySet());
+				return new TreeSet<>(dpPos.get(property).keySet());
 //				OWLDatatype dt = filler.asOWLDatatype();
 //				if(dt.isDouble()){
 //					return new TreeSet<OWLIndividual>(dd.get(property).keySet());
@@ -1238,7 +1237,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 					}
 					Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(property);
-					SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+					SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 					
 					for(Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
 						//we can skip of largest number is below minimum or lowest number is above maximum
@@ -1262,7 +1261,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				Set<OWLLiteral> values = dataOneOf.getValues();
 				
 				Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
-				SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+				SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 				
 				for(Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
 					OWLIndividual ind = entry.getKey();
@@ -1278,7 +1277,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
 			OWLLiteral value = ((OWLDataHasValue) description).getValue();
 			
-			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			
 			Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
 			

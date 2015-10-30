@@ -142,13 +142,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			throw new ComponentInitException("The class \"" + classToDescribe + "\" does not exist. Make sure you spelled it correctly.");
 		}
 		
-		classInstances = new LinkedList<OWLIndividual>(getReasoner().getIndividuals(classToDescribe));
+		classInstances = new LinkedList<>(getReasoner().getIndividuals(classToDescribe));
 		// sanity check
 		if(classInstances.size() == 0) {
 			throw new ComponentInitException("Class " + classToDescribe + " has 0 instances according to \"" + AnnComponentManager.getName(getReasoner().getClass()) + "\". Cannot perform class learning with 0 instances.");
 		}
 		
-		classInstancesSet = new TreeSet<OWLIndividual>(classInstances);
+		classInstancesSet = new TreeSet<>(classInstances);
 //		equivalence = (configurator.getType().equals("equivalence"));
 //		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
 		
@@ -161,24 +161,24 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		// we compute the instances of the super class to perform
 		// optimisations later on
 		Set<OWLClassExpression> superClasses = getReasoner().getSuperClasses(classToDescribe);
-		TreeSet<OWLIndividual> superClassInstancesTmp = new TreeSet<OWLIndividual>(getReasoner().getIndividuals());
+		TreeSet<OWLIndividual> superClassInstancesTmp = new TreeSet<>(getReasoner().getIndividuals());
 		for(OWLClassExpression superClass : superClasses) {
 			superClassInstancesTmp.retainAll(getReasoner().getIndividuals(superClass));
 		}
 		// we create one list, which includes instances of the class (an instance of the class is also instance of all super classes) ...
-		classAndSuperClassInstances = new LinkedList<OWLIndividual>(superClassInstancesTmp);
+		classAndSuperClassInstances = new LinkedList<>(superClassInstancesTmp);
 		// ... and a second list not including them
 		superClassInstancesTmp.removeAll(classInstances);
 		// since we use the instance list for approximations, we want to avoid
 		// any bias through URI names, so we shuffle the list once pseudo-randomly
-		superClassInstances = new LinkedList<OWLIndividual>(superClassInstancesTmp);
+		superClassInstances = new LinkedList<>(superClassInstancesTmp);
 		Random rand = new Random(1);
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 		
 		if(accuracyMethod.equals(HeuristicType.GEN_FMEASURE)) {
 			OWLClassExpression classToDescribeNeg = df.getOWLObjectComplementOf(classToDescribe);
-			negatedClassInstances = new TreeSet<OWLIndividual>();
+			negatedClassInstances = new TreeSet<>();
 			for(OWLIndividual ind : superClassInstances) {
 				if(getReasoner().hasType(classToDescribeNeg, ind)) {
 					negatedClassInstances.add(ind);
@@ -195,8 +195,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		
 		// TODO: reuse code to ensure that we never return inconsistent results
 		// between getAccuracy, getAccuracyOrTooWeak and computeScore
-		Set<OWLIndividual> additionalInstances = new TreeSet<OWLIndividual>();
-		Set<OWLIndividual> coveredInstances = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> additionalInstances = new TreeSet<>();
+		Set<OWLIndividual> coveredInstances = new TreeSet<>();
 		
 		int additionalInstancesCnt = 0;
 		int coveredInstancesCnt = 0;
@@ -536,7 +536,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		if(accuracyMethod.equals(HeuristicType.JACCARD)) {
 			
 			// computing R(A)
-			TreeSet<OWLIndividual> coveredInstancesSet = new TreeSet<OWLIndividual>();
+			TreeSet<OWLIndividual> coveredInstancesSet = new TreeSet<>();
 			for(OWLIndividual ind : classInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					coveredInstancesSet.add(ind);
@@ -553,7 +553,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			}
 			
 			// computing R(C) restricted to relevant instances
-			TreeSet<OWLIndividual> additionalInstancesSet = new TreeSet<OWLIndividual>();
+			TreeSet<OWLIndividual> additionalInstancesSet = new TreeSet<>();
 			for(OWLIndividual ind : superClassInstances) {
 				if(getReasoner().hasType(description, ind)) {
 					additionalInstancesSet.add(ind);
@@ -662,8 +662,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			// default negation should be turned off when using fast instance checker
 			
 			// compute I_C (negated and non-negated concepts separately)
-			TreeSet<OWLIndividual> icPos = new TreeSet<OWLIndividual>();
-			TreeSet<OWLIndividual> icNeg = new TreeSet<OWLIndividual>();
+			TreeSet<OWLIndividual> icPos = new TreeSet<>();
+			TreeSet<OWLIndividual> icNeg = new TreeSet<>();
 			OWLClassExpression descriptionNeg = df.getOWLObjectComplementOf(description);
 			// loop through all relevant instances
 			for(OWLIndividual ind : classAndSuperClassInstances) {

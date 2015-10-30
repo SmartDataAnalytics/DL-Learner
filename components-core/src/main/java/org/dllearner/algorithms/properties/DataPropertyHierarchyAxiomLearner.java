@@ -121,8 +121,8 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, p), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, p),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -168,8 +168,8 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 			double score = computeScore(candidatePopularity, popularity, overlap);
 
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, candidate), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, candidate),
 							new AxiomScore(score)));
 		}
 	}
@@ -195,7 +195,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 	 */
 	protected SortedSet<OWLDataProperty> getCandidates(){
 		// get the candidates
-		SortedSet<OWLDataProperty> candidates = new TreeSet<OWLDataProperty>();
+		SortedSet<OWLDataProperty> candidates = new TreeSet<>();
 
 		if (strictMode) { // that have the same domain and range 
 			// get rdfs:domain of the property
@@ -242,7 +242,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 		}
 		posExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLDataPropertyAssertionAxiom> posExamples = new TreeSet<OWLDataPropertyAssertionAxiom>();
+		Set<OWLDataPropertyAssertionAxiom> posExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
@@ -270,7 +270,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 		}
 		negExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLDataPropertyAssertionAxiom> negExamples = new TreeSet<OWLDataPropertyAssertionAxiom>();
+		Set<OWLDataPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

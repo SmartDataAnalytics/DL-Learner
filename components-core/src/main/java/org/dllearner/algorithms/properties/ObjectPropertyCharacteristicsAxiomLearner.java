@@ -96,8 +96,8 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		
 		int frequency = getPositiveExamplesFrequency();
 
-		currentlyBestAxioms.add(new EvaluatedAxiom<T>(
-				getAxiom(entityToDescribe), 
+		currentlyBestAxioms.add(new EvaluatedAxiom<>(
+				getAxiom(entityToDescribe),
 				computeScore(popularity, frequency, useSampling),
 				declared));
 	}
@@ -117,7 +117,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		T axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
@@ -138,7 +138,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		T axiom = evaluatedAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

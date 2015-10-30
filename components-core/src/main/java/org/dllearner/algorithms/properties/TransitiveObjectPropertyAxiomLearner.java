@@ -89,7 +89,7 @@ public class TransitiveObjectPropertyAxiomLearner extends ObjectPropertyCharacte
 		OWLTransitiveObjectPropertyAxiom axiom = evaluatedAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

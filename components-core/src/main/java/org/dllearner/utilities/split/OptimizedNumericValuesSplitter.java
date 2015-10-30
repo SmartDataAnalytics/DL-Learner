@@ -31,9 +31,6 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 	private PosNegLP lp;
 //	private Class<T> clazz;
 
-	/**
-	 * @param reasoner
-	 */
 	public OptimizedNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, PosNegLP lp) {
 		super(reasoner, dataFactory);
 		this.lp = lp;
@@ -59,10 +56,10 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 	}
 
 	public <T extends Number & Comparable<T>> List<T> computeSplitValues(OWLDataProperty dp) {
-		List<T> splitsDP = new LinkedList<T>();
+		List<T> splitsDP = new LinkedList<>();
 		NumberFormat numberFormat = NumberFormat.getInstance();
 		
-		SortedSet<T> posRelatedValues = new TreeSet<T>();
+		SortedSet<T> posRelatedValues = new TreeSet<>();
 		
 		for (OWLIndividual ex : lp.getPositiveExamples()) {
 			Set<OWLLiteral> relatedValues = reasoner.getRelatedValues(ex, dp);
@@ -84,7 +81,7 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 			}
 		}
 		
-		SortedSet<T> negRelatedValues = new TreeSet<T>();
+		SortedSet<T> negRelatedValues = new TreeSet<>();
 		
 		for (OWLIndividual ex : lp.getNegativeExamples()) {
 			Set<OWLLiteral> relatedValues = reasoner.getRelatedValues(ex, dp);

@@ -154,7 +154,7 @@ public class EvaluatedDescriptionSet {
 	 * @return a list which contains only the class expressions of this set.
 	 */
 	public List<OWLClassExpression> toDescriptionList() {
-		List<OWLClassExpression> list = new LinkedList<OWLClassExpression>();
+		List<OWLClassExpression> list = new LinkedList<>();
 		for(EvaluatedDescription<? extends Score> ed : set.descendingSet()) {
 			list.add(ed.getDescription());
 		}

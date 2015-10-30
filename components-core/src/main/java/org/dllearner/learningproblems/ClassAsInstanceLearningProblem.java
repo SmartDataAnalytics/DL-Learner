@@ -55,8 +55,8 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 
-	protected Set<OWLClass> positiveExamples = new TreeSet<OWLClass>();
-	protected Set<OWLClass> negativeExamples = new TreeSet<OWLClass>();
+	protected Set<OWLClass> positiveExamples = new TreeSet<>();
+	protected Set<OWLClass> negativeExamples = new TreeSet<>();
 	
 	
 
@@ -72,10 +72,10 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 	 */
 	@Override
 	public ScorePosNeg<OWLClass> computeScore(OWLClassExpression description, double noise) {
-		SortedSet<OWLClass> posAsPos = new TreeSet<OWLClass>();
-		SortedSet<OWLClass> posAsNeg = new TreeSet<OWLClass>();
-		SortedSet<OWLClass> negAsPos = new TreeSet<OWLClass>();
-		SortedSet<OWLClass> negAsNeg = new TreeSet<OWLClass>();
+		SortedSet<OWLClass> posAsPos = new TreeSet<>();
+		SortedSet<OWLClass> posAsNeg = new TreeSet<>();
+		SortedSet<OWLClass> negAsPos = new TreeSet<>();
+		SortedSet<OWLClass> negAsNeg = new TreeSet<>();
 
 		// for each positive example, we check whether it is a subclass of the given concept
 		for (OWLClass example : positiveExamples) {
@@ -97,7 +97,7 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 		// compute the accuracy
 		double accuracy = getAccuracyOrTooWeak(description);
 
-		return new ScoreTwoValued<OWLClass>(OWLClassExpressionUtils.getLength(description), percentPerLengthUnit, posAsPos, posAsNeg,
+		return new ScoreTwoValued<>(OWLClassExpressionUtils.getLength(description), percentPerLengthUnit, posAsPos, posAsNeg,
 				negAsPos, negAsNeg, accuracy);
 	}
 

@@ -54,7 +54,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
-    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator());
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
     
@@ -140,7 +140,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		super.addChild(child);
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<RDFResourceTree>();
+			childrenForEdge = new ArrayList<>();
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.add(child);
@@ -152,7 +152,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		super.addChildren(children);
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<RDFResourceTree>();
+			childrenForEdge = new ArrayList<>();
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.addAll(children);
@@ -208,7 +208,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	 * @return all distinct outgoing edges to children of the given node type
 	 */
 	public SortedSet<Node> getEdges(NodeType nodeType) {
-		SortedSet<Node> edges = new TreeSet<Node>(new NodeComparator());
+		SortedSet<Node> edges = new TreeSet<>(new NodeComparator());
 		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
 			Node edge = entry.getKey();
 			List<RDFResourceTree> children = entry.getValue();
@@ -403,7 +403,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		child2Edge = new HashMap<>();
-	    edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+	    edge2Children = new TreeMap<>(new NodeComparator());
 		
 	    // ID
 		int id = ois.readInt();

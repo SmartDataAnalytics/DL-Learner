@@ -596,10 +596,10 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 	 */
 	@Override
 	public ScorePosNeg<OWLNamedIndividual> computeScore(OWLClassExpression concept, double noise) {
-		SortedSet<OWLIndividual> posAsPos = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> posAsNeg = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negAsPos = new TreeSet<OWLIndividual>();
-		SortedSet<OWLIndividual> negAsNeg = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> posAsPos = new TreeSet<>();
+		SortedSet<OWLIndividual> posAsNeg = new TreeSet<>();
+		SortedSet<OWLIndividual> negAsPos = new TreeSet<>();
+		SortedSet<OWLIndividual> negAsNeg = new TreeSet<>();
 		
 		for (OWLIndividual example : positiveExamples) {
 			if (getReasoner().hasType(concept, example)) {

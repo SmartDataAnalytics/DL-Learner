@@ -128,7 +128,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			heuristic = new StableHeuristic();
 		}
 		
-		candidates = new TreeSet<SearchTreeNode>(heuristic);
+		candidates = new TreeSet<>(heuristic);
 		
 		ClassHierarchy classHierarchy = initClassHierarchy();
 		ObjectPropertyHierarchy obHierarchy = initObjectPropertyHierarchy();
@@ -254,7 +254,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// for fully computing the evaluated description
 				if(classToDescribe != null && !classToDescribe.equals(classExpression)) {
 					if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
-						EvaluatedDescription<Score> ed = new EvaluatedDescription<Score>(classExpression, score);
+						EvaluatedDescription<Score> ed = new EvaluatedDescription<>(classExpression, score);
 						bestEvaluatedDescriptions.add(ed);
 //						System.out.println("Add " + ed);
 					} else {
@@ -309,7 +309,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				}
 				
 				//non of the equivalent classes must occur on the first level
-				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				TreeSet<OWLClassExpression> toTest = new TreeSet<>();
 				if(classToDescribe != null){
 					toTest.add(classToDescribe);
 				}
@@ -323,7 +323,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			} else {
 				// none of the superclasses of the class to learn must appear on the
 				// outermost property level
-				TreeSet<OWLClassExpression> toTest = new TreeSet<OWLClassExpression>();
+				TreeSet<OWLClassExpression> toTest = new TreeSet<>();
 				if(classToDescribe != null){
 					toTest.add(classToDescribe);
 				}

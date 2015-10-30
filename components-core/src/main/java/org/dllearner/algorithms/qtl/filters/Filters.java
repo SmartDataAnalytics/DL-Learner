@@ -11,7 +11,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Filters {
 	
 	public static List<String> getSkosFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.add(SKOSVocabulary.COMMENT.getIRI().toString());
 		filters.add(SKOSVocabulary.DEFINITION.getIRI().toString());
@@ -23,7 +23,7 @@ public class Filters {
 	}
 	
 	public static List<String> getRDFSFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.add(RDFS.comment.toString());
 		filters.add(RDFS.label.toString());
@@ -34,7 +34,7 @@ public class Filters {
 	}
 	
 	public static List<String> getDBPediaFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.add("http://dbpedia.org/property/pageId");
 		filters.add("http://dbpedia.org/property/revisionId");
@@ -46,7 +46,7 @@ public class Filters {
 	}
 	
 	public static List<String> getFOAFFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.add(FOAF.page.toString());
 		filters.add(FOAF.homepage.toString());
@@ -63,7 +63,7 @@ public class Filters {
 	}
 	
 	public static List<String> getPurlFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.add("http://purl.org/dc/elements/1.1/language");
 		filters.add("http://purl.org/dc/elements/1.1/rights");
@@ -72,7 +72,7 @@ public class Filters {
 	}
 	
 	public static List<String> getAllFilterProperties(){
-		List<String> filters = new ArrayList<String>();
+		List<String> filters = new ArrayList<>();
 		
 		filters.addAll(Filters.getDBPediaFilterProperties());
 		filters.addAll(Filters.getSkosFilterProperties());

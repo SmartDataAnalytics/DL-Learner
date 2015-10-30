@@ -66,7 +66,7 @@ public class PostLGG<N> {
 //			if(leaf.getParent().getUserObject().equals("?")){
 				pathExists = true;
 				for(QueryTree<N> negTree : negTrees){
-					if(!pathExists(leaf, new ArrayList<Object>(path), negTree)){
+					if(!pathExists(leaf, new ArrayList<>(path), negTree)){
 						pathExists = false;
 						break;
 					}
@@ -96,7 +96,7 @@ public class PostLGG<N> {
 		N label1;
 		N label2;
 		QueryTree<N> parent;
-		Set<Integer> removedNodesIds = new HashSet<Integer>();
+		Set<Integer> removedNodesIds = new HashSet<>();
 		for(QueryTree<N> leaf : tree.getLeafs()){
 			if(!removedNodesIds.contains(leaf.getId())){
 				parent = leaf.getParent();
@@ -110,7 +110,7 @@ public class PostLGG<N> {
 							
 							boolean remove = false;
 							for(QueryTree<N> negTree : negTrees){
-								int ret = containsEdgeCombination(negTree, new ArrayList<Object>(path1), new ArrayList<Object>(path2), label1, label2);
+								int ret = containsEdgeCombination(negTree, new ArrayList<>(path1), new ArrayList<>(path2), label1, label2);
 								if(ret == -1){
 									remove = false;
 									break;
@@ -232,7 +232,7 @@ public class PostLGG<N> {
 	}
 	
 	private List<Object> getPathFromRootToNode(QueryTree<N> node){
-		List<Object> path = new ArrayList<Object>();
+		List<Object> path = new ArrayList<>();
 		QueryTree<N> parent = node.getParent();
 		path.add(parent.getEdge(node));
 		if(!parent.isRoot()){
@@ -246,7 +246,7 @@ public class PostLGG<N> {
 		if(path.isEmpty()){
 			return Collections.singletonList(tree);
 		}
-		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		List<QueryTree<N>> nodes = new ArrayList<>();
 		Object edge = path.remove(0);
 		for(QueryTree<N> child : tree.getChildren(edge)){
 			if(path.isEmpty()){
@@ -272,7 +272,7 @@ public class PostLGG<N> {
 		Object edge = path.remove(0);
 		if(!path.isEmpty()){
 			for(QueryTree<N> child : tree.getChildren(edge)){
-				if(existsPath(new ArrayList<Object>(path), child)){
+				if(existsPath(new ArrayList<>(path), child)){
 					return true;
 				}
 			}

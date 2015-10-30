@@ -66,7 +66,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private int maxDepth = 3;
 
-	private Set<Filter<Statement>> dropFilters = new HashSet<Filter<Statement>>();
+	private Set<Filter<Statement>> dropFilters = new HashSet<>();
 
 	public QueryTreeFactoryBase() {
 	}
@@ -121,7 +121,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private RDFResourceTree createTree(Resource resource, Model model, int maxDepth) {
 		nodeId = 0;
-		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<Resource, SortedSet<Statement>>();
+		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<>();
 
 		fillMap(resource, model, resource2Statements);
 
@@ -149,7 +149,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 		SortedSet<Statement> statements = resource2Statements.get(s);
 		if (statements == null) {
-			statements = new TreeSet<Statement>(comparator);
+			statements = new TreeSet<>(comparator);
 			resource2Statements.put(s, statements);
 		}
 

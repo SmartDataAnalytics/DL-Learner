@@ -84,13 +84,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	private double bestCurrentScore = 0d;
 	
-	private List<RDFResourceTree> currentPosExampleTrees = new ArrayList<RDFResourceTree>();
-	private List<RDFResourceTree> currentNegExampleTrees = new ArrayList<RDFResourceTree>();
-	private Set<OWLIndividual> currentPosExamples = new HashSet<OWLIndividual>();
-	private Set<OWLIndividual> currentNegExamples = new HashSet<OWLIndividual>();
+	private List<RDFResourceTree> currentPosExampleTrees = new ArrayList<>();
+	private List<RDFResourceTree> currentNegExampleTrees = new ArrayList<>();
+	private Set<OWLIndividual> currentPosExamples = new HashSet<>();
+	private Set<OWLIndividual> currentNegExamples = new HashSet<>();
 	
-	private Map<RDFResourceTree, OWLIndividual> tree2Individual = new HashMap<RDFResourceTree, OWLIndividual>();
-	private Map<OWLIndividual, RDFResourceTree> individual2Tree = new HashMap<OWLIndividual, RDFResourceTree>();
+	private Map<RDFResourceTree, OWLIndividual> tree2Individual = new HashMap<>();
+	private Map<OWLIndividual, RDFResourceTree> individual2Tree = new HashMap<>();
 	
 	private PosNegLP lp;
 
@@ -349,8 +349,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				logger.info(message);
 			}
 			
-		};
-		
+		}
+
 		isRunning = false;
 		
 		postProcess();
@@ -408,7 +408,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		RDFResourceTree currentTree;
 		
 		// generate id for each pos and neg example tree
-		TObjectIntMap<RDFResourceTree> index = new TObjectIntHashMap<RDFResourceTree>(this.currentPosExampleTrees.size() + this.currentNegExampleTrees.size());
+		TObjectIntMap<RDFResourceTree> index = new TObjectIntHashMap<>(this.currentPosExampleTrees.size() + this.currentNegExampleTrees.size());
 		int id = 1;
 		for (RDFResourceTree posTree : currentPosExampleTrees) {
 			index.put(posTree, id++);
@@ -537,13 +537,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @param negExamples the negative example trees
 	 */
 	private void initTodoList(List<RDFResourceTree> posExamples, List<RDFResourceTree> negExamples){
-		todoList = new PriorityQueue<EvaluatedRDFResourceTree>();
-		currentPartialSolutions = new TreeSet<EvaluatedRDFResourceTree>();
+		todoList = new PriorityQueue<>();
+		currentPartialSolutions = new TreeSet<>();
 //		EvaluatedRDFResourceTree dummy = new EvaluatedRDFResourceTree(new QueryTreeImpl<String>((N)"TOP"), trees, 0d);
 //		todoList.add(dummy);
 		
 		// compute distinct trees, i.e. check if some of the trees already cover others
-		Collection<RDFResourceTree> distinctTrees = new ArrayList<RDFResourceTree>();
+		Collection<RDFResourceTree> distinctTrees = new ArrayList<>();
 		for (RDFResourceTree queryTree : posExamples) {
 			boolean distinct = true;
 			for (RDFResourceTree otherTree : distinctTrees) {
@@ -609,13 +609,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		//1. get a score for the coverage = recall oriented
 		//compute positive examples which are not covered by LGG
 		List<RDFResourceTree> uncoveredPositiveExampleTrees = getUncoveredTrees(tree, currentPosExampleTrees);
-		Set<OWLIndividual> uncoveredPosExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> uncoveredPosExamples = new TreeSet<>();
 		for (RDFResourceTree queryTree : uncoveredPositiveExampleTrees) {
 			uncoveredPosExamples.add(tree2Individual.get(queryTree));
 		}
 		//compute negative examples which are covered by LGG
 		Collection<RDFResourceTree> coveredNegativeExampleTrees = getCoveredTrees(tree, currentNegExampleTrees);
-		Set<OWLIndividual> coveredNegExamples = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> coveredNegExamples = new TreeSet<>();
 		for (RDFResourceTree queryTree : coveredNegativeExampleTrees) {
 			coveredNegExamples.add(tree2Individual.get(queryTree));
 		}
@@ -644,8 +644,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 		
 		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
-				new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
-				coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+				new TreeSet<>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+				coveredNegExamples, new TreeSet<>(Sets.difference(currentNegExamples, coveredNegExamples)),
 				specifityScore, nrOfSpecificNodes);
 		
 //		QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
@@ -669,7 +669,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @return
 	 */
 	private Set<EvaluatedRDFResourceTree> evaluate(RDFResourceTree tree, boolean useSpecifity){
-		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<EvaluatedRDFResourceTree>();
+		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<>();
 		
 		LiteralNodeSubsumptionStrategy[] strategies = LiteralNodeSubsumptionStrategy.values();
 		strategies = new LiteralNodeSubsumptionStrategy[]{
@@ -680,8 +680,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 				};
 		for (LiteralNodeSubsumptionStrategy strategy : strategies) {
 			// 1. get a score for the coverage = recall oriented
-			List<RDFResourceTree> uncoveredPositiveExampleTrees = new ArrayList<RDFResourceTree>();
-			List<RDFResourceTree> coveredNegativeExampleTrees = new ArrayList<RDFResourceTree>();
+			List<RDFResourceTree> uncoveredPositiveExampleTrees = new ArrayList<>();
+			List<RDFResourceTree> coveredNegativeExampleTrees = new ArrayList<>();
 			
 			// compute positive examples which are not covered by LGG
 			for (RDFResourceTree posTree : currentPosExampleTrees) {
@@ -728,8 +728,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			double score = coverageWeight * coverageScore + specifityWeight * specifityScore;
 			
 			QueryTreeScore queryTreeScore = new QueryTreeScore(score, coverageScore,
-					new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
-					coveredNegExamples, new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredNegExamples)),
+					new TreeSet<>(Sets.difference(currentPosExamples, uncoveredPosExamples)), uncoveredPosExamples,
+					coveredNegExamples, new TreeSet<>(Sets.difference(currentNegExamples, coveredNegExamples)),
 					specifityScore, nrOfSpecificNodes);
 			
 			EvaluatedRDFResourceTree evaluatedTree = new EvaluatedRDFResourceTree(tree, uncoveredPositiveExampleTrees, coveredNegativeExampleTrees, queryTreeScore);
@@ -752,10 +752,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @return
 	 */
 	private Set<EvaluatedRDFResourceTree> evaluate2(RDFResourceTree tree, boolean useSpecifity){
-		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<EvaluatedRDFResourceTree>();
+		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<>();
 		
 		//test different strategies on the conversion of literal nodes
-		Set<OWLClassExpression> combinations = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> combinations = new HashSet<>();
 		
 		for (LiteralNodeConversionStrategy strategy : strategies) {
 			OWLClassExpression ce = QueryTreeUtils.toOWLClassExpression(tree);
@@ -767,10 +767,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		for (OWLClassExpression c : combinations) {
 			//convert to individuals
 			SortedSet<OWLIndividual> coveredExamples = reasoner.getIndividuals(c);
-			Set<OWLIndividual> coveredPosExamples = new TreeSet<OWLIndividual>(Sets.intersection(currentPosExamples, coveredExamples));
-			Set<OWLIndividual> uncoveredPosExamples = new TreeSet<OWLIndividual>(Sets.difference(currentPosExamples, coveredExamples));
-			Set<OWLIndividual> coveredNegExamples = new TreeSet<OWLIndividual>(Sets.intersection(currentNegExamples, coveredExamples));
-			Set<OWLIndividual> uncoveredNegExamples = new TreeSet<OWLIndividual>(Sets.difference(currentNegExamples, coveredExamples));
+			Set<OWLIndividual> coveredPosExamples = new TreeSet<>(Sets.intersection(currentPosExamples, coveredExamples));
+			Set<OWLIndividual> uncoveredPosExamples = new TreeSet<>(Sets.difference(currentPosExamples, coveredExamples));
+			Set<OWLIndividual> coveredNegExamples = new TreeSet<>(Sets.intersection(currentNegExamples, coveredExamples));
+			Set<OWLIndividual> uncoveredNegExamples = new TreeSet<>(Sets.difference(currentNegExamples, coveredExamples));
 			
 			//compute score
 			double recall = coveredPosExamples.size() / (double)currentPosExamples.size();
@@ -828,10 +828,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 			if(partialSolutions.size() == 1){
 				combinedSolution = partialSolutions.get(0).getEvaluatedDescription();
 			} else {
-				Set<OWLClassExpression> disjuncts = new TreeSet<OWLClassExpression>();
+				Set<OWLClassExpression> disjuncts = new TreeSet<>();
 				
-				Set<OWLIndividual> posCovered = new HashSet<OWLIndividual>();
-				Set<OWLIndividual> negCovered = new HashSet<OWLIndividual>();
+				Set<OWLIndividual> posCovered = new HashSet<>();
+				Set<OWLIndividual> negCovered = new HashSet<>();
 				
 				//build the union of all class expressions
 				OWLClassExpression partialDescription;
@@ -873,7 +873,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		isRunning = true;
 		
 		currentBestSolution = null;
-		partialSolutions = new ArrayList<EvaluatedRDFResourceTree>();
+		partialSolutions = new ArrayList<>();
 		
 		bestCurrentScore = minimumTreeScore;
 		
@@ -947,7 +947,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private Set<OWLIndividual> asIndividuals(Collection<RDFResourceTree> trees){
-		Set<OWLIndividual> individuals = new HashSet<OWLIndividual>(trees.size());
+		Set<OWLIndividual> individuals = new HashSet<>(trees.size());
 		for (RDFResourceTree queryTree : trees) {
 			individuals.add(tree2Individual.get(queryTree));
 		}
@@ -955,7 +955,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private Set<RDFResourceTree> asQueryTrees(Collection<OWLIndividual> individuals){
-		Set<RDFResourceTree> trees = new HashSet<RDFResourceTree>(individuals.size());
+		Set<RDFResourceTree> trees = new HashSet<>(individuals.size());
 		for (OWLIndividual ind : individuals) {
 			trees.add(individual2Tree.get(ind));
 		}
@@ -969,7 +969,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @return
 	 */
 	private List<RDFResourceTree> getCoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
-		List<RDFResourceTree> coveredTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> coveredTrees = new ArrayList<>();
 		for (RDFResourceTree queryTree : trees) {
 			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
 			if(subsumed){
@@ -986,7 +986,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 * @return
 	 */
 	private List<RDFResourceTree> getUncoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
-		List<RDFResourceTree> uncoveredTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> uncoveredTrees = new ArrayList<>();
 		for (RDFResourceTree queryTree : trees) {
 			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
 			if(!subsumed){
@@ -1028,7 +1028,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	private boolean isPartialSolutionTimeExpired(){
-		return maxTreeComputationTimeInSeconds <= 0 ? false : (System.currentTimeMillis() - partialSolutionStartTime)/1000d >= maxTreeComputationTimeInSeconds;
+		return maxTreeComputationTimeInSeconds > 0 && (System.currentTimeMillis() - partialSolutionStartTime) / 1000d >= maxTreeComputationTimeInSeconds;
 	}
 	
 	/**
@@ -1121,7 +1121,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setPositiveExampleTrees(Map<OWLIndividual,RDFResourceTree> positiveExampleTrees) {
 		this.currentPosExampleTrees = new ArrayList<>(positiveExampleTrees.values());
-		this.currentPosExamples = new HashSet<OWLIndividual>(positiveExampleTrees.keySet());
+		this.currentPosExamples = new HashSet<>(positiveExampleTrees.keySet());
 		
 		for (Entry<OWLIndividual, RDFResourceTree> entry : positiveExampleTrees.entrySet()) {
 			OWLIndividual ind = entry.getKey();
@@ -1135,7 +1135,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	 */
 	public void setNegativeExampleTrees(Map<OWLIndividual,RDFResourceTree> negativeExampleTrees) {
 		this.currentNegExampleTrees = new ArrayList<>(negativeExampleTrees.values());
-		this.currentNegExamples = new HashSet<OWLIndividual>(negativeExampleTrees.keySet());
+		this.currentNegExamples = new HashSet<>(negativeExampleTrees.keySet());
 		
 		for (Entry<OWLIndividual, RDFResourceTree> entry : negativeExampleTrees.entrySet()) {
 			OWLIndividual ind = entry.getKey();

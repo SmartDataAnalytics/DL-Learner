@@ -40,12 +40,12 @@ public class AutomaticNegativeExampleFinderOWL {
 	
 	private SortedSet<OWLIndividual> fullPositiveSet;
 
-	private SortedSet<OWLIndividual> fromRelated  = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> fromSuperclasses = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> fromParallelClasses = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> fromAllOther = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> fromDomain = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> fromRange = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> fromRelated  = new TreeSet<>();
+	private SortedSet<OWLIndividual> fromSuperclasses = new TreeSet<>();
+	private SortedSet<OWLIndividual> fromParallelClasses = new TreeSet<>();
+	private SortedSet<OWLIndividual> fromAllOther = new TreeSet<>();
+	private SortedSet<OWLIndividual> fromDomain = new TreeSet<>();
+	private SortedSet<OWLIndividual> fromRange = new TreeSet<>();
 	
 	static int poslimit = 10;
 	static int neglimit = 20;
@@ -62,7 +62,7 @@ public class AutomaticNegativeExampleFinderOWL {
 			SortedSet<OWLIndividual> fullPositiveSet,
 			AbstractReasonerComponent reasoningService) {
 		super();
-		this.fullPositiveSet = new TreeSet<OWLIndividual>();
+		this.fullPositiveSet = new TreeSet<>();
 		this.fullPositiveSet.addAll(fullPositiveSet);
 		this.reasoningService = reasoningService;
 
@@ -86,7 +86,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	 * @param forceNegLimit forces that exactly neglimit instances are returned by adding more instances
 	 */
 	public SortedSet<OWLIndividual> getNegativeExamples(int neglimit, boolean stable, boolean forceNegLimit ) {
-		SortedSet<OWLIndividual> negatives = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> negatives = new TreeSet<>();
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
 		negatives.addAll(fromSuperclasses);
@@ -178,7 +178,7 @@ public class AutomaticNegativeExampleFinderOWL {
 	@SuppressWarnings("unused")
 	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<OWLIndividual> positiveSet) {
 		logger.debug("making neg Examples from parallel classes");
-		SortedSet<OWLClassExpression> classes = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> classes = new TreeSet<>();
 		this.fromParallelClasses.clear();
 		
 		for (OWLIndividual instance : positiveSet) {

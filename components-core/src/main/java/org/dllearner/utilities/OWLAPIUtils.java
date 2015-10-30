@@ -3,12 +3,7 @@
  */
 package org.dllearner.utilities;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -46,26 +41,26 @@ public class OWLAPIUtils {
 	
 	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
 	
-    public final static Set<OWLDatatype> intDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
-		XSD.INT,
-		XSD.INTEGER,
-		XSD.POSITIVE_INTEGER,
-		XSD.NEGATIVE_INTEGER,
-		XSD.NON_POSITIVE_INTEGER,
-		XSD.NON_NEGATIVE_INTEGER,
-		XSD.SHORT,
-		XSD.BYTE,
-		XSD.UNSIGNED_INT,
-		XSD.UNSIGNED_LONG
-    ));
-    public final static Set<OWLDatatype> floatDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
-    	XSD.FLOAT,
-    	XSD.DOUBLE,
-    	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
-    ));
-    public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<OWLDatatype>(Arrays.asList(
-    	XSD.BOOLEAN
-    ));
+    public final static Set<OWLDatatype> intDatatypes = new TreeSet<>(Arrays.asList(
+			XSD.INT,
+			XSD.INTEGER,
+			XSD.POSITIVE_INTEGER,
+			XSD.NEGATIVE_INTEGER,
+			XSD.NON_POSITIVE_INTEGER,
+			XSD.NON_NEGATIVE_INTEGER,
+			XSD.SHORT,
+			XSD.BYTE,
+			XSD.UNSIGNED_INT,
+			XSD.UNSIGNED_LONG
+	));
+    public final static Set<OWLDatatype> floatDatatypes = new TreeSet<>(Arrays.asList(
+			XSD.FLOAT,
+			XSD.DOUBLE,
+			OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
+	));
+    public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<>(Collections.singletonList(
+			XSD.BOOLEAN
+	));
     
 	/**
 	 * The OWL 2 datatypes for the representation of time instants with and
@@ -94,7 +89,7 @@ public class OWLAPIUtils {
 	
 	private static final Map<OWLDatatype, Class<?>> javaTypeMap;
 	static {
-		javaTypeMap = new TreeMap<OWLDatatype, Class<?>>();
+		javaTypeMap = new TreeMap<>();
 		javaTypeMap.put(XSD.BYTE, Byte.class);
 		javaTypeMap.put(XSD.SHORT, Short.class);
 		javaTypeMap.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL), Double.class);

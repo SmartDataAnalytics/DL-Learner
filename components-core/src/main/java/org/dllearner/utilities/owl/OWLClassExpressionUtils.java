@@ -73,11 +73,11 @@ public class OWLClassExpressionUtils {
 	}
 	
 	/**
-	 * Determine whether a named class occurs on the outermost level, i.e. property depth 0
+	 * Determine whether a named class occurs on the outermost level of a class expression, i.e. property depth 0
 	 * (it can still be at higher depth, e.g. if intersections are nested in unions)
-	 * @param description
-	 * @param cls
-	 * @return
+	 * @param description the class expression
+	 * @param cls the named class
+	 * @return whether the named class occurs on the outermost level of the class expression
 	 */
 	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
 		return description.containsConjunct(cls);

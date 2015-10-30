@@ -19,6 +19,8 @@
 
 package org.dllearner.utilities.datastructures;
 
+import com.google.common.collect.ComparisonChain;
+import com.hp.hpl.jena.sparql.util.NodeComparator;
 import org.dllearner.kb.extraction.LiteralNode;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -44,14 +46,15 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 	}
 
 	public boolean equals(RDFNodeTuple t) {
-		return ((b.toString().equals(t.b.toString())) && (a.toString().equals(t.a)));
+		return b.equals(t.b) && a.equals(t.a);
 	}
-	
-	public int compareTo(RDFNodeTuple t){
-		int comp = a.toString().compareTo(t.a.toString());
-		if( comp == 0 ){
-			return b.toString().compareTo(t.b.toString());
-		}else return comp;
+
+	public int compareTo(RDFNodeTuple t) {
+		NodeComparator comparator = new NodeComparator();
+		return ComparisonChain.start().
+				compare(a.asNode(), t.a.asNode(), comparator).
+				compare(b.asNode(), t.b.asNode(), comparator).
+				result();
 	}
 	
 	public boolean aPartContains(String partOf) {

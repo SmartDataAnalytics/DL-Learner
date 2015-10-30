@@ -6,14 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.semkernel.SemKernel;
@@ -268,7 +261,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
     private Map<String, Set<String>> readMGI2MPMapping(String mgi2mpFilePath)
             throws IOException {
 
-        Map<String, Set<String>> mgi2mp = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mgi2mp = new HashMap<>();
 
         BufferedReader bufferedReader = new BufferedReader(new FileReader(
                 new File(mgi2mpFilePath)));
@@ -314,7 +307,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
 
             OWLClass searchCls = new OWLClassImpl(IRI.create(searchClassUriStr));
 
-            Set<String> classifierFor = new TreeSet<String>();
+            Set<String> classifierFor = new TreeSet<>();
             classifierFor.add(searchClassUriStr);
 
             Set<OWLClass> subClasses =
@@ -325,8 +318,8 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 classifierFor.add(uriStr);
             }
 
-            List<String> negatives = new ArrayList<String>();
-            List<String> positives = new ArrayList<String>();
+            List<String> negatives = new ArrayList<>();
+            List<String> positives = new ArrayList<>();
 
             // build lines to write to file (SVM light format)
             for (String mgiId : mgi2mp.keySet()) {
@@ -395,7 +388,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
 //            }
 //            buffWriter.newLine();
 
-            Set<String> classifierFor = new TreeSet<String>();
+            Set<String> classifierFor = new TreeSet<>();
             classifierFor.add(predClsUriStr);
 
             OWLClass predCls = new OWLClassImpl(IRI.create(predClsUriStr));
@@ -407,8 +400,8 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
                 classifierFor.add(uriStr);
             }
 
-            List<String> negatives = new ArrayList<String>();
-            List<String> positives = new ArrayList<String>();
+            List<String> negatives = new ArrayList<>();
+            List<String> positives = new ArrayList<>();
 
             // build lines to write to file (SVM light format)
             for (String mgiId : mgi2mp.keySet()) {
@@ -455,7 +448,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
     }
 
     private static Set<String> readTrainURIs(String trainURIsFilePath) throws IOException {
-        Set<String> uriStrs = new HashSet<String>();
+        Set<String> uriStrs = new HashSet<>();
         BufferedReader bufferedReader = new BufferedReader(
                 new FileReader(new File(trainURIsFilePath)));
 
@@ -475,7 +468,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
 
     private Map<String, Set<String>> readMGI2GOMapping(String mgi2goFilePath)
             throws IOException {
-        Map<String, Set<String>> mgi2go = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> mgi2go = new HashMap<>();
 
         BufferedReader bufferedReader = new BufferedReader(new FileReader(
                 new File(mgi2goFilePath)));
@@ -493,7 +486,7 @@ public class MPSemKernelWorkflow extends SemKernelWorkflow {
 
             if (goId.trim().length() == 0) continue;  // skip lines not containing a GO ID
 
-            if (evidenceCode != "ND" && !qualifier.contains("NOT")) {
+            if (!Objects.equals(evidenceCode, "ND") && !qualifier.contains("NOT")) {
                 String goUriStr = oboPrefix + goId.replace(":", "_");
 
                 if (!mgi2go.containsKey(mgiId)) {

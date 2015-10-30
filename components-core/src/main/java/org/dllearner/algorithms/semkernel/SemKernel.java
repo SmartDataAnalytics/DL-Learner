@@ -19,14 +19,15 @@ import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel.AllVsAllMode;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel.OneVsAllMode;
 
 public class SemKernel extends AbstractComponent {
-    public static enum SvmType {
+    public enum SvmType {
         C_SVC,
         NU_SVC,
         ONE_CLASS,
         EPSILON_SVR,
         NU_SVR
-    };
-    public static enum ScalingMode { NONE, LINEAR, ZSCORE }
+    }
+
+    public enum ScalingMode { NONE, LINEAR, ZSCORE }
 
     private boolean useCrossValidation;
     private static final Float UNSPECIFIED_GAMMA = -1F;
