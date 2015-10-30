@@ -67,34 +67,37 @@ public class AxiomScore extends Score{
 	public double getAccuracy() {
 		return accuracy;
 	}
-	
+
+	/**
+	 * @return the confidence value.
+	 */
 	public double getConfidence(){
 		return confidence;
 	}
 	
 	/**
-	 * Whether the score was computed only based on a sample of the knowledge base.
-	 * @return the sampleBased
+	 * @return whether the score was computed only based on a sample of the knowledge base
 	 */
 	public boolean isSampleBased() {
 		return sampleBased;
 	}
-	
+
+	/**
+	 * @return the total number of examples used to compute the score.
+	 */
 	public int getTotalNrOfExamples() {
 		return nrOfPositiveExamples + nrOfNegativeExamples;
 	}
 	
 	/**
-	 * Returns the number of positive examples used to compute the score.
-	 * @return
+	 * @return the number of positive examples used to compute the score.
 	 */
 	public int getNrOfPositiveExamples() {
 		return nrOfPositiveExamples;
 	}
 	
 	/**
-	 * Returns the number of negative examples used to compute the score.
-	 * @return
+	 * @return the number of negative examples used to compute the score.
 	 */
 	public int getNrOfNegativeExamples() {
 		return nrOfNegativeExamples;

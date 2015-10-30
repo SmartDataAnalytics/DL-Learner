@@ -34,7 +34,7 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	
 	// getter and setters
 	public Set<OWLIndividual> getPositiveExample() {
-		return new TreeSet<OWLIndividual>(super.getPositiveExamples());
+		return new TreeSet<>(super.getPositiveExamples());
 	}
 
 	public void setPositiveExample(SortedSet<OWLIndividual> positiveExample) {
@@ -42,7 +42,7 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	}
 
 	public Set<OWLIndividual> getNegativeExample() {
-		return new TreeSet<OWLIndividual>(super.getNegativeExamples());//negativeExamples;
+		return new TreeSet<>(super.getNegativeExamples());//negativeExamples;
 	}
 
 	public void setNegativeExample(Set<OWLIndividual> negativeExample) {
@@ -50,7 +50,7 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	}
 
 	public Set<OWLIndividual> getUncertainExample() {
-		return new TreeSet<OWLIndividual>(uncertainExamples);
+		return new TreeSet<>(uncertainExamples);
 	}
 
 	public void setUncertainExample(Set<OWLIndividual> uncertainExample) {
@@ -104,12 +104,12 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	/**
 	 * A method for binarizing a ternary learning problem. This is important to work if you want to run a method
 	 * such as CELOE starting from randomly generated queries
-	 * @return
+	 * @return the pos/neg learning problem
 	 */
 	public PosNegLP getPosNegLP(){
 		PosNegLPStandard  binaryProblem= new PosNegLPStandard(getReasoner());
 		binaryProblem.setPositiveExamples(getPositiveExample());
-	    SortedSet<OWLIndividual> therestOfWorld= new TreeSet<OWLIndividual>();
+	    SortedSet<OWLIndividual> therestOfWorld= new TreeSet<>();
 	    //positive vs. the rest  of world
 	    therestOfWorld.addAll(getNegativeExample());
 	    therestOfWorld.addAll(uncertainExamples);

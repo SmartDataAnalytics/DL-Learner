@@ -277,7 +277,7 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
 
 	@Override
 	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
-		return new ScoreThreeValued<T>(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
+		return new ScoreThreeValued<>(newLength, accuracyPenalty, errorPenalty, penaliseNeutralExamples, percentPerLengthUnit, posClassified, neutClassified, negClassified, posExamples, neutExamples, negExamples);
 	}
 
 	/* (non-Javadoc)

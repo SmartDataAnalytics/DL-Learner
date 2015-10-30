@@ -82,7 +82,7 @@ public class ExistentialRestrictionMaterialization {
 	class SuperClassFinder extends OWLClassExpressionVisitorAdapter{
 		
 		private Map<OWLClass, Set<OWLClassExpression>> map = new HashMap<>();
-		Stack<Set<OWLClassExpression>> stack = new Stack<Set<OWLClassExpression>>();
+		Stack<Set<OWLClassExpression>> stack = new Stack<>();
 		OWLDataFactory df;
 		boolean onlyIfExistentialOnPath = true;
 		
@@ -118,7 +118,7 @@ public class ExistentialRestrictionMaterialization {
 			}
 //			System.out.println(s + cls);
 			indent++;
-			Set<OWLClassExpression> superClasses = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> superClasses = new HashSet<>();
 			superClasses.add(cls);
 			
 			//get the directly asserted super classes
@@ -150,12 +150,12 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectIntersectionOf ce) {
-			Set<OWLClassExpression> newIntersections = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> newIntersections = new HashSet<>();
 			Set<OWLClassExpression> operands = ce.getOperands();
 			for (OWLClassExpression op : operands) {
 				op.accept(this);
 				Set<OWLClassExpression> operandSuperClassExpressions = stack.pop();
-				Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+				Set<OWLClassExpression> newOperands = new HashSet<>(operands);
 				newOperands.remove(op);
 				for (OWLClassExpression opSup : operandSuperClassExpressions) {
 					newOperands.add(opSup);
@@ -189,7 +189,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectSomeValuesFrom ce) {
-			Set<OWLClassExpression> newRestrictions = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> newRestrictions = new HashSet<>();
 			newRestrictions.add(ce);
 			OWLClassExpression filler = ce.getFiller();
 			filler.accept(this);

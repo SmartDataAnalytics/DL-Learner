@@ -85,11 +85,11 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		Random rand = new Random(1);
 
 		if(getReasoner()!=null) {
-			individuals = new LinkedList<OWLIndividual>(getReasoner().getIndividuals());
+			individuals = new LinkedList<>(getReasoner().getIndividuals());
 			Collections.shuffle(individuals, rand);
 		}
 
-		positiveExamplesShuffled = new LinkedList<OWLIndividual>(positiveExamples);
+		positiveExamplesShuffled = new LinkedList<>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
 	}
 
@@ -111,8 +111,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	public ScorePosOnly computeScore(OWLClassExpression description, double noise) {
 		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 
-		Set<OWLIndividual> instancesCovered = new TreeSet<OWLIndividual>();
-		Set<OWLIndividual> instancesNotCovered = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> instancesCovered = new TreeSet<>();
+		Set<OWLIndividual> instancesNotCovered = new TreeSet<>();
 		for(OWLIndividual ind : positiveExamples) {
 			if(retrieval.contains(ind)) {
 				instancesCovered.add(ind);
@@ -314,6 +314,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	}
 
 	public void setPositiveExamples(Set<OWLIndividual> positiveExamples) {
-		this.positiveExamples = new TreeSet<OWLIndividual>(positiveExamples);
+		this.positiveExamples = new TreeSet<>(positiveExamples);
 	}
 }

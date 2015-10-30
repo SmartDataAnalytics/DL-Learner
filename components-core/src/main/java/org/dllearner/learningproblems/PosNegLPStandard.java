@@ -56,7 +56,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
     
     /**
      * Copy constructor
-     * @param lp
+     * @param lp the learning problem
      */
     public PosNegLPStandard(PosNegLP lp) {
     	this.positiveExamples = lp.getPositiveExamples();

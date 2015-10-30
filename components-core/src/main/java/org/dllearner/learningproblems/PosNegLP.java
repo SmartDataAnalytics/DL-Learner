@@ -42,9 +42,9 @@ import com.google.common.collect.Sets.SetView;
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	protected static Logger logger = Logger.getLogger(PosNegLP.class);
 
-	protected Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
-	protected Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
-	protected Set<OWLIndividual> allExamples = new TreeSet<OWLIndividual>();
+	protected Set<OWLIndividual> positiveExamples = new TreeSet<>();
+	protected Set<OWLIndividual> negativeExamples = new TreeSet<>();
+	protected Set<OWLIndividual> allExamples = new TreeSet<>();
 
     @org.dllearner.core.config.ConfigOption(name = "useRetrievalForClassification", description = "\"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.",defaultValue = "false")
     private boolean useRetrievalForClassification = false;

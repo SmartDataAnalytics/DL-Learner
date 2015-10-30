@@ -12,15 +12,21 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.util.IndividualAppearance;
+import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
 public class SPARULTranslator extends AbstractTranslator<RDFNode, RDFResourceNode, RDFResourceNode, RDFLiteralNode> {
 
 	private StringBuilder sb;
 	
 	public SPARULTranslator(OWLOntologyManager manager, OWLOntology ontology,
+			boolean useStrongTyping, IndividualAppearance individualAppearance) {
+		super(manager, ontology, useStrongTyping, individualAppearance);
+	}
+	
+	public SPARULTranslator(OWLOntologyManager manager, OWLOntology ontology,
 			boolean useStrongTyping) {
-		super(manager, ontology, useStrongTyping);
-		// TODO Auto-generated constructor stub
+		this(manager, ontology, useStrongTyping, new OWLAnonymousIndividualsWithMultipleOccurrences());
 	}
 	
 	public String translate(OWLOntologyChange change){
@@ -56,7 +62,7 @@ public class SPARULTranslator extends AbstractTranslator<RDFNode, RDFResourceNod
 
 	@Override
 	protected RDFResourceNode getAnonymousNode(Object key) {
-		return new RDFResourceNode(System.identityHashCode(key));
+		return new RDFResourceNode(System.identityHashCode(key), false, false);
 	}
 
 	@Override

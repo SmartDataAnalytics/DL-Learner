@@ -43,8 +43,7 @@ public class SKOSReasoner extends GenericRuleReasoner {
     protected static Map<String, String> ruleFiles;
 
 	/**
-	 * @param factory
-	 * @param configuration
+	 * @param factory the Jena reasoner factory
 	 */
 	public SKOSReasoner(ReasonerFactory factory) {
 		super(loadRulesLevel(DEFAULT_RULES), factory);

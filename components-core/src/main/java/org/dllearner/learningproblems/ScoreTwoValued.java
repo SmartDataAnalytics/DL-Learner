@@ -108,7 +108,7 @@ public class ScoreTwoValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	
 	@Override
 	public ScorePosNeg<T> getModifiedLengthScore(int newLength) {
-		return new ScoreTwoValued<T>(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg, accuracy);
+		return new ScoreTwoValued<>(newLength, percentPerLengthUnit, posAsPos, posAsNeg, negAsPos, negAsNeg, accuracy);
 	}
 	
 	/**
