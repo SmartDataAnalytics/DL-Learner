@@ -7,7 +7,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 public interface OWLOntologyDataset {
 	
-	static File datasetDirectory = new File("dataset");
+	File datasetDirectory = new File("dataset");
 	
 	Collection<OWLOntology> loadOntologies();
 	Collection<OWLOntology> loadIncoherentOntologies();

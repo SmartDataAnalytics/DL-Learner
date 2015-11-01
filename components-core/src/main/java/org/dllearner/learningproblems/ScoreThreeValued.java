@@ -42,9 +42,9 @@ public class ScoreThreeValued<T extends OWLEntity> extends ScorePosNeg<T> {
 	
 	private static final long serialVersionUID = -1780084688122949685L;
 
-	public enum ScoreMethod {POSITIVE, FULL};
-	
-	// configuration options
+	public enum ScoreMethod {POSITIVE, FULL}
+
+    // configuration options
 	private double accuracyPenalty;
 	private double errorPenalty;
 	private boolean penaliseNeutralExamples;

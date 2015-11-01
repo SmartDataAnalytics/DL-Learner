@@ -234,7 +234,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 					bestEvaluatedDescription = learningProblem.evaluate(bestDescription);
 					bestEvaluatedDescriptions.add(bestEvaluatedDescription);
 				} else {
-					if(!bestEvaluatedDescription.equals(dataFactory.getOWLThing())){
+					if(!bestEvaluatedDescription.getDescription().equals(dataFactory.getOWLThing())){
 						bestCombinedDescription = dataFactory.getOWLObjectUnionOf(bestEvaluatedDescription.getDescription(), bestDescription);
 					}
 					bestEvaluatedDescription = learningProblem.evaluate(bestCombinedDescription);

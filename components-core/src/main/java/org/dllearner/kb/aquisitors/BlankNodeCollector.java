@@ -125,7 +125,7 @@ public class BlankNodeCollector {
 			String currentO = "?o"+currentDepth;
 			String nextP = "?p"+(currentDepth+1);
 			String nextO = "?o"+(currentDepth+1);
-			sq.append("  OPTIONAL { "+currentO+" "+nextP+" "+nextO+". }");
+			sq.append("  OPTIONAL { ").append(currentO).append(" ").append(nextP).append(" ").append(nextO).append(". }");
 		}
 		
 		

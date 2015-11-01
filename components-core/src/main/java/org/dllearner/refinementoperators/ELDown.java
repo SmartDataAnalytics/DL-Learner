@@ -43,7 +43,6 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.Hierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -89,18 +88,18 @@ public class ELDown extends RefinementOperatorAdapter {
 	private DatatypePropertyHierarchy dpHierarchy;
 	
 	// domains and ranges
-	private Map<OWLObjectProperty,OWLClassExpression> opDomains = new TreeMap<OWLObjectProperty,OWLClassExpression>();
-	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<OWLObjectProperty,OWLClassExpression>();
-	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<OWLDataProperty,OWLClassExpression>();
-	private Map<OWLDataProperty,OWLDataRange> dpRanges = new TreeMap<OWLDataProperty,OWLDataRange>();
+	private Map<OWLObjectProperty,OWLClassExpression> opDomains = new TreeMap<>();
+	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<>();
+	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<>();
+	private Map<OWLDataProperty,OWLDataRange> dpRanges = new TreeMap<>();
 	
 	// app_A set of applicable properties for a given class
-	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClassExpression, Set<OWLObjectProperty>>();
-	private Map<OWLClassExpression, Set<OWLDataProperty>> appDP = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
+	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appDP = new TreeMap<>();
 
 	// most general applicable properties
-	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgrOP = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
-	private Map<OWLClassExpression,Set<OWLDataProperty>> mgrDP = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgrOP = new TreeMap<>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgrDP = new TreeMap<>();
 
 	// utility class
 	private Utility utility;
@@ -171,7 +170,7 @@ public class ELDown extends RefinementOperatorAdapter {
 		logger.trace("refining " + concept);
 		ELDescriptionTree tree = new ELDescriptionTree(rs, concept);
 		List<ELDescriptionTree> refinementTrees = refine(tree);
-		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> refinements = new HashSet<>();
 		for(ELDescriptionTree refinementTree : refinementTrees) {
 			refinements.add(refinementTree.transformToClassExpression());
 		}
@@ -188,11 +187,11 @@ public class ELDown extends RefinementOperatorAdapter {
 	 */
 	public List<ELDescriptionTree> refine(ELDescriptionTree tree) {
 		logger.trace("applying \\rho on " + tree.toDescriptionString());
-		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<>();
 		// loop over all nodes of the tree and perform one of the 
 		// transformations on it (we make a copy of all nodes, because
 		// the transformations can, of course, add new nodes)
-		List<ELDescriptionNode> nodes = new LinkedList<ELDescriptionNode>(tree.getNodes());
+		List<ELDescriptionNode> nodes = new LinkedList<>(tree.getNodes());
 		for(ELDescriptionNode v : nodes) {
 			logger.trace("picked node v: " + v);
 			
@@ -220,7 +219,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// operation 1: label extension
 	private List<ELDescriptionTree> extendLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 //		Monitor mon = MonitorFactory.start("extend label");
-		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<>();
 				
 		// the index is the range of role in the edge pointing to the parent of this node
 		OWLClassExpression index;
@@ -254,7 +253,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// operation 2: label refinement
 	private List<ELDescriptionTree> refineLabel(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 //		Monitor mon = MonitorFactory.start("refine label");
-		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<>();
 		
 		// loop through all classes in label
 		for(OWLClass nc : v.getLabel()) {
@@ -281,7 +280,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// operation 3: refine edge
 	private List<ELDescriptionTree> refineEdge(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 //		Monitor mon = MonitorFactory.start("refine edge");
-		List<ELDescriptionTree> refinements = new LinkedList<ELDescriptionTree>();
+		List<ELDescriptionTree> refinements = new LinkedList<>();
 
 		for(int edgeNumber = 0; edgeNumber < v.getEdges().size(); edgeNumber++) {
 			ELDescriptionEdge edge = v.getEdges().get(edgeNumber);
@@ -333,10 +332,10 @@ public class ELDown extends RefinementOperatorAdapter {
 	// new version of as
 	private Collection<ELDescriptionTree> attachSubtree2(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 //		Monitor mon = MonitorFactory.start("attach tree");
-		Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
+		Set<ELDescriptionTree> refinements = new TreeSet<>(treeComp);
 		
 		// create and initialise M
-		TreeSet<TreeAndRoleSet> m = new TreeSet<TreeAndRoleSet>(mComp);
+		TreeSet<TreeAndRoleSet> m = new TreeSet<>(mComp);
 		ELDescriptionTree topTree = new ELDescriptionTree(rs, df.getOWLThing());
 		OWLClassExpression index = getIndex(v);
 		SortedSet<? extends OWLProperty> appOPs = utility.computeApplicableObjectProperties(index);
@@ -365,7 +364,7 @@ public class ELDown extends RefinementOperatorAdapter {
 //			}
 			
 //			logger.trace("R': " + rpSet);
-			Set<OWLProperty> rppSet = new TreeSet<OWLProperty>();
+			Set<OWLProperty> rppSet = new TreeSet<>();
 			
 			while(!rpSet.isEmpty()) {
 				// pick an element r from R'
@@ -430,9 +429,9 @@ public class ELDown extends RefinementOperatorAdapter {
 	// new version of as
 		private Collection<ELDescriptionTree> attachSubtreeDatatypeProperties(ELDescriptionTree tree, ELDescriptionNode v, int[] position) {
 //			Monitor mon = MonitorFactory.start("attach tree");
-			Set<ELDescriptionTree> refinements = new TreeSet<ELDescriptionTree>(treeComp);
+			Set<ELDescriptionTree> refinements = new TreeSet<>(treeComp);
 			// create and initialise M
-			TreeSet<TreeAndRoleSet> m = new TreeSet<TreeAndRoleSet>(mComp);
+			TreeSet<TreeAndRoleSet> m = new TreeSet<>(mComp);
 			ELDescriptionTree topTree = new ELDescriptionTree(rs, df.getOWLThing());
 			OWLClassExpression index = getIndex(v);
 			SortedSet<? extends OWLProperty> appOPs = utility.computeApplicableDatatypeProperties(index);
@@ -461,7 +460,7 @@ public class ELDown extends RefinementOperatorAdapter {
 //				}
 				
 //				logger.trace("R': " + rpSet);
-				Set<OWLProperty> rppSet = new TreeSet<OWLProperty>();
+				Set<OWLProperty> rppSet = new TreeSet<>();
 				
 				while(!rpSet.isEmpty()) {
 					// pick an element r from R'
@@ -540,11 +539,11 @@ public class ELDown extends RefinementOperatorAdapter {
 //		logger.trace("merge start: " + mergedTree);
 		
 		// create a list of nodes we still need to process
-		LinkedList<ELDescriptionNode> toProcess = new LinkedList<ELDescriptionNode>();
+		LinkedList<ELDescriptionNode> toProcess = new LinkedList<>();
 		toProcess.add(newTree.getRootNode());
 		
 		// map from nodes to cloned nodes
-		Map<ELDescriptionNode,ELDescriptionNode> cloneMap = new HashMap<ELDescriptionNode,ELDescriptionNode>();
+		Map<ELDescriptionNode,ELDescriptionNode> cloneMap = new HashMap<>();
 		
 //		Monitor mon2 = MonitorFactory.start("as.tmp");
 		
@@ -594,7 +593,7 @@ public class ELDown extends RefinementOperatorAdapter {
 //		System.out.println("asCheck: " + v.getTree().toSimulationString());
 		
 		// find all edges up to the root node
-		List<ELDescriptionEdge> piVEdges = new LinkedList<ELDescriptionEdge>();
+		List<ELDescriptionEdge> piVEdges = new LinkedList<>();
 		ELDescriptionNode tmp = v;
 		while(!tmp.isRoot()) {
 			piVEdges.add(tmp.getParentEdge());
@@ -639,7 +638,7 @@ public class ELDown extends RefinementOperatorAdapter {
 	// of hasChild)
 	// TODO: used in both EL operators => move to utility class
 	private OWLClassExpression getFlattenedConcept(ELDescriptionNode node) {
-		Set<OWLClassExpression> operands = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> operands = new HashSet<>();
 		
 		// add all named classes to intersection
 		for(OWLClass nc : node.getLabel()) {

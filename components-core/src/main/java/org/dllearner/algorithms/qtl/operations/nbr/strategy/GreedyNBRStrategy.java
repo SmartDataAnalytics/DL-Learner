@@ -189,7 +189,7 @@ public class GreedyNBRStrategy implements NBRStrategy{
         	sb.append("TREE\n\n");
         }
 //        ren = ren.replace("\n", "\n" + sb);
-        sb.append(tree.getData() + "(" +matrix.get(tree) +  ")");
+        sb.append(tree.getData()).append("(").append(matrix.get(tree)).append(")");
         sb.append("\n");
         for (RDFResourceTree child : tree.getChildren()) {
             for (int i = 0; i < depth; i++) {

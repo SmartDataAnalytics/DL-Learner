@@ -38,9 +38,9 @@ public interface RefinementOperator extends Component {
 
 	/**
 	 * Standard refinement operation.
-	 * @param OWLClassExpression The description, which will be refined.
+	 * @param description The description, which will be refined.
 	 * @return A set of refinements.
 	 */
-	public Set<OWLClassExpression> refine(OWLClassExpression description);
+	Set<OWLClassExpression> refine(OWLClassExpression description);
 	
 }

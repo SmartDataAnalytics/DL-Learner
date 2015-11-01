@@ -34,7 +34,7 @@ public abstract class Rule {
 	
 	public enum Months {
 		JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY,
-		AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER;
+		AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
 	}
 
 	Months month;

@@ -20,5 +20,5 @@ public interface OWLOntologyKnowledgeSource extends KnowledgeSource{
      * @param manager The manager to associate the new ontology with.
      * @return The result ontology
      */
-    public OWLOntology createOWLOntology(OWLOntologyManager manager);
+    OWLOntology createOWLOntology(OWLOntologyManager manager);
 }

@@ -138,7 +138,7 @@ public class Node {
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription()+"\n");
+		treeString.append(getShortDescription()).append("\n");
 		for(Node child : children) {
 			treeString.append(child.getTreeString(depth+1));
 		}

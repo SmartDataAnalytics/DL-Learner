@@ -143,12 +143,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private DatatypePropertyHierarchy dataPropertyHierarchy;
 
 	// domains and ranges
-	private Map<OWLObjectProperty,OWLClassExpression> opDomains = new TreeMap<OWLObjectProperty,OWLClassExpression>();
-	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<OWLDataProperty,OWLClassExpression>();
-	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<OWLObjectProperty,OWLClassExpression>();
+	private Map<OWLObjectProperty,OWLClassExpression> opDomains = new TreeMap<>();
+	private Map<OWLDataProperty,OWLClassExpression> dpDomains = new TreeMap<>();
+	private Map<OWLObjectProperty,OWLClassExpression> opRanges = new TreeMap<>();
 
 	// maximum number of fillers for each role
-	private Map<OWLObjectPropertyExpression, Integer> maxNrOfFillers = new TreeMap<OWLObjectPropertyExpression, Integer>();
+	private Map<OWLObjectPropertyExpression, Integer> maxNrOfFillers = new TreeMap<>();
 	// limit for cardinality restrictions (this makes sense if we e.g. have compounds with up to
 	// more than 200 atoms but we are only interested in atoms with certain characteristics and do
 	// not want something like e.g. >= 204 hasAtom.NOT Carbon-87; which blows up the search space
@@ -164,38 +164,38 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// the length of concepts of top refinements, the first values is
 	// for refinements of \rho_\top(\top), the second one for \rho_A(\top)
 	private int topRefinementsLength = 0;
-	private Map<OWLClassExpression, Integer> topARefinementsLength = new TreeMap<OWLClassExpression, Integer>();
+	private Map<OWLClassExpression, Integer> topARefinementsLength = new TreeMap<>();
 	// M is finite and this value is the maximum length of any value in M
 	private static int mMaxLength = 4;
 
 	// the sets M_\top and M_A
-	private Map<Integer,SortedSet<OWLClassExpression>> m = new TreeMap<Integer,SortedSet<OWLClassExpression>>();
-	private Map<OWLClassExpression,Map<Integer,SortedSet<OWLClassExpression>>> mA = new TreeMap<OWLClassExpression,Map<Integer,SortedSet<OWLClassExpression>>>();
+	private Map<Integer,SortedSet<OWLClassExpression>> m = new TreeMap<>();
+	private Map<OWLClassExpression,Map<Integer,SortedSet<OWLClassExpression>>> mA = new TreeMap<>();
 
 	// @see MathOperations.getCombos
-	private Map<Integer, List<List<Integer>>> combos = new HashMap<Integer, List<List<Integer>>>();
+	private Map<Integer, List<List<Integer>>> combos = new HashMap<>();
 
 	// refinements of the top concept ordered by length
-	private Map<Integer, SortedSet<OWLClassExpression>> topRefinements = new TreeMap<Integer, SortedSet<OWLClassExpression>>();
-	private Map<OWLClassExpression,Map<Integer, SortedSet<OWLClassExpression>>> topARefinements = new TreeMap<OWLClassExpression,Map<Integer, SortedSet<OWLClassExpression>>>();
+	private Map<Integer, SortedSet<OWLClassExpression>> topRefinements = new TreeMap<>();
+	private Map<OWLClassExpression,Map<Integer, SortedSet<OWLClassExpression>>> topARefinements = new TreeMap<>();
 
 	// cumulated refinements of top (all from length one to the specified length)
-	private Map<Integer, TreeSet<OWLClassExpression>> topRefinementsCumulative = new HashMap<Integer, TreeSet<OWLClassExpression>>();
-	private Map<OWLClassExpression,Map<Integer, TreeSet<OWLClassExpression>>> topARefinementsCumulative = new TreeMap<OWLClassExpression,Map<Integer, TreeSet<OWLClassExpression>>>();
+	private Map<Integer, TreeSet<OWLClassExpression>> topRefinementsCumulative = new HashMap<>();
+	private Map<OWLClassExpression,Map<Integer, TreeSet<OWLClassExpression>>> topARefinementsCumulative = new TreeMap<>();
 
 	// app_A set of applicable properties for a given class (separate for
 	// object properties, boolean datatypes, and double datatypes)
-	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<OWLClassExpression, Set<OWLObjectProperty>>();
-	private Map<OWLClassExpression, Set<OWLDataProperty>> appBD = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
-	private Map<OWLClassExpression, Set<OWLDataProperty>> appNumeric = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
-	private Map<OWLClassExpression, Set<OWLDataProperty>> appSD = new TreeMap<OWLClassExpression, Set<OWLDataProperty>>();
+	private Map<OWLClassExpression, Set<OWLObjectProperty>> appOP = new TreeMap<>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appBD = new TreeMap<>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appNumeric = new TreeMap<>();
+	private Map<OWLClassExpression, Set<OWLDataProperty>> appSD = new TreeMap<>();
 
 	// most general applicable properties
-	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgr = new TreeMap<OWLClassExpression,Set<OWLObjectProperty>>();
-	private Map<OWLClassExpression,Set<OWLDataProperty>> mgbd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
-	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
-	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
-	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<OWLClassExpression,Set<OWLDataProperty>>();
+	private Map<OWLClassExpression,Set<OWLObjectProperty>> mgr = new TreeMap<>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgbd = new TreeMap<>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgNumeric = new TreeMap<>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgDT = new TreeMap<>();
+	private Map<OWLClassExpression,Set<OWLDataProperty>> mgsd = new TreeMap<>();
 
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
@@ -204,12 +204,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	// data structure for a simple frequent pattern matching preprocessing phase
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
-	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>>();
+	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<>();
 	// data structure with identified frequent values
-	private Map<OWLObjectPropertyExpression, Set<OWLIndividual>> frequentValues = new HashMap<OWLObjectPropertyExpression, Set<OWLIndividual>>();
+	private Map<OWLObjectPropertyExpression, Set<OWLIndividual>> frequentValues = new HashMap<>();
 	// frequent data values
-	private Map<OWLDataProperty, Set<OWLLiteral>> frequentDataValues = new HashMap<OWLDataProperty, Set<OWLLiteral>>();
-	private Map<OWLDataProperty, Map<OWLLiteral, Integer>> dataValueFrequency = new HashMap<OWLDataProperty, Map<OWLLiteral, Integer>>();
+	private Map<OWLDataProperty, Set<OWLLiteral>> frequentDataValues = new HashMap<>();
+	private Map<OWLDataProperty, Map<OWLLiteral, Integer>> dataValueFrequency = new HashMap<>();
 	private boolean useDataHasValueConstructor = false;
 
 	// statistics
@@ -267,7 +267,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private boolean useSomeOnly = true;
 
 	// caches for reasoner queries
-	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
+	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<>();
 
 //	private Map<OWLClass,Map<OWLClass,Boolean>> abDisjoint = new TreeMap<OWLClass,Map<OWLClass,Boolean>>();
 //	private Map<OWLClass,Map<OWLClass,Boolean>> notABDisjoint = new TreeMap<OWLClass,Map<OWLClass,Boolean>>();
@@ -323,7 +323,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if (useHasValueConstructor) {
 			for (OWLObjectProperty op : reasoner.getObjectProperties()) {
 				// init
-				Map<OWLIndividual, Integer> opMap = new TreeMap<OWLIndividual, Integer>();
+				Map<OWLIndividual, Integer> opMap = new TreeMap<>();
 				valueFrequency.put(op, opMap);
 
 				// sets ordered by corresponding individual (which we ignore)
@@ -343,7 +343,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 
 				// keep only frequent patterns
-				Set<OWLIndividual> frequentInds = new TreeSet<OWLIndividual>();
+				Set<OWLIndividual> frequentInds = new TreeSet<>();
 				for (OWLIndividual i : opMap.keySet()) {
 					if (opMap.get(i) >= frequencyThreshold) {
 						frequentInds.add(i);
@@ -353,10 +353,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				frequentValues.put(op, frequentInds);
 
 				if(useInverse) {
-					opMap = new TreeMap<OWLIndividual, Integer>();
+					opMap = new TreeMap<>();
 					valueFrequency.put(op.getInverseProperty(), opMap);
 
-					frequentInds = new TreeSet<OWLIndividual>();
+					frequentInds = new TreeSet<>();
 
 					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : propertyMembers
 							.entrySet()) {
@@ -376,7 +376,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(useDataHasValueConstructor) {
 			for(OWLDataProperty dp : reasoner.getDatatypeProperties()) {
-				Map<OWLLiteral, Integer> dpMap = new TreeMap<OWLLiteral, Integer>();
+				Map<OWLLiteral, Integer> dpMap = new TreeMap<>();
 				dataValueFrequency.put(dp, dpMap);
 
 				// sets ordered by corresponding individual (which we ignore)
@@ -394,7 +394,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 
 				// keep only frequent patterns
-				Set<OWLLiteral> frequentInds = new TreeSet<OWLLiteral>();
+				Set<OWLLiteral> frequentInds = new TreeSet<>();
 				for(OWLLiteral i : dpMap.keySet()) {
 					if(dpMap.get(i) >= frequencyThreshold) {
 						logger.trace("adding value "+i+", because "+dpMap.get(i) +">="+frequencyThreshold);
@@ -403,10 +403,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 				frequentDataValues.put(dp, frequentInds);
 			}
-		}
-
-		if(useInverse) {
-
 		}
 
 		// we do not need the temporary set anymore and let the
@@ -557,10 +553,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// check whether using list or set makes more sense
 		// here; and whether HashSet or TreeSet should be used
 		// => TreeSet because duplicates are possible
-		Set<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		Set<OWLClassExpression> refinements = new TreeSet<>();
 
 		// used as temporary variable
-		Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> tmp;
 
 		if(description.isOWLThing()) {
 			// extends top refinements if necessary
@@ -605,7 +601,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				// create new intersection
 				for(OWLClassExpression c : tmp) {
 					if(!useSomeOnly || isCombinable(description, c)) {
-						List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
+						List<OWLClassExpression> newChildren = new ArrayList<>(operands);
 						newChildren.add(c);
 						newChildren.remove(child);
 						Collections.sort(newChildren);
@@ -637,7 +633,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 				// construct union (see above)
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new ArrayList<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new ArrayList<>(operands);
 					newChildren.remove(child);
 					newChildren.add(c);
 					Collections.sort(newChildren);
@@ -661,7 +657,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				} else {
 					// copy children list and remove a different element in each turn
 					for(int i=0; i<operands.size(); i++) {
-						List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+						List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 						newChildren.remove(i);
 						OWLObjectUnionOf md = new OWLObjectUnionOfImplExt(newChildren);
 						refinements.add(md);
@@ -932,7 +928,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	private Set<OWLClassExpression> refine(OWLObjectAllValuesFrom ce, int maxLength) {
-		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> refinements = new HashSet<>();
 
 		OWLObjectPropertyExpression role = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
@@ -982,9 +978,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// rule 2: min restrictions at most once
 		boolean minDoubleOccurence = false;
 		// rule 3: no double occurences of boolean datatypes
-		TreeSet<OWLDataProperty> occuredDP = new TreeSet<OWLDataProperty>();
+		TreeSet<OWLDataProperty> occuredDP = new TreeSet<>();
 		// rule 4: no double occurences of hasValue restrictions
-		TreeSet<OWLObjectPropertyExpression> occuredVR = new TreeSet<OWLObjectPropertyExpression>();
+		TreeSet<OWLObjectPropertyExpression> occuredVR = new TreeSet<>();
 		// rule 5: max. restrictions at most once
 				boolean maxIntOccurence = false;
 				// rule 6: min restrictions at most once
@@ -1119,7 +1115,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 					if(validCombo) {
 
-						SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<OWLObjectUnionOf>();
+						SortedSet<OWLObjectUnionOf> baseSet = new TreeSet<>();
 						for(Integer j : combo) {
 							if(domain == null)
 								baseSet = MathOperations.incCrossProduct(baseSet, m.get(j));
@@ -1128,11 +1124,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 						}
 
 						// convert all concepts in ordered negation normal form
-						Set<OWLObjectUnionOf> tmp = new HashSet<OWLObjectUnionOf>();
+						Set<OWLObjectUnionOf> tmp = new HashSet<>();
 						for(OWLClassExpression concept : baseSet) {
 							tmp.add((OWLObjectUnionOf) ConceptTransformation.nnf(concept));
 						}
-						baseSet = new TreeSet<OWLObjectUnionOf>(tmp);
+						baseSet = new TreeSet<>(tmp);
 
 						// apply the exists filter (throwing out all refinements with
 						// double \exists r for any r)
@@ -1158,7 +1154,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// create cumulative versions of refinements such that they can
 			// be accessed easily
-			TreeSet<OWLClassExpression> cumulativeRefinements = new TreeSet<OWLClassExpression>();
+			TreeSet<OWLClassExpression> cumulativeRefinements = new TreeSet<>();
 			for(int j=1; j<=i; j++) {
 				if(domain == null) {
 					cumulativeRefinements.addAll(topRefinements.get(j));
@@ -1203,7 +1199,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing(), true);
 		m.put(1,m1);
 
-		SortedSet<OWLClassExpression> m2 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m2 = new TreeSet<>();
 		if(useNegation) {
 			Set<OWLClassExpression> m2tmp = subHierarchy.getSuperClasses(df.getOWLNothing(), true);
 			for(OWLClassExpression c : m2tmp) {
@@ -1224,7 +1220,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 		m.put(2,m2);
 
-		SortedSet<OWLClassExpression> m3 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m3 = new TreeSet<>();
 		if(useExistsConstructor) {
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m3.add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
@@ -1266,7 +1262,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 
 		if(useTimeDatatypes) {
-			Set<OWLDataProperty> dataProperties = new HashSet<OWLDataProperty>();
+			Set<OWLDataProperty> dataProperties = new HashSet<>();
 			for (OWLDataProperty dp : reasoner.getDatatypeProperties()) {
 				OWLDatatype datatype = reasoner.getDatatype(dp);
 				if(datatype != null && OWLAPIUtils.dtDatatypes.contains(datatype)) {
@@ -1301,7 +1297,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		m.put(3,m3);
 
-		SortedSet<OWLClassExpression> m4 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m4 = new TreeSet<>();
 		if(useCardinalityRestrictions) {
 			logger.debug(sparql_debug, "most general properties:");
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
@@ -1355,7 +1351,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mA.get(nc).put(1,m1);
 
 		// most specific negated classes, which are not disjoint with nc
-		SortedSet<OWLClassExpression> m2 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m2 = new TreeSet<>();
 		if(useNegation) {
 			m2 = getNegClassCandidates(nc);
 			mA.get(nc).put(2,m2);
@@ -1404,7 +1400,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		mA.get(nc).put(2,m2);
 
-		SortedSet<OWLClassExpression> m3 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m3 = new TreeSet<>();
 		if(useExistsConstructor) {
 			for(OWLObjectProperty r : mgr.get(nc)) {
 				m3.add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
@@ -1460,7 +1456,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		mA.get(nc).put(3,m3);
 
-		SortedSet<OWLClassExpression> m4 = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> m4 = new TreeSet<>();
 		if(useCardinalityRestrictions) {
 			for(OWLObjectProperty r : mgr.get(nc)) {
 				int maxFillers = maxNrOfFillers.get(r);
@@ -1484,7 +1480,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	private SortedSet<OWLClassExpression> getClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression upperClass) {
-		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> candidates = new TreeSet<>();
 
 		SortedSet<OWLClassExpression> subClasses = subHierarchy.getSubClasses(upperClass, true);
 
@@ -1501,7 +1497,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			query += "}";
 //			System.out.println(query);
 
-			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
+			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
 			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
 			ResultSet rs = qe.execSelect();
 			while(rs.hasNext()) {
@@ -1567,7 +1563,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	private SortedSet<OWLClassExpression> getNegClassCandidatesRecursive(OWLClassExpression index, OWLClassExpression lowerClass, Set<OWLClassExpression> seenClasses) {
 		if (seenClasses == null) { seenClasses = new TreeSet<>(); }
-		SortedSet<OWLClassExpression> candidates = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> candidates = new TreeSet<>();
 //		System.out.println("index " + index + " lower class " + lowerClass);
 
 		SortedSet<OWLClassExpression> superClasses = subHierarchy.getSuperClasses(lowerClass);
@@ -1584,7 +1580,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 							+ "}";
 			query += "}";
 //			System.out.println(query);
-			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<OWLClassExpression>();
+			SortedSet<OWLClassExpression> meaningfulClasses = new TreeSet<>();
 			QueryExecution qe = ((SPARQLReasoner)reasoner).getQueryExecutionFactory().createQueryExecution(query);
 			ResultSet rs = qe.execSelect();
 			while(rs.hasNext()) {
@@ -1693,13 +1689,13 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		SortedSet<OWLIndividual> individuals1 = reasoner.getIndividuals(domain);
 		// object properties
 		Set<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
-		Set<OWLObjectProperty> applicableRoles = new TreeSet<OWLObjectProperty>();
+		Set<OWLObjectProperty> applicableRoles = new TreeSet<>();
 		for(OWLObjectProperty role : mostGeneral) {
 			// TODO: currently we just rely on named classes as roles,
 			// instead of computing dom(r) and ran(r)
 			OWLClassExpression d = opDomains.get(role);
 
-			Set<OWLIndividual> individuals2 = new HashSet<OWLIndividual>();
+			Set<OWLIndividual> individuals2 = new HashSet<>();
 			for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : reasoner.getPropertyMembers(role).entrySet()) {
 				OWLIndividual ind = entry.getKey();
 				if(!entry.getValue().isEmpty()){
@@ -1719,7 +1715,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// boolean datatype properties
 		Set<OWLDataProperty> mostGeneralBDPs = reasoner.getBooleanDatatypeProperties();
-		Set<OWLDataProperty> applicableBDPs = new TreeSet<OWLDataProperty>();
+		Set<OWLDataProperty> applicableBDPs = new TreeSet<>();
 		for(OWLDataProperty role : mostGeneralBDPs) {
 //			Description d = (OWLClass) rs.getDomain(role);
 			OWLClassExpression d = dpDomains.get(role);
@@ -1730,7 +1726,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// numeric data properties
 		Set<OWLDataProperty> mostGeneralNumericDPs = reasoner.getNumericDataProperties();
-		Set<OWLDataProperty> applicableNumericDPs = new TreeSet<OWLDataProperty>();
+		Set<OWLDataProperty> applicableNumericDPs = new TreeSet<>();
 		for(OWLDataProperty role : mostGeneralNumericDPs) {
 			// get domain of property
 			OWLClassExpression d = dpDomains.get(role);
@@ -1742,7 +1738,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// string datatype properties
 		Set<OWLDataProperty> mostGeneralSDPs = reasoner.getStringDatatypeProperties();
-		Set<OWLDataProperty> applicableSDPs = new TreeSet<OWLDataProperty>();
+		Set<OWLDataProperty> applicableSDPs = new TreeSet<>();
 		for(OWLDataProperty role : mostGeneralSDPs) {
 //			Description d = (OWLClass) rs.getDomain(role);
 			OWLClassExpression d = dpDomains.get(role);
@@ -1803,12 +1799,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// the order of access does not matter)
 
 		// create new entries if necessary
-		Map<OWLClassExpression, Boolean> map1 = new TreeMap<OWLClassExpression, Boolean>();
-		Map<OWLClassExpression, Boolean> map2 = new TreeMap<OWLClassExpression, Boolean>();
 		if (tmp == null)
-			cachedDisjoints.put(d1, map1);
+			cachedDisjoints.put(d1, new TreeMap<OWLClassExpression, Boolean>());
 		if (!cachedDisjoints.containsKey(d2))
-			cachedDisjoints.put(d2, map2);
+			cachedDisjoints.put(d2, new TreeMap<OWLClassExpression, Boolean>());
 
 		// add result symmetrically in the OWLClassExpression matrix
 		cachedDisjoints.get(d1).put(d2, result);

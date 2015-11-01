@@ -15,6 +15,6 @@ public interface AccMethodTwoValuedApproximate extends AccMethodApproximate {
 	 * @param noise noise
 	 * @return approximate accuracy value or -1 if too weak
 	 */
-	public double getAccApprox2(OWLClassExpression description, Collection<OWLIndividual> positiveExamples, Collection<OWLIndividual> negativeExamples, double noise);
+	double getAccApprox2(OWLClassExpression description, Collection<OWLIndividual> positiveExamples, Collection<OWLIndividual> negativeExamples, double noise);
 	
 }

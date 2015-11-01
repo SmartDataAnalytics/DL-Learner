@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  */
 public class SynchronizedRefinementOperator implements LengthLimitedRefinementOperator{
 	
-	private LengthLimitedRefinementOperator delegate;
+	private final LengthLimitedRefinementOperator delegate;
 
 	public SynchronizedRefinementOperator(LengthLimitedRefinementOperator delegate) {
 		this.delegate = delegate;

@@ -137,22 +137,20 @@ public class SparqlQueryMaker {
 				: " ";
 
 		StringBuffer sbuff = new StringBuffer(1400);
-		sbuff.append("SELECT * WHERE { " + lineend + "{<" + subject
-				+ "> ?predicate0 ?object0 ." + lineend);
-		sbuff.append(filtertmp + "} " + lineend);
+		sbuff.append("SELECT * WHERE { " + lineend + "{<").append(subject).append("> ?predicate0 ?object0 .").append(lineend);
+		sbuff.append(filtertmp).append("} ").append(lineend);
 
 		// " + lineend + filter +" } ";
 		for (int i = 1; i < level; i++) {
 			sbuff.append("OPTIONAL { ");
-			sbuff.append("?object" + (i - 1) + " ?predicate" + i + " ?object"
-					+ i + " . " + lineend);
+			sbuff.append("?object").append(i - 1).append(" ?predicate").append(i).append(" ?object").append(i).append(" . ").append(lineend);
 
 			filtertmp = internalFilterAssemblySubject("predicate" + i, "object"
 					+ i);
 			filtertmp = (filtertmp.length() > 0) ? "FILTER " + filtertmp + ". "
 					: " ";
 
-			sbuff.append(filtertmp + " }");
+			sbuff.append(filtertmp).append(" }");
 		}
 
 		sbuff.append(lineend + "} ");
@@ -223,7 +221,7 @@ public class SparqlQueryMaker {
 			String first = terms.remove(0);
 			sbuf.append(brackets(first));
 			for (String term : terms) {
-				sbuf.append(lineend + operator);
+				sbuf.append(lineend).append(operator);
 				sbuf.append(brackets(term));
 			}
 			return brackets(sbuf.toString());

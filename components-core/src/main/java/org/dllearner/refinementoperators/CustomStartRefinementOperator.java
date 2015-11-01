@@ -28,6 +28,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  */
 public interface CustomStartRefinementOperator extends RefinementOperator {
 
-	public void setStartClass(OWLClassExpression description);
+	void setStartClass(OWLClassExpression description);
 	
 }

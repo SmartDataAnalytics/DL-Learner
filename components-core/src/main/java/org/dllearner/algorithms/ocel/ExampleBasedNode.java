@@ -174,7 +174,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)+"\n");
+		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)).append("\n");
 		for(ExampleBasedNode child : children) {
 			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI, prefixes));
 		}

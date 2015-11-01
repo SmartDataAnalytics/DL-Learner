@@ -120,7 +120,7 @@ public class MathOperations {
 	 */
 	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
-		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<>();
 		decompose(number, number, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}
@@ -135,7 +135,7 @@ public class MathOperations {
 	 * @return A two dimensional list constructed in {@link #getCombos(int)}.
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
-		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<>();
 		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}	
@@ -164,7 +164,7 @@ public class MathOperations {
 	 * @return The "cross product" of baseSet and newSet.
 	 */
 	public static SortedSet<OWLObjectUnionOf> incCrossProduct(Set<OWLObjectUnionOf> baseSet, Set<OWLClassExpression> newSet) {
-		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<OWLObjectUnionOf>();
+		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<>();
 	
 		if(baseSet.isEmpty()) {
 			for(OWLClassExpression c : newSet) {
@@ -199,7 +199,7 @@ public class MathOperations {
 	 * @return See description.
 	 */
 	public static boolean containsDoubleObjectSomeRestriction(OWLClassExpression d) {
-		Set<OWLObjectPropertyExpression> roles = new HashSet<OWLObjectPropertyExpression>();
+		Set<OWLObjectPropertyExpression> roles = new HashSet<>();
 		for(OWLClassExpression c : d.getNestedClassExpressions()) {
 			if(c instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom)c).getProperty();								

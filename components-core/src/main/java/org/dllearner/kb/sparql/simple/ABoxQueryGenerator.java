@@ -11,6 +11,7 @@ import com.jamonapi.MonitorFactory;
 /**
  * @author didierc
  */
+@SuppressWarnings("ALL")
 public class ABoxQueryGenerator {
 
     public String createQuery(Set<String> individuals, String aboxfilter) {
@@ -31,7 +32,7 @@ public class ABoxQueryGenerator {
 
     public static StringBuilder makeInFilter(String var, Set<String> uris) {
         StringBuilder builder = new StringBuilder();
-        builder.append(" FILTER (" + var + " IN( ");
+        builder.append(" FILTER (").append(var).append(" IN( ");
         for (String uri : uris) {
             if (!uri.startsWith("<")) builder.append("<");
             builder.append(uri);

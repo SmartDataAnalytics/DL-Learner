@@ -39,26 +39,26 @@ public interface ConciseBoundedDescriptionGenerator {
 	/**
 	 * @return the CBD of depth 1 for the given resource
 	 */
-	public Model getConciseBoundedDescription(String resourceURI);
+	Model getConciseBoundedDescription(String resourceURI);
 	
 	/**
 	 * @return the CBD of given depth for the given resource
 	 */
-	public Model getConciseBoundedDescription(String resourceURI, int depth);
+	Model getConciseBoundedDescription(String resourceURI, int depth);
 	
 	/**
 	 * @return the CBD of given depth for the given resource with optionally additional 
 	 * information about the types of leaf nodes
 	 */
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
+	Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
 	
-	public void addAllowedPropertyNamespaces(Set<String> namespaces);
+	void addAllowedPropertyNamespaces(Set<String> namespaces);
 	
-	public void addAllowedObjectNamespaces(Set<String> namespaces);
+	void addAllowedObjectNamespaces(Set<String> namespaces);
 	
-	public void addPropertiesToIgnore(Set<String> properties);
+	void addPropertiesToIgnore(Set<String> properties);
 	
-	public void setRecursionDepth(int maxRecursionDepth);
+	void setRecursionDepth(int maxRecursionDepth);
 
 	
 	

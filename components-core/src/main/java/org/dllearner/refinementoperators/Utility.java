@@ -57,11 +57,11 @@ public final class Utility {
 	private boolean instanceBasedDisjoints = true;
 	
 	// cache for reasoner queries
-	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<OWLClassExpression,Map<OWLClassExpression,Boolean>>();
+	private Map<OWLClassExpression,Map<OWLClassExpression,Boolean>> cachedDisjoints = new TreeMap<>();
 		
 	// cache for applicaple object properties
-	private Map<OWLClassExpression, SortedSet<OWLObjectProperty>> appOPCache = new TreeMap<OWLClassExpression, SortedSet<OWLObjectProperty>>();
-	private Map<OWLClassExpression, SortedSet<OWLDataProperty>> appDPCache = new TreeMap<OWLClassExpression, SortedSet<OWLDataProperty>>();
+	private Map<OWLClassExpression, SortedSet<OWLObjectProperty>> appOPCache = new TreeMap<>();
+	private Map<OWLClassExpression, SortedSet<OWLDataProperty>> appDPCache = new TreeMap<>();
 	private Map<OWLObjectProperty,OWLClassExpression> opDomains;
 	private Map<OWLDataProperty, OWLClassExpression> dpDomains;
 	
@@ -92,7 +92,7 @@ public final class Utility {
 	 * Compute the set of applicable object properties for a
 	 * given description.
 	 * 
-	 * @param index The index is a OWLClassExpression which determines
+	 * @param index The index is a class expression which determines
 	 * which of the properties are applicable. Exactly those which
 	 * where the index and property domain are not disjoint are
 	 * applicable, where disjoint is defined by {@link #isDisjoint(OWLClassExpression, OWLClassExpression)}.
@@ -103,7 +103,7 @@ public final class Utility {
 		SortedSet<OWLObjectProperty> applicableObjectProperties = appOPCache.get(index);
 		if(applicableObjectProperties == null) {
 			Set<OWLObjectProperty> objectProperties = reasoner.getObjectProperties();
-			applicableObjectProperties = new TreeSet<OWLObjectProperty>();
+			applicableObjectProperties = new TreeSet<>();
 			for(OWLObjectProperty op : objectProperties) {
 				OWLClassExpression domain = opDomains.get(op);
 				if(!isDisjoint(index,domain)) {
@@ -130,7 +130,7 @@ public final class Utility {
 		SortedSet<OWLDataProperty> applicableDatatypeProperties = appDPCache.get(index);
 		if(applicableDatatypeProperties == null) {
 			Set<OWLDataProperty> datatypeProperties = reasoner.getDatatypeProperties();
-			applicableDatatypeProperties = new TreeSet<OWLDataProperty>();
+			applicableDatatypeProperties = new TreeSet<>();
 			for(OWLDataProperty op : datatypeProperties) {
 				OWLClassExpression domain = dpDomains.get(op);
 				if(!isDisjoint(index,domain)) {
@@ -155,7 +155,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLObjectProperty> computeMgr(Set<OWLObjectProperty> applicableObjectProperties) {
-		return new HashSet<OWLObjectProperty>(Sets.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties));
+		return new HashSet<>(Sets.intersection(reasoner.getMostGeneralProperties(), applicableObjectProperties));
 	}
 	
 	/**
@@ -171,7 +171,7 @@ public final class Utility {
 	 * @return The most general applicable properties.
 	 */
 	public Set<OWLDataProperty> computeMgrDP(Set<OWLDataProperty> applicableDatatypeProperties) {
-		return new HashSet<OWLDataProperty>(Sets.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties));
+		return new HashSet<>(Sets.intersection(reasoner.getMostGeneralDatatypeProperties(), applicableDatatypeProperties));
 	}
 	
 	public Set<OWLClass> getClassCandidates(OWLClassExpression index, Set<OWLClass> existingClasses) {
@@ -179,7 +179,7 @@ public final class Utility {
 	}
 	
 	private Set<OWLClass> getClassCandidatesRecursive(OWLClassExpression index, Set<OWLClass> existingClasses, OWLClassExpression upperClass) {
-		Set<OWLClass> candidates = new TreeSet<OWLClass>();
+		Set<OWLClass> candidates = new TreeSet<>();
 		
 		// we descend the subsumption hierarchy to ensure that we get
 		// the most general concepts satisfying the criteria
@@ -272,12 +272,10 @@ public final class Utility {
 			// the order of access does not matter)
 			
 			// create new entries if necessary
-			Map<OWLClassExpression,Boolean> map1 = new TreeMap<OWLClassExpression,Boolean>();
-			Map<OWLClassExpression,Boolean> map2 = new TreeMap<OWLClassExpression,Boolean>();
 			if(tmp == null)
-				cachedDisjoints.put(d1, map1);
+				cachedDisjoints.put(d1, new TreeMap<OWLClassExpression, Boolean>());
 			if(!cachedDisjoints.containsKey(d2))
-				cachedDisjoints.put(d2, map2);
+				cachedDisjoints.put(d2, new TreeMap<OWLClassExpression, Boolean>());
 			
 			// add result symmetrically in the OWLClassExpression matrix
 			cachedDisjoints.get(d1).put(d2, result);

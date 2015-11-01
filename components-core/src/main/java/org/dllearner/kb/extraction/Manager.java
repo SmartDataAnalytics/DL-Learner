@@ -160,7 +160,7 @@ public class Manager {
 		Object[] arr = tripleCollector.toArray();
 		nrOfExtractedTriples = arr.length;
 		for (int i = 0; i < arr.length; i++) {
-			nt.append((String) arr[i] + "\n");
+			nt.append((String) arr[i]).append("\n");
 			if (i % 1000 == 0)
 				logger.info(i + " of  " + arr.length + " triples done");
 		}

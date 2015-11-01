@@ -130,11 +130,11 @@ public class QueryTreeUtils {
 		Iterator<RDFResourceTree> iterator = path.iterator();
 		
 		RDFResourceTree child = iterator.next();
-		sb.append(child + "(" + child.getID() + ")");
+		sb.append(child).append("(").append(child.getID()).append(")");
 		while (iterator.hasNext()) {
 			RDFResourceTree parent = iterator.next();
 			sb.append(" <").append(parent.getEdgeToChild(child)).append("> ");
-			sb.append(parent + "(" + parent.getID() + ")");
+			sb.append(parent).append("(").append(parent.getID()).append(")");
 			child = parent;
 		}
 		return sb.toString();

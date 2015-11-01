@@ -256,7 +256,7 @@ public class NBR<N> {
         	sb.append("TREE\n\n");
         }
 //        ren = ren.replace("\n", "\n" + sb);
-        sb.append(tree.getUserObject() + "(" +matrix.get(tree) +  ")");
+        sb.append(tree.getUserObject()).append("(").append(matrix.get(tree)).append(")");
         sb.append("\n");
         for (QueryTree<N> child : tree.getChildren()) {
             for (int i = 0; i < depth; i++) {
@@ -1024,7 +1024,7 @@ public class NBR<N> {
     	}
     	query.append(triples.toString());
     	for(String optional : optionals){
-    		query.append("OPTIONAL{").append(optional + "}\n");
+    		query.append("OPTIONAL{").append(optional).append("}\n");
     	}
     	if(filters.size() > 0){
     		query.append("FILTER(");
@@ -1057,7 +1057,7 @@ public class NBR<N> {
     	}
     	query.append(triples.toString());
     	for(String optional : optionals){
-    		query.append("OPTIONAL{").append(optional + "}\n");
+    		query.append("OPTIONAL{").append(optional).append("}\n");
     	}
     	List<String> filterParts = new ArrayList<>();
     	filterParts.addAll(filters.keySet());
@@ -1085,7 +1085,7 @@ public class NBR<N> {
     			}
     			for(String f : filters.keySet()){
     				if(!filterParts.get(i).equals(f)){
-    					query.append(f + "=" + filters.get(f));
+    					query.append(f).append("=").append(filters.get(f));
     					if(cnt < filters.keySet().size()){
     						query.append(" && ");
     					}

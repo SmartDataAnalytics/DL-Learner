@@ -50,7 +50,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description) {
 		Set<OWLClassExpression> refinements = operator.refine(getNegation(description));
-		TreeSet<OWLClassExpression> results = new TreeSet<OWLClassExpression>();
+		TreeSet<OWLClassExpression> results = new TreeSet<>();
 		for(OWLClassExpression d : refinements) {
 			results.add(getNegation(d));
 		}
@@ -66,7 +66,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 		int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription) - OWLClassExpressionUtils.getLength(description));
 		Set<OWLClassExpression> refinements = operator.refine(negatedDescription, maxLength+lengthDiff+1);
 //		System.out.println("refinv: " + refinements);
-		TreeSet<OWLClassExpression> results = new TreeSet<OWLClassExpression>();
+		TreeSet<OWLClassExpression> results = new TreeSet<>();
 		for(OWLClassExpression d : refinements) {
 			OWLClassExpression dNeg = getNegation(d);
 //			System.out.println("dNeg: " + dNeg);

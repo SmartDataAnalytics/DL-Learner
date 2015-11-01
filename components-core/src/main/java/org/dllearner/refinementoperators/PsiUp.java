@@ -58,7 +58,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 	}
 	
 	private void createBottomSet() {
-		bottomSet = new TreeSet<OWLClassExpression>();
+		bottomSet = new TreeSet<>();
 		
 		// BOTTOM AND BOTTOM
 		List<OWLClassExpression> operands = Lists.<OWLClassExpression>newArrayList(df.getOWLNothing(), df.getOWLNothing());
@@ -84,11 +84,11 @@ public class PsiUp extends RefinementOperatorAdapter {
 	@SuppressWarnings("unchecked")
 	public Set<OWLClassExpression> refine(OWLClassExpression concept) {
 		
-		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
-		Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> refinements = new HashSet<>();
+		Set<OWLClassExpression> tmp = new HashSet<>();
 		
 		if (concept.isOWLThing()) {
-			return new TreeSet<OWLClassExpression>();
+			return new TreeSet<>();
 		} else if (concept.isOWLNothing()) {
 			return (Set<OWLClassExpression>) bottomSet.clone();			
 		} else if (!concept.isAnonymous()) {
@@ -134,7 +134,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 					// hier wird nur eine neue Liste erstellt
 					// => eigentlich muss nicht geklont werden (d.h. deep copy) da
 					// die Konzepte nicht verändert werden während des Algorithmus
-					List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
@@ -147,7 +147,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 			
 			// ein Element der Konjunktion kann weggelassen werden
 			for(OWLClassExpression child : operands) {
-				List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+				List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 				newChildren.remove(child);
 				if(newChildren.size()==1)
 					refinements.add(newChildren.get(0));
@@ -166,7 +166,7 @@ public class PsiUp extends RefinementOperatorAdapter {
 				tmp = refine(child);
 				// neue MultiConjunction konstruieren
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
@@ -188,8 +188,8 @@ public class PsiUp extends RefinementOperatorAdapter {
 			if(filler.isOWLThing())
 				refinements.add(df.getOWLThing());
 		} else if (concept instanceof OWLObjectAllValuesFrom) {
-			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) concept).getProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) concept).getFiller();
+			OWLObjectPropertyExpression role = ((OWLObjectAllValuesFrom) concept).getProperty();
+			OWLClassExpression filler = ((OWLObjectAllValuesFrom) concept).getFiller();
 
 			tmp = refine(filler);
 			for(OWLClassExpression c : tmp) {

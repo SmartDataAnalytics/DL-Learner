@@ -143,7 +143,7 @@ public class SearchTreeNode {
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(toString(renderer)+"\n");
+		treeString.append(toString(renderer)).append("\n");
 		for(SearchTreeNode child : children) {
 			treeString.append(child.getTreeString(depth+1, renderer));
 		}
