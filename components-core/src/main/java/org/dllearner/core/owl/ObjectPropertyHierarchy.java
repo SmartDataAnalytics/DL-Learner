@@ -49,11 +49,11 @@ public class ObjectPropertyHierarchy extends AbstractHierarchy<OWLObjectProperty
 	}
 	
 	public SortedSet<OWLObjectProperty> getMoreGeneralRoles(OWLObjectProperty role) {
-		return new TreeSet<OWLObjectProperty>(getParents(role));	
+		return new TreeSet<>(getParents(role));
 	}
 	
 	public SortedSet<OWLObjectProperty> getMoreSpecialRoles(OWLObjectProperty role) {
-		return new TreeSet<OWLObjectProperty>(getChildren(role));
+		return new TreeSet<>(getChildren(role));
 	}
 	
 	public boolean isSubpropertyOf(OWLObjectProperty subProperty, OWLObjectProperty superProperty) {

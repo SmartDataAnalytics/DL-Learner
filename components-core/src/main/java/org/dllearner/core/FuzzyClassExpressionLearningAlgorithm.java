@@ -38,7 +38,7 @@ public interface FuzzyClassExpressionLearningAlgorithm extends LearningAlgorithm
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
 	 * @return The best class descriptions found by the learning algorithm so far.
 	 */
-	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions);
+	List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions);
 	
 	/**
 	 * Return the best currently found concepts up to some maximum
@@ -46,6 +46,6 @@ public interface FuzzyClassExpressionLearningAlgorithm extends LearningAlgorithm
 	 * @param nrOfDescriptions Maximum number of descriptions returned.
 	 * @return Return value is getCurrentlyBestDescriptions(nrOfDescriptions, 0.0, false).
 	 */
-	public List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions);	
+	List<? extends EvaluatedDescription> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions);
 	
 }

@@ -67,7 +67,7 @@ public class SparqlQueryMaker {
 		super();
 		this.objectFilterList = objectFilterList;
 		this.predicateFilterList = predicateFilterList;
-		this.predicateobjectFilterList = new TreeSet<StringTuple>();
+		this.predicateobjectFilterList = new TreeSet<>();
 		this.literals = literals;
 	}
 
@@ -165,12 +165,12 @@ public class SparqlQueryMaker {
 		objectVariable = (objectVariable.startsWith("?")) ? objectVariable
 				: "?" + objectVariable;
 
-		List<String> terms = new ArrayList<String>();
+		List<String> terms = new ArrayList<>();
 		String not = (isAllowMode()) ? "" : "!";
 		/*new filter type */
 		
 		for (StringTuple tuple : getPredicateObjectFilterList()) {
-			List<String> tmpterms = new ArrayList<String>();
+			List<String> tmpterms = new ArrayList<>();
 			tmpterms.add(not + "regex(str(" + predicateVariable + "), '" + tuple.a+ "')");
 			tmpterms.add(not + "regex(str(" + objectVariable + "), '" + tuple.b+ "')");
 			terms.add(assembleTerms(tmpterms, "&&"));
@@ -187,7 +187,7 @@ public class SparqlQueryMaker {
 		}
 		String assembled =  assembleTerms(terms, getOperator());
 		
-		terms = new ArrayList<String>();
+		terms = new ArrayList<>();
 		// the next line could be removed as it is included in assemble terms
 		if(!assembled.isEmpty()){
 			terms.add(assembled);

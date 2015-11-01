@@ -27,8 +27,8 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	private SortedMap<T, SortedSet<T>> hierarchyUp;
 	private SortedMap<T, SortedSet<T>> hierarchyDown;
 	
-	private SortedSet<T> rootEntities = new TreeSet<T>();
-	private SortedSet<T> leafEntities = new TreeSet<T>();
+	private SortedSet<T> rootEntities = new TreeSet<>();
+	private SortedSet<T> leafEntities = new TreeSet<>();
 	
 
 	public AbstractHierarchy(SortedMap<T, SortedSet<T>> hierarchyUp, SortedMap<T, SortedSet<T>> hierarchyDown) {
@@ -65,18 +65,18 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		
 		if(result == null) {
 			logger.debug("Query for " + entity + " in hierarchy, but the entity is not contained in the (downward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<T>();
+			return new TreeSet<>();
 		}
 		
 		result.remove(entity);
 		if(!direct) { // get transitive children
-			SortedSet<T> tmp = new TreeSet<T>();
+			SortedSet<T> tmp = new TreeSet<>();
 			for(T child : result){
 				tmp.addAll(getChildren(child, direct));
 			}
 			result.addAll(tmp);
 		}
-		return new TreeSet<T>(result);
+		return new TreeSet<>(result);
 	}
 
 	/* (non-Javadoc)
@@ -96,19 +96,19 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		
 		if(result == null) {
 			logger.debug("Query for " + entity + " in hierarchy, but the entity is not contained in the (upward) hierarchy, e.g. because the entity does not exist or is ignored. Returning empty result instead.");
-			return new TreeSet<T>();
+			return new TreeSet<>();
 		}
 		
 		result.remove(entity);
 		if(!direct) {
-			SortedSet<T> tmp = new TreeSet<T>();
+			SortedSet<T> tmp = new TreeSet<>();
 			for(T parent : result){
 				tmp.addAll(getParents(parent, direct));
 			}
 			result.addAll(tmp);
 		}
 		
-		return new TreeSet<T>(result);
+		return new TreeSet<>(result);
 	}
 
 	/* (non-Javadoc)
@@ -116,7 +116,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 */
 	@Override
 	public SortedSet<T> getSiblings(T entity) {
-		SortedSet<T> siblings = new TreeSet<T>();
+		SortedSet<T> siblings = new TreeSet<>();
 		
 		Set<T> parents = getParents(entity);
 		for(T parent : parents) {
@@ -164,7 +164,7 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 */
 	@Override
 	public SortedSet<T> getRoots() {
-		SortedSet<T> roots = new TreeSet<T>();
+		SortedSet<T> roots = new TreeSet<>();
 		
 		for(T child : getChildren(getTopConcept())){
 			SortedSet<T> parents = getParents(child);
@@ -205,10 +205,10 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	 * refinement respectively.
 	 */
 	public void thinOutSubsumptionHierarchy() {
-		SortedMap<T, SortedSet<T>> hierarchyDownNew = new TreeMap<T, SortedSet<T>>();
-		SortedMap<T, SortedSet<T>> hierarchyUpNew = new TreeMap<T, SortedSet<T>>();
+		SortedMap<T, SortedSet<T>> hierarchyDownNew = new TreeMap<>();
+		SortedMap<T, SortedSet<T>> hierarchyUpNew = new TreeMap<>();
 
-		Set<T> conceptsInSubsumptionHierarchy = new TreeSet<T>();
+		Set<T> conceptsInSubsumptionHierarchy = new TreeSet<>();
 		conceptsInSubsumptionHierarchy.addAll(hierarchyUp.keySet());
 		conceptsInSubsumptionHierarchy.addAll(hierarchyDown.keySet());
 		
@@ -262,14 +262,14 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 	public AbstractHierarchy<T> cloneAndRestrict(Set<? extends T> allowedEntities) {
 		// currently TOP and BOTTOM are always allowed
 		// (TODO would be easier if Thing/Nothing were declared as named classes)
-		Set<T> allowed = new TreeSet<T>();
+		Set<T> allowed = new TreeSet<>();
 		allowed.addAll(allowedEntities);
 		allowed.add(getTopConcept());
 		allowed.add(getBottomConcept());
 		
 		// create new maps
-		SortedMap<T, SortedSet<T>> subsumptionHierarchyUpNew = new TreeMap<T, SortedSet<T>>();
-		SortedMap<T, SortedSet<T>> subsumptionHierarchyDownNew = new TreeMap<T, SortedSet<T>>();
+		SortedMap<T, SortedSet<T>> subsumptionHierarchyUpNew = new TreeMap<>();
+		SortedMap<T, SortedSet<T>> subsumptionHierarchyDownNew = new TreeMap<>();
 		
 		for(Entry<T, SortedSet<T>> entry : hierarchyUp.entrySet()) {
 			T key = entry.getKey();
@@ -277,9 +277,9 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 			if(allowed.contains(key)) {
 				// copy the set of all parents (we consume them until
 				// they are empty)
-				TreeSet<T> parents = new TreeSet<T>(entry.getValue());
+				TreeSet<T> parents = new TreeSet<>(entry.getValue());
 				// storage for new parents
-				TreeSet<T> newParents = new TreeSet<T>();
+				TreeSet<T> newParents = new TreeSet<>();
 				
 				while(!parents.isEmpty()) {
 					// pick and remove the first element
@@ -304,8 +304,8 @@ public abstract class AbstractHierarchy<T extends OWLObject> implements Hierarch
 		for(Entry<T, SortedSet<T>> entry : hierarchyDown.entrySet()) {
 			T key = entry.getKey();
 			if(allowed.contains(key)) {
-				TreeSet<T> children = new TreeSet<T>(entry.getValue());
-				TreeSet<T> newChildren = new TreeSet<T>();
+				TreeSet<T> children = new TreeSet<>(entry.getValue());
+				TreeSet<T> newChildren = new TreeSet<>();
 				
 				while(!children.isEmpty()) {
 					T d = children.pollFirst();

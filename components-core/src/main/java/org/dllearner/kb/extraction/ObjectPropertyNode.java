@@ -52,9 +52,9 @@ public class ObjectPropertyNode extends PropertyNode {
 
 	
 	// specialtypes like owl:symmetricproperty
-	private SortedSet<String> specialTypes = new TreeSet<String>();
-	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
-	private List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	private SortedSet<String> specialTypes = new TreeSet<>();
+	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<>();
+	private List<BlankNode> blankNodes = new ArrayList<>();
 
 	public ObjectPropertyNode(String propertyURI, Node a, Node b) {
 		super(propertyURI, a, b);		
@@ -70,7 +70,7 @@ public class ObjectPropertyNode extends PropertyNode {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		List<BlankNode> ret = new ArrayList<>();
 		ret.addAll(b.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
 		for (RDFNodeTuple tuple : newTypes) {
@@ -108,7 +108,7 @@ public class ObjectPropertyNode extends PropertyNode {
 	
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> s = new TreeSet<String>();
+		SortedSet<String> s = new TreeSet<>();
 		s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 				+ OWLVocabulary.OWL_OBJECTPROPERTY + ">.");
 		for (String one : specialTypes) {
@@ -147,7 +147,7 @@ public class ObjectPropertyNode extends PropertyNode {
 				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));				
 			}else if(one.aPartContains(OWLVocabulary.OWL_equivalentProperty)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(IRI.create(one.b.toString()));
-				Set<OWLObjectProperty> tmp = new HashSet<OWLObjectProperty>();
+				Set<OWLObjectProperty> tmp = new HashSet<>();
 				tmp.add(me);tmp.add(p);
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentObjectPropertiesAxiom(tmp));
 				

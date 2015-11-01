@@ -41,8 +41,8 @@ public class SparqlEndpoint {
 
 	public SparqlEndpoint(URL u) {
 		this.url = u;
-		this.defaultGraphURIs=new LinkedList<String>();
-		this.namedGraphURIs=new LinkedList<String>();
+		this.defaultGraphURIs= new LinkedList<>();
+		this.namedGraphURIs= new LinkedList<>();
 	}
 
 	public SparqlEndpoint(URL u, List<String> defaultGraphURIs, List<String> namedGraphURIs) {
@@ -109,7 +109,7 @@ public class SparqlEndpoint {
 
 
 	public static List<SparqlEndpoint> listEndpoints() {
-		LinkedList<SparqlEndpoint> ll =new LinkedList<SparqlEndpoint>();
+		LinkedList<SparqlEndpoint> ll = new LinkedList<>();
 		ll.add(getEndpointDBpedia());
 		ll.add(getEndpointDOAPspace());
 		ll.add(getEndpointGovTrack());
@@ -129,7 +129,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -142,7 +142,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -154,7 +154,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -166,7 +166,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -178,7 +178,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 //		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -190,7 +190,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -202,7 +202,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		//TODO defaultGraphURIs.add("http://geonames.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -214,7 +214,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		//TODO defaultGraphURIs.add("http://geonames.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -246,7 +246,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://myopenlink.net/dataspace");
 
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
@@ -291,7 +291,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://www.rdfabout.com/rdf/schema/census/");
 
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());

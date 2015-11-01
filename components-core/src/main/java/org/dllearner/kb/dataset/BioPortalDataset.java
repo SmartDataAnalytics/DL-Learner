@@ -23,9 +23,7 @@ public class BioPortalDataset extends AbstractOWLOntologyDataset{
 			try {
 				String name = URLEncoder.encode(entry.getOntologyShortName(), "UTF-8");
 				super.ontologyURLs.put(entry.getPhysicalURI().toURL(), name);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
+			} catch (MalformedURLException | UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}

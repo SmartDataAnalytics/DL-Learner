@@ -29,7 +29,7 @@ public class OxfordRepository implements OntologyRepository{
 
 
     public OxfordRepository() {
-        entries = new ArrayList<RepositoryEntry>();
+        entries = new ArrayList<>();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class OxfordRepository implements OntologyRepository{
 
     @Override
 	public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<OntologyRepositoryEntry>();
+        List<OntologyRepositoryEntry> ret = new ArrayList<>();
         ret.addAll(entries);
         return ret;
     }

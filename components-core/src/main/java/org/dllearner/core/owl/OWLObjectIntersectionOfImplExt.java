@@ -84,7 +84,7 @@ public class OWLObjectIntersectionOfImplExt extends
 
 	@Override
 	public Set<OWLClassExpression> asConjunctSet() {
-		Set<OWLClassExpression> conjuncts = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> conjuncts = new HashSet<>();
 		for (OWLClassExpression op : getOperands()) {
 			conjuncts.addAll(op.asConjunctSet());
 		}

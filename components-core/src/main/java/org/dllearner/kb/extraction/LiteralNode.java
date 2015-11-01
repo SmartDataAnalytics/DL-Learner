@@ -63,7 +63,7 @@ public class LiteralNode extends Node {
 	// expands all directly connected nodes
 	@Override
 	public List<Node> expand(TupleAquisitor tupelAquisitor, Manipulator manipulator) {
-		return new ArrayList<Node>();
+		return new ArrayList<>();
 	}
 	
 	
@@ -71,12 +71,12 @@ public class LiteralNode extends Node {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		return new ArrayList<BlankNode>();
+		return new ArrayList<>();
 	}
 
 	@Override
 	public SortedSet<String> toNTriple() {
-		return new TreeSet<String>();
+		return new TreeSet<>();
 	}
 
 	

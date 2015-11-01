@@ -76,7 +76,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 	}
 
 	public Map<OWLIndividual, List<OWLAxiom>> toRDF(String defaultNamespace){
-		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<OWLIndividual, List<OWLAxiom>>();
+		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<>();
 		OWLDataFactory f = new OWLDataFactoryImpl();
 		
 		String id = DigestUtils.md5Hex(hypothesis.toString()) + score.getAccuracy();
@@ -94,7 +94,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 //		OWLAxiom ax2 = ax.getAnnotatedAxiom(Collections.singleton(anno));
 		OWLAxiom ax3 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.confidence, ind, score.getAccuracy());
 		
-		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		List<OWLAxiom> axioms = new ArrayList<>();
 		axioms.add(ax1);
 		axioms.add(ax2);
 		axioms.add(ax3);
@@ -144,10 +144,10 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 
 	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<>();
 		
 		//get the currently best evaluated axioms
-		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom<T>>(evaluatedAxioms);
+		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<>(evaluatedAxioms);
 		
 		for(EvaluatedAxiom<T> evAx : orderedEvaluatedAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){

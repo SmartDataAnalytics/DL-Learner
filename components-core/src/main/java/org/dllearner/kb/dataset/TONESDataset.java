@@ -23,9 +23,7 @@ public class TONESDataset extends AbstractOWLOntologyDataset{
 			try {
 				String name = URLEncoder.encode(entry.getOntologyShortName(), "UTF-8");
 				ontologyURLs.put(entry.getPhysicalURI().toURL(), name);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (UnsupportedEncodingException e) {
+			} catch (MalformedURLException | UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}

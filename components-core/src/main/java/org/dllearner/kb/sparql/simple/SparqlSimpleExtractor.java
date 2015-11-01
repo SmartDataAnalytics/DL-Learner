@@ -66,16 +66,12 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
     }
 
-    /**
-     * @param args
-     * @throws ComponentInitException
-     */
     public static void main(String[] args) throws ComponentInitException {
         SparqlSimpleExtractor extractor = new SparqlSimpleExtractor();
         extractor.setEndpointURL("http://live.dbpedia.org/sparql");
         extractor.setRecursionDepth(1);
         extractor.setDefaultGraphURI("http://dbpedia.org");
-        List<String> instances = new ArrayList<String>(7);
+        List<String> instances = new ArrayList<>(7);
         instances.add("http://dbpedia.org/resource/Democritus");
         instances.add("http://dbpedia.org/resource/Zeno_of_Elea");
         instances.add("http://dbpedia.org/resource/Plato");
@@ -86,7 +82,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
         extractor.setInstances(instances);
         extractor.init();
-        List<String> individuals = new LinkedList<String>();
+        List<String> individuals = new LinkedList<>();
         individuals.add("People");
         individuals.add("Animals");
         extractor.setInstances(individuals);
@@ -94,8 +90,8 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
     }
 
     public Set<String> difference(Set<String> alreadyQueriedIndividuals, OntModel model) {
-        Set<String> candidates = new HashSet<String>();
-        Set<String> result = new HashSet<String>();
+        Set<String> candidates = new HashSet<>();
+        Set<String> result = new HashSet<>();
         for (ResIterator it = model.listSubjects(); it.hasNext(); ) {
             candidates.add(it.next().getURI());
         }
@@ -149,8 +145,8 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         Monitor monQueryingABox;
         QueryExecutor executor = new QueryExecutor();
         String queryString;
-        Set<String> instancesSet = new HashSet<String>(instances);
-        Set<String> alreadyQueried = new HashSet<String>();
+        Set<String> instancesSet = new HashSet<>(instances);
+        Set<String> alreadyQueried = new HashSet<>();
         Monitor typizeModel;
         if (sparqlQuery == null) {
             ABoxQueryGenerator aGenerator = new ABoxQueryGenerator();

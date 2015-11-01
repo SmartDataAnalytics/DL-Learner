@@ -40,7 +40,7 @@ public interface FuzzyIndividualReasoner {
 	 * @param individual An individual.
 	 * @return fuzzy membership degree of <code>individual</code> satisfying <code>description</code> [0-1].
 	 */
-	public double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual);
+	double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual);
 	
-	public SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept);
+	SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept);
 }

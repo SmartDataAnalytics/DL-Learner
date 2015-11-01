@@ -43,7 +43,7 @@ public class Manipulator {
 	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(Manipulator.class);
-	private List<Rule> rules = new ArrayList<Rule>();
+	private List<Rule> rules = new ArrayList<>();
 	
 	private Manipulator() {
 	}
@@ -134,7 +134,7 @@ public class Manipulator {
 	
 	public synchronized void addRule(Rule newRule){
 		rules.add(newRule);
-		List<Rule> l = new ArrayList<Rule>();
+		List<Rule> l = new ArrayList<>();
 		
 		for (Months month : Rule.MONTHS) {
 			for (Rule rule : rules) {

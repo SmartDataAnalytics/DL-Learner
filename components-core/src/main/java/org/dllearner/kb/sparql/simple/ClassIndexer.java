@@ -53,12 +53,12 @@ public class ClassIndexer {
     private String language = null;
 
     //Not implemented
-    private Map<String, String> transform = new HashMap<String, String>();
+    private Map<String, String> transform = new HashMap<>();
     //Not implemented
-    private Set<String> remove = new HashSet<String>();
+    private Set<String> remove = new HashSet<>();
 
     //internal variables
-    private Map<String, OntModel> classUriToClassHierarchy = new HashMap<String, OntModel>();
+    private Map<String, OntModel> classUriToClassHierarchy = new HashMap<>();
 
     public ClassIndexer() {
     }
@@ -164,7 +164,7 @@ public class ClassIndexer {
             this.uri = me.getURI();
             label = me.getLabel(language);
             comment = me.getComment(language);
-            parents = new ArrayList<Tree>();
+            parents = new ArrayList<>();
 
             Set<OntClass> superClasses = me.listSuperClasses(true).toSet();
             for (OntClass s : superClasses) {

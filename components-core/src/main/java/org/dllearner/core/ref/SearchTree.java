@@ -13,7 +13,7 @@ public class SearchTree<S, T extends SearchTreeNode<S>> {
 	private SortedSet<T> tree;
 	
 	public SearchTree(Comparator<T> comparator) {
-		tree = new TreeSet<T>(comparator);
+		tree = new TreeSet<>(comparator);
 	}
 	
 	public boolean addNode(T node) {

@@ -46,9 +46,9 @@ public class ClassNode extends Node {
 	private static Logger logger = Logger
 		.getLogger(ClassNode.class);
 	
-	List<ObjectPropertyNode> classProperties = new ArrayList<ObjectPropertyNode>();
-	List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
-	List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	List<ObjectPropertyNode> classProperties = new ArrayList<>();
+	List<DatatypePropertyNode> datatypeProperties = new ArrayList<>();
+	List<BlankNode> blankNodes = new ArrayList<>();
 	
 	public ClassNode(String uri) {
 		super(uri);
@@ -62,7 +62,7 @@ public class ClassNode extends Node {
 		// see manipulator
 		newTuples = manipulator.manipulate(this, newTuples);
 			
-		List<Node> newNodes = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
 		Node tmp;
 		for (RDFNodeTuple tuple : newTuples) {
 			if((tmp = processTuple(tuple,tupelAquisitor.isDissolveBlankNodes()))!= null) {
@@ -114,7 +114,7 @@ public class ClassNode extends Node {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		return new ArrayList<BlankNode>();
+		return new ArrayList<>();
 	}
 	
 
@@ -126,7 +126,7 @@ public class ClassNode extends Node {
 	 */
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> returnSet = new TreeSet<String>();
+		SortedSet<String> returnSet = new TreeSet<>();
 		String subject = getNTripleForm();
 		returnSet.add(subject+"<" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_CLASS + ">.");
 

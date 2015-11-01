@@ -610,6 +610,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         		for (int i = 1; i < operands.size(); i++) {
         			tmp.retainAll(getInstances(operands.get(i), direct).getNodes());
 				}
+                result.addAllNodes(tmp);
         	} else if(ce instanceof OWLObjectUnionOf){
         		Set<OWLClassExpression> operands = ((OWLObjectUnionOf) ce).getOperands();
         		

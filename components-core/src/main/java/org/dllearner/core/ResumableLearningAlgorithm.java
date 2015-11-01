@@ -31,7 +31,7 @@ public interface ResumableLearningAlgorithm {
 	 * Pauses the algorithm (not all algorithms need to implement
 	 * this operation).
 	 */
-	public void pause();	
+	void pause();
 	
 	/**
 	 * Resumes the algorithm (not all algorithms need to implement
@@ -40,6 +40,6 @@ public interface ResumableLearningAlgorithm {
 	 * reached. It will run until paused, stopped, or terminated
 	 * again.
 	 */
-	public void resume();
+	void resume();
 	
 }

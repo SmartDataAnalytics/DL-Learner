@@ -46,7 +46,7 @@ public class Manager {
 	private Configuration configuration;
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
-	private List<Node> seedNodes = new ArrayList<Node>();
+	private List<Node> seedNodes = new ArrayList<>();
 	private boolean stop = false;
 	
 	private ProgressMonitor mon;
@@ -90,7 +90,7 @@ public class Manager {
 	
 
 	public List<Node> extract(Set<String> instances) {
-		List<Node> allExtractedNodes = new ArrayList<Node>();
+		List<Node> allExtractedNodes = new ArrayList<>();
 		logger.info("Start extracting "+instances.size() + " instances ");
 		if(mon != null){
 			mon.setNote("Start extracting "+instances.size() + " instances ");
@@ -151,7 +151,7 @@ public class Manager {
 	}
 	
 	public String getNTripleForNodes(List<Node> nodes){
-		SortedSet<String> tripleCollector = new TreeSet<String>();
+		SortedSet<String> tripleCollector = new TreeSet<>();
 		for (Node n : nodes) {
 			tripleCollector.addAll(n.toNTriple());
 		}

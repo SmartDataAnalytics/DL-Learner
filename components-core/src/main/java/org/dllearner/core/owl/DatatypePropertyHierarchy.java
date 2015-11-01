@@ -51,11 +51,11 @@ public class DatatypePropertyHierarchy extends AbstractHierarchy<OWLDataProperty
 	}
 	
 	public SortedSet<OWLDataProperty> getMoreGeneralRoles(OWLDataProperty role) {
-		return new TreeSet<OWLDataProperty>(getParents(role));	
+		return new TreeSet<>(getParents(role));
 	}
 	
 	public SortedSet<OWLDataProperty> getMoreSpecialRoles(OWLDataProperty role) {
-		return new TreeSet<OWLDataProperty>(getChildren(role));
+		return new TreeSet<>(getChildren(role));
 	}	
 	
 	public boolean isSubpropertyOf(OWLDataProperty subProperty, OWLDataProperty superProperty) {

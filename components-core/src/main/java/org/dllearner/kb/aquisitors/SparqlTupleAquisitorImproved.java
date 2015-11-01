@@ -44,7 +44,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 	private static Logger logger = Logger.getLogger(SparqlTupleAquisitorImproved.class);
-	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<String, SortedSet<RDFNodeTuple>>();
+	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<>();
 	int recursionDepth;
 	
 
@@ -147,7 +147,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 		
 		if(set==null){
-			set = new TreeSet<RDFNodeTuple>();
+			set = new TreeSet<>();
 			set.add(tuple);
 			resources.put(uri, set );
 			

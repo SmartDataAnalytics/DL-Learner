@@ -72,9 +72,8 @@ public abstract class AbstractSampleGenerator {
 	/**
 	 * Computes a sample of the knowledge base, i.e. it contains only facts
 	 * about the positive and negative individuals.
-	 * @param posExamples
-	 * @param negExamples
-	 * @return
+	 * @param individuals the individuals
+	 * @return a sample ontology of the knowledge bas
 	 */
 	public OWLOntology getSample(Set<OWLIndividual> individuals) {
 		return OwlApiJenaUtils.getOWLOntology(getSampleModel(individuals));
@@ -104,7 +103,7 @@ public abstract class AbstractSampleGenerator {
 		}
 		
 		StmtIterator iterator = model.listStatements();
-		List<Statement> toAdd = new ArrayList<Statement>();
+		List<Statement> toAdd = new ArrayList<>();
 		while(iterator.hasNext()) {
 			Statement st = iterator.next();
 			if(st.getObject().isLiteral()) {

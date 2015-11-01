@@ -157,16 +157,16 @@ public class AnnComponentManager {
 			}
 		}
 		// conversion of class strings to objects
-		components = new TreeSet<Class<? extends Component>>(new Comparator<Class<? extends Component>>() {
+		components = new TreeSet<>(new Comparator<Class<? extends Component>>() {
 
 			@Override
 			public int compare(Class<? extends Component> o1,
-					Class<? extends Component> o2) {
+							   Class<? extends Component> o2) {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
-		componentNames = new DualHashBidiMap<Class<? extends Component>, String>();
-		componentNamesShort = new DualHashBidiMap<Class<? extends Component>, String>();
+		componentNames = new DualHashBidiMap<>();
+		componentNamesShort = new DualHashBidiMap<>();
 		for (String componentClassName : componentClassNames) {
 			try {
 				Class<? extends Component> component = Class.forName(componentClassName).asSubclass(Component.class);
@@ -270,7 +270,7 @@ public class AnnComponentManager {
      */
     public Collection<Class<? extends Component>> getComponentsOfType(Class type) {
 
-        Collection<Class<? extends Component>> result = new ArrayList<Class<? extends Component>>();
+        Collection<Class<? extends Component>> result = new ArrayList<>();
         for (Class<? extends Component> component : components) {
             if (type.isAssignableFrom(component)) {
                 result.add(component);
@@ -365,7 +365,7 @@ public class AnnComponentManager {
 	 * @return The list of core interfaces the component implemnets.
 	 */
 	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
-		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
+		List<Class<? extends Component>> types = new LinkedList<>();
 		for(Class c : coreComponentClasses) {
 			if(c.isAssignableFrom(component)) {
 				types.add(c);
@@ -376,7 +376,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getName(Class<? extends Component> component){
@@ -389,7 +389,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getName(Component component){
@@ -398,7 +398,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getShortName(Class<? extends Component> component){
@@ -411,7 +411,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the short name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Short name of the component.
 	 */
 	public static String getShortName(Component component){
@@ -420,7 +420,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getDescription(Class<? extends Component> component){
@@ -430,7 +430,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the description of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return OWLClassExpression of the component.
 	 */
 	public static String getDescription(Component component){
@@ -439,7 +439,7 @@ public class AnnComponentManager {
 	
 	/**
 	 * Returns the config options of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return OWLClassExpression of the component.
 	 */
 	public static Set<Field> getConfigOptions(Class<? extends Component> component){
@@ -458,7 +458,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the version of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Version of the component.
 	 */
 	public static double getVersion(Class<? extends Component> component){
@@ -468,7 +468,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the version of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Version of the component.
 	 */
 	public static double getVersion(Component component){

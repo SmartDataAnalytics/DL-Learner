@@ -21,7 +21,7 @@ public class QueryExecutionFactoryHttp
 {
     private String service;
 
-    private List<String> defaultGraphs = new ArrayList<String>();
+    private List<String> defaultGraphs = new ArrayList<>();
 
     public QueryExecutionFactoryHttp(String service) {
         this(service, Collections.<String>emptySet());
@@ -33,7 +33,7 @@ public class QueryExecutionFactoryHttp
 
     public QueryExecutionFactoryHttp(String service, Collection<String> defaultGraphs) {
         this.service = service;
-        this.defaultGraphs = new ArrayList<String>(defaultGraphs);
+        this.defaultGraphs = new ArrayList<>(defaultGraphs);
         Collections.sort(this.defaultGraphs);
     }
 

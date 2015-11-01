@@ -40,7 +40,7 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 		preProcess();
 		
 		// start with empty search tree
-		searchTree = new SearchTree<T, SearchTreeNode<T>>(heuristic);
+		searchTree = new SearchTree<>(heuristic);
 	
 		// add start node to search tree
 		searchTree.addNode(startNode);
@@ -70,9 +70,9 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 	 * Checks whether the refinement is allowed to be added to the search tree 
 	 * first by calling {@link #isValid(T refinement)}}, and if yes creates a
 	 * new node which is added to the search tree.
-	 * @param refinement
-	 * @param parentNode
-	 * @return
+	 * @param refinement the refinement
+	 * @param parentNode the parent node
+	 * @return whether the refinement is allowed to be added to the search tree
 	 */
 	protected boolean addToSearchTree(T refinement, SearchTreeNode<T> parentNode) {
 		// check if the refinement is allowed
@@ -92,7 +92,7 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 	}
 	
 	protected SearchTreeNode<T> createNode(T refinement, SearchTreeNode<T> parentNode) {
-		return new SearchTreeNodeSimple<T>(refinement, parentNode);
+		return new SearchTreeNodeSimple<>(refinement, parentNode);
 	}
 	
 	protected void preProcess() {};
@@ -106,14 +106,14 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 	
 	/**
 	 * Checks whether the object is valid for further refinement
-	 * @param refinement
-	 * @return
+	 * @param refinement the refinement
+	 * @return whether the object is valid for further refinement
 	 */
 	protected abstract boolean isValid(T refinement);
 	
 	/**
 	 * Checks whether the algorithm has to be terminated.
-	 * @return
+	 * @return whether the algorithm has to be terminated
 	 */
 	protected abstract boolean terminationCriteriaSatisfied();
 	

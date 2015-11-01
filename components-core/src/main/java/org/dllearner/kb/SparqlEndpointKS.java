@@ -64,10 +64,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	private URL url;
 
 	@ConfigOption(name = "defaultGraphURIs", description="a list of default graph URIs", defaultValue="{}", required=false)
-	private List<String> defaultGraphURIs = new LinkedList<String>();
+	private List<String> defaultGraphURIs = new LinkedList<>();
 
 	@ConfigOption(name = "namedGraphURIs", description="a list of named graph URIs", defaultValue="{}", required=false)
-	private List<String> namedGraphURIs = new LinkedList<String>();
+	private List<String> namedGraphURIs = new LinkedList<>();
 
 	// some parameters for the query execution
 	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)

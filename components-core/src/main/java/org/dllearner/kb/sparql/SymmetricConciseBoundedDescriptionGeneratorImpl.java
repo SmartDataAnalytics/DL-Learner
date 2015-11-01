@@ -71,9 +71,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 				all.add(model);
 				i++;
 			}
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
-		} catch (SQLException e) {
+		} catch (UnsupportedEncodingException | SQLException e) {
 			logger.error(e);
 		}
 		return all;
@@ -102,9 +100,7 @@ public class SymmetricConciseBoundedDescriptionGeneratorImpl implements ConciseB
 				all.add(model);
 				i++;
 			}
-		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
-		} catch (SQLException e) {
+		} catch (UnsupportedEncodingException | SQLException e) {
 			logger.error(e);
 		}
 		return all;

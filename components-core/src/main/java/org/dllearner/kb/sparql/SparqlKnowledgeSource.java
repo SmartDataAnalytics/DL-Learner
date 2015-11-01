@@ -73,18 +73,8 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
     private byte[] ontologyBytes;
     private OntologyToByteConverter converter = new SimpleOntologyToByteConverter();
 
-//	private SparqlKnowledgeSourceConfigurator configurator;
 
-	/**
-	 * @return the configurator for this Knowledgesource
-	 */
-//	public SparqlKnowledgeSourceConfigurator getConfigurator() {
-//		return configurator;
-//	}
-
-	public SparqlKnowledgeSource() {
-//		this.configurator = new SparqlKnowledgeSourceConfigurator(this);
-	}
+	public SparqlKnowledgeSource() {}
 
 	public SparqlKnowledgeSource(URL url, Set<String> instances) {
 		this.url = url;
@@ -135,9 +125,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private String predefinedEndpoint;
 
-	private Collection<String> defaultGraphURIs = new LinkedList<String>();
+	private Collection<String> defaultGraphURIs = new LinkedList<>();
 
-	private Collection<String> namedGraphURIs = new LinkedList<String>();
+	private Collection<String> namedGraphURIs = new LinkedList<>();
 
 	private boolean useCache = true;
 
@@ -147,19 +137,19 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 	private String predefinedFilter;
 
-	private Set<String> objList = new TreeSet<String>();
+	private Set<String> objList = new TreeSet<>();
 
-	private Set<String> predList = new TreeSet<String>() ;
+	private Set<String> predList = new TreeSet<>() ;
 
 	private boolean useLits = true;
 
 	private String predefinedManipulator;
 
-	private List<StringTuple> replacePredicate  = new LinkedList<StringTuple>();
+	private List<StringTuple> replacePredicate  = new LinkedList<>();
 
 	private boolean useImprovedSparqlTupelAquisitor;
 
-	private List<StringTuple> replaceObject  = new LinkedList<StringTuple>();
+	private List<StringTuple> replaceObject  = new LinkedList<>();
 
 
 	public static String getName() {
@@ -207,7 +197,7 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 
 			// the actual extraction is started here
 			Monitor extractionTime = JamonMonitorLogger.getTimeMonitor(SparqlKnowledgeSource.class, "total extraction time").start();
-			List<Node> seedNodes=new ArrayList<Node>();
+			List<Node> seedNodes= new ArrayList<>();
 
 			//if(!threaded){
 				seedNodes = m.extract(instances);
@@ -322,9 +312,9 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	public SparqlEndpoint getSparqlEndpoint(){
 		if(endpoint==null) {
 			if (predefinedEndpoint == null) {
-				endpoint = new SparqlEndpoint(getURL(), new LinkedList<String>(
+				endpoint = new SparqlEndpoint(getURL(), new LinkedList<>(
 						defaultGraphURIs),
-						new LinkedList<String>(namedGraphURIs));
+						new LinkedList<>(namedGraphURIs));
 			} else {
 				endpoint = SparqlEndpoint.getEndpointByName(predefinedEndpoint);
 				// System.out.println(endpoint);

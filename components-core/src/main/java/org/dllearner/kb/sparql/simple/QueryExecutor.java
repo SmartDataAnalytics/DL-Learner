@@ -41,8 +41,6 @@ public class QueryExecutor {
 
 			log.debug("Qexec: {}", qExec.getQuery());
 			qExec.execConstruct(model);
-		} catch (QueryParseException e) {
-			log.warn("Query failed (skipping):\n" + queryString, e);
 		} catch (JenaException e) {
 			log.warn("Query failed (skipping):\n" + queryString, e);
 		}

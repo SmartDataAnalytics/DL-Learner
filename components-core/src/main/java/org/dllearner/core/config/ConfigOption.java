@@ -44,7 +44,7 @@ public @interface ConfigOption {
 
     /**
      * The description of this config option
-     * @return
+     * @return The description of this config option
      */
     String description() default "no description available";
 

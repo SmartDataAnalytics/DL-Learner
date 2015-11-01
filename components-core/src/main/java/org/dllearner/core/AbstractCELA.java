@@ -242,7 +242,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions, boolean filterNonMinimalDescriptions) {
 		List<OWLClassExpression> currentlyBest = getCurrentlyBestDescriptions();
-		List<OWLClassExpression> returnList = new LinkedList<OWLClassExpression>();
+		List<OWLClassExpression> returnList = new LinkedList<>();
 		for(OWLClassExpression ed : currentlyBest) {
 			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
@@ -361,7 +361,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * @return All classes implementing learning problems, which are supported by this learning algorithm.
 	 */
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		return new LinkedList<Class<? extends AbstractClassExpressionLearningProblem>>();
+		return new LinkedList<>();
 	}
 	
 	// central function for printing description
@@ -653,22 +653,23 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	}
     
     /**
-	 * Replace role fillers with the range of the property, if exists.
-	 * @param d
-	 * @return
+	 * The goal of this method is to rewrite the class expression CE, to get a more informative one by e.g.
+	 * <ul><li>replacing the role fillers in CE with the range of the property, if exists.</li></ul>
+	 * @param ce the class expression
+	 * @return the modified class expression
 	 */
-	protected OWLClassExpression getNiceDescription(OWLClassExpression d){
-		OWLClassExpression rewrittenClassExpression = d;
-		if(d instanceof OWLObjectIntersectionOf){
-			Set<OWLClassExpression> newOperands = new TreeSet<OWLClassExpression>(((OWLObjectIntersectionOf) d).getOperands());
-			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) d).getOperands()) {
+	protected OWLClassExpression getNiceDescription(OWLClassExpression ce){
+		OWLClassExpression rewrittenClassExpression = ce;
+		if(ce instanceof OWLObjectIntersectionOf){
+			Set<OWLClassExpression> newOperands = new TreeSet<>(((OWLObjectIntersectionOf) ce).getOperands());
+			for (OWLClassExpression operand : ((OWLObjectIntersectionOf) ce).getOperands()) {
 				newOperands.add(getNiceDescription(operand));
 			}
 			rewrittenClassExpression = dataFactory.getOWLObjectIntersectionOf(newOperands);
-		} else if(d instanceof OWLObjectSomeValuesFrom) {
+		} else if(ce instanceof OWLObjectSomeValuesFrom) {
 			// \exists r.\bot \equiv \bot
-			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) d).getProperty().asOWLObjectProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) d).getFiller();
+			OWLObjectProperty property = ((OWLObjectSomeValuesFrom) ce).getProperty().asOWLObjectProperty();
+			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
 			if(filler.isOWLThing()) {
 				OWLClassExpression range = reasoner.getRange(property);
 				filler = range;

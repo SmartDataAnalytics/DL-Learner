@@ -96,7 +96,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	 * evaluated hypothesis of the correct type (ClassLearningProblem
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
 	 * @param hypothesis Hypothesis to evaluate.
-	 * @return
+	 * @return an evaluated hypothesis
 	 */
 	public W evaluate(V hypothesis){
 		return evaluate(hypothesis, 1.0);
@@ -108,7 +108,7 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	 * returns EvaluatedDescriptionClass instead of generic EvaluatedDescription).
 	 * @param hypothesis Hypothesis to evaluate.
 	 * @param noise the (approximated) value of noise within the examples
-	 * @return
+	 * @return an evaluated hypothesis
 	 */
 	public W evaluate(V hypothesis, double noise) {
 		return null;

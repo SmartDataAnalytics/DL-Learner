@@ -19,7 +19,7 @@ public class SchemaIndexer {
     //static instantiation
     private static ClassIndexer classIndexer = new ClassIndexer();
     //remember ontologies
-    private static Set<String> alreadyIndexed = new HashSet<String>();
+    private static Set<String> alreadyIndexed = new HashSet<>();
     //set or list of urls for the ontologies
     private List<String> ontologySchemaUrls;
 

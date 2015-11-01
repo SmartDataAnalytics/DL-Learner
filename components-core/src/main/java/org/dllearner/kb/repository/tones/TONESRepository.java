@@ -31,7 +31,7 @@ public class TONESRepository implements OntologyRepository{
 
 
     public TONESRepository() {
-        entries = new ArrayList<RepositoryEntry>();
+        entries = new ArrayList<>();
         iriMapper = new RepositoryIRIMapper();
     }
 
@@ -57,7 +57,7 @@ public class TONESRepository implements OntologyRepository{
 
 
     public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<OntologyRepositoryEntry>();
+        List<OntologyRepositoryEntry> ret = new ArrayList<>();
         ret.addAll(entries);
         return ret;
     }

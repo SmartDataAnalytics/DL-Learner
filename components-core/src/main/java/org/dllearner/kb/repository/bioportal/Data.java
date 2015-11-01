@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Data {
-	List<OntologyBean> list = new ArrayList<OntologyBean>();
+	List<OntologyBean> list = new ArrayList<>();
 
 	public void setOntologyBeans(List<OntologyBean> list) {
 		this.list = list;

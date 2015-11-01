@@ -63,6 +63,6 @@ public interface Oracle {
 	 * returned.
 	 *
 	 */
-	public List<Double> classifyIndividuals(List<OWLIndividual> individuals);
+	List<Double> classifyIndividuals(List<OWLIndividual> individuals);
 	
 }

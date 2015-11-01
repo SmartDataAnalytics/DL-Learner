@@ -49,7 +49,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 	 * union of the subclasses ex: (c sub b); (b sub a ) then: (a AND b) will be
 	 * ((a OR b OR c) AND (b OR a))
 	 * 
-	 * @param descriptionKBSyntax
+	 * @param descriptionKBSyntax the description in KB syntax
 	 * @param maxDepth
 	 *            determines the depth of retrieval, if 1 classes are replaced by direct subclasses only,
 	 *            1 is HIGHLY RECOMMENDED FOR LARGE HIERARCHIES)
@@ -61,7 +61,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 		String returnValue = "";
 		String currentconcept = "";
 		int lastPos = 0;
-		SortedSet<String> subclasses = new TreeSet<String>();
+		SortedSet<String> subclasses = new TreeSet<>();
 
 		// searches for everything in "", but backwards
 		while ((lastPos = descriptionKBSyntax.lastIndexOf(quote)) != -1) {
@@ -85,7 +85,7 @@ public class SparqlQueryDescriptionConvertRDFS {
 				currentconcept = "\"" + currentconcept + "\"";
 			// replace with union
 			else {
-				Set<OWLClassExpression> nc = new HashSet<OWLClassExpression>();
+				Set<OWLClassExpression> nc = new HashSet<>();
 				for (String one : subclasses) {
 					nc.add(new OWLClassImpl(IRI.create(one)));
 				}

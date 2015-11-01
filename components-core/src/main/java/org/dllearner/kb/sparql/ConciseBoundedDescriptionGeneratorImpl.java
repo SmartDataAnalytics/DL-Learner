@@ -42,7 +42,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Model baseModel;
 	private QueryExecutionFactory qef;
 	
-	private Set<String> propertyBlacklist = new TreeSet<String>();
+	private Set<String> propertyBlacklist = new TreeSet<>();
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());

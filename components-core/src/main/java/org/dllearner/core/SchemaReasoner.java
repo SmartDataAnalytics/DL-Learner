@@ -46,7 +46,7 @@ public interface SchemaReasoner {
 	 * have instances.
 	 * @return The set of inconsistent classes.
 	 */
-	public Set<OWLClass> getInconsistentClasses();	
+	Set<OWLClass> getInconsistentClasses();
 	
 	/**
 	 * Returns the domain of this object property. (Theoretically, there could
@@ -55,28 +55,28 @@ public interface SchemaReasoner {
 	 * @param objectProperty An object property in the knowledge base.
 	 * @return The rdfs:domain of <code>objectProperty</code>
 	 */
-	public OWLClassExpression getDomain(OWLObjectProperty objectProperty);
+	OWLClassExpression getDomain(OWLObjectProperty objectProperty);
 	
 	/**
 	 * Returns the domain of this data property.
 	 * @param datatypeProperty An data property in the knowledge base.
 	 * @return The rdfs:domain of <code>datatypeProperty</code>
-	 */	
-	public OWLClassExpression getDomain(OWLDataProperty datatypeProperty);
+	 */
+	OWLClassExpression getDomain(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Returns the range of this object property.
 	 * @param objectProperty An object property in the knowledge base.
 	 * @return The rdfs:range of <code>objectProperty</code>
-	 */	
-	public OWLClassExpression getRange(OWLObjectProperty objectProperty);
+	 */
+	OWLClassExpression getRange(OWLObjectProperty objectProperty);
 	
 	/**
 	 * Returns the range of this data property.
 	 * @param datatypeProperty An data property in the knowledge base.
 	 * @return The rdfs:range of <code>datatypeProperty</code>
-	 */		
-	public OWLDataRange getRange(OWLDataProperty datatypeProperty);
+	 */
+	OWLDataRange getRange(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Checks whether <code>superClass</code> is a super class of <code>subClass</code>.
@@ -84,7 +84,7 @@ public interface SchemaReasoner {
 	 * @param subClass The (supposed) sub class.
 	 * @return Whether <code>superClass</code> is a super class of <code>subClass</code>.
 	 */
-	public boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);	
+	boolean isSuperClassOf(OWLClassExpression superClass, OWLClassExpression subClass);
 	
 	/**
 	 * Checks whether <code>class1</code> is equivalent to <code>class2</code>.
@@ -92,7 +92,7 @@ public interface SchemaReasoner {
 	 * @param class2 The second class2.
 	 * @return Whether <code>class1</code> is equivalent to <code>class2</code>.
 	 */
-	public boolean isEquivalentClass(OWLClassExpression class1, OWLClassExpression class2);	
+	boolean isEquivalentClass(OWLClassExpression class1, OWLClassExpression class2);
 	
 	/**
 	 * Checks whether <code>class1</code> is disjoint with <code>class2</code>.
@@ -100,14 +100,14 @@ public interface SchemaReasoner {
 	 * @param class2 The second class2.
 	 * @return Whether <code>class1</code> is disjoint with <code>class2</code>.
 	 */
-	public boolean isDisjoint(OWLClass class1, OWLClass class2);
+	boolean isDisjoint(OWLClass class1, OWLClass class2);
 		
 	/**
 	 * Returns all asserted owl:equivalence class axioms for the given class.
 	 * @param namedClass A named class in the background knowledge.
 	 * @return A set of descriptions asserted to be equal to the named class.
 	 */
-	public Set<OWLClassExpression> getAssertedDefinitions(OWLClass namedClass);
+	Set<OWLClassExpression> getAssertedDefinitions(OWLClass namedClass);
 	
 	/**
 	 * Checks which of <code>superClasses</code> are super classes of <code>subClass</code>
@@ -115,14 +115,14 @@ public interface SchemaReasoner {
 	 * @param subClasses The (supposed) sub class.
 	 * @return The subset of <code>superClasses</code>, which satisfy the superclass-subclass relationship.
 	 */
-	public Set<OWLClassExpression> isSuperClassOf(Set<OWLClassExpression> superClasses, OWLClassExpression subClasses);	
+	Set<OWLClassExpression> isSuperClassOf(Set<OWLClassExpression> superClasses, OWLClassExpression subClasses);
 
 	/**
 	 * Computes and returns the class hierarchy of the knowledge base.
 	 *
 	 * @return The subsumption hierarchy of this knowledge base.
 	 */
-	public Hierarchy getClassHierarchy();	
+	Hierarchy getClassHierarchy();
 	
 	/**
 	 * Returns direct super classes in the class hierarchy.
@@ -131,7 +131,7 @@ public interface SchemaReasoner {
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
-	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression description);
+	SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression description);
 
 	/**
 	 * Returns direct sub classes in the class hierarchy.
@@ -140,96 +140,98 @@ public interface SchemaReasoner {
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
-	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression description);
+	SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression description);
 
 	/**
 	 * Computes and returns the object property hierarchy of the knowledge base.
 	 * @return The object property hierarchy of the knowlege base.
 	 */
-	public ObjectPropertyHierarchy getObjectPropertyHierarchy();
+	ObjectPropertyHierarchy getObjectPropertyHierarchy();
 	
 	/**
 	 * Returns more general concepts in the subsumption hierarchy.
 	 * 
-	 * @see OWLObjectPropertyHierarchy#getMoreGeneralRoles(OWLObjectProperty)
+	 * @see ObjectPropertyHierarchy#getMoreGeneralRoles(OWLObjectProperty)
 	 * @param objectProperty
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
-	public SortedSet<OWLObjectProperty> getSuperProperties(OWLObjectProperty objectProperty);
+	SortedSet<OWLObjectProperty> getSuperProperties(OWLObjectProperty objectProperty);
 
 	/**
 	 * Returns more special concepts in the subsumption hierarchy.
 	 * 
-	 * @see OWLObjectPropertyHierarchy#getMoreSpecialRoles(OWLObjectProperty)
+	 * @see ObjectPropertyHierarchy#getMoreSpecialRoles(OWLObjectProperty)
 	 * @param objectProperty
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
-	public SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty objectProperty);
+	SortedSet<OWLObjectProperty> getSubProperties(OWLObjectProperty objectProperty);
 
 	/**
 	 * TODO Outdated in OWL 2, because the universal role is the most general.
-	 * @see OWLObjectPropertyHierarchy#getMostGeneralRoles()
+	 * @see ObjectPropertyHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
-	public SortedSet<OWLObjectProperty> getMostGeneralProperties();
+	SortedSet<OWLObjectProperty> getMostGeneralProperties();
 
 	/**
 	 * TODO Outdated in OWL, because the bottom role is the most specific.
-	 * @see OWLObjectPropertyHierarchy#getMostSpecialRoles()
+	 * @see ObjectPropertyHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
-	public SortedSet<OWLObjectProperty> getMostSpecialProperties();
+	SortedSet<OWLObjectProperty> getMostSpecialProperties();
 
 	/**
 	 * Computes and returns the data property hierarchy of the knowledge base.
 	 * @return The data property hierarchy of the knowlege base.
-	 */	
-	public DatatypePropertyHierarchy getDatatypePropertyHierarchy();
+	 */
+	DatatypePropertyHierarchy getDatatypePropertyHierarchy();
 	
 	/**
 	 * Returns more general concepts in the subsumption hierarchy.
 	 * 
-	 * @see OWLObjectPropertyHierarchy#getMoreGeneralRoles(OWLObjectProperty)
+	 * @see DatatypePropertyHierarchy#getMoreGeneralRoles(OWLDataProperty)
 	 * @param dataProperty
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more general concepts.
 	 */
-	public SortedSet<OWLDataProperty> getSuperProperties(OWLDataProperty dataProperty);
+	SortedSet<OWLDataProperty> getSuperProperties(OWLDataProperty dataProperty);
 
 	/**
 	 * Returns more special concepts in the subsumption hierarchy.
 	 * 
-	 * @see OWLObjectPropertyHierarchy#getMoreSpecialRoles(OWLObjectProperty)
+	 * @see DatatypePropertyHierarchy#getMoreSpecialRoles(OWLDataProperty)
 	 * @param dataProperty
 	 *            Atomic concept, top, or bottom.
 	 * @return A set of more special concepts.
 	 */
-	public SortedSet<OWLDataProperty> getSubProperties(OWLDataProperty dataProperty);
+	SortedSet<OWLDataProperty> getSubProperties(OWLDataProperty dataProperty);
 
 	/**
-	 * @see OWLObjectPropertyHierarchy#getMostGeneralRoles()
+	 * @see DatatypePropertyHierarchy#getMostGeneralRoles()
 	 * @return The most general roles.
 	 */
-	public SortedSet<OWLDataProperty> getMostGeneralDatatypeProperties();
+	SortedSet<OWLDataProperty> getMostGeneralDatatypeProperties();
 
 	/**
-	 * @see OWLObjectPropertyHierarchy#getMostSpecialRoles()
+	 * @see DatatypePropertyHierarchy#getMostSpecialRoles()
 	 * @return The most special roles.
 	 */
-	public SortedSet<OWLDataProperty> getMostSpecialDatatypeProperties();
+	SortedSet<OWLDataProperty> getMostSpecialDatatypeProperties();
 
 	/**
-	 * @param role
-	 * @return
+	 * Computes all super properties for the given property.
+	 * @param property the property
+	 * @return all super properties
 	 */
-	<T extends OWLProperty> SortedSet<T> getSuperProperties(T role);
+	<T extends OWLProperty> SortedSet<T> getSuperProperties(T property);
 
 	/**
-	 * @param role
-	 * @return
+	 * Computes all sub properties for the given property.
+	 * @param property the property
+	 * @return all sub properties
 	 */
-	<T extends OWLProperty> SortedSet<T> getSubProperties(T role);
+	<T extends OWLProperty> SortedSet<T> getSubProperties(T property);
 	
 }

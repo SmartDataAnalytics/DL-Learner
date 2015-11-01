@@ -31,8 +31,8 @@ public interface Hierarchy<T extends OWLObject> {
 
 	/**
 	 * Checks whether the entity is contained in the hierarchy.
-	 * @param entity
-	 * @return
+	 * @param entity the entity
+	 * @return whether the entity is contained in the hierarchy or not
 	 */
 	boolean contains(T entity);
 

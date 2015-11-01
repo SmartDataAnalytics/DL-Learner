@@ -162,8 +162,8 @@ public class Cache implements Serializable {
 		byte[] result = md5.digest();
 
 		StringBuffer hexString = new StringBuffer();
-		for (int i = 0; i < result.length; i++) {
-			hexString.append(Integer.toHexString(0xFF & result[i]));
+		for (byte aResult : result) {
+			hexString.append(Integer.toHexString(0xFF & aResult));
 		}
 		String str = hexString.toString();
 		hashTime.stop();
@@ -201,14 +201,11 @@ public class Cache implements Serializable {
 			ObjectInputStream o = new ObjectInputStream(fos);
 			entry = (LinkedList<Object>) o.readObject();
 			o.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			if(Files.debug){System.exit(0);}
-		} catch (ClassNotFoundException e) {
+		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			if(Files.debug){System.exit(0);}
 		}
-		
+
 		// TODO: we need to check whether the query is correct
 		// (may not always be the case due to md5 hashing)
 		
@@ -241,7 +238,7 @@ public class Cache implements Serializable {
 		long timestamp = System.currentTimeMillis();
 
 		// create the object which will be serialised
-		LinkedList<Object> list = new LinkedList<Object>();
+		LinkedList<Object> list = new LinkedList<>();
 		list.add(timestamp);
 		list.add(sparqlQuery);
 		list.add(result);
@@ -352,9 +349,9 @@ public class Cache implements Serializable {
 		
 			File f = new File(cacheDir);
 		    String[] files = f.list();
-		    for (int i = 0; i < files.length; i++) {
-		    	Files.deleteFile(new File(cacheDir+"/"+files[i]));
-		    }     
+		for (String file : files) {
+			Files.deleteFile(new File(cacheDir + "/" + file));
+		}
 	}
 	
 	/**

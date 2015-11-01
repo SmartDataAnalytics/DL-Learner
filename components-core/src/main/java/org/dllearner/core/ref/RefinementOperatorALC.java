@@ -38,7 +38,7 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLClass ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		refinements.addAll(reasoner.getSubClasses(ce, true).getFlattened());
 		
@@ -50,14 +50,14 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLObjectIntersectionOf ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		for (OWLClassExpression operand : ce.getOperands()) {
 			// refine operand
 			SortedSet<OWLClassExpression> operandRefinements = refineNode(operand);
 			
 			for (OWLClassExpression operandRefinement : operandRefinements) {
-				Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(ce.getOperands());
+				Set<OWLClassExpression> newOperands = new HashSet<>(ce.getOperands());
 				newOperands.remove(operand);
 				newOperands.add(operandRefinement);
 				
@@ -73,14 +73,14 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLObjectUnionOf ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 
 		for (OWLClassExpression operand : ce.getOperands()) {
 			// refine operand
 			SortedSet<OWLClassExpression> operandRefinements = refineNode(operand);
 			
 			for (OWLClassExpression operandRefinement : operandRefinements) {
-				Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(ce.getOperands());
+				Set<OWLClassExpression> newOperands = new HashSet<>(ce.getOperands());
 				newOperands.remove(operand);
 				newOperands.add(operandRefinement);
 				
@@ -96,7 +96,7 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLObjectSomeValuesFrom ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
@@ -121,7 +121,7 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLObjectAllValuesFrom ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		OWLObjectPropertyExpression property = ce.getProperty();
 		OWLClassExpression filler = ce.getFiller();
@@ -146,7 +146,7 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLDataSomeValuesFrom ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();
@@ -168,7 +168,7 @@ public class RefinementOperatorALC extends ClassExpressionRefinementOperatorBase
 	 */
 	@Override
 	public SortedSet<OWLClassExpression> visit(OWLDataAllValuesFrom ce) {
-		SortedSet<OWLClassExpression> refinements = new TreeSet<OWLClassExpression>();
+		SortedSet<OWLClassExpression> refinements = new TreeSet<>();
 		
 		OWLDataPropertyExpression property = ce.getProperty();
 		OWLDataRange filler = ce.getFiller();

@@ -23,7 +23,7 @@ public class OntologyBean implements Comparable<OntologyBean> {
 	private Integer id;
 	private Integer ontologyId;
 	// virtual view id(s) on the virtual ontology
-	private List<Integer> virtualViewIds = new ArrayList<Integer>(0);
+	private List<Integer> virtualViewIds = new ArrayList<>(0);
 	private Integer internalVersionNumber;
 	private List<Integer> userIds;
 	private String versionNumber;
@@ -63,18 +63,18 @@ public class OntologyBean implements Comparable<OntologyBean> {
 
 	private String viewingRestriction;
 
-	private List<UserEntry> userAcl = new ArrayList<UserEntry>(0);
+	private List<UserEntry> userAcl = new ArrayList<>(0);
 
 	private boolean isView = false;
 
 	// category id(s)
-	private List<Integer> categoryIds = new ArrayList<Integer>(0);
+	private List<Integer> categoryIds = new ArrayList<>(0);
 
 	// group id(s)
-	private List<Integer> groupIds = new ArrayList<Integer>(0);
+	private List<Integer> groupIds = new ArrayList<>(0);
 
 	// file name(s)
-	private List<String> filenames = new ArrayList<String>(0);
+	private List<String> filenames = new ArrayList<>(0);
 
 	// source fileItem
 	// private FileItem fileItem;
@@ -86,10 +86,10 @@ public class OntologyBean implements Comparable<OntologyBean> {
 	private String downloadLocation;
 
 	// views on this ontology version
-	private List<Integer> hasViews = new ArrayList<Integer>(0);
+	private List<Integer> hasViews = new ArrayList<>(0);
 
 	// view specific properties
-	private List<Integer> viewOnOntologyVersionId = new ArrayList<Integer>(0);
+	private List<Integer> viewOnOntologyVersionId = new ArrayList<>(0);
 	private String viewDefinition;
 	private String viewDefinitionLanguage;
 	private String viewGenerationEngine;

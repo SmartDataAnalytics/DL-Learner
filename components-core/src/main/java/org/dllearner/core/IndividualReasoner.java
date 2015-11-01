@@ -46,33 +46,33 @@ public interface IndividualReasoner {
 	 * @param individual An individual in the knowledge base.
 	 * @return Types this individual is instance of.
 	 */
-	public Set<OWLClass> getTypes(OWLIndividual individual);
+	Set<OWLClass> getTypes(OWLIndividual individual);
 	
 	/**
 	 * Checks whether <code>individual</code> is instance of <code>description</code>.
 	 * For instance, "Leipzig" may be an instance of "City".
 	 * 
-	 * @param OWLClassExpression An OWL class description.
+	 * @param description An OWL class description.
 	 * @param individual An individual.
 	 * @return True if the instance has the OWLClassExpression as type and false otherwise.
 	 */
-	public boolean hasType(OWLClassExpression description, OWLIndividual individual);
+	boolean hasType(OWLClassExpression description, OWLIndividual individual);
 	
 	/**
 	 * Performs instance checks on a set of instances (reasoners might be more
 	 * efficient than handling each check separately).
-	 * @param OWLClassExpression An OWL class description.
+	 * @param description An OWL class description.
 	 * @param individuals An individual.
 	 * @return The subset of those instances, which have the given type.
 	 */
-	public SortedSet<OWLIndividual> hasType(OWLClassExpression description, Set<OWLIndividual> individuals);
+	SortedSet<OWLIndividual> hasType(OWLClassExpression description, Set<OWLIndividual> individuals);
 	
 	/**
 	 * Gets all instances of a given class OWLClassExpression in the knowledge base.
-	 * @param OWLClassExpression An OWL class description.
+	 * @param description An OWL class description.
 	 * @return All instances of the class description.
 	 */
-	public SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description);
+	SortedSet<OWLIndividual> getIndividuals(OWLClassExpression description);
 	
 	/**
 	 * Performs a query for all instances of the given class OWLClassExpression and
@@ -81,10 +81,10 @@ public interface IndividualReasoner {
 	 * negation.) This method might be more efficient that performing a 
 	 * two retrievals.
 	 * 
-	 * @param OWLClassExpression An OWL class description.
+	 * @param description An OWL class description.
 	 * @return All instances of the class OWLClassExpression and its negation.
 	 */
-	public SortedSetTuple<OWLIndividual> doubleRetrieval(OWLClassExpression description);	
+	SortedSetTuple<OWLIndividual> doubleRetrieval(OWLClassExpression description);
 	
 	/**
 	 * Returns the set of individuals, which are connect to the given individual
@@ -93,17 +93,17 @@ public interface IndividualReasoner {
 	 * @param objectProperty An object property, e.g. hasChild.
 	 * @return A set of individuals, e.g. {anna, maria}.
 	 */
-	public Set<OWLIndividual> getRelatedIndividuals(OWLIndividual individual,
-			OWLObjectProperty objectProperty);
+	Set<OWLIndividual> getRelatedIndividuals(OWLIndividual individual,
+											 OWLObjectProperty objectProperty);
 	
 	/**
 	 * Returns the set of individuals, which are connect to the given individual
 	 * with the specified data property.
 	 * @param individual An individual, e.g. eric.
-	 * @param datatyoeProperty A data property, e.g. hasIncome.
+	 * @param datatypeProperty A data property, e.g. hasIncome.
 	 * @return A set of individuals, e.g. {48000^^xsd:int}.
-	 */	
-	public Set<OWLLiteral> getRelatedValues(OWLIndividual individual, OWLDataProperty datatypeProperty);
+	 */
+	Set<OWLLiteral> getRelatedValues(OWLIndividual individual, OWLDataProperty datatypeProperty);
 	
 	/**
 	 * A map of properties related to an individual, e.g. 
@@ -113,7 +113,7 @@ public interface IndividualReasoner {
 	 * @return A map of of properties connected to the individual as keys and the individuals
 	 * they point to as values.
 	 */
-	public Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationships(OWLIndividual individual); 
+	Map<OWLObjectProperty,Set<OWLIndividual>> getObjectPropertyRelationships(OWLIndividual individual);
 	
 	/**
 	 * Computes and returns all connections between individuals through the specified
@@ -121,7 +121,7 @@ public interface IndividualReasoner {
 	 * @param objectProperty An object property.
 	 * @return The mapping of individuals to other individuals through this object property.
 	 */
-	public Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembers(OWLObjectProperty objectProperty);
+	Map<OWLIndividual, SortedSet<OWLIndividual>> getPropertyMembers(OWLObjectProperty objectProperty);
 
 	/**
 	 * Computes and returns all connections between individuals and values through the
@@ -129,7 +129,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty  A data property.
 	 * @return The mapping between individuals and values through the given property.
 	 */
-	public Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(OWLDataProperty datatypeProperty);
+	Map<OWLIndividual, SortedSet<OWLLiteral>> getDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
@@ -139,7 +139,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and double values through the given property.
 	 */
-	public Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembers(OWLDataProperty datatypeProperty);
+	Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
@@ -149,7 +149,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and integer values through the given property.
 	 */
-	public Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembers(OWLDataProperty datatypeProperty);
+	Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
@@ -160,11 +160,15 @@ public interface IndividualReasoner {
 	 * @return The mapping between individuals and numeric values of given type through the given property.
 	 */
 	<T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty, Class<T> clazz);
+
 	/**
-	 * @param datatypeProperty
-	 * @return
+	 * Computes and returns all connections between individuals and numeric values through the
+	 * specified property, e.g. {eric => {48000^^xsd:int}, sarah => {56000^^xsd:int}}.
+	 * @param datatypeProperty  A data property.
+	 * @return The mapping between individuals and numeric values through the given property.
 	 */
 	<T extends Number & Comparable<T>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembers(OWLDataProperty datatypeProperty);
+
 	/**
 	 * Convenience method, which can be used if it is known that the property has 
 	 * values which can be parsed as boolean value. Only "true" or "false" are 
@@ -173,7 +177,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and boolean values through the given property.
 	 */
-	public Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembers(OWLDataProperty datatypeProperty);
+	Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembers(OWLDataProperty datatypeProperty);
 
 	/**
 	 * Convenience method, which can be used to get all individuals, which have value
@@ -184,7 +188,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The set of individuals for which the boolean property holds.
 	 */
-	public SortedSet<OWLIndividual> getTrueDatatypeMembers(OWLDataProperty datatypeProperty);
+	SortedSet<OWLIndividual> getTrueDatatypeMembers(OWLDataProperty datatypeProperty);
 	
 	/**
 	 * Convenience method, which can be used to get all individuals, which have value
@@ -195,7 +199,7 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The set of individuals for which the boolean property does not hold.
 	 */
-	public SortedSet<OWLIndividual> getFalseDatatypeMembers(OWLDataProperty datatypeProperty);
+	SortedSet<OWLIndividual> getFalseDatatypeMembers(OWLDataProperty datatypeProperty);
 
 	/**
 	 * Convenience method, which can be used which returns the property values as
@@ -204,11 +208,15 @@ public interface IndividualReasoner {
 	 * @param datatypeProperty A data property.
 	 * @return The mapping between individuals and string values through the given property.
 	 */
-	public Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembers(OWLDataProperty datatypeProperty);
+	Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembers(OWLDataProperty datatypeProperty);
 
 	/**
-	 * @param individual
-	 * @return
+	 * A map of data properties related to values, e.g.
+	 * {birthDate => {eric, "1980-10-10"^^xsd:date}, height => {Mount_Everest, 8880}}.
+	 *
+	 * @param individual An individual.
+	 * @return A map of of data properties connected to the individual as keys and the literals
+	 * they point to as values.
 	 */
 	Map<OWLDataProperty, Set<OWLLiteral>> getDataPropertyRelationships(OWLIndividual individual);
 

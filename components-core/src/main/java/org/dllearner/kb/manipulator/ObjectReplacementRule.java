@@ -43,7 +43,7 @@ public class ObjectReplacementRule extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> keep = new TreeSet<>();
 		for (RDFNodeTuple tuple : tuples) {
 			if(tuple.bPartContains(oldObject)){
 				String tmp = tuple.b.toString().replace(oldObject, newObject);

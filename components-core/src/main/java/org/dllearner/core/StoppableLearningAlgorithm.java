@@ -34,7 +34,7 @@ public interface StoppableLearningAlgorithm extends LearningAlgorithm {
 	 * Stops the algorithm gracefully. A stopped algorithm cannot be resumed anymore.
 	 * Use this method for cleanup and freeing memory.
 	 */
-	public abstract void stop();
+	void stop();
 	
 	/**
 	 * Returns whether the learning algorithm is running. Implementation
@@ -42,6 +42,6 @@ public interface StoppableLearningAlgorithm extends LearningAlgorithm {
 	 * the start and resume methods.
 	 * @return True if the algorithm is running, false otherwise.
 	 */
-	public abstract boolean isRunning();
+	boolean isRunning();
 	
 }

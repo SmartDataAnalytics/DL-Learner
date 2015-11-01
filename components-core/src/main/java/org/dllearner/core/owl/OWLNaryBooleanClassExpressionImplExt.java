@@ -75,7 +75,7 @@ public abstract class OWLNaryBooleanClassExpressionImplExt extends
     public OWLNaryBooleanClassExpressionImplExt(
             Set<? extends OWLClassExpression> operands) {
         super();
-        this.operands = new ArrayList<OWLClassExpression>(new TreeSet<OWLClassExpression>(operands));
+        this.operands = new ArrayList<>(new TreeSet<>(operands));
     }
     
     /**
@@ -85,12 +85,12 @@ public abstract class OWLNaryBooleanClassExpressionImplExt extends
     public OWLNaryBooleanClassExpressionImplExt(
             List<? extends OWLClassExpression> operands) {
         super();
-        this.operands = new ArrayList<OWLClassExpression>(operands);
+        this.operands = new ArrayList<>(operands);
     }
 
     @Override
     public List<OWLClassExpression> getOperandsAsList() {
-        return new ArrayList<OWLClassExpression>(operands);
+        return new ArrayList<>(operands);
     }
 
     @Override

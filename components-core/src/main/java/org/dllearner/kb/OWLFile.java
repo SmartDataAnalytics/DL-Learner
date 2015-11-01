@@ -63,9 +63,9 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     @ConfigOption(name = "sparql",   description = "SPARQL CONSTRUCT expression to download from Endpoint")
     private String sparql = null;
     @ConfigOption(name = "defaultGraphURIs", description = "a list of default graph URIs to query from the Endpoint")
-    private List<String> defaultGraphURIs = new LinkedList<String>();
+    private List<String> defaultGraphURIs = new LinkedList<>();
     @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
-    private List<String> namedGraphURIs = new LinkedList<String>();
+    private List<String> namedGraphURIs = new LinkedList<>();
 
     private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
     @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
@@ -141,9 +141,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         try {
             OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(getURL().toURI()));
             return ontology;
-        } catch (OWLOntologyCreationException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
+        } catch (OWLOntologyCreationException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

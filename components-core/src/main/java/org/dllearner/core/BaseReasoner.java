@@ -49,51 +49,51 @@ public interface BaseReasoner {
 	 * Checks consistency of the knowledge.
 	 * @return True if the knowledge base is consistent and false otherwise.
 	 */
-	public boolean isSatisfiable();
+	boolean isSatisfiable();
 	
 	/**
 	 * Checks whether adding the specified axiom leads to an inconsistency.
 	 * @param axiom The axiom to be added to the knowledge base.
 	 * @return True of the knowledge base including the axiom is satisfiable. False otherwise.
 	 */
-	public boolean remainsSatisfiable(OWLAxiom axiom);
+	boolean remainsSatisfiable(OWLAxiom axiom);
 	
 	/**
 	 * Gets all named classes in the knowledge base, e.g. Person, City, Car.
 	 * @return All named classes in KB.
 	 */
-	public Set<OWLClass> getClasses();
+	Set<OWLClass> getClasses();
 	
 	/**
 	 * Gets all object properties in the knowledge base, e.g. hasChild, isCapitalOf, hasEngine.
 	 * @return All object properties in KB.
 	 */
-	public Set<OWLObjectProperty> getObjectProperties();
+	Set<OWLObjectProperty> getObjectProperties();
 	
 	/**
 	 * Gets all data properties in the knowledge base, e.g. hasIncome, height.
 	 * @return All data properties in KB.
 	 */
-	public Set<OWLDataProperty> getDatatypeProperties();
+	Set<OWLDataProperty> getDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:boolean.
 	 * @return Boolean data properties in KB.
 	 */
-	public Set<OWLDataProperty> getBooleanDatatypeProperties();
+	Set<OWLDataProperty> getBooleanDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with a range that describes floating point values, i.e. 
 	 * xsd:float, xsd:double and xsd:decimal.
 	 * @return Floating point data properties in KB.
 	 */
-	public Set<OWLDataProperty> getDoubleDatatypeProperties();
+	Set<OWLDataProperty> getDoubleDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with a numeric range 
 	 * @return Numeric data properties in KB.
 	 */
-	public Set<OWLDataProperty> getNumericDataProperties();
+	Set<OWLDataProperty> getNumericDataProperties();
 	
 	/**
 	 * Gets all integer type data properties, i.e. with range 
@@ -103,7 +103,7 @@ public interface BaseReasoner {
 	 * @see org.dllearner.utilities.OWLAPIUtils#intDatatypes
 	 * @return Integer data properties in KB.
 	 */
-	public Set<OWLDataProperty> getIntDatatypeProperties();
+	Set<OWLDataProperty> getIntDatatypeProperties();
 	
 	/**
 	 * Gets all data properties with range xsd:string.
@@ -112,20 +112,20 @@ public interface BaseReasoner {
 	 * @see org.dllearner.core.owl.Datatype#String
 	 * @return String data properties in KB.
 	 */
-	public Set<OWLDataProperty> getStringDatatypeProperties();	
+	Set<OWLDataProperty> getStringDatatypeProperties();
 	
 	/**
 	 * Gets all individuals in the knowledge base, e.g. Eric, London, Car829. 
 	 * @return All individuals in KB.
-	 */	
-	public SortedSet<OWLIndividual> getIndividuals();
+	 */
+	SortedSet<OWLIndividual> getIndividuals();
 
 	/**
 	 * Returns the base URI of the knowledge base. If several knowledge sources are
 	 * used, we only pick one of their base URIs.
 	 * @return The base URI, e.g. http://dbpedia.org/resource/.
 	 */
-	public String getBaseURI();
+	String getBaseURI();
 	
 	/**
 	 * Returns the prefixes used in the knowledge base, e.g. foaf for
@@ -134,13 +134,13 @@ public interface BaseReasoner {
 	 * values, we pick one of those.)
 	 * @return The prefix mapping.
 	 */
-	public Map<String, String> getPrefixes();
+	Map<String, String> getPrefixes();
 	
 	/**
 	 * Returns the RDFS labels of an entity.
 	 * @param entity An entity, e.g. Machine.
 	 * @return All values of rdfs:label for the entity, e.g. {"Machine"@en, "Maschine"@de}. 
 	 */
-	public Set<OWLLiteral> getLabel(OWLEntity entity);
+	Set<OWLLiteral> getLabel(OWLEntity entity);
 	
 }

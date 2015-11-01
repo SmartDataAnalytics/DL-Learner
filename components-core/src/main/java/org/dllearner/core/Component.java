@@ -42,6 +42,6 @@ public interface Component {
 	 * using the constructor {@link ComponentInitException#ComponentInitException(String, Throwable)}.
 	 */
 	@PostConstruct
-	public abstract void init() throws ComponentInitException;
+	void init() throws ComponentInitException;
 	
 }

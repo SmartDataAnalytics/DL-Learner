@@ -54,7 +54,7 @@ public abstract class Node  {
 	 * Nodes are expanded with a certain context, given by the typedSparqlQuery
 	 * and the manipulator
 	 * 
-	 * @param manipulator
+	 * @param manipulator the manipulator
 	 * @return Vector<Node> all Nodes that are new because of expansion
 	 */
 	public abstract List<Node> expand(
@@ -63,7 +63,7 @@ public abstract class Node  {
 	/**
 	 * gets type defs for properties like rdf:type SymmetricProperties
 	 * 
-	 * @param manipulator
+	 * @param manipulator the manipulator
 	 */
 	public abstract List<BlankNode> expandProperties(
 			TupleAquisitor TupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes);

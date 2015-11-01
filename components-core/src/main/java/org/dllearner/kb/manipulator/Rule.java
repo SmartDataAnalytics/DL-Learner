@@ -30,7 +30,7 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 public abstract class Rule {
 	
 	
-	public static final List<Months> MONTHS = new ArrayList<Months>(Arrays.asList(Months.values()));
+	public static final List<Months> MONTHS = new ArrayList<>(Arrays.asList(Months.values()));
 	
 	public enum Months {
 		JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY,
@@ -57,7 +57,7 @@ public abstract class Rule {
 			System.out.println(Months.values()[i]);
 			
 		}
-		System.out.println(Months.values());
+		System.out.println(Arrays.toString(Months.values()));
 	}
 	
 	public abstract void logJamon();

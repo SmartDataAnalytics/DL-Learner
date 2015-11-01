@@ -54,7 +54,7 @@ public class AddAllStringsAsClasses extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> keep = new TreeSet<>();
 		for (RDFNodeTuple tuple : tuples) {
 			//System.out.println(tuple);
 			//System.exit(0);

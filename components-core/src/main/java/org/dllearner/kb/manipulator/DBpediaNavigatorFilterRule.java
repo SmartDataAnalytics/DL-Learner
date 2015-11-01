@@ -40,7 +40,7 @@ public class DBpediaNavigatorFilterRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 //		RDFNode clazz = null;
 		RDFNodeTuple typeTuple = null;
-		List<RDFNodeTuple> toRemove=new LinkedList<RDFNodeTuple>();
+		List<RDFNodeTuple> toRemove= new LinkedList<>();
 		for (RDFNodeTuple tuple : tuples) {
 						
 			if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){

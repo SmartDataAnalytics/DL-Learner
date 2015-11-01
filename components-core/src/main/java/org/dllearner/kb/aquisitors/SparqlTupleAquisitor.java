@@ -162,16 +162,16 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 	//takes the resultset and assigns internal ids
 	private void assignIds(int currentId, ResultSetRewindable rsw, int lastDepth){
 		//prepare variables according to last depth
-		List<String> vars = new ArrayList<String>();
+		List<String> vars = new ArrayList<>();
 		vars.add("o0");
 		for (int i = 1; i <= lastDepth; i++) {
 			vars.add("p"+i);
 			vars.add("o"+i);
 		}
 		
-		final List<String> tmpVars = new ArrayList<String>();
+		final List<String> tmpVars = new ArrayList<>();
 		
-		Map<String, Integer> lastNodes = new HashMap<String, Integer>();
+		Map<String, Integer> lastNodes = new HashMap<>();
 		// the resultset first variable is o0
 		// iteration over each tuple of the set
 		while (rsw.hasNext()){

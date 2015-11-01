@@ -14,7 +14,7 @@ public class CachingConciseBoundedDescriptionGenerator implements ConciseBounded
 	
 	public CachingConciseBoundedDescriptionGenerator(ConciseBoundedDescriptionGenerator cbdGen) {
 		this.delegatee = cbdGen;
-		cache = new HashMap<String, Model>();
+		cache = new HashMap<>();
 	}
 	
 	public Model getConciseBoundedDescription(String resourceURI){

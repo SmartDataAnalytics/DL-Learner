@@ -41,7 +41,7 @@ public class BlankNodeCollector {
 		return ret;
 	}
 	
-	private static Map<Integer, SortedSet<RDFNodeTuple>> blankNodes = new HashMap<Integer, SortedSet<RDFNodeTuple>>();
+	private static Map<Integer, SortedSet<RDFNodeTuple>> blankNodes = new HashMap<>();
 	
 	public static void addBlankNode(int id, RDFNodeTuple t){
 		if(blankNodes.get(id)==null){
@@ -67,7 +67,7 @@ public class BlankNodeCollector {
 	 * @return true if there are more blanknodes
 	 */
 	public static boolean testResultSet(ResultSetRewindable rsw, int depth){
-		List<String> vars = new ArrayList<String>();
+		List<String> vars = new ArrayList<>();
 		vars.add("o0");
 		for (int i = 1; i <= depth; i++) {
 			vars.add("o"+i);

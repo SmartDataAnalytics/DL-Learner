@@ -31,7 +31,7 @@ import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
 public class DBPediaNavigatorCityLocatorRule extends Rule{
 	
-	Map<String,String> map=new HashMap<String,String>();
+	Map<String,String> map= new HashMap<>();
 
 
 	public DBPediaNavigatorCityLocatorRule(Months month){
@@ -53,7 +53,7 @@ public class DBPediaNavigatorCityLocatorRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		
 		String uri;
-		if(( uri = map.get(subject.getURIString().toString()) ) == null) {
+		if(( uri = map.get(subject.getURIString()) ) == null) {
 			return tuples;
 		}else {
 			tuples.add(new RDFNodeTuple(new ResourceImpl(OWLVocabulary.RDFS_SUBCLASS_OF), new ResourceImpl(uri)));

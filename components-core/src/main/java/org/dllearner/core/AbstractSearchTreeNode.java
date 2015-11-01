@@ -12,9 +12,9 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 
 public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode> implements SearchTreeNode {
 
-	protected Set< AbstractSearchTree<T> > trees = new HashSet< AbstractSearchTree<T> >();
+	protected Set< AbstractSearchTree<T> > trees = new HashSet<>();
 	protected T parent;
-	protected List<T> children = new LinkedList<T>();
+	protected List<T> children = new LinkedList<>();
 
 	@Override
 	public abstract OWLClassExpression getExpression();

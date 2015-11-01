@@ -329,8 +329,8 @@ public class QueryEngineHTTP implements QueryExecution {
      * Note that it may be more flexible to
      * </p>
      * 
-     * @param user
-     * @param password
+     * @param user the username
+     * @param password the password
      */
     public void setBasicAuthentication(String user, char[] password) {
         this.authenticator = new SimpleAuthenticator(user, password);
@@ -709,7 +709,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for SELECT queries provided that the format is
      * supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setSelectContentType(String contentType) {
         boolean ok = false;
@@ -729,7 +729,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for ASK queries provided that the format is
      * supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setAskContentType(String contentType) {
         boolean ok = false;
@@ -748,7 +748,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for CONSTRUCT/DESCRIBE queries provided that the
      * format is supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setModelContentType(String contentType) {
         // Check that this is a valid setting

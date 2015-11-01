@@ -33,6 +33,6 @@ public interface ActiveLearningAlgorithm extends LearningAlgorithm {
 	 * an oracle object is passed to the algorithm.
 	 * @param oracle The oracle to be used by the learning algorithm.
 	 */
-	public void setOracle(Oracle oracle);
+	void setOracle(Oracle oracle);
 	
 }

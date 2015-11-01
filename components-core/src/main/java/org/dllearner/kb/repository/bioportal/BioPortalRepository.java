@@ -25,7 +25,7 @@ public class BioPortalRepository implements OntologyRepository {
 	
 	private boolean initialized = false;
 	
-	private List<OntologyRepositoryEntry> entries = new ArrayList<OntologyRepositoryEntry>();
+	private List<OntologyRepositoryEntry> entries = new ArrayList<>();
 
 	@Override
 	public String getName() {
@@ -70,7 +70,7 @@ public class BioPortalRepository implements OntologyRepository {
 			return;
 		}
 		List<OntologyBean> beans = success.getData().getOntologyBeans();
-		entries = new ArrayList<OntologyRepositoryEntry>();
+		entries = new ArrayList<>();
 		for(OntologyBean bean : beans){
 			URI physicalURI = URI.create(withAPIKey(serviceURL + "/download/" + bean.getId()));
 			String shortName = bean.getDisplayLabel();

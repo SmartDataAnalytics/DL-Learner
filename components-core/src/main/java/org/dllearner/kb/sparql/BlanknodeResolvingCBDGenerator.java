@@ -68,13 +68,9 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		for(int i = 1; i <= depth; i++){
 			triplesTemplate.append("}");
 		}
-		
-		
-		StringBuilder queryString = new StringBuilder("prefix : <http://dl-learner.org/ontology/> ");
-		queryString.append("CONSTRUCT{").append(constructTemplate).append("}");
-		queryString.append(" WHERE {").append(triplesTemplate).append("}");
-		
-		ParameterizedSparqlString query = new ParameterizedSparqlString(queryString.toString());
+
+
+		ParameterizedSparqlString query = new ParameterizedSparqlString("prefix : <http://dl-learner.org/ontology/> " + "CONSTRUCT{" + constructTemplate + "}" + " WHERE {" + triplesTemplate + "}");
 		query.setIri("s0", resourceURI);
 		System.out.println(query);
 		QueryExecution qe = qef.createQueryExecution(query.toString());

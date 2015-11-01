@@ -41,7 +41,7 @@ public class TBoxQueryGenerator {
     public static void main(String... args) {
         TBoxQueryGenerator generator = new TBoxQueryGenerator();
         OntModel model = ModelFactory.createOntologyModel();
-        Set<String> individuals = new HashSet<String>();
+        Set<String> individuals = new HashSet<>();
 
 
         individuals.add("http://dbpedia.org/resource/JB_Carlson");

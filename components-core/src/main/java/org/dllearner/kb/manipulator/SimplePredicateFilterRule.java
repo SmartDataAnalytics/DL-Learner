@@ -39,7 +39,7 @@ public class SimplePredicateFilterRule extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> keep = new TreeSet<>();
 		for (RDFNodeTuple tuple : tuples) {
 			if(!tuple.aPartContains(predicateFilter)){
 				keep.add(tuple);
