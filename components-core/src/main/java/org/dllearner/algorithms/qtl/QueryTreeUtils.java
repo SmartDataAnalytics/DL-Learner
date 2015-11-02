@@ -163,7 +163,7 @@ public class QueryTreeUtils {
 		// filter by type
 		Iterator<QueryTree<N>> iterator = nodes.iterator();
 		while (iterator.hasNext()) {
-			QueryTree<N> node = (QueryTree<N>) iterator.next();
+			QueryTree<N> node = iterator.next();
 			if(node.getNodeType() != nodeType) {
 				iterator.remove();
 			}

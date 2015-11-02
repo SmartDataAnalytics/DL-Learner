@@ -854,8 +854,8 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     
     /**
      * Prints the query tree and shows children of resources only if enabled.
-     * @param stopWhenLeafNode
-     * @return
+     * @param stopIfChildIsResourceNode whether to stop if child is resource
+     * @return the query tree string
      */
     public String getStringRepresentation(boolean stopIfChildIsResourceNode){
     	int depth = getPathToRoot().size();
@@ -878,7 +878,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                 	sb.append(edge);
                 	sb.append(" ---> ");
                 }
-                sb.append(((QueryTreeImpl<N>)child).getStringRepresentation(stopIfChildIsResourceNode));
+                sb.append(child.getStringRepresentation(stopIfChildIsResourceNode));
             }
         }
         return sb.toString();

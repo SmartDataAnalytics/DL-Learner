@@ -322,7 +322,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLClass(getIRI(classVarQueue.poll()));
 				renaming.put(desc, newEntity);
 			}
-			renamedOWLObject = (OWLClass)newEntity;
+			renamedOWLObject = newEntity;
 		}
 	}
 	
@@ -336,7 +336,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLObjectProperty(getIRI(propertyVarQueue.poll()));
 				renaming.put(op, newEntity);
 			}
-			renamedOWLObject = (OWLObjectProperty)newEntity;
+			renamedOWLObject = newEntity;
 		}
 	}
 
@@ -350,7 +350,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLDataProperty(getIRI(propertyVarQueue.poll()));
 				renaming.put(dp, newEntity);
 			}
-			renamedOWLObject = (OWLDataProperty)newEntity;
+			renamedOWLObject = newEntity;
 		}
 	}
 
@@ -361,7 +361,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
 			renaming.put(ind, newEntity);
 		}
-		renamedOWLObject = (OWLNamedIndividual)newEntity;
+		renamedOWLObject = newEntity;
 	}
 	
 	private IRI getIRI(String var){
@@ -375,7 +375,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
 //			renaming.put(ind, newEntity);
 		}
-		renamedOWLObject = (OWLNamedIndividual)newEntity;
+		renamedOWLObject = newEntity;
 	}
 
 	@Override

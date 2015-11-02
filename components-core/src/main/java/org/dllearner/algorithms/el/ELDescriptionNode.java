@@ -122,8 +122,9 @@ public class ELDescriptionNode {
 	}
 	
 	/**
-	 * Constructs an EL OWLClassExpression tree given its root label.
-	 * @param label Label of the root node.
+	 * Constructs an EL description tree node given a description tree and the data range.
+	 * @param tree the description tree
+	 * @param dataRange the data range
 	 */
 	public ELDescriptionNode(ELDescriptionTree tree, OWLDataRange dataRange) {
 		this.dataRange = dataRange;
@@ -373,13 +374,13 @@ public class ELDescriptionNode {
 	
 	/**
 	 * This method transform the tree to an EL description. The
-	 * node labels are transformed to an {@link Intersection}
-	 * of {@link NamedClass}. Each edge is transformed to an 
-	 * {@link ObjectSomeRestriction}, where the property is the edge
-	 * label and the child OWLClassExpression the subtree the edge points 
+	 * node labels are transformed to an {@link org.semanticweb.owlapi.model.OWLObjectIntersectionOf}
+	 * of {@link org.semanticweb.owlapi.model.OWLClass}. Each edge is transformed to an
+	 * {@link org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom}, where the property is the edge
+	 * label and the child description the subtree the edge points
 	 * to. Edges are also added to the intersection. If the intersection
-	 * is empty, {@link Thing} is returned.
-	 * @return The OWLClassExpression corresponding to this EL OWLClassExpression tree.
+	 * is empty, {@link OWLDataFactory#getOWLThing()} is returned.
+	 * @return The description corresponding to this EL description tree.
 	 */
 	public OWLClassExpression transformToDescription() {
 		int nrOfElements = label.size() + edges.size();

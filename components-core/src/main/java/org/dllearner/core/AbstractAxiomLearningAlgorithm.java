@@ -351,7 +351,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	/**
 	 * The SPARQL CONSTRUCT query used to generate a sample for the given axiom type  and entity.
-	 * @return
+	 * @return the SPARQL query
 	 */
 	protected abstract ParameterizedSparqlString getSampleQuery();
 

@@ -299,14 +299,16 @@ public class MultiPropertyAxiomLearner {
 	}
 	
 	/**
-	 * @param maxNrOfThreads the maxNrOfThreads to set
+	 * @param maxNrOfThreads the max. nr of threads
 	 */
 	public void setMaxNrOfThreads(int maxNrOfThreads) {
 		this.maxNrOfThreads = maxNrOfThreads;
 	}
 	
 	/**
-	 * @param maxExecutionTimeMilliseconds the maxExecutionTimeMilliseconds to set
+	 * Set the maximum execution time.
+	 * @param executionTimeDuration the execution time
+	 * @param executionTimeUnit the time unit
 	 */
 	public void setMaxExecutionTime(long executionTimeDuration, TimeUnit executionTimeUnit) {
 		this.maxExecutionTimeMilliseconds = executionTimeUnit.toMillis(executionTimeDuration);

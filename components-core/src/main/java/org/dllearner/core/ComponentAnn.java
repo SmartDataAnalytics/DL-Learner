@@ -35,7 +35,6 @@ public @interface ComponentAnn {
 
     /**
      * The name of this component.
-     * @see ComponentManager#getName(Component)
      * @return The name of this component.
      */
     String name();

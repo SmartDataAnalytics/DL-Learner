@@ -10,7 +10,6 @@ import org.dllearner.algorithms.decisiontrees.utils.*;
  * A class for representing a BBA
  * @author Giuseppe Rizzo
  *
- * @param <S>
  * @param <T>
  */
 public class MassFunction <T extends Comparable<? super T>> {
@@ -76,7 +75,7 @@ public class MassFunction <T extends Comparable<? super T>> {
 	
 	/**
 	 * Returns the value of a BBA for a specific element of class 
-	 * @param class
+	 * @param label
 	 * @return the value of a bba or NaN 
 	 */
 	public double getValue(List<T> label){

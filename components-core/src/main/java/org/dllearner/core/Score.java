@@ -19,6 +19,8 @@
 
 package org.dllearner.core;
 
+import org.semanticweb.owlapi.model.OWLObject;
+
 import java.io.Serializable;
 
 /**
@@ -40,7 +42,7 @@ public abstract class Score implements Serializable{
 	 * This method returns a value, which indicates how accurate a
 	 * hypothesis solves a learning problem. 
 	 * 
-	 * @see AbstractLearningProblem#getAccuracy(org.semanticweb.owlapi.model.OWLObject)
+	 * @see AbstractLearningProblem#getAccuracyOrTooWeak(OWLObject, double)
 	 * @return A value between 0 and 1 indicating the quality (of a hypothesis).
 	 */	
 	public abstract double getAccuracy();

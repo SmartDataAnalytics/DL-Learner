@@ -30,7 +30,6 @@ import org.dllearner.algorithms.qtl.operations.nbr.strategy.NBRStrategy;
 /**
  * 
  * @author Lorenz Bühmann
- * @param <N>
  *
  */
 public class NBRGeneratorImpl implements NBRGenerator{

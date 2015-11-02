@@ -43,8 +43,8 @@ public abstract class AbstractSearchTreeNode <T extends AbstractSearchTreeNode> 
 	}
 
 	/**
-	 * internally used by the tree<->node contract to add this node to a tree
-	 * @param tree the owning tree
+	 * internally used by the tree<->node contract to add this node to a set of trees
+	 * @param trees the set of owning trees
 	 */
 	public void notifyTrees( Collection<? extends AbstractSearchTree<T>> trees ) {
 		updatePrepareTree();

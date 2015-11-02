@@ -81,8 +81,8 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	int id = 0;
 	
 	/**
-	 * Returns a OWL class expression of the union of the given query trees.
-	 * @param queryTrees
+	 * Returns a OWL class expression of the given query trees.
+	 * @param tree the query tree
 	 */
 	public OWLClassExpression asOWLClassExpression(QueryTree<String> tree){
 		Set<OWLClassExpression> classExpressions = asOWLClassExpressions(tree);
@@ -98,8 +98,8 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 	}
 	
 	/**
-	 * Returns a OWL class expression representation of the given query tree.
-	 * @param queryTrees
+	 * Returns a set of OWL class expression representations of the given query tree.
+	 * @param tree the query tree
 	 */
 	public Set<OWLClassExpression> asOWLClassExpressions(QueryTree<String> tree){
 		Set<OWLClassExpression> classExpressions = new HashSet<>();

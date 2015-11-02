@@ -109,7 +109,7 @@ public interface BaseReasoner {
 	 * Gets all data properties with range xsd:string.
 	 * TODO We could extend this to all types, which can be parsed into
 	 * strings and even include the properties without any specified datatype.
-	 * @see org.dllearner.core.owl.Datatype#String
+	 * @see OWLDataProperty
 	 * @return String data properties in KB.
 	 */
 	Set<OWLDataProperty> getStringDatatypeProperties();

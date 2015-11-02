@@ -130,10 +130,13 @@ public abstract class AbstractLearningProblem<T extends Score, V extends OWLObje
 	}
 	
 	/**
-	 * This method computes the accuracy as {@link #getAccuracy(V)},
-	 * but returns -1 instead of the accuracy if 1.) the accuracy of the
-	 * hypothesis is below the given threshold and 2.) the accuracy of all
-	 * more special w.r.t. subsumption hypotheses is below the given threshold.
+	 * This method computes the accuracy and returns -1 instead of the accuracy if
+	 *
+	 * <ol>
+	 *     <li>the accuracy of the hypothesis is below the given threshold and </li>
+	 *     <li>the accuracy of all more special w.r.t. subsumption hypotheses is below the given threshold.</li>
+	 * </ol>
+	 * 
 	 * This is used for efficiency reasons, i.e. -1 can be returned instantly if
 	 * it is clear that the hypothesis and all its refinements are not
 	 * sufficiently accurate.

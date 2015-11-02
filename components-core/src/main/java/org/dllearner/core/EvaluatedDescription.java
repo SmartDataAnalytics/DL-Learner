@@ -44,7 +44,7 @@ public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesis<O
 	}
 	
 	/**
-	 * @see org.dllearner.core.owl.Description#getLength()
+	 * @see OWLClassExpressionUtils#getLength(OWLClassExpression)
 	 * @return Length of the description.
 	 */		
 	public int getDescriptionLength() {
@@ -52,7 +52,7 @@ public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesis<O
 	}
 	
 	/**
-	 * @see org.dllearner.core.owl.Description#getDepth()
+	 * @see OWLClassExpressionUtils#getDepth(OWLClassExpression)
 	 * @return Depth of the description.
 	 */	
 	public int getDescriptionDepth() {

@@ -307,7 +307,8 @@ public class AnnComponentManager {
 	 * prints an exception and returns false.
 	 * @param <T> Type of the config option.
 	 * @param component A component object.
-	 * @param entry The configuration entry to set.
+	 * @param optionName the option name
+	 * @param value the value to set
 	 * @return True if the config entry could be applied succesfully, otherwise false.
 	 */
 	@Deprecated

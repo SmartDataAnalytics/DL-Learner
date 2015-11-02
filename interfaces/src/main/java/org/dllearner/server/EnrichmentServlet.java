@@ -71,6 +71,7 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.SPARULTranslator;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -90,7 +91,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 
 public class EnrichmentServlet extends HttpServlet {
 

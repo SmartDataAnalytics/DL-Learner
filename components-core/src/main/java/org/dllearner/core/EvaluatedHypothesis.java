@@ -76,7 +76,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score> 
 	}	
 	
 	/**
-	 * @see org.dllearner.core.Score#getScoreValue()
+	 * @see Score#getAccuracy()
 	 * @return Value in this score system.
 	 */
 	public double getAccuracy() {
