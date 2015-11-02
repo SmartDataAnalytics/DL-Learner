@@ -18,8 +18,7 @@ import java.util.List;
  * Methoden zur Erzeugung von Kombinationen.
  */
 
-public class Combination extends Object
-{
+public class Combination {
 
     /* ______________________________________________________________________________________________________________ *\
     \* Konstanten                                                                                                     */

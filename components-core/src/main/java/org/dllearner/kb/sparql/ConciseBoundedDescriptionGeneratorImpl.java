@@ -123,8 +123,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
-	 * @param example The example resource for which a CONSTRUCT query is created.
-	 * @return The JENA ARQ Query object.
+	 * @param resource The example resource for which a CONSTRUCT query is created.
+	 * @return the SPARQL query
 	 */
 	private String generateQuery(String resource, int depth, boolean withTypesForLeafs){
 		int lastIndex = Math.max(0, depth - 1);

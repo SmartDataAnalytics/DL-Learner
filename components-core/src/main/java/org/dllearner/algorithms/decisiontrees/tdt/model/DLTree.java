@@ -123,7 +123,7 @@ public class DLTree extends AbstractTree {
 	}
 
 	/**
-	 * @param root the root to set
+	 * @param concept the root concept to set
 	 */
 	public void setRoot(OWLClassExpression concept) {
 		this.root = new DLNode(concept);

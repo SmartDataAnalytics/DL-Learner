@@ -45,7 +45,7 @@ public class Function extends Term {
 
 	public Function(Function source) {
 		this(source.name, source.type);
-		arguments = new ArrayList<Term>();
+		arguments = new ArrayList<>();
 		for (int i = 0; i < source.getArity(); i++)
 			arguments.add((Term) (source.getArgument(i)).clone());
 	}
@@ -57,19 +57,19 @@ public class Function extends Term {
 
 	public Function(String name, Term term2) {
 		this(name, FunctionDefinition.TYPE_PREFIX);
-		this.arguments = new ArrayList<Term>(1);
+		this.arguments = new ArrayList<>(1);
 		arguments.add(term2);
 	}
 
 	public Function(Term term1, String name) {
 		this(name, FunctionDefinition.TYPE_POSTFIX);
-		this.arguments = new ArrayList<Term>(1);
+		this.arguments = new ArrayList<>(1);
 		arguments.add(term1);
 	}
 
 	public Function(Term term1, String name, Term term2) {
 		this(name, FunctionDefinition.TYPE_INFIX);
-		this.arguments = new ArrayList<Term>(2);
+		this.arguments = new ArrayList<>(2);
 		arguments.add(term1);
 		arguments.add(term2);
 	}
@@ -148,7 +148,7 @@ public class Function extends Term {
 
 	@Override
 	public Term getInstance(Variable variable, Term term) {
-		ArrayList<Term> newArgs = new ArrayList<Term>(arguments.size());
+		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
 		for (int i = 0; i < arguments.size(); i++) {
 			Term argument = (Term) arguments.get(i);
 			newArgs.add(argument.getInstance(variable, term));

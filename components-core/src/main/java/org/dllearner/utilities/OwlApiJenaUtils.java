@@ -45,7 +45,7 @@ public class OwlApiJenaUtils {
 	public static OWLOntology getOWLOntology(final Model model) {
 		OWLOntology ontology;
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			new Thread(new Runnable() {
 				public void run() {
@@ -79,7 +79,7 @@ public class OwlApiJenaUtils {
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
 				public void run() {
 					try {

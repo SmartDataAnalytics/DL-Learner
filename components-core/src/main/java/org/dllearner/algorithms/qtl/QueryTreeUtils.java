@@ -879,7 +879,7 @@ public class QueryTreeUtils {
 			}
 		}
 		
-		if(entailment == entailment.RDFS) {
+		if(entailment == Entailment.RDFS) {
 //			// 1. rdfs:domain:
 //			// remove rdf:type edges if this is implicitly given by the other outgoing edges
 //			// 2. rdfs:range:

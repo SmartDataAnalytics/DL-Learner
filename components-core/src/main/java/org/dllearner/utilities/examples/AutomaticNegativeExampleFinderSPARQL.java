@@ -41,12 +41,12 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	
 	private SortedSet<String> fromRelated  = new TreeSet<>();
 	private SortedSet<String> fromNearbyClasses  = new TreeSet<>();
-	private SortedSet<String> fromSuperclasses = new TreeSet<>();;
-	private SortedSet<String> fromParallelClasses = new TreeSet<>();;
-	private SortedSet<String> fromRandom = new TreeSet<>();;
-	private SortedSet<String> fromDomain = new TreeSet<>();;
-	private SortedSet<String> fromRange = new TreeSet<>();;
-	
+	private SortedSet<String> fromSuperclasses = new TreeSet<>();
+	private SortedSet<String> fromParallelClasses = new TreeSet<>();
+	private SortedSet<String> fromRandom = new TreeSet<>();
+	private SortedSet<String> fromDomain = new TreeSet<>();
+	private SortedSet<String> fromRange = new TreeSet<>();
+
 	static int poslimit = 10;
 	static int neglimit = 20;
 

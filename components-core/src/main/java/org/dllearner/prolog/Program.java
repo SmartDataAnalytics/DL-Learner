@@ -30,7 +30,7 @@ public class Program {
 	private ArrayList<Clause> clauses;
 
 	public Program() {
-		clauses = new ArrayList<Clause>();
+		clauses = new ArrayList<>();
 	}
 
 	public void addClause(Clause clause) {

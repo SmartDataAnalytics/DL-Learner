@@ -69,10 +69,8 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
     }
 
     /**
-     * Constructor allowing you to treat an already existing KB object
-     * as a KBFile knowledge source. Use it sparingly, because the
-     * standard way to create components is via
-     * {@link org.dllearner.core.ComponentManager}.
+     * Constructor allowing you to treat an already existing OWL ontology
+     * as a KBFile knowledge source.
      *
      * @param kb A KB object.
      */

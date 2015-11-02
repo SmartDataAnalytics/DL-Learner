@@ -36,9 +36,8 @@ public class AddAllStringsAsClasses extends Rule{
 
 
 	/**
-	 * @param month
+	 * @param month the month
 	 * @param resourceNamespace ns for the created uris
-	 * @param limit does not convert strings that are longer than a specific value, zero means convert all
 	 */
 	public AddAllStringsAsClasses(Months month, String resourceNamespace) { 
 		super(month);

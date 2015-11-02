@@ -20,8 +20,8 @@ public class ReasoningUtils implements Component {
 		public int trueCount;
 		public int falseCount;
 		public int total;
-	};
-	
+	}
+
 	public class Coverage extends CoverageCount {
 		public SortedSet<OWLIndividual> trueSet = new TreeSet<>();
 		public SortedSet<OWLIndividual> falseSet = new TreeSet<>();

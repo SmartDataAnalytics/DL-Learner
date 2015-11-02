@@ -65,7 +65,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 	}
 
 	/**
-	 * @param root the root to set
+	 * @param concept the root concept to set
 	 */
 	@SuppressWarnings("rawtypes")
 	public void setRoot(OWLClassExpression concept, MassFunction m) {

@@ -214,7 +214,7 @@ public class OWLAPIUtils {
 	 * @param value the value
 	 * @param min the lower interval endpoint
 	 * @param max the upper interval endpoint
-	 * @return
+	 * @return whether the given value is in the closed interval [min,max]
 	 */
 	public static boolean inRange(OWLLiteral value, OWLLiteral min, OWLLiteral max) {
 		OWLDatatype datatype = value.getDatatype();

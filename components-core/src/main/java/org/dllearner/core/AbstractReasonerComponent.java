@@ -1434,7 +1434,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 			for (OWLClass class1 : getAtomicConceptsList()) {
 				if (class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_NOTHING))) == 0
 						|| class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_THING))) == 0) {
-					;// do nothing
+					// do nothing
 				} else {
 					l.add(class1);
 				}

@@ -25,10 +25,10 @@ public class OWLPunningDetector {
 			new OWLObjectPropertyImpl(IRI.create("http://dl-learner.org/punning/relatedTo"));
 	
 	/**
-	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * Checks whether the class is also used as individual in the ontology.
+	 * @param ontology the ontology
+	 * @param cls the class
+	 * @return whether the class is also used as individual in the ontology
 	 */
 	public static boolean hasPunning(OWLOntology ontology, OWLClass cls){
 		return hasPunning(ontology, cls.getIRI());
@@ -36,9 +36,9 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology ontology the ontology
+	 * @param iri the IRI
+	 * @return whether the IRI denotes both a class and an individual
 	 */
 	public static boolean hasPunning(OWLOntology ontology, IRI iri){
 		boolean isClass = ontology.getClassesInSignature().contains(ontology.getOWLOntologyManager().getOWLDataFactory().getOWLClass(iri));
@@ -48,9 +48,8 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Returns the classes of the ontology that are also used as individuals, i.e. types of other classes.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the ontology
+	 * @return the classes
 	 */
 	public static Set<OWLClass> getPunningClasses(OWLOntology ontology){
 		Set<OWLClass> classes = new HashSet<>();
@@ -71,9 +70,8 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Returns the classes of the ontology that are also used as individuals, i.e. types of other classes.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the ontology
+	 * @return the classes
 	 */
 	public static Set<IRI> getPunningIRIs(OWLOntology ontology){
 		Set<IRI> classes = new HashSet<>();
@@ -94,9 +92,9 @@ public class OWLPunningDetector {
 	
 	/**
 	 * Checks whether the same IRI denotes both a class and an individual in the ontology.
-	 * @param ontology
-	 * @param iri
-	 * @return
+	 * @param ontology the ontology
+	 * @param iri the IRI
+	 * @return whether the same IRI denotes both a class and an individual
 	 */
 	public static boolean hasPunning(OWLOntology ontology, String iri){
 		return hasPunning(ontology, IRI.create(iri));

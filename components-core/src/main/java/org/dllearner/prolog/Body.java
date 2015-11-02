@@ -30,7 +30,7 @@ public class Body {
 	private ArrayList<Literal> literals;
 
 	public Body() {
-		literals = new ArrayList<Literal>();
+		literals = new ArrayList<>();
 	}
 
 	public void addLiteral(Literal literal) {

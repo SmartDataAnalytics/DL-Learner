@@ -78,7 +78,7 @@ public class Files {
 	 *            The file to read.
 	 * @return Content of the file.
 	 */
-	public static String readFile(File file) throws FileNotFoundException, IOException {
+	public static String readFile(File file) throws IOException {
 
 		StringBuilder content = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -100,7 +100,7 @@ public class Files {
 	 *            The file to read.
 	 * @return StringArray with lines
 	 */
-	public static String[] readFileAsArray(File file) throws FileNotFoundException, IOException {
+	public static String[] readFileAsArray(File file) throws IOException {
 		String content = readFile(file);
 		StringTokenizer st = new StringTokenizer(content, System.getProperty("line.separator"));
 		List<String> l = new ArrayList<>();

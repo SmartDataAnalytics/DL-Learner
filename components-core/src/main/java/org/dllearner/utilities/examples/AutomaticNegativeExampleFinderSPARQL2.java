@@ -75,7 +75,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public enum Strategy{
-		SUPERCLASS, SIBLING, RANDOM;
+		SUPERCLASS, SIBLING, RANDOM
 	}
 
 	// for re-using existing queries

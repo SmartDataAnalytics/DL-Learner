@@ -83,7 +83,7 @@ public class UsedEntitiesDetection {
 	 * 
 	 * @param reasoner A reasoner.
 	 * @param individuals A set of individuals to start from.
-	 * @param depth The maximum depth for the search.
+	 * @param maxDepth The maximum depth for the search.
 	 */
 	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<OWLIndividual> individuals, int maxDepth) {
 		this.reasoner = reasoner;

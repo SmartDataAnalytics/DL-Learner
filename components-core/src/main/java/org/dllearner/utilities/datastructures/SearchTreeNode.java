@@ -35,11 +35,11 @@ public interface SearchTreeNode {
 	 * Gets the OWL 2 class expression at this search tree node.
 	 * @return The expression at this node.
 	 */
-	public OWLClassExpression getExpression();
+	OWLClassExpression getExpression();
 	
 	/**
 	 * The children of this node.
 	 * @return The children of this node.
 	 */
-	public Collection<? extends SearchTreeNode> getChildren();
+	Collection<? extends SearchTreeNode> getChildren();
 }

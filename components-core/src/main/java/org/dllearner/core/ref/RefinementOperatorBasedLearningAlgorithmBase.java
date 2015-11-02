@@ -95,10 +95,10 @@ public abstract class RefinementOperatorBasedLearningAlgorithmBase<T> implements
 		return new SearchTreeNodeSimple<>(refinement, parentNode);
 	}
 	
-	protected void preProcess() {};
+	protected void preProcess() {}
 
-	protected void postProcess() {};
-	
+	protected void postProcess() {}
+
 	protected abstract SearchTreeNode<T> computeStartNode();
 	
 	protected abstract SearchTreeNode<T> getNextNodeToExpand();
