@@ -47,12 +47,25 @@ public class FuzzyIndividual extends OWLNamedIndividualImpl{
 		else
 			return d;
 	}
-    
+
 	@Override
 	public boolean equals(Object o) {
-		if(o==null) {
-			return false;
-		}
-		return (compareTo((FuzzyIndividual)o)==0);
+		if (this == o) return true;
+		if (!(o instanceof FuzzyIndividual)) return false;
+		if (!super.equals(o)) return false;
+
+		FuzzyIndividual that = (FuzzyIndividual) o;
+
+		return Double.compare(that.truthDegree, truthDegree) == 0;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		long temp;
+		temp = Double.doubleToLongBits(truthDegree);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		return result;
 	}
 }

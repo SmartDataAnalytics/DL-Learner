@@ -251,14 +251,14 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
             }
         }
         negated = false;
+
         OWLClassExpression filler = desc.getFiller().accept(this);
-        OWLClassExpression nnf = null;
+
+        OWLClassExpression nnf;
         if (neg) {
-            nnf = dataFactory.getOWLObjectMaxCardinality(card,
-                    desc.getProperty(), filler);
+            nnf = dataFactory.getOWLObjectMaxCardinality(card, desc.getProperty(), filler);
         } else {
-            nnf = dataFactory.getOWLObjectMinCardinality(card,
-                    desc.getProperty(), filler);
+            nnf = dataFactory.getOWLObjectMinCardinality(card, desc.getProperty(), filler);
         }
         negated = neg;
         return nnf;
@@ -278,7 +278,8 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
         }
         negated = false;
         OWLClassExpression filler = desc.getFiller().accept(this);
-        OWLClassExpression nnf = null;
+
+        OWLClassExpression nnf;
         if (neg) {
             nnf = dataFactory.getOWLObjectMinCardinality(card,
                     desc.getProperty(), filler);
@@ -355,7 +356,7 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
         }
         negated = false;
         OWLDataRange filler = desc.getFiller().accept(this);
-        OWLClassExpression nnf = null;
+        OWLClassExpression nnf;
         if (neg) {
             nnf = dataFactory.getOWLDataMinCardinality(card,
                     desc.getProperty(), filler);
@@ -379,7 +380,7 @@ public class NNF implements OWLClassExpressionVisitorEx<OWLClassExpression>,
         }
         negated = false;
         OWLDataRange filler = desc.getFiller().accept(this);
-        OWLClassExpression nnf = null;
+        OWLClassExpression nnf;
         if (neg) {
             nnf = dataFactory.getOWLDataMaxCardinality(card,
                     desc.getProperty(), filler);
