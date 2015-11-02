@@ -144,7 +144,7 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 		return asEvaluatedDescription();
 	}
 	/**
-	 * @param OWLClassExpression the OWLClassExpression to set
+	 * @param description the description to set
 	 */
 	public void setDescription(EvaluatedDescription<? extends Score> description) {
 		this.description = description;

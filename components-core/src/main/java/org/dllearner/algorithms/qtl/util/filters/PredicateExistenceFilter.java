@@ -39,8 +39,8 @@ public class PredicateExistenceFilter {
 	
 	/**
 	 * Returns a new tree based on the input tree.
-	 * @param tree
-	 * @return
+	 * @param tree the input tree
+	 * @return a filtered new tree
 	 */
 	public RDFResourceTree filter(RDFResourceTree tree) {
 		RDFResourceTree newTree;

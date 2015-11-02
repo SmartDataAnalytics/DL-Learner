@@ -148,15 +148,7 @@ public class OWLAxiomPatternFinder {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://" + dbServer + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUser, dbPass);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InvalidFileFormatException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (ClassNotFoundException | IOException | SQLException  e) {
 			e.printStackTrace();
 		}
 	}

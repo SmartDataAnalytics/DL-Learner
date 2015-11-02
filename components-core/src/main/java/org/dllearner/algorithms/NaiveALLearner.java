@@ -106,7 +106,7 @@ public class NaiveALLearner extends AbstractCELA{
      *      - all concepts of length `length`-2 are extended by limited
      *        existential quantification/value restriction
      *
-     * @param length
+     * @param length the length
      */
     private void generateDescriptions(int length) {
         generatedDescriptions.put(length, new ArrayList<OWLClassExpression>());

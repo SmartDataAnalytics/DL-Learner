@@ -1,5 +1,7 @@
 package org.dllearner.algorithms.qtl;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -89,9 +91,8 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private Set<OWLIndividual> currentPosExamples = new HashSet<>();
 	private Set<OWLIndividual> currentNegExamples = new HashSet<>();
 	
-	private Map<RDFResourceTree, OWLIndividual> tree2Individual = new HashMap<>();
-	private Map<OWLIndividual, RDFResourceTree> individual2Tree = new HashMap<>();
-	
+	private BiMap<RDFResourceTree, OWLIndividual> tree2Individual = HashBiMap.create();
+
 	private PosNegLP lp;
 
 	private Model model;
@@ -395,7 +396,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	/**
 	 * Compute a (partial) solution that covers as much positive examples as possible.
-	 * @return
+	 * @return a (partial) solution
 	 */
 	private EvaluatedRDFResourceTree computeBestPartialSolution(){
 		logger.info("Computing best partial solution...");
@@ -598,7 +599,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	/**
 	 * Add tree to ToDo list if not already contained in that list or the solutions.
-	 * @param solution
+	 * @param solution the solution
 	 */
 	private void todo(EvaluatedRDFResourceTree solution){
 		logger.trace("Added to TODO list.");
@@ -957,22 +958,21 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private Set<RDFResourceTree> asQueryTrees(Collection<OWLIndividual> individuals){
 		Set<RDFResourceTree> trees = new HashSet<>(individuals.size());
 		for (OWLIndividual ind : individuals) {
-			trees.add(individual2Tree.get(ind));
+			trees.add(tree2Individual.inverse().get(ind));
 		}
 		return trees;
 	}
 
 	/**
 	 * Return all trees from the given list {@code allTrees} which are not already subsumed by {@code tree}.
-	 * @param tree
-	 * @param allTrees
+	 * @param tree the tree
+	 * @param trees all trees
 	 * @return
 	 */
 	private List<RDFResourceTree> getCoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
 		List<RDFResourceTree> coveredTrees = new ArrayList<>();
 		for (RDFResourceTree queryTree : trees) {
-			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
-			if(subsumed){
+			if(QueryTreeUtils.isSubsumedBy(queryTree, tree)){
 				coveredTrees.add(queryTree);
 			}
 		}
@@ -988,8 +988,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private List<RDFResourceTree> getUncoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
 		List<RDFResourceTree> uncoveredTrees = new ArrayList<>();
 		for (RDFResourceTree queryTree : trees) {
-			boolean subsumed = QueryTreeUtils.isSubsumedBy(queryTree, tree);
-			if(!subsumed){
+			if(!QueryTreeUtils.isSubsumedBy(queryTree, tree)){
 				uncoveredTrees.add(queryTree);
 			}
 		}

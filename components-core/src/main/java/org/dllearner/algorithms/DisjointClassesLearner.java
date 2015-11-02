@@ -206,8 +206,8 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 	}
 	
 	/**
-	 * Returns the candidate properties for comparison.
-	 * @return
+	 * Returns the candidate classes for comparison.
+	 * @return the candidate classes
 	 */
 	private SortedSet<OWLClass> getCandidates(){
 		SortedSet<OWLClass> candidates;
@@ -226,7 +226,7 @@ public class DisjointClassesLearner extends AbstractAxiomLearningAlgorithm<OWLDi
 		return candidates;
 	}
 	
-	public double computeScore(int candidatePopularity, int popularity, int overlap){
+	private double computeScore(int candidatePopularity, int popularity, int overlap){
 		// compute the estimated precision
 		double precision = Heuristics.getConfidenceInterval95WaldAverage(candidatePopularity, overlap);
 

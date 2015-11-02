@@ -48,8 +48,8 @@ public class InformativenessMeasures {
 	 * the total number of triples having p as a predicate.
 	 * </p>
 	 * 
-	 * @param property
-	 * @return
+	 * @param property the predicate
+	 * @return the inverse triple frequency
 	 */
 	public double getInverseTripleFrequency(OWLProperty property) {
 		// total number of triples
@@ -76,7 +76,7 @@ public class InformativenessMeasures {
 	 * and u appear together.
 	 * 
 	 * @param individual
-	 * @param property
+	 * @param property the predicate
 	 * @param outgoing
 	 * @return
 	 */

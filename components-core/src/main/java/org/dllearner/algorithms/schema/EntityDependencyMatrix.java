@@ -76,11 +76,12 @@ public class EntityDependencyMatrix<T> {
 	 * entity1 depends on entity2 might be different from what
 	 * entity2 depends on entity1.
 	 * 
-	 * @param entity1
-	 * @param entity2
+	 * @param entity1 the first entity
+	 * @param entity2 the second entity
+	 * @return the dependency value
 	 */
-	public void getDependency(OWLEntity entity1, OWLEntity entity2){
-		
+	public double getDependency(OWLEntity entity1, OWLEntity entity2){
+		return 0;
 	}
 
 }

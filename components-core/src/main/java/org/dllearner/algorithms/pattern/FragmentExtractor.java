@@ -14,9 +14,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 public interface FragmentExtractor {
 	
 	/**
-	 * @param cls
-	 * @param maxFragmentDepth
-	 * @return
+	 * Extracts a fragment of the knowledge base for the given class C with a max. depth of of triples starting from
+	 * instances of C.
+	 * @param cls the class
+	 * @param maxFragmentDepth the maximum depth
+	 * @return the fragment
 	 */
 	Model extractFragment(OWLClass cls, int maxFragmentDepth);
 

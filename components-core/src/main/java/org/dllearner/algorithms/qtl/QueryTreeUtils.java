@@ -534,7 +534,8 @@ public class QueryTreeUtils {
 	 * @param trees
 	 * @return
 	 */
-    public static <N> boolean sameTrees(QueryTree<N>... trees) {
+    @SafeVarargs
+	public static <N> boolean sameTrees(QueryTree<N>... trees) {
     	for(int i = 0; i < trees.length; i++) {
     		QueryTree<N> tree1 = trees[i];
     		for(int j = i; j < trees.length; j++) {
@@ -854,8 +855,8 @@ public class QueryTreeUtils {
 	 * of used statements.</li>
 	 * 
 	 * </ul>
-	 * @param tree
-	 * @param entailment
+	 * @param tree the tree
+	 * @param entailment the entailment regime
 	 */
 	public static void prune(RDFResourceTree tree, AbstractReasonerComponent reasoner, Entailment entailment) {
 		
@@ -989,8 +990,7 @@ public class QueryTreeUtils {
 	
 	/**
 	 * Recursively removes edges that lead to a leaf node which is a variable.
-	 * @param tree
-	 * @param entailment
+	 * @param tree the tree
 	 */
 	public static boolean removeVarLeafs(RDFResourceTree tree) {
 		SortedSet<Node> edges = new TreeSet<>(tree.getEdges());

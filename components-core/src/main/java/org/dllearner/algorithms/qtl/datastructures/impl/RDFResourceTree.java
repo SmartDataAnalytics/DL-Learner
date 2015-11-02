@@ -87,17 +87,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	/**
 	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * @param datatype the datatype
 	 */
 	public RDFResourceTree(RDFDatatype datatype) {
 		this(0, datatype);
 	}
 	
 	/**
-	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * Create empty literal node with given ID and datatype.
+	 * @param id the ID
+	 * @param datatype the datatype
 	 */
 	public RDFResourceTree(int id, RDFDatatype datatype) {
 		super(DEFAULT_LITERAL_NODE);
@@ -106,9 +105,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
-	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * Create literal node with given ID, datatype and a set of literal values.
+	 * @param id the ID
+	 * @param datatype the datatype
+	 * @param literals the literal values
 	 */
 	public RDFResourceTree(int id, RDFDatatype datatype, Set<Literal> literals) {
 		super(DEFAULT_LITERAL_NODE);
@@ -185,7 +185,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
-	 * @param edge
+	 * @param edge the edge
 	 * @return all children for the specified edge, or <code>null</code> if
 	 * there is no child for the edge
 	 */
@@ -278,8 +278,11 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	/**
 	 * Prints the query tree and shows children of resources only if enabled.
 	 * 
-	 * @param stopWhenLeafNode
-	 * @return
+	 * @param stopIfChildIsResourceNode if a child node is not a variable, children will not be rendered
+	 * @param syntax the syntax used for rendering
+	 * @param baseIRI the base IRI
+	 * @param pm the prefix mapping
+	 * @return a rendered string representation of the tree
 	 */
 	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();

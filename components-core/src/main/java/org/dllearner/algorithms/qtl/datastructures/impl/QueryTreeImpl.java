@@ -1754,11 +1754,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
                 vertexNameProvider, edgeIDProvider, edgeLabelProvider);
 		try {
 			exporter.export(new FileWriter(new File("tree.graphml")), graph);
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (TransformerConfigurationException | SAXException | IOException e) {
 			e.printStackTrace();
 		}
 	}

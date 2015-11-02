@@ -191,7 +191,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	/**
 	 * Returns the candidate properties for comparison.
-	 * @return
+	 * @return the candidate properties
 	 */
 	protected SortedSet<OWLObjectProperty> getCandidates(){
 		// get the candidates

@@ -373,7 +373,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 			  psiDown= new PsiDown(lp,(AbstractReasonerComponent)reasoner);
 
 			}else
-				new RuntimeException("Psi Down cannot be instantiated");
+				throw new RuntimeException("Psi Down cannot be instantiated");
 			
 //			ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
 			

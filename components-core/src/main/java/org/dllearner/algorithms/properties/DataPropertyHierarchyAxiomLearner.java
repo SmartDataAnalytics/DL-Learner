@@ -186,12 +186,20 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 		
 		return score;
 	}
-	
+
+	/**
+	 * Returns the hierarchy axiom based on the axiom type of the current learning algorithm between both
+	 * properties. The relationship between both properties can be (1) subsumption, (2) equivalence or (3)
+	 * disjointness.
+	 * @param property the first property
+	 * @param otherProperty the second property
+	 * @return the hierarchy axiom
+	 */
 	public abstract T getAxiom(OWLDataProperty property, OWLDataProperty otherProperty);
 	
 	/**
 	 * Returns the candidate properties for comparison.
-	 * @return
+	 * @return  the candidate properties
 	 */
 	protected SortedSet<OWLDataProperty> getCandidates(){
 		// get the candidates

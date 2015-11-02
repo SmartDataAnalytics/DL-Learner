@@ -51,8 +51,8 @@ public interface QueryTree<N> {
     void setUserObject(N userObject);
     
     /**
-     * 
-     * @param id
+     * Set the ID of the current node
+     * @param id the ID
      */
     void setId(int id);
     

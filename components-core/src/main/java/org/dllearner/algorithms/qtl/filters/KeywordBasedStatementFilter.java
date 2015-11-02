@@ -192,7 +192,7 @@ public class KeywordBasedStatementFilter extends Filter<Statement> {
 	public Set<Statement> getStatementsBelowThreshold(double threshold){
 		Set<Statement> statements = new HashSet<>();
 		for(Entry<Statement, Double> entry : statement2Similarity.entrySet()){
-			if(entry.getValue().doubleValue() < threshold){
+			if(entry.getValue() < threshold){
 				statements.add(entry.getKey());
 			}
 		}

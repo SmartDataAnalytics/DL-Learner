@@ -94,9 +94,9 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 	/**
 	 * Return the integer value of a SPARQL query that just returns a single COUNT value.
 	 * It is assumed the the variable of the COUNT value is ?cnt.
-	 * @param query
-	 * @param model
-	 * @return
+	 * @param query the SPARQL query
+	 * @param model the model containing the data
+	 * @return the count value
 	 */
 	protected int getCountValue(String query, Model model){
 		ResultSet rs = executeSelectQuery(query, model);

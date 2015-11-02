@@ -57,7 +57,7 @@ public class SearchTreeNode {
 	}
 
 	/**
-	 * @param tooWeak set if the node is too weak
+	 * set if the node is too weak
 	 */
 	public void setTooWeak() {
 		tooWeak = true;
