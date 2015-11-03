@@ -386,8 +386,8 @@ public class ROLearner2 {
 		long lastTreeTraversalTime = System.nanoTime();
 		long lastReductionTime = System.nanoTime();
 		// try a traversal after x seconds
-		long traversalInterval = 300l * 1000000000l;
-		long reductionInterval = 300l * 1000000000l;
+		long traversalInterval = 300L * 1000000000L;
+		long reductionInterval = 300L * 1000000000L;
 		long currentTime;
 		
 		while (!isTerminationCriteriaReached()) {
@@ -395,7 +395,7 @@ public class ROLearner2 {
 
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
-			if (currentTime - lastPrintTime > 3000000000l) {
+			if (currentTime - lastPrintTime > 3000000000L) {
 				printStatistics(false);
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");

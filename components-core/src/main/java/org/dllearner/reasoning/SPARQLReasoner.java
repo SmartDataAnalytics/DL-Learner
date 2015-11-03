@@ -419,14 +419,18 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 		return cnt;
 	}
-	
+
+	/**
+	 * Computes the popularity of the given entity.
+	 * @param entity the entity
+	 * @param <T> the OWL entity type
+	 * @return the popularity
+	 */
 	public <T extends OWLEntity> int getPopularity(T entity){
-		Integer popularity = null;
-		
-		if(useCache){
-			popularity = entityPopularityMap.get(entity);
-		}
-		
+		// check if we have the value cached
+		Integer popularity = entityPopularityMap.get(entity);
+
+		// compute the value if not cached
 		if(popularity == null){
 			ParameterizedSparqlString queryTemplate;
 			if(entity.isOWLClass()){
@@ -443,7 +447,8 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			ResultSet rs = executeSelectQuery(queryTemplate.toString());
 			
 			popularity = rs.next().getLiteral("cnt").getInt();
-			
+
+			// put to cache
 			entityPopularityMap.put(entity, popularity);
 		}
 		return popularity;

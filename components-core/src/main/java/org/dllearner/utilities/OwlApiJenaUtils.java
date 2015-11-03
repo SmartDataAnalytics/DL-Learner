@@ -9,6 +9,10 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Set;
 
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
 import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.EntityType;
@@ -23,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
+import org.semanticweb.owlapi.vocab.Namespaces;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import com.hp.hpl.jena.graph.Node;
@@ -42,6 +47,11 @@ public class OwlApiJenaUtils {
 	
 	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
 
+	/**
+	 * Converts a JENA API model into an OWL API ontology.
+	 * @param model the JENA API model
+	 * @return the OWL API ontology
+	 */
 	public static OWLOntology getOWLOntology(final Model model) {
 		OWLOntology ontology;
 
@@ -63,19 +73,12 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Could not convert JENA API model to OWL API ontology.", e);
 		}
 	}
-	
+
 	/**
-	 * Convert statements from JENA API  into OWL API axioms.
-	 * @param statements the JENA API statements
-	 * @return the set of axioms
+	 * Converts an OWL API ontology into a JENA API model.
+	 * @param ontology the OWL API ontology
+	 * @return the JENA API model
 	 */
-	public static Set<OWLAxiom> asOWLAxioms(List<Statement> statements) {
-		Model model = ModelFactory.createDefaultModel();
-		model.add(statements);
-		OWLOntology ontology = getOWLOntology(model);
-		return ontology.getAxioms();
-	}
-	
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
@@ -96,7 +99,24 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Could not convert OWL API ontology to JENA API model.", e);
 		}
 	}
-	
+
+	/**
+	 * Convert statements from JENA API  into OWL API axioms.
+	 * @param statements the JENA API statements
+	 * @return the set of axioms
+	 */
+	public static Set<OWLAxiom> asOWLAxioms(List<Statement> statements) {
+		Model model = ModelFactory.createDefaultModel();
+		model.add(statements);
+		OWLOntology ontology = getOWLOntology(model);
+		return ontology.getAxioms();
+	}
+
+	/**
+	 * Converts a JENA API literal into an OWL API literal.
+	 * @param lit the JENA API literal
+	 * @return the OWL API literal
+	 */
 	public static OWLLiteral getOWLLiteral(Literal lit){
 		OWLLiteral literal = null;
 		if(lit.getDatatypeURI() != null){
@@ -111,9 +131,31 @@ public class OwlApiJenaUtils {
 		}
 		return literal;
 	}
-	
+
+	/**
+	 * Converts a JENA API literal into an OWL API literal.
+	 * @param lit the JENA API literal
+	 * @return the OWL API literal
+	 */
 	public static OWLLiteral getOWLLiteral(LiteralLabel lit){
 		return getOWLLiteral(new LiteralImpl(NodeFactory.createLiteral(lit), null));
+	}
+
+	/**
+	 * Converts an OWL API literal into a JENA API literal.
+	 * @param lit the OWL API literal
+	 * @return the JENA API literal
+	 */
+	public static LiteralLabel getLiteral(OWLLiteral lit){
+		OWLDatatype owlDatatype = lit.getDatatype();
+
+		RDFDatatype datatype;
+		if(Namespaces.XSD.inNamespace(owlDatatype.getIRI())){
+			datatype = new XSDDatatype(owlDatatype.getIRI().getRemainder().get());
+		} else {
+			datatype = new BaseDatatype(lit.getDatatype().toStringID());
+		}
+		return LiteralLabelFactory.create(lit.getLiteral(), lit.getLang(), datatype);
 	}
 	
 	/**
@@ -132,9 +174,9 @@ public class OwlApiJenaUtils {
 	}
 	
 	/**
-	 * Convert an OWL entity into a JENA Node.
-	 * @param entity the OWL entity
-	 * @return the JENA Node
+	 * Convert an OWL API entity into a JENA API node.
+	 * @param entity the OWL API entity
+	 * @return the JENA API node
 	 */
 	public static Node asNode(OWLEntity entity) {
 		return NodeFactory.createURI(entity.toStringID());

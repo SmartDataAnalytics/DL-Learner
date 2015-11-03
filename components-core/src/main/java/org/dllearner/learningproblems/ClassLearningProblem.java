@@ -703,7 +703,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	}
 	
 	private boolean terminationTimeExpired(){
-		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
+		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L));
 		if(val) {
 			logger.warn("Description test aborted, because it took longer than " + maxExecutionTimeInSeconds + " seconds.");
 		}

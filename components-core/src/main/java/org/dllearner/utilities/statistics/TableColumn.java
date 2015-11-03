@@ -30,7 +30,7 @@ import org.dllearner.utilities.Files;
 
 public class TableColumn implements Serializable {
 
-	private static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1L;
 	private String header;
 	private List<String> entries = new ArrayList<>();
 

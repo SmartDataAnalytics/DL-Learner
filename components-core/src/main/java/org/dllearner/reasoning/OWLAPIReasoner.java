@@ -357,7 +357,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 			break;
 		case OWLLINK:
 			reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
-			URL url = null;
+			URL url;
 			try {
 				url = new URL(getOwlLinkURL());//Configure the server end-point
 				conf = new OWLlinkReasonerConfiguration(url);

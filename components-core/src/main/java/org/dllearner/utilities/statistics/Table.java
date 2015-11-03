@@ -38,7 +38,7 @@ import org.dllearner.utilities.StringFormatter;
  */
 public class Table implements Serializable{
 
-	private static final long serialVersionUID = 0l;
+	private static final long serialVersionUID = 0L;
     
     //used to give a good percentage output
     //private DecimalFormat df = new DecimalFormat( ".00%" ); 

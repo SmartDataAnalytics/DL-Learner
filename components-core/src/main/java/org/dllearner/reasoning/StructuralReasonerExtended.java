@@ -629,8 +629,8 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         		for (OWLOntology ontology : getRootOntology().getImportsClosure()) {
                     for (OWLObjectPropertyExpression curProp : properties) {
                         Set<OWLAxiom> referencingAxioms = ontology.getReferencingAxioms(curProp.asOWLObjectProperty());
-                        int i = 0;
-						for (OWLAxiom axiom : referencingAxioms) {
+
+							for (OWLAxiom axiom : referencingAxioms) {
                         	if(axiom instanceof OWLObjectPropertyAssertionAxiom){
                         		// check if object is instance of filler 
                         		OWLIndividual object = ((OWLObjectPropertyAssertionAxiom) axiom).getObject();
