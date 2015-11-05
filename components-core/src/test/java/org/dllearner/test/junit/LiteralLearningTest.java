@@ -1,11 +1,7 @@
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Level;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
@@ -16,27 +12,20 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplInteger;
 
-import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertTrue;
 
 public final class LiteralLearningTest {
 	static final String NUMBERS = "http://dl-learner.org/test/numbers#";
@@ -109,9 +98,9 @@ public final class LiteralLearningTest {
 				op.setReasoner(rc);
 				op.setMaxNrOfSplits(maxNrOfSplits);
 				op.init();
-				
+
 				CELOE alg = new CELOE(lp, rc);
-				alg.setMaxClassDescriptionTests(1000);
+				alg.setMaxClassExpressionTests(1000);
 				alg.setMaxExecutionTimeInSeconds(0);
 				alg.setOperator(op);
 				alg.init();
@@ -234,6 +223,58 @@ public final class LiteralLearningTest {
 		runner.setReasoners(cwr , oar);
 		
 		runner.run();
+	}
+
+	@Test
+	public void stringTypeTest () throws OWLOntologyCreationException, ComponentInitException {
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLOntology ontology = man.createOntology();
+		PrefixManager pm = new DefaultPrefixManager("http://dl-learner.org/test/strings/");
+		OWLDataProperty dp = df.getOWLDataProperty("stringValue", pm);
+		OWLClass cls = df.getOWLClass("A", pm);
+		man.addAxiom(ontology, df.getOWLDataPropertyDomainAxiom(dp, cls));
+		man.addAxiom(ontology, df.getOWLDataPropertyRangeAxiom(dp, OWL2Datatype.XSD_STRING.getDatatype(df)));
+
+		Set<OWLIndividual> positiveExamples = new TreeSet<>();
+		for (int i = 0; i < 10; i++) {
+			OWLNamedIndividual ind = df.getOWLNamedIndividual("p" + i, pm);
+			positiveExamples.add(ind);
+			man.addAxiom(ontology, df.getOWLDataPropertyAssertionAxiom(dp, ind, "X"));
+			man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, ind));
+		}
+
+		Set<OWLIndividual> negativeExamples = new TreeSet<>();
+		for (int i = 0; i < 10; i++) {
+			OWLNamedIndividual ind = df.getOWLNamedIndividual("n" + i, pm);
+			negativeExamples.add(ind);
+			man.addAxiom(ontology, df.getOWLDataPropertyAssertionAxiom(dp, ind, "Y"));
+			man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, ind));
+		}
+
+		OWLAPIOntology ks = new OWLAPIOntology(ontology);
+		ks.init();
+
+		ClosedWorldReasoner reasoner = new ClosedWorldReasoner(ks);
+		reasoner.init();
+
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		lp.setPositiveExamples(positiveExamples);
+		lp.setNegativeExamples(negativeExamples);
+		lp.init();
+
+		RhoDRDown op = new RhoDRDown();
+		op.setUseDataHasValueConstructor(true);
+		op.setReasoner(reasoner);
+		op.init();
+
+		CELOE alg = new CELOE(lp, reasoner);
+		alg.setMaxClassExpressionTests(1000);
+		alg.setMaxExecutionTimeInSeconds(0);
+		alg.setOperator(op);
+		alg.init();
+
+		alg.start();
 	}
 	
 	@Test
