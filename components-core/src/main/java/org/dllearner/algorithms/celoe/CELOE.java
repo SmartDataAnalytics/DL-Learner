@@ -276,7 +276,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	public static String getName() {
 		return "CELOE";
 	}
-	
+
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();
@@ -996,16 +996,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		this.replaceSearchTree = replaceSearchTree;
 	}
 
-	@Deprecated
-	public int getMaxClassDescriptionTests() {
-		return maxClassExpressionTests;
-	}
-
-	@Deprecated
-	public void setMaxClassDescriptionTests(int maxClassDescriptionTests) {
-		this.maxClassExpressionTests = maxClassDescriptionTests;
-	}
-
 	public boolean isTerminateOnNoiseReached() {
 		return terminateOnNoiseReached;
 	}
@@ -1029,17 +1019,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	@Autowired(required=false)
 	public void setHeuristic(AbstractHeuristic heuristic) {
 		this.heuristic = heuristic;
-	}
-
-	@Deprecated
-	public int getMaxClassExpressionTestsWithoutImprovement() {
-		return maxClassExpressionTestsAfterImprovement;
-	}
-
-	@Deprecated
-	public void setMaxClassExpressionTestsWithoutImprovement(
-			int maxClassExpressionTestsWithoutImprovement) {
-		this.maxClassExpressionTestsAfterImprovement = maxClassExpressionTestsWithoutImprovement;
 	}
 
 	public int getMaxExecutionTimeInSecondsAfterImprovement() {
