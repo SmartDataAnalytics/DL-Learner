@@ -17,6 +17,8 @@ import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -195,10 +197,9 @@ public class OWLAPIUtils {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
-				return parser.parseClassExpression();
-			} catch (ParserException e) {
+				ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, new SimpleOWLEntityChecker(reasoner));
+				return parser.parse(s);
+			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
 			}

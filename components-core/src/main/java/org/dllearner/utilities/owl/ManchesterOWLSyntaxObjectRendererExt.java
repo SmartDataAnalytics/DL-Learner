@@ -38,52 +38,6 @@
  */
 package org.dllearner.utilities.owl;
 
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.AND;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ANNOTATIONS;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ANNOTATION_PROPERTY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ASYMMETRIC;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.CLASS;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.COMMA;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DATA_PROPERTY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DIFFERENT_FROM;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DIFFERENT_INDIVIDUALS;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_CLASSES;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_PROPERTIES;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_UNION_OF;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DISJOINT_WITH;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.DOMAIN;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_CLASSES;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_PROPERTIES;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EQUIVALENT_TO;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.EXACTLY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FACET_RESTRICTION_SEPARATOR;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.FUNCTIONAL;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.HAS_KEY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INDIVIDUAL;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE_FUNCTIONAL;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.INVERSE_OF;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.IRREFLEXIVE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.MAX;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.MIN;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.NOT;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.OBJECT_PROPERTY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONE_OF_DELIMETER;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONLY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.ONTOLOGY;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.OR;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.RANGE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.REFLEXIVE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SAME_AS;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SAME_INDIVIDUAL;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SELF;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SOME;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SUBCLASS_OF;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SUB_PROPERTY_OF;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.SYMMETRIC;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.TRANSITIVE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.TYPE;
-import static org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax.VALUE;
 
 import java.io.Writer;
 import java.util.ArrayList;
@@ -94,14 +48,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntax;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntax;
+import org.semanticweb.owlapi.manchestersyntax.renderer.AbstractRenderer;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.vocab.SWRLBuiltInsVocabulary;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
 
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.AbstractRenderer;
-
+import static org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntax.*;
 /**
  * @author Matthew Horridge, The University Of Manchester, Bio-Health
  *         Informatics Group, Date: 25-Apr-2007
@@ -224,17 +178,17 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
     }
 
     private
-            <R extends OWLPropertyRange, P extends OWLPropertyExpression<R, P>, V extends OWLObject>
-            void writeRestriction(OWLHasValueRestriction<R, P, V> restriction) {
+            <R extends OWLPropertyRange, P extends OWLPropertyExpression, V extends OWLObject>
+            void writeRestriction(OWLHasValueRestriction restriction) {
         restriction.getProperty().accept(this);
         write(VALUE);
         restriction.getValue().accept(this);
     }
 
     private
-            <R extends OWLPropertyRange, P extends OWLPropertyExpression<R, P>, F extends OWLPropertyRange>
+            <R extends OWLPropertyRange, P extends OWLPropertyExpression, F extends OWLPropertyRange>
             void writeRestriction(
-                    OWLCardinalityRestriction<R, P, F> restriction,
+                    OWLCardinalityRestriction restriction,
                     ManchesterOWLSyntax keyword) {
         restriction.getProperty().accept(this);
         write(keyword);

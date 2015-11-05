@@ -51,7 +51,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
     private static final OWLClass OWL_NOTHING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
     
-    private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    private OWLDataFactory df = new OWLDataFactoryImpl();
     
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This
