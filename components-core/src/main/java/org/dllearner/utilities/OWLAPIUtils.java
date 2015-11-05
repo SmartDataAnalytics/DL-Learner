@@ -3,37 +3,21 @@
  */
 package org.dllearner.utilities;
 
-import java.util.*;
-
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.ISODateTimeFormat;
-import org.joda.time.format.ISOPeriodFormat;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
-import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
-
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
-
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.joda.time.DateTime;
+import org.joda.time.format.*;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann

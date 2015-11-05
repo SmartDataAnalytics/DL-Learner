@@ -21,6 +21,7 @@ public abstract class ClassExpressionRefinementOperatorBase extends
 	protected OWLDataFactory dataFactory;
 
 	public ClassExpressionRefinementOperatorBase(OWLReasoner reasoner, OWLDataFactory dataFactory) {
+		super(dataFactory.getOWLNothing());
 		this.reasoner = reasoner;
 		this.dataFactory = dataFactory;
 	}
