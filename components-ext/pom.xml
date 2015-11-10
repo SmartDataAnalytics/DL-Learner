@@ -102,6 +102,25 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+        <!-- EDGE dependency -->
+        <dependency>
+            <groupId>unife</groupId>
+            <artifactId>edge</artifactId>
+            <version>3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>manpageGenerator-maven-plugin</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>openMPI</groupId>
+            <artifactId>openmpi-java-binding</artifactId>
+            <version>1.8.6</version>
+        </dependency>
         
     <!--
         <dependency>
