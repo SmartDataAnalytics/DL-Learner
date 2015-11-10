@@ -67,10 +67,15 @@ public class AllTestsRunner{
 				SimulationTests.class,
 				UtilitiesTests.class);
 
-		for (Failure failure : result.getFailures()) {
-			System.err.println(failure.toString());
+		if(result.wasSuccessful()) {
+			System.out.println("All tests succeeded!");
+		} else {
+			System.err.println("Some tests failed:");
+
+			for (Failure failure : result.getFailures()) {
+				System.err.println(failure.toString());
+			}
 		}
-		System.out.println(result.wasSuccessful());
 	}
 
 }
