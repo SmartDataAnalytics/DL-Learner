@@ -948,7 +948,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
 			
 			SortedSet<OWLLiteral> values = mapping.get(individual);
-			
+
 			return values != null && values.contains(value);
 		} else if (description instanceof OWLObjectOneOf) {
 			return ((OWLObjectOneOf) description).getIndividuals().contains(individual);

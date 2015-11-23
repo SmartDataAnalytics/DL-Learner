@@ -386,7 +386,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 			while(!refinements.isEmpty() && !terminationCriteriaSatisfied()) {
 				// pick element from set
 				OWLClassExpression refinement = refinements.pollFirst();
-				
+
 				// get length of class expression
 				int length = OWLClassExpressionUtils.getLength(refinement);
 				
