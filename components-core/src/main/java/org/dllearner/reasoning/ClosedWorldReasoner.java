@@ -178,11 +178,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     private boolean handlePunning = false;
     private boolean precomputeNegations = true;
     
-	/**
-	 * Creates an instance of the fast instance checker.
-	 */
-	public ClosedWorldReasoner() {
-	}
+	public ClosedWorldReasoner() {}
 
     public ClosedWorldReasoner(TreeSet<OWLIndividual> individuals,
 			Map<OWLClass, TreeSet<OWLIndividual>> classInstancesPos,
@@ -204,7 +200,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             try {
 				baseReasoner.init();
 			} catch (ComponentInitException e) {
-				e.printStackTrace();
+				throw new RuntimeException("Intialization of base reasoner failed.", e);
 			}
         }
 		
@@ -266,10 +262,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
             baseReasoner = new OWLAPIReasoner(sources);
             baseReasoner.init();
         }
-		
-        objectProperties = baseReasoner.getObjectProperties();
-        
-		individuals = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals();
 		
 //		loadOrDematerialize();
 		materialize();
@@ -333,6 +325,10 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	private void materialize(){
 		logger.info("Materializing TBox...");
 		long dematStartTime = System.currentTimeMillis();
+
+		objectProperties = baseReasoner.getObjectProperties();
+
+		individuals = (TreeSet<OWLIndividual>) baseReasoner.getIndividuals();
 
 		logger.debug("materialising concepts");
 		for (OWLClass cls : baseReasoner.getClasses()) {
