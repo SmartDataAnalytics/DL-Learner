@@ -6,6 +6,8 @@ package org.dllearner.algorithms.qtl.experiments;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +24,9 @@ import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.apache.jena.riot.Lang;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
@@ -52,12 +56,13 @@ public class DBpediaLearningProblemsGenerator {
 	private Model schema;
 	private File benchmarkDirectory;
 	private int threadCount;
+
+	private static String DBPEDIA_ONTOLOGY_URL = "http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2";
 	
-	public DBpediaLearningProblemsGenerator(File benchmarkDirectory, int threadCount) throws Exception {
+	public DBpediaLearningProblemsGenerator(SparqlEndpoint endpoint, File benchmarkDirectory, int threadCount) throws Exception {
+		this.endpoint = endpoint;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.threadCount = threadCount;
-		
-		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
 		
 		ks = new SparqlEndpointKS(endpoint);
 		ks.setCacheDir(new File(benchmarkDirectory, "cache").getPath() + ";mv_store=false");
@@ -75,7 +80,11 @@ public class DBpediaLearningProblemsGenerator {
 		dataDir.mkdirs();
 		
 		schema = ModelFactory.createDefaultModel();
-		schema.read(new FileInputStream(new File(benchmarkDirectory, "dbpedia_2014.owl")), null, "RDF/XML");
+		try(InputStream is = new BZip2CompressorInputStream(new URL(DBPEDIA_ONTOLOGY_URL).openStream())){
+			schema.read(is, null, Lang.RDFXML.getName());
+		}
+
+//		schema.read(new FileInputStream(new File(benchmarkDirectory, "dbpedia_2014.owl")), null, "RDF/XML");
 	}
 	
 	private Set<OWLClass> getClasses() {
@@ -208,8 +217,10 @@ public class DBpediaLearningProblemsGenerator {
 		int minDepth = Integer.parseInt(args[3]);
 		int maxDepth = Integer.parseInt(args[4]);
 		int minNrOfExamples = Integer.parseInt(args[5]);
+
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://dbpedia.org/sparql", "http://dbpedia.org");
 		
-		DBpediaLearningProblemsGenerator generator = new DBpediaLearningProblemsGenerator(benchmarkBaseDirectory, threadCount);
+		DBpediaLearningProblemsGenerator generator = new DBpediaLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
 		generator.generateBenchmark(nrOfSPARQLQueries, minDepth, maxDepth, minNrOfExamples);
 	}
 	

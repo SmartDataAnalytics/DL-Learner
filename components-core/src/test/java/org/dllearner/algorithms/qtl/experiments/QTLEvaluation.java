@@ -176,7 +176,7 @@ public class QTLEvaluation {
 
 	private EvaluationDataset dataset;
 	
-	private Map<String, List<String>> cache = new HashMap<String, List<String>>();
+	private Map<String, List<String>> cache = new HashMap<>();
 	
 	private int kbSize;
 
@@ -418,7 +418,7 @@ public class QTLEvaluation {
 	}
 	
 	private List<String> getSparqlQueries(File queriesFile) throws IOException {
-		List<String> sparqlQueries = new ArrayList<String>();
+		List<String> sparqlQueries = new ArrayList<>();
 		
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 //			Query q = QueryFactory.create(queryString);
@@ -451,7 +451,7 @@ public class QTLEvaluation {
 	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
-		
+
 		if(exampleInterval != null) {
 			nrOfExamplesIntervals = exampleInterval;
 		}
@@ -467,7 +467,11 @@ public class QTLEvaluation {
 		
 		List<String> queries = getSparqlQueries(queriesFile);
 		logger.info("#loaded queries: " + queries.size());
-		
+
+		if(maxNrOfProcessedQueries == -1) {
+			maxNrOfProcessedQueries = queries.size();
+		}
+
 		queries = filter(queries, maxNrOfProcessedQueries / maxTreeDepth);
 //		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
 		logger.info("#queries to process: " + queries.size());
@@ -608,8 +612,8 @@ public class QTLEvaluation {
 										la.setMaxTreeComputationTimeInSeconds(maxExecutionTimeInSeconds);
 										la.init();
 										la.start();
-										List<EvaluatedRDFResourceTree> solutions = new ArrayList<EvaluatedRDFResourceTree>(la.getSolutions());
-
+										List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
+										
 //										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
 										nrOfReturnedSolutionsStats.addValue(solutions.size());
 										
@@ -888,7 +892,7 @@ public class QTLEvaluation {
 				for (Node edge : edges) {
 					List<RDFResourceTree> children = ex.getChildren(edge);
 					for (RDFResourceTree child : children) {
-						pairs.add(new Pair<Node, Node>(edge, child.getData()));
+						pairs.add(new Pair<>(edge, child.getData()));
 					}
 				}
 			}
@@ -908,7 +912,7 @@ public class QTLEvaluation {
 				for (Node edge : edges) {
 					List<RDFResourceTree> children = ex.getChildren(edge);
 					for (RDFResourceTree child : children) {
-						edgeObjectPairs.add(new Pair<Node, Node>(edge, child.getData()));
+						edgeObjectPairs.add(new Pair<>(edge, child.getData()));
 					}
 				}
 			}
@@ -984,7 +988,7 @@ public class QTLEvaluation {
 		la.init();
 		la.start();
 
-		List<EvaluatedRDFResourceTree> solutions = new ArrayList<EvaluatedRDFResourceTree>(la.getSolutions());
+		List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
 		
 		return solutions;
 	}
@@ -1042,11 +1046,11 @@ public class QTLEvaluation {
 			ExamplesWrapper examples) throws Exception{
 		logger.info("Searching for best matching query tree...");
 		
-		Set<RDFResourceTree> correctPositiveExampleTrees = new HashSet<RDFResourceTree>();
+		Set<RDFResourceTree> correctPositiveExampleTrees = new HashSet<>();
 		for (String ex  : examples.correctPosExamples) {
 			correctPositiveExampleTrees.add(examples.posExamplesMapping.get(new OWLNamedIndividualImpl(IRI.create(ex))));
 		}
-		Set<RDFResourceTree> noisyPositiveExampleTrees = new HashSet<RDFResourceTree>();
+		Set<RDFResourceTree> noisyPositiveExampleTrees = new HashSet<>();
 		for (String ex  : examples.falsePosExamples) {
 			noisyPositiveExampleTrees.add(examples.posExamplesMapping.get(new OWLNamedIndividualImpl(IRI.create(ex))));
 		}
@@ -1162,9 +1166,10 @@ public class QTLEvaluation {
 	/**
 	 * Generates a list of candidates that are not contained in the given set of examples.
 	 * @param sparqlQuery
-	 * @param posExamples
-	 * @param negExamples
-	 * @return
+	 * @param noiseMethod
+	 * @param examples
+	 * @param limit
+	 * @return list of candidate resource
 	 */
 	private List<String> generateNoiseCandidates(String sparqlQuery, NoiseMethod noiseMethod, List<String> examples, int limit) {
 		List<String> noiseCandidates = new ArrayList<>();
@@ -1206,7 +1211,7 @@ public class QTLEvaluation {
 
 		if (probabilityBased) {
 			// 1. way
-			List<String> newExamples = new ArrayList<String>();
+			List<String> newExamples = new ArrayList<>();
 			for (Iterator<String> iterator = examples.iterator(); iterator.hasNext();) {
 				String posExample = iterator.next();
 				double rnd = randomGen.nextDouble();
@@ -1232,8 +1237,8 @@ public class QTLEvaluation {
 			List<String> posExamples2Replace = new ArrayList<>(examples.subList(0, nrOfPosExamples2Replace));
 			examples.removeAll(posExamples2Replace);
 			List<String> negExamples4Replacement = noiseCandidateExamples.subList(0, nrOfPosExamples2Replace);
-			List<String> noiseExamples = new ArrayList<String>(negExamples4Replacement);
-			List<String> correctExamples = new ArrayList<String>(examples);
+			List<String> noiseExamples = new ArrayList<>(negExamples4Replacement);
+			List<String> correctExamples = new ArrayList<>(examples);
 			examples.addAll(negExamples4Replacement);
 			logger.info("replaced " + posExamples2Replace + " by " + negExamples4Replacement);
 			
@@ -1285,7 +1290,7 @@ public class QTLEvaluation {
 		
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<String> negExamplesSet = new TreeSet<String>();
+		Set<String> negExamplesSet = new TreeSet<>();
 		
 		if(triplePatterns.size() == 1){
 			Triple tp = triplePatterns.iterator().next();
@@ -1326,7 +1331,7 @@ public class QTLEvaluation {
 				if(!set.isEmpty() && set.size() != triplePatterns.size()){
 					List<Triple> existingTriplePatterns = new ArrayList<>(triplePatterns);
 					List<Triple> newTriplePatterns = new ArrayList<>();
-					List<ElementFilter> filters = new ArrayList<ElementFilter>();
+					List<ElementFilter> filters = new ArrayList<>();
 					int cnt = 0;
 					for (Triple tp : set) {
 						if(tp.getObject().isURI() || tp.getObject().isLiteral()){
@@ -1350,7 +1355,7 @@ public class QTLEvaluation {
 					q.setQuerySelectType();
 					q.setDistinct(true);
 					q.addProjectVars(query.getProjectVars());
-					List<Triple> allTriplePatterns = new ArrayList<Triple>(existingTriplePatterns);
+					List<Triple> allTriplePatterns = new ArrayList<>(existingTriplePatterns);
 					allTriplePatterns.addAll(newTriplePatterns);
 					ElementTriplesBlock tripleBlock = new ElementTriplesBlock(BasicPattern.wrap(allTriplePatterns));
 					ElementGroup eg = new ElementGroup();
@@ -1400,7 +1405,7 @@ public class QTLEvaluation {
 	}
 	
 	private List<RDFResourceTree> getQueryTrees(List<String> resources){
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> trees = new ArrayList<>();
 		
 		for (String resource : resources) {
 			trees.add(getQueryTree(resource));
@@ -1443,7 +1448,7 @@ public class QTLEvaluation {
 		logger.trace(sparqlQuery);
 		List<String> resources = cache.get(sparqlQuery);
 		if(resources == null || !useCache) {
-			resources = new ArrayList<String>();
+			resources = new ArrayList<>();
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			
 			// we assume a single projection var
@@ -1481,7 +1486,7 @@ public class QTLEvaluation {
 		
 		// remove triple patterns with unbound object vars
 		if(triplePatterns.size() > 10) {
-			query = removeUnboundObjectVarTriples(query);
+			query = queryUtils.removeUnboundObjectVarTriples(query);
 			triplePatterns = queryUtils.extractTriplePattern(query);
 		} 
 		
@@ -1507,8 +1512,8 @@ public class QTLEvaluation {
 		
 		// 1. get the outgoing triple patterns of the target var that do not have
 		// outgoing triple patterns
-		Set<Triple> fixedTriplePatterns = new HashSet<Triple>();
-		Set<Set<Triple>> clusters = new HashSet<Set<Triple>>();
+		Set<Triple> fixedTriplePatterns = new HashSet<>();
+		Set<Set<Triple>> clusters = new HashSet<>();
 		Collection<Triple> targetVarTriplePatterns = var2TriplePatterns.get(targetVar);
 		boolean useSplitting = false;
 		for (Triple tp : targetVarTriplePatterns) {
@@ -1546,7 +1551,7 @@ public class QTLEvaluation {
 		
 		// again split clusters to have only a maximum number of triple patterns
 		int maxNrOfTriplePatternsPerQuery = 20;// number of outgoing triple patterns form the target var in each executed query
-		Set<Set<Triple>> newClusters = new HashSet<Set<Triple>>();
+		Set<Set<Triple>> newClusters = new HashSet<>();
 		for (Set<Triple> cluster : clusters) {
 			int cnt = 0;
 			for (Triple triple : cluster) {
@@ -1556,14 +1561,14 @@ public class QTLEvaluation {
 			}
 			
 			if(cnt > maxNrOfTriplePatternsPerQuery) {
-				Set<Triple> newCluster = new HashSet<Triple>();
+				Set<Triple> newCluster = new HashSet<>();
 				for (Triple triple : cluster) {
 					if(triple.getSubject().matches(targetVar)) {
 						newCluster.add(triple);
 					}
 					if(newCluster.size() == maxNrOfTriplePatternsPerQuery) {
 						newClusters.add(newCluster);
-						newCluster = new HashSet<Triple>();
+						newCluster = new HashSet<>();
 					}
 				}
 				if(!newCluster.isEmpty()) {
@@ -1574,7 +1579,7 @@ public class QTLEvaluation {
 		
 		for (Set<Triple> cluster : newClusters) {
 			for(int i = 1; i < maxTreeDepth; i++) {
-				Set<Triple> additionalTriples = new HashSet<Triple>();
+				Set<Triple> additionalTriples = new HashSet<>();
 				for (Triple triple : cluster) {
 					if(triple.getObject().isVariable()){
 						Collection<Triple> triples = var2TriplePatterns.get(Var.alloc(triple.getObject()));
@@ -1592,17 +1597,17 @@ public class QTLEvaluation {
 		// 3. run query for each cluster
 		for (Set<Triple> cluster : clusters) {
 			// remove redundant edges
-			SortedSet<Triple> tmp = new TreeSet<Triple>(new Comparator<Triple>() {
-				
+			SortedSet<Triple> tmp = new TreeSet<>(new Comparator<Triple>() {
+
 				TripleComparator comp = new TripleComparator();
-				
+
 				@Override
 				public int compare(Triple o1, Triple o2) {
-					boolean same = o1.subjectMatches(o2.getSubject()) 
-							&& o2.predicateMatches(o2.getPredicate()) 
+					boolean same = o1.subjectMatches(o2.getSubject())
+							&& o2.predicateMatches(o2.getPredicate())
 							&& o1.getObject().isVariable() && o2.getObject().isVariable();
 //							&& !var2TriplePatterns.containsKey(o1.getObject());
-					if(same) return 0;
+					if (same) return 0;
 					return comp.compare(o1, o2);
 				}
 			});
@@ -1626,7 +1631,7 @@ public class QTLEvaluation {
 //			sparqlQuery = getPrefixedQuery(sparqlQuery);
 			System.out.println(q);
 			List<String> partialResult = getResult(q.toString());
-			Set<String> resourcesTmp = new HashSet<String>(partialResult);
+			Set<String> resourcesTmp = new HashSet<>(partialResult);
 			
 			if(resourcesTmp.isEmpty()) {
 				System.err.println("Empty query result");
@@ -1642,45 +1647,14 @@ public class QTLEvaluation {
 			}
 		}
 		
-		return new ArrayList<String>(resources);
-	}
-	
-	private Query removeUnboundObjectVarTriples(Query query) {
-		QueryUtils queryUtils = new QueryUtils();
-		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
-		
-		Multimap<Var, Triple> var2TriplePatterns = HashMultimap.create();
-		for (Triple tp : triplePatterns) {
-			var2TriplePatterns.put(Var.alloc(tp.getSubject()), tp);
-		}
-		
-		Iterator<Triple> iterator = triplePatterns.iterator();
-		while (iterator.hasNext()) {
-			Triple triple = iterator.next();
-			Node object = triple.getObject();
-			if(object.isVariable() && !var2TriplePatterns.containsKey(Var.alloc(object))) {
-				iterator.remove();
-			}
-		}
-		
-		Query newQuery = new Query();
-		newQuery.addProjectVars(query.getProjectVars());
-		ElementTriplesBlock el = new ElementTriplesBlock();
-		for (Triple triple : triplePatterns) {
-			el.addTriple(triple);
-		}
-		newQuery.setQuerySelectType();
-		newQuery.setDistinct(true);
-		newQuery.setQueryPattern(el);
-		
-		return newQuery;
+		return new ArrayList<>(resources);
 	}
 	
 	private void filterOutGeneralTypes(Multimap<Var, Triple> var2Triples) {
 		// keep the most specific types for each subject
 		for (Var subject : var2Triples.keySet()) {
 			Collection<Triple> triplePatterns = var2Triples.get(subject);
-			Collection<Triple> triplesPatterns2Remove = new HashSet<Triple>();
+			Collection<Triple> triplesPatterns2Remove = new HashSet<>();
 
 			for (Triple tp : triplePatterns) {
 				if (tp.getObject().isURI() && !triplesPatterns2Remove.contains(tp)) {
@@ -1702,7 +1676,7 @@ public class QTLEvaluation {
 	}
 	
 	private Set<Node> getSuperClasses(Node cls){
-		Set<Node> superClasses = new HashSet<Node>();
+		Set<Node> superClasses = new HashSet<>();
 		
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
@@ -2059,7 +2033,7 @@ public class QTLEvaluation {
 		OptionSpec<Boolean> overrideSpec = parser.accepts("o", "override previous results").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
 		OptionSpec<Boolean> emailNotificationSpec = parser.accepts("mail", "enable email notification").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
-		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
+		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of processed queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
 		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
 		OptionSpec<Integer> maxQTLRuntimeSpec = parser.accepts("max-qtl-runtime", "max. runtime of each QTL run").withRequiredArg().ofType(Integer.class).defaultsTo(10).required();
 		OptionSpec<Integer> nrOfThreadsSpec = parser.accepts("thread-count", "number of threads used for parallel evaluation").withRequiredArg().ofType(Integer.class).defaultsTo(1);
