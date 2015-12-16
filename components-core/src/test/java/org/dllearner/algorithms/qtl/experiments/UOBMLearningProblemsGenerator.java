@@ -29,25 +29,25 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * Generate learning problems based on the DBpedia knowledge base.
+ * Generate learning problems based on the UOBM dataset.
  * @author Lorenz Buehmann
  *
  */
-public class DBpediaLearningProblemsGenerator {
-	
+public class UOBMLearningProblemsGenerator {
+
 	SparqlEndpoint endpoint;
 	SparqlEndpointKS ks;
 	SPARQLReasoner reasoner;
 	ConciseBoundedDescriptionGenerator cbdGen;
-	
+
 	File dataDir;
 	private Model schema;
 	private File benchmarkDirectory;
 	private int threadCount;
 
-	private static String DBPEDIA_ONTOLOGY_URL = "http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2";
-	
-	public DBpediaLearningProblemsGenerator(SparqlEndpoint endpoint, File benchmarkDirectory, int threadCount) throws Exception {
+	private static String ONTOLOGY_URL = "http://www.cs.ox.ac.uk/isg/tools/RDFox/2014/AAAI/input/UOBM/owl/UOBM.owl";
+
+	public UOBMLearningProblemsGenerator(SparqlEndpoint endpoint, File benchmarkDirectory, int threadCount) throws Exception {
 		this.endpoint = endpoint;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.threadCount = threadCount;
@@ -64,11 +64,11 @@ public class DBpediaLearningProblemsGenerator {
 		
 		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
 		
-		dataDir = new File(benchmarkDirectory, "data/dbpedia/");
+		dataDir = new File(benchmarkDirectory, "data/uobm/");
 		dataDir.mkdirs();
 		
 		schema = ModelFactory.createDefaultModel();
-		try(InputStream is = new BZip2CompressorInputStream(new URL(DBPEDIA_ONTOLOGY_URL).openStream())){
+		try(InputStream is = new URL(ONTOLOGY_URL).openStream()){
 			schema.read(is, null, Lang.RDFXML.getName());
 		}
 
@@ -76,7 +76,7 @@ public class DBpediaLearningProblemsGenerator {
 	}
 	
 	private Set<OWLClass> getClasses() {
-		return reasoner.getOWLClasses("http://dbpedia.org/ontology");
+		return reasoner.getOWLClasses();
 //		return reasoner.getMostSpecificClasses();
 	}
 	
@@ -86,9 +86,7 @@ public class DBpediaLearningProblemsGenerator {
 		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
 		Collections.shuffle(classesList, new Random(123));
 		classes = classesList;
-		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Artist")));
-		
-
+//		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/Artist")));
 		
 //		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
 		List<Future<Path>> futures = new ArrayList<Future<Path>>();
@@ -107,12 +105,13 @@ public class DBpediaLearningProblemsGenerator {
 		// for each depth <= maxDepth
 		for(int depth = minDepth; depth <= maxDepth; depth++) {
 			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
-
+			
 			Iterator<OWLClass> iterator = classes.iterator();
-
-			List<Path> pathsForDepth = new ArrayList<Path>();
+			
 			// generate paths of depths <= maxDepth
-			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
+			List<Path> paths = new ArrayList<Path>();
+			
+			while(paths.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
 				
 				// pick next class
 				OWLClass cls = iterator.next();
@@ -168,9 +167,8 @@ public class DBpediaLearningProblemsGenerator {
 		
 		// write queries to disk
 		String queries = "";
-		int i = 1;
-		for (Path path : paths) {
-			System.out.println(i++ + ":" + path);
+		for (Path path : allPaths) {
+			System.out.println(path);
 			queries += path.asSPARQLQuery(Var.alloc("s")) + "\n";
 		}
 		File file = new File(benchmarkDirectory, "queries_" + nrOfSPARQLQueries + "_" + minDepth + "-" + maxDepth + "_" + minNrOfExamples+ ".txt");
@@ -208,9 +206,9 @@ public class DBpediaLearningProblemsGenerator {
 		int minNrOfExamples = Integer.parseInt(args[5]);
 
 //		SparqlEndpoint endpoint = SparqlEndpoint.create("http://dbpedia.org/sparql", "http://dbpedia.org");
-		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://uobm.org");
 
-		DBpediaLearningProblemsGenerator generator = new DBpediaLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
+		UOBMLearningProblemsGenerator generator = new UOBMLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
 		generator.generateBenchmark(nrOfSPARQLQueries, minDepth, maxDepth, minNrOfExamples);
 	}
 	
