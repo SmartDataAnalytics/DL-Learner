@@ -427,10 +427,12 @@ public class QueryTreeUtils {
 		}
 
 		// check if each statement of m1 is contained in m2
-		StmtIterator iterator = m1closure.listStatements();
+		StmtIterator iterator = m2closure.listStatements();
 		while (iterator.hasNext()) {
 			Statement st = iterator.next();
-			if (!st.getSubject().isAnon() && !st.getObject().isAnon() && !m2closure.contains(st)) {
+			if (!st.getSubject().isAnon() && !st.getObject().isAnon()
+					&& !(st.getPredicate().equals(RDFS.subClassOf) && st.getSubject().equals(st.getObject()))
+					&& !m1closure.contains(st)) {
 				return false;
 			} 
 		}
@@ -588,15 +590,15 @@ public class QueryTreeUtils {
 	}
 	
 	private static void buildModel(Model model, RDFResourceTree tree, Resource subject) {
+		int i = 0;
 		for (Node edge : tree.getEdges()) {
 			Property p = model.getProperty(edge.getURI());
 			for (RDFResourceTree child : tree.getChildren(edge)) {
-				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createAnon()).asResource() : model
-						.asRDFNode(child.getData());
+				RDFNode object = child.isVarNode() ? model.asRDFNode(NodeFactory.createAnon()) : model.asRDFNode(child.getData());
 				model.add(subject, p, object);
-				if (child.isVarNode()) {
+//				if (child.isVarNode()) {
 					buildModel(model, child, object.asResource());
-				}
+//				}
 			}
 		}
 	}

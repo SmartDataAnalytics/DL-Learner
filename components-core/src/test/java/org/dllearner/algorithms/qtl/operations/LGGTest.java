@@ -17,6 +17,7 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
@@ -52,7 +53,7 @@ private static final String baseIRI = "http://test.org/";
 	private static LGGGenerator lggGenRDFS;
 	
 	@BeforeClass
-	public static void init() {
+	public static void init() throws ComponentInitException {
 		String kb = "@prefix : <http://test.org/> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
 				+ ":a1 :r :A . "
 				+ ":a2 :s :A . "
@@ -60,7 +61,12 @@ private static final String baseIRI = "http://test.org/";
 				+ ":a4 :s :D . :D :p :F ."
 				+ "<_:lgg1_2> :r :A ."
 				+ "<_:lgg3_4> :r _:D . _:D :p _:F ."
-				+ ":r rdfs:subPropertyOf :s .";
+				+ ":r rdfs:subPropertyOf :s ."
+				+ ":a5 a :A ."
+				+ ":a6 a :B ."
+				+ ":A rdfs:subClassOf :B ."
+				+ "<_:lgg5_6> a :B ."
+				;
 		
 		model = ModelFactory.createDefaultModel();
 		model.read(new ByteArrayInputStream(kb.getBytes()), null, "TURTLE");
@@ -77,6 +83,7 @@ private static final String baseIRI = "http://test.org/";
 		reasoner = new SPARQLReasoner(model);
 		reasoner.setPrecomputeObjectPropertyHierarchy(false);
 		reasoner.setPrecomputeDataPropertyHierarchy(false);
+		reasoner.init();
 		
 		lggGenSimple = new LGGGeneratorSimple();
 		lggGenRDFS = new LGGGeneratorRDFS(reasoner);
@@ -115,6 +122,28 @@ private static final String baseIRI = "http://test.org/";
 		lggRDFS = lggGenRDFS.getLGG(tree3, tree4);
 		System.out.println("LGG_RDFS(T3,T4)\n" + lggRDFS.getStringRepresentation());
 		
+		assertTrue(QueryTreeUtils.sameTrees(lggRDFS, targetLGG));
+	}
+
+	@Test
+	public void testClassEntailment() {
+		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/a5", model);
+		RDFResourceTree tree2 = treeFactory.getQueryTree("http://test.org/a6", model);
+
+		System.out.println("Tree 1\n" + tree1.getStringRepresentation());
+		System.out.println("Tree 2\n" + tree2.getStringRepresentation());
+
+		RDFResourceTree lggSimple = lggGenSimple.getLGG(tree1, tree2);
+		System.out.println("LGG_simple(T1,T2)\n" + lggSimple.getStringRepresentation());
+
+		assertTrue(lggSimple.isLeaf());
+
+		RDFResourceTree targetLGG = treeFactory.getQueryTree(new ResourceImpl(AnonId.create("lgg5_6")), model);
+		System.out.println("Target LGG\n" + targetLGG.getStringRepresentation());
+
+		RDFResourceTree lggRDFS = lggGenRDFS.getLGG(tree1, tree2);
+		System.out.println("LGG_RDFS(T1,T2)\n" + lggRDFS.getStringRepresentation());
+
 		assertTrue(QueryTreeUtils.sameTrees(lggRDFS, targetLGG));
 	}
 	
