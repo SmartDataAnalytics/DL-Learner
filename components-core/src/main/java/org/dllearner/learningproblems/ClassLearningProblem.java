@@ -20,7 +20,6 @@
 package org.dllearner.learningproblems;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +35,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionToSPARQLConverter;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -46,6 +46,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -76,12 +77,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	@ConfigOption(name="equivalence",defaultValue="true",description="Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
-	@ConfigOption(name = "approxDelta", description = "The Approximate Delta", defaultValue = "0.05", required = false)
-	private double approxDelta = 0.05;
-	
-	@ConfigOption(name = "useApproximations", description = "Use Approximations", defaultValue = "false", required = false)
-	private boolean useApproximations;
-	
 	// factor for higher weight on recall (needed for subclass learning)
 	private double coverageFactor;
 	
@@ -99,7 +94,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	private TreeSet<OWLIndividual> negatedClassInstances;
 	
     @ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
-	private HeuristicType accuracyMethod = HeuristicType.PRED_ACC;
+	protected AccMethodTwoValued accuracyMethod;
 	
 	@ConfigOption(name = "checkConsistency", description = "whether to check for consistency of suggestions (when added to ontology)", required=false, defaultValue="true")
 	private boolean checkConsistency = true;
@@ -108,15 +103,12 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	@ConfigOption(name="useInstanceChecks",defaultValue="true",description="Whether to use instance checks (or get individiuals query)")
 	private boolean useInstanceChecks = true;
 	
+	
 	private OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 
 	public ClassLearningProblem() {
 		
 	}
-	
-//	public ClassLearningProblemConfigurator getConfigurator(){
-//		return configurator;
-//	}
 	
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
@@ -128,19 +120,10 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	
 	@Override
 	public void init() throws ComponentInitException {
-//		classToDescribe = df.getOWLClass(IRI.create(configurator.getClassToDescribe().toString());
-//		useApproximations = configurator.getUseApproximations();
-		
-		if(useApproximations && accuracyMethod.equals(HeuristicType.PRED_ACC)) {
+	
+		if(accuracyMethod != null && accuracyMethod instanceof AccMethodPredAccApprox) {
 			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first to verify that it works.");
 		}
-		
-		if(useApproximations && !(accuracyMethod.equals(HeuristicType.PRED_ACC) || accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE))) {
-			throw new ComponentInitException("Approximations only supported for F-Measure or Standard-Measure. It is unsupported for \"" + accuracyMethod + ".\"");
-		}
-		
-//		useFMeasure = configurator.getAccuracyMethod().equals("fmeasure");
-//		approxDelta = configurator.getApproxAccuracy();
 		
 		if(!getReasoner().getClasses().contains(classToDescribe)) {
 			throw new ComponentInitException("The class \"" + classToDescribe + "\" does not exist. Make sure you spelled it correctly.");
@@ -153,8 +136,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		}
 		
 		classInstancesSet = new TreeSet<OWLIndividual>(classInstances);
-//		equivalence = (configurator.getType().equals("equivalence"));
-//		maxExecutionTimeInSeconds = configurator.getMaxExecutionTimeInSeconds();
 		
 		if(equivalence) {
 			coverageFactor = betaEq;
@@ -180,7 +161,14 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		Collections.shuffle(classInstances, rand);
 		Collections.shuffle(superClassInstances, rand);
 		
-		if(accuracyMethod.equals(HeuristicType.GEN_FMEASURE)) {
+		if (accuracyMethod == null) {
+			accuracyMethod = new AccMethodPredAcc(true);
+		}
+		if (accuracyMethod instanceof AccMethodApproximate) {
+			((AccMethodApproximate)accuracyMethod).setReasoner(getReasoner());
+		}
+		reasoningUtil.setClassLearningProblem(this);
+		if(accuracyMethod instanceof AccMethodGenFMeasure) {
 			OWLClassExpression classToDescribeNeg = df.getOWLObjectComplementOf(classToDescribe);
 			negatedClassInstances = new TreeSet<OWLIndividual>();
 			for(OWLIndividual ind : superClassInstances) {
@@ -205,7 +193,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		int additionalInstancesCnt = 0;
 		int coveredInstancesCnt = 0;
 		
-		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner instanceof SPARQLReasoner) {
 			// R(C)
 			String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 					+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
@@ -223,19 +211,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 			OWLObjectIntersectionOf ce = df.getOWLObjectIntersectionOf(classToDescribe, description);
 			coveredInstancesCnt = ((SPARQLReasoner) reasoner).getPopularityOf(ce);
 		} else {
+			Coverage[] cc = reasoningUtil.getCoverage(description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances));
 			// overhang
-			for(OWLIndividual ind : superClassInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					additionalInstances.add(ind);
-				}
-			}
+			additionalInstances.addAll(cc[1].trueSet);
 			
 			// coverage
-			for(OWLIndividual ind : classInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					coveredInstances.add(ind);
-				}
-			}
+			coveredInstances.addAll(cc[0].trueSet);
+
 			additionalInstancesCnt = additionalInstances.size();
 			coveredInstancesCnt = coveredInstances.size();
 		}
@@ -283,253 +265,12 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		// delegates to the appropriate methods
-		return useApproximations ? getAccuracyOrTooWeakApprox(description, noise) : getAccuracyOrTooWeakExact(description, noise);
-	}
-	
-	// instead of using the standard operation, we use optimisation
-	// and approximation here
-	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
-		if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
-			// we abort when there are too many uncovered positives
-			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
-			int instancesCovered = 0;
-			int instancesNotCovered = 0;
-			
-			for(OWLIndividual ind : classInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					instancesCovered++;
-				} else {
-					instancesNotCovered ++;
-					if(instancesNotCovered > maxNotCovered) {
-						return -1;
-					}
-				}
-			}
-			
-			double recall = instancesCovered/(double)classInstances.size();
-			
-			int testsPerformed = 0;
-			int instancesDescription = 0;
-			
-			for(OWLIndividual ind : superClassInstances) {
-
-				if(getReasoner().hasType(description, ind)) {
-					instancesDescription++;
-				}
-				testsPerformed++;
-				
-				// check whether approximation is sufficiently accurate
-				double[] approx = Heuristics.getFScoreApproximation(instancesCovered, recall, coverageFactor, superClassInstances.size(), testsPerformed, instancesDescription);
-				if(approx[1]<approxDelta) {
-					return approx[0];
-				}
-				
-			}
-			
-			// standard computation (no approximation)
-			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-//			if(instancesCovered + instancesDescription == 0) {
-//				precision = 0;
-//			}
-			return Heuristics.getFScore(recall, precision, coverageFactor);
-			
-		} else if(accuracyMethod.equals(HeuristicType.AMEASURE)) {
-			// the F-MEASURE implementation is now separate (different optimisation
-			// strategy)
-			
-			// we abort when there are too many uncovered positives
-			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
-			int instancesCovered = 0;
-			int instancesNotCovered = 0;
-			int total = 0;
-			boolean estimatedA = false;
-			
-			double lowerBorderA = 0;
-			int lowerEstimateA = 0;
-			double upperBorderA = 1;
-			int upperEstimateA = classInstances.size();
-			
-			for(OWLIndividual ind : classInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					instancesCovered++;
-				} else {
-					instancesNotCovered ++;
-					if(instancesNotCovered > maxNotCovered) {
-						return -1;
-					}
-				}
-				
-				// approximation step (starting after 10 tests)
-				total = instancesCovered + instancesNotCovered;
-				if(total > 10) {
-					// compute confidence interval
-					double p1 = p1(instancesCovered, total);
-					double p2 = p3(p1, total);
-					lowerBorderA = Math.max(0, p1 - p2);
-					upperBorderA = Math.min(1, p1 + p2);
-					double size = upperBorderA - lowerBorderA;
-					// if the interval has a size smaller than 10%, we can be confident
-					if(size < 2 * approxDelta) {
-						// we have to distinguish the cases that the accuracy limit is
-						// below, within, or above the limit and that the mean is below
-						// or above the limit
-						double mean = instancesCovered/(double)total;
-						
-						// we can estimate the best possible concept to reach with downward refinement
-						// by setting precision to 1 and recall = mean stays as it is
-						double optimumEstimate = accuracyMethod.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*mean)/(Math.sqrt(coverageFactor)+1) : (coverageFactor*mean+1)/(coverageFactor+1);
-						
-						// if the mean is greater than the required minimum, we can accept;
-						// we also accept if the interval is small and close to the minimum
-						// (worst case is to accept a few inaccurate descriptions)
-						if(optimumEstimate > 1-noise-0.03) {
-//								|| (upperBorderA > mean && size < 0.03)) {
-							instancesCovered = (int) (instancesCovered/(double)total * classInstances.size());
-							upperEstimateA = (int) (upperBorderA * classInstances.size());
-							lowerEstimateA = (int) (lowerBorderA * classInstances.size());
-							estimatedA = true;
-							break;
-						}
-						
-						// reject only if the upper border is far away (we are very
-						// certain not to lose a potential solution)
-//						if(upperBorderA + 0.1 < 1-noise) {
-						double optimumEstimateUpperBorder = accuracyMethod.equals(HeuristicType.FMEASURE) ? ((1+Math.sqrt(coverageFactor))*(upperBorderA+0.1))/(Math.sqrt(coverageFactor)+1) : (coverageFactor*(upperBorderA+0.1)+1)/(coverageFactor+1);
-						if(optimumEstimateUpperBorder < 1 - noise) {
-							return -1;
-						}
-					}
-				}
-			}
-			
-			double recall = instancesCovered/(double)classInstances.size();
-			
-//			MonitorFactory.add("estimatedA","count", estimatedA ? 1 : 0);
-//			MonitorFactory.add("aInstances","count", total);
-			
-			// we know that a definition candidate is always subclass of the
-			// intersection of all super classes, so we test only the relevant instances
-			// (leads to undesired effects for descriptions not following this rule,
-			// but improves performance a lot);
-			// for learning a superclass of a defined class, similar observations apply;
-
-
-			int testsPerformed = 0;
-			int instancesDescription = 0;
-//			boolean estimatedB = false;
-			
-			for(OWLIndividual ind : superClassInstances) {
-
-				if(getReasoner().hasType(description, ind)) {
-					instancesDescription++;
-				}
-				
-				testsPerformed++;
-				
-				if(testsPerformed > 10) {
-					
-					// compute confidence interval
-					double p1 = p1(instancesDescription, testsPerformed);
-					double p2 = p3(p1, testsPerformed);
-					double lowerBorder = Math.max(0, p1 - p2);
-					double upperBorder = Math.min(1, p1 + p2);
-					int lowerEstimate = (int) (lowerBorder * superClassInstances.size());
-					int upperEstimate = (int) (upperBorder * superClassInstances.size());
-					
-					double size;
-					if(estimatedA) {
-//						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-						size = accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate)) - getFMeasure(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate)) : Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);
-					} else {
-//						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-						size = accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, instancesCovered/(double)(instancesCovered+lowerEstimate)) - getFMeasure(recall, instancesCovered/(double)(instancesCovered+upperEstimate)) : Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
-					}
-					
-					if(size < 0.1) {
-//						System.out.println(instancesDescription + " of " + testsPerformed);
-//						System.out.println("interval from " + lowerEstimate + " to " + upperEstimate);
-//						System.out.println("size: " + size);
-						
-//						estimatedB = true;
-						// calculate total number of instances
-						instancesDescription = (int) (instancesDescription/(double)testsPerformed * superClassInstances.size());
-						break;
-					}
-				}
-			}
-			
-			// since we measured/estimated accuracy only on instances outside A (superClassInstances
-			// does not include instances of A), we need to add it in the denominator
-			double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-			if(instancesCovered + instancesDescription == 0) {
-				precision = 0;
-			}
-			
-			return accuracyMethod.equals(HeuristicType.FMEASURE) ? getFMeasure(recall, precision) : Heuristics.getAScore(recall, precision, coverageFactor);
-						
-		} else if(accuracyMethod.equals(HeuristicType.FMEASURE)) {
-			int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
-			
-			int notCoveredPos = 0;
-//			int notCoveredNeg = 0;
-			
-			int posClassifiedAsPos = 0;
-			int negClassifiedAsNeg = 0;
-			
-			int nrOfPosChecks = 0;
-			int nrOfNegChecks = 0;
-			
-			// special case: we test positive and negative examples in turn
-			Iterator<OWLIndividual> itPos = classInstances.iterator();
-			Iterator<OWLIndividual> itNeg = superClassInstances.iterator();
-			
-			do {
-				// in each loop we pick 0 or 1 positives and 0 or 1 negative
-				// and classify it
-				
-				if(itPos.hasNext()) {
-					OWLIndividual posExample = itPos.next();
-//					System.out.println(posExample);
-					
-					if(getReasoner().hasType(description, posExample)) {
-						posClassifiedAsPos++;
-					} else {
-						notCoveredPos++;
-					}
-					nrOfPosChecks++;
-					
-					// take noise into account
-					if(notCoveredPos > maxNotCovered) {
-						return -1;
-					}
-				}
-				
-				if(itNeg.hasNext()) {
-					OWLIndividual negExample = itNeg.next();
-					if(!getReasoner().hasType(description, negExample)) {
-						negClassifiedAsNeg++;
-					}
-					nrOfNegChecks++;
-				}
-			
-				// compute how accurate our current approximation is and return if it is sufficiently accurate
-				double approx[] = Heuristics.getPredAccApproximation(classInstances.size(), superClassInstances.size(), 1, nrOfPosChecks, posClassifiedAsPos, nrOfNegChecks, negClassifiedAsNeg);
-				if(approx[1]<approxDelta) {
-//					System.out.println(approx[0]);
-					return approx[0];
-				}
-				
-			} while(itPos.hasNext() || itNeg.hasNext());
-			
-			double ret = Heuristics.getPredictiveAccuracy(classInstances.size(), superClassInstances.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
-			return ret;
+		if (accuracyMethod instanceof AccMethodApproximate) {
+			return ((AccMethodCLPApproximate) accuracyMethod).getAccApproxCLP(description, classInstances, superClassInstances, coverageFactor, noise);
 		} else {
-			throw new Error("Approximation for " + accuracyMethod + " not implemented.");
+			return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, Sets.newTreeSet(classInstances), Sets.newTreeSet(superClassInstances), noise);
 		}
-		
 	}
-	
 
 	// exact computation for 5 heuristics; each one adapted to super class learning;
 	// each one takes the noise parameter into account
@@ -537,45 +278,14 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		//System.out.println(description);
 		nanoStartTime = System.nanoTime();
 		
-		if(accuracyMethod.equals(HeuristicType.JACCARD)) {
-			
-			// computing R(A)
-			TreeSet<OWLIndividual> coveredInstancesSet = new TreeSet<OWLIndividual>();
-			for(OWLIndividual ind : classInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					coveredInstancesSet.add(ind);
-				}
-				if(terminationTimeExpired()){
-					return 0;
-				}
-			}
-			
-			// if even the optimal case (no additional instances covered) is not sufficient,
-			// the concept is too weak
-			if(coveredInstancesSet.size() / (double) classInstances.size() <= 1 - noise) {
-				return -1;
-			}
-			
-			// computing R(C) restricted to relevant instances
-			TreeSet<OWLIndividual> additionalInstancesSet = new TreeSet<OWLIndividual>();
-			for(OWLIndividual ind : superClassInstances) {
-				if(getReasoner().hasType(description, ind)) {
-					additionalInstancesSet.add(ind);
-				}
-				if(terminationTimeExpired()){
-					return 0;
-				}
-			}
-					
-			Set<OWLIndividual> union = Sets.union(classInstancesSet, additionalInstancesSet);
-			return Heuristics.getJaccardCoefficient(coveredInstancesSet.size(), union.size());
-			
-		} else if (accuracyMethod.equals(HeuristicType.AMEASURE) || accuracyMethod.equals(HeuristicType.FMEASURE) || accuracyMethod.equals(HeuristicType.PRED_ACC)) {
+		if (accuracyMethod instanceof AccMethodAMeasure
+				|| accuracyMethod instanceof AccMethodFMeasure
+				|| accuracyMethod instanceof AccMethodPredAcc) {
 			
 			int additionalInstances = 0;
 			int coveredInstances = 0;
 			
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			if(reasoner instanceof SPARQLReasoner) {
 				// R(C)
 				String query = "SELECT (COUNT(DISTINCT ?s) AS ?cnt) WHERE {"
 						+ "?s a ?sup . ?classToDescribe <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup . "
@@ -706,7 +416,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		throw new Error("ClassLearningProblem error: not implemented");
 	}
 	
-	private boolean terminationTimeExpired(){
+	public boolean terminationTimeExpired(){
 		boolean val = ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds*1000000000l));
 		if(val) {
 			logger.warn("Description test aborted, because it took longer than " + maxExecutionTimeInSeconds + " seconds.");
@@ -755,16 +465,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return (precision + recall == 0) ? 0 :
 		  ( (1+Math.sqrt(coverageFactor)) * (precision * recall)
 				/ (Math.sqrt(coverageFactor) * precision + recall) );
-	}
-	
-	// see paper: expression used in confidence interval estimation
-	public static double p3(double p1, int total) {
-		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
-	}
-	
-	// see paper: p'
-	public static double p1(int success, int total) {
-		return (success+2)/(double)(total+4);
 	}
 	
 	/**
@@ -824,22 +524,6 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		this.equivalence = equivalence;
 	}
 
-	public boolean isUseApproximations() {
-		return useApproximations;
-	}
-
-	public void setUseApproximations(boolean useApproximations) {
-		this.useApproximations = useApproximations;
-	}
-
-	public double getApproxDelta() {
-		return approxDelta;
-	}
-
-	public void setApproxDelta(double approxDelta) {
-		this.approxDelta = approxDelta;
-	}
-
 	public double getBetaSC() {
 		return betaSC;
 	}
@@ -864,11 +548,12 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		this.checkConsistency = checkConsistency;
 	}
 
-	public HeuristicType getAccuracyMethod() {
+	public AccMethodTwoValued getAccuracyMethod() {
 		return accuracyMethod;
 	}
 
-	public void setAccuracyMethod(HeuristicType accuracyMethod) {
+	@Autowired(required=false)
+	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
 		this.accuracyMethod = accuracyMethod;
 	}
 	

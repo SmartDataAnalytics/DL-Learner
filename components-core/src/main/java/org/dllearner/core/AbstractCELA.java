@@ -408,8 +408,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	protected ClassHierarchy initClassHierarchy() {
 		// we ignore all unsatisfiable classes
-		Set<OWLClass> unsatisfiableClasses = reasoner.getInconsistentClasses();
-		if(!unsatisfiableClasses.isEmpty()) {
+		Set<OWLClass> unsatisfiableClasses = null;
+		try {
+		unsatisfiableClasses = reasoner.getInconsistentClasses();
+		} catch (UnsupportedOperationException e) {
+			logger.warn("Ignoring unsatisfiable check due to "+e.getStackTrace()[0]);
+		}
+		if(unsatisfiableClasses != null && !unsatisfiableClasses.isEmpty()) {
 			logger.warn("Ignoring unsatsifiable classes " + unsatisfiableClasses);
 			if(ignoredConcepts == null) {
 				ignoredConcepts = unsatisfiableClasses;

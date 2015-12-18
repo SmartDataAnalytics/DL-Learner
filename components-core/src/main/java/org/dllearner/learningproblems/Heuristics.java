@@ -184,6 +184,16 @@ public class Heuristics {
 		return (noise * nrOfPositiveExamples) < nrOfNegClassifiedPositives;
 	}
 
+	// see paper: p'
+	public static double p1(int success, int total) {
+		return (success+2)/(double)(total+4);
+	}
+
+	// see paper: expression used in confidence interval estimation
+	public static double p3(double p1, int total) {
+		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
+	}
+
 	/**
 	 * This method can be used to approximate F-Measure and thereby saving a lot of
 	 * instance checks. It assumes that all positive examples (or instances of a class)

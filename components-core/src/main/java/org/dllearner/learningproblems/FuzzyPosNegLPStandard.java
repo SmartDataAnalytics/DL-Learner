@@ -425,8 +425,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			total = instancesCovered + instancesNotCovered;
 			if(total > 10) {
 				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesCovered, total);
-				double p2 = ClassLearningProblem.p3(p1, total);
+				double p1 = Heuristics.p1(instancesCovered, total);
+				double p2 = Heuristics.p3(p1, total);
 				lowerBorderA = Math.max(0, p1 - p2);
 				upperBorderA = Math.min(1, p1 + p2);
 				double size = upperBorderA - lowerBorderA;
@@ -484,8 +484,8 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			if(testsPerformed > 10) {
 				
 				// compute confidence interval
-				double p1 = ClassLearningProblem.p1(instancesDescription, testsPerformed);
-				double p2 = ClassLearningProblem.p3(p1, testsPerformed);
+				double p1 = Heuristics.p1(instancesDescription, testsPerformed);
+				double p2 = Heuristics.p3(p1, testsPerformed);
 				double lowerBorder = Math.max(0, p1 - p2);
 				double upperBorder = Math.min(1, p1 + p2);
 				int lowerEstimate = (int) (lowerBorder * negativeExamples.size());

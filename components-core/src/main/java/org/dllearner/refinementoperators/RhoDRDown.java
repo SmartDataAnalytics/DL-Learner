@@ -417,19 +417,20 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+			if(reasoner instanceof SPARQLReasoner
 					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
 				logger.warn("Numeric Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
 			} else {
 				ValuesSplitter splitter = new DefaultNumericValuesSplitter(reasoner, df, maxNrOfSplits);
 				splits.putAll(splitter.computeSplits());
+				System.err.println(splits);
 			}
 		}
 
 		// compute splits for time data properties
 		if (useTimeDatatypes) {
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)
+			if(reasoner instanceof SPARQLReasoner
 					&& !((SPARQLReasoner)reasoner).isUseGenericSplitsCode()) {
 				// TODO SPARQL support for splits
 				logger.warn("Time based Facet restrictions are not (yet) implemented for " + AnnComponentManager.getName(reasoner) + ", option ignored");
@@ -442,11 +443,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// determine the maximum number of fillers for each role
 		// (up to a specified cardinality maximum)
 		if(useCardinalityRestrictions) {
-			if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+			if(reasoner instanceof SPARQLReasoner) {
 				logger.warn("Cardinality restrictions in Sparql not fully implemented, defaulting to 10.");
 			}
 			for(OWLObjectProperty op : reasoner.getObjectProperties()) {
-				if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+				if(reasoner instanceof SPARQLReasoner) {
 					// TODO SPARQL support for cardinalities
 					maxNrOfFillers.put(op, 10);
 				} else {
@@ -1488,7 +1489,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		SortedSet<OWLClassExpression> subClasses = subHierarchy.getSubClasses(upperClass, true);
 
-		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner instanceof SPARQLReasoner) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
@@ -1572,7 +1573,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		SortedSet<OWLClassExpression> superClasses = subHierarchy.getSuperClasses(lowerClass);
 
-		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner instanceof SPARQLReasoner) {
 			OWLClassExpressionToSPARQLConverter conv = new OWLClassExpressionToSPARQLConverter();
 			String query = "SELECT DISTINCT ?concept WHERE {";
 			query += conv.convert("?ind", index);
@@ -1818,7 +1819,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	}
 
 	private boolean isDisjointInstanceBased(OWLClassExpression d1, OWLClassExpression d2) {
-		if(reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
+		if(reasoner instanceof SPARQLReasoner) {
 			SortedSet<OWLIndividual> individuals = reasoner.getIndividuals(df.getOWLObjectIntersectionOf(d1, d2));
 			return individuals.isEmpty();
 		} else {
