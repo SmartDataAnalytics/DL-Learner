@@ -36,7 +36,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * 2-valued, because we only distinguish between covered and non-covered
  * examples. (A 3-valued problem distinguishes between covered examples,
  * examples covered by the negation of the concept, and all other examples.) The
- * 2-valued learning problem is often more useful for OWLClassExpression Logics due to
+ * 2-valued learning problem is often more useful for Description Logics due to
  * (the Open World Assumption and) the fact that negative knowledge, e.g. that a
  * person does not have a child, is or cannot be expressed.
  * 

@@ -16,7 +16,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
  * @author Utente
  *
  */
-@ComponentAnn(name="PosNegUndLP", shortName="posNegUndLP", version=1.0, description="A learning problem with uncertain-memebrship instances")
+@ComponentAnn(name="PosNegUndLP", shortName="posNegUndLP", version=1.0, description="A learning problem with uncertain-membership instances")
 public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	//private SortedSet<OWLIndividual> positiveExample;
 	//private SortedSet<OWLIndividual> negativeExample;
