@@ -79,10 +79,10 @@ public class PathDetectionTask implements Callable<Path> {
 						lines = Files.readLines(file, Charsets.UTF_8);
 						ArrayList<String> split = Lists.newArrayList(Splitter.on("\t").split(lines.get(0)));
 						String object = split.remove(split.size() - 1);
-						List<Set<String>> propertyClusters = new ArrayList<Set<String>>();
+						List<Set<String>> propertyClusters = new ArrayList<>();
 						
 						for (String clusterString : split) {
-							Set<String> cluster = new TreeSet<String>();
+							Set<String> cluster = new TreeSet<>();
 							for (String property : Splitter.on(",").trimResults().split(clusterString)) {
 								cluster.add(property.replace("[", "").replace("]", ""));
 							}
@@ -184,7 +184,7 @@ public class PathDetectionTask implements Callable<Path> {
 					query += String.format("optional{?o%d ?p%d ?o%d .", i-1, i, i);
 				}
 				for(int i = 1; i < maxDepth; i++) {
-					query += String.format("}");
+					query += "}";
 				}
 				query += "}";
 				QueryExecutionFactory qef = new QueryExecutionFactoryPaginated(ks.getQueryExecutionFactory(), 500000);
@@ -195,7 +195,7 @@ public class PathDetectionTask implements Callable<Path> {
 		}
 		
 		private List<Set<String>> getCooccuringPropertiesOnPath(Model model, OWLClass cls, List<Set<String>> propertiesOnPath, int clusterSize) {
-			List<Set<String>> properties = new ArrayList<Set<String>>();
+			List<Set<String>> properties = new ArrayList<>();
 			
 			String query = "SELECT DISTINCT "; 
 			for(int i = 0; i < clusterSize; i++) {
@@ -218,7 +218,7 @@ public class PathDetectionTask implements Callable<Path> {
 			
 			if(clusterSize > 1) {
 				String filter = "FILTER(";
-				List<String> conditions = new ArrayList<String>();
+				List<String> conditions = new ArrayList<>();
 				for(int i = 0; i < clusterSize; i++) {
 					for(int j = i + 1; j < clusterSize; j++) {
 						conditions.add("(?p" + i + "!=" + "?p" + j + ")");
@@ -252,22 +252,22 @@ public class PathDetectionTask implements Callable<Path> {
 				
 				properties.add(propertyCluster);
 			}
-			return new ArrayList<Set<String>>(new HashSet<Set<String>>(properties));
+			return new ArrayList<>(new HashSet<>(properties));
 		}
 		
 		private Path findPathOfDepthN(OWLClass cls, Model model, int depth) {
 			// generate possible property paths of length n
 
-			List<List<Set<String>>> paths = new ArrayList<List<Set<String>>>();
+			List<List<Set<String>>> paths = new ArrayList<>();
 			paths.add(Lists.<Set<String>>newArrayList());
 
 			for (int i = 0; i < depth; i++) {
-				List<List<Set<String>>> pathsNew = new ArrayList<List<Set<String>>>();
+				List<List<Set<String>>> pathsNew = new ArrayList<>();
 				for (List<Set<String>> path : paths) {
 					int clusterSize = rndGen.nextInt(3) + 1;
 					List<Set<String>> propertyClusters = getCooccuringPropertiesOnPath(model, cls, path, depth == 1 ? 2 : 1);
 					for (Set<String> propertyCluster : propertyClusters) {
-						List<Set<String>> newPath = new ArrayList<Set<String>>(path);
+						List<Set<String>> newPath = new ArrayList<>(path);
 						newPath.add(propertyCluster);
 						pathsNew.add(newPath);
 					}

@@ -71,7 +71,7 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
 	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
-		return Lists.<Filter<Statement>>newArrayList(
+		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 			new PredicateDropStatementFilter(StopURIsRDFS.get()),

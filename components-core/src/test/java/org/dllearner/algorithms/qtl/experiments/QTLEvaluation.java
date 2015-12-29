@@ -143,6 +143,7 @@ import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
  * @author Lorenz Buehmann
  *
  */
+@SuppressWarnings("unchecked")
 public class QTLEvaluation {
 	
 	private static final Logger logger = Logger.getLogger(QTLEvaluation.class.getName());
@@ -257,7 +258,8 @@ public class QTLEvaluation {
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
 		
 		// add some filters to avoid resources with namespaces like http://dbpedia.org/property/
-		queryTreeFactory.addDropFilters((Filter<Statement>[]) dataset.getQueryTreeFilters().toArray(new Filter[]{}));
+		List<Filter<Statement>> var = dataset.getQueryTreeFilters();
+		queryTreeFactory.addDropFilters((Filter<Statement>[]) var.toArray(new Filter[var.size()]));
 		
 		qef = dataset.getKS().getQueryExecutionFactory();
 		

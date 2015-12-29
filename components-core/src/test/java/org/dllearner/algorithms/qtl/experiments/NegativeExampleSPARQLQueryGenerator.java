@@ -86,7 +86,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		}
 		
 		private List<Query> generateQueries(Query query) {
-			List<Query> queries = new ArrayList<Query>();
+			List<Query> queries = new ArrayList<>();
 			
 			// extract paths
 			Node source = query.getProjectVars().get(0).asNode();
@@ -134,10 +134,10 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		}
 		
 		private Set<List<Triple>> getPaths(List<Triple> path, Query query, Node source) {
-			Set<List<Triple>> paths = new LinkedHashSet<List<Triple>>();
+			Set<List<Triple>> paths = new LinkedHashSet<>();
 			Set<Triple> outgoingTriplePatterns = QueryUtils.getOutgoingTriplePatterns(query, source);
 			for (Triple tp : outgoingTriplePatterns) {
-				List<Triple> newPath = new ArrayList<Triple>(path);
+				List<Triple> newPath = new ArrayList<>(path);
 				newPath.add(tp);
 				if(tp.getObject().isVariable()) {
 					paths.addAll(getPaths(newPath, query, tp.getObject()));
@@ -151,11 +151,11 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		/**
 		 * Returns a modified SPARQL query such that it is similar but different by choosing one of the triple patterns and use
 		 * the negation of its existence.
-		 * @param query
+		 * @param query the SPARQL query
 		 */
 		public Query generateSPARQLQuery(Query query){
 			//choose a random triple for the modification
-			List<Triple> triplePatterns = new ArrayList<Triple>(triplePatternExtractor.extractTriplePattern(query));
+			List<Triple> triplePatterns = new ArrayList<>(triplePatternExtractor.extractTriplePattern(query));
 			Collections.shuffle(triplePatterns, randomGen);
 			triple = triplePatterns.get(0);
 			
@@ -168,8 +168,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 		@Override
 		public void visit(ElementGroup el) {
 			parentGroup.push(el);
-			for (Iterator<Element> iterator = new ArrayList<Element>(el.getElements()).iterator(); iterator.hasNext();) {
-				Element e = iterator.next();
+			for (Element e : new ArrayList<>(el.getElements())) {
 				e.visit(this);
 			}
 			parentGroup.pop();
@@ -224,8 +223,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 
 		@Override
 		public void visit(ElementUnion el) {
-			for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-				Element e = iterator.next();
+			for (Element e : el.getElements()) {
 				e.visit(this);
 			}
 		}

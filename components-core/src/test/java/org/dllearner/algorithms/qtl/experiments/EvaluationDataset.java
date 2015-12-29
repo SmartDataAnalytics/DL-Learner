@@ -27,7 +27,7 @@ public class EvaluationDataset {
 	AbstractReasonerComponent reasoner;
 	
 	List<String> sparqlQueries;
-	List<Filter<Statement>> queryTreeFilters = new ArrayList<Filter<Statement>>();
+	List<Filter<Statement>> queryTreeFilters = new ArrayList<>();
 	
 	public SparqlEndpointKS getKS() {
 		return ks;
