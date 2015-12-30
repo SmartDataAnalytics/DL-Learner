@@ -63,15 +63,14 @@ public class SPARQLEndpointEx extends SparqlEndpoint {
 	
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ENDPOINT\n");
-		sb.append("Label: ").append(getLabel()).append("\n");
-		sb.append("URL: ").append(getURL()).append("\n");
-		sb.append("Default Graph URI: ").append(getDefaultGraphURIs()).append("\n");
-		sb.append("Named Graph URI: ").append(getNamedGraphURIs()).append("\n");
-		sb.append("Predicate Filters: ").append(getPredicateFilters()).append("\n");
-		
-		return sb.toString();
+		String sb = "ENDPOINT\n" +
+				"Label: " + getLabel() + "\n" +
+				"URL: " + getURL() + "\n" +
+				"Default Graph URI: " + getDefaultGraphURIs() + "\n" +
+				"Named Graph URI: " + getNamedGraphURIs() + "\n" +
+				"Predicate Filters: " + getPredicateFilters() + "\n";
+
+		return sb;
 	}
 	
 	@Override

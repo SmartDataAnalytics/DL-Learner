@@ -61,7 +61,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectComplementOf ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getOperand());
+		return Collections.singleton(ce.getOperand());
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +69,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectSomeValuesFrom ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getFiller());
+		return Collections.singleton(ce.getFiller());
 	}
 
 	/* (non-Javadoc)
@@ -77,7 +77,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectAllValuesFrom ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getFiller());
+		return Collections.singleton(ce.getFiller());
 	}
 
 	/* (non-Javadoc)
@@ -93,7 +93,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectMinCardinality ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getFiller());
+		return Collections.singleton(ce.getFiller());
 	}
 
 	/* (non-Javadoc)
@@ -101,7 +101,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectExactCardinality ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getFiller());
+		return Collections.singleton(ce.getFiller());
 	}
 
 	/* (non-Javadoc)
@@ -109,7 +109,7 @@ public class OWLClassExpressionChildrenCollector implements OWLClassExpressionVi
 	 */
 	@Override
 	public Set<OWLClassExpression> visit(OWLObjectMaxCardinality ce) {
-		return Collections.<OWLClassExpression> singleton(ce.getFiller());
+		return Collections.singleton(ce.getFiller());
 	}
 
 	/* (non-Javadoc)

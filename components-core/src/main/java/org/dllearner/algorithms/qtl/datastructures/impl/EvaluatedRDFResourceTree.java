@@ -13,6 +13,7 @@ import org.dllearner.core.Score;
 import org.dllearner.learningproblems.QueryTreeScore;
 
 import com.google.common.collect.ComparisonChain;
+import org.jetbrains.annotations.NotNull;
 
 public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResourceTree>{
 	
@@ -128,7 +129,7 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 	}
 
 	@Override
-	public int compareTo(EvaluatedRDFResourceTree other) {
+	public int compareTo(@NotNull EvaluatedRDFResourceTree other) {
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())

@@ -13,6 +13,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.QueryTreeScore;
 
 import com.google.common.collect.ComparisonChain;
+import org.jetbrains.annotations.NotNull;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
@@ -128,7 +129,7 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	}
 
 	@Override
-	public int compareTo(EvaluatedQueryTree<N> other) {
+	public int compareTo(@NotNull EvaluatedQueryTree<N> other) {
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())

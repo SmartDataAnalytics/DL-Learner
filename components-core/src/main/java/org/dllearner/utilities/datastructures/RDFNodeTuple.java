@@ -24,6 +24,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
 import org.dllearner.kb.extraction.LiteralNode;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A container which can hold two Strings, mainly used as a helper.
@@ -49,7 +50,7 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 		return b.equals(t.b) && a.equals(t.a);
 	}
 
-	public int compareTo(RDFNodeTuple t) {
+	public int compareTo(@NotNull RDFNodeTuple t) {
 		NodeComparator comparator = new NodeComparator();
 		return ComparisonChain.start().
 				compare(a.asNode(), t.a.asNode(), comparator).

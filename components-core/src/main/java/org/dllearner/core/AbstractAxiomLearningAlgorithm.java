@@ -532,8 +532,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	protected boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
-		return  timeLimitExceeded ;
+		return maxExecutionTimeInSeconds != 0 && getRemainingRuntimeInMilliSeconds() <= 0;
 	}
 	
 	protected List<Entry<OWLClassExpression, Integer>> sortByValues(Map<OWLClassExpression, Integer> map, final boolean useHierachy){

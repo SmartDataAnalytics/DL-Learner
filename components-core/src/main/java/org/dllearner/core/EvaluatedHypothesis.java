@@ -22,6 +22,7 @@ package org.dllearner.core;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLObject;
 
 import com.google.common.collect.ComparisonChain;
@@ -92,7 +93,7 @@ public abstract class EvaluatedHypothesis<T extends OWLObject, S extends Score> 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(EvaluatedHypothesis<T, S> o) {
+	public int compareTo(@NotNull EvaluatedHypothesis<T, S> o) {
 		return ComparisonChain.start()
 				.compare(score.getAccuracy(), o.score.getAccuracy())
 				.compare(hypothesis, o.getDescription())

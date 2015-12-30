@@ -201,7 +201,7 @@ public class InstanceNode extends Node {
 			if(one.getURIString().equals(OWLVocabulary.OWL_DIFFERENT_FROM)){
 				OWLIndividual o = factory.getOWLNamedIndividual(one.getBPart().getIRI());
 				
-				ax = factory.getOWLDifferentIndividualsAxiom(new OWLIndividual[]{me,o});
+				ax = factory.getOWLDifferentIndividualsAxiom(me, o);
 			}else{
 			
 				//create axiom

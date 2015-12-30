@@ -380,7 +380,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			if(learningProblem instanceof PosNegLP) {
 				Set<OWLIndividual> positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
 				Set<OWLIndividual> negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
-				ReasoningUtils reasoningUtil = ((PosNegLP)learningProblem).getReasoningUtil();
+				ReasoningUtils reasoningUtil = learningProblem.getReasoningUtil();
 				
 				str += current + ": " + descriptionString + " (pred. acc.: "
 						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))

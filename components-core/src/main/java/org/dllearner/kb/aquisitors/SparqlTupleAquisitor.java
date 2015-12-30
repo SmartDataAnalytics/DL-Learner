@@ -183,7 +183,6 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			// could be two different blank nodes here, but unlikely
 			if(!q.get("o0").isAnon()){
 				lastNodes.put(q.get("o0").toString(), currentId);
-				continue;
 			}else{
 				
 				// remove the first node

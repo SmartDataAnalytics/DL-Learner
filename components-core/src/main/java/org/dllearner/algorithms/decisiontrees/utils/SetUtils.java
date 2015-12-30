@@ -87,10 +87,8 @@ public class SetUtils{
 	 */
 	public static <T> boolean areEquals(List<T>l1, List<T> l2){
 		// due insiemi sono uguali se uno � incluso nell'altro
-		if (l1.containsAll(l2)&&l2.containsAll(l1))
-			return true;
-		
-		return false;
+		return l1.containsAll(l2) && l2.containsAll(l1);
+
 	}
 	
 	/**

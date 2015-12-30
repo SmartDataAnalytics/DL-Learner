@@ -1,5 +1,7 @@
 package org.dllearner.kb.repository.bioportal;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -557,7 +559,7 @@ public class OntologyBean implements Comparable<OntologyBean> {
 	}
 
 	@Override
-	public int compareTo(OntologyBean o) {
+	public int compareTo(@NotNull OntologyBean o) {
 		return this.displayLabel.compareTo(o.getDisplayLabel());
 	}
 

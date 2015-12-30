@@ -20,8 +20,8 @@ public class BioPortalRepository implements OntologyRepository {
 	
 	private static final Logger log = Logger.getLogger(BioPortalRepository.class);
 	
-	private String apiKey = "8fadfa2c-47de-4487-a1f5-b7af7378d693";
-	private String serviceURL = "http://rest.bioontology.org/bioportal/ontologies";
+	private static final String apiKey = "8fadfa2c-47de-4487-a1f5-b7af7378d693";
+	private static final String serviceURL = "http://rest.bioontology.org/bioportal/ontologies";
 	
 	private boolean initialized = false;
 	

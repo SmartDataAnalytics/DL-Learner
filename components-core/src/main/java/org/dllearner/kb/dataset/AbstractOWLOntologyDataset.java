@@ -59,7 +59,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
 	protected Map<URL, String> ontologyURLs = new HashMap<>();
 	
-	private final int nrOfThreads = 1;
+	private static final int nrOfThreads = 1;
 	private boolean analyze = false;
 	
 	public AbstractOWLOntologyDataset(String name, boolean analyze) {
@@ -231,7 +231,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
 	private OWLOntology loadFromLocal(URL url){
 		String filename = getFilename(url);
-		for(File parent : Arrays.asList(directory)){
+		for(File parent : Collections.singletonList(directory)){
 			File file = new File(parent, filename);
 			if(file.exists()){
 				try {

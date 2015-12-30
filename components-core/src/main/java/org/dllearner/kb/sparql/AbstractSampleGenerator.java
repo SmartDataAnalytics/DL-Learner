@@ -68,7 +68,11 @@ public abstract class AbstractSampleGenerator {
 	public void addIgnoredProperties(Set<String> ignoredProperties) {
 		cbdGen.addPropertiesToIgnore(ignoredProperties);
 	}
-	
+
+	public void setLoadRelatedSchema(boolean loadRelatedSchema) {
+		this.loadRelatedSchema = loadRelatedSchema;
+	}
+
 	/**
 	 * Computes a sample of the knowledge base, i.e. it contains only facts
 	 * about the positive and negative individuals.

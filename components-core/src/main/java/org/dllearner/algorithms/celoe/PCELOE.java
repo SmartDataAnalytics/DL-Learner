@@ -19,35 +19,14 @@
 
 package org.dllearner.algorithms.celoe;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -59,36 +38,23 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.refinementoperators.SynchronizedRefinementOperator;
+import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.TreeUtils;
 import org.dllearner.utilities.datastructures.SynchronizedSearchTree;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.PropertyContext;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
+import org.dllearner.utilities.owl.*;
+import org.semanticweb.owlapi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * The PCELOE is an experimental, parallel implementation of the CELOE algorithm.

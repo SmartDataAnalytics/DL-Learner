@@ -63,7 +63,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 
 	/**
 	 * must be called before modifying a node, to support immutable set element pattern
-	 * @param node
+	 * @param node the node
 	 */
 	public void updatePrepare(T node) {
 		nodes.remove(node);
@@ -77,16 +77,14 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 	}
 
 	/**
-	 * Returns an iterator over the elements in this search tree in descending comparison order.
-	 * @return
+	 * @return an iterator over the elements in this search tree in descending comparison order
 	 */
 	public Iterator<T> descendingIterator() {
 		return nodes.descendingIterator();
 	}
 
 	/**
-	 * Returns a set of the nodes in the search tree ordered in descending comparison order.
-	 * @return
+	 * @return a set of the nodes in the search tree ordered in descending comparison order
 	 */
 	public SortedSet<T> descendingSet() {
 		return nodes.descendingSet();

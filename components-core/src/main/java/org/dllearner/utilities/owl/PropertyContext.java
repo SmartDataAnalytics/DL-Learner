@@ -21,6 +21,7 @@ package org.dllearner.utilities.owl;
 
 import java.util.LinkedList;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -49,7 +50,7 @@ public class PropertyContext extends LinkedList<OWLObjectProperty> implements Co
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(PropertyContext context) {
+	public int compareTo(@NotNull PropertyContext context) {
 		// we first distinguish on size - simpler contexts come first
 		int diff = context.size() - size();
 		if(diff != 0) {

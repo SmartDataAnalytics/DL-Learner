@@ -158,7 +158,7 @@ public class Psi implements GeneticRefinementOperator {
 			
 		
 		// ein refinement zufällig auswählen
-		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[0]);
+		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[refinements.size()]);
 		// kein refinement gefunden
 		if(array.length==0) {
 			if(debug) {

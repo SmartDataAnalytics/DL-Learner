@@ -1253,10 +1253,11 @@ public class ROLearner2 {
 	 * @return true if the algorithm should stop, this is mostly indepent of the question if a solution was found
 	 */
 	private boolean isTerminationCriteriaReached(){
+		// algorithm was stopped from outside
 		if(this.stop){
 			return true;
 		}
-//		System.out.println("ssssss");
+
 		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;

@@ -40,9 +40,7 @@ public class Edge {
 		if (getClass() != obj.getClass())
 			return false;
 		Edge other = (Edge) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
 	}
 
 	

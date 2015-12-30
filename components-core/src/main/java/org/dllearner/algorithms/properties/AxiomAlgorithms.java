@@ -93,7 +93,7 @@ public class AxiomAlgorithms {
     /** set of tbox and rbox axiom types */
     public static final Set<AxiomType<? extends OWLAxiom>> TBoxAndRBoxAxiomTypes = tboxAndRbox();
 
-    private static final Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
+    private static Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
         Set<AxiomType<?>> axioms = new HashSet<>(TBoxAxiomTypes);
         axioms.addAll(RBoxAxiomTypes);
         return axioms;

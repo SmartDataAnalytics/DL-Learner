@@ -411,7 +411,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		// filter by predicate
 		Iterator<Triple> iterator = triplePatterns.iterator();
 		while (iterator.hasNext()) {
-			Triple tp = (Triple) iterator.next();
+			Triple tp = iterator.next();
 			if(!tp.predicateMatches(predicate)) {
 				iterator.remove();
 			}

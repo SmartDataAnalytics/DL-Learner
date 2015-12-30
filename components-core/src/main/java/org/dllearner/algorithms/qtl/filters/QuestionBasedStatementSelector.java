@@ -34,11 +34,8 @@ public class QuestionBasedStatementSelector implements Selector {
 		} else if(s.getObject().isLiteral()){
 			object = s.getObject().asLiteral().getLexicalForm();
 		}
-		if(isSimiliar2QuestionWord(object) || isSimiliar2QuestionWord(predicate)){
-			return true;
-		}
-		
-		return false;
+		return isSimiliar2QuestionWord(object) || isSimiliar2QuestionWord(predicate);
+
 	}
 	
 	private boolean isSimiliar2QuestionWord(String s){

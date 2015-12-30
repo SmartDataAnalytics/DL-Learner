@@ -33,6 +33,7 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 /**
@@ -208,7 +209,7 @@ public class DescriptionSubsumptionTree {
 		}
 
 		@Override
-		public int compareTo(Node node) {
+		public int compareTo(@NotNull Node node) {
 			if (this.equals(node)) {
 				return 0;
 			}

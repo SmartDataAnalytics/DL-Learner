@@ -22,6 +22,7 @@ package org.dllearner.utilities.examples;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 
@@ -62,7 +63,7 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	}
 
 	@Override
-	public int compareTo(ExampleContainer e){
+	public int compareTo(@NotNull ExampleContainer e){
 		
 		if(getNegativeExamples().equals(e.getNegativeExamples())
 				&&
