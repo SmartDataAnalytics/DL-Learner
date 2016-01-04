@@ -248,11 +248,32 @@
 						</gitFlowConfig>
 					</configuration>
 				</plugin>
-				<!-- <plugin>
+				<plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.4</version>
-                </plugin> -->
+                	<configuration>
+						<skipDeploy>true</skipDeploy>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>com.github.github</groupId>
+					<artifactId>site-maven-plugin</artifactId>
+					<version>0.5</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>site</goal>
+							</goals>
+							<phase>site-deploy</phase>
+							<configuration>
+								<path>${project.version}</path>
+								<merge>true</merge>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -738,6 +759,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>2.8.1</version>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -751,6 +775,34 @@
 					</links>
 					<maxmemory>2g</maxmemory>
 					<minmemory>128m</minmemory>
+
+					<header></header>
+					<show>public</show>
+					<nohelp>true</nohelp>
+					<destDir>doc/javadoc</destDir>
+					<doctitle>DL-Learner Javadoc</doctitle>
+					<author>true</author>
+					<nodeprecated>false</nodeprecated>
+					<nodeprecatedlist>false</nodeprecatedlist>
+					<noindex>false</noindex>
+					<nonavbar>false</nonavbar>
+					<notree>false</notree>
+					<overview>src/etc/overview.html</overview>
+					<source>${compiler.version}</source>
+					<sourcepath>src/main/java</sourcepath>
+					<splitindex>true</splitindex>
+					<stylesheetfile>src/etc/javadoc2.css</stylesheetfile>
+					<use>true</use>
+					<version>true</version>
+					<linksource>true</linksource>
+					<bottom>&lt;img style='float:right'
+						src='https://raw.githubusercontent.com/github/media/master/octocats/blacktocat-16.png'
+						border='0' alt='Github.com Logo' /&gt; DL-Learner is licenced
+						under the terms of the GNU General Public License.&lt;br
+						/&gt;Copyright &amp;#169; 2007-2015 Jens Lehmann</bottom>
+					<encoding>ISO-8859-1</encoding>
+					<windowtitle>DL-Learner Javadoc</windowtitle>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 			</plugin>
 		</plugins>
