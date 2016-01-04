@@ -19,8 +19,6 @@
 
 package org.dllearner.utilities.datastructures;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A container which can hold two Strings, mainly used as a helper.
  * Also used as pre form, if you want to create triple, that have the same subject
@@ -45,7 +43,7 @@ public class StringTuple implements Comparable<StringTuple>{
 		return ((b.equals(t.b)) && (a.equals(t.a)));
 	}
 	
-	public int compareTo(@NotNull StringTuple t){
+	public int compareTo(StringTuple t){
 		int comp = a.compareTo(t.a);
 		if( comp == 0 ){
 			return b.compareTo(t.b);

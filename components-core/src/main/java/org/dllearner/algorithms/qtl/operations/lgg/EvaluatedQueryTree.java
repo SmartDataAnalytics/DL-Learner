@@ -1,19 +1,16 @@
 package org.dllearner.algorithms.qtl.operations.lgg;
 
+import com.google.common.collect.ComparisonChain;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.learningproblems.QueryTreeScore;
 
-import com.google.common.collect.ComparisonChain;
-import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	
@@ -129,7 +126,7 @@ public class EvaluatedQueryTree<N> implements Comparable<EvaluatedQueryTree<N>>{
 	}
 
 	@Override
-	public int compareTo(@NotNull EvaluatedQueryTree<N> other) {
+	public int compareTo(EvaluatedQueryTree<N> other) {
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())

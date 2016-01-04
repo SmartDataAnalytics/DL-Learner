@@ -1,19 +1,16 @@
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
+import com.google.common.collect.ComparisonChain;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.learningproblems.QueryTreeScore;
 
-import com.google.common.collect.ComparisonChain;
-import org.jetbrains.annotations.NotNull;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResourceTree>{
 	
@@ -129,7 +126,7 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 	}
 
 	@Override
-	public int compareTo(@NotNull EvaluatedRDFResourceTree other) {
+	public int compareTo(EvaluatedRDFResourceTree other) {
 		return ComparisonChain.start()
 //		         .compare(this.getScore(), other.getScore())
 		         .compare(other.getScore(), this.getScore())

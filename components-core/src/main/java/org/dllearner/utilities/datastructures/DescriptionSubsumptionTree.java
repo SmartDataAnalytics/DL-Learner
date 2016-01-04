@@ -19,13 +19,6 @@
 
 package org.dllearner.utilities.datastructures;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -33,8 +26,9 @@ import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import java.util.*;
 
 /**
  * This class takes Descritptions and a reasoner and orders the 
@@ -209,7 +203,7 @@ public class DescriptionSubsumptionTree {
 		}
 
 		@Override
-		public int compareTo(@NotNull Node node) {
+		public int compareTo(Node node) {
 			if (this.equals(node)) {
 				return 0;
 			}

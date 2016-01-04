@@ -38,15 +38,14 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * An implementation of the OWLObjectRenderer interface. (Renders standalone
@@ -144,7 +143,7 @@ public class ManchesterOWLSyntaxOWLObjectRendererImplExt implements
         }
 
         @Override
-        public void write(@NotNull char[] cbuf, int off, int len) throws IOException {
+        public void write(char[] cbuf, int off, int len) throws IOException {
             delegate.write(cbuf, off, len);
         }
     }
