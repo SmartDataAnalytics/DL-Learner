@@ -19,6 +19,7 @@
 
 package org.dllearner.reasoning;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -1059,11 +1060,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // (TODO: we need to make sure we always ignore the same concepts)
             OWLObjectPropertyExpression property = node.getRepresentativeElement();
             if (!property.isAnonymous()) {
-                roles.add(df.getOWLObjectProperty(IRI.create(property.asOWLObjectProperty().toStringID())));
+                roles.add(property.asOWLObjectProperty());
             }
         }
-        roles.remove(df.getOWLObjectProperty(IRI.create(df.getOWLTopObjectProperty().toStringID())));
-        roles.remove(df.getOWLObjectProperty(IRI.create(df.getOWLBottomObjectProperty().toStringID())));
+		// we ignore top and bottom properties
+        roles.remove(df.getOWLTopObjectProperty());
+        roles.remove(df.getOWLBottomObjectProperty());
         return roles;
     }
 
@@ -1078,10 +1080,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             	continue;
             }
             OWLDataProperty property = node.getRepresentativeElement();
-            roles.add(df.getOWLDataProperty(IRI.create(property.toStringID())));
+            roles.add(property);
         }
-        roles.remove(df.getOWLDataProperty(IRI.create(df.getOWLTopDataProperty().toStringID())));
-        roles.remove(df.getOWLDataProperty(IRI.create(df.getOWLBottomDataProperty().toStringID())));
+		// we ignore top and bottom properties
+        roles.remove(df.getOWLTopDataProperty());
+        roles.remove(df.getOWLBottomDataProperty());
         return roles;
     }
 
@@ -1309,5 +1312,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
 			reasoner = new ThreadSafeOWLReasoner(reasoner);
 		}
+	}
+
+	public static void main(String[] args) throws Exception{
+		OWLOntology o = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(new File("/tmp/test2.rdf"));
+		System.out.println(o.getClassesInSignature());
+		System.out.println(o.getDataPropertiesInSignature());
+		System.out.println(o.getIndividualsInSignature().size());
 	}
 }
