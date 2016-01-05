@@ -37,6 +37,7 @@ import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
 import org.semanticweb.owlapi.owllink.OWLlinkReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.*;
@@ -151,10 +152,10 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
                 throw new ComponentInitException("OWL API Reasoner requires an OWLKnowledgeSource.  Received a KS of type: " + source.getClass().getName());
             }
 
-            atomicConcepts.addAll(ontology.getClassesInSignature(true));
-            atomicRoles.addAll(ontology.getObjectPropertiesInSignature(true));
-            datatypeProperties.addAll(ontology.getDataPropertiesInSignature(true));
-            individuals.addAll(ontology.getIndividualsInSignature(true));
+            atomicConcepts.addAll(ontology.getClassesInSignature(Imports.INCLUDED));
+            atomicRoles.addAll(ontology.getObjectPropertiesInSignature(Imports.INCLUDED));
+            datatypeProperties.addAll(ontology.getDataPropertiesInSignature(Imports.INCLUDED));
+            individuals.addAll(ontology.getIndividualsInSignature(Imports.INCLUDED));
 
             // if several knowledge sources are included, then we can only
             // guarantee that the base URI is from one of those sources (there
@@ -871,7 +872,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     protected Map<OWLObjectProperty, Set<OWLIndividual>> getObjectPropertyRelationshipsImpl(OWLIndividual individual) {
         Map<OWLObjectProperty, Set<OWLIndividual>> map = new HashMap<>();
 
-        for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)) {
+        for (OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(Imports.INCLUDED)) {
             map.put(prop, getRelatedIndividualsImpl(individual, prop));
         }
 
