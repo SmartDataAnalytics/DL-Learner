@@ -238,10 +238,11 @@
 			<artifactId>org.semanticweb.hermit</artifactId>
 		</dependency>
 
-		<!--<dependency>
+		<dependency>
 			<groupId>org.semanticweb.elk</groupId>
 			<artifactId>elk-owlapi</artifactId>
-		</dependency>-->
+		</dependency>
+
 		<dependency>
 			<groupId>de.tudresden.inf.lat.cel</groupId>
 			<artifactId>reasoner</artifactId>

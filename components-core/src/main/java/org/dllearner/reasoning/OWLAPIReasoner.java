@@ -22,8 +22,6 @@ package org.dllearner.reasoning;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-//import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
-//import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -36,8 +34,7 @@ import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.HermiT.Configuration;
-import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
-//import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
@@ -55,6 +52,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
+//import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
+//import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
+//import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 
 /**
  * Mapping to OWL API reasoner interface. The OWL API currently
@@ -286,11 +287,11 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		case FACT:
 			reasonerFactory = new FaCTPlusPlusReasonerFactory();
 			break;
-//		case ELK:
-//			reasonerFactory = new ElkReasonerFactory();
-//			break;
+		case ELK:
+			reasonerFactory = new ElkReasonerFactory();
+			break;
 		case HERMIT:
-			reasonerFactory = new ReasonerFactory();
+			reasonerFactory = new org.semanticweb.HermiT.ReasonerFactory();
 			Configuration c = new Configuration();
 			c.ignoreUnsupportedDatatypes = true;
 //			c.throwInconsistentOntologyException = false;
