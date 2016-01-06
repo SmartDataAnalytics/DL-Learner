@@ -22,8 +22,8 @@ package org.dllearner.reasoning;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapiv3.XSD;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
-import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
+//import de.tudresden.inf.lat.cel.owlapi.CelReasoner;
+//import eu.trowl.owlapi3.rel.reasoner.dl.RELReasonerFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -37,7 +37,7 @@ import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
-import org.semanticweb.elk.owlapi.ElkReasonerFactory;
+//import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.owllink.OWLlinkHTTPXMLReasonerFactory;
@@ -286,9 +286,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		case FACT:
 			reasonerFactory = new FaCTPlusPlusReasonerFactory();
 			break;
-		case ELK:
-			reasonerFactory = new ElkReasonerFactory();
-			break;
+//		case ELK:
+//			reasonerFactory = new ElkReasonerFactory();
+//			break;
 		case HERMIT:
 			reasonerFactory = new ReasonerFactory();
 			Configuration c = new Configuration();
@@ -296,12 +296,12 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 //			c.throwInconsistentOntologyException = false;
 			conf = c;
 			break;
-		case TROWL:
-			reasonerFactory = new RELReasonerFactory();
-			break;
-		case CEL:
-			reasoner = new CelReasoner(ontology, conf);
-			break;
+//		case TROWL:
+//			reasonerFactory = new RELReasonerFactory();
+//			break;
+//		case CEL:
+//			reasoner = new CelReasoner(ontology, conf);
+//			break;
 		case OWLLINK:
 			reasonerFactory = new OWLlinkHTTPXMLReasonerFactory();
 			URL url;
