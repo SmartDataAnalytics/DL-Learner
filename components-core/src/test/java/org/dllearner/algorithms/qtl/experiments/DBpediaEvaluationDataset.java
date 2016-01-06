@@ -49,7 +49,8 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 	}
 
 	
-	public DBpediaEvaluationDataset(File benchmarkDirectory) {
+	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
+		this.endpoint = endpoint;
 		// set KS
 		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {

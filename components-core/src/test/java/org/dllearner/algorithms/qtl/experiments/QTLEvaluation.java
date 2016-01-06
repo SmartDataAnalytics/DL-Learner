@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -66,6 +68,7 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -87,7 +90,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -137,6 +139,10 @@ import com.hp.hpl.jena.util.iterator.Filter;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.jamonapi.MonitorFactory;
 
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
@@ -213,7 +219,7 @@ public class QTLEvaluation {
 //					5,
 					10,
 //					15,
-					20, 
+					20,
 //					25,
 					30
 					}; 
@@ -282,14 +288,14 @@ public class QTLEvaluation {
 			
 			String sql;
 			java.sql.Statement stmt = conn.createStatement();
-			
+
 //			// empty tables if override
 //			if(override) {
 //				sql = "DROP TABLE IF EXISTS eval_overall,eval_detailed;";
 //				sql = "ALTER TABLE IF EXISTS eval_overall DROP PRIMARY KEY;";
 //				stmt.execute(sql);
 //			}
-			
+
 			// create tables if not exist
 			sql = "CREATE TABLE IF NOT EXISTS eval_overall (" +
 					   "heuristic VARCHAR(100), " + 
@@ -312,7 +318,7 @@ public class QTLEvaluation {
 	                   "avg_recall_baseline DOUBLE, " + 
 	                   "avg_predacc_baseline DOUBLE, " + 
 	                   "avg_mathcorr_baseline DOUBLE, " +
-	                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))"; 
+	                   "PRIMARY KEY(heuristic, heuristic_measure, nrOfExamples, noise))";
 			stmt.execute(sql);
 			
 			sql = "CREATE TABLE IF NOT EXISTS eval_detailed (" +
@@ -334,7 +340,7 @@ public class QTLEvaluation {
 	                   "baseline_fscore DOUBLE, " + 
 	                   "baseline_precision DOUBLE, " + 
 	                   "baseline_recall DOUBLE, " + 
-	                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM"; 
+	                   "PRIMARY KEY(target_query, nrOfExamples, noise, heuristic, heuristic_measure)) ENGINE=MyISAM";
 			stmt.execute(sql);
 			
 			sql = "INSERT INTO eval_overall ("
@@ -354,7 +360,7 @@ public class QTLEvaluation {
 					+ "baseline_query,baseline_fscore, baseline_precision, baseline_recall)" + 
 					"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 			psInsertDetailEval = conn.prepareStatement(sql);
-			
+
 			// remove primary keys
 			if (override) {
 				try {
@@ -413,11 +419,14 @@ public class QTLEvaluation {
 		return sparqlQueries;
 	}
 	
-	public void run(File queriesFile) throws Exception{
+	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth) throws Exception{
+		this.maxTreeDepth = maxTreeDepth;
 		
 		List<String> queries = getSparqlQueries(queriesFile);
-		queries = queries.subList(0, Math.min(queries.size(), nrOfProcessedQueries));
-		logger.info("Total number of queries: " + queries.size());
+		logger.info("#loaded queries: " + queries.size());
+
+		queries = queries.subList(0, Math.min(queries.size(), maxNrOfProcessedQueries));
+		logger.info("#queries to process: " + queries.size());
 		
 		// generate examples for each query
 		final Map<String, ExampleCandidates> query2Examples = new HashMap<>();
@@ -1968,7 +1977,7 @@ public class QTLEvaluation {
 			psInsertDetailEval.setDouble(16, baselineScore.fmeasure);
 			psInsertDetailEval.setDouble(17, baselineScore.precision);
 			psInsertDetailEval.setDouble(18, baselineScore.recall);
-			
+
 			logger.trace(psInsertDetailEval);
 			psInsertDetailEval.executeUpdate();
 			logger.trace("...finished writing to DB.");
@@ -2027,17 +2036,31 @@ public class QTLEvaluation {
 		Logger.getLogger(QTLEvaluation.class).setLevel(Level.INFO);
 		Logger.getLogger(QueryExecutionFactoryCacheEx.class).setLevel(Level.INFO);
 		
-		if(args.length < 4) {
-			System.out.println("Usage: QTLEvaluation <path/to/benchmark> <path/to/benchmark-queries> <write2Database> <overrideLocalResults>");
-			System.exit(0);
-		}
+		OptionParser parser = new OptionParser();
+		OptionSpec<File> benchmarkDirectorySpec = parser.accepts("d", "base directory").withRequiredArg().ofType(File.class).required();
+		OptionSpec<File> queriesFileSpec = parser.accepts("q", "processed queries file").withRequiredArg().ofType(File.class).required();
+		OptionSpec<URL> endpointURLSpec = parser.accepts("e", "endpoint URL").withRequiredArg().ofType(URL.class).required();
+		OptionSpec<String> defaultGraphSpec = parser.accepts("g", "default graph").withRequiredArg().ofType(String.class);
+		OptionSpec<Boolean> overrideSpec = parser.accepts("o", "override previous results").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
+		OptionSpec<Boolean> write2DBSpec = parser.accepts("db", "write to database").withOptionalArg().ofType(Boolean.class).defaultsTo(Boolean.FALSE);
+		OptionSpec<Integer> maxNrOfQueriesSpec = parser.accepts("max-queries", "max. nr. of process queries").withRequiredArg().ofType(Integer.class).defaultsTo(-1);
+		OptionSpec<Integer> maxTreeDepthSpec = parser.accepts("max-tree-depth", "max. depth of processed queries and generated trees").withRequiredArg().ofType(Integer.class).defaultsTo(3);
+
 		
-		File benchmarkDirectory = new File(args[0]);
-		File queries = new File(args[1]);
-		boolean write2DB = Boolean.valueOf(args[2]);
-		boolean override = Boolean.valueOf(args[3]);
-		
-		new QTLEvaluation(new DBpediaEvaluationDataset(benchmarkDirectory), benchmarkDirectory, write2DB, override).run(queries);
+
+        OptionSet options = parser.parse(args);
+
+		File benchmarkDirectory = options.valueOf(benchmarkDirectorySpec);
+		File queriesFile = options.valueOf(queriesFileSpec);
+		boolean write2DB = options.valueOf(write2DBSpec);
+		boolean override = options.valueOf(overrideSpec);
+		URL endpointURL = options.valueOf(endpointURLSpec);
+		String defaultGraph = options.has(defaultGraphSpec) ? options.valueOf(defaultGraphSpec) : null;
+		SparqlEndpoint endpoint = SparqlEndpoint.create(endpointURL.toString(), defaultGraph);
+		int maxNrOfQueries = options.valueOf(maxNrOfQueriesSpec);
+		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
+
+		new QTLEvaluation(new DBpediaEvaluationDataset(endpoint), benchmarkDirectory, write2DB, override).run(queriesFile, maxNrOfQueries, maxTreeDepth);
 
 //		new QALDExperiment(Dataset.BIOMEDICAL).run();
 	}

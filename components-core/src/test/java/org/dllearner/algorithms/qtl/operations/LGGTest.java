@@ -17,6 +17,7 @@ import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorSimple;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -147,7 +148,7 @@ private static final String baseIRI = "http://test.org/";
 //	@Test
 	public void correctness() {
 		treeFactory.setMaxDepth(2);
-		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset(new File("/tmp/qtl")).getQueryTreeFilters().toArray(new Filter[]{}));
+		treeFactory.addDropFilters((Filter<Statement>[]) new DBpediaEvaluationDataset(SparqlEndpoint.getEndpointDBpedia()).getQueryTreeFilters().toArray(new Filter[]{}));
 		// http://dbpedia.org/resource/Battle_Arena_Toshinden_3
 		Model model = ModelFactory.createDefaultModel();
 		RDFDataMgr.read(
