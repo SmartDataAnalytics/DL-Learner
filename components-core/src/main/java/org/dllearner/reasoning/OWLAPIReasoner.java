@@ -51,6 +51,7 @@ import uk.ac.manchester.cs.jfact.JFactFactory;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.alternateimpls.ThreadSafeOWLReasoner;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -732,7 +733,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		// do the same for all super properties
 		SortedSet<OWLDataProperty> superProperties = getSuperProperties(dataProperty);
 		for (OWLDataProperty supProp : superProperties) {
-			domains.addAll(supProp.getDomains(ontology));
+			domains.addAll(EntitySearcher.getDomains(supProp, ontology));
 		}
 
 		// last but not least, call a reasoner

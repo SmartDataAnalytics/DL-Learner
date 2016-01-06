@@ -32,6 +32,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import org.semanticweb.owlapi.profiles.Profiles;
 
 
 /**
@@ -94,13 +95,13 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	 * @param owlProfile the OWL profile
 	 */
 	public void setAxiomTypes(OWLProfile owlProfile) {
-		if(owlProfile.getIRI().equals(OWLProfile.OWL2_EL)){
+		if(owlProfile.equals(Profiles.OWL2_EL.getOWLProfile())){
 			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_RL)){
-			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_QL)){
-			
-		} else if(owlProfile.getIRI().equals(OWLProfile.OWL2_DL)){
+		} else if(owlProfile.equals(Profiles.OWL2_RL.getOWLProfile())){
+
+		} else if(owlProfile.equals(Profiles.OWL2_QL.getOWLProfile())){
+
+		} else if(owlProfile.equals(Profiles.OWL2_DL.getOWLProfile())){
 			
 		} else {
 			throw new IllegalArgumentException("OWL profile " + owlProfile.getName() + " not supported.");

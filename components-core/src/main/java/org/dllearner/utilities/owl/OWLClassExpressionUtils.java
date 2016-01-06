@@ -3,14 +3,13 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.util.Set;
-
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.util.MaximumModalDepthFinder;
 import org.semanticweb.owlapi.util.OWLObjectDuplicator;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.Set;
 
 /**
  * A utility class for OWL class expressions.
@@ -19,7 +18,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public class OWLClassExpressionUtils {
 	
-	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	private static OWLObjectDuplicator duplicator = new OWLObjectDuplicator(dataFactory);
 	private static final OWLClassExpressionLengthCalculator LENGTH_CALCULATOR= new OWLClassExpressionLengthCalculator();
 	private static final MaximumModalDepthFinder DEPTH_FINDER = new MaximumModalDepthFinder();

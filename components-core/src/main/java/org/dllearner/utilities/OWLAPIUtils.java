@@ -10,11 +10,11 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
 import org.joda.time.DateTime;
 import org.joda.time.format.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import java.util.*;
@@ -26,6 +26,9 @@ import java.util.*;
 public class OWLAPIUtils {
 	
 	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
+
+	public static final OWLOntologyManager	manager	= OWLManager.createOWLOntologyManager();
+	public static final OWLDataFactory factory = manager.getOWLDataFactory();
 	
     public final static Set<OWLDatatype> intDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.INT,
@@ -42,7 +45,8 @@ public class OWLAPIUtils {
     public final static Set<OWLDatatype> floatDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.FLOAT,
 			XSD.DOUBLE,
-			OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
+			factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI())
+
 	));
     public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<>(Collections.singletonList(
 			XSD.BOOLEAN
@@ -53,8 +57,8 @@ public class OWLAPIUtils {
 	 * without time zone offsets.
 	 */
     public final static Set<OWLDatatype> owl2TimeDatatypes = Sets.newTreeSet(Arrays.asList(
-    		OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME),
-        	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP)
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME.getIRI()),
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI())
         ));
     
     public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
@@ -78,7 +82,7 @@ public class OWLAPIUtils {
 		javaTypeMap = new TreeMap<>();
 		javaTypeMap.put(XSD.BYTE, Byte.class);
 		javaTypeMap.put(XSD.SHORT, Short.class);
-		javaTypeMap.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL), Double.class);
+		javaTypeMap.put(factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI()), Double.class);
 		javaTypeMap.put(XSD.INT, Integer.class);
 		javaTypeMap.put(XSD.INTEGER, Integer.class);
 		javaTypeMap.put(XSD.POSITIVE_INTEGER, Integer.class);
@@ -103,7 +107,7 @@ public class OWLAPIUtils {
 		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
-		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+		dateTimeFormatters.put(factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI()), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 
 	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeParsers = new HashMap<>(dateTimeFormatters);

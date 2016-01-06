@@ -33,7 +33,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  */
 public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
 
-	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	public AbstractClassExpressionLearningProblem(){
 

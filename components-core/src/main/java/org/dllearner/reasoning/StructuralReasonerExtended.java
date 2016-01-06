@@ -107,6 +107,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.CollectionFactory;
 import org.semanticweb.owlapi.util.OWLObjectPropertyManager;
 import org.semanticweb.owlapi.util.Version;
@@ -1525,7 +1526,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         @Override
         public Collection<OWLDataProperty> getParents(OWLDataProperty child) {
             Set<OWLDataProperty> properties = new HashSet<>();
-            for (OWLDataPropertyExpression prop : child.getSuperProperties(getRootOntology().getImportsClosure())) {
+            for (OWLDataPropertyExpression prop : EntitySearcher.getSuperProperties(child, getRootOntology().getImportsClosure())) {
                 properties.add(prop.asOWLDataProperty());
             }
             return properties;
@@ -1534,7 +1535,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         @Override
         public Collection<OWLDataProperty> getChildren(OWLDataProperty parent) {
             Set<OWLDataProperty> properties = new HashSet<>();
-            for (OWLDataPropertyExpression prop : parent.getSubProperties(getRootOntology().getImportsClosure())) {
+            for (OWLDataPropertyExpression prop : EntitySearcher.getSubProperties(parent, getRootOntology().getImportsClosure())) {
                 properties.add(prop.asOWLDataProperty());
             }
             return properties;
