@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.transform.TransformerConfigurationException;
 
+import com.hp.hpl.jena.graph.NodeFactory;
 import org.dllearner.algorithms.qtl.datastructures.NodeRenderer;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
@@ -1394,7 +1395,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     public Query toQuery(){
     	Query query = QueryFactory.make();
     	query.setQuerySelectType();
-    	query.addResultVar(Node.createVariable("x0"));
+    	query.addResultVar(NodeFactory.createVariable("x0"));
     	query.setDistinct(true);
     	query.setPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
     	query.setPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
@@ -1420,31 +1421,31 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	List<Triple> triples = new ArrayList<>();
     	Pattern pattern = Pattern.compile("^^", Pattern.LITERAL);
     	
-    	Node subject = tree.getUserObject().equals("?") ? Node.createVariable("x" + tree.getId()) : Node.createURI((String) tree.getUserObject());
+    	Node subject = tree.getUserObject().equals("?") ? NodeFactory.createVariable("x" + tree.getId()) : NodeFactory.createURI((String) tree.getUserObject());
     	Node predicate = null;
     	Node object = null;
     	
     	String objectLabel = null;
     	for(QueryTree<N> child : tree.getChildren()){
-    		predicate = Node.createURI((String) tree.getEdge(child));
+    		predicate = NodeFactory.createURI((String) tree.getEdge(child));
     		objectLabel = (String) child.getUserObject();
     		if(objectLabel.equals("?")){
-    			object = Node.createVariable("x" + child.getId());
+    			object = NodeFactory.createVariable("x" + child.getId());
     		} else if(objectLabel.startsWith("http:")){
-    			object = Node.createURI(objectLabel);
+    			object = NodeFactory.createURI(objectLabel);
     		} else {
 //    			System.out.println(objectLabel);
     			String[] split = objectLabel.split("@");
 //    			System.out.println(Arrays.toString(split));
     			if(split.length == 2){
-    				object = Node.createLiteral(split[0], split[1], null);
+    				object = NodeFactory.createLiteral(split[0], split[1], null);
     			} else {
 
     				split = pattern.split(objectLabel);
     				if(split.length == 2){
-    					object = Node.createLiteral(split[0], null, new BaseDatatype(split[1]));
+    					object = NodeFactory.createLiteral(split[0], null, new BaseDatatype(split[1]));
     				} else {
-    					object = Node.createLiteral(objectLabel);
+    					object = NodeFactory.createLiteral(objectLabel);
     				}
     			}
     			

@@ -626,6 +626,7 @@ public class Enrichment {
 			e.printStackTrace();
 		}
 		if(classAlgorithms.contains(algorithmClass)) {
+
 			ConfigHelper.configure(learner, "classToDescribe", entity);
 		} else {
 			ConfigHelper.configure(learner, "propertyToDescribe", entity);
