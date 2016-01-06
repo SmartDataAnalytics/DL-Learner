@@ -19,20 +19,6 @@
  */
 package org.dllearner.examples;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.parser.PrologParser;
@@ -42,21 +28,15 @@ import org.dllearner.prolog.Program;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This class maps the carcinogenesis Prolog files to an OWL file. In a first
@@ -251,7 +231,7 @@ public class Carcinogenesis {
 		// writing generated knowledge base
 		System.out.print("Writing OWL file ... ");
 		startTime = System.nanoTime();
-		man.saveOntology(kb, new RDFXMLOntologyFormat(), new FileOutputStream(owlFile));
+		man.saveOntology(kb, new RDFXMLDocumentFormat(), new FileOutputStream(owlFile));
 		duration = System.nanoTime() - startTime;
 		time = Helper.prettyPrintNanoSeconds(duration, false, false);
 		System.out.println("OK (" + time + ").");

@@ -66,11 +66,11 @@
 			<artifactId>weka</artifactId>
 		</dependency>
 		
-		<dependency>
+		<!--<dependency>
 		    <groupId>org.semanticweb.elk</groupId>
 		    <artifactId>elk-owlapi</artifactId>
-		</dependency>
-		
+		</dependency>-->
+
 		<!-- <dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-reasoner</artifactId>

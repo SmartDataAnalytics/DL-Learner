@@ -19,34 +19,16 @@
 
 package org.dllearner.refinementoperators;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.Component;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.Reasoner;
+import com.google.common.base.Functions;
+import com.google.common.base.Joiner;
+import com.google.common.collect.*;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
-import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.core.owl.*;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.OWLCLassExpressionToOWLClassTransformer;
@@ -57,33 +39,8 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
 import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
 import org.dllearner.utilities.split.ValuesSplitter;
-import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
@@ -91,20 +48,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Functions;
-import com.google.common.base.Joiner;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * A downward refinement operator, which makes use of domains
@@ -493,7 +441,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		} else {
 			try {
 				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
-			} catch (ParserException e) {
+			} catch (ManchesterOWLSyntaxParserException e) {
 				logger.info("Error parsing startClass: " + e.getMessage());
 				this.startClass = df.getOWLThing();
 			}

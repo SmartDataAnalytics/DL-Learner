@@ -1,97 +1,38 @@
 package org.dllearner.scripts;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.prefs.Preferences;
-
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-//import org.dllearner.common.index.ModelGenerator;
-//import org.dllearner.common.index.ModelGenerator.Strategy;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
-import org.ini4j.IniPreferences;
-import org.ini4j.InvalidFileFormatException;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyCharacteristicAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
-import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
-import org.semanticweb.owlapi.reasoner.InconsistentOntologyException;
-import org.semanticweb.owlapi.reasoner.InferenceType;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
-import org.semanticweb.owlapi.reasoner.TimeOutException;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.log4j.*;
+import org.dllearner.kb.sparql.*;
+import org.ini4j.IniPreferences;
+import org.ini4j.InvalidFileFormatException;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.reasoner.*;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.*;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.prefs.Preferences;
+
+//import org.dllearner.common.index.ModelGenerator;
+//import org.dllearner.common.index.ModelGenerator.Strategy;
 
 /**
  * FIXME: I just commented out all lines that caused errors. So, this class
@@ -359,7 +300,7 @@ public class SPARQLSampleDebugging {
 		try {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			man.saveOntology(ontology, new RDFXMLOntologyFormat(), baos);
+			man.saveOntology(ontology, new RDFXMLDocumentFormat(), baos);
 			bais = new ByteArrayInputStream(baos.toByteArray());
 			model.read(bais, null);
 		} catch (OWLOntologyStorageException e) {
@@ -458,7 +399,7 @@ public class SPARQLSampleDebugging {
 			logger.info("###################################################################");
 			logger.info("Resource " + resource);//resource = "http://dbpedia.org/resource/The_Man_Who_Wouldn%27t_Die";
 			module = extractSampleModule(resource);module.getOWLOntologyManager().removeAxioms(module, module.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION));
-			manager.addAxioms(reference, module.getABoxAxioms(true));
+			manager.addAxioms(reference, module.getABoxAxioms(Imports.INCLUDED));
 			manager.removeAxioms(reference, reference.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION));
 			boolean isConsistent = reasoner.isConsistent();
 			logger.info("Consistent: " + isConsistent);
@@ -517,7 +458,7 @@ public class SPARQLSampleDebugging {
 					logger.info(entry.getKey() + "\t: " + entry.getValue());
 				}
 			}
-			man.removeAxioms(reference, module.getABoxAxioms(true));
+			man.removeAxioms(reference, module.getABoxAxioms(Imports.INCLUDED));
 //			writeToDB(resource, module.getLogicalAxiomCount(), isConsistent, explanations);
 		}
 		renderer.endRendering();
@@ -565,7 +506,7 @@ public class SPARQLSampleDebugging {
 			logger.info("###################################################################");
 			logger.info("Resource " + resource);//resource = "http://dbpedia.org/resource/The_Man_Who_Wouldn%27t_Die";
 			module = extractSampleModule(resource);
-			man.addAxioms(reference, module.getABoxAxioms(true));
+			man.addAxioms(reference, module.getABoxAxioms(Imports.INCLUDED));
 			man.removeAxioms(reference, reference.getAxioms(AxiomType.DATA_PROPERTY_ASSERTION));
 			boolean isConsistent = reasoner.isConsistent();
 			logger.info("Consistent: " + isConsistent);
@@ -626,7 +567,7 @@ public class SPARQLSampleDebugging {
 					logger.info(entry.getKey() + "\t: " + entry.getValue());
 				}
 			}
-			man.removeAxioms(reference, module.getABoxAxioms(true));
+			man.removeAxioms(reference, module.getABoxAxioms(Imports.INCLUDED));
 //			writeToDB(resource, module.getLogicalAxiomCount(), isConsistent, explanations);
 			break;
 		}
@@ -864,7 +805,7 @@ public class SPARQLSampleDebugging {
 		OWLReasoner reasoner = null;
 		try {
 			OWLOntology ontology = manager.createOntology(justification);
-			manager.removeAxioms(ontology, ontology.getABoxAxioms(true));
+			manager.removeAxioms(ontology, ontology.getABoxAxioms(Imports.INCLUDED));
 			reasoner = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology);
 			for(OWLObjectProperty p : ontology.getObjectPropertiesInSignature()){
 				boolean satisfiable = reasoner.isSatisfiable(factory.getOWLObjectExactCardinality(1, p));

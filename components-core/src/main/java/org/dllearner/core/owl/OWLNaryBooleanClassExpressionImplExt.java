@@ -43,9 +43,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.CollectionFactory;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLAnonymousClassExpressionImpl;
@@ -86,6 +84,20 @@ public abstract class OWLNaryBooleanClassExpressionImplExt extends
             List<? extends OWLClassExpression> operands) {
         super();
         this.operands = new ArrayList<>(operands);
+    }
+
+    @Override
+    public void addSignatureEntitiesToSet(Set<OWLEntity> entities) {
+        for (OWLClassExpression operand : operands) {
+            addSignatureEntitiesToSetForValue(entities, operand);
+        }
+    }
+
+    @Override
+    public void addAnonymousIndividualsToSet(Set<OWLAnonymousIndividual> anons) {
+        for (OWLClassExpression operand : operands) {
+            addAnonymousIndividualsToSetForValue(anons, operand);
+        }
     }
 
     @Override

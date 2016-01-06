@@ -3,35 +3,21 @@
  */
 package org.dllearner.utilities;
 
-import java.util.*;
-
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxEditorParser;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.ISODateTimeFormat;
-import org.joda.time.format.ISOPeriodFormat;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
-import org.semanticweb.owlapi.expression.ParserException;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
-
-import uk.ac.manchester.cs.owl.owlapi.OWL2DatatypeImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
-
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.joda.time.DateTime;
+import org.joda.time.format.*;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassExpressionParser;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.XSDVocabulary;
+import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
+
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -40,6 +26,9 @@ import com.google.common.collect.Sets;
 public class OWLAPIUtils {
 	
 	private static final OWLCLassExpressionToOWLClassTransformer OWL_CLASS_TRANSFORM_FUNCTION = new OWLCLassExpressionToOWLClassTransformer();
+
+	public static final OWLOntologyManager	manager	= OWLManager.createOWLOntologyManager();
+	public static final OWLDataFactory factory = manager.getOWLDataFactory();
 	
     public final static Set<OWLDatatype> intDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.INT,
@@ -56,7 +45,8 @@ public class OWLAPIUtils {
     public final static Set<OWLDatatype> floatDatatypes = new TreeSet<>(Arrays.asList(
 			XSD.FLOAT,
 			XSD.DOUBLE,
-			OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL)
+			factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI())
+
 	));
     public final static Set<OWLDatatype> fixedDatatypes = new TreeSet<>(Collections.singletonList(
 			XSD.BOOLEAN
@@ -67,8 +57,8 @@ public class OWLAPIUtils {
 	 * without time zone offsets.
 	 */
     public final static Set<OWLDatatype> owl2TimeDatatypes = Sets.newTreeSet(Arrays.asList(
-    		OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME),
-        	OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP)
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME.getIRI()),
+			factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI())
         ));
     
     public final static Set<OWLDatatype> dtDatatypes = Sets.newTreeSet(Arrays.asList(
@@ -92,7 +82,7 @@ public class OWLAPIUtils {
 		javaTypeMap = new TreeMap<>();
 		javaTypeMap.put(XSD.BYTE, Byte.class);
 		javaTypeMap.put(XSD.SHORT, Short.class);
-		javaTypeMap.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DECIMAL), Double.class);
+		javaTypeMap.put(factory.getOWLDatatype(XSDVocabulary.DECIMAL.getIRI()), Double.class);
 		javaTypeMap.put(XSD.INT, Integer.class);
 		javaTypeMap.put(XSD.INTEGER, Integer.class);
 		javaTypeMap.put(XSD.POSITIVE_INTEGER, Integer.class);
@@ -117,7 +107,7 @@ public class OWLAPIUtils {
 		dateTimeFormatters.put(XSD.TIME, DateTimeFormat.forPattern("hh:mm:ss.sss").withOffsetParsed());
 		dateTimeFormatters.put(XSD.DATE, ISODateTimeFormat.date());
 		dateTimeFormatters.put(XSD.DATE_TIME, ISODateTimeFormat.dateHourMinuteSecond()); //  .dateTimeNoMillis());
-		dateTimeFormatters.put(OWL2DatatypeImpl.getDatatype(OWL2Datatype.XSD_DATE_TIME_STAMP), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
+		dateTimeFormatters.put(factory.getOWLDatatype(XSDVocabulary.DATE_TIME_STAMP.getIRI()), ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed());
 	}
 
 	public static final Map<OWLDatatype, DateTimeFormatter> dateTimeParsers = new HashMap<>(dateTimeFormatters);
@@ -195,10 +185,9 @@ public class OWLAPIUtils {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				ManchesterOWLSyntaxEditorParser parser = new ManchesterOWLSyntaxEditorParser(dataFactory, s);
-				parser.setOWLEntityChecker(new SimpleOWLEntityChecker(reasoner));
-				return parser.parseClassExpression();
-			} catch (ParserException e) {
+				ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, new SimpleOWLEntityChecker(reasoner));
+				return parser.parse(s);
+			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
 			}

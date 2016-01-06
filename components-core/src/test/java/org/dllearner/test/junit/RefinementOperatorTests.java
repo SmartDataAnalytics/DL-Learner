@@ -19,21 +19,11 @@
 
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ocel.OCEL;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.*;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -46,14 +36,17 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * A suite of JUnit tests related to refinement operators.

@@ -3,41 +3,29 @@
  */
 package org.dllearner.utilities;
 
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.List;
-import java.util.Set;
-
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
-import org.semanticweb.owlapi.vocab.Namespaces;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.Namespaces;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -45,7 +33,7 @@ import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
  */
 public class OwlApiJenaUtils {
 	
-	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	/**
 	 * Converts a JENA API model into an OWL API ontology.
@@ -86,7 +74,7 @@ public class OwlApiJenaUtils {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
+						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
 					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();

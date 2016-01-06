@@ -1,17 +1,11 @@
 package org.dllearner.utilities.owl;
 
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.AND;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.COMMA;
-import static uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntax.OR;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.*;
 
 import java.util.Iterator;
 
-import org.semanticweb.owlapi.io.OWLObjectRenderer;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLObjectVisitor;
+import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.*;
 
 /**
  * Extended version of the DLSyntaxObjectRenderer class in OWL API. Extension is
@@ -21,7 +15,7 @@ import org.semanticweb.owlapi.model.OWLObjectVisitor;
  * 
  * @author Lorenz Buehmann
  */
-public class DLSyntaxObjectRenderer extends uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer
+public class DLSyntaxObjectRenderer extends org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer
 implements OWLObjectRenderer, OWLObjectVisitor {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//

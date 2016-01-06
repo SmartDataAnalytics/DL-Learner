@@ -164,7 +164,7 @@ public class DocumentationHTMLGenerator {
 	}
 	
 	// this is a hack, because we just assume that every PropertyEditor is named
-	// as TypeEditor (e.g. ObjectPropertyEditor); however that hack does not too much harm here
+	// as TypeEditor (e.g. OWLObjectPropertyEditor); however that hack does not too much harm here
 //	private static String getOptionType(ConfigOption option) {
 //		String name = option.propertyEditorClass().getSimpleName();
 //		return name.substring(0, name.length()-6);

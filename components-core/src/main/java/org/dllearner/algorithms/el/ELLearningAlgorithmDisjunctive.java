@@ -19,22 +19,8 @@
 
 package org.dllearner.algorithms.el;
 
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScoreSimple;
@@ -42,9 +28,12 @@ import org.dllearner.refinementoperators.ELDown;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * A learning algorithm for EL, which will based on an
@@ -160,7 +149,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 		} else {
 			try {
 				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
-			} catch (ParserException e) {
+			} catch (ManchesterOWLSyntaxParserException e) {
 				logger.info("Error parsing startClass: " + e.getMessage());
 				this.startClass = dataFactory.getOWLThing();
 			}

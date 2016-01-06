@@ -1,13 +1,11 @@
 package org.dllearner.algorithms.pattern;
 
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.repository.OntologyRepository;
 import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
 import org.junit.Test;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 
 public class OWLPatternDetectionTest {

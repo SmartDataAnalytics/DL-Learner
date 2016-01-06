@@ -109,6 +109,7 @@ public class ELDownTests {
 		// For this test, we need to turn instance based disjoints
 		// off! (We do not have any instances here.)
 		RefinementOperator operator = new ELDown(rs, false);
+		operator.init();
 		
 		// desired refinements as strings
 		Set<String> desiredString = new TreeSet<String>();
@@ -185,7 +186,7 @@ public class ELDownTests {
 	}
 	
 	@Test
-	public void test2() throws ParseException, IOException {
+	public void test2() throws ParseException, IOException, ComponentInitException {
 		System.out.println("TEST 2");			
 		
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DR);
@@ -225,6 +226,7 @@ public class ELDownTests {
 		logger.addAppender(app);		
 		
 		RefinementOperator operator = new ELDown(rs);
+		operator.init();
 		
 		Set<OWLClassExpression> refinements = operator.refine(input);
 		
@@ -238,7 +240,7 @@ public class ELDownTests {
 	}
 	
 	@Test
-	public void test3() throws ParseException, IOException {
+	public void test3() throws ParseException, IOException, ComponentInitException {
 		System.out.println("TEST 3");
 		
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.SIMPLE_NO_DISJOINT);
@@ -273,6 +275,7 @@ public class ELDownTests {
 		logger.addAppender(app);		
 		
 		RefinementOperator operator = new ELDown(rs);
+		operator.init();
 		
 		Set<OWLClassExpression> refinements = operator.refine(input);
 		
@@ -308,14 +311,18 @@ public class ELDownTests {
 		input = ConceptTransformation.cleanConcept(input);
 		
 		ELDown operator = new ELDown(reasoner);
+		operator.init();
+
 		operator.refine(input);
 		
 	}
 
 	@Test
-	public void test5() {
+	public void test5() throws ComponentInitException {
 		AbstractReasonerComponent rs = TestOntologies.getTestOntology(TestOntology.TRAINS_OWL);
 		RefinementOperator operator = new ELDown(rs);
+		operator.init();
+
 		Set<OWLClassExpression> refinements = operator.refine(new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI()));
 		for(OWLClassExpression refinement : refinements) {
 			System.out.println(refinement);
@@ -353,6 +360,8 @@ public class ELDownTests {
 		ELDescriptionNode w = new ELDescriptionNode(v2, r1);
 
 		ELDown operator = new ELDown(reasoner);
+		operator.init();
+
 		System.out.println(operator.asCheck(w));		
 		
 	}

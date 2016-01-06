@@ -3,42 +3,38 @@
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.google.common.base.Charsets;
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.*;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
+import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.expr.*;
+import com.hp.hpl.jena.sparql.expr.aggregate.AggCountVarDistinct;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.sparql.util.TripleComparator;
+import com.hp.hpl.jena.util.iterator.Filter;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.jamonapi.MonitorFactory;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.apache.commons.collections15.ListUtils;
@@ -71,6 +67,8 @@ import org.dllearner.algorithms.qtl.util.statistics.TimeMonitors;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
@@ -78,67 +76,25 @@ import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.utilities.QueryUtils;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Ordering;
-import com.google.common.collect.Sets;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
-import com.hp.hpl.jena.sparql.expr.E_NotEquals;
-import com.hp.hpl.jena.sparql.expr.E_NotExists;
-import com.hp.hpl.jena.sparql.expr.E_NumAbs;
-import com.hp.hpl.jena.sparql.expr.E_Subtract;
-import com.hp.hpl.jena.sparql.expr.Expr;
-import com.hp.hpl.jena.sparql.expr.ExprAggregator;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.NodeValue;
-import com.hp.hpl.jena.sparql.expr.aggregate.AggCountVarDistinct;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.util.TripleComparator;
-import com.hp.hpl.jena.util.iterator.Filter;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.jamonapi.MonitorFactory;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
+
+import java.io.*;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Lorenz Buehmann
@@ -205,7 +161,7 @@ public class QTLEvaluation {
 	int maxTreeDepth = 3;
 	
 	NoiseMethod noiseMethod = NoiseMethod.RANDOM;
-	
+
 	// whether to override existing results
 	private boolean override = false;
 	
@@ -333,12 +289,12 @@ public class QTLEvaluation {
 	                   "noise DOUBLE, " + 
 	                   "heuristic VARCHAR(100), " +
 	                   "heuristic_measure VARCHAR(100), " +
-	                   "query_top LONGTEXT, " + 
+	                   "query_top LONGTEXT, " +
 	                   "fscore_top DOUBLE, " + 
 	                   "precision_top DOUBLE, " + 
 	                   "recall_top DOUBLE, " + 
 	                   "best_query LONGTEXT," +
-	                   "best_rank SMALLINT, " + 
+	                   "best_rank SMALLINT, " +
 	                   "best_fscore DOUBLE, " + 
 	                   "best_precision DOUBLE, " + 
 	                   "best_recall DOUBLE, " + 
@@ -452,7 +408,7 @@ public class QTLEvaluation {
 		}
 		return subset;
 	}
-	
+
 	public void run(File queriesFile, int maxNrOfProcessedQueries, int maxTreeDepth, int[] exampleInterval, double[] noiseInterval, HeuristicType[] measures) throws Exception{
 		this.maxTreeDepth = maxTreeDepth;
 		queryTreeFactory.setMaxDepth(maxTreeDepth);
@@ -488,7 +444,7 @@ public class QTLEvaluation {
 			query2Examples.put(query, generateExamples(query));
 		}
 		logger.info("precomputing pos. and neg. examples finished.");
-		
+
 		final int totalNrOfQTLRuns = heuristics.length * measures.length * nrOfExamplesIntervals.length * noiseIntervals.length * queries.size();
 		logger.info("#QTL runs: " + totalNrOfQTLRuns);
 
@@ -565,7 +521,7 @@ public class QTLEvaluation {
 						
 						// indicates if the execution for some of the queries failed
 						final AtomicBoolean failed = new AtomicBoolean(false);
-						
+
 						// loop over SPARQL queries
 						for (final String sparqlQuery : queries) {
 							
@@ -618,7 +574,7 @@ public class QTLEvaluation {
 										la.init();
 										la.start();
 										List<EvaluatedRDFResourceTree> solutions = new ArrayList<>(la.getSolutions());
-										
+
 //										List<EvaluatedRDFResourceTree> solutions = generateSolutions(examples, noise, heuristic);
 										nrOfReturnedSolutionsStats.addValue(solutions.size());
 										
@@ -714,7 +670,7 @@ public class QTLEvaluation {
 						
 						tp.shutdown();
 						tp.awaitTermination(12, TimeUnit.HOURS);
-						
+
 						Logger.getRootLogger().removeAppender(appender);
 						
 						if(!failed.get()) {
@@ -804,9 +760,9 @@ public class QTLEvaluation {
 				}
 			}
 		}
-		
+
 		conn.close();
-		
+
 		if(useEmailNotification) {
 			sendFinishedMail();
 		}
@@ -814,7 +770,7 @@ public class QTLEvaluation {
 		long duration = t2 - t1;
 		logger.info("QTL evaluation finished in " + DurationFormatUtils.formatDurationHMS(duration) + "ms.");
 	}
-	
+
 	private String render(EvaluatedDescription ed) {
 		return owlRenderer.render(ed.getDescription()) + dfPercent.format(ed.getAccuracy());
 	}
@@ -1081,7 +1037,7 @@ public class QTLEvaluation {
 					coveredCorrectTrees++;
 				}
 			}
-			
+
 //			System.err.println("+" + coveredCorrectTrees + "|-" + coveredNoiseTrees);
 			// this is obviously the most perfect solution according to the input
 			if(coveredNoiseTrees == 0 && coveredCorrectTrees == correctPositiveExampleTrees.size()) {
@@ -1137,7 +1093,7 @@ public class QTLEvaluation {
 		}
 		Collections.sort(negExamples);
 		logger.info("#Neg. examples: " + negExamples.size());
-		
+
 		// get some noise candidates, i.e. resources used as false pos. examples
 		int maxNrOfNoiseCandidates = 100;
 		List<String> noiseCandidates;
@@ -1150,7 +1106,7 @@ public class QTLEvaluation {
 			Files.write(Joiner.on("\n").join(noiseCandidates), file, Charsets.UTF_8);
 		}
 		logger.info("#False pos. example candidates: " + noiseCandidates.size());
-		
+
 		return new ExampleCandidates(posExamples, negExamples, noiseCandidates);
 	}
 	
@@ -1441,7 +1397,7 @@ public class QTLEvaluation {
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).start();
 		RDFResourceTree tree = queryTreeFactory.getQueryTree(resource, cbd);
 		MonitorFactory.getTimeMonitor(TimeMonitors.TREE_GENERATION.name()).stop();
-		
+
 		return tree;
 	}
 	
@@ -1923,7 +1879,7 @@ public class QTLEvaluation {
 		
 		// pred. acc
 		double predAcc = (tp + tn) / (double)((tp + fn) + (tn + fp));
-		
+
 		BigDecimal denominator = BigDecimal.valueOf(tp + fp).
 				multiply(BigDecimal.valueOf(tp + fn)).
 				multiply(BigDecimal.valueOf(tn + fp)).
@@ -2047,7 +2003,7 @@ public class QTLEvaluation {
 		OptionSpec<String> noiseIntervalsSpec = parser.accepts("noise", "comma-separated list of noise values used in evaluation").withRequiredArg().ofType(String.class);
 		OptionSpec<String> measuresSpec = parser.accepts("measures", "comma-separated list of measures used in evaluation").withRequiredArg().ofType(String.class);
 
-		
+
 
         OptionSet options = parser.parse(args);
 
@@ -2063,7 +2019,7 @@ public class QTLEvaluation {
 		int maxTreeDepth = options.valueOf(maxTreeDepthSpec);
 		int maxQTLRuntime = options.valueOf(maxQTLRuntimeSpec);
 		int nrOfThreads = options.valueOf(nrOfThreadsSpec);
-		
+
 		int[] exampleInterval = null;
 		if(options.has(exampleIntervalsSpec)) {
 			String s = options.valueOf(exampleIntervalsSpec);
@@ -2130,13 +2086,13 @@ public class QTLEvaluation {
 	}
 	
 
-	
+
 	class ExampleCandidates {
 
 		List<String> correctPosExampleCandidates;
 		List<String> falsePosExampleCandidates;
 		List<String> correctNegExampleCandidates;
-		
+
 		public ExampleCandidates(List<String> correctPosExampleCandidates,
 				List<String> correctNegExampleCandidates,
 				List<String> falsePosExampleCandidates) {

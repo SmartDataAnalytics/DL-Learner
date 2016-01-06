@@ -19,26 +19,19 @@
 
 package org.dllearner.utilities.owl;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.coode.owlapi.rdf.model.AbstractTranslator;
-import org.coode.owlapi.rdf.model.RDFLiteralNode;
-import org.coode.owlapi.rdf.model.RDFNode;
-import org.coode.owlapi.rdf.model.RDFResourceNode;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import com.google.common.collect.Lists;
+import org.semanticweb.owlapi.io.*;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
 import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
+import java.util.Collection;
+import java.util.List;
+
 public class OWL2SPARULConverter
 		extends
-		AbstractTranslator<RDFNode, RDFResourceNode, RDFResourceNode, RDFLiteralNode> {
+		AbstractTranslator<RDFNode, RDFResource, RDFResourceIRI, RDFLiteral> {
 	private StringBuilder sb;
 
 	public OWL2SPARULConverter(OWLOntologyManager manager,
@@ -88,36 +81,34 @@ public class OWL2SPARULConverter
 		return sb.toString();
 	}
 
+	public String translate(OWLOntologyChange change) {
+		return translate(Lists.newArrayList(change));
+	}
+
 	@Override
-	protected void addTriple(RDFResourceNode subject, RDFResourceNode pred,
+	protected void addTriple(RDFResource subject, RDFResourceIRI pred,
 			RDFNode object) {
 		sb.append(subject).append(" ").append(pred).append(" ").append(object);
 
 	}
 
 	@Override
-	protected RDFResourceNode getAnonymousNode(Object key) {
-		return new RDFResourceNode(System.identityHashCode(key), false, false);
+	protected RDFResourceBlankNode getAnonymousNode(Object key) {
+		return new RDFResourceBlankNode(System.identityHashCode(key), false, false);
 	}
 
 	@Override
-	protected RDFResourceNode getPredicateNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResourceIRI getPredicateNode(IRI iri) {
+		return new RDFResourceIRI(iri);
 	}
 
 	@Override
-	protected RDFResourceNode getResourceNode(IRI iri) {
-		return new RDFResourceNode(iri);
+	protected RDFResource getResourceNode(IRI iri) {
+		return new RDFResourceIRI(iri);
 	}
 
 	@Override
-	protected RDFLiteralNode getLiteralNode(OWLLiteral literal) {
-		if (literal.getDatatype() != null) {
-			return new RDFLiteralNode(literal.toString(), literal.getDatatype()
-					.getIRI());
-		} else {
-			return new RDFLiteralNode(literal.toString(), literal.getLang());
-		}
-
+	protected RDFLiteral getLiteralNode(OWLLiteral literal) {
+		return new RDFLiteral(literal);
 	}
 }

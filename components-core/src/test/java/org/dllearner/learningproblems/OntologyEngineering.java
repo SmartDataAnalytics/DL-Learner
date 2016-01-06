@@ -19,67 +19,32 @@ package org.dllearner.learningproblems;
  *
  */
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.ClassLearningProblem;
+import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.reasoning.OWLAPIReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.util.*;
+
 //import org.dllearner.core.ComponentManager;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.Score;
 //import org.dllearner.core.owl.Description;
 //import org.dllearner.core.owl.Individual;
 //import org.dllearner.core.owl.NamedClass;
 //import org.dllearner.core.owl.Thing;
-import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.kb.OWLFile;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.EvaluatedDescriptionClass;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
-import org.dllearner.reasoning.ClosedWorldReasoner;
 //import org.dllearner.reasoning.FastInstanceChecker;
-import org.dllearner.reasoning.OWLAPIReasoner;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
-import org.dllearner.utilities.statistics.Stat;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 /**
  * The script loads an ontology, loops through all classes having at least a

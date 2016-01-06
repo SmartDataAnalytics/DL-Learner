@@ -3,21 +3,24 @@
  */
 package org.dllearner.algorithms.qtl;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.xml.transform.TransformerConfigurationException;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.reasoner.Reasoner;
+import com.hp.hpl.jena.reasoner.ReasonerRegistry;
+import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.expr.*;
+import com.hp.hpl.jena.sparql.serializer.SerializationContext;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import org.dllearner.algorithms.qtl.datastructures.QueryTree;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeConversionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
@@ -30,57 +33,23 @@ import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.dllearner.utilities.PrefixCCMap;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.ext.EdgeNameProvider;
 import org.jgrapht.ext.GraphMLExporter;
 import org.jgrapht.ext.VertexNameProvider;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.*;
 import org.xml.sax.SAXException;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.Syntax;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.reasoner.Reasoner;
-import com.hp.hpl.jena.reasoner.ReasonerRegistry;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.expr.E_Datatype;
-import com.hp.hpl.jena.sparql.expr.E_Equals;
-import com.hp.hpl.jena.sparql.expr.E_LogicalAnd;
-import com.hp.hpl.jena.sparql.expr.ExprNode;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.NodeValue;
-import com.hp.hpl.jena.sparql.serializer.SerializationContext;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author Lorenz Buehmann
@@ -90,7 +59,7 @@ public class QueryTreeUtils {
 	
 	private static final VarGenerator varGen = new VarGenerator("x");
 	private static final String TRIPLE_PATTERN_TEMPLATE = "%s %s %s .";
-	private static final OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+	private static final OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	public static String EMPTY_QUERY_TREE_QUERY = "SELECT ?s WHERE {?s ?p ?o.}";
 	
@@ -571,7 +540,7 @@ public class QueryTreeUtils {
 	}
 	
 	public static <N> boolean sameTrees(RDFResourceTree tree1, RDFResourceTree tree2) {
-		return 
+		return
 				tree1.getData().equals(tree2.getData()) && // root(t1) == root(t2)
 				tree1.getNumberOfChildren() == tree2.getNumberOfChildren() && // #children(t1) == #children(t2)
 				isSubsumedBy(tree1, tree2) && isSubsumedBy(tree2, tree1); // t1 <= t2 && t2 <= t1
@@ -1058,11 +1027,11 @@ public class QueryTreeUtils {
 	 */
 	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment,
 			AbstractReasonerComponent reasoner) {
-		
+
 		if(entailment == Entailment.SIMPLE) {
 			return isSubsumedBy(tree1, tree2);
 		}
-		
+
 		// 1.compare the root nodes
 
 		// (T_1 != ?) and (T_2 != ?) --> T_1 = T_2
@@ -1085,7 +1054,7 @@ public class QueryTreeUtils {
 	    				return tree2.getDatatype().equals(d1);
 	    			}
 	    		}
-	    		
+
 	    	}
 		}
 
@@ -1093,25 +1062,25 @@ public class QueryTreeUtils {
 		if (tree1.isVarNode() && !tree2.isVarNode()) {
 			return false;
 		}
-		
+
 		// 2. compare the children
 		for (Node edge2 : tree2.getEdges()) {
-			
+
 			// get sub properties
 			OWLObjectProperty prop2 = OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY);
 			SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(prop2);
 			subProperties.add(prop2);
-			
+
 			// for each subtree T2_sub in T2
 			for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
 				boolean childSubsumed = false;
-				
+
 				// for each sub edge
 				for(OWLObjectProperty subProp : subProperties) {
 					// check if there is a child in T_1 that is subsumed by
 					Node edge1 = OwlApiJenaUtils.asNode(subProp);
 					List<RDFResourceTree> children1 = tree1.getChildren(edge1);
-					
+
 					if(children1 != null) {
 						for (RDFResourceTree child1 : children1) {
 							if (QueryTreeUtils.isSubsumedBy(child1, child2, entailment, reasoner)) {
@@ -1124,39 +1093,39 @@ public class QueryTreeUtils {
 						break;
 					}
 				}
-				
+
 				// we found no subtree in T1 that is subsumed by t2_sub
 				if(!childSubsumed) {
 					return false;
 				}
 			}
 		}
-			
-		
+
+
 		// 2. compare the children
 //		for (Node edge2 : tree2.getEdges()) {
-//			
+//
 //			// get sub properties
 //			OWLObjectProperty prop2 = OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY);
 //			SortedSet<OWLObjectProperty> subProperties = reasoner.getSubProperties(prop2);
 //			subProperties.add(prop2);
-//			
+//
 //			boolean edgeSubsumed = false;
-//			
+//
 //			Iterator<OWLObjectProperty> iterator = subProperties.iterator();
 //			while (!edgeSubsumed && iterator.hasNext()) {
 //				OWLObjectProperty subProp  = iterator.next();
-//				
+//
 //				Node edge1 = OwlApiJenaUtils.asNode(subProp);
-//				
+//
 //				List<RDFResourceTree> children1 = tree1.getChildren(edge1);
-//				
+//
 //				if (children1 != null) {
-//				
+//
 //					boolean childrenSubsumed = true;
 //					for (RDFResourceTree child2 : tree2.getChildren(edge2)) {
 //						boolean childSubsumed = false;
-//						
+//
 //						for (RDFResourceTree child1 : children1) {
 //							if (QueryTreeUtils.isSubsumedBy(child1, child2, entailment, reasoner)) {
 //								childSubsumed = true;
@@ -1167,13 +1136,13 @@ public class QueryTreeUtils {
 //							childrenSubsumed = false;
 //						}
 //					}
-//					
+//
 //					if(childrenSubsumed) {
 //						edgeSubsumed = true;
 //					}
 //				}
 //			}
-//			
+//
 //			if(!edgeSubsumed) {
 //				System.err.println("edge not subsumed");
 //				return false;
@@ -1181,23 +1150,23 @@ public class QueryTreeUtils {
 //		}
 		return true;
 	}
-	
+
 	/*
-	 * For each edge in tree 1 we compute the related edges in tree 2. 
+	 * For each edge in tree 1 we compute the related edges in tree 2.
 	 */
 	private static Multimap<Node, Node> getRelatedEdges(RDFResourceTree tree1, RDFResourceTree tree2, AbstractReasonerComponent reasoner) {
 		Multimap<Node, Node> relatedEdges = HashMultimap.create();
-		
+
 		for(Node edge1 : tree1.getEdges()) {
 			// trivial
 			if(tree2.getEdges().contains(edge1)) {
 				relatedEdges.put(edge1, edge1);
 			}
 			// check if it's not a built-in properties
-			if (!edge1.getNameSpace().equals(RDF.getURI()) 
+			if (!edge1.getNameSpace().equals(RDF.getURI())
 					&& !edge1.getNameSpace().equals(RDFS.getURI())
 					&& !edge1.getNameSpace().equals(OWL.getURI())) {
-				
+
 				// get related edges by subsumption
 				OWLProperty prop;
 				if(tree1.isObjectPropertyEdge(edge1)) {
@@ -1205,7 +1174,7 @@ public class QueryTreeUtils {
 				} else {
 					prop = new OWLDataPropertyImpl(IRI.create(edge1.getURI()));
 				}
-				
+
 				for (OWLProperty p : reasoner.getSuperProperties(prop)) {
 					Node edge = NodeFactory.createURI(p.toStringID());
 					if(tree2.getEdges().contains(edge)) {
