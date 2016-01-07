@@ -18,10 +18,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -39,7 +41,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable, Comparable<RDFResourceTree>{
 	
 	public enum Rendering {
 		INDENTED, BRACES
@@ -198,6 +200,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
+	 * @param edge
+	 *            the edge from the root node to the possible child nodes
+	 * @return TRUE if there is at least one child connected by the given edge,
+	 *         otherwise FALSE
+	 */
+	public boolean hasChildren(Node edge) {
+		return edge2Children.get(edge) != null;
+	}
+	
+	/**
 	 * @return all distinct outgoing edges.
 	 */
 	public SortedSet<Node> getEdges() {
@@ -273,6 +285,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	public String getStringRepresentation(Rendering syntax, String baseIRI, PrefixMapping pm) {
 		return getStringRepresentation(false, syntax, baseIRI, pm);
+	}
+	
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 * 
+	 * @param stopWhenLeafNode
+	 * @return
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
+		return getStringRepresentation(stopIfChildIsResourceNode, null, null, PrefixCCPrefixMapping.Full);
 	}
 	    
 	/**
@@ -443,5 +465,17 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			}
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(RDFResourceTree other) {
+		return ComparisonChain.start().
+			compare(this.getData(), other.getData(), new NodeComparator()). // root node
+			compare(this.getNumberOfChildren(), other.getNumberOfChildren()). // number of direct children
+			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
+			result();
 	}
 }

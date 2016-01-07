@@ -56,6 +56,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 
+import javax.annotation.Nonnull;
+
 public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLIndividualVisitor, OWLDataRangeVisitor {
 	
 	private static final String NS = "http://dl-learner.org/pattern/";
@@ -352,6 +354,11 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			}
 			renamedOWLObject = newEntity;
 		}
+	}
+
+	@Override
+	public void visit(@Nonnull OWLAnnotationProperty property) {
+
 	}
 
 	@Override

@@ -4,6 +4,7 @@
 package org.dllearner.core.ref;
 
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -21,6 +22,7 @@ public abstract class ClassExpressionRefinementOperatorBase extends
 	protected OWLDataFactory dataFactory;
 
 	public ClassExpressionRefinementOperatorBase(OWLReasoner reasoner, OWLDataFactory dataFactory) {
+		super(new TreeSet<OWLClassExpression>());
 		this.reasoner = reasoner;
 		this.dataFactory = dataFactory;
 	}

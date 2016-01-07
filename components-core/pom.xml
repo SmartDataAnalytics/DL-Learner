@@ -272,9 +272,31 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.semanticweb.hermit</groupId>
-			<artifactId>hermit</artifactId>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>org.semanticweb.hermit</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.semanticweb.elk</groupId>
+			<artifactId>elk-owlapi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>de.tudresden.inf.lat.cel</groupId>
+			<artifactId>reasoner</artifactId>
+			<version>0.5.1</version>
+		</dependency>
+		<!--
+             <dependency>
+                <groupId>de.tudresden.inf.lat.cel</groupId>
+                <artifactId>jsexp</artifactId>
+                <version>0.1.0</version>
+            </dependency>
+        -->
+		<!--<dependency>
+			<groupId>eu.trowl</groupId>
+			<artifactId>trowl-core</artifactId>
+		</dependency>-->
 
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
@@ -310,68 +332,49 @@
 			<version>1.0</version>
 		</dependency>
 
-		<!-- This module is a library module, so it needs only to have the slf api dependency to enable logging -->
-		<!--
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.5</version>
-            </dependency>
-        -->
+        <!-- This module is a library module, so it needs only to have the slf api dependency to enable logging -->
+    <!--
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.5</version>
 		</dependency>
-		<!--
-            <dependency>
-                    <groupId>org.apache.lucene</groupId>
-                    <artifactId>lucene-analyzers-common</artifactId>
-                </dependency>
-            <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>commons-pool</groupId>
-                <artifactId>commons-pool</artifactId>
-                <version>1.6</version>
-            </dependency>
-        -->
-		<dependency>
-			<groupId>org.semanticweb.elk</groupId>
-			<artifactId>elk-owlapi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.tudresden.inf.lat.cel</groupId>
-			<artifactId>reasoner</artifactId>
-			<version>0.5.1</version>
-		</dependency>
-		<!--
-             <dependency>
-                <groupId>de.tudresden.inf.lat.cel</groupId>
-                <artifactId>jsexp</artifactId>
-                <version>0.1.0</version>
-            </dependency>
-        -->
-		<dependency>
-			<groupId>eu.trowl</groupId>
-			<artifactId>trowl-core</artifactId>
-		</dependency>
-		<!--
-             <dependency>
-                 <groupId>xerces</groupId>
-                 <artifactId>xercesImpl</artifactId>
-                 <version>2.8.0</version>
-             </dependency>
-        -->
+    -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+    <!--
+        <dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-analyzers-common</artifactId>
+			</dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>commons-pool</groupId>
+        	<artifactId>commons-pool</artifactId>
+        	<version>1.6</version>
+        </dependency>
+    -->
+
+    <!--
+         <dependency>
+         	<groupId>xerces</groupId>
+         	<artifactId>xercesImpl</artifactId>
+         	<version>2.8.0</version>
+         </dependency>
+    -->
 
 		<dependency>
 			<groupId>uk.ac.shef.wit</groupId>
@@ -466,6 +469,27 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.9-RC1</version>
 		</dependency>
+
+
+			<dependency>
+				<groupId>net.sf.jopt-simple</groupId>
+				<artifactId>jopt-simple</artifactId>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-email</artifactId>
+				<version>1.4</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.panayotis.gnuplot</groupId>
+				<artifactId>javaplot</artifactId>
+				<version>0.5.0</version>
+				<scope>test</scope>
+			</dependency>
 
 	</dependencies>
 </project>

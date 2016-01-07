@@ -3,6 +3,12 @@ package org.dllearner.algorithms.qtl.datastructures.impl;
 import com.google.common.collect.ComparisonChain;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.Score;
@@ -11,6 +17,9 @@ import org.dllearner.learningproblems.QueryTreeScore;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResourceTree>{
 	
@@ -37,8 +46,8 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 	// the corresponding description set lazily
 	private EvaluatedDescription<? extends Score> description;
 	
-	// the query trees of which the underlying query tree was generated from
-	private Set<RDFResourceTree> baseQueryTrees = new HashSet<>();
+	// the query trees of which this query tree was generated from
+	private Set<RDFResourceTree> baseQueryTrees = new TreeSet<>();
 
 	public EvaluatedRDFResourceTree(RDFResourceTree tree, Collection<RDFResourceTree> falseNegatives, 
 			Collection<RDFResourceTree> falsePositives, QueryTreeScore score) {
@@ -125,16 +134,6 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 		return score;
 	}
 
-	@Override
-	public int compareTo(EvaluatedRDFResourceTree other) {
-		return ComparisonChain.start()
-//		         .compare(this.getScore(), other.getScore())
-		         .compare(other.getScore(), this.getScore())
-		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription())
-		         .result();
-	}
-	
-	
 	/**
 	 * @return the query tree as OWL class expression
 	 */
@@ -148,13 +147,26 @@ public class EvaluatedRDFResourceTree implements Comparable<EvaluatedRDFResource
 		this.description = description;
 	}
 	
+	/**
+	 * @return the query tree as OWL class expression with score
+	 */
 	public EvaluatedDescription<? extends Score> asEvaluatedDescription(){
+		// lazy generation
 		if(description == null){
 			description = new EvaluatedDescription(QueryTreeUtils.toOWLClassExpression(getTree()), score);
 		}
 		return description;
 	}
 	
+	@Override
+	public int compareTo(EvaluatedRDFResourceTree other) {
+		return ComparisonChain.start()
+		         .compare(other.getScore(), this.getScore()) // score
+		         .compare(this.baseQueryTrees.toString(), other.baseQueryTrees.toString()) // base query trees
+		         .compare(this.asEvaluatedDescription(), other.asEvaluatedDescription()) // class expression representation
+		         .result();
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

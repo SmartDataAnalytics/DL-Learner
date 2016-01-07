@@ -165,7 +165,7 @@ public final class LiteralLearningTest {
 	
 	@Test
 	public void numericTypeTest () throws ComponentInitException, OWLOntologyCreationException {
-		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "55");
+		genericNumericTypeTest(NUMBERS, NUMBERS_OWL, (new OWLDataFactoryImpl()).getIntegerOWLDatatype(), "9");
 	}
 
 	@Test

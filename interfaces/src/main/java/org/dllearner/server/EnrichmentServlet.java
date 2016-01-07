@@ -68,10 +68,10 @@ import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SPARULTranslator;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
+import org.dllearner.utilities.owl.OWL2SPARULConverter;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -103,7 +103,7 @@ public class EnrichmentServlet extends HttpServlet {
 	
 	private static String validAxiomTypes = "";
 	
-	private SPARULTranslator sparul;
+	private OWL2SPARULConverter sparul;
 	private OWLOntology ont;
 
 	static {
@@ -179,7 +179,7 @@ public class EnrichmentServlet extends HttpServlet {
 		} catch (OWLOntologyCreationException e1) {
 			e1.printStackTrace();
 		}
-		sparul = new SPARULTranslator(man, ont, false);
+		sparul = new OWL2SPARULConverter(ont, false);
 		dataFactory = man.getOWLDataFactory();
 	}
 	

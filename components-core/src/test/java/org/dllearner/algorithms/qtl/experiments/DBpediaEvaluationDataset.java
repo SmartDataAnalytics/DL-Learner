@@ -34,26 +34,12 @@ import com.hp.hpl.jena.util.iterator.Filter;
  */
 public class DBpediaEvaluationDataset extends EvaluationDataset {
 	
-	static SparqlEndpoint endpoint;
-	
-	static {
-		try {
-			endpoint = SparqlEndpoint.getEndpointDBpedia();
-			endpoint = new SparqlEndpoint(
-//			new URL("http://akswnc3.informatik.uni-leipzig.de:8860/sparql"), 
-					new URL("http://sake.informatik.uni-leipzig.de:8890/sparql"), 
-					"http://dbpedia.org");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	
-	public DBpediaEvaluationDataset() {
+	public DBpediaEvaluationDataset(File benchmarkDirectory, SparqlEndpoint endpoint) {
 		// set KS
+		File cacheDir = new File(benchmarkDirectory, "cache");
 		try {
 			ks = new SparqlEndpointKS(endpoint);
-			ks.setCacheDir("./cache-qtl/qtl-qald-iswc2015-cache;mv_store=false");
+			ks.setCacheDir(cacheDir.getAbsolutePath() + "/sparql/qtl-AAAI-cache;mv_store=false");
 			ks.init();
 		} catch (ComponentInitException e) {
 			e.printStackTrace();
@@ -83,8 +69,9 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
-		return Lists.<Filter<Statement>>newArrayList(
+		return Lists.newArrayList(
 			new PredicateDropStatementFilter(StopURIsDBpedia.get()),
 			new ObjectDropStatementFilter(StopURIsDBpedia.get()),
 			new PredicateDropStatementFilter(StopURIsRDFS.get()),

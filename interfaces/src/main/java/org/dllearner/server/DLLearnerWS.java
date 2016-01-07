@@ -778,7 +778,8 @@ public class DLLearnerWS {
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
-	 * @param value
+	 * @param keys
+	 * @param values
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 * @throws UnknownComponentException
 	 */
@@ -833,7 +834,7 @@ public class DLLearnerWS {
 				value = ignoredConcepts;
 			}
 			field.set(component, value);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | URISyntaxException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
 //		try {
@@ -1078,7 +1079,7 @@ public class DLLearnerWS {
 	 * @param query The SPARQL query.
 	 * @param useCache Specify whether to use a cache for queries.
 	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
-	 * @see SPARQLEndpoint#getEndpointByName;
+	 * @see SparqlEndpoint#getEndpointByName(String)
 	 */
 	@WebMethod
 	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query, boolean useCache) {

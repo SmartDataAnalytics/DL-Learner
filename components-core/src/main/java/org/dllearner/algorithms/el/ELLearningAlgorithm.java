@@ -19,19 +19,10 @@
 
 package org.dllearner.algorithms.el;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -43,12 +34,14 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.expression.ParserException;
+import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A learning algorithm for EL, which is based on an
@@ -158,7 +151,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 		} else {
 			try {
 				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, dataFactory);
-			} catch (ParserException e) {
+			} catch (ManchesterOWLSyntaxParserException e) {
 				logger.info("Error parsing startClass: " + e.getMessage());
 				this.startClass = dataFactory.getOWLThing();
 			}

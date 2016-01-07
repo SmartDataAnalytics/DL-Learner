@@ -40,9 +40,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
 
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -122,7 +122,7 @@ public class ExistentialRestrictionMaterialization {
 			superClasses.add(cls);
 			
 			//get the directly asserted super classes
-			Collection<OWLClassExpression> superClassExpressions = cls.getSuperClasses(ontology);
+			Collection<OWLClassExpression> superClassExpressions = EntitySearcher.getSuperClasses(cls, ontology);
 			
 			//omit trivial super class
 			superClassExpressions.remove(cls);

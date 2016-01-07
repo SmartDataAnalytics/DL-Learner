@@ -42,9 +42,7 @@ public final class StringRenderer {
 	
 	@SuppressWarnings("deprecation")
 	public static void setRenderer(OWLObjectRenderer r) {
-		if (ToStringRenderer.getInstance().getRenderer() != r) {
-			ToStringRenderer.getInstance().setRenderer(r);
-		}
+		ToStringRenderer.getInstance().setRenderer(r);
 		renderer = r;
 	}
 

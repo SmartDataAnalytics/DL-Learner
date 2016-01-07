@@ -1373,9 +1373,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
 		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
-			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
+			return getObjectPropertyHierarchy().isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
 		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
-			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
+			return getDatatypePropertyHierarchy().isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
 		}
 		return false;
 	}

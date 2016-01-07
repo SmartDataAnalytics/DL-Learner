@@ -4,9 +4,7 @@
 package org.dllearner.algorithms.qtl.experiments;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.SparqlEndpointKS;
@@ -29,7 +27,7 @@ public class EvaluationDataset {
 	AbstractReasonerComponent reasoner;
 	
 	List<String> sparqlQueries;
-	List<Filter<Statement>> queryTreeFilters = new ArrayList<Filter<Statement>>();
+	List<Filter<Statement>> queryTreeFilters = new ArrayList<>();
 	
 	public SparqlEndpointKS getKS() {
 		return ks;

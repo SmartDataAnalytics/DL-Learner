@@ -16,12 +16,13 @@
 		<gwt.version>2.3.0</gwt.version>
 
 		<!--Define the AKSW dependency version -->
-		<slf4j.version>1.6.4</slf4j.version>
-		<log4j.version>1.2.16</log4j.version>
-		<solr.version>5.3.0</solr.version>
-		<owlapi.version>3.5.4</owlapi.version>
-		<spring.version>3.2.13.RELEASE</spring.version>
-		<jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
+        <slf4j.version>1.6.4</slf4j.version>
+        <log4j.version>1.2.16</log4j.version>
+        <solr.version>5.3.0</solr.version>
+        <owlapi.version>4.1.3</owlapi.version>
+        <spring.version>4.2.2.RELEASE</spring.version>
+        <jena.sparql.api.version>2.13.0-5</jena.sparql.api.version>
+		<pellet.version>2.4.0-dllearner</pellet.version>
 	</properties>
 
 	<modules>
@@ -128,114 +129,119 @@
 					</configuration>
 				</plugin>
 
-				<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm
-                    putting this in so we can create a jar for the test classes - in components
-                    core so that other components' tests can leverage them -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.5</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>1.3.2</version>
-					<executions>
-						<execution>
-							<id>sign</id>
-							<goals>
-								<goal>sign</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<keystore>/path/to/the/keystore</keystore>
-						<alias>Alias name</alias>
-						<storepass>Store password</storepass>
-						<keypass>Key password</keypass>
-					</configuration>
-				</plugin>
-				<!--JAR the Sources -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.3</version>
-					<configuration>
-						<failOnError>false</failOnError>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>com.mycila</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>2.8</version>
-					<configuration>
-						<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
-						<header>license_header.txt</header>
-						<properties>
-							<owner>Jens Lehmann</owner>
-							<email>lehmann@informatik.uni-leipzig.de</email>
-						</properties>
-						<includes><include>src/**/*.java</include>
-
-						</includes>
-						<excludes>
-							<exclude>**/README</exclude>
-							<exclude>src/test/resources/**</exclude>
-							<exclude>src/etc/**</exclude>
-							<exclude>src/deb-package/**</exclude>
-							<exclude>src/deb/**</exclude>
-							<exclude>src/main/resources/**</exclude>
-							<exclude>cache/**</exclude>
-							<exclude>log/**</exclude>
-							<exclude>src/**/*.html</exclude>
-							<exclude>src/**/*.jj</exclude>
-							<exclude>src/**/*.txt</exclude>
-						</excludes>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>tomcat-maven-plugin</artifactId>
-					<version>1.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.7</version>
-				</plugin>
-				<plugin>
-					<groupId>org.mortbay.jetty</groupId>
-					<artifactId>maven-jetty-plugin</artifactId>
-					<version>6.1.26</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.10</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.2</version>
-					<configuration>
-						<autoVersionSubmodules>true</autoVersionSubmodules>
-					</configuration>
-				</plugin>
-				<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
-                See: https://github.com/aleksandr-m/gitflow-maven-plugin
-                Usage: gitflow:release-start and gitflow:release-finish -->
-				<plugin>
-					<groupId>com.amashchenko.maven.plugin</groupId>
-					<artifactId>gitflow-maven-plugin</artifactId>
-					<version>1.0.8</version>
-					<configuration>
-						<installProject>false</installProject>
-						<verbose>true</verbose>
+			<!-- - Maven Jar Plugin - if you want to create and/or sign jars. - I'm 
+				putting this in so we can create a jar for the test classes - in components 
+				core so that other components' tests can leverage them -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<id>sign</id>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keystore>/path/to/the/keystore</keystore>
+					<alias>Alias name</alias>
+					<storepass>Store password</storepass>
+					<keypass>Key password</keypass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+			</plugin>
+			<!--JAR the Sources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+				<!-- 	<header>com/mycila/maven/plugin/license/templates/GPL-3.txt</header> -->
+					<header>license_header.txt</header>
+			        <properties>
+			            <owner>Jens Lehmann</owner>
+			            <email>lehmann@informatik.uni-leipzig.de</email>
+			        </properties>
+			       <includes><include>src/**/*.java</include>
+			       
+			       </includes>
+			        <excludes>
+			            <exclude>**/README</exclude>
+			            <exclude>src/test/resources/**</exclude>
+			             <exclude>src/etc/**</exclude>
+			              <exclude>src/deb-package/**</exclude>
+			              <exclude>src/deb/**</exclude>
+			            <exclude>src/main/resources/**</exclude>
+			            <exclude>cache/**</exclude>
+			            <exclude>log/**</exclude>
+			            <exclude>src/**/*.html</exclude>
+			            <exclude>src/**/*.jj</exclude>
+			            <exclude>src/**/*.txt</exclude>
+			        </excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<version>1.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+			<plugin>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>maven-jetty-plugin</artifactId>
+				<version>6.1.26</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+				</configuration>
+			</plugin>
+			<!-- Git flow plugin according to the Git branching model http://nvie.com/posts/a-successful-git-branching-model/
+			See: https://github.com/aleksandr-m/gitflow-maven-plugin
+			Usage: gitflow:release-start and gitflow:release-finish -->
+	<plugin>
+	<groupId>com.amashchenko.maven.plugin</groupId>
+	<artifactId>gitflow-maven-plugin</artifactId>
+	<version>1.0.8</version>
+	<configuration>
+		<installProject>false</installProject>
+		<verbose>true</verbose>
 
 						<gitFlowConfig>
 							<productionBranch>master</productionBranch>
@@ -287,11 +293,7 @@
 			as version is retrieved from the parent. - - Remember, default scope is compile
 			in Maven. -->
 		<dependencies>
-			<dependency>
-				<groupId>org.semanticweb.elk</groupId>
-				<artifactId>elk-owlapi</artifactId>
-				<version>0.4.1</version>
-			</dependency>
+
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-math3</artifactId>
@@ -338,11 +340,13 @@
 				<version>1.1.1</version>
 			</dependency>
 
-			<!-- OWL API compatible reasoners -->
+	<!-- OWL API compatible reasoners -->
+			<!-- Pellet -->
+			<!-- orignal groupId: com.clarkparsia.pellet -->
 			<dependency>
 				<groupId>com.clarkparsia.pellet</groupId>
 				<artifactId>pellet-distribution</artifactId>
-				<version>2.3.3-dllearner</version>
+				<version>${pellet.version}</version>
 				<type>pom</type>
 				<exclusions>
 					<exclusion>
@@ -359,23 +363,29 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-
+			<!-- Trowl - no support for OWL API v4 yet-->
+			<!--<dependency>-->
+				<!--<groupId>eu.trowl</groupId>-->
+				<!--<artifactId>trowl-core</artifactId>-->
+				<!--<version>1.5.0</version>-->
+			<!--</dependency>-->
+			<!-- ELK -->
 			<dependency>
-				<groupId>eu.trowl</groupId>
-				<artifactId>trowl-core</artifactId>
-				<version>1.5.0</version>
+				<groupId>org.semanticweb.elk</groupId>
+				<artifactId>elk-owlapi</artifactId>
+				<version>0.4.3-SNAPSHOT</version>
 			</dependency>
-
+			<!-- JFact -->
 			<dependency>
 				<groupId>net.sourceforge.owlapi</groupId>
 				<artifactId>jfact</artifactId>
-				<version>1.2.2</version>
+				<version>4.0.3</version>
 			</dependency>
-
+			<!-- HermiT (OWL API v4 fork) -->
 			<dependency>
-				<groupId>org.semanticweb.hermit</groupId>
-				<artifactId>hermit</artifactId>
-				<version>1.3.8</version>
+				<groupId>net.sourceforge.owlapi</groupId>
+				<artifactId>org.semanticweb.hermit</artifactId>
+				<version>1.3.8.413</version>
 			</dependency>
 
 			<!-- SOLR Dependency -->
@@ -708,7 +718,7 @@
 			<dependency>
 				<groupId>org.aksw</groupId>
 				<artifactId>semlibsvm</artifactId>
-				<version>3.20-SNAPSHOT</version>
+				<version>3.20</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -832,11 +842,61 @@
 						<artifactId>maven-source-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>attach-sources</id>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<!-- these actions will be activated only when staging a release -->
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<!-- sign released artifacts using PGP, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
 								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- generate javadocs, required by maven central -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<links>
+								<link>http://java.sun.com/j2se/1.7.0/docs/api</link>
+							</links>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<configuration>
+									<maxmemory>512m</maxmemory>
+									<minmemory>128m</minmemory>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>

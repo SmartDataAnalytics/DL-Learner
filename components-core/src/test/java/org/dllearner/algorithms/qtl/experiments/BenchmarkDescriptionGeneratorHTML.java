@@ -129,7 +129,7 @@ public class BenchmarkDescriptionGeneratorHTML {
 	}
 
 	private List<Query> loadQueries(File queriesFile) throws IOException {
-		List<Query> queries = new ArrayList<Query>();
+		List<Query> queries = new ArrayList<>();
 		
 		for (String queryString : Files.readLines(queriesFile, Charsets.UTF_8)) {
 			Query q = QueryFactory.create(queryString);

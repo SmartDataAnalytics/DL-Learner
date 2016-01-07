@@ -62,7 +62,7 @@ import com.hp.hpl.jena.util.iterator.Filter;
 public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private int nodeId;
-	private Comparator<Statement> comparator = new StatementComparator();
+	private final Comparator<Statement> comparator = new StatementComparator();
 
 	private int maxDepth = 3;
 

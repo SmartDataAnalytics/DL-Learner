@@ -19,88 +19,33 @@
  */
 package org.dllearner.cli;
 
-import static java.util.Arrays.asList;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
-import java.net.Authenticator;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.SecureRandom;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-
 import org.apache.jena.riot.checker.CheckerLiterals;
 import org.apache.jena.riot.system.ErrorHandlerFactory;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.coode.owlapi.manchesterowlsyntax.ManchesterOWLSyntaxOntologyFormat;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
 import org.dllearner.algorithms.properties.MultiPropertyAxiomLearner;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
-import org.dllearner.core.AbstractAxiomLearningAlgorithm;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.AxiomLearningAlgorithm;
-import org.dllearner.core.AxiomLearningProgressMonitor;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.ConsoleAxiomLearningProgressMonitor;
-import org.dllearner.core.EvaluatedAxiom;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblemUnsupportedException;
-import org.dllearner.core.Score;
+import org.dllearner.core.*;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.kb.sparql.SPARQLTasks;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
+import org.dllearner.kb.sparql.*;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.Heuristics.HeuristicType;
@@ -114,45 +59,26 @@ import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.formats.ManchesterSyntaxDocumentFormat;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.OWLProperty;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.engine.http.QueryExceptionHTTP;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.net.*;
+import java.security.SecureRandom;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+
+import static java.util.Arrays.asList;
 
 /**
  * Command Line Interface for Enrichment.
@@ -246,7 +172,7 @@ public class Enrichment {
 
 	AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 
-	private OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	public Enrichment(SparqlEndpoint se, OWLEntity resource, double threshold, int nrOfAxiomsToLearn,
 			boolean useInference, boolean verbose, int chunksize, int maxExecutionTimeInSeconds,
@@ -525,7 +451,7 @@ public class Enrichment {
 			}
 			ksFragment = new OWLAPIOntology(ontology);
 			try {
-				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), new FileOutputStream("/tmp/test.ttl"));
+				OWLManager.createOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), new FileOutputStream("/tmp/test.ttl"));
 			} catch (OWLOntologyStorageException | FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -626,6 +552,7 @@ public class Enrichment {
 			e.printStackTrace();
 		}
 		if(classAlgorithms.contains(algorithmClass)) {
+
 			ConfigHelper.configure(learner, "classToDescribe", entity);
 		} else {
 			ConfigHelper.configure(learner, "propertyToDescribe", entity);
@@ -746,13 +673,7 @@ public class Enrichment {
 		axioms.add(ax);
 
 		//add used input to algorithm run instance
-		OWLNamedIndividual knowldegeBaseInd = null;
-		try {
-			knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		OWLNamedIndividual knowldegeBaseInd = f.getOWLNamedIndividual(IRI.create(ks.getEndpoint().getURL()));
 		ax = f.getOWLClassAssertionAxiom(EnrichmentVocabulary.SPARQLEndpoint, knowldegeBaseInd);
 		axioms.add(ax);
 		if(!ks.getEndpoint().getDefaultGraphURIs().isEmpty()) {
@@ -797,7 +718,7 @@ public class Enrichment {
 		try {
 			System.out.println("ENRICHMENT[");
 
-			ManchesterOWLSyntaxOntologyFormat manSyntaxFormat = new ManchesterOWLSyntaxOntologyFormat();
+			ManchesterSyntaxDocumentFormat manSyntaxFormat = new ManchesterSyntaxDocumentFormat();
 			manSyntaxFormat.setDefaultPrefix(defaultNamespace);
 			manSyntaxFormat.setPrefix("enrichment", "http://www.dl-learner.org/enrichment.owl#");
 
@@ -1274,7 +1195,7 @@ public class Enrichment {
 				try {
 					OWLOntology ontology = e.getGeneratedOntology(options.has("a"));
 					OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
-					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLOntologyFormat(), os);
+					OWLManager.createOWLOntologyManager().saveOntology(ontology, new RDFXMLDocumentFormat(), os);
 				} catch (OWLOntologyStorageException e1) {
 					throw new Error("Could not save ontology.");
 				}

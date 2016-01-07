@@ -50,6 +50,9 @@ import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.utilities.OwlApiJenaUtils;
+import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLProperty;
 
@@ -69,7 +72,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 /**
  * 
@@ -115,21 +117,32 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		// get edges of tree 2 connected via subsumption
 		Multimap<Node, Node> relatedEdges = getRelatedEdges(tree1, tree2);
 		for (Entry<Node, Collection<Node>> entry : relatedEdges.asMap().entrySet()){
-			Node edge1 = entry.getKey();
+			Node edge1 = entry.getKey();//System.out.println("e1:" + edge1);
 			Collection<Node> edges2 = entry.getValue();
 			
 			Set<RDFResourceTree> addedChildren = new HashSet<>();
-		
-			
+
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
 				// for all related edges of tree 2
-				for (Node edge2 : edges2) {
+				for (Node edge2 : edges2) {//System.out.println("e2:" + edge2);
 					// loop over children of second tree
-					for(RDFResourceTree child2 : tree2.getChildren(edge2)){
+					for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
 						// compute the LGG
 						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
 						
+						Node moreGeneralEdge;
+						// get the more general edge
+						if (reasoner.isSubPropertyOf(
+								OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+								OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+							moreGeneralEdge = edge2;
+						} else {
+							moreGeneralEdge = edge1;
+						}
+//						System.out.println("e_gen:" + moreGeneralEdge);
+
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
 						boolean add = true;
@@ -146,12 +159,23 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
 //										lggChild.getStringRepresentation(),
 //										addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, edge1);
+								lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 								it.remove();
 							} 
 						}
 						if(add){
-							lgg.addChild(lggChild, edge1);
+							Node edge;
+							// get the more general edge
+							if (reasoner.isSubPropertyOf(
+									OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+									OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+								edge = edge2;
+							} else {
+								edge = edge1;
+							}
+
+							lgg.addChild(lggChild, edge);
 							addedChildren.add(lggChild);
 //							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 						} 
@@ -174,10 +198,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			if(tree2.getEdges().contains(edge1)) {
 				relatedEdges.put(edge1, edge1);
 			}
-			// check if it's not a built-in properties
-			if (!edge1.getNameSpace().equals(RDF.getURI()) 
-					&& !edge1.getNameSpace().equals(RDFS.getURI())
-					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+
+			// check if it's a built-in property
+			boolean builtIn = edge1.getNameSpace().equals(RDF.getURI())
+					&& edge1.getNameSpace().equals(RDFS.getURI())
+					&& edge1.getNameSpace().equals(OWL.getURI());
+
+			if (!builtIn) {
 				
 				// get related edges by subsumption
 				OWLProperty prop;
