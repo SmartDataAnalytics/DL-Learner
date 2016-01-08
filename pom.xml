@@ -259,29 +259,50 @@
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.4</version>
                 	<configuration>
-						<skipDeploy>true</skipDeploy>
+						<!--<skipDeploy>true</skipDeploy>-->
 					</configuration>
-				</plugin>
-
-				<plugin>
-					<groupId>com.github.github</groupId>
-					<artifactId>site-maven-plugin</artifactId>
-					<version>0.5</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>site</goal>
-							</goals>
-							<phase>site-deploy</phase>
-							<configuration>
-								<path>${project.version}</path>
-								<merge>true</merge>
-							</configuration>
-						</execution>
-					</executions>
+					<dependencies>
+						<dependency><!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>2.0</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<!--<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>stage-for-scm-publish</id>
+						<phase>post-site</phase>
+						<goals>
+							<goal>stage</goal>
+						</goals>
+						<configuration>
+							<skipDeploy>false</skipDeploy>&lt;!&ndash; MSITE-652: configuration won't be necessary with m-site-p 3.2 &ndash;&gt;
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-scm-publish-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>scm-publish</id>
+						<phase>site-deploy</phase>
+						<goals>
+							<goal>publish-scm</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>-->
 	</build>
 
 	<dependencyManagement>
@@ -758,7 +779,7 @@
 		<site>
 			<id>site.deployments</id>
 			<name>Site deployments</name>
-			<url>scp://prod0.aksw.org/var/www/aksw.org/javadoc/</url>
+			<url>scp://[2001:638:902:2010:0:168:35:165]/site</url>
 		</site>
 		<!-- end - location where site is deployed - username/password for site.deployments in server.xml -->
 	</distributionManagement>
