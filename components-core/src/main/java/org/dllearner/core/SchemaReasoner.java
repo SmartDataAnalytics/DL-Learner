@@ -122,7 +122,7 @@ public interface SchemaReasoner {
 	 *
 	 * @return The subsumption hierarchy of this knowledge base.
 	 */
-	Hierarchy getClassHierarchy();
+	Hierarchy<OWLClassExpression> getClassHierarchy();
 	
 	/**
 	 * Returns direct super classes in the class hierarchy.

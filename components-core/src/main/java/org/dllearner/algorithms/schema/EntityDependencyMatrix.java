@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
@@ -37,7 +38,7 @@ public class EntityDependencyMatrix<T> {
 		OWLReasoner reasoner = new StructuralReasonerFactory().createNonBufferingReasoner(ontology);
 		
 		// how often are individuals of class A related to individuals of class B
-		Set<OWLClass> classes = ontology.getClassesInSignature(true);
+		Set<OWLClass> classes = ontology.getClassesInSignature(Imports.INCLUDED);
 		for (OWLClass clsA : classes) {
 			for (OWLClass clsB : classes) {
 				if(!clsA.equals(clsB)) {

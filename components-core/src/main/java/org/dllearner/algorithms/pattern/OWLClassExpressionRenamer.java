@@ -155,7 +155,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLDataHasValue desc) {
 		OWLDataPropertyExpression property = desc.getProperty();
 		property = rename(property);
-		OWLLiteral value = desc.getValue();
+		OWLLiteral value = desc.getFiller();
 		value = rename(value);
 		renamedOWLObject = df.getOWLDataHasValue(property, value);
 	}
@@ -189,7 +189,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectHasValue desc) {
 		OWLObjectPropertyExpression property = desc.getProperty();
 		property = rename(property);
-		OWLIndividual value = desc.getValue();
+		OWLIndividual value = desc.getFiller();
 		value = rename(value);
 		renamedOWLObject = df.getOWLObjectHasValue(property, value);
 	}

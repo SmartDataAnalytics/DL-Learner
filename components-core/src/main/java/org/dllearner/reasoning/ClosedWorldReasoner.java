@@ -1186,7 +1186,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			return returnSet;
 		} else if (description instanceof OWLObjectHasValue) {
 			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
-			OWLIndividual value = ((OWLObjectHasValue)description).getValue();
+			OWLIndividual value = ((OWLObjectHasValue)description).getFiller();
 			
 			if (property.isAnonymous()) {
 				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
@@ -1271,7 +1271,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			}
 		} else if (description instanceof OWLDataHasValue){
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
-			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 			
 			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			

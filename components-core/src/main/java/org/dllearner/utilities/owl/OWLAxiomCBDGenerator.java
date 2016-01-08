@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.*;
 
+import org.semanticweb.owlapi.model.parameters.Imports;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
@@ -136,7 +137,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 			visitedIndividuals.add(individual);
 			
 			currentDepth++;
-			Set<OWLIndividualAxiom> axioms = ontology.getAxioms(individual);
+			Set<OWLIndividualAxiom> axioms = ontology.getAxioms(individual, Imports.INCLUDED);
 			for (OWLIndividualAxiom ax : axioms) {
 				ax.accept(this);
 			}
@@ -160,7 +161,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 		if(!visitedProperties.contains(property)){
 			visitedProperties.add(property);
 			
-			Set<OWLObjectPropertyAxiom> axioms = ontology.getAxioms(property);
+			Set<OWLObjectPropertyAxiom> axioms = ontology.getAxioms(property, Imports.INCLUDED);
 			for (OWLObjectPropertyAxiom ax : axioms) {
 				ax.accept(this);
 			}
@@ -182,7 +183,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 		if(!visitedProperties.contains(property)){
 			visitedProperties.add(property);
 			
-			Set<OWLDataPropertyAxiom> axioms = ontology.getAxioms(property);
+			Set<OWLDataPropertyAxiom> axioms = ontology.getAxioms(property, Imports.INCLUDED);
 			for (OWLDataPropertyAxiom ax : axioms) {
 				ax.accept(this);
 			}

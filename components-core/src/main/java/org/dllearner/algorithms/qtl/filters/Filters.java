@@ -13,9 +13,8 @@ public class Filters {
 	public static List<String> getSkosFilterProperties(){
 		List<String> filters = new ArrayList<>();
 		
-		filters.add(SKOSVocabulary.COMMENT.getIRI().toString());
+//		filters.add(SKOSVocabulary.COMMENT.getIRI().toString());
 		filters.add(SKOSVocabulary.DEFINITION.getIRI().toString());
-		filters.add(SKOSVocabulary.COMMENT.getIRI().toString());
 		filters.add(SKOSVocabulary.PREFLABEL.getIRI().toString());
 		filters.add(SKOSVocabulary.ALTLABEL.getIRI().toString());
 		

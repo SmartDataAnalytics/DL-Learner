@@ -472,7 +472,8 @@ public class QueryTreeConverter implements OWLClassExpressionVisitor, OWLDataRan
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
-		PrefixManager pm = new DefaultPrefixManager("http://example.org/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://example.org/");
 		OWLClassExpression ce = df.getOWLObjectIntersectionOf(
 				df.getOWLClass("A", pm),
 				df.getOWLObjectSomeValuesFrom(

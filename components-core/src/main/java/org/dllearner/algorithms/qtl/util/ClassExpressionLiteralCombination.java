@@ -317,7 +317,8 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	public static void main(String[] args) throws Exception {
 		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
 		OWLDataFactoryImpl df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager(":");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix(":");
 		OWLClass A = df.getOWLClass("A", pm );
 		OWLDataProperty s = df.getOWLDataProperty("s", pm);
 		OWLDataProperty t = df.getOWLDataProperty("t", pm);
