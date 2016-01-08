@@ -252,7 +252,8 @@ public class OWLAxiomToSPARQLConverter implements OWLAxiomVisitor{
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
-		PrefixManager pm = new DefaultPrefixManager("http://dbpedia.org/ontology/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dbpedia.org/ontology/");
 		
 		OWLClass clsA = df.getOWLClass("A", pm);
 		OWLClass clsB = df.getOWLClass("B", pm);

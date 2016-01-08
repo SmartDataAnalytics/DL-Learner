@@ -283,10 +283,10 @@ public class OWLAxiomPatternFinder {
 			insertOntologyPs.setInt(5, tbox.size());
 			insertOntologyPs.setInt(6, rbox.size());
 			insertOntologyPs.setInt(7, abox.size());
-			insertOntologyPs.setInt(8, ontology.getClassesInSignature(true).size());
-			insertOntologyPs.setInt(9, ontology.getObjectPropertiesInSignature(true).size());
-			insertOntologyPs.setInt(10, ontology.getDataPropertiesInSignature(true).size());
-			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(true).size());
+			insertOntologyPs.setInt(8, ontology.getClassesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(9, ontology.getObjectPropertiesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(10, ontology.getDataPropertiesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(Imports.INCLUDED).size());
 			insertOntologyPs.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -343,7 +343,7 @@ public class OWLAxiomPatternFinder {
 					Set<OWLAxiom> logicalAxioms = new HashSet<>();
 					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
 						if(type.isLogical()){
-							logicalAxioms.addAll(ontology.getAxioms(type, true));
+							logicalAxioms.addAll(ontology.getAxioms(type, Imports.INCLUDED));
 						}
 					}
 					System.out.println(" (" + logicalAxioms.size() + " axioms)");

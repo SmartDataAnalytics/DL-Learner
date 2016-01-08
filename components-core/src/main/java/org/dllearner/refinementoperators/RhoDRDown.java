@@ -739,7 +739,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		} else if (description instanceof OWLDataHasValue) {
 			OWLDataPropertyExpression dp = ((OWLDataHasValue) description).getProperty();
-			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 
 			if(!dp.isAnonymous()){
 				Set<OWLDataProperty> subDPs = dataPropertyHierarchy.getMoreSpecialRoles(dp.asOWLDataProperty());

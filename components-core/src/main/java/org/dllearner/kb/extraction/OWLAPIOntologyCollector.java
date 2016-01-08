@@ -19,19 +19,12 @@
 
 package org.dllearner.kb.extraction;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChangeException;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
+
+import java.io.File;
 
 public class OWLAPIOntologyCollector {
 	
@@ -53,7 +46,7 @@ public class OWLAPIOntologyCollector {
 		 this.ontologyIRI = IRI.create(ontologyIRI);
 		 this.physicalIRI = IRI.create(new File(physicalIRI));
 		 SimpleIRIMapper mapper = new SimpleIRIMapper(this.ontologyIRI, this.physicalIRI);
-		 this.manager.addIRIMapper(mapper);
+		 this.manager.getIRIMappers().add(mapper);
 		 try{
 		 this.currentOntology = manager.createOntology(this.ontologyIRI);
 		 }catch(OWLOntologyCreationException e){

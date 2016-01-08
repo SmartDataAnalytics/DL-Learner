@@ -80,6 +80,7 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
+import org.semanticweb.owlapi.model.parameters.AxiomAnnotations;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
@@ -111,6 +112,8 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.CollectionFactory;
 import org.semanticweb.owlapi.util.OWLObjectPropertyManager;
 import org.semanticweb.owlapi.util.Version;
+
+import static org.semanticweb.owlapi.model.parameters.Imports.INCLUDED;
 
 /**
  * Author: Matthew Horridge<br>
@@ -253,7 +256,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
 
     @Override
     public boolean isEntailed(OWLAxiom axiom) throws ReasonerInterruptedException, UnsupportedEntailmentTypeException, TimeOutException, AxiomNotInProfileException, FreshEntitiesException, InconsistentOntologyException {
-    	boolean containsAxiom = getRootOntology().containsAxiom(axiom, true);
+    	boolean containsAxiom = getRootOntology().containsAxiom(axiom, INCLUDED, AxiomAnnotations.IGNORE_AXIOM_ANNOTATIONS);
 		
 		if(containsAxiom){
 			return true;
@@ -276,7 +279,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
 				clses.addAll(getSubClasses(cls, false).getFlattened());
 				
 				for (OWLClass curCls : clses) {
-					boolean contained = getRootOntology().containsAxiom(df.getOWLClassAssertionAxiom(curCls, individual), true);
+					boolean contained = getRootOntology().containsAxiom(df.getOWLClassAssertionAxiom(curCls, individual), INCLUDED, AxiomAnnotations.IGNORE_AXIOM_ANNOTATIONS);
 					if (contained) {
 						return true;
 					}
@@ -304,7 +307,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
 					
 					OWLClassExpression filler = ((OWLObjectSomeValuesFrom) ce).getFiller();
 					
-					Set<OWLIndividualAxiom> axioms = getRootOntology().getAxioms(individual);
+					Set<OWLIndividualAxiom> axioms = getRootOntology().getAxioms(individual, INCLUDED);
 					
 					for (OWLIndividualAxiom curAx : axioms) {
 						if(curAx instanceof OWLObjectPropertyAssertionAxiom && 
@@ -325,7 +328,8 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
     @Override
     public boolean isEntailed(Set<? extends OWLAxiom> axioms) throws ReasonerInterruptedException, UnsupportedEntailmentTypeException, TimeOutException, AxiomNotInProfileException, FreshEntitiesException, InconsistentOntologyException {
         for (OWLAxiom ax : axioms) {
-            if (!getRootOntology().containsAxiomIgnoreAnnotations(ax, true)) {
+            assert ax != null;
+            if (!getRootOntology().containsAxiom(ax, INCLUDED, AxiomAnnotations.IGNORE_AXIOM_ANNOTATIONS)) {
                 return false;
             }
         }
@@ -440,7 +444,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
     @Override
     public Node<OWLObjectPropertyExpression> getInverseObjectProperties(OWLObjectPropertyExpression pe) throws InconsistentOntologyException, FreshEntitiesException, ReasonerInterruptedException, TimeOutException {
         ensurePrepared();
-        OWLObjectPropertyExpression inv = pe.getInverseProperty().getSimplified();
+        OWLObjectPropertyExpression inv = pe.getInverseProperty();
         return getEquivalentObjectProperties(inv);
     }
 
@@ -667,7 +671,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
         for (OWLOntology ontology : getRootOntology().getImportsClosure()) {
             for (OWLObjectPropertyAssertionAxiom axiom : ontology.getObjectPropertyAssertionAxioms(ind)) {
                 if (!axiom.getObject().isAnonymous()) {
-                    if (axiom.getProperty().getSimplified().equals(pe.getSimplified())) {
+                    if (axiom.getProperty().equals(pe)) {
                         if (getIndividualNodeSetPolicy().equals(IndividualNodeSetPolicy.BY_SAME_AS)) {
                             result.addNode(getSameIndividuals(axiom.getObject().asOWLNamedIndividual()));
                         }
@@ -678,7 +682,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
                 }
                 // Inverse of pe
                 if (axiom.getObject().equals(ind) && !axiom.getSubject().isAnonymous()) {
-                    OWLObjectPropertyExpression invPe = axiom.getProperty().getInverseProperty().getSimplified();
+                    OWLObjectPropertyExpression invPe = axiom.getProperty().getInverseProperty();
                     if (!invPe.isAnonymous() && inverses.contains(invPe.asOWLObjectProperty())) {
                         if (getIndividualNodeSetPolicy().equals(IndividualNodeSetPolicy.BY_SAME_AS)) {
                             result.addNode(getSameIndividuals(axiom.getObject().asOWLNamedIndividual()));

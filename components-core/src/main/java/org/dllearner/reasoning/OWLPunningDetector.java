@@ -14,6 +14,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.collect.Sets;
 
+import org.semanticweb.owlapi.model.parameters.Imports;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
@@ -55,8 +56,8 @@ public class OWLPunningDetector {
 	 * @return TRUE if there is at least one entity that is both, class and individual, otherwise FALSE
 	 */
 	public static boolean hasPunning(OWLOntology ontology){
-		Set<OWLClass> classes = ontology.getClassesInSignature(true);
-		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(true);
+		Set<OWLClass> classes = ontology.getClassesInSignature(Imports.INCLUDED);
+		Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(Imports.INCLUDED);
 		
 		Set<IRI> classIRIs = new HashSet<>(classes.size());
 		for (OWLClass cls : classes) {

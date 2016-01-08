@@ -365,7 +365,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLNamedIndividual value = ce.getValue().asOWLNamedIndividual();
+		OWLNamedIndividual value = ce.getFiller().asOWLNamedIndividual();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
 			sparql += triple(value.toStringID(), propertyExpression.getNamedProperty(), variables.peek());
@@ -523,7 +523,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
-		OWLLiteral value = ce.getValue();
+		OWLLiteral value = ce.getFiller();
 		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), value);
 	}
 
@@ -622,7 +622,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
-		PrefixManager pm = new DefaultPrefixManager("http://dbpedia.org/ontology/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dbpedia.org/ontology/");
 		
 		OWLClass clsA = df.getOWLClass("A", pm);
 		OWLClass clsB = df.getOWLClass("B", pm);

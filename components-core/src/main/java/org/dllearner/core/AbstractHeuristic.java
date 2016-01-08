@@ -35,9 +35,7 @@ import com.google.common.collect.ComparisonChain;
  */
 public abstract class AbstractHeuristic extends AbstractComponent implements Heuristic, Comparator<OENode>{
 	
-	public AbstractHeuristic() {
-
-	}
+	public AbstractHeuristic() {}
 	
 	@Override
 	public void init() throws ComponentInitException {

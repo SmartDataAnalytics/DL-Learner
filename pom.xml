@@ -126,6 +126,9 @@
 						<source>${compiler.version}</source>
 						<target>${compiler.version}</target>
 						<encoding>${project.build.sourceEncoding}</encoding>
+						<compilerArgs>
+							<arg>-Xlint:all,-options,-path</arg>
+						</compilerArgs>
 					</configuration>
 				</plugin>
 

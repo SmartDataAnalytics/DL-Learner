@@ -227,7 +227,8 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	
 	public static void main(String[] args) throws Exception {
 		OWLDataFactoryImpl df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("http://dllearner.org/pattern#");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dllearner.org/pattern#");
 		
 		Model model = ModelFactory.createDefaultModel();
 		String triples = 

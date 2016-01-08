@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.http.HTTPException;
 
+import com.hp.hpl.jena.graph.NodeFactory;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
@@ -1303,7 +1304,7 @@ public class NBR<N> {
 	                	if(current.getObject().toString().equals(label)){
 	                		node = current.getObject();
 	                		position = ((ElementTriplesBlock) el).getPattern().getList().indexOf(current);
-	                		add = Triple.create(current.getSubject(), current.getPredicate(), Node.createVariable("x" + nodeId));
+	                		add = Triple.create(current.getSubject(), current.getPredicate(), NodeFactory.createVariable("x" + nodeId));
 	                		iter.remove();
 	                	}
 	                }

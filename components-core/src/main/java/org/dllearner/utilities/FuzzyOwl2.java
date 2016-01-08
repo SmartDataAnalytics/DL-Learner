@@ -994,14 +994,14 @@ public class FuzzyOwl2
 			case OBJECT_HAS_VALUE:
 
 				OWLObjectHasValue hasValue = (OWLObjectHasValue) c;
-				OWLIndividual i = hasValue.getValue();
+				OWLIndividual i = hasValue.getFiller();
 				p = hasValue.getProperty();
 				return getObjectHasValueName(p, i);
 
 			case DATA_HAS_VALUE:
 
 				OWLDataHasValue dataHasValue = (OWLDataHasValue) c;
-				OWLLiteral lit = dataHasValue.getValue();
+				OWLLiteral lit = dataHasValue.getFiller();
 				dp = dataHasValue.getProperty();
 				return getDataHasValueName(dp, lit);
 

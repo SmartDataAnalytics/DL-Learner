@@ -142,7 +142,7 @@ public class LCS {
 		 */
 		@Override
 		public String toString() {
-			return super.toString();
+			return root + "" + triples;
 		}
 	}
 

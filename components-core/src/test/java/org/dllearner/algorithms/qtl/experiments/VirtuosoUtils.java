@@ -54,11 +54,6 @@ public class VirtuosoUtils {
 			int cnt = 0;
 			
 			@Override
-			public void visit(ElementGroup el) {
-				super.visit(el);
-			}
-			
-			@Override
 			public void visit(ElementTriplesBlock el) {
 				Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
 					@Override
