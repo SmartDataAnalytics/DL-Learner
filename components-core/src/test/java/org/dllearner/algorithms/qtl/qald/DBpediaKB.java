@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.qald;
 
 import java.net.URL;

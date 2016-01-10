@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities;
 
 import gnu.trove.map.TObjectIntMap;

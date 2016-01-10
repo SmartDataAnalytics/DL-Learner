@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.core.ref;
 
 import java.util.List;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.experiments;
 
 import org.apache.jena.riot.Lang;

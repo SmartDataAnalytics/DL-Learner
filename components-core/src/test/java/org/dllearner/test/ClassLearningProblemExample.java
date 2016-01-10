@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.test;
 
 import org.dllearner.algorithms.celoe.CELOE;

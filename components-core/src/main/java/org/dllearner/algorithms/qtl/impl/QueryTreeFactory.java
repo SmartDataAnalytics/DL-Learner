@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.impl;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;

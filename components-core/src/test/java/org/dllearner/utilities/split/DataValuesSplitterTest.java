@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities.split;
 
 import static org.junit.Assert.fail;

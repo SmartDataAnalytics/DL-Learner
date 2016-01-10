@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.core.owl;
 
 import java.util.Map.Entry;

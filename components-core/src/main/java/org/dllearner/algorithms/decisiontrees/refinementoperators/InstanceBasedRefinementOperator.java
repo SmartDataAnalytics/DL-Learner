@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.decisiontrees.refinementoperators;
 
 import java.util.Set;

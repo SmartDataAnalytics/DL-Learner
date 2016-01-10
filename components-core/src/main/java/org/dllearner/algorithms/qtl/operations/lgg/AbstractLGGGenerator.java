@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
 import java.util.List;

@@ -1,11 +1,3 @@
-/*\
- * Copyright  2006 Klaus Rogall, Hamburg, Germany (klaus.rogall@web.de). All rights reserved.
- * _____________________________________________________________________________________________________________________
- * 
- * This class is "Open Source" as defined by the Open Source Initiative (OSI). You can redistribute it and/or modify it
- * under the terms of the BSD License. The license text is appended to the end of this file.
-\*/
-
 
 package org.dllearner.algorithms.decisiontrees.utils;
 import java.util.ArrayList;

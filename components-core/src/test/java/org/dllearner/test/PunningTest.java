@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.test;
 
 import java.util.HashSet;
@@ -120,7 +117,8 @@ public class PunningTest {
 		System.out.println("Classes: " + ontology.getClassesInSignature());
 		System.out.println("Individuals: " + ontology.getIndividualsInSignature());
 		
-		PrefixManager pm = new DefaultPrefixManager("http://ex.org/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://ex.org/");
 		OWLClass fahrzeug = df.getOWLClass("Fahrzeug", pm);
 		OWLClassExpression d = fahrzeug;
 		System.out.println(d);

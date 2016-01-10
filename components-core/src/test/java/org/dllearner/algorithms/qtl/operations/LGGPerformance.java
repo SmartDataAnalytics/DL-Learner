@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.operations;
 
 import java.util.Random;

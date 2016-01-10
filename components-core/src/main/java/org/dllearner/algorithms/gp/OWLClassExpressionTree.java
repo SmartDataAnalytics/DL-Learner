@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.gp;
 
 import java.util.ArrayList;

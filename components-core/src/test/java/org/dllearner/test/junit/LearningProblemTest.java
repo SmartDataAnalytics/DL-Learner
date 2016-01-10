@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.test.junit;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +37,8 @@ public class LearningProblemTest {
 		OWLDataFactory df = man.getOWLDataFactory();
 		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		PrefixManager pm = new DefaultPrefixManager(ns);
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix(ns);
 		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
 			nc[i] = df.getOWLClass("A" + i, pm);

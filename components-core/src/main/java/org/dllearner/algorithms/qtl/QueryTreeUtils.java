@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.HashMultimap;

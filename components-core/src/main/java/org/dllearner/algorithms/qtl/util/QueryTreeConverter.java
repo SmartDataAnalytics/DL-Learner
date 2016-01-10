@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.util;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities.owl;
 
 import java.util.ArrayList;

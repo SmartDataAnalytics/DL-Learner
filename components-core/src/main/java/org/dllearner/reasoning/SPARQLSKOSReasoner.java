@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.reasoning;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;

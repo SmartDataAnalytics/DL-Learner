@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.schema;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -23,7 +20,8 @@ public class SyntheticDataGenerator {
 	
 	private static final String NS = "http://dl-learner.org/data/";
 	
-	PrefixManager pm = new DefaultPrefixManager(NS);
+	PrefixManager pm = new DefaultPrefixManager();
+
 	IRIShortFormProvider sfp = new SimpleIRIShortFormProvider();
 	OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 	OWLDataFactory df = man.getOWLDataFactory();
@@ -33,6 +31,10 @@ public class SyntheticDataGenerator {
 	RandomDataGenerator rnd = new RandomDataGenerator();
 	
 	OWLOntology ontology;
+
+	public SyntheticDataGenerator() {
+		pm.setDefaultPrefix(NS);
+	}
 	
 	
 	/**

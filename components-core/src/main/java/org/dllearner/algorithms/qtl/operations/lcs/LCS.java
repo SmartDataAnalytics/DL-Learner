@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.operations.lcs;
 
 import java.util.HashMap;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.experiments;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;

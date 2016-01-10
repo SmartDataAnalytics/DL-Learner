@@ -189,8 +189,8 @@
 			            <owner>Jens Lehmann</owner>
 			            <email>lehmann@informatik.uni-leipzig.de</email>
 			        </properties>
-			       <includes><include>src/**/*.java</include>
-			       
+			       <includes>
+					   <include>src/**/*.java</include>
 			       </includes>
 			        <excludes>
 			            <exclude>**/README</exclude>
@@ -204,6 +204,7 @@
 			            <exclude>src/**/*.html</exclude>
 			            <exclude>src/**/*.jj</exclude>
 			            <exclude>src/**/*.txt</exclude>
+						<exclude>package-info.java</exclude>
 			        </excludes>
 				</configuration>
 			</plugin>

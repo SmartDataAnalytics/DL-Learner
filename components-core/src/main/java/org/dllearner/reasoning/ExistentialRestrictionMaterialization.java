@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.reasoning;
 
 import java.io.ByteArrayInputStream;

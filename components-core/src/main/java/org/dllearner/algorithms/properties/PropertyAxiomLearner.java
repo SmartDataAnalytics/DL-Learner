@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.properties;
 
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;

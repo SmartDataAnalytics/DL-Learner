@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities.sparql;
 
 import java.util.Collection;

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.refinementoperators;
 
 import java.util.List;

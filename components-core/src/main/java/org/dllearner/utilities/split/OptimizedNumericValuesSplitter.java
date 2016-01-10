@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities.split;
 
 import java.text.NumberFormat;

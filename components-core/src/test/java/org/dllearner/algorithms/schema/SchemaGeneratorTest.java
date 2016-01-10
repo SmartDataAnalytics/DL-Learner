@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.schema;
 
 import com.google.common.collect.Sets;

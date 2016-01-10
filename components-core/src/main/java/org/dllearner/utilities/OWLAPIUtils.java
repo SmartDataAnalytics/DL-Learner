@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities;
 
 import com.clarkparsia.owlapiv3.XSD;

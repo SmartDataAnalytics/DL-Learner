@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.test.junit;
 
 import java.util.ArrayList;

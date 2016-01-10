@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.kb.sparql;
 
 import java.util.Set;

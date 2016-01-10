@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
 import java.io.IOException;

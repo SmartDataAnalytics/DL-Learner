@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;

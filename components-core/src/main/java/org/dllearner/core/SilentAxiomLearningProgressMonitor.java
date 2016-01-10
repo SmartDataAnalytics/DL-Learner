@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.core;
 
 import org.semanticweb.owlapi.model.AxiomType;

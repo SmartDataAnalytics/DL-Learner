@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.core;
 
 import java.io.File;

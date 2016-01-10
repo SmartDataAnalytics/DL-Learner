@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.learningproblems;
 
 import static org.junit.Assert.*;

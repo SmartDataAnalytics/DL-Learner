@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.algorithms.properties;
 
 import static org.semanticweb.owlapi.model.AxiomType.ASYMMETRIC_OBJECT_PROPERTY;

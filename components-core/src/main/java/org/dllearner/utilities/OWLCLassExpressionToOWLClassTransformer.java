@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.dllearner.utilities;
 
 import org.semanticweb.owlapi.model.OWLClass;
