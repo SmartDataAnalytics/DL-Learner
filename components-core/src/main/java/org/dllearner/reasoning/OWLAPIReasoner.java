@@ -143,7 +143,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
             // can't be more than one); but we will take care that all prefixes are
             // correctly imported
             OWLDocumentFormat format = manager.getOntologyFormat(ontology);
-            if (format.isPrefixOWLOntologyFormat()) {
+            if (format != null && format.isPrefixOWLOntologyFormat()) {
                 prefixes.putAll(format.asPrefixOWLOntologyFormat().getPrefixName2PrefixMap());
                 baseURI = format.asPrefixOWLOntologyFormat().getDefaultPrefix();
                 prefixes.remove("");
