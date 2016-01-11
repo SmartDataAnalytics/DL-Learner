@@ -305,8 +305,8 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	/**
 	 * Prints the query tree and shows children of resources only if enabled.
 	 * 
-	 * @param stopWhenLeafNode
-	 * @return
+	 * @param stopIfChildIsResourceNode do not show children of nodes that are resources
+	 * @return the query tree
 	 */
 	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
 		return getStringRepresentation(stopIfChildIsResourceNode, null, null, PrefixCCPrefixMapping.Full);

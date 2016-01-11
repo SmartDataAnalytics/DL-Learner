@@ -46,7 +46,7 @@ public class Body {
 
 	public boolean isGround() {
 		for (int i = 0; i < literals.size(); i++) {
-			if (!((Literal) literals.get(i)).isGround())
+			if (!literals.get(i).isGround())
 				return false;
 		}
 
@@ -57,7 +57,7 @@ public class Body {
 		Body newbody = new Body();
 
 		for (int i = 0; i < literals.size(); i++) {
-			Literal literal = (Literal) literals.get(i);
+			Literal literal = literals.get(i);
 			newbody.addLiteral(literal.getInstance(variable, term));
 		}
 
@@ -81,7 +81,7 @@ public class Body {
 		StringBuffer ret = new StringBuffer();
 
 		for (int i = 0; i < literals.size(); i++) {
-			ret.append(((Literal) literals.get(i)).toPLString());
+			ret.append(literals.get(i).toPLString());
 			if (i + 1 < literals.size())
 				ret.append(", ");
 		}

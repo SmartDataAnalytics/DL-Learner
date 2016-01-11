@@ -67,7 +67,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	/**
 	 * Returns a pruned copy of the given query.
 	 * @param query the query
-	 * @return
+	 * @return a pruned copy of the given query
 	 */
 	public Query pruneQuery(Query query) {
 		Query copy = query.cloneQuery();

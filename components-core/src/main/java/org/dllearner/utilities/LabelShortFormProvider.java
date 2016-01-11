@@ -28,6 +28,8 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
+import javax.annotation.Nonnull;
+
 /**
  * A short form provider for OWL entities which uses the English rdfs:label if exist.
  *
@@ -56,8 +58,9 @@ public class LabelShortFormProvider implements ShortFormProvider{
 		qef.close();
 	}
 
+	@Nonnull
 	@Override
-	public String getShortForm(OWLEntity entity) {
+	public String getShortForm(@Nonnull OWLEntity entity) {
 		queryTemplate.clearParams();
 		queryTemplate.setIri("entity", entity.toStringID());
 		queryTemplate.setIri("labelProperty", labelProperty);

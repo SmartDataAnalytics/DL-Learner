@@ -54,7 +54,7 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	/**
 	 * adds to a global example repository.
 	 * returns false, if the set is contained already
-	 * @param e
+	 * @param e the example container
 	 * @return
 	 */
 	public static boolean add(ExampleContainer e){

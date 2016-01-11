@@ -289,8 +289,8 @@ public class DLTree extends AbstractTree {
 		else{
 			//OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 			// tail recursive calls
-			associate(tree.getPosSubTree(),df,leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
-			associate(tree.getNegSubTree(),df, leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
+			associate(tree.getPosSubTree(),df,leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
+			associate(tree.getNegSubTree(),df, leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
 		}
 	
 	}

@@ -21,6 +21,7 @@ package org.dllearner.utilities.owl;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.*;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 import static org.semanticweb.owlapi.dlsyntax.renderer.DLSyntax.*;
@@ -42,21 +43,21 @@ implements OWLObjectRenderer, OWLObjectVisitor {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void visit(OWLDataIntersectionOf node) {
+	public void visit(@Nonnull OWLDataIntersectionOf node) {
 		write("(");
 		write(node.getOperands(), AND, false);
 		write(")");
 	}
 
 	@Override
-	public void visit(OWLDataUnionOf node) {
+	public void visit(@Nonnull OWLDataUnionOf node) {
 		write("(");
 		write(node.getOperands(), OR, false);
 		write(")");
 	}
 
 	@Override
-	public void visit(OWLDatatypeRestriction node) {
+	public void visit(@Nonnull OWLDatatypeRestriction node) {
 		node.getDatatype().accept(this);
 		write("[");
 		Iterator<OWLFacetRestriction> iterator = node.getFacetRestrictions().iterator();
@@ -72,7 +73,7 @@ implements OWLObjectRenderer, OWLObjectVisitor {
 	}
 
 	@Override
-	public void visit(OWLFacetRestriction node) {
+	public void visit(@Nonnull OWLFacetRestriction node) {
 		write(node.getFacet().getSymbolicForm());
 		writeSpace();
 		node.getFacetValue().accept(this);

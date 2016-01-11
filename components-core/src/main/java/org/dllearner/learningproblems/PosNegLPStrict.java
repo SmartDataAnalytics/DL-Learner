@@ -102,8 +102,8 @@ public class PosNegLPStrict extends PosNegLP {
     						"neutral examples are penalized. Use Retrievals instead.");
     				
     			// TODO: umschreiben in instance checks
-    			SortedSet<OWLIndividual> posClassified = new TreeSet<OWLIndividual>();
-    			SortedSet<OWLIndividual> negClassified = new TreeSet<OWLIndividual>();
+    			SortedSet<OWLIndividual> posClassified = new TreeSet<>();
+    			SortedSet<OWLIndividual> negClassified = new TreeSet<>();
     			// Beispiele durchgehen
     			// TODO: Implementierung ist ineffizient, da man hier schon in Klassen wie
     			// posAsNeut, posAsNeg etc. einteilen koennte; so wird das extra in der Score-Klasse

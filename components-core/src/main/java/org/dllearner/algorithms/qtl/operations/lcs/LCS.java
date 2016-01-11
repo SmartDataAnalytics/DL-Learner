@@ -94,13 +94,15 @@ public class LCS {
 		
 		return connectedTriples;
 	}
-	
+
 	/**
 	 * Check if there is an RDF-path from source to target.
-	 * @param source the source node
-	 * @param target the target node
+	 *
+	 * @param source  the source node
+	 * @param target  the target node
 	 * @param triples the set of triples in the graph
-	 * @return
+	 * @return whether both nodes are RDF-connected by the given set of triples, i.e. if there is an RDF-path from
+	 * source to target.
 	 */
 	public static boolean isRDFConnected(Node source, Node target, Set<Triple> triples) {
 		// trivial case: node is always RDF-connected to itself

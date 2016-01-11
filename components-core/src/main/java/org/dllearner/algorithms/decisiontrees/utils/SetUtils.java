@@ -18,6 +18,9 @@
  */
 package org.dllearner.algorithms.decisiontrees.utils;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.collections15.ListUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +82,6 @@ public class SetUtils{
 	 * @return
 	 */
 	public static <T> List<T> union(List<T> list1,List<T> list2){
-		
 		List<T> result= intersection(list1, list2);// take the common elements between  list 2 and list 2
 		
 		for(T elem:list1){ //add the element that are in list1 but not in result yet
@@ -104,7 +106,6 @@ public class SetUtils{
 	 * @return
 	 */
 	public static <T> boolean areEquals(List<T>l1, List<T> l2){
-		// due insiemi sono uguali se uno � incluso nell'altro
 		return l1.containsAll(l2) && l2.containsAll(l1);
 
 	}

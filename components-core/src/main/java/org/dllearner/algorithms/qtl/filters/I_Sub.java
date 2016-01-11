@@ -133,7 +133,7 @@ public class I_Sub {
 		}
 
 		double commonality = 0;
-		double scaledCommon = (double)(2*common)/(L1+L2);
+		double scaledCommon = 2*common /(L1+L2);
 		commonality = scaledCommon;
 
 		double winklerImprovement = winklerImprovement(inputStr1, inputStr2, commonality);

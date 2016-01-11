@@ -1380,14 +1380,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		if(useTimeDatatypes) {
 			Set<OWLDataProperty> dtDPs = mgDT.get(nc);
 
-//			for(OWLDataProperty dp : dtDPs) {
-//				if(splits.get(dp).size() > 0) {
-//					OWLLiteral min = splits.get(dp).get(0);
-//					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
-//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
-//					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
-//				}
-//			}
+			for(OWLDataProperty dp : dtDPs) {
+				if(splits.get(dp).size() > 0) {
+					OWLLiteral min = splits.get(dp).get(0);
+					OWLLiteral max = splits.get(dp).get(splits.get(dp).size()-1);
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, min, OWLFacet.MIN_INCLUSIVE)));
+					m3.add(df.getOWLDataSomeValuesFrom(dp, asDatatypeRestriction(dp, max, OWLFacet.MAX_INCLUSIVE)));
+				}
+			}
 		}
 
 		if(useDataHasValueConstructor) {

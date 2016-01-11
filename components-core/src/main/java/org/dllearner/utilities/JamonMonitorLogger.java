@@ -56,7 +56,7 @@ public class JamonMonitorLogger {
 		Iterator<Monitor> it = MonitorFactory.getFactory().iterator();
 			//mf.iterator();
 		while (it.hasNext()) {
-			Monitor monitor = (Monitor) it.next();
+			Monitor monitor = it.next();
 			
 			l.add(monitor);
 		}

@@ -46,7 +46,7 @@ public class List extends Term {
         if (content.isEmpty()) {
             return new List();
         } else {
-            Term head = (Term) content.remove(0);
+            Term head = content.remove(0);
             List body = compose(content);
             return new List(head, body);
         }            

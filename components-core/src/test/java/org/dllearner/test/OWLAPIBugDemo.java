@@ -19,27 +19,17 @@
 package org.dllearner.test;
 
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 
-import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class OWLAPIBugDemo {
 
@@ -87,9 +77,6 @@ public class OWLAPIBugDemo {
     		OWLAxiom axiom3 = factory.getOWLObjectPropertyDomainAxiom(p, c);
             AddAxiom addAxiom3 = new AddAxiom(ontology, axiom3);
             manager.applyChange(addAxiom3);
-            
-            Set<OWLOntology> ontologies = new HashSet<OWLOntology>();
-            ontologies.add(ontology);
             
             OWLReasoner reasoner = new PelletReasonerFactory().createReasoner(ontology);
             

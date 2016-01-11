@@ -202,8 +202,8 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		else{
 			//OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 			// tail recursive calls
-			associate(tree.getPosSubTree(),df,leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
-			associate(tree.getNegSubTree(),df, leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
+			associate(tree.getPosSubTree(),df,leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
+			associate(tree.getNegSubTree(),df, leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
 		}
 	
 	}

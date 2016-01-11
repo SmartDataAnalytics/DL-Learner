@@ -21,14 +21,17 @@ package org.dllearner.algorithms.pattern;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 
+import javax.annotation.Nonnull;
+
 public class FullIRIEntityShortFromProvider implements ShortFormProvider{
 
 	@Override
 	public void dispose() {
 	}
 
+	@Nonnull
 	@Override
-	public String getShortForm(OWLEntity entity) {
+	public String getShortForm(@Nonnull OWLEntity entity) {
 		return entity.toStringID();
 	}
 

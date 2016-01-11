@@ -27,6 +27,7 @@ import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -202,7 +203,7 @@ public class DescriptionSubsumptionTree {
 		}
 
 		@Override
-		public int compareTo(Node node) {
+		public int compareTo(@Nonnull Node node) {
 			if (this.equals(node)) {
 				return 0;
 			}
@@ -280,7 +281,7 @@ public class DescriptionSubsumptionTree {
 				break;
 			}
 			if (evaluatedDescription.getAccuracy() > accuracyThreshold) {
-				newSet.add((EvaluatedDescription) evaluatedDescription);
+				newSet.add(evaluatedDescription);
 				logger.warn(evaluatedDescription);
 			}
 			i++;

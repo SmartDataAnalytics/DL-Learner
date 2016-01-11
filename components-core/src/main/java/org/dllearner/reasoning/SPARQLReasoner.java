@@ -124,9 +124,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private Map<OWLEntity, Integer> entityPopularityMap = new HashMap<>();
 	private Map<OWLClass, Integer> classPopularityMap = new HashMap<>();
-	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap = new HashMap<>();
-	private Map<OWLDataProperty, Integer> dataPropertyPopularityMap = new HashMap<>();
-	private Map<OWLIndividual, Integer> individualPopularityMap = new HashMap<>();
 	private boolean batchedMode = true;
 	private Set<PopularityType> precomputedPopularityTypes = new HashSet<>();
 	
@@ -171,10 +168,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public void init() throws ComponentInitException {
 		classPopularityMap = new HashMap<>();
-		objectPropertyPopularityMap = new HashMap<>();
-		dataPropertyPopularityMap = new HashMap<>();
-		individualPopularityMap = new HashMap<>();
-		
+
 		// this is only done if the reasoner is setup via config file
 		if(qef == null) {
 			if(ks == null) {
@@ -280,7 +274,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if (qs.get("p").isURIResource()) {
 					OWLObjectProperty property = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
 					int cnt = qs.getLiteral("cnt").getInt();
-					objectPropertyPopularityMap.put(property, cnt);
+					entityPopularityMap.put(property, cnt);
 				}
 			}
 		} else {
@@ -289,7 +283,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			for (OWLObjectProperty property : properties) {
 				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
 				int cnt = rs.next().getLiteral("cnt").getInt();
-				objectPropertyPopularityMap.put(property, cnt);
+				entityPopularityMap.put(property, cnt);
 			}
 		}
 		precomputedPopularityTypes.add(PopularityType.OBJECT_PROPERTY);
@@ -315,7 +309,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if (qs.get("p").isURIResource()) {
 					OWLDataProperty property = df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI()));
 					int cnt = qs.getLiteral("cnt").getInt();
-					dataPropertyPopularityMap.put(property, cnt);
+					entityPopularityMap.put(property, cnt);
 				}
 			}
 		} else {
@@ -324,7 +318,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			for (OWLDataProperty property : properties) {
 				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
 				int cnt = rs.next().getLiteral("cnt").getInt();
-				dataPropertyPopularityMap.put(property, cnt);
+				entityPopularityMap.put(property, cnt);
 			}
 		}
 		precomputedPopularityTypes.add(PopularityType.DATA_PROPERTY);

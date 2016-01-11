@@ -101,13 +101,10 @@ public class ExtractionDBCache {
         // create cache table if it does not exist
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS QUERY_CACHE(QUERYHASH BINARY PRIMARY KEY,QUERY VARCHAR(20000), TRIPLES CLOB, STORE_TIME TIMESTAMP)");
-		} catch(NoSuchAlgorithmException | ClassNotFoundException e) {
+		} catch(NoSuchAlgorithmException | ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-        } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
 	}
 	
 	public void setFreshnessInMilliseconds(long freshnessInMilliseconds) {

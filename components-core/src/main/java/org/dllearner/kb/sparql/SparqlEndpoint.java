@@ -87,22 +87,23 @@ public class SparqlEndpoint {
 
 		name = name.toUpperCase();
 
-		if (name.equals("DBPEDIA")) {
-			return getEndpointDBpedia();
-		} else if (name.equals("GOVTRACK")) {
-			return getEndpointGovTrack();
-		} else if (name.equals("SPARQLETTE")) {
-			return getEndpointSparqlette();
-		} else if (name.equals("SWCONFERENCE")) {
-			return getEndpointSWConference();
-		} else if (name.equals("REVYU")) {
-			return getEndpointRevyu();
-		} else if (name.equals("MYOPENLINK")) {
-			return getEndpointMyOpenlink();
-		} else if (name.equals("MUSICBRAINZ")) {
-			return getEndpointMusicbrainz();
-		} else {
-			return null;
+		switch (name) {
+			case "DBPEDIA":
+				return getEndpointDBpedia();
+			case "GOVTRACK":
+				return getEndpointGovTrack();
+			case "SPARQLETTE":
+				return getEndpointSparqlette();
+			case "SWCONFERENCE":
+				return getEndpointSWConference();
+			case "REVYU":
+				return getEndpointRevyu();
+			case "MYOPENLINK":
+				return getEndpointMyOpenlink();
+			case "MUSICBRAINZ":
+				return getEndpointMusicbrainz();
+			default:
+				return null;
 		}
 	}
 

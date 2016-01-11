@@ -20,12 +20,12 @@ package org.dllearner.algorithms.schema;
 
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.rdf.model.Model;
-import junit.framework.TestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.utilities.OwlApiJenaUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -35,14 +35,11 @@ import org.semanticweb.owlapi.model.OWLOntology;
  * @author Lorenz Buehmann 
  * @since Oct 25, 2014
  */
-public class SchemaGeneratorTest extends TestCase{
+public class SchemaGeneratorTest {
 	
 	SyntheticDataGenerator dataGenerator = new SyntheticDataGenerator();
 	
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
+	@BeforeClass
 	protected void setUp() throws Exception {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(SimpleSchemaGenerator.class).setLevel(Level.TRACE);

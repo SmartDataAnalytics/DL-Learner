@@ -42,7 +42,7 @@ public class Program {
 
 	public boolean isGround() {
 		for (int c = 0; c < clauses.size(); c++) {
-			Clause clause = (Clause) clauses.get(c);
+			Clause clause = clauses.get(c);
 			if (!clause.isGround())
 				return false;
 		}
@@ -67,7 +67,7 @@ public class Program {
 		StringBuffer ret = new StringBuffer();
 
 		for (int i = 0; i < clauses.size(); i++) {
-			ret.append(((Clause) clauses.get(i)).toPLString());
+			ret.append(clauses.get(i).toPLString());
 			if (i + 1 < clauses.size())
 				ret.append("\n");
 		}

@@ -210,7 +210,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	public static String encode(String s) {
 		char[] htmlChars = s.toCharArray();
-		StringBuffer encodedHtml = new StringBuffer();
+		StringBuilder encodedHtml = new StringBuilder();
 		for (int i = 0; i < htmlChars.length; i++) {
 			switch (htmlChars[i]) {
 			case '<':

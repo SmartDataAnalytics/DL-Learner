@@ -71,7 +71,7 @@ public class Atom {
 	public Atom getInstance(Variable variable, Term term) {
 		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
 		for (int i = 0; i < arguments.size(); i++) {
-			Term argument = (Term) arguments.get(i);
+			Term argument = arguments.get(i);
 			newArgs.add(argument.getInstance(variable, term));
 		}
 		return new Atom(name, newArgs);
@@ -92,7 +92,7 @@ public class Atom {
 	public String toPLString() {
 		StringBuffer ret = new StringBuffer(name + "(");
 		for (int i = 0; i < arguments.size(); i++) {
-			ret.append(((Term) arguments.get(i)).toPLString());
+			ret.append(arguments.get(i).toPLString());
 			if (i + 1 < arguments.size())
 				ret.append(", ");
 		}
