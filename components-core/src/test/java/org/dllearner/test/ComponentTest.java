@@ -62,7 +62,8 @@ public class ComponentTest {
 		reasoner.init();
 		
 		OWLDataFactory df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("http://localhost/foo#");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://localhost/foo#");
 		
 		// create a learning problem and set positive and negative examples
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);

@@ -18,21 +18,11 @@
  */
 package org.dllearner.test;
 
-import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
-import org.semanticweb.owlapi.reasoner.InferenceType;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.parameters.Imports;
+import org.semanticweb.owlapi.reasoner.*;
 
 public class HermitTest {
 	
@@ -49,21 +39,21 @@ public class HermitTest {
 		OWLReasoner pellet = PelletReasonerFactory.getInstance().createNonBufferingReasoner(ontology, conf);
 		pellet.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 		
-		for(OWLIndividual ind : ontology.getIndividualsInSignature(true)){
+		for(OWLIndividual ind : ontology.getIndividualsInSignature(Imports.INCLUDED)){
 			System.out.println("Individual: " + ind);
-			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)){
+			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(Imports.INCLUDED)){
 				System.out.println("Property: " + prop);
 				pellet.getObjectPropertyValues(ind.asOWLNamedIndividual(), prop);
 			}
 		}
 		
 		System.out.println("Using HermiT reasoner");
-		OWLReasoner hermit = new ReasonerFactory().createNonBufferingReasoner(ontology, conf);
+		OWLReasoner hermit = new org.semanticweb.HermiT.ReasonerFactory().createNonBufferingReasoner(ontology, conf);
 		hermit.precomputeInferences(InferenceType.CLASS_HIERARCHY, InferenceType.CLASS_ASSERTIONS);
 		
-		for(OWLIndividual ind : ontology.getIndividualsInSignature(true)){
+		for(OWLIndividual ind : ontology.getIndividualsInSignature(Imports.INCLUDED)){
 			System.out.println("Individual: " + ind);
-			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(true)){
+			for(OWLObjectProperty prop : ontology.getObjectPropertiesInSignature(Imports.INCLUDED)){
 				System.out.println("Property: " + prop);
 				hermit.getObjectPropertyValues(ind.asOWLNamedIndividual(), prop);
 			}

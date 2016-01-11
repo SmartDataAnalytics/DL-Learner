@@ -47,7 +47,8 @@ public class OWLAxiomRenamerTest {
 	@Before
 	public void setUp() throws Exception {
 		df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("http://examples.org/ontology#");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://examples.org/ontology#");
 		
 		clsA = df.getOWLClass("A", pm);
 		clsB = df.getOWLClass("B", pm);

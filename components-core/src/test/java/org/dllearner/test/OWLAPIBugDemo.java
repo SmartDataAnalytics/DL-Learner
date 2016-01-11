@@ -53,7 +53,7 @@ public class OWLAPIBugDemo {
             File f = new File("src/dl-learner/org/dllearner/tools/ore/inconsistent.owl");
             IRI physicalURI = IRI.create(f.toURI());
             SimpleIRIMapper mapper = new SimpleIRIMapper(ontologyURI, physicalURI);
-            manager.addIRIMapper(mapper);
+            manager.getIRIMappers().add(mapper);
 
             OWLOntology ontology = manager.createOntology(ontologyURI);
             OWLDataFactory factory = manager.getOWLDataFactory();

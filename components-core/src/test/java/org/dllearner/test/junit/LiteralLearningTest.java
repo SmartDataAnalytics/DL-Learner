@@ -86,7 +86,8 @@ public final class LiteralLearningTest {
 			File file = new File(owlfile);
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 			df = new OWLDataFactoryImpl();
-			pm = new DefaultPrefixManager(prefix);
+			pm = new DefaultPrefixManager();
+			pm.setDefaultPrefix(prefix);
 			ks = new OWLAPIOntology(ontology);
 			ks.init();
 		}
@@ -248,7 +249,8 @@ public final class LiteralLearningTest {
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
 		OWLOntology ontology = man.createOntology();
-		PrefixManager pm = new DefaultPrefixManager("http://dl-learner.org/test/strings/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dl-learner.org/test/strings/");
 		OWLDataProperty dp = df.getOWLDataProperty("stringValue", pm);
 		OWLClass cls = df.getOWLClass("A", pm);
 		man.addAxiom(ontology, df.getOWLDataPropertyDomainAxiom(dp, cls));

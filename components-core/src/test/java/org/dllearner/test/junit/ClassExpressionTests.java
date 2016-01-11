@@ -49,7 +49,11 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 public class ClassExpressionTests {
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
-	PrefixManager pm = new DefaultPrefixManager("");
+	PrefixManager pm = new DefaultPrefixManager();
+
+	public ClassExpressionTests() {
+		pm.setDefaultPrefix("");
+	}
 	
 
 	/**

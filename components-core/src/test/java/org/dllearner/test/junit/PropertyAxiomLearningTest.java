@@ -83,7 +83,7 @@ public class PropertyAxiomLearningTest {
 	
 	private static final String NS = "http://dllearner.org/test/";
 	
-	PrefixManager pm = new DefaultPrefixManager(NS);
+	PrefixManager pm = new DefaultPrefixManager();
 	OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private OWLObjectProperty op1 = df.getOWLObjectProperty("op1", pm);
@@ -99,7 +99,10 @@ public class PropertyAxiomLearningTest {
 	
 	private OWLDataProperty disDataProperty = df.getOWLDataProperty(IRI.create( "http://dbpedia.org/ontology/height"));
 	private OWLDataProperty equivDataProperty = df.getOWLDataProperty(IRI.create( "http://dbpedia.org/ontology/height"));
-	
+
+	public PropertyAxiomLearningTest() {
+		pm.setDefaultPrefix(NS);
+	}
 	
 	@BeforeClass
 	public static void setUp() throws Exception {
