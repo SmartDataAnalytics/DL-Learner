@@ -12,9 +12,6 @@
 	<properties>
 		<compiler.version>1.7</compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- convenience to define GWT version in one place -->
-		<gwt.version>2.3.0</gwt.version>
-
 		<!--Define the AKSW dependency version -->
         <slf4j.version>1.6.4</slf4j.version>
         <log4j.version>1.2.16</log4j.version>
@@ -55,7 +52,7 @@
 		<url>http://www.aksw.org</url>
 	</organization>
 
-	<inceptionYear>2009</inceptionYear>
+	<inceptionYear>2007</inceptionYear>
 
 	<developers>
 		<developer>
