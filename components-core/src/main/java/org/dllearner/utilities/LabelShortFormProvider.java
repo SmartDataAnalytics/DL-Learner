@@ -18,21 +18,21 @@
  */
 package org.dllearner.utilities;
 
-import org.dllearner.kb.sparql.ExtractionDBCache;
-import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.kb.sparql.SparqlQuery;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.vocabulary.RDFS;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleIRIShortFormProvider;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
+/**
+ * A short form provider for OWL entities which uses the English rdfs:label if exist.
+ *
+ * @author Lorenz Buehmann
+ */
 public class LabelShortFormProvider implements ShortFormProvider{
 	
 	private final ParameterizedSparqlString queryTemplate = new ParameterizedSparqlString(
@@ -41,21 +41,10 @@ public class LabelShortFormProvider implements ShortFormProvider{
 	
 	private final SimpleIRIShortFormProvider fallback = new SimpleIRIShortFormProvider();
 	
-	private ExtractionDBCache cache;
-	private SparqlEndpoint endpoint;
-	private Model model;
-	
-	public LabelShortFormProvider(Model model) {
-		this.model = model;
-	}
-	
-	public LabelShortFormProvider(SparqlEndpoint endpoint) {
-		this.endpoint = endpoint;
-	}
-	
-	public LabelShortFormProvider(SparqlEndpoint endpoint, ExtractionDBCache cache) {
-		this.endpoint = endpoint;
-		this.cache = cache;
+	private final QueryExecutionFactory qef;
+
+	public LabelShortFormProvider(QueryExecutionFactory qef) {
+		this.qef = qef;
 	}
 	
 	public void setLabelProperty(String labelProperty) {
@@ -64,6 +53,7 @@ public class LabelShortFormProvider implements ShortFormProvider{
 
 	@Override
 	public void dispose() {
+		qef.close();
 	}
 
 	@Override
@@ -72,35 +62,15 @@ public class LabelShortFormProvider implements ShortFormProvider{
 		queryTemplate.setIri("entity", entity.toStringID());
 		queryTemplate.setIri("labelProperty", labelProperty);
 		Query query = queryTemplate.asQuery();
-		ResultSet rs = executeSelect(query);
-		String label = null;
-		if(rs.hasNext()){
-			label = rs.next().getLiteral("label").asLiteral().getLexicalForm();
-		} else {
-			label = fallback.getShortForm(entity.getIRI());
-		}
-		return label;
-	}
-	
-	protected ResultSet executeSelect(Query query){
-		ResultSet rs = null;
-		if(endpoint != null){
-			if(cache != null){
-				rs = SparqlQuery.convertJSONtoResultSet(cache.executeSelectQuery(endpoint, query.toString()));
+		try(QueryExecution qe = qef.createQueryExecution(query)) {
+			ResultSet rs = qe.execSelect();
+			String label = null;
+			if(rs.hasNext()){
+				label = rs.next().getLiteral("label").asLiteral().getLexicalForm();
 			} else {
-				QueryEngineHTTP qe = new QueryEngineHTTP(endpoint.getURL().toString(), query);
-				for(String uri : endpoint.getDefaultGraphURIs()){
-					qe.addDefaultGraph(uri);
-				}
-				rs = qe.execSelect();
+				label = fallback.getShortForm(entity.getIRI());
 			}
-		} else {
-			rs = QueryExecutionFactory.create(query, model).execSelect();
+			return label;
 		}
-		
-		return rs;
 	}
-
-	
-
 }

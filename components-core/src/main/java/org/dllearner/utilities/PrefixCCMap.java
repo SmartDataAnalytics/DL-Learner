@@ -34,6 +34,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A map of prefixes based on http://prefix.cc/ service. The prefixes are cached locally in
+ * src/main/resources/prefixes.csv. An update of this file has to be forced manually by running the main method
+ * of this class.
+ *
+ * @author Lorenz Buehmann
+ */
 public class PrefixCCMap extends HashMap<String, String>{
 	
 	private static final String LOCAL_FILE = "prefixes.csv";

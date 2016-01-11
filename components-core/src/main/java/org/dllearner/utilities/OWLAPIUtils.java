@@ -35,6 +35,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 import java.util.*;
 
 /**
+ * A collection of utility methods for the OWL API.
+ *
  * @author Lorenz Buehmann
  *
  */
@@ -173,11 +175,19 @@ public class OWLAPIUtils {
         .toFormatter());
 		
 	}
-	
+
+	/**
+	 * @param entityType the OWL entity type
+	 * @return the name of the OWL entity type
+	 */
 	public static String getPrintName(EntityType entityType) {
         return entityType.getPrintName().toLowerCase();
 	}
-	
+
+	/**
+	 * @param lit the OWL literal
+	 * @return whether the OWL literal is an integer, i.e. whether the datatype is some integer
+	 */
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
 		return intDatatypes.contains(lit.getDatatype());
 	}
@@ -189,7 +199,12 @@ public class OWLAPIUtils {
 	public static boolean isNumericDatatype(OWLDatatype datatype){
 		return numericDatatypes.contains(datatype);
     }
-	
+
+	/**
+	 * Convenience method that converts a set of OWL class expressions to a set of OWL classes.
+	 * @param classExpressions a set of OWL class expressions
+	 * @return a set of OWL classes
+	 */
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
 		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
 	}
