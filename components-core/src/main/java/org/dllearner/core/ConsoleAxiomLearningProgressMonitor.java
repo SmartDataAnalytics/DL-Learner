@@ -7,6 +7,9 @@ import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.OWLAxiom;
 
 /**
+ * A progress monitor for axiom learning algorithms which prints to the console.
+ *
+ * @see org.dllearner.core.AxiomLearningProgressMonitor
  * @author Lorenz Buehmann
  *
  */

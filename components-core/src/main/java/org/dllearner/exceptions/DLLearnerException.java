@@ -1,6 +1,7 @@
 package org.dllearner.exceptions;
 
 /**
+ * An exception thrown by the DL-Learner framework.
  * @author Lorenz Buehmann
  *
  */

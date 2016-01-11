@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import org.aksw.commons.collections.multimaps.MultimapUtils;
 
 public class MapUtils {
 
@@ -41,12 +43,17 @@ public class MapUtils {
 		});
         return entries;
 	}
-	
+
+	/**
+	 * Constructs a multimap with the same mappings as the specified map.
+	 * @param input the input map
+	 * @return the multimap
+	 */
 	public static <K, V> Multimap<K, V> createMultiMap(Map<K, ? extends Iterable<V>> input) {
-		  Multimap<K, V> multimap = ArrayListMultimap.create();
-		  for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
-		    multimap.putAll(entry.getKey(), entry.getValue());
-		  }
-		  return multimap;
+		Multimap<K, V> multimap = ArrayListMultimap.create();
+		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
+			multimap.putAll(entry.getKey(), entry.getValue());
 		}
+		return multimap;
+	}
 }

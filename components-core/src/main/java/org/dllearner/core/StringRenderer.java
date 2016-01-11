@@ -7,6 +7,11 @@ import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.util.ShortFormProvider;
 import org.semanticweb.owlapi.util.SimpleRenderer;
 
+/**
+ * A renderer for OWL objects. Different syntaxes are supported, e.g., DL syntax or Manchester OWL syntax.
+ *
+ * @author Simon Bin
+ */
 public final class StringRenderer {
   	public enum Rendering {
   		OWLAPI_SYNTAX("owlapi", new SimpleRenderer()),
