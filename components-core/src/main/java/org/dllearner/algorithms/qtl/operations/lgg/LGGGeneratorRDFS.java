@@ -73,12 +73,15 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
 
 /**
- * 
+ * An LGG generator with RDFS entailment enabled.
  * @author Lorenz Bühmann
  *
  */
 public class LGGGeneratorRDFS extends AbstractLGGGenerator {
-	
+
+	/**
+	 * @param reasoner the underlying reasoner used for RDFS entailment
+	 */
 	public LGGGeneratorRDFS(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 		this.entailment = Entailment.RDFS;
@@ -127,20 +130,33 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 				for (Node edge2 : edges2) {//System.out.println("e2:" + edge2);
 					// loop over children of second tree
 					for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
-						// compute the LGG
-						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
-						
-						Node moreGeneralEdge;
-						// get the more general edge
-						if (reasoner.isSubPropertyOf(
-								OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
-								OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+						RDFResourceTree lggChild;
 
-							moreGeneralEdge = edge2;
+						// special case: rdf:type relation
+						if(edge1.equals(RDF.type.asNode())) {
+							if(QueryTreeUtils.isSubsumedBy(child1, child2, Entailment.RDFS)) {
+								lggChild = child2;
+							} else if(QueryTreeUtils.isSubsumedBy(child2, child1, Entailment.RDFS)) {
+								lggChild = child1;
+							} else {
+								lggChild = computeLGG(child1, child2, learnFilters);
+							}
 						} else {
-							moreGeneralEdge = edge1;
+							// compute the LGG
+							lggChild = computeLGG(child1, child2, learnFilters);
+
+							Node moreGeneralEdge;
+							// get the more general edge
+							if (reasoner.isSubPropertyOf(
+									OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+									OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+								moreGeneralEdge = edge2;
+							} else {
+								moreGeneralEdge = edge1;
+							}
+//							System.out.println("e_gen:" + moreGeneralEdge);
 						}
-//						System.out.println("e_gen:" + moreGeneralEdge);
 
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
