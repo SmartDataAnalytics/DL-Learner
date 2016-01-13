@@ -40,7 +40,7 @@ public class SchemaGeneratorTest {
 	SyntheticDataGenerator dataGenerator = new SyntheticDataGenerator();
 	
 	@BeforeClass
-	protected void setUp() throws Exception {
+	public static void setUp() throws Exception {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(SimpleSchemaGenerator.class).setLevel(Level.TRACE);
 	}
