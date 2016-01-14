@@ -131,7 +131,7 @@
 							<!-- Include the target configuration directory in the classpath -->
 							<includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
 							<extraJvmArguments>
-							-Xms256m -Xmx1024m
+							-Xms256m -Xmx1024m -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties
 							</extraJvmArguments>
 							
 							<installArtifacts>false</installArtifacts>
@@ -253,8 +253,7 @@
 							<assembleDirectory>${project.build.directory}/${dist-dir}</assembleDirectory>
 							<repoPath>/usr/share/dl-learner/lib</repoPath>
 							<repositoryName>${install-dir}/lib</repositoryName>
-							<extraJvmArguments>-Xms256m -Xmx1024m</extraJvmArguments>
-							<installArtifacts>false</installArtifacts>
+							<extraJvmArguments>-Xms256m -Xmx1024m -Dlog4j.configuration=file:@BASEDIR@/etc/log4j.properties</extraJvmArguments>
 							<configurationDirectory>/</configurationDirectory>
 							<platforms>
 								<platform>unix</platform>
