@@ -313,11 +313,27 @@ public class CLI {
             }
             logger.debug("Stack Trace: ", e);
             logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
+            createIfNotExists(new File(stacktraceFileName));
+
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
             PrintStream ps = new PrintStream(fos);
             e.printStackTrace(ps);
         }
+    }
 
+    private static boolean createIfNotExists(File f) {
+        if (f.exists()) return true;
+
+        File p = f.getParentFile();
+        if (p != null && !p.exists()) p.mkdirs();
+
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**
