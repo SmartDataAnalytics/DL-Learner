@@ -24,6 +24,7 @@ import com.google.common.collect.*;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -1281,17 +1283,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private void computeM(OWLClassExpression nc) {
 		long mComputationTimeStartNs = System.nanoTime();
 
-//		System.out.println(nc);
-
 		mA.put(nc, new TreeMap<Integer,SortedSet<OWLClassExpression>>());
 		// initialise all possible lengths (1 to 3)
 		for(int i=1; i<=mMaxLength; i++) {
 			mA.get(nc).put(i, new TreeSet<OWLClassExpression>());
 		}
-
-		// incomplete, prior implementation
-//		SortedSet<Description> m1 = subHierarchy.getSubClasses(nc);
-//		mA.get(nc).put(1,m1);
 
 		// most general classes, which are not disjoint with nc and provide real refinement
 		SortedSet<OWLClassExpression> m1 = getClassCandidates(nc);
@@ -1303,35 +1299,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			m2 = getNegClassCandidates(nc);
 			mA.get(nc).put(2,m2);
 		}
-
-//		System.out.println("m1 " + "(" + nc + "): " + m1);
-//		System.out.println("m2 " + "(" + nc + "): " + m2);
-
-		/*
-		SortedSet<Description> m2 = new TreeSet<Description>(conceptComparator);
-		if(useNegation) {
-			// the definition in the paper is more complex, but actually
-			// we only have to insert the most specific concepts satisfying
-			// the mentioned restrictions; there is no need to implement a
-			// recursive method because for A subClassOf A' we have not A'
-			// subClassOf A and thus: if A and B are disjoint then also A'
-			// and B; if not A AND B = B then also not A' AND B = B
-			// 2010/03: the latter is not correct => a recursive method is needed
-			SortedSet<Description> m2tmp = subHierarchy.getSuperClasses(new Nothing());
-
-			for(OWLClassExpression c : m2tmp) {
-//				if(c instanceof Thing)
-//					m2.add(c);
-//				else {
-				// we obviously do not add \top (\top refines \top does not make sense)
-				if(!(c instanceof Thing)) {
-					NamedClass a = (OWLClass) c;
-					if(!isNotADisjoint(a, nc) && isNotAMeaningful(a, nc))
-						m2.add(df.getOWLObjectComplementOf(a));
-				}
-			}
-		}
-		*/
 
 		// compute applicable properties
 		computeMg(nc);
@@ -1581,6 +1548,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		mgbd.put(domain, new TreeSet<OWLDataProperty>());
 		mgNumeric.put(domain, new TreeSet<OWLDataProperty>());
 		mgsd.put(domain, new TreeSet<OWLDataProperty>());
+		mgDT.put(domain, new TreeSet<OWLDataProperty>());
 
 		SortedSet<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
