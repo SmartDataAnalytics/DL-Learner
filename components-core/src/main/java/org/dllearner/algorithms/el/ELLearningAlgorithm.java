@@ -330,7 +330,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			return true;
 		} else {
 			// the class to learn must not appear on the outermost property level
-			if(OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
+			if(classToDescribe != null && OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
 				return false;
 			}
 		}
