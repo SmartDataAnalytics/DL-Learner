@@ -18,20 +18,12 @@
  */
 package org.dllearner.algorithms.ocel;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.learningproblems.AccMethodNoWeakness;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -46,16 +38,12 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Implements the 2nd version of the refinement operator based learning approach.
@@ -763,6 +751,13 @@ public class ROLearner2 {
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode
 							.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
+					if (quality != -1 && !(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
+							learningProblem.getAccuracyMethod().getAccOrTooWeak2(
+							newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),
+							newlyCoveredNegatives.size(), nrOfNegativeExamples - newlyCoveredNegatives.size(),
+							1) == -1)
+						quality = -1;
+
 					if (quality != -1) {
 						// quality is the number of misclassifications (if it is
 						// not too weak)
