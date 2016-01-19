@@ -751,7 +751,7 @@ public class ROLearner2 {
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode
 							.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
-					if (!(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
+					if (quality != -1 && !(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
 							learningProblem.getAccuracyMethod().getAccOrTooWeak2(
 							newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),
 							newlyCoveredNegatives.size(), nrOfNegativeExamples - newlyCoveredNegatives.size(),
