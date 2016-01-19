@@ -18,12 +18,6 @@
  */
 package org.dllearner.algorithms.ocel;
 
-import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.learningproblems.AccMethodTwoValued;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
@@ -31,6 +25,12 @@ import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * 
@@ -255,7 +255,11 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		int fp = coveredNegatives.size();
 		int tn = nrOfNegativeExamples - fp;
 		int fn = nrOfPositiveExamples - tp;
-		return this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+
+		double accuracy = this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+		if (accuracy == -1 && !isTooWeak)
+			throw new RuntimeException("Accuracy says weak but node is not marked as such.");
+		return accuracy;
 	}
 	
 	/**
