@@ -77,8 +77,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
-	// link to parent in search tree
-	private ExampleBasedNode parent = null;
 	// apart from the child nodes, we also keep child concepts
 	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<>();
 	
@@ -305,17 +303,8 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public boolean isRedundant() {
 		return isRedundant;
 	}
-	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
-	}
-
-	/**
-	 * @return the parent
-	 */
-	@Override
-	public ExampleBasedNode getParent() {
-		return parent;
 	}
 
 	public boolean isPosOnlyCandidate() {
