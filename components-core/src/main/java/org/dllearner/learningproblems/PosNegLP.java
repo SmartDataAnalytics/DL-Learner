@@ -18,8 +18,9 @@
  */
 package org.dllearner.learningproblems;
 
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -30,8 +31,8 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Set;
-import java.util.TreeSet;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 
 /**
  * @author Jens Lehmann
@@ -99,8 +100,7 @@ public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<Sc
 		
 		// sanity check whether examples are contained in KB
 		if(reasoner != null && !reasoner.getIndividuals().containsAll(allExamples) && !reasoner.getClass().isAssignableFrom(SPARQLReasoner.class)) {
-			System.err.println("Individuals:" + reasoner.getIndividuals());
-			Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
+            Set<OWLIndividual> missing = Sets.difference(allExamples, reasoner.getIndividuals());
             double percentage = missing.size()/allExamples.size();
             percentage = Math.round(percentage * 1000) / 1000;
 			String str = "The examples (" + (percentage * 100) + " % of total) below are not contained in the knowledge base (check spelling and prefixes)\n";
