@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.ocel;
 
-import java.util.Set;
-
 import org.dllearner.core.Component;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -27,6 +25,8 @@ import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+
+import java.util.Set;
 
 /**
  * This heuristic combines the following criteria to assign a
