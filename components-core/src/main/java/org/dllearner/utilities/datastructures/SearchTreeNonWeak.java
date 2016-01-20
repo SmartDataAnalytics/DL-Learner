@@ -18,9 +18,9 @@
  */
 package org.dllearner.utilities.datastructures;
 
-import java.util.Comparator;
-
 import org.dllearner.core.AbstractSearchTreeNode;
+
+import java.util.Comparator;
 
 /**
  * A Search Tree which does not maintain weak nodes in its set
@@ -34,10 +34,8 @@ public class SearchTreeNonWeak<T extends AbstractSearchTreeNode & WeakSearchTree
 	}
 
 	@Override
-	public void notifyNode(T node) {
-		if (!node.isTooWeak()) {
-			nodes.add(node);
-		}
+	protected boolean allowedNode(T node) {
+		return super.allowedNode(node) && !node.isTooWeak();
 	}
 
 }
