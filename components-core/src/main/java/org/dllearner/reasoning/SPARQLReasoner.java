@@ -902,9 +902,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public Set<OWLClass> getTypes(String namespace, boolean omitEmptyTypes) {
 		Set<OWLClass> types = new TreeSet<>();
-		String query = 	"SELECT DISTINCT ?class WHERE {[] a ?cls ." +
+		String query = 	"SELECT DISTINCT ?cls WHERE {[] a ?cls ." +
 		(omitEmptyTypes ? "[] a ?cls ." : "" ) +
-		(namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}";
+		(namespace != null ? ("FILTER(REGEX(?cls,'^" + namespace + "'))") : "") + "}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1975,14 +1975,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			query = String.format("SELECT ?sup {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup. FILTER(isIRI(?sup))}",
 					description.asOWLClass().toStringID());
 		} else {
-			query = String.format("SELECT ?sub {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?sup. FILTER(isIRI(?sup))}",
+			query = String.format("SELECT ?sup {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?sup. FILTER(isIRI(?sup))}",
 					description.asOWLClass().toStringID());
 		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
+			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sup").getURI())));
 		}
 		superClasses.remove(description);
 		System.out.println("Sup(" + description + "):" + superClasses);
