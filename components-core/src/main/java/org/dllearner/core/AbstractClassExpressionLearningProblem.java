@@ -27,7 +27,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 /**
  * Base class for all class expression learning problems.
  * 
- * @author Lorent Buehmann
+ * @author Lorenz Buehmann
  *
  */
 public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {

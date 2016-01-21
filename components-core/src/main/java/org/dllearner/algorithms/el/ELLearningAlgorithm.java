@@ -178,7 +178,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			
 			// logging
 			if(logger.isTraceEnabled()) {
-				logger.trace("Choosen node " + best);
+				logger.trace("Chosen node " + best);
 				logger.trace(startNode.getTreeString(renderer));
 				logger.trace("Loop " + loop + " completed.");
 			}
@@ -244,7 +244,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// the class expression has a chance to make it in the set if it has
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
-				if(classToDescribe != null && !classToDescribe.equals(classExpression)) {
+				if(classToDescribe == null || !classToDescribe.equals(classExpression)) {
 					if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
 						EvaluatedDescription<Score> ed = new EvaluatedDescription<>(classExpression, score);
 						bestEvaluatedDescriptions.add(ed);
