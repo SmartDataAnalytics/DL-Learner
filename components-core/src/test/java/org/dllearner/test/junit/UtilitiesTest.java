@@ -36,7 +36,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
  * @author Jens Lehmann
  *
  */
-public class UtilitiesTests {
+public class UtilitiesTest {
 
 	@Test
 	public void entityDetection() {

@@ -30,7 +30,7 @@ import org.junit.Test;
  * @author Jens Lehmann
  * 
  */
-public class ComponentTests {
+public class ComponentTest {
 
 	/**
 	 * Checks whether all components implement the getName() method. While it

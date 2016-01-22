@@ -54,7 +54,7 @@ import static org.junit.Assert.assertTrue;
  * @author Jens Lehmann
  *
  */
-public class RefinementOperatorTests {
+public class RefinementOperatorTest {
 
 	private String baseURI;
 	

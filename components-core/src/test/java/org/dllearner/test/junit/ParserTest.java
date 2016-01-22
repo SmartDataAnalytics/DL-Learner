@@ -30,7 +30,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Jens Lehmann.
  *
  */
-public class ParserTests {
+public class ParserTest {
 
 	@Test
 	public void KBParserTest() throws ParseException {

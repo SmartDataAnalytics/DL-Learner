@@ -46,7 +46,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
  * @author Jens Lehmann
  *
  */
-public class SimulationTests {
+public class SimulationTest {
 	
 	/**
 	 * Empty tree - empty simulation.

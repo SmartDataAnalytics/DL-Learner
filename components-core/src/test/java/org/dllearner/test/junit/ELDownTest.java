@@ -69,10 +69,10 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-public class ELDownTests {
+public class ELDownTest {
 
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(ELDownTests.class);	
+	private static Logger logger = Logger.getLogger(ELDownTest.class);
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
 	

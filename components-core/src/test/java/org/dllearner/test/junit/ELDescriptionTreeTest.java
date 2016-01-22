@@ -50,7 +50,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
  * @author Jens Lehmann
  *
  */
-public final class ELDescriptionTreeTests {
+public final class ELDescriptionTreeTest {
 
 	@Test
 	public void simulationTest() {

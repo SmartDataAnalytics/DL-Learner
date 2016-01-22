@@ -43,7 +43,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
  * @author Lorenz Buehmann
  *
  */
-public class ReasonerTests {
+public class ReasonerTest {
 	
 	public static void main(String[] args) throws Exception {
 		Logger.getRootLogger().setLevel(Level.OFF);
