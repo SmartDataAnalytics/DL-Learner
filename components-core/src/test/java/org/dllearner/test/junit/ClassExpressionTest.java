@@ -18,9 +18,6 @@
  */
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
@@ -28,16 +25,12 @@ import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -134,17 +127,22 @@ public class ClassExpressionTest {
 		assertTrue(ConceptTransformation.getForallContexts(d1).isEmpty());
 		// note: the assertions below use toString() which should usually be avoided, but since
 		// the toString() method of SortedSet is unlikely to change we use it here for convenience
-		// ALL p1.a1 => context: [[p1]]		
+		// ALL p1.a1 => context: [[p1]]
+		System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d2).toString());
 		assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[<p1>]]"));
 		// (a1 AND a2) OR ALL p1.a1 => [[p1]]
+		System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d3).toString());
 		assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[<p1>]]"));
 		// p2 hasValue i1 => []
 		assertTrue(ConceptTransformation.getForallContexts(d4).isEmpty());
 		// ALL p2.ALL p1.a1 => [[p2],[p1,p2]]
+		System.out.println("[[<p2>, <p1>], [<p2>]] ? " + ConceptTransformation.getForallContexts(d5).toString());
 		assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[<p2>, <p1>], [<p2>]]"));
 		// ALL p1.p2 hasValue i1 => [[p1]]
+		System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d6).toString());
 		assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[<p1>]]"));
 		// EXISTS p3.ALL p2.ALL p1.a1 => [[p3,p2],[p3,p2,p1]]
+		System.out.println("[[<p3>, <p2>, <p1>], [<p3>, <p2>]] ? " + ConceptTransformation.getForallContexts(d7).toString());
 		assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[<p3>, <p2>, <p1>], [<p3>, <p2>]]"));
 		// (ALL p1.a1 OR ALL p2.ALL p1.a1)
 		assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[<p2>, <p1>], [<p1>], [<p2>]]"));
