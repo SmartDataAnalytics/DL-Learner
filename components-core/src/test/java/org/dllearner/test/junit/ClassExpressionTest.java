@@ -19,6 +19,7 @@
 package org.dllearner.test.junit;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.StringRenderer;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
@@ -104,6 +105,8 @@ public class ClassExpressionTest {
 	 */
 	@Test
 	public void forAllContextTest() {
+		// if we rely on toString comparison below we better be a bit more explicit...
+		StringRenderer.setRenderer(StringRenderer.Rendering.OWLAPI_SYNTAX);
 		// create some basic ontology elements
 		OWLClass a1 = df.getOWLClass("a1", pm);
 		OWLClass a2 = df.getOWLClass("a2", pm);
