@@ -18,8 +18,6 @@
  */
 package org.dllearner.test.junit;
 
-import junit.framework.TestSuite;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -56,15 +54,15 @@ public class AllTestsRunner{
 		
 		// runs everything except example test
 		Result result = JUnitCore.runClasses(
-				ClassExpressionTests.class,
-				ComponentTests.class,
-				ELDescriptionTreeTests.class,
-				ELDownTests.class,
-				HeuristicTests.class,
-				ParserTests.class,
-				RefinementOperatorTests.class,
-				SimulationTests.class,
-				UtilitiesTests.class);
+				ClassExpressionTest.class,
+				ComponentTest.class,
+				ELDescriptionTreeTest.class,
+				ELDownTest.class,
+				HeuristicTest.class,
+				ParserTest.class,
+				RefinementOperatorTest.class,
+				SimulationTest.class,
+				UtilitiesTest.class);
 
 		if(result.wasSuccessful()) {
 			System.out.println("All tests succeeded!");
