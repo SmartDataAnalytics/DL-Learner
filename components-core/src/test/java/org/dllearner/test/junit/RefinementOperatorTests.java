@@ -34,6 +34,7 @@ import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -65,6 +66,7 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDRDownTest() {
 		try {
+			//StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 			String file = "../examples/carcinogenesis/carcinogenesis.owl";
 			KnowledgeSource ks = new OWLFile(file);
 			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
@@ -100,7 +102,7 @@ public class RefinementOperatorTests {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
@@ -232,6 +234,49 @@ public class RefinementOperatorTests {
 		}		
 	}	
 	
+
+	/**
+	 * Applies the RhoDRDown operator to a concept and checks that the number of
+	 * refinements does not exceed the requested length.
+	 *
+	 */
+	@Test
+	public void rhoDRDownTest6() {
+		try {
+			String file = "../examples/carcinogenesis/carcinogenesis.owl";
+			KnowledgeSource ks = new OWLFile(file);
+			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.init();
+			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
+			int maxLength = 4;
+			Set<OWLClassExpression> results = op.refine(concept, maxLength, null);
+
+			int tooLong = 0;
+			for(OWLClassExpression result : results) {
+				if (OWLClassExpressionUtils.getLength(result) > maxLength) {
+					tooLong++;
+				}
+			}
+
+			if(tooLong!= 0) {
+				System.out.println(tooLong + " refinements were longer than " + maxLength);
+			}
+			assertTrue(tooLong==0);
+		} catch(ComponentInitException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
