@@ -158,7 +158,7 @@ public class HeuristicTest {
 		
 		//// noise tests ////
 		
-		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasureApprox(), false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasureApprox(true, reasoner), false, 0.05);
 		assertEquals(problem.getAccuracyOrTooWeak(nc[3], 0.5),-1,delta);
 		
 		// TODO: test approximations

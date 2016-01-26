@@ -1,12 +1,12 @@
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-
 import org.dllearner.core.Reasoner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMethodCLPApproximate {
+import java.util.Collection;
+
+public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMethodTwoValuedApproximate {
 
 	private Reasoner reasoner;
 	private double approxDelta;
@@ -27,10 +27,10 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 	}
 
 	@Override
-	public double getAccApproxCLP(OWLClassExpression description,
+	public double getAccApprox2(OWLClassExpression description,
 			Collection<OWLIndividual> classInstances,
 			Collection<OWLIndividual> superClassInstances,
-			double coverageFactor, double noise) {
+			double noise) {
 		// we abort when there are too many uncovered positives
 		int maxNotCovered = (int) Math.ceil(noise*classInstances.size());
 		int instancesCovered = 0;
@@ -71,7 +71,7 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 
 					// we can estimate the best possible concept to reach with downward refinement
 					// by setting precision to 1 and recall = mean stays as it is
-					double optimumEstimate = (coverageFactor*mean+1)/(coverageFactor+1);
+					double optimumEstimate = beta == 0 ? mean : (beta*mean+1)/(beta+1);
 
 					// if the mean is greater than the required minimum, we can accept;
 					// we also accept if the interval is small and close to the minimum
@@ -88,7 +88,7 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 					// reject only if the upper border is far away (we are very
 					// certain not to lose a potential solution)
 					//						if(upperBorderA + 0.1 < 1-noise) {
-					double optimumEstimateUpperBorder = (coverageFactor*(upperBorderA+0.1)+1)/(coverageFactor+1);
+					double optimumEstimateUpperBorder = beta == 0 ? upperBorderA+0.1 : (beta*(upperBorderA+0.1)+1)/(beta+1);
 					if(optimumEstimateUpperBorder < 1 - noise) {
 						return -1;
 					}
@@ -133,10 +133,18 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 				double size;
 				if(estimatedA) {
 					//						size = 1/(coverageFactor+1) * (coverageFactor * (upperBorderA-lowerBorderA) + Math.sqrt(upperEstimateA/(upperEstimateA+lowerEstimate)) + Math.sqrt(lowerEstimateA/(lowerEstimateA+upperEstimate)));
-					size = Heuristics.getAScore(upperBorderA, upperEstimateA/(double)(upperEstimateA+lowerEstimate), coverageFactor) - Heuristics.getAScore(lowerBorderA, lowerEstimateA/(double)(lowerEstimateA+upperEstimate),coverageFactor);
+					if (beta == 0) {
+						size = Heuristics.getAScore(upperBorderA, upperEstimateA / (double) (upperEstimateA + lowerEstimate)) - Heuristics.getAScore(lowerBorderA, lowerEstimateA / (double) (lowerEstimateA + upperEstimate));
+					} else {
+						size = Heuristics.getAScore(upperBorderA, upperEstimateA / (double) (upperEstimateA + lowerEstimate), beta) - Heuristics.getAScore(lowerBorderA, lowerEstimateA / (double) (lowerEstimateA + upperEstimate), beta);
+					}
 				} else {
-					//						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
-					size = Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+lowerEstimate),coverageFactor) - Heuristics.getAScore(recall, instancesCovered/(double)(instancesCovered+upperEstimate),coverageFactor);
+					if (beta == 0) {
+						size = Heuristics.getAScore(recall, instancesCovered / (double) (instancesCovered + lowerEstimate)) - Heuristics.getAScore(recall, instancesCovered / (double) (instancesCovered + upperEstimate));
+					} else {
+						//						size = 1/(coverageFactor+1) * (coverageFactor * coverage + Math.sqrt(instancesCovered/(instancesCovered+lowerEstimate)) + Math.sqrt(instancesCovered/(instancesCovered+upperEstimate)));
+						size = Heuristics.getAScore(recall, instancesCovered / (double) (instancesCovered + lowerEstimate), beta) - Heuristics.getAScore(recall, instancesCovered / (double) (instancesCovered + upperEstimate), beta);
+					}
 				}
 
 				if(size < 0.1) {
@@ -159,7 +167,11 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 			precision = 0;
 		}
 
-		return Heuristics.getAScore(recall, precision, coverageFactor);
+		if (beta == 0) {
+			return Heuristics.getAScore(recall, precision);
+		} else {
+			return Heuristics.getAScore(recall, precision, beta);
+		}
 
 	}
 	

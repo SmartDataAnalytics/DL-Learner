@@ -18,9 +18,7 @@
  */
 package org.dllearner.learningproblems;
 
-import org.dllearner.core.Component;
-
-public interface AccMethodTwoValued extends Component {
+public interface AccMethodTwoValued extends AccMethod {
 	/**
 	 * Compute accuracy according to this method
 	 * @param tp True Positives (positive as positive)

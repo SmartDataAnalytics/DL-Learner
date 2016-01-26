@@ -21,7 +21,9 @@ package org.dllearner.learningproblems;
 import org.dllearner.core.ComponentAnn;
 
 @ComponentAnn(name = "Predictive Accuracy", shortName = "pred_acc", version = 0)
-public class AccMethodPredAcc implements AccMethodTwoValued {
+public class AccMethodPredAcc implements AccMethodTwoValued, AccMethodWithBeta {
+
+	private double beta = 0;
 
 	public AccMethodPredAcc() {
 	}
@@ -37,15 +39,32 @@ public class AccMethodPredAcc implements AccMethodTwoValued {
 	@Override
 	public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
 		int posExamples = tp + fn;
-		int allExamples = posExamples + fp + tn;
-		
-		int maxNotCovered = (int) Math.ceil(noise*posExamples);
-		
-		if(fn != 0 && fn >= maxNotCovered) {
-			return -1;
+		int negExamples = fp + tn;
+		int allExamples = posExamples + negExamples;
+
+		if (beta == 0) {
+			int maxNotCovered = (int) Math.ceil(noise * posExamples);
+
+			if (fn != 0 && fn >= maxNotCovered) {
+				return -1;
+			}
+
+			return (tp + tn) / (double) allExamples;
+
+		} else {
+
+			if ((beta * tp + negExamples) / (beta * posExamples + negExamples) < 1 - noise) {
+				return -1;
+			}
+
+			// correctly classified divided by all examples
+			return (beta * tp + tn) / (beta * posExamples + negExamples);
 		}
 		
-		return (tp + tn) / (double) allExamples;
 	}
 
+	@Override
+	public void setBeta(double beta) {
+		this.beta = beta;
+	}
 }

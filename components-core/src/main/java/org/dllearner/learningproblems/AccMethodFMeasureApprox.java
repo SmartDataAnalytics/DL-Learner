@@ -18,39 +18,35 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-
+import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import java.util.Collection;
+
 @ComponentAnn(name = "FMeasure Approximate", shortName = "approx.fmeasure", version = 0)
-public class AccMethodFMeasureApprox extends AccMethodFMeasure implements AccMethodTwoValuedApproximate, AccMethodCLPApproximate {
+public class AccMethodFMeasureApprox extends AccMethodFMeasure implements AccMethodTwoValuedApproximate, AccMethodWithBeta {
 	@ConfigOption(description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
 	private Reasoner reasoner;
+
+	public AccMethodFMeasureApprox(boolean init, AbstractReasonerComponent reasoner) {
+		this.setReasoner(reasoner);
+		if(init) {
+			init();
+		}
+	}
+
+	public AccMethodFMeasureApprox() {
+	}
 
 	@Override
 	public double getAccApprox2(OWLClassExpression description,
 			Collection<OWLIndividual> positiveExamples,
 			Collection<OWLIndividual> negativeExamples, double noise) {
-		return getAccApproxImpl(description, positiveExamples, negativeExamples, 1, noise);
-	}
-
-	@Override
-	public double getAccApproxCLP(OWLClassExpression description,
-			Collection<OWLIndividual> classInstances,
-			Collection<OWLIndividual> superClassInstances,
-			double coverageFactor, double noise) {
-		return getAccApproxImpl(description, classInstances, superClassInstances, coverageFactor, noise);
-	}
-
-	public double getAccApproxImpl(OWLClassExpression description,
-			Collection<OWLIndividual> positiveExamples,
-			Collection<OWLIndividual> negativeExamples,
-			double coverageFactor, double noise) {
 		//		System.out.println("Testing " + description);
 
 		// we abort when there are too many uncovered positives
@@ -82,7 +78,7 @@ public class AccMethodFMeasureApprox extends AccMethodFMeasure implements AccMet
 			testsPerformed++;
 
 			// check whether approximation is sufficiently accurate
-			double[] approx = Heuristics.getFScoreApproximation(instancesCovered, recall, coverageFactor, negativeExamples.size(), testsPerformed, instancesDescription);
+			double[] approx = Heuristics.getFScoreApproximation(instancesCovered, recall, (beta == 0 ? 1 : beta), negativeExamples.size(), testsPerformed, instancesDescription);
 			if(approx[1]<approxDelta) {
 				return approx[0];
 			}
@@ -91,7 +87,7 @@ public class AccMethodFMeasureApprox extends AccMethodFMeasure implements AccMet
 
 		// standard computation (no approximation)
 		double precision = instancesCovered/(double)(instancesDescription+instancesCovered);
-		return Heuristics.getFScore(recall, precision, coverageFactor);
+		return Heuristics.getFScore(recall, precision, (beta == 0 ? 1 : beta));
 	}
 
 	@Override

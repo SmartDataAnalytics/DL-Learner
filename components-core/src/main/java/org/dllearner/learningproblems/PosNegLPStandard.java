@@ -18,8 +18,6 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.SortedSet;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
@@ -28,6 +26,8 @@ import org.dllearner.utilities.ReasoningUtils.Coverage;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.SortedSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -96,10 +96,10 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	@Override
 	public ScorePosNeg computeScore(OWLClassExpression concept, double noise) {
 
-		Coverage[] cc = getReasoningUtil().getCoverage(concept, positiveExamples, negativeExamples);
+		Coverage[] cc = reasoningUtil.getCoverage(concept, positiveExamples, negativeExamples);
 
 		// TODO: this computes accuracy twice - more elegant method should be implemented
-		double accuracy = accuracyMethod.getAccOrTooWeak2(cc[0].trueCount, cc[0].falseCount, cc[1].trueCount, cc[1].falseCount, noise);
+		double accuracy = reasoningUtil.getAccuracyOrTooWeakExact2(accuracyMethod, cc, noise);
 
 		return new ScoreTwoValued(
 				OWLClassExpressionUtils.getLength(concept),
@@ -111,7 +111,7 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 
 	@Override
 	public double getAccuracyOrTooWeak(OWLClassExpression description, double noise) {
-		return getReasoningUtil().getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
+		return reasoningUtil.getAccuracyOrTooWeak2(accuracyMethod, description, positiveExamples, negativeExamples, noise);
 	}
 
 	/* (non-Javadoc)

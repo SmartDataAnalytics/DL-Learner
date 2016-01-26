@@ -18,9 +18,6 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
@@ -28,8 +25,11 @@ import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 @ComponentAnn(name = "Predictive Accuracy Approximate", shortName = "approx.prec_acc", version = 0)
-public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate, AccMethodCLPApproximate {
+public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate {
 	final static Logger logger = Logger.getLogger(AccMethodPredAccApprox.class);
 	@Override
 	public void init() {
@@ -100,14 +100,6 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 		double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 		return ret;
-	}
-
-	@Override
-	public double getAccApproxCLP(OWLClassExpression description,
-			Collection<OWLIndividual> classInstances,
-			Collection<OWLIndividual> superClassInstances,
-			double coverageFactor, double noise) {
-		return getAccApprox2(description, classInstances, superClassInstances, noise);
 	}
 
 	@Override

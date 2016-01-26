@@ -18,12 +18,12 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-public interface AccMethodTwoValuedApproximate extends AccMethodApproximate {
+import java.util.Collection;
+
+public interface AccMethodTwoValuedApproximate extends AccMethodApproximate, AccMethodTwoValued {
 
 	/**
 	 * calculate approximate accuracy for an expression, according to method

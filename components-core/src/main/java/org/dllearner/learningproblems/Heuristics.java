@@ -54,7 +54,13 @@ public class Heuristics {
 			  ( (1+ beta * beta) * (precision * recall)
 					/ (beta * beta * precision + recall) );
 	}
-	
+
+	public static double getFScoreBalanced(double recall, double precision, double beta) {
+		// balanced F measure
+		return (precision + recall == 0) ? 0 :
+		  ( (1+Math.sqrt(beta)) * (precision * recall)
+				/ (Math.sqrt(beta) * precision + recall) );
+	}
 	/**
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
 	 * here (A=arithmetic), but is not an established notion in machine learning.

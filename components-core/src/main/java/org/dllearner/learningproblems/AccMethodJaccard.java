@@ -1,8 +1,5 @@
 package org.dllearner.learningproblems;
 
-import org.dllearner.learningproblems.AccMethodTwoValued;
-import org.dllearner.learningproblems.Heuristics;
-
 public class AccMethodJaccard implements AccMethodTwoValued {
 
 	public AccMethodJaccard() {}
@@ -16,7 +13,7 @@ public class AccMethodJaccard implements AccMethodTwoValued {
 	}
 
 	@Override
-		public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
+	public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
 		if(tp / (double) (tp+fn) <= 1 - noise) {
 			return -1;
 		}

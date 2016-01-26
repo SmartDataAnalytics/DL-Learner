@@ -18,28 +18,22 @@
  */
 package org.dllearner.test;
 
-import java.net.URL;
-import java.util.SortedSet;
-
+import com.hp.hpl.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLIndividual;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import java.util.SortedSet;
 
 /**
  * @author Lorenz Buehmann
@@ -59,6 +53,7 @@ public class SPARQLReasonerTest {
 		AbstractReasonerComponent rc = new SPARQLReasoner(ks);
 //		AbstractReasonerComponent rc = new SPARQLReasoner(new SparqlEndpointKS(new SparqlEndpoint(
 //				new URL("http://localhost:8890/sparql"), "http://family-benchmark.owl")));
+		rc.setUseInstanceChecks(false);
         rc.init();
         
         OWLClass classToDescribe = new OWLClassImpl(IRI.create("http://ns.softwiki.de/req/CustomerRequirement"));
@@ -80,7 +75,6 @@ public class SPARQLReasonerTest {
 //		lp.init();
 		
 		ClassLearningProblem lp = new ClassLearningProblem(rc);
-		lp.setUseInstanceChecks(false);
 		lp.setClassToDescribe(classToDescribe);
 		lp.init();
 		

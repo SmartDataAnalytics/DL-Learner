@@ -133,8 +133,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private OWLObjectDuplicator duplicator = new OWLObjectDuplicator(df);
-	private boolean useSingleTypeChecks = false;
-	
+
 	/**
 	 * Default constructor for usage of config files + Spring API.
 	 */
@@ -2416,14 +2415,5 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this.useValueLists = useValueLists;
 	}
 
-	public boolean isUseSingleTypeChecks() {
-		return useSingleTypeChecks;
-	}
-
-	public void setUseSingleTypeChecks(boolean useSingleTypeChecks) {
-		this.useSingleTypeChecks = useSingleTypeChecks;
-	}
-	
-	
 
 }

@@ -21,7 +21,9 @@ package org.dllearner.learningproblems;
 import org.dllearner.core.ComponentAnn;
 
 @ComponentAnn(name = "FMeasure", shortName = "fmeasure", version = 0)
-public class AccMethodFMeasure implements AccMethodTwoValued {
+public class AccMethodFMeasure implements AccMethodTwoValued, AccMethodWithBeta {
+
+	protected double beta = 0;
 
 	@Override
 	public void init() {
@@ -38,13 +40,27 @@ public class AccMethodFMeasure implements AccMethodTwoValued {
 	public double getAccOrTooWeak2(int tp, int fn, int fp, int tn, double noise) {
 		double recall = Heuristics.divideOrZero( tp , tp+fn );
 
-		if(recall == 0 || recall < 1 - noise) {
-			return -1;
+		if (beta == 0) {
+			if (recall == 0 || recall < 1 - noise) {
+				return -1;
+			}
+		} else {
+			if (recall == 0 || ((1 + Math.sqrt(beta)) * recall) / (Math.sqrt(beta) + 1) < 1 - noise) {
+				return -1;
+			}
 		}
 
 		double precision = Heuristics.divideOrZero( tp , tp+fp );
 
-		return Heuristics.getFScore(recall, precision);
+		if (beta == 0) {
+			return Heuristics.getFScore(recall, precision);
+		} else {
+			return Heuristics.getFScore(recall, precision, beta);
+		}
 	}
 
+	@Override
+	public void setBeta(double beta) {
+		this.beta = beta;
+	}
 }

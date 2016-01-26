@@ -21,11 +21,12 @@ package org.dllearner.learningproblems;
 import org.dllearner.core.ComponentAnn;
 
 @ComponentAnn(name = "Weighted FMeasure", shortName = "weighted.fmeasure", version = 0)
-public class AccMethodFMeasureWeighted implements AccMethodTwoValued {
+public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodWithBeta {
 	
 	private boolean balanced = false;
 	private double posWeight = 1;
 	private double negWeight = 1;
+	private double beta = 0;
 
 	@Override
 	public void init() {
@@ -54,7 +55,11 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued {
 			negWeight = 1/(double)negExamples;
 		}
 		double precision = tp == 0 ? 0 : ( tp*posWeight ) / ( tp*posWeight+fp*negWeight );
-		return Heuristics.getFScore(recall, precision);
+		if (beta == 0) {
+			return Heuristics.getFScore(recall, precision);
+		} else {
+			return Heuristics.getFScore(recall, precision, beta);
+		}
 	}
 
 
@@ -80,5 +85,10 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued {
 
 	public void setNegWeight(double negWeight) {
 		this.negWeight = negWeight;
+	}
+
+	@Override
+	public void setBeta(double beta) {
+		this.beta = beta;
 	}
 }

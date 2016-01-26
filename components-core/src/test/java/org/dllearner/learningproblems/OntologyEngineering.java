@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -251,10 +250,23 @@ public class OntologyEngineering {
 								+ algorithmRuntimeInSeconds + " seconds)");
 							lp.setEquivalence(false);
 					}
-					lp.setUseApproximations(useApproximations);// we use the approximations but what about 
-					if(useFMeasure) {
-						lp.setAccuracyMethod(HeuristicType.FMEASURE);
+					AccMethodTwoValued acc;
+					if (useApproximations) {
+						if (useFMeasure) {
+							acc = new AccMethodFMeasureApprox();
+						} else {
+							acc = new AccMethodPredAccApprox();
+						}
+						((AccMethodTwoValuedApproximate)acc).setReasoner(reasoner);
+					} else {
+						if (useFMeasure) {
+							acc = new AccMethodFMeasure();
+						} else {
+							acc = new AccMethodPredAcc();
+						}
 					}
+					acc.init();
+					lp.setAccuracyMethod(acc);
 					lp.init();
 					CELOE celoe = new CELOE(lp, reasoner);
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
@@ -306,6 +318,7 @@ public class OntologyEngineering {
 							for(EvaluatedDescriptionClass ed : suggestionsList) {
 								OWLClassExpression d = ed.getDescription();
 							//	lp.setAccuracyMethod(accuracyMethod);
+								//lp.getReasoningUtil().getAccuracyOrTooWeak2()
 								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
 								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
 								
