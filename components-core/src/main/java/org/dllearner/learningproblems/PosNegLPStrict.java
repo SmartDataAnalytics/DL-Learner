@@ -47,6 +47,7 @@ public class PosNegLPStrict extends PosNegLP {
 	private boolean penaliseNeutralExamples = false;
 	
 	private static final double defaultAccuracyPenalty = 1;
+
 	@ConfigOption(name="accuracyPenalty", description = "penalty for pos/neg examples which are classified as neutral", defaultValue = "1.0")
 	private double accuracyPenalty = defaultAccuracyPenalty;
 
@@ -54,11 +55,25 @@ public class PosNegLPStrict extends PosNegLP {
 	@ConfigOption(name="errorPenalty", description = "penalty for pos. examples classified as negative or vice versa", defaultValue = "3.0")
 	private double errorPenalty = defaultErrorPenalty;
 	
-	
+
+	public void setAccuracyPenalty(double accuracyPenalty) {
+		this.accuracyPenalty = accuracyPenalty;
+	}
+
+	public void setErrorPenalty(double errorPenalty) {
+		this.errorPenalty = errorPenalty;
+	}
+
+	public void setPenaliseNeutralExamples(boolean penaliseNeutralExamples) {
+		this.penaliseNeutralExamples = penaliseNeutralExamples;
+	}
+
 	public PosNegLPStrict(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
-	
+
+	public PosNegLPStrict() { super(); }
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#getName()
 	 */

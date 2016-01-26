@@ -18,16 +18,17 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 /**
  * A ternary learning problem (positive, negative and uncertain instances) to manage the problem of the Open World Assumption
  * typically employed for ontologies
@@ -38,6 +39,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	//private SortedSet<OWLIndividual> positiveExample;
 	//private SortedSet<OWLIndividual> negativeExample;
+	@ConfigOption(description = "the uncertain examples", required = true)
 	private Set<OWLIndividual> uncertainExamples;
 	
 	/*

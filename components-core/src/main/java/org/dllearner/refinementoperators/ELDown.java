@@ -21,8 +21,8 @@ package org.dllearner.refinementoperators;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.el.*;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -53,7 +53,7 @@ import java.util.*;
  * @author Jens Lehmann
  *
  */
-@ComponentAnn(name = "EL Downward refinement operator", shortName = "eldown", version = 0.1)
+//@ComponentAnn(name = "EL Downward refinement operator", shortName = "eldown", version = 0.1)
 public class ELDown extends RefinementOperatorAdapter {
 
 	private static Logger logger = Logger.getLogger(ELDown.class);	
@@ -86,7 +86,8 @@ public class ELDown extends RefinementOperatorAdapter {
 	private ELDescriptionTreeComparator treeComp = new ELDescriptionTreeComparator();
 	private ELDescriptionEdgeComparator edgeComp = new ELDescriptionEdgeComparator();
 	private TreeAndRoleSetComparator mComp = new TreeAndRoleSetComparator();
-	
+
+	@ConfigOption(description = "maximum depth", defaultValue = "2")
 	private int maxClassExpressionDepth = 2;
 	
 	private OWLDataFactory df = new OWLDataFactoryImpl();

@@ -32,7 +32,6 @@ function showAllCat(){
 <div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.el.DisjunctiveHeuristic">DisjunctiveHeuristic</a></li></div>
-<div class="type menu RefinementOperator"><li><a href="#org.dllearner.refinementoperators.ELDown">EL Downward refinement operator</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier">ETDT</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasure">FMeasure</a></li></div>
@@ -180,8 +179,6 @@ function showAllCat(){
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.el.DisjunctiveHeuristic"><h2>DisjunctiveHeuristic <small class="default-hidden">org.dllearner.algorithms.el.DisjunctiveHeuristic</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>disjunctive_heuristic</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
-<div class="type RefinementOperator"><a name="org.dllearner.refinementoperators.ELDown"><h2>EL Downward refinement operator <small class="default-hidden">org.dllearner.refinementoperators.ELDown</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>eldown</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithm"><h2>ELTL <small class="default-hidden">org.dllearner.algorithms.el.ELLearningAlgorithm</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>eltl</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>ELTL is an algorithm based on the refinement operator in http://jens-lehmann.org/files/2009/el_ilp.pdf.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
@@ -303,8 +300,13 @@ function showAllCat(){
 <div class="type ReasonerComponent"><a name="org.dllearner.reasoning.OWLAPIReasoner"><h2>OWL API Reasoner <small class="default-hidden">org.dllearner.reasoning.OWLAPIReasoner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oar</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>owlLinkURL</td><td>specifies the URL of the remote OWLLink server</td><td> String</td><td>null</td><td> false</td></tr>
+<tr><td>precomputeClassHierarchy</td><td>if class hierarchy should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeDataPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>reasonerImplementation</td><td>specifies the used OWL API reasoner implementation</td><td> ReasonerImplementation</td><td>pellet</td><td> false</td></tr>
+<tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useFallbackReasoner</td><td>specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.ocel.OCEL"><h2>OWL Class Expression Learner <small class="default-hidden">org.dllearner.algorithms.ocel.OCEL</small></h2></a>
@@ -375,7 +377,9 @@ function showAllCat(){
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosNegLPStandard"><h2>PosNegLPStandard <small class="default-hidden">org.dllearner.learningproblems.PosNegLPStandard</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>posNegStandard</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethodTwoValued</td><td>PRED_ACC</td><td> false</td></tr>
+<tr><td>negativeExamples</td><td>list of negative examples</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>percentPerLengthUnit</td><td>Percent Per Length Unit</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>positiveExamples</td><td>list of positive examples</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useRetrievalForClassification</td><td>"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -384,13 +388,18 @@ function showAllCat(){
 <tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethodTwoValued</td><td>PRED_ACC</td><td> false</td></tr>
 <tr><td>accuracyPenalty</td><td>penalty for pos/neg examples which are classified as neutral</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>errorPenalty</td><td>penalty for pos. examples classified as negative or vice versa</td><td> double</td><td>3.0</td><td> false</td></tr>
+<tr><td>negativeExamples</td><td>list of negative examples</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>penaliseNeutralExamples</td><td>if set to true neutral examples are penalised</td><td> boolean</td><td></td><td> false</td></tr>
 <tr><td>percentPerLengthUnit</td><td>Percent Per Length Unit</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>positiveExamples</td><td>list of positive examples</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useRetrievalForClassification</td><td>"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosNegUndLP"><h2>PosNegUndLP <small class="default-hidden">org.dllearner.learningproblems.PosNegUndLP</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>posNegUndLP</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd><dt>description</dt><dd>A learning problem with uncertain-membership instances</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>posNegUndLP</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd><dt>description</dt><dd>A learning problem with uncertain-membership instances</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>uncertainExamples</td><td>the uncertain examples</td><td> Set</td><td></td><td> true</td></tr>
+</tbody></table></div>
+</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAcc"><h2>Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAcc</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccApprox"><h2>Predictive Accuracy Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccApprox</small></h2></a>
@@ -418,8 +427,13 @@ function showAllCat(){
 <div class="type ReasonerComponent"><a name="org.dllearner.reasoning.SPARQLReasoner"><h2>SPARQL Reasoner <small class="default-hidden">org.dllearner.reasoning.SPARQLReasoner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>spr</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>laxMode</td><td>Use alternative relaxed Sparql-queries for Classes and Individuals</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>precomputeClassHierarchy</td><td>if class hierarchy should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeDataPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useCache</td><td>Whether to use a file-based cache</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useGenericSplitsCode</td><td>Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useValueLists</td><td>Whether to use SPARQL1.1 Value Lists</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
@@ -461,6 +475,11 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>cwr</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>defaultNegation</td><td>Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>forallSemantics</td><td>This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.</td><td> ForallSemantics</td><td>standard</td><td> false</td></tr>
+<tr><td>precomputeClassHierarchy</td><td>if class hierarchy should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeDataPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
+<tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner"><h2>data property domain axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner</small></h2></a>
@@ -528,7 +547,10 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm object subproperty axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosOnlyLP"><h2>positive only learning problem <small class="default-hidden">org.dllearner.learningproblems.PosOnlyLP</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>posonlylp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>posonlylp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>positiveExamples</td><td>the positive examples</td><td> SortedSet</td><td></td><td> true</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.qtl.QTL2Disjunctive"><h2>query tree learner with noise (disjunctive) <small class="default-hidden">org.dllearner.algorithms.qtl.QTL2Disjunctive</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>qtl2dis</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
@@ -553,14 +575,17 @@ function showAllCat(){
 <tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>maxNrOfSplits</td><td>the number of generated split intervals for numeric types</td><td> int</td><td>12</td><td> false</td></tr>
 <tr><td>useAllConstructor</td><td>support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useBooleanDatatypes</td><td>support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useDataHasValueConstructor</td><td>whether to use hasValue on frequently occuring strings</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useExistsConstructor</td><td>support of existential restrictions (owl:someValuesFrom), e.g. ∃ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useHasValueConstructor</td><td>support of has value constructor (owl:hasValue), e.g. ∃ r.{a} </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useInverse</td><td>support of inverse object properties (owl:inverseOf), e.g. r⁻.C </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useNegation</td><td>support of negation (owl:complementOf), e.g. ¬ C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useNumericDatatypes</td><td>support of numeric datatypes (xsd:int, xsd:double, ...), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useObjectValueNegation</td><td>whether to generate object complement while refining</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useSomeOnly</td><td>universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useStringDatatypes</td><td>support of string datatypes (xsd:string), e.g. ∃ r.{"SOME_STRING"} </td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useTimeDatatypes</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>

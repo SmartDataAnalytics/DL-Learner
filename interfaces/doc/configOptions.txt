@@ -1751,12 +1751,26 @@ required: false
 default value: PRED_ACC
 conf file usage: lp.accuracyMethod = "PRED_ACC"
 
+option name: negativeExamples
+description: list of negative examples
+type: Set
+required: true
+default value: 
+conf file usage: lp.negativeExamples = {}
+
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
 type: double
 required: false
 default value: 0.05
 conf file usage: lp.percentPerLengthUnit = 0.05
+
+option name: positiveExamples
+description: list of positive examples
+type: Set
+required: true
+default value: 
+conf file usage: lp.positiveExamples = {}
 
 option name: useRetrievalForClassification
 description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
@@ -1792,6 +1806,13 @@ required: false
 default value: 3.0
 conf file usage: lp.errorPenalty = 3.0
 
+option name: negativeExamples
+description: list of negative examples
+type: Set
+required: true
+default value: 
+conf file usage: lp.negativeExamples = {}
+
 option name: penaliseNeutralExamples
 description: if set to true neutral examples are penalised
 type: boolean
@@ -1806,6 +1827,13 @@ required: false
 default value: 0.05
 conf file usage: lp.percentPerLengthUnit = 0.05
 
+option name: positiveExamples
+description: list of positive examples
+type: Set
+required: true
+default value: 
+conf file usage: lp.positiveExamples = {}
+
 option name: useRetrievalForClassification
 description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
 type: boolean
@@ -1819,10 +1847,24 @@ A learning problem with uncertain-membership instances
 
 conf file usage: lp.type = "posNegUndLP"
 
+option name: uncertainExamples
+description: the uncertain examples
+type: Set
+required: true
+default value: 
+conf file usage: lp.uncertainExamples = {}
+
 component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
 =========================================================================================
 
 conf file usage: lp.type = "posonlylp"
+
+option name: positiveExamples
+description: the positive examples
+type: SortedSet
+required: true
+default value: 
+conf file usage: lp.positiveExamples = ""
 
 component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.PropertyAxiomLearningProblem) v0.6
 ==========================================================================================================
@@ -1861,6 +1903,41 @@ required: false
 default value: standard
 conf file usage: reasoner.forallSemantics = "standard"
 
+option name: precomputeClassHierarchy
+description: if class hierarchy should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeClassHierarchy = true
+
+option name: precomputeDataPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeDataPropertyHierarchy = true
+
+option name: precomputeObjectPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
+
+option name: sources
+description: the underlying knowledge sources
+type: Set
+required: true
+default value: 
+conf file usage: reasoner.sources = {}
+
+option name: useInstanceChecks
+description: whether to use single instance checks
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useInstanceChecks = false
+
 component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
 =========================================================================
 
@@ -1873,6 +1950,27 @@ required: false
 default value: null
 conf file usage: reasoner.owlLinkURL = "null"
 
+option name: precomputeClassHierarchy
+description: if class hierarchy should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeClassHierarchy = true
+
+option name: precomputeDataPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeDataPropertyHierarchy = true
+
+option name: precomputeObjectPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
+
 option name: reasonerImplementation
 description: specifies the used OWL API reasoner implementation
 type: ReasonerImplementation
@@ -1880,12 +1978,26 @@ required: false
 default value: pellet
 conf file usage: reasoner.reasonerImplementation = "pellet"
 
+option name: sources
+description: the underlying knowledge sources
+type: Set
+required: true
+default value: 
+conf file usage: reasoner.sources = {}
+
 option name: useFallbackReasoner
 description: specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level
 type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useFallbackReasoner = false
+
+option name: useInstanceChecks
+description: whether to use single instance checks
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useInstanceChecks = false
 
 component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
 ========================================================================
@@ -1898,6 +2010,34 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.laxMode = false
+
+option name: precomputeClassHierarchy
+description: if class hierarchy should be precomputed
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeClassHierarchy = true
+
+option name: precomputeDataPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeDataPropertyHierarchy = true
+
+option name: precomputeObjectPropertyHierarchy
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
+
+option name: sources
+description: the underlying knowledge sources
+type: Set
+required: true
+default value: 
+conf file usage: reasoner.sources = {}
 
 option name: useCache
 description: Whether to use a file-based cache
@@ -1912,6 +2052,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useGenericSplitsCode = false
+
+option name: useInstanceChecks
+description: whether to use single instance checks
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useInstanceChecks = false
 
 option name: useValueLists
 description: Whether to use SPARQL1.1 Value Lists
@@ -1958,11 +2105,6 @@ type: int
 required: false
 default value: 1
 conf file usage: op.ro = 1
-
-component: EL Downward refinement operator (org.dllearner.refinementoperators.ELDown) v0.1
-==========================================================================================
-
-conf file usage: op.type = "eldown"
 
 component: OperatorInverter (org.dllearner.refinementoperators.OperatorInverter) v0.1
 =====================================================================================
@@ -2030,6 +2172,13 @@ required: false
 default value: true
 conf file usage: op.instanceBasedDisjoints = true
 
+option name: maxNrOfSplits
+description: the number of generated split intervals for numeric types
+type: int
+required: false
+default value: 12
+conf file usage: op.maxNrOfSplits = 12
+
 option name: useAllConstructor
 description: support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C 
 type: boolean
@@ -2050,6 +2199,13 @@ type: boolean
 required: false
 default value: true
 conf file usage: op.useCardinalityRestrictions = true
+
+option name: useDataHasValueConstructor
+description: whether to use hasValue on frequently occuring strings
+type: boolean
+required: false
+default value: false
+conf file usage: op.useDataHasValueConstructor = false
 
 option name: useExistsConstructor
 description: support of existential restrictions (owl:someValuesFrom), e.g. ∃ r.C 
@@ -2085,6 +2241,13 @@ type: boolean
 required: false
 default value: true
 conf file usage: op.useNumericDatatypes = true
+
+option name: useObjectValueNegation
+description: whether to generate object complement while refining
+type: boolean
+required: false
+default value: false
+conf file usage: op.useObjectValueNegation = false
 
 option name: useSomeOnly
 description: universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r

@@ -148,6 +148,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// splits for double datatype properties in ascending order
 	private Map<OWLDataProperty,List<OWLLiteral>> splits = new TreeMap<>();
 
+	@ConfigOption(description = "the number of generated split intervals for numeric types", defaultValue = "12")
 	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
@@ -158,6 +159,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// frequent data values
 	private Map<OWLDataProperty, Set<OWLLiteral>> frequentDataValues = new HashMap<>();
 	private Map<OWLDataProperty, Map<OWLLiteral, Integer>> dataValueFrequency = new HashMap<>();
+	@ConfigOption(description = "whether to use hasValue on frequently occuring strings", defaultValue = "false")
 	private boolean useDataHasValueConstructor = false;
 
 	// statistics
@@ -223,6 +225,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	private boolean isInitialised = false;
 
+	@ConfigOption(description = "whether to generate object complement while refining", defaultValue = "false")
 	private boolean useObjectValueNegation = false;
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();

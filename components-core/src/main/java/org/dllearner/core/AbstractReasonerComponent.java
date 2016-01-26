@@ -21,6 +21,7 @@ package org.dllearner.core;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -75,6 +76,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
 	private static final NumberFormat numberFormat = NumberFormat.getInstance();
+	@ConfigOption(description = "whether to use single instance checks", defaultValue = "false")
 	protected boolean useInstanceChecks = false;
 
 	// statistical data for particular reasoning operations
@@ -107,9 +109,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected ClassHierarchy subsumptionHierarchy = null;
 	protected ObjectPropertyHierarchy roleHierarchy = null;
 	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
-	
+
+	@ConfigOption(description = "if class hierarchy should be precomputed", defaultValue = "true")
 	protected boolean precomputeClassHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeObjectPropertyHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeDataPropertyHierarchy = true;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
@@ -120,6 +125,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	/**
 	 * The underlying knowledge sources.
 	 */
+	@ConfigOption(description = "the underlying knowledge sources", required = true)
 	protected Set<KnowledgeSource> sources;
 
 
