@@ -18,6 +18,9 @@
  */
 package org.dllearner.learningproblems;
 
+/**
+ * Accuracy calculation with true/false positive/negative
+ */
 public interface AccMethodTwoValued extends AccMethod {
 	/**
 	 * Compute accuracy according to this method

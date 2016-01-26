@@ -1,5 +1,8 @@
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.ComponentAnn;
+
+@ComponentAnn(name = "Jaccard Coefficient", shortName = "jaccard", version = 0.1)
 public class AccMethodJaccard implements AccMethodTwoValued {
 
 	public AccMethodJaccard() {}

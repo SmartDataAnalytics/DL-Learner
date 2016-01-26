@@ -19,12 +19,16 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.config.ConfigOption;
 
 @ComponentAnn(name = "Weighted FMeasure", shortName = "weighted.fmeasure", version = 0)
 public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodWithBeta {
 	
+	@ConfigOption(defaultValue = "false", description = "balance the weights to relative set size")
 	private boolean balanced = false;
+	@ConfigOption(defaultValue = "1", description = "weight on the positive examples")
 	private double posWeight = 1;
+	@ConfigOption(defaultValue = "1", description = "weight on the negative examples")
 	private double negWeight = 1;
 	private double beta = 0;
 

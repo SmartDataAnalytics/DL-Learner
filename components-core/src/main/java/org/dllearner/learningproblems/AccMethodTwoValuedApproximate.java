@@ -23,6 +23,9 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.util.Collection;
 
+/**
+ * Approximation support for @AccMethodTwoValued
+ */
 public interface AccMethodTwoValuedApproximate extends AccMethodApproximate, AccMethodTwoValued {
 
 	/**

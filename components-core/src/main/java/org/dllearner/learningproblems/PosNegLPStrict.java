@@ -21,12 +21,10 @@ package org.dllearner.learningproblems;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.NotImplementedException;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -40,6 +38,7 @@ import java.util.TreeSet;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "PosNegLPStrict", shortName = "posNegStrict", version = 0.1, description = "three valued definition learning problem")
 public class PosNegLPStrict extends PosNegLP {
 
 	private Set<OWLIndividual> neutralExamples;

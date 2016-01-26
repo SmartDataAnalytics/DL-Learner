@@ -18,8 +18,10 @@
  */
 package org.dllearner.algorithms.el;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
+@ComponentAnn(name = "DisjunctiveHeuristic", shortName = "disjunctive_heuristic", version = 0.1)
 public class DisjunctiveHeuristic implements ELHeuristic {
 
 	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();

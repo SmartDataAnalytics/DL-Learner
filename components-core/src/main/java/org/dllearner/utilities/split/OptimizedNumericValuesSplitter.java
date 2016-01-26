@@ -61,7 +61,7 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 		List<OWLLiteral> splitLiterals = new ArrayList<>();
 		
 		List<? extends Number> splitValues = computeSplitValues(dp);
-		
+
 		for (Number value : splitValues) {
 			OWLLiteral literal = dataFactory.getOWLLiteral(value.toString(), reasoner.getDatatype(dp));
 			splitLiterals.add(literal);

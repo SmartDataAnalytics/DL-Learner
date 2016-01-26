@@ -21,12 +21,25 @@ package org.dllearner.learningproblems;
 import org.dllearner.core.Component;
 import org.dllearner.core.Reasoner;
 
-
+/**
+ * Implementation of approximate accuracy calculation.
+ * These methods require the reasoner to incrementally query the knowledge source.
+ */
 public interface AccMethodApproximate extends Component {
 	double getApproxDelta();
 
+	/**
+	 * set the approximation delta;
+	 * this option should be exposed via @ConfigOption
+	 * @param approxDelta delta
+	 */
 	void setApproxDelta(double approxDelta);
 
+	/**
+	 * set the reasoner;
+	 * consumers of the accuracy method should call this method on all approximate components
+	 * @param reasoner the problem reasoner
+	 */
 	void setReasoner(Reasoner reasoner);
 
 }

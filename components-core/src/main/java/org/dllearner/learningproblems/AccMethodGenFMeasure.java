@@ -1,6 +1,9 @@
 package org.dllearner.learningproblems;
 
-public class AccMethodGenFMeasure implements AccMethodThreeValued, AccMethodCLPComplement, AccMethodWithBeta {
+import org.dllearner.core.ComponentAnn;
+
+@ComponentAnn(name = "Generalised FMeasure", shortName = "gen_fmeasure", version = 0.1)
+public class AccMethodGenFMeasure implements AccMethodThreeValued, AccMethodWithBeta {
 
 	private double beta = 0;
 

@@ -1,7 +1,7 @@
 package org.dllearner.learningproblems;
 
 /**
- * Created by ailin on 16-1-26.
+ * Approximation support for @AccMethodThreeValued
  */
-public interface AccMethodThreeValuedApproximate extends AccMethodApproximate {
+public interface AccMethodThreeValuedApproximate extends AccMethodApproximate, AccMethodThreeValued {
 }

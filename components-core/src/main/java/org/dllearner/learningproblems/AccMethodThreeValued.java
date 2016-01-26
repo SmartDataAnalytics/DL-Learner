@@ -1,7 +1,7 @@
 package org.dllearner.learningproblems;
 
 /**
- * Created by ailin on 16-1-26.
+ * Implementations of generalised measures according to method in A Note on the Evaluation of Inductive Concept Classification Procedures
  */
 public interface AccMethodThreeValued extends AccMethod {
 	/**

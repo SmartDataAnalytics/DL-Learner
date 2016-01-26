@@ -1,8 +1,10 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.Component;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
+@ComponentAnn(name = "AMeasure", shortName = "ameasure", version = 0.1)
 public class AccMethodAMeasure implements Component, AccMethodTwoValued, AccMethodWithBeta {
 
 	protected double beta = 0;

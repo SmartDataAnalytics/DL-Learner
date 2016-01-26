@@ -1,11 +1,13 @@
 package org.dllearner.learningproblems;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.util.Collection;
 
+@ComponentAnn(name = "AMeasure Approximate", shortName = "approx.ameasure", version = 0.1)
 public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMethodTwoValuedApproximate {
 
 	private Reasoner reasoner;

@@ -160,7 +160,7 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		if (accuracyMethod instanceof AccMethodApproximate) {
 			((AccMethodApproximate) accuracyMethod).setReasoner(getReasoner());
 		}
-		if (accuracyMethod instanceof AccMethodCLPComplement) {
+		if (accuracyMethod instanceof AccMethodThreeValued) {
 			Coverage[] cc = reasoningUtil.getCoverage(df.getOWLObjectComplementOf(classToDescribe), Sets.newTreeSet(superClassInstances));
 			negatedClassInstances = Sets.newTreeSet(cc[0].trueSet);
 //			System.out.println("negated class instances: " + negatedClassInstances);
