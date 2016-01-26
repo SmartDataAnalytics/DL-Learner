@@ -26,7 +26,8 @@ import java.util.TreeMap;
  */
 public class DocumentationHTMLGenerator {
 	static {
-		System.setProperty("log4j.configuration", "log4j.properties");
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
 	}
 
 	private AnnComponentManager cm;

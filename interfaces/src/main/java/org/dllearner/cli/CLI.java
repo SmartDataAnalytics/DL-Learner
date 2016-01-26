@@ -68,7 +68,8 @@ import java.util.Map.Entry;
 @ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
 public class CLI {
 	static {
-		System.setProperty("log4j.configuration", "log4j.properties");
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
 	}
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
