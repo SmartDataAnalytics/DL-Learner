@@ -14,8 +14,7 @@ public class AccMethodAMeasure implements Component, AccMethodTwoValued, AccMeth
 	}
 
 	@Override
-	public void init() throws ComponentInitException {
-		throw new ComponentInitException("Todo");
+	public void init() {
 	}
 
 	@Override
@@ -35,7 +34,11 @@ public class AccMethodAMeasure implements Component, AccMethodTwoValued, AccMeth
 			}
 		}
 
-		return Heuristics.getAScore(recall, precision,  (beta == 0 ? 1 : beta));
+		if (beta == 0) {
+			return Heuristics.getAScore(recall, precision);
+		} else {
+			return Heuristics.getAScore(recall, precision, beta);
+		}
 	}
 
 	@Override
