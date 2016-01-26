@@ -23,13 +23,16 @@ function showAllCat(){
 </head><body><div class="container-fluid">
 <h1>DL-Learner Components</h1>
 <p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>
-<a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
+<a href="#" onClick="showAllCat()">show all</a><ul class="list-unstyled"><li><a href="#" onClick="showOnlyCat('Class')">Non-component Class</a></li><li><a href="#" onClick="showOnlyCat('KnowledgeSource')">KnowledgeSource</a></li><li><a href="#" onClick="showOnlyCat('LearningAlgorithm')">LearningAlgorithm</a><ul><li><a href="#" onClick="showOnlyCat('AxiomLearningAlgorithm')">AxiomLearningAlgorithm</a></li><li><a href="#" onClick="showOnlyCat('ClassExpressionLearningAlgorithm')">ClassExpressionLearningAlgorithm</a></li></ul></li><li><a href="#" onClick="showOnlyCat('LearningProblem')">LearningProblem</a></li><li><a href="#" onClick="showOnlyCat('ReasonerComponent')">ReasonerComponent</a></li><li><a href="#" onClick="showOnlyCat('RefinementOperator')">RefinementOperator</a></li><li><a href="#" onClick="showOnlyCat('Heuristic')">Heuristic</a></li><li><a href="#" onClick="showOnlyCat('AccMethod')">AccMethod</a></li><li><a href="#" onClick="showOnlyCat('OtherComponent')">other</a></li></ul><p>Click on a component to get an overview on its configuration options.</p><ul>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.CELOE">CELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.ClassLearningProblem">ClassLearningProblem</a></li></div>
 <div class="type menu Class"><li><a href="#org.dllearner.cli.CLI">Command Line Interface</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive">Disjunctive ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.el.ELLearningAlgorithm">ELTL</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier">ETDT</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasure">FMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasureApprox">FMeasure Approximate</a></li></div>
+<div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.FuzzyPosNegLPStandard">FuzzyPosNegLPStandard</a></li></div>
 <div class="type menu Class"><li><a href="#org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc">GLOBAL OPTIONS</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.LocalModelBasedSparqlEndpointKS">Local Endpoint</a></li></div>
@@ -42,6 +45,9 @@ function showAllCat(){
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.PCELOE">PCELOE</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegLPStandard">PosNegLPStandard</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PosNegUndLP">PosNegUndLP</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAcc">Predictive Accuracy</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccApprox">Predictive Accuracy Approximate</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PropertyAxiomLearningProblem">PropertyAxiomLearningProblem</a></li></div>
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex">QueryTreeHeuristic</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator">Refinement Operator TDT</a></li></div>
@@ -49,6 +55,8 @@ function showAllCat(){
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.sparql.SparqlKnowledgeSource">SPARQL endpoint fragment</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.SemKernelWorkflow">SemKernel Workflow</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodFMeasureWeighted">Weighted FMeasure</a></li></div>
+<div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccWeighted">Weighted Predictive Accuracy</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner">asymmetric object property axiom learner</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.ClosedWorldReasoner">closed world reasoner</a></li></div>
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner">data property domain axiom learner</a></li></div>
@@ -112,16 +120,13 @@ function showAllCat(){
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.ClassLearningProblem"><h2>ClassLearningProblem <small class="default-hidden">org.dllearner.learningproblems.ClassLearningProblem</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>clp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> String</td><td>pred_acc</td><td> false</td></tr>
-<tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethod</td><td>PRED_ACC</td><td> false</td></tr>
 <tr><td>betaEq</td><td>beta index for F-measure in definition learning</td><td> double</td><td>1.0</td><td> false</td></tr>
 <tr><td>betaSC</td><td>beta index for F-measure in super class learning</td><td> double</td><td>3.0</td><td> false</td></tr>
 <tr><td>checkConsistency</td><td>whether to check for consistency of suggestions (when added to ontology)</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>classToDescribe</td><td>class of which an OWL class expression should be learned</td><td> IRI</td><td></td><td> true</td></tr>
 <tr><td>equivalence</td><td>Whether this is an equivalence problem (or superclass learning problem)</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>Maximum execution time in seconds</td><td> int</td><td>10</td><td> false</td></tr>
-<tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
-<tr><td>useInstanceChecks</td><td>Whether to use instance checks (or get individiuals query)</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Class"><a name="org.dllearner.cli.CLI"><h2>Command Line Interface <small class="default-hidden">org.dllearner.cli.CLI</small></h2></a>
@@ -142,6 +147,7 @@ function showAllCat(){
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>whether to do real disjoint tests or check that two named classes do not have common instances</td><td> boolean</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
@@ -164,6 +170,7 @@ function showAllCat(){
 <tr><td>instanceBasedDisjoints</td><td>Specifies whether to use real disjointness checks or instance based ones (no common instances) in the refinement operator.</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>maxClassExpressionDepth</td><td>The maximum depth for class expressions to test</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
@@ -171,7 +178,6 @@ function showAllCat(){
 <tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> String</td><td>log/searchTree.txt</td><td> false</td></tr>
 <tr><td>startClass</td><td>You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>stopOnFirstDefinition</td><td>algorithm will terminate immediately when a correct definition is found</td><td> boolean</td><td>false</td><td> false</td></tr>
-<tr><td>treeSearchTimeSeconds</td><td>Specifies how long the algorithm should search for a partial solution (a tree).</td><td> double</td><td>10.0</td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>writeSearchTree</td><td>specifies whether to write a search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
@@ -187,11 +193,24 @@ function showAllCat(){
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>nonSpecifityControl</td><td>a flag to decide if further control on the purity measure should be made</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>operator</td><td>refinement operator instance to use</td><td> RefinementOperator</td><td>DLTreesRefinementOperator</td><td> false</td></tr>
 <tr><td>puritythreshold</td><td>Purity threshold for setting a leaf</td><td> double</td><td>0.05</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasure"><h2>FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasure</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureApprox"><h2>FMeasure Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureApprox</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>approx.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+</tbody></table></div>
+</div>
+<div class="type LearningProblem"><a name="org.dllearner.learningproblems.FuzzyPosNegLPStandard"><h2>FuzzyPosNegLPStandard <small class="default-hidden">org.dllearner.learningproblems.FuzzyPosNegLPStandard</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>fuzzyPosNeg</dd><dt>version</dt><dd>0.2</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> HeuristicType</td><td>PRED_ACC</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Class"><a name="org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc"><h2>GLOBAL OPTIONS <small class="default-hidden">org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc</small></h2></a>
@@ -230,6 +249,7 @@ function showAllCat(){
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>maxLength</td><td>maximum length of class expression</td><td> int</td><td>4</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
@@ -259,6 +279,7 @@ function showAllCat(){
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
@@ -309,21 +330,22 @@ function showAllCat(){
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosNegLPStandard"><h2>PosNegLPStandard <small class="default-hidden">org.dllearner.learningproblems.PosNegLPStandard</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>posNegStandard</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> String</td><td>predacc</td><td> false</td></tr>
-<tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> AccMethodTwoValued</td><td>PRED_ACC</td><td> false</td></tr>
 <tr><td>percentPerLengthUnit</td><td>Percent Per Length Unit</td><td> double</td><td>0.05</td><td> false</td></tr>
-<tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
-<tr><td>useMultiInstanceChecks</td><td>Use The Multi Instance Checks</td><td> UseMultiInstanceChecks</td><td>UseMultiInstanceChecks.TWOCHECKS</td><td> false</td></tr>
 <tr><td>useRetrievalForClassification</td><td>"Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosNegUndLP"><h2>PosNegUndLP <small class="default-hidden">org.dllearner.learningproblems.PosNegUndLP</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>posNegUndLP</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd><dt>description</dt><dd>A learning problem with uncertain-memebrship instances</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> String</td><td>predacc</td><td> false</td></tr>
+<dl class="dl-horizontal"><dt>short name</dt><dd>posNegUndLP</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd><dt>description</dt><dd>A learning problem with uncertain-membership instances</dd></dl>This component does not have configuration options.</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAcc"><h2>Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAcc</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccApprox"><h2>Predictive Accuracy Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccApprox</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>approx.prec_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
-<tr><td>useApproximations</td><td>Use Approximations</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccOCEL"><h2>Predictive Accuracy without Weak elimination <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccOCEL</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc.ocel</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PropertyAxiomLearningProblem"><h2>PropertyAxiomLearningProblem <small class="default-hidden">org.dllearner.learningproblems.PropertyAxiomLearningProblem</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>palp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>reasoner</td><td>The reasoner component variable to use for this Learning Problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
@@ -344,6 +366,7 @@ function showAllCat(){
 <tr><td>laxMode</td><td>Use alternative relaxed Sparql-queries for Classes and Individuals</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useCache</td><td>Whether to use a file-based cache</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useGenericSplitsCode</td><td>Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useValueLists</td><td>Whether to use SPARQL1.1 Value Lists</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.SparqlEndpointKS"><h2>SPARQL endpoint <small class="default-hidden">org.dllearner.kb.SparqlEndpointKS</small></h2></a>
@@ -362,6 +385,10 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>sparqlfrag</dd><dt>version</dt><dd>0.5</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type OtherComponent"><a name="org.dllearner.utilities.semkernel.SemKernelWorkflow"><h2>SemKernel Workflow <small class="default-hidden">org.dllearner.utilities.semkernel.SemKernelWorkflow</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>skw</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureWeighted"><h2>Weighted FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureWeighted</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>weighted.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccWeighted"><h2>Weighted Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccWeighted</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>weighted.pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner"><h2>asymmetric object property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.AsymmetricObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplasymm</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for asymmetric object property axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type ReasonerComponent"><a name="org.dllearner.reasoning.ClosedWorldReasoner"><h2>closed world reasoner <small class="default-hidden">org.dllearner.reasoning.ClosedWorldReasoner</small></h2></a>

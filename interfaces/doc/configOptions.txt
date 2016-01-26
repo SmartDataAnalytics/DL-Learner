@@ -465,8 +465,22 @@ component: disjoint classes learner (org.dllearner.algorithms.DisjointClassesLea
 
 conf file usage: la.type = "cldisjoint"
 
+option name: entityToDescribe
+description: the OWL entity to learn about
+type: OWLEntity
+required: false
+default value: 
+conf file usage: la.entityToDescribe = ""
+
+option name: ks
+description: the sparql endpoint knowledge source
+type: SparqlEndpointKS
+required: false
+default value: 
+conf file usage: la.ks = ""
+
 option name: maxExecutionTimeInSeconds
-description: 
+description: maximum execution of the algorithm in seconds (abstract)
 type: int
 required: false
 default value: 10
@@ -479,12 +493,33 @@ required: false
 default value: 
 conf file usage: la.maxFetchedRows = 
 
+option name: reasoner
+description: The sparql reasoner instance to use
+type: SPARQLReasoner
+required: false
+default value: SPARQLReasoner
+conf file usage: la.reasoner = "SPARQLReasoner"
+
 option name: returnOnlyNewAxioms
-description: 
+description: omit axioms already existing in the knowledge base
 type: boolean
 required: false
 default value: false
 conf file usage: la.returnOnlyNewAxioms = false
+
+option name: suggestMostGeneralClasses
+description: only keep most general classes in suggestions
+type: boolean
+required: false
+default value: true
+conf file usage: la.suggestMostGeneralClasses = true
+
+option name: useClassPopularity
+description: include instance count / popularity when computing scores
+type: boolean
+required: false
+default value: true
+conf file usage: la.useClassPopularity = true
 
 component: Naive AL Learner (org.dllearner.algorithms.NaiveALLearner) v0.1
 ==========================================================================
@@ -540,6 +575,20 @@ required: false
 default value: 
 conf file usage: la.learningProblem = ""
 
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxLength
+description: maximum length of class expression
+type: int
+required: false
+default value: 4
+conf file usage: la.maxLength = 4
+
 option name: reasoner
 description: The reasoner variable to use for this learning problem
 type: AbstractReasonerComponent
@@ -559,8 +608,22 @@ component: simple subclass learner (org.dllearner.algorithms.SimpleSubclassLearn
 
 conf file usage: la.type = "clsub"
 
+option name: entityToDescribe
+description: the OWL entity to learn about
+type: OWLEntity
+required: false
+default value: 
+conf file usage: la.entityToDescribe = ""
+
+option name: ks
+description: the sparql endpoint knowledge source
+type: SparqlEndpointKS
+required: false
+default value: 
+conf file usage: la.ks = ""
+
 option name: maxExecutionTimeInSeconds
-description: 
+description: maximum execution of the algorithm in seconds (abstract)
 type: int
 required: false
 default value: 10
@@ -573,8 +636,15 @@ required: false
 default value: 
 conf file usage: la.maxFetchedRows = 
 
+option name: reasoner
+description: The sparql reasoner instance to use
+type: SPARQLReasoner
+required: false
+default value: SPARQLReasoner
+conf file usage: la.reasoner = "SPARQLReasoner"
+
 option name: returnOnlyNewAxioms
-description: 
+description: omit axioms already existing in the knowledge base
 type: boolean
 required: false
 default value: false
@@ -606,6 +676,13 @@ type: Set
 required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
+
+option name: expandAccuracy100Nodes
+description: whether to try and refine solutions which already have accuracy value of 1
+type: boolean
+required: false
+default value: false
+conf file usage: la.expandAccuracy100Nodes = false
 
 option name: filterDescriptionsFollowingFromKB
 description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
@@ -698,6 +775,13 @@ required: false
 default value: 0.0
 conf file usage: la.noisePercentage = 0.0
 
+option name: operator
+description: the refinement operator instance to use
+type: LengthLimitedRefinementOperator
+required: false
+default value: 
+conf file usage: la.operator = ""
+
 option name: reasoner
 description: The reasoner variable to use for this learning problem
 type: AbstractReasonerComponent
@@ -768,25 +852,11 @@ required: false
 default value: false
 conf file usage: la.writeSearchTree = false
 
-component: ETDT (org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier) v1.0
-=====================================================================================
-An Evidence-based Terminological Decision Tree
+component: PCELOE (org.dllearner.algorithms.celoe.PCELOE) v1.0
+==============================================================
+PCELOE is an experimental, parallel implementation of the CELOE algorithm.
 
-conf file usage: la.type = "etdt"
-
-option name: BEAM
-description: value for limiting the number of generated concepts
-type: int
-required: false
-default value: 4
-conf file usage: la.BEAM = 4
-
-option name: PURITY_THRESHOLD
-description: Purity threshold for setting a leaf
-type: double
-required: false
-default value: 0.05
-conf file usage: la.PURITY_THRESHOLD = 0.05
+conf file usage: la.type = "pceloe"
 
 option name: allowedConcepts
 description: List of classes that are allowed
@@ -808,6 +878,27 @@ type: Set
 required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
+
+option name: expandAccuracy100Nodes
+description: whether to try and refine solutions which already have accuracy value of 1
+type: boolean
+required: false
+default value: false
+conf file usage: la.expandAccuracy100Nodes = false
+
+option name: filterDescriptionsFollowingFromKB
+description: If true, then the results will not contain suggestions, which already follow logically from the knowledge base. Be careful, since this requires a potentially expensive consistency check for candidate solutions.
+type: boolean
+required: false
+default value: false
+conf file usage: la.filterDescriptionsFollowingFromKB = false
+
+option name: heuristic
+description: no description available
+type: AbstractHeuristic
+required: false
+default value: celoe_heuristic
+conf file usage: la.heuristic = "celoe_heuristic"
 
 option name: ignoredConcepts
 description: List of classes to ignore
@@ -837,12 +928,235 @@ required: false
 default value: 
 conf file usage: la.learningProblem = ""
 
-option name: nonspecificity
+option name: maxClassExpressionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassExpressionTests = 0
+
+option name: maxClassExpressionTestsAfterImprovement
+description: The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassExpressionTestsAfterImprovement = 0
+
+option name: maxDepth
+description: maximum depth of description
+type: double
+required: false
+default value: 7
+conf file usage: la.maxDepth = 7
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: maxExecutionTimeInSecondsAfterImprovement
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 0
+conf file usage: la.maxExecutionTimeInSecondsAfterImprovement = 0
+
+option name: maxNrOfResults
+description: Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).
+type: int
+required: false
+default value: 10
+conf file usage: la.maxNrOfResults = 10
+
+option name: noisePercentage
+description: the (approximated) percentage of noise within the examples
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: nrOfThreads
+description: number of threads running in parallel
+type: int
+required: false
+default value: 2
+conf file usage: la.nrOfThreads = 2
+
+option name: operator
+description: the refinement operator instance to use
+type: LengthLimitedRefinementOperator
+required: false
+default value: 
+conf file usage: la.operator = ""
+
+option name: reasoner
+description: The reasoner variable to use for this learning problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: la.reasoner = ""
+
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.replaceSearchTree = false
+
+option name: reuseExistingDescription
+description: If true, the algorithm tries to find a good starting point close to an existing definition/super class of the given class in the knowledge base.
+type: boolean
+required: false
+default value: false
+conf file usage: la.reuseExistingDescription = false
+
+option name: searchTreeFile
+description: file to use for the search tree
+type: String
+required: false
+default value: log/searchTree.txt
+conf file usage: la.searchTreeFile = "log/searchTree.txt"
+
+option name: singleSuggestionMode
+description: Use this if you are interested in only one suggestion and your learning problem has many (more than 1000) examples.
+type: boolean
+required: false
+default value: false
+conf file usage: la.singleSuggestionMode = false
+
+option name: startClass
+description: You can specify a start class for the algorithm. To do this, you have to use Manchester OWL syntax without using prefixes.
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: la.startClass = "owl:Thing"
+
+option name: stopOnFirstDefinition
+description: algorithm will terminate immediately when a correct definition is found
+type: boolean
+required: false
+default value: false
+conf file usage: la.stopOnFirstDefinition = false
+
+option name: terminateOnNoiseReached
+description: specifies whether to terminate when noise criterion is met
+type: boolean
+required: false
+default value: false
+conf file usage: la.terminateOnNoiseReached = false
+
+option name: useMinimizer
+description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
+type: boolean
+required: false
+default value: true
+conf file usage: la.useMinimizer = true
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.writeSearchTree = false
+
+component: ETDT (org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier) v1.0
+=====================================================================================
+An Evidence-based Terminological Decision Tree
+
+conf file usage: la.type = "etdt"
+
+option name: allowedConcepts
+description: List of classes that are allowed
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedConcepts = {}
+
+option name: allowedDataProperties
+description: List of data properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedDataProperties = {}
+
+option name: allowedObjectProperties
+description: List of object properties to allow
+type: Set
+required: false
+default value: 
+conf file usage: la.allowedObjectProperties = {}
+
+option name: beam
+description: value for limiting the number of generated concepts
+type: int
+required: false
+default value: 4
+conf file usage: la.beam = 4
+
+option name: heuristic
+description: instance of heuristic to use
+type: TreeInductionHeuristics
+required: false
+default value: TreeInductionHeuristics
+conf file usage: la.heuristic = "TreeInductionHeuristics"
+
+option name: ignoredConcepts
+description: List of classes to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredConcepts = {}
+
+option name: ignoredDataProperties
+description: List of data properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredDataProperties = {}
+
+option name: ignoredObjectProperties
+description: List of object properties to ignore
+type: Set
+required: false
+default value: 
+conf file usage: la.ignoredObjectProperties = {}
+
+option name: learningProblem
+description: The Learning Problem variable to use in this algorithm
+type: AbstractClassExpressionLearningProblem
+required: false
+default value: 
+conf file usage: la.learningProblem = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: nonSpecifityControl
 description: a flag to decide if further control on the purity measure should be made
 type: boolean
 required: false
 default value: false
-conf file usage: la.nonspecificity = false
+conf file usage: la.nonSpecifityControl = false
+
+option name: operator
+description: refinement operator instance to use
+type: RefinementOperator
+required: false
+default value: DLTreesRefinementOperator
+conf file usage: la.operator = "DLTreesRefinementOperator"
+
+option name: puritythreshold
+description: Purity threshold for setting a leaf
+type: double
+required: false
+default value: 0.05
+conf file usage: la.puritythreshold = 0.05
 
 option name: reasoner
 description: The reasoner variable to use for this learning problem
@@ -864,19 +1178,12 @@ A Terminological Decision Tree
 
 conf file usage: la.type = "tdt"
 
-option name: BINARYCLASSIFICATION
-description: value for limiting the number of generated concepts
+option name: binaryClassification
+description: if it is a binary classification problem
 type: boolean
 required: false
 default value: false
-conf file usage: la.BINARYCLASSIFICATION = false
-
-option name: PURITY_THRESHOLD
-description: Purity threshold for setting a leaf
-type: double
-required: false
-default value: 0.05
-conf file usage: la.PURITY_THRESHOLD = 0.05
+conf file usage: la.binaryClassification = false
 
 option name: ccp
 description: value for limiting the number of generated concepts
@@ -885,12 +1192,40 @@ required: false
 default value: false
 conf file usage: la.ccp = false
 
-option name: missingValueTreatment
+option name: classToDescribe
+description: concept for splitting undefined examples into positive and negative for binary classification problems
+type: OWLClassExpression
+required: false
+default value: 
+conf file usage: la.classToDescribe = ""
+
+option name: heuristic
+description: the heuristic instance to use
+type: TreeInductionHeuristics
+required: false
+default value: TreeInductionHeuristics
+conf file usage: la.heuristic = "TreeInductionHeuristics"
+
+option name: missingValueTreatmentForTDT
 description: for overcoming the problem of missing values in tree algorithms.tree.models
 type: boolean
 required: false
 default value: false
-conf file usage: la.missingValueTreatment = false
+conf file usage: la.missingValueTreatmentForTDT = false
+
+option name: operator
+description: the refinement operator instance to use
+type: RefinementOperator
+required: false
+default value: DLTreesRefinementOperator
+conf file usage: la.operator = "DLTreesRefinementOperator"
+
+option name: puritythreshold
+description: Purity threshold for setting a leaf
+type: double
+required: false
+default value: 0.05
+conf file usage: la.puritythreshold = 0.05
 
 component: ELTL (org.dllearner.algorithms.el.ELLearningAlgorithm) v0.5
 ======================================================================
@@ -975,6 +1310,13 @@ required: false
 default value: 2
 conf file usage: la.maxClassExpressionDepth = 2
 
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
+
 option name: maxNrOfResults
 description: Sets the maximum number of results one is interested in
 type: int
@@ -1023,13 +1365,6 @@ type: boolean
 required: false
 default value: false
 conf file usage: la.stopOnFirstDefinition = false
-
-option name: treeSearchTimeSeconds
-description: Specifies how long the algorithm should search for a partial solution (a tree).
-type: double
-required: false
-default value: 10.0
-conf file usage: la.treeSearchTimeSeconds = 10.0
 
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
@@ -1106,6 +1441,13 @@ type: AbstractClassExpressionLearningProblem
 required: false
 default value: 
 conf file usage: la.learningProblem = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
 
 option name: noisePercentage
 description: the (approximated) percentage of noise within the examples
@@ -1209,6 +1551,13 @@ type: AbstractClassExpressionLearningProblem
 required: false
 default value: 
 conf file usage: la.learningProblem = ""
+
+option name: maxExecutionTimeInSeconds
+description: maximum execution of the algorithm in seconds
+type: int
+required: false
+default value: 10
+conf file usage: la.maxExecutionTimeInSeconds = 10
 
 option name: reasoner
 description: The reasoner variable to use for this learning problem
@@ -1319,17 +1668,10 @@ conf file usage: lp.type = "clp"
 
 option name: accuracyMethod
 description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
+type: AccMethod
 required: false
-default value: pred_acc
-conf file usage: lp.accuracyMethod = "pred_acc"
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-required: false
-default value: 0.05
-conf file usage: lp.approxDelta = 0.05
+default value: PRED_ACC
+conf file usage: lp.accuracyMethod = "PRED_ACC"
 
 option name: betaEq
 description: beta index for F-measure in definition learning
@@ -1373,19 +1715,17 @@ required: false
 default value: 10
 conf file usage: lp.maxExecutionTimeInSeconds = 10
 
-option name: useApproximations
-description: Use Approximations
-type: boolean
-required: false
-default value: false
-conf file usage: lp.useApproximations = false
+component: FuzzyPosNegLPStandard (org.dllearner.learningproblems.FuzzyPosNegLPStandard) v0.2
+============================================================================================
 
-option name: useInstanceChecks
-description: Whether to use instance checks (or get individiuals query)
-type: boolean
+conf file usage: lp.type = "fuzzyPosNeg"
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).
+type: HeuristicType
 required: false
-default value: true
-conf file usage: lp.useInstanceChecks = true
+default value: PRED_ACC
+conf file usage: lp.accuracyMethod = "PRED_ACC"
 
 component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
 ==================================================================================
@@ -1393,18 +1733,11 @@ component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0
 conf file usage: lp.type = "posNegStandard"
 
 option name: accuracyMethod
-description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
+description: Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).
+type: AccMethodTwoValued
 required: false
-default value: predacc
-conf file usage: lp.accuracyMethod = "predacc"
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-required: false
-default value: 0.05
-conf file usage: lp.approxDelta = 0.05
+default value: PRED_ACC
+conf file usage: lp.accuracyMethod = "PRED_ACC"
 
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
@@ -1412,20 +1745,6 @@ type: double
 required: false
 default value: 0.05
 conf file usage: lp.percentPerLengthUnit = 0.05
-
-option name: useApproximations
-description: Use Approximations
-type: boolean
-required: false
-default value: false
-conf file usage: lp.useApproximations = false
-
-option name: useMultiInstanceChecks
-description: Use The Multi Instance Checks
-type: UseMultiInstanceChecks
-required: false
-default value: UseMultiInstanceChecks.TWOCHECKS
-conf file usage: lp.useMultiInstanceChecks = "UseMultiInstanceChecks.TWOCHECKS"
 
 option name: useRetrievalForClassification
 description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
@@ -1436,35 +1755,26 @@ conf file usage: lp.useRetrievalForClassification = false
 
 component: PosNegUndLP (org.dllearner.learningproblems.PosNegUndLP) v1.0
 ========================================================================
-A learning problem with uncertain-memebrship instances
+A learning problem with uncertain-membership instances
 
 conf file usage: lp.type = "posNegUndLP"
-
-option name: accuracyMethod
-description: Specifies, which method/function to use for computing accuracy. Available measues are "pred_acc" (predictive accuracy), "fmeasure" (F measure), "generalised_fmeasure" (generalised F-Measure according to Fanizzi and d'Amato).
-type: String
-required: false
-default value: predacc
-conf file usage: lp.accuracyMethod = "predacc"
-
-option name: approxDelta
-description: The Approximate Delta
-type: double
-required: false
-default value: 0.05
-conf file usage: lp.approxDelta = 0.05
-
-option name: useApproximations
-description: Use Approximations
-type: boolean
-required: false
-default value: false
-conf file usage: lp.useApproximations = false
 
 component: positive only learning problem (org.dllearner.learningproblems.PosOnlyLP) v0.6
 =========================================================================================
 
 conf file usage: lp.type = "posonlylp"
+
+component: PropertyAxiomLearningProblem (org.dllearner.learningproblems.PropertyAxiomLearningProblem) v0.6
+==========================================================================================================
+
+conf file usage: lp.type = "palp"
+
+option name: reasoner
+description: The reasoner component variable to use for this Learning Problem
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: lp.reasoner = ""
 
 
 
@@ -1484,12 +1794,12 @@ required: false
 default value: true
 conf file usage: reasoner.defaultNegation = true
 
-option name: forAllRetrievalSemantics
+option name: forallSemantics
 description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
 type: ForallSemantics
 required: false
 default value: standard
-conf file usage: reasoner.forAllRetrievalSemantics = "standard"
+conf file usage: reasoner.forallSemantics = "standard"
 
 component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
 =========================================================================
@@ -1522,12 +1832,33 @@ component: SPARQL Reasoner (org.dllearner.reasoning.SPARQLReasoner) v0.1
 
 conf file usage: reasoner.type = "spr"
 
+option name: laxMode
+description: Use alternative relaxed Sparql-queries for Classes and Individuals
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.laxMode = false
+
 option name: useCache
 description: Whether to use a file-based cache
 type: boolean
 required: false
 default value: true
 conf file usage: reasoner.useCache = true
+
+option name: useGenericSplitsCode
+description: Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useGenericSplitsCode = false
+
+option name: useValueLists
+description: Whether to use SPARQL1.1 Value Lists
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.useValueLists = false
 
 
 
@@ -1547,12 +1878,26 @@ required: false
 default value: 5
 conf file usage: op.beam = 5
 
-option name: kindOperator
+option name: lp
+description: the learning problem instance to use
+type: PosNegLP
+required: false
+default value: 
+conf file usage: op.lp = ""
+
+option name: reasoner
+description: the reasoner instance to use
+type: Reasoner
+required: false
+default value: 
+conf file usage: op.reasoner = ""
+
+option name: ro
 description: no description available
 type: int
 required: false
 default value: 1
-conf file usage: op.kindOperator = 1
+conf file usage: op.ro = 1
 
 component: rho refinement operator (org.dllearner.refinementoperators.RhoDRDown) v0.8
 =====================================================================================
@@ -1682,6 +2027,27 @@ component: OEHeuristicRuntime (org.dllearner.algorithms.celoe.OEHeuristicRuntime
 
 conf file usage: h.type = "celoe_heuristic"
 
+option name: expansionPenaltyFactor
+description: penalty for long descriptions (horizontal expansion) (strong by default)
+type: double
+required: false
+default value: 0.1
+conf file usage: h.expansionPenaltyFactor = 0.1
+
+option name: gainBonusFactor
+description: bonus for being better than parent node
+type: double
+required: false
+default value: 0.3
+conf file usage: h.gainBonusFactor = 0.3
+
+option name: nodeRefinementPenalty
+description: penalty if a node OWLClassExpression has very many refinements since exploring such a node is computationally very expensive
+type: double
+required: false
+default value: 0.0001
+conf file usage: h.nodeRefinementPenalty = 0.0001
+
 option name: startNodeBonus
 description: no description available
 type: double
@@ -1745,6 +2111,61 @@ component: QueryTreeHeuristic (org.dllearner.algorithms.qtl.heuristics.QueryTree
 =====================================================================================================
 
 conf file usage: h.type = "qtree_heuristic_simple"
+
+
+
+*************
+* AccMethod *
+*************
+
+component: FMeasure (org.dllearner.learningproblems.AccMethodFMeasure) v0.0
+===========================================================================
+
+conf file usage: accMethod.type = "fmeasure"
+
+component: FMeasure Approximate (org.dllearner.learningproblems.AccMethodFMeasureApprox) v0.0
+=============================================================================================
+
+conf file usage: accMethod.type = "approx.fmeasure"
+
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: accMethod.approxDelta = 0.05
+
+component: Weighted FMeasure (org.dllearner.learningproblems.AccMethodFMeasureWeighted) v0.0
+============================================================================================
+
+conf file usage: accMethod.type = "weighted.fmeasure"
+
+component: Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAcc) v0.0
+=====================================================================================
+
+conf file usage: accMethod.type = "pred_acc"
+
+component: Predictive Accuracy Approximate (org.dllearner.learningproblems.AccMethodPredAccApprox) v0.0
+=======================================================================================================
+
+conf file usage: accMethod.type = "approx.prec_acc"
+
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: accMethod.approxDelta = 0.05
+
+component: Predictive Accuracy without Weak elimination (org.dllearner.learningproblems.AccMethodPredAccOCEL) v0.0
+==================================================================================================================
+
+conf file usage: accMethod.type = "pred_acc.ocel"
+
+component: Weighted Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAccWeighted) v0.0
+======================================================================================================
+
+conf file usage: accMethod.type = "weighted.pred_acc"
 
 
 ********************

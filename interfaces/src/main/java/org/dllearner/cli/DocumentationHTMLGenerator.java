@@ -1,6 +1,7 @@
 package org.dllearner.cli;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AnnComponentManager;
@@ -11,10 +12,8 @@ import org.semanticweb.owlapi.model.OWLClass;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * Script for generating documentation for all components, in particular
@@ -48,7 +47,7 @@ public class DocumentationHTMLGenerator {
 		for(Entry<Class<?>, String> entry : componentNames.entrySet()) {
 			componentNamesInv.put(entry.getValue(), entry.getKey());
 		}
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(getHeader());
 		
@@ -56,17 +55,36 @@ public class DocumentationHTMLGenerator {
 		sb.append("<h1>DL-Learner Components</h1>\n");
 		
 		// filter interface
+		Map<Class, List<Class>> compTree = new TreeMap<>(new Comparator<Class>() {
+			@Override
+			public int compare(Class o1, Class o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		Map<Class, MutableInt> compSublevel = new HashMap<>();
+		for (Class coreClazz : AnnComponentManager.coreComponentClasses) {
+			compSublevel.put(coreClazz, new MutableInt(0));
+		}
+		for (Class coreClazz : AnnComponentManager.coreComponentClasses) {
+			compTree.put(coreClazz, new ArrayList<Class>());
+			for (Class subClazz : AnnComponentManager.coreComponentClasses) {
+				if (subClazz.equals(coreClazz)) {
+					continue;
+				}
+				try {
+					subClazz.asSubclass(coreClazz);
+					compTree.get(coreClazz).add(subClazz);
+					compSublevel.get(subClazz).increment();
+				} catch (ClassCastException e) {
+					// no subclass
+				}
+			}
+		}
+
 		sb.append("<p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>\n");
 		sb.append("<a href=\"#\" onClick=\"showAllCat()\">show all</a><ul class=\"list-unstyled\">");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Class')\">Non-component Class</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('KnowledgeSource')\">KnowledgeSource</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ReasonerComponent')\">ReasonerComponent</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningProblem')\">LearningProblem</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningAlgorithm')\">LearningAlgorithm</a>");
-		sb.append("<ul><li><a href=\"#\" onClick=\"showOnlyCat('AxiomLearningAlgorithm')\">AxiomLearningAlgorithm</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ClassExpressionLearningAlgorithm')\">ClassExpressionLearningAlgorithm</a></li></ul></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('RefinementOperator')\">RefinementOperator</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Heuristic')\">Heuristic</a></li>");
+		printFilter(sb, compTree, compSublevel, Arrays.asList(AnnComponentManager.coreComponentClasses), 0);
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('OtherComponent')\">other</a></li>");
 		sb.append("</ul>");
 		
@@ -106,6 +124,22 @@ public class DocumentationHTMLGenerator {
 		sb.append(getFooter());
 		
 		Files.createFile(file, sb.toString());
+	}
+
+	private void printFilter(StringBuffer sb, Map<Class, List<Class>> compTree, Map<Class, MutableInt> compSublevel, List<Class> filter, int level) {
+		for (Class e : filter) {
+			if (level != compSublevel.get(e).intValue()) {
+				continue;
+			}
+			sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('" + e.getSimpleName() + "')\">" + e.getSimpleName() + "</a>");
+			List<Class> subClazzes = compTree.get(e);
+			if (!subClazzes.isEmpty()) {
+				sb.append("<ul>");
+				printFilter(sb, compTree, compSublevel, compTree.get(e), level + 1);
+				sb.append("</ul>");
+			}
+			sb.append("</li>");
+		}
 	}
 
 	private void optionsTable(StringBuffer sb, Class<?> comp) {

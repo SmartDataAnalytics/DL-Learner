@@ -23,6 +23,7 @@ import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.AccMethod;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -345,7 +346,8 @@ public class AnnComponentManager {
 		LearningProblem.class,
 		ReasonerComponent.class,
 		RefinementOperator.class,
-		Heuristic.class
+		Heuristic.class,
+		AccMethod.class
 	};
 
 	/**
