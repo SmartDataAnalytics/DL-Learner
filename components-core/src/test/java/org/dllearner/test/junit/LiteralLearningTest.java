@@ -21,6 +21,7 @@ package org.dllearner.test.junit;
 import com.clarkparsia.owlapiv3.XSD;
 import com.google.common.collect.Sets;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -77,9 +78,6 @@ public final class LiteralLearningTest {
 			this.prefix = prefix;
 			this.restrictionType = restrictionType;
 			this.maxNrOfSplits = maxNrOfSplits;
-			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
-//			org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
-
 //			StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
 //			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 
@@ -95,40 +93,51 @@ public final class LiteralLearningTest {
 			this(prefix, owlfile, restrictionType, 12);
 		}
 		public void run() throws ComponentInitException {
-			Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
-			positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
-			positiveExamples.add(df.getOWLNamedIndividual("N2", pm));
-			positiveExamples.add(df.getOWLNamedIndividual("N3", pm));
-			
-			Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
-			negativeExamples.add(df.getOWLNamedIndividual("N100", pm));
-			negativeExamples.add(df.getOWLNamedIndividual("N102", pm));
-			negativeExamples.add(df.getOWLNamedIndividual("N104", pm));
-			
-			for(AbstractReasonerComponent rc : rcs) {
-				PosNegLPStandard lp = new PosNegLPStandard(rc);
-				lp.setPositiveExamples(positiveExamples);
-				lp.setNegativeExamples(negativeExamples);
-				lp.init();
-				
-				RhoDRDown op = new RhoDRDown();
-				op.setUseTimeDatatypes(true);
-				op.setUseNumericDatatypes(true);
-				op.setReasoner(rc);
-				op.setMaxNrOfSplits(maxNrOfSplits);
-				op.init();
+			Level oldLevel = Logger.getLogger("org.dllearner").getLevel();
+			//Level oldLevelCELOE = Logger.getLogger(CELOE.class).getLevel();
+			try {
+				Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
+                //Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
-				CELOE alg = new CELOE(lp, rc);
-				alg.setMaxClassExpressionTests(1000);
-				alg.setMaxExecutionTimeInSeconds(0);
-				alg.setOperator(op);
-				alg.init();
-				
-				alg.start();
-				OWLClassExpression soln = alg.getCurrentlyBestDescription();
 
-				assertTrue(soln.getNNF().equals(target));
-				
+				Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+				positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
+				positiveExamples.add(df.getOWLNamedIndividual("N2", pm));
+				positiveExamples.add(df.getOWLNamedIndividual("N3", pm));
+
+				Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+				negativeExamples.add(df.getOWLNamedIndividual("N100", pm));
+				negativeExamples.add(df.getOWLNamedIndividual("N102", pm));
+				negativeExamples.add(df.getOWLNamedIndividual("N104", pm));
+
+				for (AbstractReasonerComponent rc : rcs) {
+					PosNegLPStandard lp = new PosNegLPStandard(rc);
+					lp.setPositiveExamples(positiveExamples);
+					lp.setNegativeExamples(negativeExamples);
+					lp.init();
+
+					RhoDRDown op = new RhoDRDown();
+					op.setUseTimeDatatypes(true);
+					op.setUseNumericDatatypes(true);
+					op.setReasoner(rc);
+					op.setMaxNrOfSplits(maxNrOfSplits);
+					op.init();
+
+					CELOE alg = new CELOE(lp, rc);
+					alg.setMaxClassExpressionTests(1000);
+					alg.setMaxExecutionTimeInSeconds(0);
+					alg.setOperator(op);
+					alg.init();
+
+					alg.start();
+					OWLClassExpression soln = alg.getCurrentlyBestDescription();
+
+					assertTrue(soln.getNNF().equals(target));
+
+				}
+			} finally {
+				Logger.getLogger("org.dllearner").setLevel(oldLevel);
+				//Logger.getLogger(CELOE.class).setLevel(oldLevelCELOE);
 			}
 		}
 		public void setSingleRestrictionTarget(OWLFacet facetType, String solution) {

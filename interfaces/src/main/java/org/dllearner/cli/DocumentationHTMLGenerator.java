@@ -1,12 +1,5 @@
 package org.dllearner.cli;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
@@ -15,6 +8,13 @@ import org.dllearner.core.Component;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Script for generating documentation for all components, in particular
@@ -25,6 +25,9 @@ import org.semanticweb.owlapi.model.OWLClass;
  *
  */
 public class DocumentationHTMLGenerator {
+	static {
+		System.setProperty("log4j.configuration", "log4j.properties");
+	}
 
 	private AnnComponentManager cm;
 	

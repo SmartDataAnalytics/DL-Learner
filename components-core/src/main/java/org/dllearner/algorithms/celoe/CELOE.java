@@ -475,15 +475,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = searchTree.descendingIterator();
-		if (logger.isDebugEnabled()) {
+		if (logger.isTraceEnabled()) {
 			for (OENode N:searchTree.getNodeSet()) {
-				logger.debug(sparql_debug,"`getnext:"+N);
+				logger.trace(sparql_debug,"`getnext:"+N);
 			}
 		}
 
 		while(it.hasNext()) {
 			OENode node = it.next();
-			logger.debug(sparql_debug,"``"+node+node.getAccuracy());
+			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 			} else {
@@ -500,7 +500,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// expand node horizontically
 	private TreeSet<OWLClassExpression> refineNode(OENode node) {
-		logger.debug(sparql_debug,"REFINE NODE " + node);
+		logger.trace(sparql_debug,"REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -523,27 +523,27 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 */
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		String sparql_debug_out = "";
-		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description;
+		if (logger.isTraceEnabled()) sparql_debug_out = "DESC: " + description;
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-			logger.debug(sparql_debug, sparql_debug_out + "REDUNDANT");
+			logger.trace(sparql_debug, sparql_debug_out + "REDUNDANT");
 			return false;
 		}
 		
 		// check whether the class expression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-			logger.debug(sparql_debug, sparql_debug_out + "NOT ALLOWED");
+			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
 		
 		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
-		logger.debug(sparql_debug, sparql_debug_out);
+		logger.trace(sparql_debug, sparql_debug_out);
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
-		logger.debug(sparql_debug, "`acc:"+accuracy);
+		logger.trace(sparql_debug, "`acc:"+accuracy);
 		mon.stop();
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)

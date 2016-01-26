@@ -35,6 +35,7 @@
 								<!--This line excludes inner classes -->
 								<exclude>**/*$*</exclude>
 							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 						</configuration>
 					</plugin>
 					<!-- Jar the tests up into a separate jar so other components tests'
@@ -137,6 +138,7 @@
 						<!--This line excludes inner classes -->
 						<exclude>**/*$*</exclude>
 					</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 				</configuration>
 			</plugin>
 			<!-- Jar the tests up into a separate jar so other components tests' can 

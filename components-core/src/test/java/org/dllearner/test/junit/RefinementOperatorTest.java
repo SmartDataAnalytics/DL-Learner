@@ -304,37 +304,42 @@ public class RefinementOperatorTest {
 	@Test
 	public void rhoDownTestPellet() throws ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
-		Logger.getRootLogger().setLevel(Level.TRACE);
-		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
-		reasoner.init();
-		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setUseSomeOnly(false);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.setUseSomeOnly(false);
-		op.init();
-		
-		OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
-		Set<OWLClassExpression> refinements = op.refine(nc, 5);
-		for(OWLClassExpression refinement : refinements) {
-			System.out.println(refinement);
-		}		
-		// refinements should be as follows:
-		//	male ⊓ male
-		//	male ⊓ (male   ⊔ male)
-		//	male ⊓ (female ⊔ male)
-		//	male ⊓ (female ⊔ female)
-		//	male ⊓ (¬male)
-		//	male ⊓ (¬female)
-		//	male ⊓ (∃ hasChild.⊤)
-		//	male ⊓ (∀ hasChild.⊤)
+		Level oldLevel = Logger.getRootLogger().getLevel();
+		try {
+			Logger.getRootLogger().setLevel(Level.TRACE);
+			AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
+			reasoner.init();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseSomeOnly(false);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.setUseSomeOnly(false);
+			op.init();
+
+			OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
+			Set<OWLClassExpression> refinements = op.refine(nc, 5);
+			for (OWLClassExpression refinement : refinements) {
+				System.out.println(refinement);
+			}
+			// refinements should be as follows:
+			//	male ⊓ male
+			//	male ⊓ (male   ⊔ male)
+			//	male ⊓ (female ⊔ male)
+			//	male ⊓ (female ⊔ female)
+			//	male ⊓ (¬male)
+			//	male ⊓ (¬female)
+			//	male ⊓ (∃ hasChild.⊤)
+			//	male ⊓ (∀ hasChild.⊤)
 //		System.out.println(rs);
 //		System.out.println("most general properties: " + rs.getMostGeneralProperties());
-		System.out.println(reasoner.getObjectPropertyHierarchy());
-		assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size()==8);		
+			System.out.println(reasoner.getObjectPropertyHierarchy());
+			assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size() == 8);
+		} finally {
+			Logger.getRootLogger().setLevel(oldLevel);
+		}
 	}
 	
 	private String uri(String name) {
