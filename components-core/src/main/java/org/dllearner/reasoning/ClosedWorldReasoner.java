@@ -1179,9 +1179,9 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					double max = Double.MAX_VALUE;
 					for (OWLFacetRestriction facet : facetRestrictions) {
 						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
-							min = facet.getFacetValue().parseDouble();
+							min = Double.parseDouble(facet.getFacetValue().getLiteral());
 						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
-							max = facet.getFacetValue().parseDouble();
+							max = Double.parseDouble(facet.getFacetValue().getLiteral());
 						}
 					}
 					Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(property);
