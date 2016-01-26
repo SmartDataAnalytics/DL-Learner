@@ -19,6 +19,7 @@
 package org.dllearner.algorithms.el;
 
 import com.google.common.collect.ComparisonChain;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
 
@@ -31,6 +32,7 @@ import org.dllearner.core.ComponentInitException;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Stable Heuristic", shortName = "el_heuristic", version = 0.1)
 public class StableHeuristic implements ELHeuristic {
 
 	private final ELDescriptionTreeComparator cmp = new ELDescriptionTreeComparator();

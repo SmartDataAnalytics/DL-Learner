@@ -1661,6 +1661,18 @@ conf file usage: la.useMinimizer = true
 * LearningProblem *
 *******************
 
+component: Class as Instance LP (org.dllearner.learningproblems.ClassAsInstanceLearningProblem) v0.1
+====================================================================================================
+
+conf file usage: lp.type = "classasinstance"
+
+option name: percentPerLengthUnit
+description: Percent Per Length Unit
+type: double
+required: false
+default value: 0.05
+conf file usage: lp.percentPerLengthUnit = 0.05
+
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
 
@@ -1738,6 +1750,54 @@ type: AccMethodTwoValued
 required: false
 default value: PRED_ACC
 conf file usage: lp.accuracyMethod = "PRED_ACC"
+
+option name: percentPerLengthUnit
+description: Percent Per Length Unit
+type: double
+required: false
+default value: 0.05
+conf file usage: lp.percentPerLengthUnit = 0.05
+
+option name: useRetrievalForClassification
+description: "Specifies whether to use retrieval or instance checks for testing a concept. - NO LONGER FULLY SUPPORTED.
+type: boolean
+required: false
+default value: false
+conf file usage: lp.useRetrievalForClassification = false
+
+component: PosNegLPStrict (org.dllearner.learningproblems.PosNegLPStrict) v0.1
+==============================================================================
+three valued definition learning problem
+
+conf file usage: lp.type = "posNegStrict"
+
+option name: accuracyMethod
+description: Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).
+type: AccMethodTwoValued
+required: false
+default value: PRED_ACC
+conf file usage: lp.accuracyMethod = "PRED_ACC"
+
+option name: accuracyPenalty
+description: penalty for pos/neg examples which are classified as neutral
+type: double
+required: false
+default value: 1.0
+conf file usage: lp.accuracyPenalty = 1.0
+
+option name: errorPenalty
+description: penalty for pos. examples classified as negative or vice versa
+type: double
+required: false
+default value: 3.0
+conf file usage: lp.errorPenalty = 3.0
+
+option name: penaliseNeutralExamples
+description: if set to true neutral examples are penalised
+type: boolean
+required: false
+default value: 
+conf file usage: lp.penaliseNeutralExamples = 
 
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
@@ -1899,6 +1959,37 @@ required: false
 default value: 1
 conf file usage: op.ro = 1
 
+component: EL Downward refinement operator (org.dllearner.refinementoperators.ELDown) v0.1
+==========================================================================================
+
+conf file usage: op.type = "eldown"
+
+component: OperatorInverter (org.dllearner.refinementoperators.OperatorInverter) v0.1
+=====================================================================================
+
+conf file usage: op.type = "inv_op"
+
+option name: guaranteeLength
+description: Whether inverse solutions must respect the desired max length
+type: boolean
+required: false
+default value: true
+conf file usage: op.guaranteeLength = true
+
+option name: operator
+description: operator to invert
+type: LengthLimitedRefinementOperator
+required: true
+default value: 
+conf file usage: op.operator = ""
+
+option name: useNegationNormalForm
+description: whether to apply NNF
+type: boolean
+required: false
+default value: true
+conf file usage: op.useNegationNormalForm = true
+
 component: rho refinement operator (org.dllearner.refinementoperators.RhoDRDown) v0.8
 =====================================================================================
 
@@ -2055,6 +2146,40 @@ required: false
 default value: 0.1
 conf file usage: h.startNodeBonus = 0.1
 
+component: DisjunctiveHeuristic (org.dllearner.algorithms.el.DisjunctiveHeuristic) v0.1
+=======================================================================================
+
+conf file usage: h.type = "disjunctive_heuristic"
+
+component: Stable Heuristic (org.dllearner.algorithms.el.StableHeuristic) v0.1
+==============================================================================
+
+conf file usage: h.type = "el_heuristic"
+
+component: Flexible Heuristic (org.dllearner.algorithms.ocel.FlexibleHeuristic) v0.1
+====================================================================================
+
+conf file usage: h.type = "flexheuristic"
+
+option name: nrOfNegativeExamples
+description: the number of negative examples
+type: int
+required: false
+default value: 
+conf file usage: h.nrOfNegativeExamples = 
+
+option name: percentPerLengthUnit
+description: score percent to deduct per expression length
+type: double
+required: true
+default value: 
+conf file usage: h.percentPerLengthUnit = 
+
+component: Lexicograpgic Heuristic (org.dllearner.algorithms.ocel.LexicographicHeuristic) v0.1
+==============================================================================================
+
+conf file usage: h.type = "lexheuristic"
+
 component: multiple criteria heuristic (org.dllearner.algorithms.ocel.MultiHeuristic) v0.7
 ==========================================================================================
 
@@ -2118,6 +2243,16 @@ conf file usage: h.type = "qtree_heuristic_simple"
 * AccMethod *
 *************
 
+component: AMeasure (org.dllearner.learningproblems.AccMethodAMeasure) v0.1
+===========================================================================
+
+conf file usage: accMethod.type = "ameasure"
+
+component: AMeasure Approximate (org.dllearner.learningproblems.AccMethodAMeasureApprox) v0.1
+=============================================================================================
+
+conf file usage: accMethod.type = "approx.ameasure"
+
 component: FMeasure (org.dllearner.learningproblems.AccMethodFMeasure) v0.0
 ===========================================================================
 
@@ -2139,6 +2274,37 @@ component: Weighted FMeasure (org.dllearner.learningproblems.AccMethodFMeasureWe
 ============================================================================================
 
 conf file usage: accMethod.type = "weighted.fmeasure"
+
+option name: balanced
+description: balance the weights to relative set size
+type: boolean
+required: false
+default value: false
+conf file usage: accMethod.balanced = false
+
+option name: negWeight
+description: weight on the negative examples
+type: double
+required: false
+default value: 1
+conf file usage: accMethod.negWeight = 1
+
+option name: posWeight
+description: weight on the positive examples
+type: double
+required: false
+default value: 1
+conf file usage: accMethod.posWeight = 1
+
+component: Generalised FMeasure (org.dllearner.learningproblems.AccMethodGenFMeasure) v0.1
+==========================================================================================
+
+conf file usage: accMethod.type = "gen_fmeasure"
+
+component: Jaccard Coefficient (org.dllearner.learningproblems.AccMethodJaccard) v0.1
+=====================================================================================
+
+conf file usage: accMethod.type = "jaccard"
 
 component: Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAcc) v0.0
 =====================================================================================
@@ -2166,6 +2332,27 @@ component: Weighted Predictive Accuracy (org.dllearner.learningproblems.AccMetho
 ======================================================================================================
 
 conf file usage: accMethod.type = "weighted.pred_acc"
+
+option name: balanced
+description: balance the weights to relative set size
+type: boolean
+required: false
+default value: false
+conf file usage: accMethod.balanced = false
+
+option name: negWeight
+description: weight on the negative examples
+type: double
+required: false
+default value: 1
+conf file usage: accMethod.negWeight = 1
+
+option name: posWeight
+description: weight on the positive examples
+type: double
+required: false
+default value: 1
+conf file usage: accMethod.posWeight = 1
 
 
 ********************

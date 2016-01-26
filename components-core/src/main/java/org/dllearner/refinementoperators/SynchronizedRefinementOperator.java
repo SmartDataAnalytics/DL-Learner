@@ -18,11 +18,11 @@
  */
 package org.dllearner.refinementoperators;
 
-import java.util.List;
-import java.util.Set;
-
 import org.dllearner.core.ComponentInitException;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * A wrapper class that makes the call of the refinement methods synchronized, i.e.
@@ -33,6 +33,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  * @author Lorenz Buehmann
  *
  */
+// not for conf
 public class SynchronizedRefinementOperator implements LengthLimitedRefinementOperator{
 	
 	private final LengthLimitedRefinementOperator delegate;

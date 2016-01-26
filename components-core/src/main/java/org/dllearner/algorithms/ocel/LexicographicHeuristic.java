@@ -18,9 +18,10 @@
  */
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
-
+@ComponentAnn(name = "Lexicograpgic Heuristic", shortName = "lexheuristic", version = 0.1)
 public class LexicographicHeuristic implements ExampleBasedHeuristic {
 
 	// implementiert einfach die Definition in der Diplomarbeit

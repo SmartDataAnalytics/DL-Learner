@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  * @author Lorenz Buehmann
  *
  */
+// not for conf
 public class ALCLearningAlgorithm extends RefinementOperatorBasedLearningAlgorithmBase<OWLClassExpression>{
 	
 	public ALCLearningAlgorithm(OWLOntology ontology, OWLReasoner reasoner) {

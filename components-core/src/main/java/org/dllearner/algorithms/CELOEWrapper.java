@@ -53,6 +53,7 @@ import java.util.SortedSet;
  * @author Lorenz Buehmann
  *
  */
+// not for conf
 public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, OWLIndividual, OWLClass> {
 	
 	private boolean equivalence = true;

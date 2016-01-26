@@ -18,8 +18,6 @@
  */
 package org.dllearner.kb;
 
-import java.util.Collections;
-
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
 import org.dllearner.utilities.owl.SimpleOntologyToByteConverter;
@@ -28,10 +26,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.util.Collections;
+
 /**
  * This class provides a wrapper around a single OWL Ontology.  However, due to threading issues it is not safe
  * to allow access to ontologies created with an Ontology Manager which we do not control.
  */
+// not for conf
 public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 	
     private byte[] ontologyBytes;
