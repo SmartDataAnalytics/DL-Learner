@@ -18,47 +18,14 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractReasonerComponent;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.util.OWLObjectDuplicator;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.dllearner.core.AbstractReasonerComponent;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.OWLObjectDuplicator;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author Lorenz Buehmann
@@ -110,16 +77,17 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 			operands.set(i, operands.get(i).accept(this));
 		}
 		
+		List<OWLClassExpression> oldOperands = new ArrayList<>(new TreeSet<>(operands));
 		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		for (int i = 0; i < operands.size(); i++) {
-			OWLClassExpression op1 = operands.get(i);
-			for (int j = i + 1; j < operands.size(); j++) {
-				OWLClassExpression op2 = operands.get(j);
+		for (int i = 0; i < oldOperands.size(); i++) {
+			OWLClassExpression op1 = oldOperands.get(i);
+			for (int j = i + 1; j < oldOperands.size(); j++) {
+				OWLClassExpression op2 = oldOperands.get(j);
 				
 				//remove operand if it is a super class
 				if(isSubClassOf(op1, op2)){
@@ -180,16 +148,17 @@ public class OWLClassExpressionMinimizer implements OWLClassExpressionVisitorEx<
 		for (int i = 0; i < operands.size(); i++) {
 			operands.set(i, operands.get(i).accept(this));
 		}
+		List<OWLClassExpression> oldOperands = new ArrayList<>(new TreeSet<>(operands));
 		List<OWLClassExpression> newOperands = new ArrayList<>(operands);
 		
 		if(newOperands.size() == 1){
 			return newOperands.iterator().next().accept(this);
 		}
 		
-		for (int i = 0; i < operands.size(); i++) {
-			OWLClassExpression op1 = operands.get(i);
-			for (int j = i + 1; j < operands.size(); j++) {
-				OWLClassExpression op2 = operands.get(j);
+		for (int i = 0; i < oldOperands.size(); i++) {
+			OWLClassExpression op1 = oldOperands.get(i);
+			for (int j = i + 1; j < oldOperands.size(); j++) {
+				OWLClassExpression op2 = oldOperands.get(j);
 				
 				//remove operand if it is a subclass
 				if(isSubClassOf(op2, op1)){

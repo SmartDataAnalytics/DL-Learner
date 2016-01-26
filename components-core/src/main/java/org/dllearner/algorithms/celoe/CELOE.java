@@ -18,25 +18,10 @@
  */
 package org.dllearner.algorithms.celoe;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -50,43 +35,25 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.TreeUtils;
 import org.dllearner.utilities.datastructures.SearchTree;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.PropertyContext;
+import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.*;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -620,7 +587,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewrite(node.getExpression());
-			
+
 			if(niceDescription.equals(classToDescribe)) {
 				return false;
 			}
