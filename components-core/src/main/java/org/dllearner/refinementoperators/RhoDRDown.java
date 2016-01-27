@@ -496,7 +496,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 			List<OWLClassExpression> knownRefinements, OWLClassExpression currDomain) {
 
-//		System.out.println("|- " + description + "<"+OWLClassExpressionUtils.getLength(description)+">" + " " + currDomain + "<"+OWLClassExpressionUtils.getLength(currDomain)+">" + " " + maxLength );
+//		System.out.println("|- " + description + " " + currDomain + " " + maxLength);
 
 		// actions needing to be performed if this is the first time the
 		// current domain is used
@@ -1162,6 +1162,16 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 			}
 		}
+
+		// boolean datatypes, e.g. testPositive = true
+		if(useBooleanDatatypes) {
+			Set<OWLDataProperty> booleanDPs = reasoner.getBooleanDatatypeProperties();
+			logger.debug(sparql_debug, "BOOL DPs:"+booleanDPs);
+			for(OWLDataProperty dp : booleanDPs) {
+				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(true)));
+				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(false)));
+			}
+		}
 		m.put(2,m2);
 
 		SortedSet<OWLClassExpression> m3 = new TreeSet<>();
@@ -1185,16 +1195,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				if(useInverse) {
 					m3.add(df.getOWLObjectAllValuesFrom(r.getInverseProperty(), df.getOWLThing()));
 				}
-			}
-		}
-
-		// boolean datatypes, e.g. testPositive = true
-		if(useBooleanDatatypes) {
-			Set<OWLDataProperty> booleanDPs = reasoner.getBooleanDatatypeProperties();
-			logger.debug(sparql_debug, "BOOL DPs:"+booleanDPs);
-			for(OWLDataProperty dp : booleanDPs) {
-				m3.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(true)));
-				m3.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(false)));
 			}
 		}
 
@@ -1308,6 +1308,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// compute applicable properties
 		computeMg(nc);
 
+		// boolean datatypes, e.g. testPositive = true
+		if(useBooleanDatatypes) {
+			Set<OWLDataProperty> booleanDPs = mgbd.get(nc);
+			for(OWLDataProperty dp : booleanDPs) {
+				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(true)));
+				m2.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(false)));
+			}
+		}
+
 		mA.get(nc).put(2,m2);
 
 		SortedSet<OWLClassExpression> m3 = new TreeSet<>();
@@ -1323,15 +1332,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// M_A and M_A' where A'=ran(r)
 			for(OWLObjectProperty r : mgr.get(nc)) {
 				m3.add(df.getOWLObjectAllValuesFrom(r, df.getOWLThing()));
-			}
-		}
-
-		// boolean datatypes, e.g. testPositive = true
-		if(useBooleanDatatypes) {
-			Set<OWLDataProperty> booleanDPs = mgbd.get(nc);
-			for(OWLDataProperty dp : booleanDPs) {
-				m3.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(true)));
-				m3.add(df.getOWLDataHasValue(dp, df.getOWLLiteral(false)));
 			}
 		}
 
