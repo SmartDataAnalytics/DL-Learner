@@ -1,7 +1,5 @@
 package org.dllearner.distributed.amqp;
 
-import org.dllearner.algorithms.celoe.OENode;
-import org.dllearner.utilities.datastructures.SearchTree;
 import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
@@ -9,25 +7,34 @@ public class SearchTreeContainer implements MessageContainer {
 	// TODO: PW: fix SeachTree instances to non-abstract type
 	private static final long serialVersionUID = 6662673346574604637L;
 
-	private SearchTree<OENode> tree;
+	private SearchTree tree;
 	private double bestAccuracy;
 	private OWLClassExpression bestDescription;
 	private EvaluatedDescriptionSet bestEvaluatedDescriptions;
 	private int numChecks;
+	private int minHorizExpansion;
+	private int maxHorizExpansion;
 
-	public SearchTreeContainer(SearchTree<OENode> tree) {
+	public SearchTreeContainer(SearchTree tree, int minHorizExpansion,
+			int maxHorizExpansion) {
+
 		this.tree = tree;
+		this.minHorizExpansion = minHorizExpansion;
+		this.maxHorizExpansion = maxHorizExpansion;
 	}
 
-	public SearchTreeContainer(SearchTree<OENode> tree, double bestAccuracy,
+	public SearchTreeContainer(SearchTree tree, double bestAccuracy,
 			OWLClassExpression bestDescription,
-			EvaluatedDescriptionSet bestEvaluatedDescriptions, int numChecks) {
+			EvaluatedDescriptionSet bestEvaluatedDescriptions, int numChecks,
+			int minHorizExpansion, int maxHorizExpansion) {
 
 		this.tree = tree;
 		this.bestAccuracy = bestAccuracy;
 		this.bestDescription = bestDescription;
 		this.bestEvaluatedDescriptions = bestEvaluatedDescriptions;
 		this.numChecks = numChecks;
+		this.minHorizExpansion = minHorizExpansion;
+		this.maxHorizExpansion = maxHorizExpansion;
 	}
 
 	@Override
@@ -35,7 +42,7 @@ public class SearchTreeContainer implements MessageContainer {
 		return "[" + tree.getRoot().toString() + " ...] (" + tree.size() + ")";
 	}
 
-	public SearchTree<OENode> getTree() {
+	public SearchTree getTree() {
 		return tree;
 	}
 
@@ -53,5 +60,13 @@ public class SearchTreeContainer implements MessageContainer {
 
 	public int getNumChecks() {
 		return numChecks;
+	}
+
+	public int getMinHorizExpansion() {
+		return minHorizExpansion;
+	}
+
+	public int getMaxHorizExpansion() {
+		return maxHorizExpansion;
 	}
 }

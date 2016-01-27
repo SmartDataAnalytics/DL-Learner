@@ -3,7 +3,6 @@ package org.dllearner.distributed.amqp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.dllearner.distributed.OEHeuristicRuntime;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 
@@ -442,10 +441,65 @@ public class SearchTreeTest {
 		tree.updateAndSetUnblocked(updateTree2);
 		assertEquals(23, tree.size());
 		assertEquals(false, tree.isBlocked(j_));
-		assertEquals(j_.getRefinementCount(),j.getRefinementCount());
+		assertEquals(j_.getRefinementCount(), j.getRefinementCount());
 		assertTrue(tree.contains(t_));
 		assertTrue(tree.contains(u_));
 		assertTrue(tree.contains(v_));
 		assertTrue(tree.contains(w_));
+	}
+
+	@Test
+	public void testIsSúbTreeGreaterThan() {
+		/* search tree
+		 *
+		 *               A
+		 *        .------^------.
+		 *       B               C
+		 *    .--^--.        .---|---.
+		 *   D       E      F    G    H
+		 *  / \     /|\    / \   |   / \
+		 * I   J   K L M  N   O  P  Q   R
+		 */
+
+		OENode a = new OENode(newCls("A"), 0.56); a.setRefinementCount(23);
+		OENode b = new OENode(newCls("B"), 0.67); b.setRefinementCount(24);
+		OENode c = new OENode(newCls("C"), 0.67); c.setRefinementCount(25);
+		OENode d = new OENode(newCls("D"), 0.78); d.setRefinementCount(26);
+		OENode e = new OENode(newCls("E"), 0.89); e.setRefinementCount(27);
+		OENode f = new OENode(newCls("F"), 0.87); f.setRefinementCount(28);
+		OENode g = new OENode(newCls("G"), 0.86); g.setRefinementCount(29);
+		OENode h = new OENode(newCls("H"), 0.85); h.setRefinementCount(30);
+		OENode i = new OENode(newCls("I"), 0.84); i.setRefinementCount(31);
+		OENode j = new OENode(newCls("J"), 0.83); j.setRefinementCount(32);
+		OENode k = new OENode(newCls("K"), 0.82); k.setRefinementCount(33);
+		OENode l = new OENode(newCls("L"), 0.81); l.setRefinementCount(34);
+		OENode m = new OENode(newCls("M"), 0.80); m.setRefinementCount(35);
+		OENode n = new OENode(newCls("N"), 0.54); n.setRefinementCount(36);
+		OENode o = new OENode(newCls("O"), 0.55); o.setRefinementCount(37);
+		OENode p = new OENode(newCls("P"), 0.56); p.setRefinementCount(38);
+		OENode q = new OENode(newCls("Q"), 0.57); q.setRefinementCount(39);
+		OENode r = new OENode(newCls("R"), 0.58); r.setRefinementCount(40);
+
+		SearchTree tree = new SearchTree(new OEHeuristicRuntime());
+		tree.setRoot(a);
+
+		tree.addNode(a, b); tree.addNode(b, d); tree.addNode(d, i);
+		                                        tree.addNode(d, j);
+
+		                    tree.addNode(b, e); tree.addNode(e, k);
+		                                        tree.addNode(e, l);
+		                                        tree.addNode(e, m);
+
+		tree.addNode(a, c); tree.addNode(c, f); tree.addNode(f, n);
+		                                        tree.addNode(f, o);
+
+		                    tree.addNode(c, g); tree.addNode(g, p);
+
+		                    tree.addNode(c, h); tree.addNode(h, q);
+		                                        tree.addNode(h, r);
+
+		assertTrue(tree.isSubTreeGreaterThanX(b, 5));
+		assertEquals(false, tree.isSubTreeGreaterThanX(j, 5));
+		assertEquals(false, tree.isSubTreeGreaterThanX(c, 9));
 	}
 }

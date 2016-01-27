@@ -1,4 +1,4 @@
-package org.dllearner.distributed;
+package org.dllearner.distributed.amqp;
 
 import java.util.Comparator;
 
@@ -6,7 +6,6 @@ import org.dllearner.core.AbstractComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Heuristic;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.distributed.amqp.OENode;
 
 import com.google.common.collect.ComparisonChain;
 

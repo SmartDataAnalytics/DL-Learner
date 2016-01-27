@@ -7,15 +7,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Properties;
+import java.util.Random;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.Topic;
+import javax.jms.TopicSubscriber;
 
 import org.apache.qpid.QpidException;
 import org.apache.qpid.client.AMQConnection;
 import org.apache.qpid.client.AMQQueue;
+import org.apache.qpid.client.AMQTopic;
 import org.apache.qpid.url.URLSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +33,8 @@ import com.jamonapi.MonitorFactory;
 public class AMQPAgent extends Thread {
 
 	private static Logger logger = LoggerFactory.getLogger(AMQPAgent.class);
+	public static String processedMessagesQueue = "processedMessagesQ";
+	public static String messagesToProcessQueue = "messagesToProcessQ";
 
 	protected AMQQueue queueOut;
 	protected AMQQueue queueIn;
@@ -39,7 +48,15 @@ public class AMQPAgent extends Thread {
 	private boolean transacted = false;
 	private org.apache.qpid.jms.Session session;
 	private MessageProducer producer;
+	private MessageConsumer consumer;
+	private MessageProducer termMsgProducer;
+	protected TopicSubscriber termMsgSubscriber;
 	private boolean debugLog = true;
+	private String termRoutingKey = "terminate";
+	private Topic termTopic;
+	protected int myID;
+	private int sentMsgsCnt;
+	private int recvdMsgsCnt;
 
 	public AMQPAgent() {
 		super();
@@ -58,18 +75,33 @@ public class AMQPAgent extends Thread {
 	}
 
 	protected void init() throws URLSyntaxException, QpidException, JMSException {
+		if (myID == 0) {
+			myID = (new Random()).nextInt(100000);
+		}
+
 		AMQPConfiguration url = new AMQPConfiguration(user, password, clientId,
 				virtualHost, host, port);
 
 		connection = new AMQConnection(url.getURL());
+		connection.start();
 		session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
-		producer = session.createProducer(queueOut);
 
+		producer = session.createProducer(queueOut);
+		producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+
+		consumer = session.createConsumer(queueIn);
+
+		termTopic = new AMQTopic(connection, termRoutingKey);
+		termMsgProducer = session.createProducer(termTopic);
+		termMsgSubscriber = session.createDurableSubscriber(
+				termTopic, Integer.toString(myID));
+
+		sentMsgsCnt = 0;
+		recvdMsgsCnt = 0;
 	}
 
 	protected void terminateWorkers() throws JMSException {
-		// TODO: PW: implement
-		throw new RuntimeException("Implement me!");
+		termMsgProducer.send(session.createBytesMessage());
 	}
 
 	public void setOutputQueue(String queueName) {
@@ -78,6 +110,10 @@ public class AMQPAgent extends Thread {
 
 	public void setInputQueue(String queueName) {
 		queueIn = new AMQQueue("amq.direct", queueName);
+	}
+
+	public void setMessageListener(MessageListener listener) throws JMSException {
+		consumer.setMessageListener(listener);
 	}
 
 	public boolean loadAMQPSettings(String propertiesFilePath) {
@@ -99,6 +135,7 @@ public class AMQPAgent extends Thread {
 	}
 
 	protected void send(MessageContainer msgContainer) {
+		// TODO: PW: log send
 		Message msg;
 
 		try {
@@ -128,5 +165,13 @@ public class AMQPAgent extends Thread {
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
+	}
+
+	// TODO: PW: implement receive
+	// TODO: PW: log receive
+
+	public void finalizeMessaging() throws JMSException {
+		session.close();
+		connection.close();
 	}
 }
