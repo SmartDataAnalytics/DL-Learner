@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.examples;
 
 import java.util.SortedSet;
@@ -55,7 +54,7 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	/**
 	 * adds to a global example repository.
 	 * returns false, if the set is contained already
-	 * @param e
+	 * @param e the example container
 	 * @return
 	 */
 	public static boolean add(ExampleContainer e){

@@ -19,37 +19,23 @@
  */
 package org.dllearner.cli;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.AnnComponentManager;
-import org.dllearner.core.Component;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.LearningProblem;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
 import org.reflections.Reflections;
 import org.semanticweb.owlapi.model.OWLClass;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -57,8 +43,9 @@ import com.google.common.collect.Sets;
  *
  */
 public class DocumentationGenerator {
-
 	static {
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
 		AnnComponentManager.setReflectionScanner(new Reflections());
 		org.apache.log4j.Logger.getLogger(AnnComponentManager.class).setLevel(Level.DEBUG);
 	}

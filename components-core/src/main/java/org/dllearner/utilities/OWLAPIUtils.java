@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities;
 
@@ -20,6 +35,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 import java.util.*;
 
 /**
+ * A collection of utility methods for the OWL API.
+ *
  * @author Lorenz Buehmann
  *
  */
@@ -158,11 +175,19 @@ public class OWLAPIUtils {
         .toFormatter());
 		
 	}
-	
+
+	/**
+	 * @param entityType the OWL entity type
+	 * @return the name of the OWL entity type
+	 */
 	public static String getPrintName(EntityType entityType) {
         return entityType.getPrintName().toLowerCase();
 	}
-	
+
+	/**
+	 * @param lit the OWL literal
+	 * @return whether the OWL literal is an integer, i.e. whether the datatype is some integer
+	 */
 	public static boolean isIntegerDatatype(OWLLiteral lit) {
 		return intDatatypes.contains(lit.getDatatype());
 	}
@@ -174,7 +199,12 @@ public class OWLAPIUtils {
 	public static boolean isNumericDatatype(OWLDatatype datatype){
 		return numericDatatypes.contains(datatype);
     }
-	
+
+	/**
+	 * Convenience method that converts a set of OWL class expressions to a set of OWL classes.
+	 * @param classExpressions a set of OWL class expressions
+	 * @return a set of OWL classes
+	 */
 	public static Set<OWLClass> asOWLClasses(Set<OWLClassExpression> classExpressions) {
 		return Sets.newHashSet(Iterables.transform(classExpressions, OWL_CLASS_TRANSFORM_FUNCTION));
 	}

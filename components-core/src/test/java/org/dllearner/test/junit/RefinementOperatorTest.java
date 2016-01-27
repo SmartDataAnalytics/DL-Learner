@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
 
 import org.apache.log4j.Level;
@@ -35,6 +34,7 @@ import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -54,7 +54,7 @@ import static org.junit.Assert.assertTrue;
  * @author Jens Lehmann
  *
  */
-public class RefinementOperatorTests {
+public class RefinementOperatorTest {
 
 	private String baseURI;
 	
@@ -66,6 +66,7 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDRDownTest() {
 		try {
+			//StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 			String file = "../examples/carcinogenesis/carcinogenesis.owl";
 			KnowledgeSource ks = new OWLFile(file);
 			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
@@ -90,7 +91,7 @@ public class RefinementOperatorTests {
 				System.out.println(result);
 			}
 			
-			int desiredResultSize = 141;
+			int desiredResultSize = 113;
 			if(results.size() != desiredResultSize) {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}
@@ -101,7 +102,7 @@ public class RefinementOperatorTests {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void rhoDRDownTest2() throws ParseException, ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
@@ -233,6 +234,49 @@ public class RefinementOperatorTests {
 		}		
 	}	
 	
+
+	/**
+	 * Applies the RhoDRDown operator to a concept and checks that the number of
+	 * refinements does not exceed the requested length.
+	 *
+	 */
+	@Test
+	public void rhoDRDownTest6() {
+		try {
+			String file = "../examples/carcinogenesis/carcinogenesis.owl";
+			KnowledgeSource ks = new OWLFile(file);
+			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.init();
+			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
+			int maxLength = 4;
+			Set<OWLClassExpression> results = op.refine(concept, maxLength, null);
+
+			int tooLong = 0;
+			for(OWLClassExpression result : results) {
+				if (OWLClassExpressionUtils.getLength(result) > maxLength) {
+					tooLong++;
+				}
+			}
+
+			if(tooLong!= 0) {
+				System.out.println(tooLong + " refinements were longer than " + maxLength);
+			}
+			assertTrue(tooLong==0);
+		} catch(ComponentInitException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
@@ -260,37 +304,42 @@ public class RefinementOperatorTests {
 	@Test
 	public void rhoDownTestPellet() throws ComponentInitException {
 		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
-		Logger.getRootLogger().setLevel(Level.TRACE);
-		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
-		reasoner.init();
-		
-		RhoDRDown op = new RhoDRDown();
-		op.setReasoner(reasoner);
-		op.setUseSomeOnly(false);
-		op.setSubHierarchy(reasoner.getClassHierarchy());
-		op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
-		op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
-		op.setUseSomeOnly(false);
-		op.init();
-		
-		OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
-		Set<OWLClassExpression> refinements = op.refine(nc, 5);
-		for(OWLClassExpression refinement : refinements) {
-			System.out.println(refinement);
-		}		
-		// refinements should be as follows:
-		//	male ⊓ male
-		//	male ⊓ (male   ⊔ male)
-		//	male ⊓ (female ⊔ male)
-		//	male ⊓ (female ⊔ female)
-		//	male ⊓ (¬male)
-		//	male ⊓ (¬female)
-		//	male ⊓ (∃ hasChild.⊤)
-		//	male ⊓ (∀ hasChild.⊤)
+		Level oldLevel = Logger.getRootLogger().getLevel();
+		try {
+			Logger.getRootLogger().setLevel(Level.TRACE);
+			AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.FATHER);
+			reasoner.init();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseSomeOnly(false);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.setUseSomeOnly(false);
+			op.init();
+
+			OWLClass nc = new OWLClassImpl(IRI.create("http://example.com/father#male"));
+			Set<OWLClassExpression> refinements = op.refine(nc, 5);
+			for (OWLClassExpression refinement : refinements) {
+				System.out.println(refinement);
+			}
+			// refinements should be as follows:
+			//	male ⊓ male
+			//	male ⊓ (male   ⊔ male)
+			//	male ⊓ (female ⊔ male)
+			//	male ⊓ (female ⊔ female)
+			//	male ⊓ (¬male)
+			//	male ⊓ (¬female)
+			//	male ⊓ (∃ hasChild.⊤)
+			//	male ⊓ (∀ hasChild.⊤)
 //		System.out.println(rs);
 //		System.out.println("most general properties: " + rs.getMostGeneralProperties());
-		System.out.println(reasoner.getObjectPropertyHierarchy());
-		assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size()==8);		
+			System.out.println(reasoner.getObjectPropertyHierarchy());
+			assertTrue(refinements.size() + " results found, but should be " + 8 + ".", refinements.size() == 8);
+		} finally {
+			Logger.getRootLogger().setLevel(oldLevel);
+		}
 	}
 	
 	private String uri(String name) {

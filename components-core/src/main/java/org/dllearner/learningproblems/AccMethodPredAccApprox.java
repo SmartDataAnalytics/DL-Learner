@@ -1,7 +1,22 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.learningproblems;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.dllearner.core.ComponentAnn;
@@ -10,8 +25,11 @@ import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 @ComponentAnn(name = "Predictive Accuracy Approximate", shortName = "approx.prec_acc", version = 0)
-public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate, AccMethodCLPApproximate {
+public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMethodTwoValuedApproximate {
 	final static Logger logger = Logger.getLogger(AccMethodPredAccApprox.class);
 	@Override
 	public void init() {
@@ -82,14 +100,6 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 		double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 		return ret;
-	}
-
-	@Override
-	public double getAccApproxCLP(OWLClassExpression description,
-			Collection<OWLIndividual> classInstances,
-			Collection<OWLIndividual> superClassInstances,
-			double coverageFactor, double noise) {
-		return getAccApprox2(description, classInstances, superClassInstances, noise);
 	}
 
 	@Override

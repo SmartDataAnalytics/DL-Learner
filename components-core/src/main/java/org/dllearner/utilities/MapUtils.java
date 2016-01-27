@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities;
 
 import java.util.ArrayList;
@@ -9,6 +27,8 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import org.aksw.commons.collections.multimaps.MultimapUtils;
 
 public class MapUtils {
 
@@ -41,12 +61,17 @@ public class MapUtils {
 		});
         return entries;
 	}
-	
+
+	/**
+	 * Constructs a multimap with the same mappings as the specified map.
+	 * @param input the input map
+	 * @return the multimap
+	 */
 	public static <K, V> Multimap<K, V> createMultiMap(Map<K, ? extends Iterable<V>> input) {
-		  Multimap<K, V> multimap = ArrayListMultimap.create();
-		  for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
-		    multimap.putAll(entry.getKey(), entry.getValue());
-		  }
-		  return multimap;
+		Multimap<K, V> multimap = ArrayListMultimap.create();
+		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
+			multimap.putAll(entry.getKey(), entry.getValue());
 		}
+		return multimap;
+	}
 }

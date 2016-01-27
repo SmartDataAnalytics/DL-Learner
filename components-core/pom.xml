@@ -35,6 +35,7 @@
 								<!--This line excludes inner classes -->
 								<exclude>**/*$*</exclude>
 							</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 						</configuration>
 					</plugin>
 					<!-- Jar the tests up into a separate jar so other components tests'
@@ -137,6 +138,7 @@
 						<!--This line excludes inner classes -->
 						<exclude>**/*$*</exclude>
 					</excludes>
+							<argLine>-Dlog4j.configuration=log4j.properties</argLine>
 				</configuration>
 			</plugin>
 			<!-- Jar the tests up into a separate jar so other components tests' can 
@@ -149,6 +151,44 @@
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
+				<configuration>
+					<skipDeploy>true</skipDeploy>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<!-- Deploy the web site -->
+				<groupId>com.github.github</groupId>
+				<artifactId>site-maven-plugin</artifactId>
+				<version>0.12</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>site</goal>
+						</goals>
+						<!-- select the Maven phase in which the plugin will be executed -->
+						<phase>site-deploy</phase>
+						<configuration>
+							<!-- Plugin configuration ges here -->
+
+							<server>github</server>
+
+							<!-- The commit message -->
+							<message>Creating site for ${project.name} ${project.version}</message>
+							<!-- The location where the site is uploaded -->
+							<path>${project.version}</path>
+							<!-- Use merge or override the content -->
+							<merge>true</merge>
+							<noJekyll>true</noJekyll>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

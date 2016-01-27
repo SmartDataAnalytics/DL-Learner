@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.prolog;
 
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class Function extends Term {
 	}
 
 	public Term getArgument(int index) {
-		return (Term) arguments.get(index);
+		return arguments.get(index);
 	}
 
 	public void setArgument(int index, Term term) {
@@ -128,16 +127,16 @@ public class Function extends Term {
 	@Override
 	public String toPLString() {
 		if ((type == FunctionDefinition.TYPE_PREFIX) && (getArity() == 1)) {
-			return name + ((Term) arguments.get(0)).toPLString();
+			return name + arguments.get(0).toPLString();
 		} else if ((type == FunctionDefinition.TYPE_POSTFIX) && (getArity() == 1)) {
-			return ((Term) arguments.get(0)).toPLString() + name;
+			return arguments.get(0).toPLString() + name;
 		} else if ((type == FunctionDefinition.TYPE_POSTFIX) && (getArity() == 2)) {
-			return ((Term) arguments.get(0)).toPLString() + name
-					+ ((Term) arguments.get(1)).toPLString();
+			return arguments.get(0).toPLString() + name
+					+ arguments.get(1).toPLString();
 		} else {
 			StringBuffer ret = new StringBuffer(name + "(");
 			for (int i = 0; i < arguments.size(); i++) {
-				ret.append(((Term) arguments.get(i)).toPLString());
+				ret.append(arguments.get(i).toPLString());
 				if (i + 1 < arguments.size())
 					ret.append(", ");
 			}
@@ -150,7 +149,7 @@ public class Function extends Term {
 	public Term getInstance(Variable variable, Term term) {
 		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
 		for (int i = 0; i < arguments.size(); i++) {
-			Term argument = (Term) arguments.get(i);
+			Term argument = arguments.get(i);
 			newArgs.add(argument.getInstance(variable, term));
 		}
 		return new Function(name, this.type, newArgs);

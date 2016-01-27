@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,29 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.StringRenderer;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
 import org.junit.Test;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -47,10 +41,14 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * @author Jens Lehmann
  *
  */
-public class ClassExpressionTests {
+public class ClassExpressionTest {
 	
 	OWLDataFactory df = new OWLDataFactoryImpl();
-	PrefixManager pm = new DefaultPrefixManager("");
+	PrefixManager pm = new DefaultPrefixManager();
+
+	public ClassExpressionTest() {
+		pm.setDefaultPrefix("");
+	}
 	
 
 	/**
@@ -108,45 +106,56 @@ public class ClassExpressionTests {
 	 */
 	@Test
 	public void forAllContextTest() {
-		// create some basic ontology elements
-		OWLClass a1 = df.getOWLClass("a1", pm);
-		OWLClass a2 = df.getOWLClass("a2", pm);
-		OWLObjectProperty p1 = df.getOWLObjectProperty("p1", pm);
-		OWLObjectProperty p2 = df.getOWLObjectProperty("p2", pm);
-		OWLObjectProperty p3 = df.getOWLObjectProperty("p3", pm);
-		OWLIndividual i1 = df.getOWLNamedIndividual("i1", pm);
-		
-		// create some class expressions
-		OWLClassExpression d1 = df.getOWLObjectIntersectionOf(a1,a2);
-		OWLClassExpression d2 = df.getOWLObjectAllValuesFrom(p1,a1);
-		OWLClassExpression d3 = df.getOWLObjectUnionOf(d1,d2);
-		OWLClassExpression d4 = df.getOWLObjectHasValue(p2,i1);
-		OWLClassExpression d5 = df.getOWLObjectAllValuesFrom(p2,d2);
-		OWLClassExpression d6 = df.getOWLObjectAllValuesFrom(p1,d4);
-		OWLClassExpression d7 = df.getOWLObjectSomeValuesFrom(p3,d5);
-		OWLClassExpression d8 = df.getOWLObjectUnionOf(d2,d5);
-		OWLClassExpression d9 = df.getOWLObjectAllValuesFrom(p1,d8);
-		
-		// a1 AND a2 => should be empty result
-		assertTrue(ConceptTransformation.getForallContexts(d1).isEmpty());
-		// note: the assertions below use toString() which should usually be avoided, but since
-		// the toString() method of SortedSet is unlikely to change we use it here for convenience
-		// ALL p1.a1 => context: [[p1]]		
-		assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[<p1>]]"));
-		// (a1 AND a2) OR ALL p1.a1 => [[p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[<p1>]]"));
-		// p2 hasValue i1 => []
-		assertTrue(ConceptTransformation.getForallContexts(d4).isEmpty());
-		// ALL p2.ALL p1.a1 => [[p2],[p1,p2]]
-		assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[<p2>, <p1>], [<p2>]]"));
-		// ALL p1.p2 hasValue i1 => [[p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[<p1>]]"));
-		// EXISTS p3.ALL p2.ALL p1.a1 => [[p3,p2],[p3,p2,p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[<p3>, <p2>, <p1>], [<p3>, <p2>]]"));
-		// (ALL p1.a1 OR ALL p2.ALL p1.a1)
-		assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[<p2>, <p1>], [<p1>], [<p2>]]"));
-		// ALL p1.(ALL p1.a1 OR ((a1 AND a2) OR ALL p1.a1)) => [[p1],[p1,p1],[p1,p2],[p1,p2,p1]]
-		assertTrue(ConceptTransformation.getForallContexts(d9).toString().equals("[[<p1>, <p2>, <p1>], [<p1>, <p1>], [<p1>, <p2>], [<p1>]]"));
-		
+		// if we rely on toString comparison below we better be a bit more explicit...
+		OWLObjectRenderer lastRenderer = StringRenderer.getRenderer();
+		try {
+			StringRenderer.setRenderer(StringRenderer.Rendering.OWLAPI_SYNTAX);
+			// create some basic ontology elements
+			OWLClass a1 = df.getOWLClass("a1", pm);
+			OWLClass a2 = df.getOWLClass("a2", pm);
+			OWLObjectProperty p1 = df.getOWLObjectProperty("p1", pm);
+			OWLObjectProperty p2 = df.getOWLObjectProperty("p2", pm);
+			OWLObjectProperty p3 = df.getOWLObjectProperty("p3", pm);
+			OWLIndividual i1 = df.getOWLNamedIndividual("i1", pm);
+
+			// create some class expressions
+			OWLClassExpression d1 = df.getOWLObjectIntersectionOf(a1, a2);
+			OWLClassExpression d2 = df.getOWLObjectAllValuesFrom(p1, a1);
+			OWLClassExpression d3 = df.getOWLObjectUnionOf(d1, d2);
+			OWLClassExpression d4 = df.getOWLObjectHasValue(p2, i1);
+			OWLClassExpression d5 = df.getOWLObjectAllValuesFrom(p2, d2);
+			OWLClassExpression d6 = df.getOWLObjectAllValuesFrom(p1, d4);
+			OWLClassExpression d7 = df.getOWLObjectSomeValuesFrom(p3, d5);
+			OWLClassExpression d8 = df.getOWLObjectUnionOf(d2, d5);
+			OWLClassExpression d9 = df.getOWLObjectAllValuesFrom(p1, d8);
+
+			// a1 AND a2 => should be empty result
+			assertTrue(ConceptTransformation.getForallContexts(d1).isEmpty());
+			// note: the assertions below use toString() which should usually be avoided, but since
+			// the toString() method of SortedSet is unlikely to change we use it here for convenience
+			// ALL p1.a1 => context: [[p1]]
+			System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d2).toString());
+			assertTrue(ConceptTransformation.getForallContexts(d2).toString().equals("[[<p1>]]"));
+			// (a1 AND a2) OR ALL p1.a1 => [[p1]]
+			System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d3).toString());
+			assertTrue(ConceptTransformation.getForallContexts(d3).toString().equals("[[<p1>]]"));
+			// p2 hasValue i1 => []
+			assertTrue(ConceptTransformation.getForallContexts(d4).isEmpty());
+			// ALL p2.ALL p1.a1 => [[p2],[p1,p2]]
+			System.out.println("[[<p2>, <p1>], [<p2>]] ? " + ConceptTransformation.getForallContexts(d5).toString());
+			assertTrue(ConceptTransformation.getForallContexts(d5).toString().equals("[[<p2>, <p1>], [<p2>]]"));
+			// ALL p1.p2 hasValue i1 => [[p1]]
+			System.out.println("[[<p1>]] ? " + ConceptTransformation.getForallContexts(d6).toString());
+			assertTrue(ConceptTransformation.getForallContexts(d6).toString().equals("[[<p1>]]"));
+			// EXISTS p3.ALL p2.ALL p1.a1 => [[p3,p2],[p3,p2,p1]]
+			System.out.println("[[<p3>, <p2>, <p1>], [<p3>, <p2>]] ? " + ConceptTransformation.getForallContexts(d7).toString());
+			assertTrue(ConceptTransformation.getForallContexts(d7).toString().equals("[[<p3>, <p2>, <p1>], [<p3>, <p2>]]"));
+			// (ALL p1.a1 OR ALL p2.ALL p1.a1)
+			assertTrue(ConceptTransformation.getForallContexts(d8).toString().equals("[[<p2>, <p1>], [<p1>], [<p2>]]"));
+			// ALL p1.(ALL p1.a1 OR ((a1 AND a2) OR ALL p1.a1)) => [[p1],[p1,p1],[p1,p2],[p1,p2,p1]]
+			assertTrue(ConceptTransformation.getForallContexts(d9).toString().equals("[[<p1>, <p2>, <p1>], [<p1>, <p1>], [<p1>, <p2>], [<p1>]]"));
+		} finally {
+			StringRenderer.setRenderer(lastRenderer);
+		}
 	}
 }

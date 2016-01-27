@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
+
+import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
 
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
 
 /**
  * The class uses an existing refinement operator and inverts it, i.e. a 
@@ -37,14 +37,45 @@ import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "OperatorInverter", shortName = "inv_op", version = 0.1)
 public class OperatorInverter implements LengthLimitedRefinementOperator {
 
+	public LengthLimitedRefinementOperator getOperator() {
+		return operator;
+	}
+
+	public void setOperator(LengthLimitedRefinementOperator operator) {
+		this.operator = operator;
+	}
+
+	public boolean isUseNegationNormalForm() {
+		return useNegationNormalForm;
+	}
+
+	public void setUseNegationNormalForm(boolean useNegationNormalForm) {
+		this.useNegationNormalForm = useNegationNormalForm;
+	}
+
+	public boolean isGuaranteeLength() {
+		return guaranteeLength;
+	}
+
+	public void setGuaranteeLength(boolean guaranteeLength) {
+		this.guaranteeLength = guaranteeLength;
+	}
+
+	@ConfigOption(description = "operator to invert", required = true)
 	private LengthLimitedRefinementOperator operator;
+	@ConfigOption(description = "whether to apply NNF", defaultValue = "true")
 	private boolean useNegationNormalForm = true;
+	@ConfigOption(description = "Whether inverse solutions must respect the desired max length", defaultValue = "true")
 	private boolean guaranteeLength = true;
 	
 	public OperatorInverter(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
+	}
+
+	public OperatorInverter() {
 	}
 	
 	@Override

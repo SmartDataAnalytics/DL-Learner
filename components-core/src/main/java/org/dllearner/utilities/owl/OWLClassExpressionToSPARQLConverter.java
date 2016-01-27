@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.owl;
 
 import com.google.common.base.Joiner;
@@ -365,7 +383,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLNamedIndividual value = ce.getValue().asOWLNamedIndividual();
+		OWLNamedIndividual value = ce.getFiller().asOWLNamedIndividual();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
 			sparql += triple(value.toStringID(), propertyExpression.getNamedProperty(), variables.peek());
@@ -523,7 +541,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
-		OWLLiteral value = ce.getValue();
+		OWLLiteral value = ce.getFiller();
 		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), value);
 	}
 
@@ -622,7 +640,8 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
-		PrefixManager pm = new DefaultPrefixManager("http://dbpedia.org/ontology/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dbpedia.org/ontology/");
 		
 		OWLClass clsA = df.getOWLClass("A", pm);
 		OWLClass clsB = df.getOWLClass("B", pm);

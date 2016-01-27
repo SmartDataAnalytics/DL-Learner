@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,18 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.NotImplementedException;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
@@ -41,6 +38,7 @@ import java.util.TreeSet;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "PosNegLPStrict", shortName = "posNegStrict", version = 0.1, description = "three valued definition learning problem")
 public class PosNegLPStrict extends PosNegLP {
 
 	private Set<OWLIndividual> neutralExamples;
@@ -49,6 +47,7 @@ public class PosNegLPStrict extends PosNegLP {
 	private boolean penaliseNeutralExamples = false;
 	
 	private static final double defaultAccuracyPenalty = 1;
+
 	@ConfigOption(name="accuracyPenalty", description = "penalty for pos/neg examples which are classified as neutral", defaultValue = "1.0")
 	private double accuracyPenalty = defaultAccuracyPenalty;
 
@@ -56,11 +55,25 @@ public class PosNegLPStrict extends PosNegLP {
 	@ConfigOption(name="errorPenalty", description = "penalty for pos. examples classified as negative or vice versa", defaultValue = "3.0")
 	private double errorPenalty = defaultErrorPenalty;
 	
-	
+
+	public void setAccuracyPenalty(double accuracyPenalty) {
+		this.accuracyPenalty = accuracyPenalty;
+	}
+
+	public void setErrorPenalty(double errorPenalty) {
+		this.errorPenalty = errorPenalty;
+	}
+
+	public void setPenaliseNeutralExamples(boolean penaliseNeutralExamples) {
+		this.penaliseNeutralExamples = penaliseNeutralExamples;
+	}
+
 	public PosNegLPStrict(AbstractReasonerComponent reasoningService) {
 		super(reasoningService);
 	}
-	
+
+	public PosNegLPStrict() { super(); }
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#getName()
 	 */
@@ -103,8 +116,8 @@ public class PosNegLPStrict extends PosNegLP {
     						"neutral examples are penalized. Use Retrievals instead.");
     				
     			// TODO: umschreiben in instance checks
-    			SortedSet<OWLIndividual> posClassified = new TreeSet<OWLIndividual>();
-    			SortedSet<OWLIndividual> negClassified = new TreeSet<OWLIndividual>();
+    			SortedSet<OWLIndividual> posClassified = new TreeSet<>();
+    			SortedSet<OWLIndividual> negClassified = new TreeSet<>();
     			// Beispiele durchgehen
     			// TODO: Implementierung ist ineffizient, da man hier schon in Klassen wie
     			// posAsNeut, posAsNeg etc. einteilen koennte; so wird das extra in der Score-Klasse

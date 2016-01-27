@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.el;
 
 import com.jamonapi.Monitor;
@@ -179,7 +178,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			
 			// logging
 			if(logger.isTraceEnabled()) {
-				logger.trace("Choosen node " + best);
+				logger.trace("Chosen node " + best);
 				logger.trace(startNode.getTreeString(renderer));
 				logger.trace("Loop " + loop + " completed.");
 			}
@@ -245,7 +244,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 				// the class expression has a chance to make it in the set if it has
 				// at least as high accuracy - if not we can save the reasoner calls
 				// for fully computing the evaluated description
-				if(classToDescribe != null && !classToDescribe.equals(classExpression)) {
+				if(classToDescribe == null || !classToDescribe.equals(classExpression)) {
 					if(bestEvaluatedDescriptions.size() == 0 || bestEvaluatedDescriptions.getWorst().getAccuracy() < node.getAccuracy()) {
 						EvaluatedDescription<Score> ed = new EvaluatedDescription<>(classExpression, score);
 						bestEvaluatedDescriptions.add(ed);
@@ -331,7 +330,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 			return true;
 		} else {
 			// the class to learn must not appear on the outermost property level
-			if(OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
+			if(classToDescribe != null && OWLClassExpressionUtils.occursOnFirstLevel(description, classToDescribe)) {
 				return false;
 			}
 		}

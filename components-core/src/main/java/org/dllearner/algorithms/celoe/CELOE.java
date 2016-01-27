@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,28 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.celoe;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractHeuristic;
-import org.dllearner.core.AbstractKnowledgeSource;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.Score;
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -51,43 +35,25 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.OperatorInverter;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
+import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.TreeUtils;
 import org.dllearner.utilities.datastructures.SearchTree;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionSet;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionMinimizer;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.dllearner.utilities.owl.PropertyContext;
+import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import java.io.File;
+import java.util.*;
 
 /**
  * The CELOE (Class Expression Learner for Ontology Engineering) algorithm.
@@ -509,15 +475,15 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		// already and have a horizontal expansion equal to their length
 		// (rationale: further extension is likely to add irrelevant syntactical constructs)
 		Iterator<OENode> it = searchTree.descendingIterator();
-		if (logger.isDebugEnabled()) {
+		if (logger.isTraceEnabled()) {
 			for (OENode N:searchTree.getNodeSet()) {
-				logger.debug(sparql_debug,"`getnext:"+N);
+				logger.trace(sparql_debug,"`getnext:"+N);
 			}
 		}
 
 		while(it.hasNext()) {
 			OENode node = it.next();
-			logger.debug(sparql_debug,"``"+node+node.getAccuracy());
+			logger.trace(sparql_debug,"``"+node+node.getAccuracy());
 			if (isExpandAccuracy100Nodes() && node.getHorizontalExpansion() < OWLClassExpressionUtils.getLength(node.getDescription())) {
 					return node;
 			} else {
@@ -534,7 +500,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	
 	// expand node horizontically
 	private TreeSet<OWLClassExpression> refineNode(OENode node) {
-		logger.debug(sparql_debug,"REFINE NODE " + node);
+		logger.trace(sparql_debug,"REFINE NODE " + node);
 		MonitorFactory.getTimeMonitor("refineNode").start();
 		// we have to remove and add the node since its heuristic evaluation changes through the expansion
 		// (you *must not* include any criteria in the heuristic which are modified outside of this method,
@@ -557,27 +523,27 @@ public class CELOE extends AbstractCELA implements Cloneable{
 	 */
 	private boolean addNode(OWLClassExpression description, OENode parentNode) {
 		String sparql_debug_out = "";
-		if (logger.isDebugEnabled()) sparql_debug_out = "DESC: " + description;
+		if (logger.isTraceEnabled()) sparql_debug_out = "DESC: " + description;
 		MonitorFactory.getTimeMonitor("addNode").start();
 		
 		// redundancy check (return if redundant)
 		boolean nonRedundant = descriptions.add(description);
 		if(!nonRedundant) {
-			logger.debug(sparql_debug, sparql_debug_out + "REDUNDANT");
+			logger.trace(sparql_debug, sparql_debug_out + "REDUNDANT");
 			return false;
 		}
 		
 		// check whether the class expression is allowed
 		if(!isDescriptionAllowed(description, parentNode)) {
-			logger.debug(sparql_debug, sparql_debug_out + "NOT ALLOWED");
+			logger.trace(sparql_debug, sparql_debug_out + "NOT ALLOWED");
 			return false;
 		}
 		
 		// quality of class expression (return if too weak)
 		Monitor mon = MonitorFactory.start("lp");
-		logger.debug(sparql_debug, sparql_debug_out);
+		logger.trace(sparql_debug, sparql_debug_out);
 		double accuracy = learningProblem.getAccuracyOrTooWeak(description, noise);
-		logger.debug(sparql_debug, "`acc:"+accuracy);
+		logger.trace(sparql_debug, "`acc:"+accuracy);
 		mon.stop();
 		
 		// issue a warning if accuracy is not between 0 and 1 or -1 (too weak)
@@ -621,7 +587,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		
 		if(isCandidate) {
 			OWLClassExpression niceDescription = rewrite(node.getExpression());
-			
+
 			if(niceDescription.equals(classToDescribe)) {
 				return false;
 			}

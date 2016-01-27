@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl;
 
 import com.google.common.collect.BiMap;
@@ -180,7 +198,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	
 	/**
 	 * Copy constructor.
-	 * @param qtl
+	 * @param qtl the QTL2Disjunctive instance
 	 */
 	public QTL2Disjunctive(QTL2Disjunctive qtl) {
 		super(qtl.getLearningProblem(), qtl.getReasoner());
@@ -662,10 +680,11 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 	
 	/**
-	 * Returns a set of evaluated query trees. A set is returned because there are several ways how to convert literal nodes.
-	 * @param tree
-	 * @param useSpecifity
-	 * @return
+	 * Evaluated a query tree such that it returns a set of evaluated query trees.
+	 * A set is returned because there are several ways how to convert literal nodes.
+	 * @param tree the query tree
+	 * @param useSpecifity whether to use SPECIFITY as measure
+	 * @return a set of evaluated query trees
 	 */
 	private Set<EvaluatedRDFResourceTree> evaluate(RDFResourceTree tree, boolean useSpecifity){
 		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<>();
@@ -746,12 +765,13 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 		
 		return evaluatedTrees;
 	}
-	
+
 	/**
-	 * Returns a set of evaluated query trees. A set is returned because there are several ways how to convert literal nodes.
-	 * @param tree
-	 * @param useSpecifity
-	 * @return
+	 * Evaluated a query tree such that it returns a set of evaluated query trees.
+	 * A set is returned because there are several ways how to convert literal nodes.
+	 * @param tree the query tree
+	 * @param useSpecifity whether to use SPECIFITY as measure
+	 * @return a set of evaluated query trees
 	 */
 	private Set<EvaluatedRDFResourceTree> evaluate2(RDFResourceTree tree, boolean useSpecifity){
 		Set<EvaluatedRDFResourceTree> evaluatedTrees = new TreeSet<>();
@@ -965,10 +985,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 
 	/**
-	 * Return all trees from the given list {@code allTrees} which are not already subsumed by {@code tree}.
+	 * Computes all trees from the given list {@code allTrees} which are subsumed by {@code tree}.
 	 * @param tree the tree
 	 * @param trees all trees
-	 * @return
+	 * @return all trees from the given list {@code allTrees} which are subsumed by {@code tree}
 	 */
 	private List<RDFResourceTree> getCoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
 		List<RDFResourceTree> coveredTrees = new ArrayList<>();
@@ -981,9 +1001,10 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	}
 
 	/**
-	 * @param tree
-	 * @param allTrees
-	 * @return all trees from the given list {@code allTrees} which are not subsumed by {@code tree}.
+	 * Computes all trees from the given list {@code trees} which are not subsumed by {@code tree}.
+	 * @param tree the tree
+	 * @param trees the trees
+	 * @return all trees from the given list {@code trees} which are not subsumed by {@code tree}.
 	 */
 	private List<RDFResourceTree> getUncoveredTrees(RDFResourceTree tree, List<RDFResourceTree> trees){
 		List<RDFResourceTree> uncoveredTrees = new ArrayList<>();

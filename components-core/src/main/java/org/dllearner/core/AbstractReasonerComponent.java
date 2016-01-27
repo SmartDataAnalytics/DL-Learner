@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,24 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -43,29 +31,16 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -101,6 +76,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
 	private static final NumberFormat numberFormat = NumberFormat.getInstance();
+	@ConfigOption(description = "whether to use single instance checks", defaultValue = "false")
+	protected boolean useInstanceChecks = false;
 
 	// statistical data for particular reasoning operations
 	private long instanceCheckReasoningTimeNs = 0;
@@ -132,9 +109,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected ClassHierarchy subsumptionHierarchy = null;
 	protected ObjectPropertyHierarchy roleHierarchy = null;
 	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
-	
+
+	@ConfigOption(description = "if class hierarchy should be precomputed", defaultValue = "true")
 	protected boolean precomputeClassHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeObjectPropertyHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeDataPropertyHierarchy = true;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
@@ -145,6 +125,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	/**
 	 * The underlying knowledge sources.
 	 */
+	@ConfigOption(description = "the underlying knowledge sources", required = true)
 	protected Set<KnowledgeSource> sources;
 
 
@@ -1641,4 +1622,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * to be thread safe.
 	 */
 	public abstract void setSynchronized();
+
+	public boolean isUseInstanceChecks() {
+		return useInstanceChecks;
+	}
+
+	public void setUseInstanceChecks(boolean useInstanceChecks) {
+		this.useInstanceChecks = useInstanceChecks;
+	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.prolog;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class Program {
 
 	public boolean isGround() {
 		for (int c = 0; c < clauses.size(); c++) {
-			Clause clause = (Clause) clauses.get(c);
+			Clause clause = clauses.get(c);
 			if (!clause.isGround())
 				return false;
 		}
@@ -68,7 +67,7 @@ public class Program {
 		StringBuffer ret = new StringBuffer();
 
 		for (int i = 0; i < clauses.size(); i++) {
-			ret.append(((Clause) clauses.get(i)).toPLString());
+			ret.append(clauses.get(i).toPLString());
 			if (i + 1 < clauses.size())
 				ret.append("\n");
 		}

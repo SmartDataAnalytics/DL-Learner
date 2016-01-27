@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 import org.dllearner.utilities.ReasoningUtils;
@@ -28,7 +27,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 /**
  * Base class for all class expression learning problems.
  * 
- * @author Lorent Buehmann
+ * @author Lorenz Buehmann
  *
  */
 public abstract class AbstractClassExpressionLearningProblem<T extends Score>  extends AbstractLearningProblem<T, OWLClassExpression, EvaluatedDescription<T>> implements LearningProblem {
@@ -40,13 +39,28 @@ public abstract class AbstractClassExpressionLearningProblem<T extends Score>  e
     }
 
 	protected ReasoningUtils reasoningUtil;
+	protected static Class reasoningUtilsClass = ReasoningUtils.class;
 	
 	private void setReasonerAndUtil(AbstractReasonerComponent reasoner) {
 		if (this.reasoner != reasoner) {
-			this.reasoningUtil = new ReasoningUtils(reasoner);
+			if (this.reasoningUtil == null) {
+				this.reasoningUtil = newReasoningUtils(reasoner);
+			} else {
+				this.reasoningUtil.setReasoner(reasoner);
+			}
+
 			this.reasoningUtil.init();
 		}
 		this.reasoner = reasoner;
+	}
+
+	/**
+	 * Factory method to get problem-specific reasoning utils
+	 * @param reasoner the current reasoner
+	 * @return a reasoning util (by default the generic one)
+	 */
+	protected ReasoningUtils newReasoningUtils(AbstractReasonerComponent reasoner) {
+		return new ReasoningUtils(reasoner);
 	}
 
 	/**

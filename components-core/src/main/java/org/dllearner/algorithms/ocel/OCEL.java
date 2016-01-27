@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,41 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.dllearner.core.*;
+import org.dllearner.core.options.CommonConfigOptions;
+import org.dllearner.core.owl.ClassHierarchy;
+import org.dllearner.core.owl.DatatypePropertyHierarchy;
+import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.learningproblems.*;
+import org.dllearner.reasoning.ReasonerType;
+import org.dllearner.refinementoperators.*;
+import org.dllearner.utilities.Files;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.options.CommonConfigOptions;
-import org.dllearner.core.owl.ClassHierarchy;
-import org.dllearner.core.owl.DatatypePropertyHierarchy;
-import org.dllearner.core.owl.ObjectPropertyHierarchy;
-import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
-import org.dllearner.learningproblems.PosNegLP;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.learningproblems.PosOnlyLP;
-import org.dllearner.learningproblems.ScorePosNeg;
-import org.dllearner.reasoning.ReasonerType;
-import org.dllearner.refinementoperators.CustomHierarchyRefinementOperator;
-import org.dllearner.refinementoperators.CustomStartRefinementOperator;
-import org.dllearner.refinementoperators.LengthLimitedRefinementOperator;
-import org.dllearner.refinementoperators.ReasoningBasedRefinementOperator;
-import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.Files;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The DL-Learner learning algorithm component for the example
@@ -234,7 +221,13 @@ public class OCEL extends AbstractCELA {
 				if(mh.getNrOfNegativeExamples() == 0) {
 					mh.setNrOfNegativeExamples(nrNegEx);
 				}
+			} else if (heuristic instanceof  FlexibleHeuristic) {
+				FlexibleHeuristic h2 = (FlexibleHeuristic) heuristic;
+				if(h2.getNrOfNegativeExamples() == 0) {
+					h2.setNrOfNegativeExamples(((PosNegLP) getLearningProblem()).getNegativeExamples().size());
+				}
 			}
+
 		}
 		
 		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored

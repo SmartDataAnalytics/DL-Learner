@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,10 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
 
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 
 /**
@@ -44,17 +45,39 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Flexible Heuristic", shortName = "flexheuristic", version = 0.1)
 public class FlexibleHeuristic implements ExampleBasedHeuristic {
 
+	@ConfigOption(description = "the number of negative examples")
 	private int nrOfNegativeExamples;
+	@ConfigOption(description = "score percent to deduct per expression length", required = true)
 	private double percentPerLengthUnit;
-	
 	// 5% sind eine Verlängerung um 1 wert
 	// double percentPerLengthUnit = 0.05;
+
+	public int getNrOfNegativeExamples() {
+		return nrOfNegativeExamples;
+	}
+
+	public void setNrOfNegativeExamples(int nrOfNegativeExamples) {
+		this.nrOfNegativeExamples = nrOfNegativeExamples;
+	}
+
+	public double getPercentPerLengthUnit() {
+		return percentPerLengthUnit;
+	}
+
+	public void setPercentPerLengthUnit(double percentPerLengthUnit) {
+		this.percentPerLengthUnit = percentPerLengthUnit;
+	}
+
 	
 	public FlexibleHeuristic(int nrOfNegativeExamples, double percentPerLengthUnit) {
 		this.nrOfNegativeExamples = nrOfNegativeExamples;
 		this.percentPerLengthUnit = percentPerLengthUnit;
+	}
+
+	public FlexibleHeuristic() {
 	}
 	
 	// implementiert einfach die Definition in der Diplomarbeit

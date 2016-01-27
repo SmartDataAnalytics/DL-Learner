@@ -46,9 +46,9 @@ import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.*;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.EnrichmentVocabulary;
@@ -471,8 +471,7 @@ public class Enrichment {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setAccuracyMethod(HeuristicType.FMEASURE);
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 

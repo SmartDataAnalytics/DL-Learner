@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,27 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
-import com.google.common.collect.Sets;
+import java.util.*;
 
 /**
  * A learning problem, where we learn from positive examples only.
@@ -50,6 +43,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;
 
+	@ConfigOption(description = "the positive examples", required = true)
 	protected SortedSet<OWLIndividual> positiveExamples;
 
 	private List<OWLIndividual> positiveExamplesShuffled;

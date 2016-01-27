@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -32,8 +30,8 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Jens Lehmann
@@ -42,7 +40,9 @@ import com.google.common.collect.Sets.SetView;
 public abstract class PosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	protected static Logger logger = Logger.getLogger(PosNegLP.class);
 
+	@ConfigOption(description = "list of positive examples", required = true)
 	protected Set<OWLIndividual> positiveExamples = new TreeSet<>();
+	@ConfigOption(description = "list of negative examples", required = true)
 	protected Set<OWLIndividual> negativeExamples = new TreeSet<>();
 	protected Set<OWLIndividual> allExamples = new TreeSet<>();
 

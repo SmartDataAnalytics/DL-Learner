@@ -1,12 +1,26 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.datastructures;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-
 import org.dllearner.core.AbstractSearchTreeNode;
+
+import java.util.*;
 
 public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 
@@ -45,10 +59,22 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 	 * internally used by tree<->node contract to notify a tree about an added node
 	 * @param node the node
 	 */
-	public void notifyNode(T node) {
-		nodes.add(node);
+	public final void notifyNode(T node) {
+		if (node.getParent() == null || nodes.contains(node.getParent())) {
+			if (allowedNode(node))
+				nodes.add(node);
+		}
 	}
-	
+
+	/**
+	 * filter certain nodes to be permitted in the node-set
+	 * @param node node to test
+	 * @return whether node is allowed in the node-set
+	 */
+	protected boolean allowedNode(T node) {
+		return true;
+	}
+
 	/**
 	 * set the tree root to a node
 	 * @param node the node
@@ -65,15 +91,24 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 	 * must be called before modifying a node, to support immutable set element pattern
 	 * @param node the node
 	 */
-	public void updatePrepare(T node) {
+	public final void updatePrepare(T node) {
+		for (T child : (Collection<T>)node.getChildren()) {
+			if (allowedNode(child))
+				updatePrepare(child);
+		}
 		nodes.remove(node);
 	}
 	
 	/**
 	 * must be called after modifying a node, to support immutable set element pattern
 	 */
-	public void updateDone(T node) {
-		notifyNode(node);
+	public final void updateDone(T node) {
+		if (allowedNode(node)) {
+			nodes.add(node);
+			for (T child : (Collection<T>)node.getChildren()) {
+				updateDone(child);
+			}
+		}
 	}
 
 	/**

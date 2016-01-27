@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,14 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
-
-import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.learningproblems.AccMethodTwoValued;
@@ -32,6 +25,12 @@ import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * 
@@ -78,8 +77,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
-	// link to parent in search tree
-	private ExampleBasedNode parent = null;
 	// apart from the child nodes, we also keep child concepts
 	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<>();
 	
@@ -256,7 +253,11 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		int fp = coveredNegatives.size();
 		int tn = nrOfNegativeExamples - fp;
 		int fn = nrOfPositiveExamples - tp;
-		return this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+
+		double accuracy = this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+		if (accuracy == -1 && !isTooWeak)
+			throw new RuntimeException("Accuracy says weak but node is not marked as such.");
+		return accuracy;
 	}
 	
 	/**
@@ -302,17 +303,8 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public boolean isRedundant() {
 		return isRedundant;
 	}
-	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
-	}
-
-	/**
-	 * @return the parent
-	 */
-	@Override
-	public ExampleBasedNode getParent() {
-		return parent;
 	}
 
 	public boolean isPosOnlyCandidate() {

@@ -19,37 +19,19 @@
  */
 package org.dllearner.cli;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
-//import org.dllearner.algorithms.qtl.QTL2;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
 import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.confparser.ParseException;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.LearningAlgorithm;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
+import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
@@ -63,6 +45,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+//import org.dllearner.algorithms.qtl.QTL2;
+
 
 
 /**
@@ -74,6 +67,10 @@ import org.springframework.core.io.Resource;
  */
 @ComponentAnn(name = "Command Line Interface", version = 0, shortName = "")
 public class CLI {
+	static {
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
+	}
 
 	private static Logger logger = LoggerFactory.getLogger(CLI.class);
 
@@ -115,6 +112,7 @@ public class CLI {
 	// context from a conf file without actually running it
 	public void init() throws IOException {
     	if(context == null) {
+
     		Resource confFileR = new FileSystemResource(confFile);
     		List<Resource> springConfigResources = new ArrayList<Resource>();
             configuration = new ConfParserConfiguration(confFileR);
@@ -313,11 +311,27 @@ public class CLI {
             }
             logger.debug("Stack Trace: ", e);
             logger.error("Terminating DL-Learner...and writing stacktrace to: " + stacktraceFileName);
+            createIfNotExists(new File(stacktraceFileName));
+
             FileOutputStream fos = new FileOutputStream(stacktraceFileName);
             PrintStream ps = new PrintStream(fos);
             e.printStackTrace(ps);
         }
+    }
 
+    private static boolean createIfNotExists(File f) {
+        if (f.exists()) return true;
+
+        File p = f.getParentFile();
+        if (p != null && !p.exists()) p.mkdirs();
+
+        try {
+            f.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**

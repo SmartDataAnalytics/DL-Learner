@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.learningproblems;
 /**
  * Copyright (C) 2007-2008, Jens Lehmann
@@ -24,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
@@ -233,10 +250,23 @@ public class OntologyEngineering {
 								+ algorithmRuntimeInSeconds + " seconds)");
 							lp.setEquivalence(false);
 					}
-					lp.setUseApproximations(useApproximations);// we use the approximations but what about 
-					if(useFMeasure) {
-						lp.setAccuracyMethod(HeuristicType.FMEASURE);
+					AccMethodTwoValued acc;
+					if (useApproximations) {
+						if (useFMeasure) {
+							acc = new AccMethodFMeasureApprox();
+						} else {
+							acc = new AccMethodPredAccApprox();
+						}
+						((AccMethodTwoValuedApproximate)acc).setReasoner(reasoner);
+					} else {
+						if (useFMeasure) {
+							acc = new AccMethodFMeasure();
+						} else {
+							acc = new AccMethodPredAcc();
+						}
 					}
+					acc.init();
+					lp.setAccuracyMethod(acc);
 					lp.init();
 					CELOE celoe = new CELOE(lp, reasoner);
 					celoe.setMaxExecutionTimeInSeconds(algorithmRuntimeInSeconds);
@@ -288,6 +318,7 @@ public class OntologyEngineering {
 							for(EvaluatedDescriptionClass ed : suggestionsList) {
 								OWLClassExpression d = ed.getDescription();
 							//	lp.setAccuracyMethod(accuracyMethod);
+								//lp.getReasoningUtil().getAccuracyOrTooWeak2()
 								double approx = lp.getAccuracyOrTooWeakApprox(d, noisePercent/(double)100);
 								double exact = lp.getAccuracyOrTooWeakExact(d, noisePercent/(double)100);
 								

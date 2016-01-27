@@ -62,9 +62,9 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
@@ -464,8 +464,7 @@ public class EnrichmentServlet extends HttpServlet {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setAccuracyMethod(HeuristicType.FMEASURE);
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 

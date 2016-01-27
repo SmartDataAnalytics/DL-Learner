@@ -29,6 +29,7 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.scripts.MouseDiabetesCBD;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.elk.owlapi.ElkReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -272,7 +273,7 @@ public class MouseDiabetes2 {
 
         //convert JENA model to OWL API ontology
         logger.debug("converting to OWLApi ontology...");
-        OWLOntology ontology = getOWLOntology(model);
+        OWLOntology ontology = OwlApiJenaUtils.getOWLOntology(model);
         logger.debug("finished conversion");
 
         // sanity check
@@ -290,28 +291,4 @@ public class MouseDiabetes2 {
 		}
     	return false;
     }
-
-    public static OWLOntology getOWLOntology(final Model model) {
-        OWLOntology ontology;
-        try (PipedInputStream is = new PipedInputStream();
-                PipedOutputStream os = new PipedOutputStream(is);) {
-            OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    model.write(os, "TURTLE", null);
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-            ontology = man.loadOntologyFromOntologyDocument(is);
-            return ontology;
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Could not convert JENA API model to OWL API ontology.", e);
-        }
-        }
 }

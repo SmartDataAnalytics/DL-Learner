@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
 
 import static org.junit.Assert.assertEquals;
@@ -31,13 +30,7 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.learningproblems.AccMethodFMeasure;
-import org.dllearner.learningproblems.AccMethodFMeasureApprox;
-import org.dllearner.learningproblems.AccMethodTwoValued;
-import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
-import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -57,7 +50,7 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
  * @author Jens Lehmann
  * 
  */
-public class HeuristicTests {
+public class HeuristicTest {
 
 	// when comparing heuristic values, this is the maximum allowed difference between actual and returned value
 	// (there can always be precision errors, so cannot assume that actual and returned values are exactly equal)
@@ -70,7 +63,8 @@ public class HeuristicTests {
 		OWLDataFactory df = man.getOWLDataFactory();
 		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		PrefixManager pm = new DefaultPrefixManager(ns);
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix(ns);
 		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
 			nc[i] = df.getOWLClass("A" + i, pm);
@@ -115,21 +109,21 @@ public class HeuristicTests {
 		//// equivalent classes, no noise, no approximations ////
 		
 		// evaluate A2 wrt. A1 using Jaccard
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.JACCARD);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodJaccard(true));
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.PRED_ACC);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodPredAcc(true));
 		// the value should be the sum of 10 (correct positives) and 970 (correct negatives) divided by 1000
 		assertEqualsClassLP(problem, nc[1], (10+70)/(double)100);
 		assertEqualsClassLP(problem, nc[2], (10+50)/(double)100);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.AMEASURE);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodAMeasure(true));
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.375);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.FMEASURE);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasure(true));
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F1-score = 0.33...
@@ -141,20 +135,20 @@ public class HeuristicTests {
 		// beta = 3.0
 		
 		// Jaccard
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.JACCARD, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodJaccard(true), false, 0.05);
 		// the value should be 10 (i10-i19) divided by 30 (i0-i29)
 		assertEqualsClassLP(problem, nc[1], 1/(double)3);
 		assertEqualsClassLP(problem, nc[2], 1/(double)5);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.PRED_ACC, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodPredAcc(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 5/(double)7);
 		assertEqualsClassLP(problem, nc[2], 4/(double)7);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.AMEASURE, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodAMeasure(true), false, 0.05);
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		assertEqualsClassLP(problem, nc[2], 0.4375);
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, false, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasure(true), false, 0.05);
 		// recall = precision = F1-score = 0.5
 		assertEqualsClassLP(problem, nc[1], 0.5);
 		// recall = 0.5, precision = 0.25, F_beta-score = 5/11...
@@ -164,7 +158,7 @@ public class HeuristicTests {
 		
 		//// noise tests ////
 		
-		HeuristicTests.configureClassLP(problem, nc[0], HeuristicType.FMEASURE, false, true, 0.05);
+		HeuristicTest.configureClassLP(problem, nc[0], new AccMethodFMeasureApprox(true, reasoner), false, 0.05);
 		assertEquals(problem.getAccuracyOrTooWeak(nc[3], 0.5),-1,delta);
 		
 		// TODO: test approximations
@@ -180,7 +174,8 @@ public class HeuristicTests {
 		OWLDataFactory df = man.getOWLDataFactory();
 		OWLOntology kb = man.createOntology();
 		String ns = "http://dl-learner.org/junit/";
-		PrefixManager pm = new DefaultPrefixManager(ns);
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix(ns);
 		OWLClass[] nc = new OWLClass[5];
 		for(int i=0; i<5; i++) {
 			nc[i] = df.getOWLClass("A" + i, pm);
@@ -219,7 +214,7 @@ public class HeuristicTests {
 		OWLIndividual[] neg1 = new OWLIndividual[] {ind[5], ind[6], ind[7], ind[8], ind[9]};
 		
 		// F-Measure and no approximations
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, new AccMethodFMeasure(true));
+		HeuristicTest.configurePosNegStandardLP(problem, pos1, neg1, new AccMethodFMeasure(true));
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -230,7 +225,7 @@ public class HeuristicTests {
 		AccMethodFMeasureApprox accMethodFMeasureApprox = new AccMethodFMeasureApprox();
 		accMethodFMeasureApprox.setReasoner(reasoner);
 		accMethodFMeasureApprox.init();
-		HeuristicTests.configurePosNegStandardLP(problem, pos1, neg1, accMethodFMeasureApprox);
+		HeuristicTest.configurePosNegStandardLP(problem, pos1, neg1, accMethodFMeasureApprox);
 		
 		assertEqualsPosNegLPStandard(problem, nc[0], 0.5); // precision 2/3, recall 2/5
 		assertEqualsPosNegLPStandard(problem, nc[1], 2/3d); // precision 3/4, recall 3/5
@@ -285,22 +280,22 @@ public class HeuristicTests {
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)
-	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 		problem.setAccuracyMethod(accuracyMethod);
-		problem.setUseApproximations(false);
 		problem.init();
 		
 	}
 	
 	// convencience method to set the learning problem to a desired configuration
-	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, HeuristicType accuracyMethod, boolean equivalenceLearning, boolean useApproximations, double approxAccuracy) throws ComponentInitException {
+	private static void configureClassLP(ClassLearningProblem problem, OWLClass classToDescribe, AccMethodTwoValued accuracyMethod, boolean equivalenceLearning, double approxAccuracy) throws ComponentInitException {
 		problem.setClassToDescribe(classToDescribe);
 //		problem.getConfigurator().setType("superClass");
 		problem.setEquivalence(equivalenceLearning);
 		problem.setAccuracyMethod(accuracyMethod);
-		problem.setUseApproximations(useApproximations);
-		problem.setApproxDelta(approxAccuracy);
+		if (accuracyMethod instanceof AccMethodApproximate) {
+			((AccMethodApproximate) accuracyMethod).setApproxDelta(approxAccuracy);
+		}
 		problem.init();
 	}
 	
@@ -308,7 +303,7 @@ public class HeuristicTests {
 	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
 		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
 		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
-		HeuristicTests.configurePosNegStandardLP(problem, s1, s2, accuracyMethod);
+		HeuristicTest.configurePosNegStandardLP(problem, s1, s2, accuracyMethod);
 	}
 	
 	// convencience method to set the learning problem to a desired configuration (approximations disabled)

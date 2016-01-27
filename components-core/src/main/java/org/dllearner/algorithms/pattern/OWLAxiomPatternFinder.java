@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.pattern;
 
 import com.google.common.collect.HashMultiset;
@@ -283,10 +301,10 @@ public class OWLAxiomPatternFinder {
 			insertOntologyPs.setInt(5, tbox.size());
 			insertOntologyPs.setInt(6, rbox.size());
 			insertOntologyPs.setInt(7, abox.size());
-			insertOntologyPs.setInt(8, ontology.getClassesInSignature(true).size());
-			insertOntologyPs.setInt(9, ontology.getObjectPropertiesInSignature(true).size());
-			insertOntologyPs.setInt(10, ontology.getDataPropertiesInSignature(true).size());
-			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(true).size());
+			insertOntologyPs.setInt(8, ontology.getClassesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(9, ontology.getObjectPropertiesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(10, ontology.getDataPropertiesInSignature(Imports.INCLUDED).size());
+			insertOntologyPs.setInt(11, ontology.getIndividualsInSignature(Imports.INCLUDED).size());
 			insertOntologyPs.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -343,7 +361,7 @@ public class OWLAxiomPatternFinder {
 					Set<OWLAxiom> logicalAxioms = new HashSet<>();
 					for (AxiomType<?> type : AxiomType.AXIOM_TYPES) {
 						if(type.isLogical()){
-							logicalAxioms.addAll(ontology.getAxioms(type, true));
+							logicalAxioms.addAll(ontology.getAxioms(type, Imports.INCLUDED));
 						}
 					}
 					System.out.println(" (" + logicalAxioms.size() + " axioms)");

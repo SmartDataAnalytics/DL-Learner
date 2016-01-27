@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.owl;
 
 import java.util.HashSet;
@@ -5,6 +23,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.*;
 
+import org.semanticweb.owlapi.model.parameters.Imports;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
@@ -136,7 +155,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 			visitedIndividuals.add(individual);
 			
 			currentDepth++;
-			Set<OWLIndividualAxiom> axioms = ontology.getAxioms(individual);
+			Set<OWLIndividualAxiom> axioms = ontology.getAxioms(individual, Imports.INCLUDED);
 			for (OWLIndividualAxiom ax : axioms) {
 				ax.accept(this);
 			}
@@ -160,7 +179,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 		if(!visitedProperties.contains(property)){
 			visitedProperties.add(property);
 			
-			Set<OWLObjectPropertyAxiom> axioms = ontology.getAxioms(property);
+			Set<OWLObjectPropertyAxiom> axioms = ontology.getAxioms(property, Imports.INCLUDED);
 			for (OWLObjectPropertyAxiom ax : axioms) {
 				ax.accept(this);
 			}
@@ -182,7 +201,7 @@ public class OWLAxiomCBDGenerator implements OWLAxiomVisitor, OWLClassExpression
 		if(!visitedProperties.contains(property)){
 			visitedProperties.add(property);
 			
-			Set<OWLDataPropertyAxiom> axioms = ontology.getAxioms(property);
+			Set<OWLDataPropertyAxiom> axioms = ontology.getAxioms(property, Imports.INCLUDED);
 			for (OWLDataPropertyAxiom ax : axioms) {
 				ax.accept(this);
 			}

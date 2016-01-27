@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,75 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.reasoning;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentAnn;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.KnowledgeSource;
-import org.dllearner.core.ReasoningMethodUnsupportedException;
-import org.dllearner.core.config.ConfigOption;
-import org.dllearner.utilities.OWLAPIUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.semanticweb.owlapi.model.DataRangeType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.vocab.OWLFacet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import org.dllearner.core.*;
+import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.OWLAPIUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.OWLFacet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Reasoner for fast instance checks. It works by completely dematerialising the
@@ -1186,7 +1138,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			return returnSet;
 		} else if (description instanceof OWLObjectHasValue) {
 			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
-			OWLIndividual value = ((OWLObjectHasValue)description).getValue();
+			OWLIndividual value = ((OWLObjectHasValue)description).getFiller();
 			
 			if (property.isAnonymous()) {
 				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
@@ -1222,26 +1174,26 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 				OWLDatatype datatype = ((OWLDatatypeRestriction) filler).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) filler).getFacetRestrictions();
 				
-				if(datatype.isDouble()){
+				if(OWLAPIUtils.floatDatatypes.contains(datatype)) {
 					double min = -Double.MAX_VALUE;
 					double max = Double.MAX_VALUE;
 					for (OWLFacetRestriction facet : facetRestrictions) {
 						if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
-							min = facet.getFacetValue().parseDouble();
+							min = Double.parseDouble(facet.getFacetValue().getLiteral());
 						} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
-							max = facet.getFacetValue().parseDouble();
+							max = Double.parseDouble(facet.getFacetValue().getLiteral());
 						}
 					}
 					Map<OWLIndividual, SortedSet<Double>> mapping = dd.get(property);
 					SortedSet<OWLIndividual> returnSet = new TreeSet<>();
-					
+
 					for(Entry<OWLIndividual, SortedSet<Double>> entry : mapping.entrySet()) {
 						//we can skip of largest number is below minimum or lowest number is above maximum
 						if(entry.getValue().last() < min ||
 								entry.getValue().first() > max) {
 							continue;
 						}
-						
+
 						//search a value which is in the interval
 						for (Double value : entry.getValue()) {
 							if(value >= min && value <= max){
@@ -1251,7 +1203,68 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 						}
 					}
 					return returnSet;
-				} 
+				} else if(OWLAPIUtils.intDatatypes.contains(datatype)) {
+						int min = Integer.MIN_VALUE;
+						int max = Integer.MAX_VALUE;
+						for (OWLFacetRestriction facet : facetRestrictions) {
+							if(facet.getFacet() == OWLFacet.MIN_INCLUSIVE){
+								min = facet.getFacetValue().parseInteger();
+							} else if(facet.getFacet() == OWLFacet.MAX_INCLUSIVE){
+								max = facet.getFacetValue().parseInteger();
+							}
+						}
+					Map<OWLIndividual, SortedSet<Integer>> mapping = id.get(property);
+					SortedSet<OWLIndividual> returnSet = new TreeSet<>();
+					for(Entry<OWLIndividual, SortedSet<Integer>> entry : mapping.entrySet()) {
+						//we can skip of largest number is below minimum or lowest number is above maximum
+						if(entry.getValue().last() < min ||
+								entry.getValue().first() > max) {
+							continue;
+						}
+
+						//search a value which is in the interval
+						for (Integer value : entry.getValue()) {
+							if(value >= min && value <= max){
+								returnSet.add(entry.getKey());
+								break;
+							}
+						}
+					}
+					return returnSet;
+				} else if(OWLAPIUtils.dtDatatypes.contains(datatype)) {
+					// TODO we cannot ensure the sorting, because OWL API does only String comparison
+					// on the lexical String value
+					OWLLiteral min = null;
+					OWLLiteral max = null;
+					for (OWLFacetRestriction facet : facetRestrictions) {
+						if (facet.getFacet() == OWLFacet.MIN_INCLUSIVE) {
+							min = facet.getFacetValue();
+						} else if (facet.getFacet() == OWLFacet.MAX_INCLUSIVE) {
+							max = facet.getFacetValue();
+						}
+					}
+					Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = dpPos.get(property);
+					// we can return false if largest number is below minimum or lowest number is above maximum
+					DateTimeFormatter parser = OWLAPIUtils.dateTimeParsers.get(datatype);
+					DateTime minDateTime = null;
+					if (min != null) {
+						minDateTime = parser.parseDateTime(min.getLiteral());
+					}
+					DateTime maxDateTime = null;
+					if (max != null) {
+						maxDateTime = parser.parseDateTime(max.getLiteral());
+					}
+					SortedSet<OWLIndividual> returnSet = new TreeSet<>();
+					for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
+						//search a value which is in the interval
+						for (OWLLiteral value : entry.getValue()) {
+							if (OWLAPIUtils.inRange(value, min, max)) {
+								returnSet.add(entry.getKey());
+							}
+						}
+					}
+					return returnSet;
+				}
 			} else if(filler.getDataRangeType() == DataRangeType.DATA_ONE_OF) {
 				OWLDataOneOf dataOneOf = (OWLDataOneOf) filler;
 				Set<OWLLiteral> values = dataOneOf.getValues();
@@ -1271,7 +1284,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			}
 		} else if (description instanceof OWLDataHasValue){
 			OWLDataPropertyExpression property = ((OWLDataHasValue) description).getProperty();
-			OWLLiteral value = ((OWLDataHasValue) description).getValue();
+			OWLLiteral value = ((OWLDataHasValue) description).getFiller();
 			
 			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			

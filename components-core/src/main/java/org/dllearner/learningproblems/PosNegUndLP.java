@@ -1,15 +1,34 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.learningproblems;
-
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
+
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 /**
  * A ternary learning problem (positive, negative and uncertain instances) to manage the problem of the Open World Assumption
  * typically employed for ontologies
@@ -20,6 +39,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	//private SortedSet<OWLIndividual> positiveExample;
 	//private SortedSet<OWLIndividual> negativeExample;
+	@ConfigOption(description = "the uncertain examples", required = true)
 	private Set<OWLIndividual> uncertainExamples;
 	
 	/*

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.reasoning;
 
 import com.clarkparsia.owlapiv3.XSD;
@@ -40,7 +39,7 @@ import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
@@ -125,9 +124,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private Map<OWLEntity, Integer> entityPopularityMap = new HashMap<>();
 	private Map<OWLClass, Integer> classPopularityMap = new HashMap<>();
-	private Map<OWLObjectProperty, Integer> objectPropertyPopularityMap = new HashMap<>();
-	private Map<OWLDataProperty, Integer> dataPropertyPopularityMap = new HashMap<>();
-	private Map<OWLIndividual, Integer> individualPopularityMap = new HashMap<>();
 	private boolean batchedMode = true;
 	private Set<PopularityType> precomputedPopularityTypes = new HashSet<>();
 	
@@ -137,8 +133,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	private OWLObjectDuplicator duplicator = new OWLObjectDuplicator(df);
-	private boolean useSingleTypeChecks = false;
-	
+
 	/**
 	 * Default constructor for usage of config files + Spring API.
 	 */
@@ -172,10 +167,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	@Override
 	public void init() throws ComponentInitException {
 		classPopularityMap = new HashMap<>();
-		objectPropertyPopularityMap = new HashMap<>();
-		dataPropertyPopularityMap = new HashMap<>();
-		individualPopularityMap = new HashMap<>();
-		
+
 		// this is only done if the reasoner is setup via config file
 		if(qef == null) {
 			if(ks == null) {
@@ -281,7 +273,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if (qs.get("p").isURIResource()) {
 					OWLObjectProperty property = df.getOWLObjectProperty(IRI.create(qs.getResource("p").getURI()));
 					int cnt = qs.getLiteral("cnt").getInt();
-					objectPropertyPopularityMap.put(property, cnt);
+					entityPopularityMap.put(property, cnt);
 				}
 			}
 		} else {
@@ -290,7 +282,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			for (OWLObjectProperty property : properties) {
 				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
 				int cnt = rs.next().getLiteral("cnt").getInt();
-				objectPropertyPopularityMap.put(property, cnt);
+				entityPopularityMap.put(property, cnt);
 			}
 		}
 		precomputedPopularityTypes.add(PopularityType.OBJECT_PROPERTY);
@@ -316,7 +308,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 				if (qs.get("p").isURIResource()) {
 					OWLDataProperty property = df.getOWLDataProperty(IRI.create(qs.getResource("p").getURI()));
 					int cnt = qs.getLiteral("cnt").getInt();
-					dataPropertyPopularityMap.put(property, cnt);
+					entityPopularityMap.put(property, cnt);
 				}
 			}
 		} else {
@@ -325,7 +317,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			for (OWLDataProperty property : properties) {
 				ResultSet rs = executeSelectQuery(String.format(queryTemplate, property.toStringID()));
 				int cnt = rs.next().getLiteral("cnt").getInt();
-				dataPropertyPopularityMap.put(property, cnt);
+				entityPopularityMap.put(property, cnt);
 			}
 		}
 		precomputedPopularityTypes.add(PopularityType.DATA_PROPERTY);
@@ -909,9 +901,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	public Set<OWLClass> getTypes(String namespace, boolean omitEmptyTypes) {
 		Set<OWLClass> types = new TreeSet<>();
-		String query = 	"SELECT DISTINCT ?class WHERE {[] a ?cls ." +
+		String query = 	"SELECT DISTINCT ?cls WHERE {[] a ?cls ." +
 		(omitEmptyTypes ? "[] a ?cls ." : "" ) +
-		(namespace != null ? ("FILTER(REGEX(?class,'^" + namespace + "'))") : "") + "}";
+		(namespace != null ? ("FILTER(REGEX(?cls,'^" + namespace + "'))") : "") + "}";
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
@@ -1982,14 +1974,14 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 			query = String.format("SELECT ?sup {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf> ?sup. FILTER(isIRI(?sup))}",
 					description.asOWLClass().toStringID());
 		} else {
-			query = String.format("SELECT ?sub {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?sup. FILTER(isIRI(?sup))}",
+			query = String.format("SELECT ?sup {<%s> <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?sup. FILTER(isIRI(?sup))}",
 					description.asOWLClass().toStringID());
 		}
 		ResultSet rs = executeSelectQuery(query);
 		QuerySolution qs;
 		while(rs.hasNext()){
 			qs = rs.next();
-			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sub").getURI())));
+			superClasses.add(df.getOWLClass(IRI.create(qs.getResource("sup").getURI())));
 		}
 		superClasses.remove(description);
 		System.out.println("Sup(" + description + "):" + superClasses);
@@ -2423,14 +2415,5 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		this.useValueLists = useValueLists;
 	}
 
-	public boolean isUseSingleTypeChecks() {
-		return useSingleTypeChecks;
-	}
-
-	public void setUseSingleTypeChecks(boolean useSingleTypeChecks) {
-		this.useSingleTypeChecks = useSingleTypeChecks;
-	}
-	
-	
 
 }

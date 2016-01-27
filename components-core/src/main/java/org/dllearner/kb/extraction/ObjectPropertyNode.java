@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -165,17 +164,23 @@ public class ObjectPropertyNode extends PropertyNode {
 		}
 		
 		for (String one : specialTypes) {
-			
-			if(one.equals(OWLVocabulary.OWL_FunctionalProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_InverseFunctionalProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseFunctionalObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_TransitiveProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_SymmetricProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
-			}else{
-				tail("conversion to ontology: special types: " + one);
+
+			switch (one) {
+				case OWLVocabulary.OWL_FunctionalProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_InverseFunctionalProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLInverseFunctionalObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_TransitiveProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_SymmetricProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
+					break;
+				default:
+					tail("conversion to ontology: special types: " + one);
+					break;
 			}
 		}
 		for (BlankNode bn : blankNodes) {

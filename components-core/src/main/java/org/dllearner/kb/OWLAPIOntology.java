@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,10 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb;
-
-import java.util.Collections;
 
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.utilities.owl.OntologyToByteConverter;
@@ -29,10 +26,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
+import java.util.Collections;
+
 /**
  * This class provides a wrapper around a single OWL Ontology.  However, due to threading issues it is not safe
  * to allow access to ontologies created with an Ontology Manager which we do not control.
  */
+// not for conf
 public class OWLAPIOntology extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 	
     private byte[] ontologyBytes;
