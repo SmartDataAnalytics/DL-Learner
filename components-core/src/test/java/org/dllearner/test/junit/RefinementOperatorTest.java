@@ -95,7 +95,7 @@ public class RefinementOperatorTest {
 				System.out.println(result);
 			}
 			
-			int desiredResultSize = 113;
+			int desiredResultSize = 141;
 			if(results.size() != desiredResultSize) {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}

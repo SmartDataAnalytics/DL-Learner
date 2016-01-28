@@ -18,13 +18,13 @@
  */
 package org.dllearner.refinementoperators;
 
-import java.util.List;
-import java.util.Set;
-
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Adapter for {@link RefinementOperator} interface.
@@ -59,4 +59,10 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 		throw new UnsupportedOperationException();
 	}
 
+
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		throw new UnsupportedOperationException();
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() { return null; }
 }

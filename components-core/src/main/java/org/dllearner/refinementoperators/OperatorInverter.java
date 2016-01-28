@@ -21,6 +21,7 @@ package org.dllearner.refinementoperators;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectComplementOfImpl;
@@ -40,12 +41,18 @@ import java.util.TreeSet;
 @ComponentAnn(name = "OperatorInverter", shortName = "inv_op", version = 0.1)
 public class OperatorInverter implements LengthLimitedRefinementOperator {
 
+	private OWLClassExpressionLengthMetric lengthMetric;
+
 	public LengthLimitedRefinementOperator getOperator() {
 		return operator;
 	}
 
 	public void setOperator(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
+		this.lengthMetric = operator.getLengthMetric();
+		if (this.lengthMetric == null) {
+			this.lengthMetric  = OWLClassExpressionLengthMetric.getDefaultMetric();
+		}
 	}
 
 	public boolean isUseNegationNormalForm() {
@@ -94,7 +101,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 //		System.out.println("negated description: " + negatedDescription);
 		// concept length can change because of the conversion process; as a heuristic
 		// we increase maxLength by the length difference of negated and original concept
-		int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription) - OWLClassExpressionUtils.getLength(description));
+		int lengthDiff = Math.max(0, OWLClassExpressionUtils.getLength(negatedDescription, lengthMetric) - OWLClassExpressionUtils.getLength(description, lengthMetric));
 		Set<OWLClassExpression> refinements = operator.refine(negatedDescription, maxLength+lengthDiff+1);
 //		System.out.println("refinv: " + refinements);
 		TreeSet<OWLClassExpression> results = new TreeSet<>();
@@ -103,7 +110,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 //			System.out.println("dNeg: " + dNeg);
 			// to satisfy the guarantee that the method does not return longer
 			// concepts, we perform an additional check
-			if(!guaranteeLength || OWLClassExpressionUtils.getLength(dNeg) <= maxLength) {
+			if(!guaranteeLength || OWLClassExpressionUtils.getLength(dNeg, lengthMetric) <= maxLength) {
 				results.add(dNeg);
 			}
 		}
@@ -114,6 +121,16 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 	public Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength,
 			List<OWLClassExpression> knownRefinements) {
 		throw new Error("Method not implemented.");
+	}
+
+	@Override
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		this.lengthMetric = lengthMetric;
+		operator.setLengthMetric(lengthMetric);
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() {
+		return this.lengthMetric;
 	}
 
 	private OWLClassExpression getNegation(OWLClassExpression description) {

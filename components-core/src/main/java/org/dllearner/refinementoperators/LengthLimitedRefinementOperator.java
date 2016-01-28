@@ -18,11 +18,12 @@
  */
 package org.dllearner.refinementoperators;
 
-import java.util.List;
-import java.util.Set;
-
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * A refinement operator for which the syntactic length of the generated
@@ -54,5 +55,8 @@ public interface LengthLimitedRefinementOperator extends RefinementOperator {
 	 * @return A set of refinements obeying the above restrictions.
 	 */
 	Set<OWLClassExpression> refine(OWLClassExpression description, int maxLength, List<OWLClassExpression> knownRefinements);
-		
+
+	void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric);
+
+	OWLClassExpressionLengthMetric getLengthMetric();
 }

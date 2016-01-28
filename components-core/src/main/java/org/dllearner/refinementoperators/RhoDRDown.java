@@ -467,17 +467,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			dataPropertyHierarchy = reasoner.getDatatypePropertyHierarchy();
 		}
 
-		mMaxLength = max (
-				lengthMetric.classLength,
-				lengthMetric.objectComplementLength + lengthMetric.classLength,
-				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
-				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
-				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
-				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
-				lengthMetric.dataHasValueLength + lengthMetric.dataProperyLength,
-				lengthMetric.dataSomeValuesLength + lengthMetric.dataProperyLength + 1,
-				lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
-		logger.debug("mMaxLength = " + mMaxLength);
 		isInitialised = true;
 	}
 
@@ -2004,6 +1993,19 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
+
+		mMaxLength = max (
+				lengthMetric.classLength,
+				lengthMetric.objectComplementLength + lengthMetric.classLength,
+				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
+				lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
+				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength,
+				lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength + lengthMetric.objectInverseLength,
+				lengthMetric.dataHasValueLength + lengthMetric.dataProperyLength,
+				lengthMetric.dataSomeValuesLength + lengthMetric.dataProperyLength + 1,
+				lengthMetric.objectCardinalityLength + lengthMetric.objectProperyLength + lengthMetric.classLength);
+
+		logger.debug("mMaxLength = " + mMaxLength);
 	}
 
 }

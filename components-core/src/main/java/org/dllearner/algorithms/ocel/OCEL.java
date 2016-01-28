@@ -21,6 +21,7 @@ package org.dllearner.algorithms.ocel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dllearner.core.*;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -29,6 +30,7 @@ import org.dllearner.learningproblems.*;
 import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.refinementoperators.*;
 import org.dllearner.utilities.Files;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +130,9 @@ public class OCEL extends AbstractCELA {
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
 	boolean showBenchmarkInformation = false;
+
+	@ConfigOption(description = "adjust the weights of class expression length in refinement", defaultValue = "OCEL default metric")
+	private OWLClassExpressionLengthMetric lengthMetric;
 	// boolean createTreeString = false;
 	// String searchTree = new String();
 //	private int cardinalityLimit = 5;
@@ -275,7 +280,14 @@ public class OCEL extends AbstractCELA {
 			((CustomHierarchyRefinementOperator)operator).setObjectPropertyHierarchy(objectPropertyHierarchy);
 			((CustomHierarchyRefinementOperator)operator).setDataPropertyHierarchy(datatypePropertyHierarchy);
 		}
-		
+
+		if (lengthMetric == null) {
+			lengthMetric = OWLClassExpressionLengthMetric.getOCELMetric();
+		}
+		if(operator instanceof LengthLimitedRefinementOperator) {
+			((LengthLimitedRefinementOperator)operator).setLengthMetric(lengthMetric);
+		}
+
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
@@ -305,7 +317,8 @@ public class OCEL extends AbstractCELA {
 				negativeWeight,
 				startNodeBonus,
 				expansionPenaltyFactor,
-				negationPenalty
+				negationPenalty,
+				lengthMetric
 		);
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
@@ -567,6 +580,18 @@ public class OCEL extends AbstractCELA {
 
 	public void setTerminateOnNoiseReached(boolean terminateOnNoiseReached) {
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() {
+		return lengthMetric;
+	}
+
+	@Autowired(required = false)
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		this.lengthMetric = lengthMetric;
+		if (operator != null && operator instanceof LengthLimitedRefinementOperator) {
+			((LengthLimitedRefinementOperator)operator).setLengthMetric(lengthMetric);
+		}
 	}
 
     @Autowired(required=false)

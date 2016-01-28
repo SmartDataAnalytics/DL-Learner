@@ -19,6 +19,7 @@
 package org.dllearner.refinementoperators;
 
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import java.util.List;
@@ -82,7 +83,20 @@ public class SynchronizedRefinementOperator implements LengthLimitedRefinementOp
 			return delegate.refine(description, maxLength, knownRefinements);
 		}
 	}
-	
+
+	@Override
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		synchronized (delegate) {
+			delegate.setLengthMetric(lengthMetric);
+		}
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() {
+		synchronized (delegate) {
+			return delegate.getLengthMetric();
+		}
+	}
+
 	/**
 	 * @return the wrapped refinement operator
 	 */

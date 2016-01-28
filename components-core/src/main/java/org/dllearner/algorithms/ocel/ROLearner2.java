@@ -211,7 +211,8 @@ public class ROLearner2 {
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
 			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease,
 			boolean terminateOnNoiseReached,
-			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
+			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty,
+			OWLClassExpressionLengthMetric lengthMetric) {
 
 		
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -252,6 +253,7 @@ public class ROLearner2 {
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
 		this.maxClassDescriptionTests = maxClassDescriptionTests;
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
+		this.lengthMetric = lengthMetric;
 
 		// logger.setLevel(Level.DEBUG);
 	}
@@ -359,6 +361,7 @@ public class ROLearner2 {
 		searchTree.addNode(null, startNode);
 		searchTreeStable.addNode(null, startNode);
 
+		ExampleBasedNode previousBestNode = startNode;
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
@@ -423,6 +426,7 @@ public class ROLearner2 {
 			searchTree.updatePrepare(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
 			searchTree.updateDone(bestNode);
+			previousBestNode = bestNode;
 
 			// System.out.println("done");
 

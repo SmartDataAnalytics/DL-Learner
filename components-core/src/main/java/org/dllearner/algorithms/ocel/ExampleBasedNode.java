@@ -53,6 +53,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	// example based variables
 	private Set<OWLIndividual> coveredPositives;
 	private Set<OWLIndividual> coveredNegatives;
+
 //	private int coveredPositiveSize;
 //	private int coveredNegativeSize;
 	
@@ -74,7 +75,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	private double startNodeBonus;
 	private double expansionPenaltyFactor;
 	private int negationPenalty;
-	
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
 	// apart from the child nodes, we also keep child concepts
@@ -127,6 +127,10 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		isQualityEvaluated = true;
 //		exampleMemoryCounter += coveredPositives.size() * 4;
 //		exampleMemoryCounter += coveredNegatives.size() * 4;
+	}
+
+	public int getQuality() {
+		return getCovPosMinusCovNeg();
 	}
 
 	@Override
