@@ -48,7 +48,12 @@ public class OWLClassExpressionUtils {
 		OWLClassExpressionLengthCalculator calculator = new OWLClassExpressionLengthCalculator();
 		return calculator.getLength(ce);
 	}
-	
+
+	public static int getLength(OWLClassExpression ce, OWLClassExpressionLengthMetric metric) {
+		OWLClassExpressionLengthCalculator calculator = new OWLClassExpressionLengthCalculator(metric);
+		return calculator.getLength(ce);
+	}
+
 	/**
 	 * Returns the depth of a class expression. 
 	 * @param ce the class expression
@@ -96,4 +101,5 @@ public class OWLClassExpressionUtils {
 	public static boolean occursOnFirstLevel(OWLClassExpression description, OWLClassExpression cls) {
 		return description.containsConjunct(cls);
 	}
+
 }

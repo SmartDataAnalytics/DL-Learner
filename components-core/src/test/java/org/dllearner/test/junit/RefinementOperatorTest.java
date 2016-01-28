@@ -34,6 +34,7 @@ import org.dllearner.refinementoperators.OperatorInverter;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.test.junit.TestOntologies.TestOntology;
 import org.dllearner.utilities.Helper;
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
@@ -66,7 +67,7 @@ public class RefinementOperatorTest {
 	@Test
 	public void rhoDRDownTest() {
 		try {
-			//StringRenderer.setRenderer(Rendering.DL_SYNTAX);
+			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 			String file = "../examples/carcinogenesis/carcinogenesis.owl";
 			KnowledgeSource ks = new OWLFile(file);
 			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
@@ -83,6 +84,9 @@ public class RefinementOperatorTest {
 			op.setSubHierarchy(reasoner.getClassHierarchy());
 			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
 			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			OWLClassExpressionLengthMetric metric = new OWLClassExpressionLengthMetric();
+			metric.dataHasValueLength = 1;
+			op.setLengthMetric(metric);
 			op.init();
 			OWLClassExpression concept = KBParser.parseConcept(uri("Compound"));
 			Set<OWLClassExpression> results = op.refine(concept, 4, null);

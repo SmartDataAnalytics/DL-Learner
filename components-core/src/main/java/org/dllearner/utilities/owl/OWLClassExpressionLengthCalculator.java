@@ -18,12 +18,11 @@
  */
 package org.dllearner.utilities.owl;
 
-import java.util.List;
-import java.util.Set;
-
 import org.semanticweb.owlapi.model.*;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Computes the length of a class expression.
@@ -35,7 +34,16 @@ public class OWLClassExpressionLengthCalculator implements
 		OWLClassExpressionVisitor, OWLPropertyExpressionVisitor,
 		OWLDataRangeVisitor {
 
+	private OWLClassExpressionLengthMetric metric;
 	private int length;
+
+	public OWLClassExpressionLengthCalculator(OWLClassExpressionLengthMetric metric) {
+		this.metric = metric;
+	}
+
+	public OWLClassExpressionLengthCalculator() {
+		this.metric = OWLClassExpressionLengthMetric.getDefaultMetric();
+	}
 
 	/**
 	 * Computes the length of a class expression.
@@ -57,7 +65,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLClass ce) {
-		length++;
+		length += metric.classLength;
 	}
 
 	/*
@@ -73,7 +81,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLClassExpression op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.objectIntersectionLength;
 	}
 
 	/*
@@ -89,7 +97,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLClassExpression op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.objectUnionLength;
 	}
 
 	/*
@@ -102,7 +110,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectComplementOf ce) {
 		ce.getOperand().accept(this);
-		length++;
+		length += metric.objectComplementLength;
 	}
 
 	/*
@@ -116,7 +124,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectSomeValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.objectSomeValuesLength;
 	}
 
 	/*
@@ -130,7 +138,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectAllValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.objectAllValuesLength;
 	}
 
 	/*
@@ -143,7 +151,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.objectHasValueLength;
 	}
 
 	/*
@@ -157,7 +165,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectMinCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -171,7 +179,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectExactCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -185,7 +193,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLObjectMaxCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.objectCardinalityLength;
 	}
 
 	/*
@@ -198,7 +206,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLObjectHasSelf ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.objectHasValueLength;
 	}
 
 	/*
@@ -210,7 +218,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectOneOf ce) {
-		length++;
+		length += metric.objectOneOfLength;
 	}
 
 	/*
@@ -224,7 +232,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataSomeValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.dataSomeValuesLength;
 	}
 
 	/*
@@ -238,7 +246,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataAllValuesFrom ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length++;
+		length += metric.dataAllValuesLength;
 	}
 
 	/*
@@ -251,7 +259,7 @@ public class OWLClassExpressionLengthCalculator implements
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		ce.getProperty().accept(this);
-		length += 2;
+		length += metric.dataHasValueLength;
 	}
 
 	/*
@@ -265,7 +273,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataMinCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -279,7 +287,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataExactCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -293,7 +301,7 @@ public class OWLClassExpressionLengthCalculator implements
 	public void visit(OWLDataMaxCardinality ce) {
 		ce.getProperty().accept(this);
 		ce.getFiller().accept(this);
-		length += 2;
+		length += metric.dataCardinalityLength;
 	}
 
 	/*
@@ -304,7 +312,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectProperty property) {
-		length++;
+		length += metric.objectProperyLength;
 	}
 
 	/*
@@ -315,7 +323,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLObjectInverseOf property) {
-		length += 2;
+		length += metric.objectInverseLength;
 	}
 
 	/*
@@ -326,7 +334,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataProperty property) {
-		length++;
+		length += metric.dataProperyLength;
 	}
 
 	@Override
@@ -341,7 +349,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDatatype node) {
-		length++;
+		length += metric.datatypeLength;
 	}
 
 	/*
@@ -353,7 +361,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataOneOf node) {
-		length++;
+		length += metric.dataOneOfLength;
 	}
 
 	/*
@@ -365,7 +373,7 @@ public class OWLClassExpressionLengthCalculator implements
 	 */
 	@Override
 	public void visit(OWLDataComplementOf node) {
-		length += 2;
+		length += metric.dataComplementLength;
 	}
 
 	/*
@@ -381,7 +389,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLDataRange op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.dataIntersectionLength;
 	}
 
 	/*
@@ -397,7 +405,7 @@ public class OWLClassExpressionLengthCalculator implements
 		for (OWLDataRange op : operands) {
 			op.accept(this);
 		}
-		length += operands.size() - 1;
+		length += (operands.size() - 1) * metric.dataUnionLength;
 	}
 
 	/*

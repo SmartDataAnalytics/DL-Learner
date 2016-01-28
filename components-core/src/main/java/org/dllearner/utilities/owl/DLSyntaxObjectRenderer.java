@@ -74,7 +74,14 @@ implements OWLObjectRenderer, OWLObjectVisitor {
 
 	@Override
 	public void visit(@Nonnull OWLFacetRestriction node) {
-		write(node.getFacet().getSymbolicForm());
+		switch (node.getFacet()) {
+			case MIN_INCLUSIVE: write("\u2265"); /* >= */ break;
+			case MIN_EXCLUSIVE: write("\u003e"); /* >  */ break;
+			case MAX_INCLUSIVE: write("\u2264"); /* <= */ break;
+			case MAX_EXCLUSIVE: write("\u003c"); /* <  */ break;
+			default:
+				write(node.getFacet().getSymbolicForm());
+		}
 		writeSpace();
 		node.getFacetValue().accept(this);
 	}
