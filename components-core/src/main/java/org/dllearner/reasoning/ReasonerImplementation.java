@@ -29,8 +29,7 @@ public enum ReasonerImplementation {
 	HERMIT,
 	JFACT,
 	ELK,
-	CEL,
-	TROWL,
+//	TROWL,
 	OWLLINK,
 	FACT,
 	STRUCTURAL
