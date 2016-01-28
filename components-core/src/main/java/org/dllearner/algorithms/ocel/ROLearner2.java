@@ -34,10 +34,7 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
+import org.dllearner.utilities.owl.*;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -197,6 +194,7 @@ public class ROLearner2 {
 	private int negationPenalty;
 	
 	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+	private OWLClassExpressionLengthMetric lengthMetric;
 
 	public ROLearner2(
 //			OCELConfigurator configurator,
@@ -556,7 +554,7 @@ public class ROLearner2 {
 		while (it.hasNext()) {
 
 			OWLClassExpression refinement = it.next();
-			if (OWLClassExpressionUtils.getLength(refinement) > node.getHorizontalExpansion()) {
+			if (OWLClassExpressionUtils.getLength(refinement, lengthMetric) > node.getHorizontalExpansion()) {
 				// TRUE means that improperness was detected, but FALSE does not mean that the refinement is proper
 				boolean impropernessDetected = false;
 
@@ -592,7 +590,7 @@ public class ROLearner2 {
 							tooWeakList.add(refinement);
 
 							ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement) - 1);
+							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
 							newNode.setTooWeak(true);
 							newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
 							node.addChild(newNode);
@@ -676,7 +674,7 @@ public class ROLearner2 {
 				ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements
 				// für den neuen Knoten erlaubt wären z.B. person => male
-				newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement) - 1);
+				newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
 
 				boolean qualityKnown = false;
 				int quality = -2;
@@ -794,7 +792,7 @@ public class ROLearner2 {
 				// reached (to replace atomic concepts with more specific ones)
 				if(forceRefinementLengthIncrease && !newNode.isTooWeak()) {
 					// extend node again if its concept has the same length
-					if(OWLClassExpressionUtils.getLength(node.getConcept()) == OWLClassExpressionUtils.getLength(newNode.getConcept())) {
+					if(OWLClassExpressionUtils.getLength(node.getConcept(), lengthMetric) == OWLClassExpressionUtils.getLength(newNode.getConcept(), lengthMetric)) {
 						extendNodeProper(newNode, refinement, maxLength, recDepth + 1);
 					}
 				}

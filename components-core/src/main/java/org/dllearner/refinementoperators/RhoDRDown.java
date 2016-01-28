@@ -24,7 +24,6 @@ import com.google.common.collect.*;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -51,7 +50,6 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.shef.wit.simmetrics.metrichandlers.MetricHandler;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -643,7 +641,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			OWLClassExpression domain = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
 
 			// rule 1: EXISTS r.D => EXISTS r.E
-			tmp = refine(filler, maxLength-2, null, domain);
+			tmp = refine(filler, maxLength-lengthMetric.objectSomeValuesLength-lengthMetric.objectProperyLength, null, domain);
 
 			for(OWLClassExpression c : tmp){
 				refinements.add(df.getOWLObjectSomeValuesFrom(role, c));
@@ -691,7 +689,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			if(description instanceof OWLObjectMaxCardinality) {
 				// rule 1: <= x r.C =>  <= x r.D
 				if(useNegation || cardinality > 0){
-					tmp = refine(filler, maxLength-3, null, range);
+					tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
 
 					for(OWLClassExpression d : tmp) {
 						refinements.add(df.getOWLObjectMaxCardinality(cardinality,role,d));
@@ -705,7 +703,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				}
 
 			} else if(description instanceof OWLObjectMinCardinality) {
-				tmp = refine(filler, maxLength-3, null, range);
+				tmp = refine(filler, maxLength-lengthMetric.objectCardinalityLength-lengthMetric.objectProperyLength, null, range);
 
 				for(OWLClassExpression d : tmp) {
 					refinements.add(df.getOWLObjectMinCardinality(cardinality,role,d));
@@ -906,7 +904,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		OWLClassExpression range = role.isAnonymous() ? opDomains.get(role.getNamedProperty()) : opRanges.get(role);
 
 		// rule 1: ALL r.D => ALL r.E
-		Set<OWLClassExpression> tmp = refine(filler, maxLength-2, null, range);
+		Set<OWLClassExpression> tmp = refine(filler, maxLength-lengthMetric.objectAllValuesLength-lengthMetric.objectProperyLength, null, range);
 
 		for(OWLClassExpression c : tmp) {
 			refinements.add(df.getOWLObjectAllValuesFrom(role, c));
