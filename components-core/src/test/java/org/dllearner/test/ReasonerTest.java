@@ -50,8 +50,11 @@ public class ReasonerTest {
 		Logger.getLogger(ElkReasoner.class).setLevel(Level.OFF);
 		
 		ReasonerImplementation[] reasonerImplementations = new ReasonerImplementation[]{
-				ReasonerImplementation.ELK, ReasonerImplementation.TROWL, ReasonerImplementation.JFACT,
-				ReasonerImplementation.HERMIT, ReasonerImplementation.PELLET};
+				ReasonerImplementation.ELK,
+//				ReasonerImplementation.TROWL,
+				ReasonerImplementation.JFACT,
+				ReasonerImplementation.HERMIT,
+				ReasonerImplementation.PELLET};
 		
 		int maxExecutionTimeInSeconds = 10;
 		
