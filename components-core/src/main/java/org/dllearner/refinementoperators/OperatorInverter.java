@@ -80,6 +80,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 	
 	public OperatorInverter(LengthLimitedRefinementOperator operator) {
 		this.operator = operator;
+		this.lengthMetric = operator.getLengthMetric();
 	}
 
 	public OperatorInverter() {
