@@ -983,22 +983,43 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			//get instances of filler concept
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
-			
+
+			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping;
 			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-			
-			// each individual is connected to a set of individuals via the property;
-			// we loop through the complete mapping
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
-				SortedSet<OWLIndividual> inds = entry.getValue();
-				for(OWLIndividual ind : inds) {
-					if(targetSet.contains(ind)) {
-						returnSet.add(entry.getKey());
-						// once we found an individual, we do not need to check the others
-						break;
+				// negated property
+				mapping = new TreeMap<>();
+				for (Entry<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> p : opPos.entrySet()) {
+					if (p.getKey().equals(property.getInverseProperty().asOWLObjectProperty())) {
+						continue;
+					}
+
+					Map<OWLIndividual, SortedSet<OWLIndividual>> m2 = p.getValue();
+
+					for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : m2.entrySet()) {
+						SortedSet<OWLIndividual> inds = entry.getValue();
+						for (OWLIndividual ind : inds) {
+							if (targetSet.contains(ind)) {
+								returnSet.add(entry.getKey());
+								// once we found an individual, we do not need to check the others
+								break;
+							}
+						}
+					}
+				}
+			} else {
+				// fast case
+				mapping = opPos.get(property.asOWLObjectProperty());
+
+				// each individual is connected to a set of individuals via the property;
+				// we loop through the complete mapping
+				for (Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+					SortedSet<OWLIndividual> inds = entry.getValue();
+					for (OWLIndividual ind : inds) {
+						if (targetSet.contains(ind)) {
+							returnSet.add(entry.getKey());
+							// once we found an individual, we do not need to check the others
+							break;
+						}
 					}
 				}
 			}
@@ -1007,10 +1028,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			// \forall restrictions are difficult to handle; assume we want to check
 			// \forall hasChild.male with domain(hasChild)=Person; then for all non-persons
 			// this is satisfied trivially (all of their non-existing children are male)
-//			if(!configurator.getForallRetrievalSemantics().equals("standard")) {
-//				throw new Error("Only forallExists semantics currently implemented.");
-//			}
-			
+
 			// problem: we need to make sure that \neg \exists r.\top \equiv \forall r.\bot
 			// can still be reached in an algorithm (\forall r.\bot \equiv \bot under forallExists
 			// semantics)
@@ -1027,7 +1045,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
 			
 			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-//			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
 			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 			
 			// each individual is connected to a set of individuals via the property;
