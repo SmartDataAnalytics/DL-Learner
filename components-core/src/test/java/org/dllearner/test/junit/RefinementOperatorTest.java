@@ -282,6 +282,43 @@ public class RefinementOperatorTest {
 	}
 
 	@Test
+	public void rhoDRDownTest7() {
+		try {
+			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
+			String file = "../examples/family/father_oe_inv.ttl";
+			KnowledgeSource ks = new OWLFile(file);
+			AbstractReasonerComponent reasoner = new OWLAPIReasoner(Collections.singleton(ks));
+			reasoner.init();
+			baseURI = reasoner.getBaseURI();
+
+			RhoDRDown op = new RhoDRDown();
+			op.setReasoner(reasoner);
+			op.setUseInverse(true);
+			op.setUseHasValueConstructor(true);
+			op.setSubHierarchy(reasoner.getClassHierarchy());
+			op.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			op.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
+			op.init();
+			OWLClassExpression concept = KBParser.parseConcept(uri("person"));
+			Set<OWLClassExpression> results = op.refine(concept, 5, null);
+
+			for(OWLClassExpression result : results) {
+				System.out.println(result);
+			}
+
+			int desiredResultSize = 11;
+			if(results.size() != desiredResultSize) {
+				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
+			}
+			assertTrue(results.size()==desiredResultSize);
+		} catch(ComponentInitException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Test
 	public void invertedOperatorTest() throws ParseException, ComponentInitException {
 		AbstractReasonerComponent reasoner = TestOntologies.getTestOntology(TestOntology.RHO1);
 		reasoner.init();

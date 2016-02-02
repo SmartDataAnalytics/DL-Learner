@@ -1169,7 +1169,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		if(useExistsConstructor) {
 			int lc = lengthMetric.objectSomeValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
-			int lc_i = lc + lengthMetric.objectInverseLength;
+			int lc_i = lengthMetric.objectSomeValuesLength + lengthMetric.objectInverseLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m.get(lc).add(df.getOWLObjectSomeValuesFrom(r, df.getOWLThing()));
 
@@ -1184,7 +1184,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			// becomes too difficult to manage due to dependencies between
 			// M_A and M_A' where A'=ran(r)
 			int lc = lengthMetric.objectAllValuesLength + lengthMetric.objectProperyLength + lengthMetric.classLength;
-			int lc_i = lc + lengthMetric.objectInverseLength;
+			int lc_i = lengthMetric.objectAllValuesLength + lengthMetric.objectInverseLength + lengthMetric.classLength;
 			for(OWLObjectProperty r : objectPropertyHierarchy.getMostGeneralRoles()) {
 				m.get(lc).add(df.getOWLObjectAllValuesFrom(r, df.getOWLThing()));
 
