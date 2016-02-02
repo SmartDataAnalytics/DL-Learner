@@ -18,13 +18,14 @@
  */
 package org.dllearner.reasoning;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.utilities.MapUtils;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -75,6 +76,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	private Map<OWLClass, TreeSet<OWLIndividual>> classInstancesNeg = new TreeMap<>();
 	// object property mappings
 	private Map<OWLObjectProperty, Map<OWLIndividual, SortedSet<OWLIndividual>>> opPos = new TreeMap<>();
+//	private Map<OWLObjectProperty, Multimap<OWLIndividual, OWLIndividual>> opPos = new TreeMap<>();
 	// data property mappings
 	private Map<OWLDataProperty, Map<OWLIndividual, SortedSet<OWLLiteral>>> dpPos = new TreeMap<>();
 		
@@ -983,17 +985,24 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			//get instances of filler concept
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+
+			// the mapping of instances related by r
+			Map<OWLIndividual, ? extends  Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
 			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
-						+ description + " unsupported. Inverse object properties not supported.");
+			if (property.isAnonymous()) { // \exists r^{-1}.C
+				// invert the mapping
+				// get all objects that are related by r to (at least) one subject which is of type C
+				Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
+						MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+						TreeMultimap.<OWLIndividual, OWLIndividual>create());
+
+				mapping = mappingInv.asMap();
 			}
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-			
+
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
-				SortedSet<OWLIndividual> inds = entry.getValue();
+			for(Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
+				Collection<OWLIndividual> inds = entry.getValue();
 				for(OWLIndividual ind : inds) {
 					if(targetSet.contains(ind)) {
 						returnSet.add(entry.getKey());
@@ -1002,6 +1011,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 					}
 				}
 			}
+
 			return returnSet;
 		} else if (description instanceof OWLObjectAllValuesFrom) {
 			// \forall restrictions are difficult to handle; assume we want to check
@@ -1017,23 +1027,30 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			
 			OWLObjectPropertyExpression property = ((OWLObjectAllValuesFrom) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectAllValuesFrom) description).getFiller();
-			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
-			//get instances of filler concept
+
+			// get instances of filler concept
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+
+			// the mapping of instances related by r
+			Map<OWLIndividual, ? extends  Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+
+			if (property.isAnonymous()) { // \forall r^{-1}.C
+				// invert the mapping
+				// get all objects that are related by r to (at least) one subject which is of type C
+				Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
+						MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+						TreeMultimap.<OWLIndividual, OWLIndividual>create());
+
+				mapping = mappingInv.asMap();
+			}
+
 //			SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>(mapping.keySet());
 			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 			
 			// each individual is connected to a set of individuals via the property;
 			// we loop through the complete mapping
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
-				SortedSet<OWLIndividual> inds = entry.getValue();
+			for(Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
+				Collection<OWLIndividual> inds = entry.getValue();
 				for(OWLIndividual ind : inds) {
 					if(!targetSet.contains(ind)) {
 						returnSet.remove(entry.getKey());
@@ -1045,25 +1062,32 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		} else if (description instanceof OWLObjectMinCardinality) {
 			OWLObjectPropertyExpression property = ((OWLObjectMinCardinality) description).getProperty();
 			OWLClassExpression filler = ((OWLObjectMinCardinality) description).getFiller();
-			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
+
 			//get instances of filler concept
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
+
+			// the mapping of instances related by r
+			Map<OWLIndividual, ? extends  Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+
+			if (property.isAnonymous()) { // \forall r^{-1}.C
+				// invert the mapping
+				// get all objects that are related by r to (at least) one subject which is of type C
+				Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
+						MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+						TreeMultimap.<OWLIndividual, OWLIndividual>create());
+
+				mapping = mappingInv.asMap();
+			}
 			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-			
+
 			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 
 			int number = ((OWLObjectMinCardinality) description).getCardinality();
 
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<OWLIndividual> inds = entry.getValue();
+				Collection<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(inds.size() < number) {
@@ -1093,24 +1117,30 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			OWLClassExpression filler = ((OWLObjectMaxCardinality) description).getFiller();
 			int number = ((OWLObjectMaxCardinality) description).getCardinality();
 			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
-						+ description + " unsupported. Inverse object properties not supported.");
-			}
-			
 			//get instances of filler concept
 			SortedSet<OWLIndividual> targetSet = getIndividualsImpl(filler);
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
+
+			// the mapping of instances related by r
+			Map<OWLIndividual, ? extends  Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+
+			if (property.isAnonymous()) { // \forall r^{-1}.C
+				// invert the mapping
+				// get all objects that are related by r to (at least) one subject which is of type C
+				Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
+						MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+						TreeMultimap.<OWLIndividual, OWLIndividual>create());
+
+				mapping = mappingInv.asMap();
+			}
 			
 			// initially all individuals are in the return set and we then remove those
 			// with too many fillers
 			SortedSet<OWLIndividual> returnSet = (SortedSet<OWLIndividual>) individuals.clone();
 
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
 				int nrOfFillers = 0;
 				int index = 0;
-				SortedSet<OWLIndividual> inds = entry.getValue();
+				Collection<OWLIndividual> inds = entry.getValue();
 				
 				// we do not need to run tests if there are not sufficiently many fillers
 				if(number < inds.size()) {
@@ -1139,17 +1169,23 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 		} else if (description instanceof OWLObjectHasValue) {
 			OWLObjectPropertyExpression property = ((OWLObjectHasValue) description).getProperty();
 			OWLIndividual value = ((OWLObjectHasValue)description).getFiller();
-			
-			if (property.isAnonymous()) {
-				throw new ReasoningMethodUnsupportedException("Retrieval for OWLClassExpression "
-						+ description + " unsupported. Inverse object properties not supported.");
+
+			// the mapping of instances related by r
+			Map<OWLIndividual, ? extends  Collection<OWLIndividual>> mapping = opPos.get(property.getNamedProperty());
+
+			if (property.isAnonymous()) { // \exists r^{-1}.{a}
+				// invert the mapping
+				// get all objects that are related by r to (at least) one subject which is of type C
+				Multimap<OWLIndividual, OWLIndividual> mappingInv = Multimaps.invertFrom(
+						MapUtils.createSortedMultiMap(opPos.get(property.getNamedProperty())),
+						TreeMultimap.<OWLIndividual, OWLIndividual>create());
+
+				mapping = mappingInv.asMap();
 			}
-			
-			Map<OWLIndividual, SortedSet<OWLIndividual>> mapping = opPos.get(property.asOWLObjectProperty());
-			
+
 			SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 			
-			for(Entry<OWLIndividual, SortedSet<OWLIndividual>> entry : mapping.entrySet()) {
+			for(Entry<OWLIndividual, ? extends Collection<OWLIndividual>> entry : mapping.entrySet()) {
 				if(entry.getValue().contains(value)) {
 					returnSet.add(entry.getKey());
 				}
@@ -1297,6 +1333,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			}
 			
 			return returnSet;
+		} else if(description instanceof  OWLObjectOneOf) {
+			return new TreeSet(((OWLObjectOneOf) description).getIndividuals());
 		}
 			
 		throw new ReasoningMethodUnsupportedException("Retrieval for class expression "
