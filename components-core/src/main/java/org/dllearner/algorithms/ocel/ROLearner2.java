@@ -35,6 +35,7 @@ import org.dllearner.utilities.JamonMonitorLogger;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
 import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
 import org.dllearner.utilities.owl.*;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
@@ -51,6 +52,7 @@ import java.util.*;
 public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
+	private final OWLObjectRenderer renderer;
 
 	// basic setup: learning problem and reasoning service
 	private AbstractReasonerComponent rs;
@@ -212,7 +214,7 @@ public class ROLearner2 {
 			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease,
 			boolean terminateOnNoiseReached,
 			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty,
-			OWLClassExpressionLengthMetric lengthMetric) {
+			OWLClassExpressionLengthMetric lengthMetric, OWLObjectRenderer renderer) {
 
 		
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -254,7 +256,7 @@ public class ROLearner2 {
 		this.maxClassDescriptionTests = maxClassDescriptionTests;
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
 		this.lengthMetric = lengthMetric;
-
+		this.renderer = renderer;
 		// logger.setLevel(Level.DEBUG);
 	}
 
@@ -365,7 +367,7 @@ public class ROLearner2 {
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
-		logger.info("starting top down refinement with: " + OWLAPIRenderers.toManchesterOWLSyntax(startNode.getConcept()) + " (" + df.format(100*startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "% accuracy)");
+		logger.info("starting top down refinement with: " + renderer.render(startNode.getConcept()) + " (" + df.format(100*startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "% accuracy)");
 		
 		int loop = 0;
 
@@ -409,7 +411,7 @@ public class ROLearner2 {
 					.getCovPosMinusCovNeg()) {
 				String acc = new DecimalFormat( ".00%" ).format((searchTreeStable.best().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
-				logger.info("more accurate ("+acc+") class expression found: " + OWLAPIRenderers.toManchesterOWLSyntax(searchTreeStable.best().getConcept()));
+				logger.info("more accurate ("+acc+") class expression found: " + renderer.render(searchTreeStable.best().getConcept()));
 				if(logger.isTraceEnabled()){
 					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
 					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
@@ -465,7 +467,7 @@ public class ROLearner2 {
 			int show = 1;
 			String manchester = "MANCHESTER:\n";
 			for (ExampleBasedNode c : solutions) {
-				logger.info(show + ": " + OWLAPIRenderers.toManchesterOWLSyntax(c.getConcept())
+				logger.info(show + ": " + renderer.render(c.getConcept())
 						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length "
 						+ OWLClassExpressionUtils.getLength(c.getConcept())
 						+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept()) + ")");
