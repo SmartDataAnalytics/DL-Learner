@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.TreeMultimap;
 import org.aksw.commons.collections.multimaps.MultimapUtils;
 
 public class MapUtils {
@@ -69,6 +70,17 @@ public class MapUtils {
 	 */
 	public static <K, V> Multimap<K, V> createMultiMap(Map<K, ? extends Iterable<V>> input) {
 		Multimap<K, V> multimap = ArrayListMultimap.create();
+		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
+			multimap.putAll(entry.getKey(), entry.getValue());
+		}
+		return multimap;
+	}
+
+	/**
+	 * Creates a Guava sorted multimap using the input map.
+	 */
+	public static <K extends Comparable, V extends Comparable> Multimap<K, V> createSortedMultiMap(Map<K, ? extends Iterable<V>> input) {
+		Multimap<K, V> multimap = TreeMultimap.<K, V>create();
 		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
 			multimap.putAll(entry.getKey(), entry.getValue());
 		}
