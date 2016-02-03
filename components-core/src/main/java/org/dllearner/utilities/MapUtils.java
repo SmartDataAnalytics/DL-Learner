@@ -80,7 +80,7 @@ public class MapUtils {
 	 * Creates a Guava sorted multimap using the input map.
 	 */
 	public static <K extends Comparable, V extends Comparable> Multimap<K, V> createSortedMultiMap(Map<K, ? extends Iterable<V>> input) {
-		Multimap<K, V> multimap = TreeMultimap.<K, V>create();
+		Multimap<K, V> multimap = TreeMultimap.create();
 		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
 			multimap.putAll(entry.getKey(), entry.getValue());
 		}
