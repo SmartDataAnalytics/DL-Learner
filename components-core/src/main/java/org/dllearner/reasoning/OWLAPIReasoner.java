@@ -232,36 +232,34 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     }
     
     private void initDatatypes() {
-    	Set<OWLDataProperty> numericDataProperties = new HashSet<>();
-        for (OWLDataProperty dataProperty : datatypeProperties) {
-            Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
-			Iterator<OWLDataRange> it = ranges.iterator();
-			if (it.hasNext()) {
-				OWLDataRange range = it.next();
-				if (range.isDatatype()) {
-					OWLDatatype datatype = range.asOWLDatatype();
-					
-					if(datatype.isBuiltIn()) { // OWL 2 DL compliant datatypes
-						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+	    Set<OWLDataProperty> numericDataProperties = new HashSet<>();
+	    for (OWLDataProperty dataProperty : datatypeProperties) {
+		    Collection<OWLDataRange> ranges = EntitySearcher.getRanges(dataProperty, owlAPIOntologies);
+		    Iterator<OWLDataRange> it = ranges.iterator();
+		    if (it.hasNext()) {
+			    OWLDataRange range = it.next();
+			    if (range.isDatatype()) {
+				    OWLDatatype datatype = range.asOWLDatatype();
 
-						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
-						
-						if(OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
-							numericDataProperties.add(dataProperty);
-						}
-					} else if(OWLAPIUtils.dtDatatypes.contains(datatype)) { // support for other XSD datatypes, e.g. xsd:date
-						datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+				    if (datatype.isBuiltIn()) { // OWL 2 DL compliant datatypes
+					    datatype2Properties.put(range.asOWLDatatype(), dataProperty);
 
-						dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
-					} else {
-						datatype2Properties.put(XSD.STRING, dataProperty);
-						dataproperty2datatype.put(dataProperty, XSD.STRING);
-					}
-				} else { // TODO handle complex data property ranges
-					
-				}
-			} 
-        }
+					    dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+
+					    if (OWLAPIUtils.isNumericDatatype(range.asOWLDatatype())) {
+						    numericDataProperties.add(dataProperty);
+					    }
+				    } else if (OWLAPIUtils.dtDatatypes.contains(datatype)) { // support for other XSD datatypes, e.g. xsd:date
+					    datatype2Properties.put(range.asOWLDatatype(), dataProperty);
+
+					    dataproperty2datatype.put(dataProperty, range.asOWLDatatype());
+				    } else { // TODO handle non-built-in data types
+				    }
+			    } else { // TODO handle complex data property ranges
+			    }
+		    } else { // TODO handle data properties without range assertion
+		    }
+	    }
     }
 
     private void initBaseReasoner() {
