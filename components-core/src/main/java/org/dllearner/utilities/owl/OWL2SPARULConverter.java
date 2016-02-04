@@ -86,17 +86,17 @@ public class OWL2SPARULConverter
 	 * @param change the OWL ontology change
 	 * @return the SPARQL 1.1 Update command
 	 */
-	public String translate(OWLOntologyChange change) {
-		return translate(Collections.singletonList(change));
+	public String convert(OWLOntologyChange change) {
+		return convert(Collections.singletonList(change));
 	}
 
 	/**
-	 * Converts a set of OWL ontology changes to a SPARQL 1.1 Update command.
+	 * Converts a list of OWL ontology changes to a SPARQL 1.1 Update command.
 	 *
 	 * @param changes the ontology changes
 	 * @return the SPARQL 1.1 Update command
 	 */
-	public String translate(List<OWLOntologyChange> changes) {
+	public String convert(List<OWLOntologyChange> changes) {
 		sb = new StringBuilder();
 
 		// sort by type of change
