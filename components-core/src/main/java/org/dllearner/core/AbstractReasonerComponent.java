@@ -19,6 +19,7 @@
 package org.dllearner.core;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.dllearner.core.config.ConfigOption;
@@ -1408,21 +1409,12 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	public List<OWLClass> getAtomicConceptsList(boolean removeOWLThing) {
-		if (!removeOWLThing) {
-			return getAtomicConceptsList();
-		} else {
-			List<OWLClass> l = new LinkedList<>();
-			for (OWLClass class1 : getAtomicConceptsList()) {
-				if (class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_NOTHING))) == 0
-						|| class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_THING))) == 0) {
-					// do nothing
-				} else {
-					l.add(class1);
-				}
-			}
-			return l;
+		List<OWLClass> classes = Lists.newArrayList(getAtomicConceptsList());
+		if (removeOWLThing) {
+			classes.remove(df.getOWLThing());
+			classes.remove(df.getOWLNothing());
 		}
-
+		return classes;
 	}
 	
 	public void setSubsumptionHierarchy(ClassHierarchy subsumptionHierarchy) {

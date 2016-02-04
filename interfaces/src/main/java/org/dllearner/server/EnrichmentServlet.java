@@ -343,7 +343,7 @@ public class EnrichmentServlet extends HttpServlet {
 	}
 	
 	private String getSPARUL(OWLAxiom axiom){
-		return sparul.translate(new AddAxiom(ont, axiom));
+		return sparul.convert(new AddAxiom(ont, axiom));
 	}
 	
 	private boolean oneOf(String value, String... possibleValues){
