@@ -318,7 +318,8 @@ public class OCEL extends AbstractCELA {
 				startNodeBonus,
 				expansionPenaltyFactor,
 				negationPenalty,
-				lengthMetric
+				lengthMetric,
+				renderer
 		);
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the

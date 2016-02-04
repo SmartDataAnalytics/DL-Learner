@@ -25,7 +25,9 @@ import org.semanticweb.owlapi.rdf.model.AbstractTranslator;
 import org.semanticweb.owlapi.util.IndividualAppearance;
 import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrences;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class OWL2SPARULConverter
@@ -94,6 +96,11 @@ public class OWL2SPARULConverter
 	@Override
 	protected RDFResourceBlankNode getAnonymousNode(Object key) {
 		return new RDFResourceBlankNode(System.identityHashCode(key), false, false);
+	}
+
+	@Override
+	protected RDFResource getAnonymousNodeForExpressions(@Nonnull Object o) {
+		return new RDFResourceBlankNode(false, false);
 	}
 
 	@Override

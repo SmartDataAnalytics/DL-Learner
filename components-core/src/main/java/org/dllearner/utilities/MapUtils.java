@@ -28,21 +28,29 @@ import java.util.Map.Entry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.TreeMultimap;
 import org.aksw.commons.collections.multimaps.MultimapUtils;
 
+/**
+ * Utility class for operations on maps.
+ *
+ * @author Lorenz Buehmann
+ */
 public class MapUtils {
 
 	/**
 	 * Returns a list of entries sorted by the map values descending.
+	 *
 	 * @param map the map
 	 * @return a list of entries sorted by the map values descending.
 	 */
-	public static <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
+	public static <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map) {
 		return sortByValues(map, false);
 	}
-	
+
 	/**
 	 * Returns a list of entries sorted by the map values either ascending or descending.
+	 *
 	 * @param map the map
 	 * @return a list of entries sorted by the map values either ascending or descending.
 	 */
@@ -64,11 +72,26 @@ public class MapUtils {
 
 	/**
 	 * Constructs a multimap with the same mappings as the specified map.
+	 *
 	 * @param input the input map
 	 * @return the multimap
 	 */
 	public static <K, V> Multimap<K, V> createMultiMap(Map<K, ? extends Iterable<V>> input) {
 		Multimap<K, V> multimap = ArrayListMultimap.create();
+		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
+			multimap.putAll(entry.getKey(), entry.getValue());
+		}
+		return multimap;
+	}
+
+	/**
+	 * Creates a Guava sorted multimap using the input map.
+	 *
+	 * @param input the input map
+	 * @return the multimap
+	 */
+	public static <K extends Comparable, V extends Comparable> Multimap<K, V> createSortedMultiMap(Map<K, ? extends Iterable<V>> input) {
+		Multimap<K, V> multimap = TreeMultimap.create();
 		for (Map.Entry<K, ? extends Iterable<V>> entry : input.entrySet()) {
 			multimap.putAll(entry.getKey(), entry.getValue());
 		}
