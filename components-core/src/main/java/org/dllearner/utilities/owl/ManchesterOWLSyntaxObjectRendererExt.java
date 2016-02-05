@@ -150,7 +150,9 @@ public class ManchesterOWLSyntaxObjectRendererExt extends AbstractRenderer
                     || restriction.getFiller() instanceof OWLObjectUnionOf) {
                 conjunctionOrDisjunction = true;
                 incrementTab(4);
-                writeNewLine();
+                if (isUseWrapping()) {
+                    writeNewLine();
+                }
             }
             write("(");
         }
