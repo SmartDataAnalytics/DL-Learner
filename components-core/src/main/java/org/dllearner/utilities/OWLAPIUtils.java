@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.owl.SimpleOWLEntityChecker;
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -210,13 +211,14 @@ public class OWLAPIUtils {
 	}
 
 	public static final String UNPARSED_OCE = "dllearner+unparsed:";
+
+
 	
 	public static OWLClassExpression classExpressionPropertyExpander (OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
 		if(!startClass.isAnonymous() && startClass.asOWLClass().getIRI().toString().startsWith(UNPARSED_OCE)) {
 			try {
 				String s = startClass.asOWLClass().getIRI().toString().substring(UNPARSED_OCE.length());
-				ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, new SimpleOWLEntityChecker(reasoner));
-				return parser.parse(s);
+				return fromManchester(s, reasoner, dataFactory);
 			} catch (ManchesterOWLSyntaxParserException e) {
 				throw new RuntimeException("Parsing of class expression in OWL Manchester Syntax failed. Please check the syntax and "
 						+ "remember to use either full IRIs or prefixed IRIs.", e);
@@ -226,7 +228,21 @@ public class OWLAPIUtils {
 		}
 
 	}
-	
+
+	@NotNull
+	public static OWLClassExpression fromManchester(String expr, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory) {
+		ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, new SimpleOWLEntityChecker(reasoner));
+		return parser.parse(expr);
+	}
+
+	@NotNull
+	public static OWLClassExpression fromManchester(String expr, AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, boolean shortForm) {
+		SimpleOWLEntityChecker oec = new SimpleOWLEntityChecker(reasoner);
+		oec.setAllowShortForm(shortForm);
+		ManchesterOWLSyntaxClassExpressionParser parser = new ManchesterOWLSyntaxClassExpressionParser(dataFactory, oec);
+		return parser.parse(expr);
+	}
+
 	/**
 	 * Checks whether the given value is in the closed interval [min,max], i.e.
 	 * the value is greater than min and lower than max.
