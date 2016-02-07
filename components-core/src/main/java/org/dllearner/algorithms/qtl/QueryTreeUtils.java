@@ -27,6 +27,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.rdf.model.impl.IteratorFactory;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -43,6 +44,8 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Edge;
 import org.dllearner.algorithms.qtl.datastructures.rendering.Vertex;
+import org.dllearner.algorithms.qtl.util.BreadthFirstTreeIterator;
+import org.dllearner.algorithms.qtl.util.DepthFirstTreeIterator;
 import org.dllearner.algorithms.qtl.util.Entailment;
 import org.dllearner.algorithms.qtl.util.VarGenerator;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -1205,5 +1208,23 @@ public class QueryTreeUtils {
 			}
 		}
 		return relatedEdges;
+	}
+
+	public static void serialize(RDFResourceTree tree) {
+
+		StringBuilder sb = new StringBuilder();
+		Iterator<RDFResourceTree> iterator = preorder(tree);
+		while (iterator.hasNext()) {
+			RDFResourceTree nextTree = iterator.next();
+
+		}
+	}
+
+	public static Iterator<RDFResourceTree> preorder(RDFResourceTree tree) {
+		return new DepthFirstTreeIterator(tree);
+	}
+
+	public static Iterator<RDFResourceTree> postorder(RDFResourceTree tree) {
+		return new BreadthFirstTreeIterator(tree);
 	}
 }
