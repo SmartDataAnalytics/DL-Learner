@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.operations;
 
 import java.util.ArrayList;
@@ -66,7 +84,7 @@ public class PostLGG<N> {
 //			if(leaf.getParent().getUserObject().equals("?")){
 				pathExists = true;
 				for(QueryTree<N> negTree : negTrees){
-					if(!pathExists(leaf, new ArrayList<Object>(path), negTree)){
+					if(!pathExists(leaf, new ArrayList<>(path), negTree)){
 						pathExists = false;
 						break;
 					}
@@ -96,7 +114,7 @@ public class PostLGG<N> {
 		N label1;
 		N label2;
 		QueryTree<N> parent;
-		Set<Integer> removedNodesIds = new HashSet<Integer>();
+		Set<Integer> removedNodesIds = new HashSet<>();
 		for(QueryTree<N> leaf : tree.getLeafs()){
 			if(!removedNodesIds.contains(leaf.getId())){
 				parent = leaf.getParent();
@@ -110,7 +128,7 @@ public class PostLGG<N> {
 							
 							boolean remove = false;
 							for(QueryTree<N> negTree : negTrees){
-								int ret = containsEdgeCombination(negTree, new ArrayList<Object>(path1), new ArrayList<Object>(path2), label1, label2);
+								int ret = containsEdgeCombination(negTree, new ArrayList<>(path1), new ArrayList<>(path2), label1, label2);
 								if(ret == -1){
 									remove = false;
 									break;
@@ -232,7 +250,7 @@ public class PostLGG<N> {
 	}
 	
 	private List<Object> getPathFromRootToNode(QueryTree<N> node){
-		List<Object> path = new ArrayList<Object>();
+		List<Object> path = new ArrayList<>();
 		QueryTree<N> parent = node.getParent();
 		path.add(parent.getEdge(node));
 		if(!parent.isRoot()){
@@ -246,7 +264,7 @@ public class PostLGG<N> {
 		if(path.isEmpty()){
 			return Collections.singletonList(tree);
 		}
-		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		List<QueryTree<N>> nodes = new ArrayList<>();
 		Object edge = path.remove(0);
 		for(QueryTree<N> child : tree.getChildren(edge)){
 			if(path.isEmpty()){
@@ -272,7 +290,7 @@ public class PostLGG<N> {
 		Object edge = path.remove(0);
 		if(!path.isEmpty()){
 			for(QueryTree<N> child : tree.getChildren(edge)){
-				if(existsPath(new ArrayList<Object>(path), child)){
+				if(existsPath(new ArrayList<>(path), child)){
 					return true;
 				}
 			}

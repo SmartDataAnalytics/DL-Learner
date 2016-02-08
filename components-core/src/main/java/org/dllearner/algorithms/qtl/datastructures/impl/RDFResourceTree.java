@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
@@ -18,10 +33,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -39,7 +56,7 @@ import com.hp.hpl.jena.sparql.util.NodeComparator;
  * @author Lorenz Buehmann
  *
  */
-public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable{
+public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implements Serializable, Comparable<RDFResourceTree>{
 	
 	public enum Rendering {
 		INDENTED, BRACES
@@ -54,7 +71,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	private RDFDatatype datatype;
 	
 	private Map<RDFResourceTree, Node> child2Edge = new HashMap<>();
-    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+    private NavigableMap<Node, List<RDFResourceTree>> edge2Children = new TreeMap<>(new NodeComparator());
 //	private TreeMultimap<Node, RDFResourceTree> edge2Children = TreeMultimap.create(
 //			new NodeComparator(), Ordering.arbitrary());
     
@@ -87,17 +104,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	/**
 	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * @param datatype the datatype
 	 */
 	public RDFResourceTree(RDFDatatype datatype) {
 		this(0, datatype);
 	}
 	
 	/**
-	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * Create empty literal node with given ID and datatype.
+	 * @param id the ID
+	 * @param datatype the datatype
 	 */
 	public RDFResourceTree(int id, RDFDatatype datatype) {
 		super(DEFAULT_LITERAL_NODE);
@@ -106,9 +122,10 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
-	 * Create empty literal node with given datatype.
-	 * @param id
-	 * @param datatype
+	 * Create literal node with given ID, datatype and a set of literal values.
+	 * @param id the ID
+	 * @param datatype the datatype
+	 * @param literals the literal values
 	 */
 	public RDFResourceTree(int id, RDFDatatype datatype, Set<Literal> literals) {
 		super(DEFAULT_LITERAL_NODE);
@@ -140,7 +157,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		super.addChild(child);
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<RDFResourceTree>();
+			childrenForEdge = new ArrayList<>();
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.add(child);
@@ -152,7 +169,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		super.addChildren(children);
 		List<RDFResourceTree> childrenForEdge = edge2Children.get(edge);
 		if(childrenForEdge == null) {
-			childrenForEdge = new ArrayList<RDFResourceTree>();
+			childrenForEdge = new ArrayList<>();
 			edge2Children.put(edge, childrenForEdge);
 		}
 		childrenForEdge.addAll(children);
@@ -179,10 +196,16 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 		child2Edge.remove(child);
 	}
 	
+	@Override
 	public List<RDFResourceTree> getChildren() {
 		return super.getChildren();
 	}
 	
+	/**
+	 * @param edge the edge
+	 * @return all children for the specified edge, or <code>null</code> if
+	 * there is no child for the edge
+	 */
 	public List<RDFResourceTree> getChildren(Node edge) {
 		return edge2Children.get(edge);
 	}
@@ -192,19 +215,27 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	}
 	
 	/**
-	 * Returns all outgoing different edges.
-	 * @return
+	 * @param edge
+	 *            the edge from the root node to the possible child nodes
+	 * @return TRUE if there is at least one child connected by the given edge,
+	 *         otherwise FALSE
+	 */
+	public boolean hasChildren(Node edge) {
+		return edge2Children.get(edge) != null;
+	}
+	
+	/**
+	 * @return all distinct outgoing edges.
 	 */
 	public SortedSet<Node> getEdges() {
 		return edge2Children.navigableKeySet();
 	}
 	
 	/**
-	 * Returns all outgoing different edges.
-	 * @return
+	 * @return all distinct outgoing edges to children of the given node type
 	 */
 	public SortedSet<Node> getEdges(NodeType nodeType) {
-		SortedSet<Node> edges = new TreeSet<Node>(new NodeComparator());
+		SortedSet<Node> edges = new TreeSet<>(new NodeComparator());
 		for (Entry<Node, List<RDFResourceTree>> entry : edge2Children.entrySet()) {
 			Node edge = entry.getKey();
 			List<RDFResourceTree> children = entry.getValue();
@@ -270,12 +301,25 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	public String getStringRepresentation(Rendering syntax, String baseIRI, PrefixMapping pm) {
 		return getStringRepresentation(false, syntax, baseIRI, pm);
 	}
+	
+	/**
+	 * Prints the query tree and shows children of resources only if enabled.
+	 * 
+	 * @param stopIfChildIsResourceNode do not show children of nodes that are resources
+	 * @return the query tree
+	 */
+	public String getStringRepresentation(boolean stopIfChildIsResourceNode) {
+		return getStringRepresentation(stopIfChildIsResourceNode, null, null, PrefixCCPrefixMapping.Full);
+	}
 	    
 	/**
 	 * Prints the query tree and shows children of resources only if enabled.
 	 * 
-	 * @param stopWhenLeafNode
-	 * @return
+	 * @param stopIfChildIsResourceNode if a child node is not a variable, children will not be rendered
+	 * @param syntax the syntax used for rendering
+	 * @param baseIRI the base IRI
+	 * @param pm the prefix mapping
+	 * @return a rendered string representation of the tree
 	 */
 	public String getStringRepresentation(boolean stopIfChildIsResourceNode, Rendering syntax, String baseIRI, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
@@ -399,7 +443,7 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 	
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 		child2Edge = new HashMap<>();
-	    edge2Children = new TreeMap<Node, List<RDFResourceTree>>(new NodeComparator());
+	    edge2Children = new TreeMap<>(new NodeComparator());
 		
 	    // ID
 		int id = ois.readInt();
@@ -436,5 +480,17 @@ public class RDFResourceTree extends GenericTree<Node, RDFResourceTree> implemen
 			}
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(RDFResourceTree other) {
+		return ComparisonChain.start().
+			compare(this.getData(), other.getData(), new NodeComparator()). // root node
+			compare(this.getNumberOfChildren(), other.getNumberOfChildren()). // number of direct children
+			compare(QueryTreeUtils.toOWLClassExpression(this), QueryTreeUtils.toOWLClassExpression(other)). // class expression representation
+			result();
 	}
 }

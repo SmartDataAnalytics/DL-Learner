@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.owl.fuzzydll;
 
 import org.semanticweb.owlapi.model.IRI;
@@ -47,12 +46,25 @@ public class FuzzyIndividual extends OWLNamedIndividualImpl{
 		else
 			return d;
 	}
-    
+
 	@Override
 	public boolean equals(Object o) {
-		if(o==null) {
-			return false;
-		}
-		return (compareTo((FuzzyIndividual)o)==0);
+		if (this == o) return true;
+		if (!(o instanceof FuzzyIndividual)) return false;
+		if (!super.equals(o)) return false;
+
+		FuzzyIndividual that = (FuzzyIndividual) o;
+
+		return Double.compare(that.truthDegree, truthDegree) == 0;
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		long temp;
+		temp = Double.doubleToLongBits(truthDegree);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		return result;
 	}
 }

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
 
@@ -117,8 +132,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, p), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, p),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -168,8 +183,8 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<T>(
-							getAxiom(entityToDescribe, candidate), 
+					new EvaluatedAxiom<>(
+							getAxiom(entityToDescribe, candidate),
 							new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 		}
 	}
@@ -191,11 +206,11 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	/**
 	 * Returns the candidate properties for comparison.
-	 * @return
+	 * @return the candidate properties
 	 */
 	protected SortedSet<OWLObjectProperty> getCandidates(){
 		// get the candidates
-		SortedSet<OWLObjectProperty> candidates = new TreeSet<OWLObjectProperty>();
+		SortedSet<OWLObjectProperty> candidates = new TreeSet<>();
 
 		if (strictMode) { // that have the same domain and range 
 			// get rdfs:domain of the property
@@ -242,7 +257,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		}
 		posExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
@@ -270,7 +285,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		}
 		negExamplesQueryTemplate.setIri("p_other", otherProperty.toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

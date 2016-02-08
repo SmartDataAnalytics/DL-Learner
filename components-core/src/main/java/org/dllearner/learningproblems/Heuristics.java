@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
 /**
@@ -29,8 +28,8 @@ package org.dllearner.learningproblems;
  */
 public class Heuristics {
 
-	public static enum HeuristicType { PRED_ACC, AMEASURE, JACCARD, FMEASURE, GEN_FMEASURE, ENTROPY, MATTHEWS_CORRELATION, YOUDEN_INDEX };	
-	
+	public enum HeuristicType { PRED_ACC, AMEASURE, JACCARD, FMEASURE, GEN_FMEASURE, ENTROPY, MATTHEWS_CORRELATION, YOUDEN_INDEX }
+
 	/**
 	 * Computes F1-Score.
 	 * @param recall Recall.
@@ -39,7 +38,7 @@ public class Heuristics {
 	 */
 	public static double getFScore(double recall, double precision) {
 		return (precision + recall == 0) ? 0 :
-			  ( 2 * (precision * recall) / (double) (precision + recall) ); 		
+			  ( 2 * (precision * recall) / (precision + recall) );
 	}
 	
 	/**
@@ -53,23 +52,29 @@ public class Heuristics {
 	public static double getFScore(double recall, double precision, double beta) {
 		return (precision + recall == 0) ? 0 :
 			  ( (1+ beta * beta) * (precision * recall)
-					/ (beta * beta * precision + recall) ); 		
-	}	
-	
+					/ (beta * beta * precision + recall) );
+	}
+
+	public static double getFScoreBalanced(double recall, double precision, double beta) {
+		// balanced F measure
+		return (precision + recall == 0) ? 0 :
+		  ( (1+Math.sqrt(beta)) * (precision * recall)
+				/ (Math.sqrt(beta) * precision + recall) );
+	}
 	/**
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
-	 * here (A=arithmetic), but is not an established notion in machine learning.  
+	 * here (A=arithmetic), but is not an established notion in machine learning.
 	 * @param recall Recall.
 	 * @param precision Precison.
 	 * @return Arithmetic mean of precision and recall.
 	 */
 	public static double getAScore(double recall, double precision) {
-		return (recall + precision) / (double) 2;
+		return (recall + precision) / 2;
 	}
 
 	/**
 	 * Computes arithmetic mean of precision and recall, which is called "A-Score"
-	 * here (A=arithmetic), but is not an established notion in machine learning.  
+	 * here (A=arithmetic), but is not an established notion in machine learning.
 	 * @param recall Recall.
 	 * @param precision Precison.
 	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
@@ -95,18 +100,18 @@ public class Heuristics {
 	
 	public static double getPredictiveAccuracy(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives) {
 		return (nrOfPosClassifiedPositives + nrOfNegClassifiedNegatives) / (double) nrOfExamples;
-	}	
+	}
 
 	public static double getPredictiveAccuracy(int nrOfPosExamples, int nrOfNegExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
-		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (double) (nrOfPosExamples + beta * nrOfNegExamples);
-	}		
+		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (nrOfPosExamples + beta * nrOfNegExamples);
+	}
 	
 	public static double getPredictiveAccuracy2(int nrOfExamples, int nrOfPosClassifiedPositives, int nrOfPosClassifiedNegatives) {
 		return (nrOfPosClassifiedPositives + nrOfExamples - nrOfPosClassifiedNegatives) / (double) nrOfExamples;
 	}
 	
 	public static double getPredictiveAccuracy2(int nrOfPosExamples, int nrOfNegExamples, int nrOfPosClassifiedPositives, int nrOfNegClassifiedNegatives, double beta) {
-		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (double) (nrOfPosExamples + beta * nrOfNegExamples);
+		return (nrOfPosClassifiedPositives + beta * nrOfNegClassifiedNegatives) / (nrOfPosExamples + beta * nrOfNegExamples);
 	}
 	
 	public static double getMatthewsCorrelationCoefficient(int tp, int fp, int tn, int fn) {
@@ -116,7 +121,7 @@ public class Heuristics {
 	/**
 	 * Computes the 95% confidence interval of an experiment with boolean outcomes,
 	 * e.g. heads or tails coin throws. It uses the very efficient, but still accurate
-	 * Wald method. 
+	 * Wald method.
 	 * @param success Number of successes, e.g. number of times the coin shows head.
 	 * @param total Total number of tries, e.g. total number of times the coin was thrown.
 	 * @return A two element double array, where element 0 is the lower border and element
@@ -137,7 +142,7 @@ public class Heuristics {
 	/**
 	 * Computes the 95% confidence interval average of an experiment with boolean outcomes,
 	 * e.g. heads or tails coin throws. It uses the very efficient, but still accurate
-	 * Wald method. 
+	 * Wald method.
 	 * @param success Number of successes, e.g. number of times the coin shows head.
 	 * @param total Total number of tries, e.g. total number of times the coin was thrown.
 	 * @return The average of the lower border and upper border of the 95% confidence interval.
@@ -157,7 +162,7 @@ public class Heuristics {
 	 * @param nrOfPosClassifiedPositives The number of positive examples, which were indeed classified as positive by the hypothesis.
 	 * @param noise The noise parameter is a value between 0 and 1, which indicates how noisy the example data is (0 = no noise, 1 = completely random).
 	 * If a hypothesis contains more errors on the positive examples than the noise value multiplied by the
-	 * number of all examples, then the hypothesis is too weak.  
+	 * number of all examples, then the hypothesis is too weak.
 	 * @return True if the hypothesis is too weak and false otherwise.
 	 */
 	public boolean isTooWeak(int nrOfPositiveExamples, int nrOfPosClassifiedPositives, double noise) {
@@ -174,18 +179,28 @@ public class Heuristics {
 	 * @param nrOfNegClassifiedPositives The number of positive examples, which were indeed classified as negative by the hypothesis.
 	 * @param noise The noise parameter is a value between 0 and 1, which indicates how noisy the example data is (0 = no noise, 1 = completely random).
 	 * If a hypothesis contains more errors on the positive examples than the noise value multiplied by the
-	 * number of all examples, then the hypothesis is too weak.  
+	 * number of all examples, then the hypothesis is too weak.
 	 * @return True if the hypothesis is too weak and false otherwise.
 	 */
 	public boolean isTooWeak2(int nrOfPositiveExamples, int nrOfNegClassifiedPositives, double noise) {
 		if(noise < 0 || noise > 1 || nrOfNegClassifiedPositives <= nrOfPositiveExamples || nrOfPositiveExamples < 1) {
 			throw new IllegalArgumentException();
-		}		
+		}
 		return (noise * nrOfPositiveExamples) < nrOfNegClassifiedPositives;
 	}
 
+	// see paper: p'
+	public static double p1(int success, int total) {
+		return (success+2)/(double)(total+4);
+	}
+
+	// see paper: expression used in confidence interval estimation
+	public static double p3(double p1, int total) {
+		return 1.96 * Math.sqrt(p1*(1-p1)/(total+4));
+	}
+
 	/**
-	 * This method can be used to approximate F-Measure and thereby saving a lot of 
+	 * This method can be used to approximate F-Measure and thereby saving a lot of
 	 * instance checks. It assumes that all positive examples (or instances of a class)
 	 * have already been tested via instance checks, i.e. recall is already known and
 	 * precision is approximated.
@@ -211,7 +226,7 @@ public class Heuristics {
 		double fMeasureLow = (1 + Math.sqrt(beta)) * (nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+upperBorder)*recall) / (Math.sqrt(beta)*nrOfPosClassifiedPositives/(nrOfPosClassifiedPositives+upperBorder)+recall);
 		double diff = fMeasureHigh - fMeasureLow;
 		// compute F-score for proportion ?
-		// double proportionInstanceChecks = successfulInstanceChecks / (double) nrOfInstanceChecks * nrOfRelevantInstances; // 
+		// double proportionInstanceChecks = successfulInstanceChecks / (double) nrOfInstanceChecks * nrOfRelevantInstances; //
 		// => don't do it for now, because the difference between proportion and center of interval is usually quite small
 		// for sufficiently small diffs
 		// return interval length and center
@@ -247,7 +262,7 @@ public class Heuristics {
 	 * In step 2 of the A-Score approximation, the precision and overall A-Score is estimated based on
 	 * the estimated recall.
 	 * @param nrOfPosClassifiedPositives Positive examples (instance of a class), which are classified as positives.
-	 * @param recallInterval The estimated recall, which needs to be given as a two element array with the first element being the mean value and the second element being the length of the interval (to be compatible with the step1 method). 
+	 * @param recallInterval The estimated recall, which needs to be given as a two element array with the first element being the mean value and the second element being the length of the interval (to be compatible with the step1 method).
 	 * @param beta Weights precision and recall. If beta is >1, then recall is more important
 	 * than precision.
 	 * @param nrOfRelevantInstances Number of relevant instances, i.e. number of instances, which
@@ -291,14 +306,18 @@ public class Heuristics {
 		// multiply by number of instances from which the random samples are drawn
 		double lowerBorder = intervalPos[0] * nrOfPositiveExamples + beta * intervalNeg[0] * nrOfNegativeExamples;
 		double upperBorder = intervalNeg[1] * nrOfPositiveExamples + beta * intervalNeg[1] * nrOfNegativeExamples;
-		double predAccLow = lowerBorder / (double) (nrOfPositiveExamples + beta * nrOfNegativeExamples);
-		double predAccHigh = upperBorder / (double) (nrOfPositiveExamples + beta * nrOfNegativeExamples);
+		double predAccLow = lowerBorder / (nrOfPositiveExamples + beta * nrOfNegativeExamples);
+		double predAccHigh = upperBorder / (nrOfPositiveExamples + beta * nrOfNegativeExamples);
 		double diff = predAccHigh - predAccLow;
 		// return interval length and center
 		double[] ret = new double[2];
 		ret[0] = predAccLow + 0.5 * diff;
 		ret[1] = diff;
 		return ret;
+	}
+
+	public static double divideOrZero(int numerator, int denominator) {
+		return denominator == 0 ? 0 : numerator / (double)denominator;
 	}
 	
 }

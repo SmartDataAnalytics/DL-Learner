@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.el;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import org.dllearner.core.Score;
 import org.semanticweb.owlapi.io.OWLObjectRenderer;
 
 
@@ -36,13 +35,13 @@ public class SearchTreeNode {
 
 	private ELDescriptionTree descriptionTree;
 	
-	private List<SearchTreeNode> children = new LinkedList<SearchTreeNode>();
+	private List<SearchTreeNode> children = new LinkedList<>();
 	
 	private int coveredPositives;
 	private int coveredNegatives;
 	private boolean tooWeak = false;
 	
-	private double score;
+	private Score score;
 	protected double accuracy;
 	
 	public SearchTreeNode(ELDescriptionTree descriptionTree) {
@@ -50,14 +49,14 @@ public class SearchTreeNode {
 	}
 
 	/**
-	 * @return the tooWeak
+	 * @return whether the node is too weak
 	 */
 	public boolean isTooWeak() {
 		return tooWeak;
 	}
 
 	/**
-	 * @param tooWeak the tooWeak to set
+	 * set if the node is too weak
 	 */
 	public void setTooWeak() {
 		tooWeak = true;
@@ -143,18 +142,24 @@ public class SearchTreeNode {
 			treeString.append("  ");
 		if(depth!=0)
 			treeString.append("|--> ");
-		treeString.append(toString(renderer)+"\n");
+		treeString.append(toString(renderer)).append("\n");
 		for(SearchTreeNode child : children) {
 			treeString.append(child.getTreeString(depth+1, renderer));
 		}
 		return treeString;
 	}
 
-	public double getScore() {
+	/**
+	 * @return the score of the node
+	 */
+	public Score getScore() {
 		return score;
 	}
 
-	public void setScore(double score) {
+	/**
+	 * @param score the score of the node to set
+	 */
+	public void setScore(Score score) {
 		this.score = score;
 	}	
 	

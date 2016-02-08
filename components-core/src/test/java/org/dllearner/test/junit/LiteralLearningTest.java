@@ -1,12 +1,27 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.test.junit;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.clarkparsia.owlapiv3.XSD;
+import com.google.common.collect.Sets;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -16,26 +31,20 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLLiteralImplInteger;
 
-import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertTrue;
 
 public final class LiteralLearningTest {
 	static final String NUMBERS = "http://dl-learner.org/test/numbers#";
@@ -69,16 +78,14 @@ public final class LiteralLearningTest {
 			this.prefix = prefix;
 			this.restrictionType = restrictionType;
 			this.maxNrOfSplits = maxNrOfSplits;
-			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
-//			org.apache.log4j.Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
-
-//			ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
-			ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+//			StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
+//			StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 
 			File file = new File(owlfile);
 			OWLOntology ontology = OWLManager.createOWLOntologyManager().loadOntologyFromOntologyDocument(file);
 			df = new OWLDataFactoryImpl();
-			pm = new DefaultPrefixManager(prefix);
+			pm = new DefaultPrefixManager();
+			pm.setDefaultPrefix(prefix);
 			ks = new OWLAPIOntology(ontology);
 			ks.init();
 		}
@@ -86,40 +93,51 @@ public final class LiteralLearningTest {
 			this(prefix, owlfile, restrictionType, 12);
 		}
 		public void run() throws ComponentInitException {
-			Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
-			positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
-			positiveExamples.add(df.getOWLNamedIndividual("N2", pm));
-			positiveExamples.add(df.getOWLNamedIndividual("N3", pm));
-			
-			Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
-			negativeExamples.add(df.getOWLNamedIndividual("N100", pm));
-			negativeExamples.add(df.getOWLNamedIndividual("N102", pm));
-			negativeExamples.add(df.getOWLNamedIndividual("N104", pm));
-			
-			for(AbstractReasonerComponent rc : rcs) {
-				PosNegLPStandard lp = new PosNegLPStandard(rc);
-				lp.setPositiveExamples(positiveExamples);
-				lp.setNegativeExamples(negativeExamples);
-				lp.init();
-				
-				RhoDRDown op = new RhoDRDown();
-				op.setUseTimeDatatypes(true);
-				op.setUseNumericDatatypes(true);
-				op.setReasoner(rc);
-				op.setMaxNrOfSplits(maxNrOfSplits);
-				op.init();
-				
-				CELOE alg = new CELOE(lp, rc);
-				alg.setMaxClassDescriptionTests(1000);
-				alg.setMaxExecutionTimeInSeconds(0);
-				alg.setOperator(op);
-				alg.init();
-				
-				alg.start();
-				OWLClassExpression soln = alg.getCurrentlyBestDescription();
+			Level oldLevel = Logger.getLogger("org.dllearner").getLevel();
+			//Level oldLevelCELOE = Logger.getLogger(CELOE.class).getLevel();
+			try {
+				Logger.getLogger("org.dllearner").setLevel(Level.DEBUG);
+                //Logger.getLogger(CELOE.class).setLevel(Level.DEBUG);
 
-				assertTrue(soln.getNNF().equals(target));
-				
+
+				Set<OWLIndividual> positiveExamples = new TreeSet<OWLIndividual>();
+				positiveExamples.add(df.getOWLNamedIndividual("N1", pm));
+				positiveExamples.add(df.getOWLNamedIndividual("N2", pm));
+				positiveExamples.add(df.getOWLNamedIndividual("N3", pm));
+
+				Set<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+				negativeExamples.add(df.getOWLNamedIndividual("N100", pm));
+				negativeExamples.add(df.getOWLNamedIndividual("N102", pm));
+				negativeExamples.add(df.getOWLNamedIndividual("N104", pm));
+
+				for (AbstractReasonerComponent rc : rcs) {
+					PosNegLPStandard lp = new PosNegLPStandard(rc);
+					lp.setPositiveExamples(positiveExamples);
+					lp.setNegativeExamples(negativeExamples);
+					lp.init();
+
+					RhoDRDown op = new RhoDRDown();
+					op.setUseTimeDatatypes(true);
+					op.setUseNumericDatatypes(true);
+					op.setReasoner(rc);
+					op.setMaxNrOfSplits(maxNrOfSplits);
+					op.init();
+
+					CELOE alg = new CELOE(lp, rc);
+					alg.setMaxClassExpressionTests(1000);
+					alg.setMaxExecutionTimeInSeconds(0);
+					alg.setOperator(op);
+					alg.init();
+
+					alg.start();
+					OWLClassExpression soln = alg.getCurrentlyBestDescription();
+
+					assertTrue(soln.getNNF().equals(target));
+
+				}
+			} finally {
+				Logger.getLogger("org.dllearner").setLevel(oldLevel);
+				//Logger.getLogger(CELOE.class).setLevel(oldLevelCELOE);
 			}
 		}
 		public void setSingleRestrictionTarget(OWLFacet facetType, String solution) {
@@ -233,6 +251,59 @@ public final class LiteralLearningTest {
 		runner.setReasoners(cwr , oar);
 		
 		runner.run();
+	}
+
+	@Test
+	public void stringTypeTest () throws OWLOntologyCreationException, ComponentInitException {
+		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+		OWLDataFactory df = man.getOWLDataFactory();
+		OWLOntology ontology = man.createOntology();
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dl-learner.org/test/strings/");
+		OWLDataProperty dp = df.getOWLDataProperty("stringValue", pm);
+		OWLClass cls = df.getOWLClass("A", pm);
+		man.addAxiom(ontology, df.getOWLDataPropertyDomainAxiom(dp, cls));
+		man.addAxiom(ontology, df.getOWLDataPropertyRangeAxiom(dp, OWL2Datatype.XSD_STRING.getDatatype(df)));
+
+		Set<OWLIndividual> positiveExamples = new TreeSet<>();
+		for (int i = 0; i < 10; i++) {
+			OWLNamedIndividual ind = df.getOWLNamedIndividual("p" + i, pm);
+			positiveExamples.add(ind);
+			man.addAxiom(ontology, df.getOWLDataPropertyAssertionAxiom(dp, ind, "X"));
+			man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, ind));
+		}
+
+		Set<OWLIndividual> negativeExamples = new TreeSet<>();
+		for (int i = 0; i < 10; i++) {
+			OWLNamedIndividual ind = df.getOWLNamedIndividual("n" + i, pm);
+			negativeExamples.add(ind);
+			man.addAxiom(ontology, df.getOWLDataPropertyAssertionAxiom(dp, ind, "Y"));
+			man.addAxiom(ontology, df.getOWLClassAssertionAxiom(cls, ind));
+		}
+
+		OWLAPIOntology ks = new OWLAPIOntology(ontology);
+		ks.init();
+
+		ClosedWorldReasoner reasoner = new ClosedWorldReasoner(ks);
+		reasoner.init();
+
+		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
+		lp.setPositiveExamples(positiveExamples);
+		lp.setNegativeExamples(negativeExamples);
+		lp.init();
+
+		RhoDRDown op = new RhoDRDown();
+		op.setUseDataHasValueConstructor(true);
+		op.setReasoner(reasoner);
+		op.init();
+
+		CELOE alg = new CELOE(lp, reasoner);
+		alg.setMaxClassExpressionTests(1000);
+		alg.setMaxExecutionTimeInSeconds(0);
+		alg.setOperator(op);
+		alg.init();
+
+		alg.start();
 	}
 	
 	@Test

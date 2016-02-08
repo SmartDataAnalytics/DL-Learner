@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.net.URI;
@@ -52,10 +51,10 @@ public class InstanceNode extends Node {
 	private static Logger logger = Logger
 		.getLogger(InstanceNode.class);
 
-	private List<ClassNode> classes = new ArrayList<ClassNode>();
+	private List<ClassNode> classes = new ArrayList<>();
 	//SortedSet<StringTuple> datatypes = new TreeSet<StringTuple>();
-	private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
-	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	private List<ObjectPropertyNode> objectProperties = new ArrayList<>();
+	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<>();
 
 	public InstanceNode(String uri) {
 		super(uri);
@@ -69,7 +68,7 @@ public class InstanceNode extends Node {
 		// see Manipulator
 		newTuples = manipulator.manipulate(this, newTuples);
 		
-		List<Node> newNodes = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
 
 		Node tmp;
 		for (RDFNodeTuple tuple : newTuples) {
@@ -145,7 +144,7 @@ public class InstanceNode extends Node {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		List<BlankNode> ret = new ArrayList<>();
 		for (ObjectPropertyNode one : objectProperties) {
 			ret.addAll(one.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		}
@@ -159,7 +158,7 @@ public class InstanceNode extends Node {
 
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> returnSet = new TreeSet<String>();
+		SortedSet<String> returnSet = new TreeSet<>();
 		returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + OWLVocabulary.OWL_THING + ">.");
 		for (ClassNode one : classes) {
 			returnSet.add("<" + uri + "><" + OWLVocabulary.RDF_TYPE + "><" + one.getURIString() + ">.");
@@ -201,7 +200,7 @@ public class InstanceNode extends Node {
 			if(one.getURIString().equals(OWLVocabulary.OWL_DIFFERENT_FROM)){
 				OWLIndividual o = factory.getOWLNamedIndividual(one.getBPart().getIRI());
 				
-				ax = factory.getOWLDifferentIndividualsAxiom(new OWLIndividual[]{me,o});
+				ax = factory.getOWLDifferentIndividualsAxiom(me, o);
 			}else{
 			
 				//create axiom

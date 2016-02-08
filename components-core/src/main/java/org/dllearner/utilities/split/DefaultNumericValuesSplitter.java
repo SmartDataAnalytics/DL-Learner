@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities.split;
 
@@ -61,7 +76,6 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 		List<OWLLiteral> splitLiterals = new ArrayList<>();
 		
 		List<? extends Number> splitValues = computeSplitValues(dp);
-		
 		for (Number value : splitValues) {
 			OWLLiteral literal = dataFactory.getOWLLiteral(value.toString(), reasoner.getDatatype(dp));
 			splitLiterals.add(literal);
@@ -71,13 +85,17 @@ public class DefaultNumericValuesSplitter extends AbstractNumericValuesSplitter 
 	}
 	
 	private <T extends Number & Comparable<T>> List<T> computeSplitValues(OWLDataProperty dp) {
-		Set<T> valuesSet = new TreeSet<T>();
+		Set<T> valuesSet = new TreeSet<>();
 
 		Map<OWLIndividual, SortedSet<T>> ind2Values = reasoner.getNumericDatatypeMembers(dp);
-
 		// add all values to the set
 		for(Entry<OWLIndividual, SortedSet<T>> e : ind2Values.entrySet()){
-			valuesSet.addAll(e.getValue());
+			try {
+				valuesSet.addAll(e.getValue());
+			} catch(ClassCastException ce) {
+				System.err.println("Mixed datatypes in "+dp.toStringID());
+				throw ce;
+			}
 		}
 
 		return simpleListSplitter(valuesSet, maxNrOfSplits);

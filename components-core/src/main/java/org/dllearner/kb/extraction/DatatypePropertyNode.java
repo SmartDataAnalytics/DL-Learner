@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -47,9 +46,9 @@ import org.semanticweb.owlapi.model.OWLDataRange;
 public class DatatypePropertyNode extends PropertyNode {
 
 	//	 specialtypes like owl:symmetricproperty
-	private SortedSet<String> specialTypes = new TreeSet<String>();
-	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();	
-	private List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	private SortedSet<String> specialTypes = new TreeSet<>();
+	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<>();
+	private List<BlankNode> blankNodes = new ArrayList<>();
 	
 	public DatatypePropertyNode(String uri, Node a, LiteralNode b) {
 		super(uri, a, b);
@@ -65,7 +64,7 @@ public class DatatypePropertyNode extends PropertyNode {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		List<BlankNode> ret = new ArrayList<>();
 		//ret.addAll(b.expandProperties(tupelAquisitor, manipulator));
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
 		
@@ -110,7 +109,7 @@ public class DatatypePropertyNode extends PropertyNode {
 
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> s = new TreeSet<String>();
+		SortedSet<String> s = new TreeSet<>();
 		s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 				+ OWLVocabulary.OWL_DATATYPPROPERTY + ">.");
 

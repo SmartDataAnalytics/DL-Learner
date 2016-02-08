@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,34 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.ComparisonChain;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.utilities.EnrichmentVocabulary;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxPrefixNameShortFormProvider;
 
-import com.google.common.collect.ComparisonChain;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.*;
 
 public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, AxiomScore>{
 	
@@ -76,7 +63,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 	}
 
 	public Map<OWLIndividual, List<OWLAxiom>> toRDF(String defaultNamespace){
-		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<OWLIndividual, List<OWLAxiom>>();
+		Map<OWLIndividual, List<OWLAxiom>> ind2Axioms = new HashMap<>();
 		OWLDataFactory f = new OWLDataFactoryImpl();
 		
 		String id = DigestUtils.md5Hex(hypothesis.toString()) + score.getAccuracy();
@@ -94,7 +81,7 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 //		OWLAxiom ax2 = ax.getAnnotatedAxiom(Collections.singleton(anno));
 		OWLAxiom ax3 = f.getOWLDataPropertyAssertionAxiom(EnrichmentVocabulary.confidence, ind, score.getAccuracy());
 		
-		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		List<OWLAxiom> axioms = new ArrayList<>();
 		axioms.add(ax1);
 		axioms.add(ax2);
 		axioms.add(ax3);
@@ -144,10 +131,10 @@ public class EvaluatedAxiom<T extends OWLAxiom> extends EvaluatedHypothesis<T, A
 
 	public static <T extends OWLAxiom> List<EvaluatedAxiom<T>> getBestEvaluatedAxioms(Set<EvaluatedAxiom<T>> evaluatedAxioms, int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<>();
 		
 		//get the currently best evaluated axioms
-		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<EvaluatedAxiom<T>>(evaluatedAxioms);
+		Set<EvaluatedAxiom<T>> orderedEvaluatedAxioms = new TreeSet<>(evaluatedAxioms);
 		
 		for(EvaluatedAxiom<T> evAx : orderedEvaluatedAxioms){
 			if(evAx.getScore().getAccuracy() >= accuracyThreshold && returnList.size() < nrOfAxioms){

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,33 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+
+import java.net.URI;
+import java.util.*;
 
 public class OntologyCloserOWLAPI {
 
@@ -56,7 +38,7 @@ public class OntologyCloserOWLAPI {
 
 	public OntologyCloserOWLAPI(OWLAPIReasoner reasoner) {
 		this.rs = reasoner;
-		this.indToRestr = new HashMap<OWLIndividual, Set<OWLObjectExactCardinality>>();
+		this.indToRestr = new HashMap<>();
 //		this.rs = new ReasonerComponent(reasoner);
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.factory = manager.getOWLDataFactory();
@@ -127,7 +109,7 @@ public class OntologyCloserOWLAPI {
 			}
 		}// end for
 
-		Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> target = new HashSet<>();
 		Set<OWLObjectExactCardinality> s = null;
 
 		for (OWLIndividual oneInd : indToRestr.keySet()) {
@@ -138,7 +120,7 @@ public class OntologyCloserOWLAPI {
 			// collect everything in an intersection
 			OWLObjectIntersectionOf intersection = factory.getOWLObjectIntersectionOf(target);
 			s = null;
-			target = new HashSet<OWLClassExpression>();
+			target = new HashSet<>();
 
 			OWLAxiom axiom = factory.getOWLClassAssertionAxiom(intersection, factory
 					.getOWLNamedIndividual(IRI.create(oneInd.toStringID())));
@@ -176,7 +158,7 @@ public class OntologyCloserOWLAPI {
 
 	public void writeOWLFile(URI filename) {
 		try {
-			manager.saveOntology(this.onto, new RDFXMLOntologyFormat(),
+			manager.saveOntology(this.onto, new RDFXMLDocumentFormat(),
 					IRI.create(filename));
 		} catch (Exception e) {
 			e.printStackTrace();

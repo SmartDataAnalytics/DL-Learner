@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.owl;
 
 import java.util.HashMap;
@@ -32,19 +31,19 @@ import java.util.TreeSet;
  */
 public class FlatABox {
     
-    public SortedSet<String> roles = new TreeSet<String>();
-    public SortedSet<String> concepts = new TreeSet<String>();
-    public SortedSet<String> domain = new TreeSet<String>();
-    public SortedSet<String> top = new TreeSet<String>();
-    public SortedSet<String> bottom = new TreeSet<String>();   
+    public SortedSet<String> roles = new TreeSet<>();
+    public SortedSet<String> concepts = new TreeSet<>();
+    public SortedSet<String> domain = new TreeSet<>();
+    public SortedSet<String> top = new TreeSet<>();
+    public SortedSet<String> bottom = new TreeSet<>();
     
-    public Map<String,SortedSet<String>> atomicConceptsPos = new HashMap<String,SortedSet<String>>();
-    public Map<String,SortedSet<String>> atomicConceptsNeg = new HashMap<String,SortedSet<String>>();
-    public Map<String,Map<String,SortedSet<String>>> rolesPos = new HashMap<String,Map<String,SortedSet<String>>>();
-    public Map<String,Map<String,SortedSet<String>>> rolesNeg = new HashMap<String,Map<String,SortedSet<String>>>();
+    public Map<String,SortedSet<String>> atomicConceptsPos = new HashMap<>();
+    public Map<String,SortedSet<String>> atomicConceptsNeg = new HashMap<>();
+    public Map<String,Map<String,SortedSet<String>>> rolesPos = new HashMap<>();
+    public Map<String,Map<String,SortedSet<String>>> rolesNeg = new HashMap<>();
     
-    public Map<String,SortedSet<String>> exampleConceptsPos = new HashMap<String,SortedSet<String>>();
-    public Map<String,SortedSet<String>> exampleConceptsNeg = new HashMap<String,SortedSet<String>>();
+    public Map<String,SortedSet<String>> exampleConceptsPos = new HashMap<>();
+    public Map<String,SortedSet<String>> exampleConceptsNeg = new HashMap<>();
     
     public FlatABox() {
         

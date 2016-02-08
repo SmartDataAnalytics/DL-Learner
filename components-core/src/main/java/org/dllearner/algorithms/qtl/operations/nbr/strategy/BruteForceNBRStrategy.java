@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.operations.nbr.strategy;
 
@@ -55,7 +54,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 			return nbr;
 		}
 		
-		Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
+		Set<RDFResourceTree> tested = new HashSet<>();
 		Node edge;
 		RDFResourceTree parent;
 		while(!(tested.size() == nbr.getLeafs().size()) ){
@@ -98,7 +97,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 			return Collections.singletonList(posExampleTree);
 		}
 		
-		List<RDFResourceTree> nbrs = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> nbrs = new ArrayList<>();
 		
 		compute(posExampleTree, negExampleTrees, nbrs);
 		
@@ -119,7 +118,7 @@ public class BruteForceNBRStrategy implements NBRStrategy {
 		}
 		
 		if(!subsumesTrees(nbr, negExampleTrees)){
-			Set<RDFResourceTree> tested = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> tested = new HashSet<>();
 			Node edge;
 			RDFResourceTree parent;
 			while(!(tested.size() == nbr.getLeafs().size()) ){

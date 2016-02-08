@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.operations;
 
@@ -48,9 +63,12 @@ public class SubsumptionTest {
 		String kb = "@prefix : <http://test.org/> . @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
 				+ "<_:a1> :p1 _:b . "
 				+ "<_:a2> :p1 _:s . _:s :p2 :b ."
-				+ ":a3 a :A . "
-				+ ":a4 a _:cls . _:cls rdfs:subClassOf :A ."
-				+ ":a5 a _:cls2 . _:cls2 rdfs:subClassOf _:cls3 . _:cls3 rdfs:subClassOf :A .";
+				+ ":t1 a :A . "
+				+ ":t2 a _:cls1 . _:cls1 rdfs:subClassOf :A ."
+				+ ":t3 a _:cls2 . _:cls2 rdfs:subClassOf :B ."
+				+ ":t4 a _:cls3 . _:cls3 rdfs:subClassOf _:cls4 . _:cls4 rdfs:subClassOf :A ."
+				+ ":A rdfs:subClassOf :B ."
+				;
 		
 		model = ModelFactory.createDefaultModel();
 		model.read(new ByteArrayInputStream(kb.getBytes()), null, "TURTLE");
@@ -91,19 +109,26 @@ public class SubsumptionTest {
 	
 	@Test
 	public void testSubsumptionRDFS() {
-		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/a3", model);
-		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree1));
+		RDFResourceTree tree1 = treeFactory.getQueryTree("http://test.org/t1", model);
 		print(tree1);
 		
-		RDFResourceTree tree2 = treeFactory.getQueryTree("http://test.org/a4", model);
+		RDFResourceTree tree2 = treeFactory.getQueryTree("http://test.org/t2", model);
 		print(tree2);
-		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2, Entailment.RDFS));
-		assertFalse(QueryTreeUtils.isSubsumedBy(tree2, tree1, Entailment.RDFS));
-		
-		RDFResourceTree tree3 = treeFactory.getQueryTree("http://test.org/a5", model);
+
+		RDFResourceTree tree3 = treeFactory.getQueryTree("http://test.org/t3", model);
 		print(tree3);
+
+		RDFResourceTree tree4 = treeFactory.getQueryTree("http://test.org/t4", model);
+		print(tree4);
+
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree1));
+
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree1, tree2, Entailment.RDFS));
+		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree1, Entailment.RDFS));
+		
+
 		assertTrue(QueryTreeUtils.isSubsumedBy(tree2, tree3, Entailment.RDFS));
-		assertTrue(QueryTreeUtils.isSubsumedBy(tree3, tree2, Entailment.RDFS));
+		assertFalse(QueryTreeUtils.isSubsumedBy(tree3, tree2, Entailment.RDFS));
 	}
 	
 	public static void print(RDFResourceTree tree) {

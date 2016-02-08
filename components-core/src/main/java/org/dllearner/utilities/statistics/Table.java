@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
 
 import java.io.File;
@@ -38,11 +37,11 @@ import org.dllearner.utilities.StringFormatter;
  */
 public class Table implements Serializable{
 
-	private static final long serialVersionUID = 0l;
+	private static final long serialVersionUID = 0L;
     
     //used to give a good percentage output
     //private DecimalFormat df = new DecimalFormat( ".00%" ); 
-    private List<TableColumn> columns = new ArrayList<TableColumn>();
+    private List<TableColumn> columns = new ArrayList<>();
     
     private String tableName = "";
     private String caption = "";
@@ -126,7 +125,7 @@ public class Table implements Serializable{
     }
     
     public String getRowInLatex(int index){
-    	List<String> l = new ArrayList<String>();
+    	List<String> l = new ArrayList<>();
     	for(TableColumn c: columns){
     		l.add(c.getEntry(index));
     	}
@@ -149,7 +148,7 @@ public class Table implements Serializable{
     
     
     public List<String> getColumnHeaders(){
-    	List<String> entries = new ArrayList<String>();
+    	List<String> entries = new ArrayList<>();
     	for (TableColumn c : columns) {
 			 entries.add(c.getHeader());
 		}

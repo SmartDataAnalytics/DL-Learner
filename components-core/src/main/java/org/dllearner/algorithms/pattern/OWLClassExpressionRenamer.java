@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.pattern;
 
 import java.util.ArrayList;
@@ -56,6 +74,8 @@ import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
 
+import javax.annotation.Nonnull;
+
 public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLIndividualVisitor, OWLDataRangeVisitor {
 	
 	private static final String NS = "http://dl-learner.org/pattern/";
@@ -65,9 +85,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	private OWLObject renamedOWLObject;
 //	private OWLClassExpressionOrderingComparator comparator = new OWLClassExpressionOrderingComparator();
 	private OWLObjectComparator comparator = new OWLObjectComparator();
-	private Queue<String> classVarQueue = new LinkedList<String>();
-	private Queue<String> propertyVarQueue = new LinkedList<String>();
-	private Queue<String> individualVarQueue = new LinkedList<String>();
+	private Queue<String> classVarQueue = new LinkedList<>();
+	private Queue<String> propertyVarQueue = new LinkedList<>();
+	private Queue<String> individualVarQueue = new LinkedList<>();
 	
 	private OWLLiteralRenamer literalRenamer;
 	
@@ -131,7 +151,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectIntersectionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
 		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<OWLClassExpression>(comparator);
+		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -142,7 +162,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectUnionOf desc) {
 		List<OWLClassExpression> operands = desc.getOperandsAsList();
 		Collections.sort(operands, comparator);
-		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<OWLClassExpression>(comparator);
+		SortedSet<OWLClassExpression> renamedOperands = new TreeSet<>(comparator);
 		for(OWLClassExpression expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -153,7 +173,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLDataHasValue desc) {
 		OWLDataPropertyExpression property = desc.getProperty();
 		property = rename(property);
-		OWLLiteral value = desc.getValue();
+		OWLLiteral value = desc.getFiller();
 		value = rename(value);
 		renamedOWLObject = df.getOWLDataHasValue(property, value);
 	}
@@ -187,7 +207,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	public void visit(OWLObjectHasValue desc) {
 		OWLObjectPropertyExpression property = desc.getProperty();
 		property = rename(property);
-		OWLIndividual value = desc.getValue();
+		OWLIndividual value = desc.getFiller();
 		value = rename(value);
 		renamedOWLObject = df.getOWLObjectHasValue(property, value);
 	}
@@ -241,7 +261,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLObjectOneOf desc) {
 		Set<OWLIndividual> individuals = desc.getIndividuals();
-		Set<OWLIndividual> renamedIndividuals = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> renamedIndividuals = new TreeSet<>();
 		for (OWLIndividual ind : individuals) {
 			renamedIndividuals.add(rename(ind));
 		}
@@ -322,7 +342,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLClass(getIRI(classVarQueue.poll()));
 				renaming.put(desc, newEntity);
 			}
-			renamedOWLObject = (OWLClass)newEntity;
+			renamedOWLObject = newEntity;
 		}
 	}
 	
@@ -336,7 +356,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLObjectProperty(getIRI(propertyVarQueue.poll()));
 				renaming.put(op, newEntity);
 			}
-			renamedOWLObject = (OWLObjectProperty)newEntity;
+			renamedOWLObject = newEntity;
 		}
 	}
 
@@ -350,8 +370,13 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 				newEntity = df.getOWLDataProperty(getIRI(propertyVarQueue.poll()));
 				renaming.put(dp, newEntity);
 			}
-			renamedOWLObject = (OWLDataProperty)newEntity;
+			renamedOWLObject = newEntity;
 		}
+	}
+
+	@Override
+	public void visit(@Nonnull OWLAnnotationProperty property) {
+
 	}
 
 	@Override
@@ -361,7 +386,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
 			renaming.put(ind, newEntity);
 		}
-		renamedOWLObject = (OWLNamedIndividual)newEntity;
+		renamedOWLObject = newEntity;
 	}
 	
 	private IRI getIRI(String var){
@@ -375,7 +400,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 			newEntity = df.getOWLNamedIndividual(getIRI(individualVarQueue.poll()));
 //			renaming.put(ind, newEntity);
 		}
-		renamedOWLObject = (OWLNamedIndividual)newEntity;
+		renamedOWLObject = newEntity;
 	}
 
 	@Override
@@ -386,7 +411,7 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 	@Override
 	public void visit(OWLDataOneOf desc) {
 		Set<OWLLiteral> literals = desc.getValues();
-		Set<OWLLiteral> renamedLiterals = new TreeSet<OWLLiteral>();
+		Set<OWLLiteral> renamedLiterals = new TreeSet<>();
 		for (OWLLiteral lit : literals) {
 			renamedLiterals.add(rename(lit));
 		}
@@ -402,9 +427,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDataIntersectionOf desc) {
-		List<OWLDataRange> operands = new ArrayList<OWLDataRange>(desc.getOperands());
+		List<OWLDataRange> operands = new ArrayList<>(desc.getOperands());
 		Collections.sort(operands, comparator);
-		SortedSet<OWLDataRange> renamedOperands = new TreeSet<OWLDataRange>(comparator);
+		SortedSet<OWLDataRange> renamedOperands = new TreeSet<>(comparator);
 		for(OWLDataRange expr : operands){
 			renamedOperands.add(rename(expr));
 		}
@@ -413,9 +438,9 @@ public class OWLClassExpressionRenamer implements OWLClassExpressionVisitor, OWL
 
 	@Override
 	public void visit(OWLDataUnionOf desc) {
-		List<OWLDataRange> operands = new ArrayList<OWLDataRange>(desc.getOperands());
+		List<OWLDataRange> operands = new ArrayList<>(desc.getOperands());
 		Collections.sort(operands, comparator);
-		SortedSet<OWLDataRange> renamedOperands = new TreeSet<OWLDataRange>(comparator);
+		SortedSet<OWLDataRange> renamedOperands = new TreeSet<>(comparator);
 		for(OWLDataRange expr : operands){
 			renamedOperands.add(rename(expr));
 		}

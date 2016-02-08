@@ -1,21 +1,21 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * This file is part of DL-Learner.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.sparql;
 
 import java.io.ByteArrayInputStream;
@@ -329,8 +329,8 @@ public class QueryEngineHTTP implements QueryExecution {
      * Note that it may be more flexible to
      * </p>
      * 
-     * @param user
-     * @param password
+     * @param user the username
+     * @param password the password
      */
     public void setBasicAuthentication(String user, char[] password) {
         this.authenticator = new SimpleAuthenticator(user, password);
@@ -426,7 +426,7 @@ public class QueryEngineHTTP implements QueryExecution {
     private Model execModel(Model model) {
         checkNotClosed() ;
         HttpQuery httpQuery = makeHttpQuery();
-        httpQuery.setAccept(WebContent.contentTypeRDFXML);
+        httpQuery.setAccept(modelContentType);
         InputStream in = httpQuery.exec();
 
         // Don't assume the endpoint actually gives back the content type we
@@ -709,7 +709,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for SELECT queries provided that the format is
      * supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setSelectContentType(String contentType) {
         boolean ok = false;
@@ -729,7 +729,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for ASK queries provided that the format is
      * supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setAskContentType(String contentType) {
         boolean ok = false;
@@ -748,7 +748,7 @@ public class QueryEngineHTTP implements QueryExecution {
      * Sets the Content Type for CONSTRUCT/DESCRIBE queries provided that the
      * format is supported
      * 
-     * @param contentType
+     * @param contentType the content type
      */
     public void setModelContentType(String contentType) {
         // Check that this is a valid setting
@@ -799,19 +799,19 @@ public class QueryEngineHTTP implements QueryExecution {
         // Or use WebContent.defaultGraphAcceptHeader which is slightly
         // narrower. Here, we have a tuned setting for SPARQL operations.
         StringBuilder sBuff = new StringBuilder() ;
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtle,       1.0);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriples,     1.0);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeRDFXML,       0.9);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt1,   0.8);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt2,   0.8);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3,           0.7);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt1,       0.6);
-        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt2,       0.6);
-        
-        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriplesAlt,  0.5);
-        accumulateContentTypeString(sBuff, "*/*",                              0.1) ;
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtle,       1.0);
+        accumulateContentTypeString(sBuff, WebContent.contentTypeTextPlain,     1.0);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeRDFXML,       0.9);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt1,   0.8);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeTurtleAlt2,   0.8);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3,           0.7);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt1,       0.6);
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeN3Alt2,       0.6);
+//        
+//        accumulateContentTypeString(sBuff, WebContent.contentTypeNTriplesAlt,  0.5);
+//        accumulateContentTypeString(sBuff, "*/*",                              0.1) ;
 
         return sBuff.toString();
     }

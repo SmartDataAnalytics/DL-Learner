@@ -1,12 +1,28 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.util;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
@@ -44,7 +60,9 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Lorenz Buehmann
@@ -57,9 +75,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLClass)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLClass ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>(1);
+	public Set<OWLClassExpression> visit(@Nonnull OWLClass ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>(1);
 		expressions.add(ce);
 		return expressions;
 	}
@@ -67,20 +86,21 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectIntersectionOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectIntersectionOf ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
-		Set<Set<OWLClassExpression>> combinations = new HashSet<Set<OWLClassExpression>>();
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectIntersectionOf ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>();
+		Set<Set<OWLClassExpression>> combinations = new HashSet<>();
 		for (int i = 0; i < ce.getOperands().size(); i++) {
-			Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> tmp = new HashSet<>();
 			combinations.add(tmp);
 		}
 		for (OWLClassExpression operand : ce.getOperands()) {
-			Set<Set<OWLClassExpression>> combinationsTmp = new HashSet<Set<OWLClassExpression>>();
+			Set<Set<OWLClassExpression>> combinationsTmp = new HashSet<>();
 			Set<OWLClassExpression> newOperands = operand.accept(this);
 			for (Set<OWLClassExpression> set : combinations) {
 				for (OWLClassExpression newOp : newOperands) {
-					Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+					Set<OWLClassExpression> tmp = new HashSet<>();
 					tmp.addAll(set);
 					tmp.add(newOp);
 					combinationsTmp.add(tmp);
@@ -97,25 +117,28 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectUnionOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectUnionOf ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectUnionOf ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectComplementOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectComplementOf ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectComplementOf ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectSomeValuesFrom ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectSomeValuesFrom ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		Set<OWLClassExpression> newFillers = ce.getFiller().accept(this);
 		for (OWLClassExpression newFiller : newFillers) {
 			expressions.add(df.getOWLObjectSomeValuesFrom(ce.getProperty(), newFiller));
@@ -126,17 +149,19 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectAllValuesFrom)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectAllValuesFrom ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectAllValuesFrom ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectHasValue)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectHasValue ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		expressions.add(ce);
 		return expressions;
 	}
@@ -144,49 +169,55 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectMinCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectMinCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectMinCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectExactCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectExactCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectExactCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectMaxCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectMaxCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectMaxCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectHasSelf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectHasSelf ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectHasSelf ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLObjectOneOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLObjectOneOf ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLObjectOneOf ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataSomeValuesFrom)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataSomeValuesFrom ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataSomeValuesFrom ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		Set<OWLDataRange> newDataRanges = ce.getFiller().accept(this);
 		for (OWLDataRange newDataRange : newDataRanges) {
 			expressions.add(df.getOWLDataSomeValuesFrom(ce.getProperty(), newDataRange));
@@ -197,17 +228,19 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataAllValuesFrom)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataAllValuesFrom ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataAllValuesFrom ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataHasValue)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataHasValue ce) {
-		Set<OWLClassExpression> expressions = new HashSet<OWLClassExpression>();
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataHasValue ce) {
+		Set<OWLClassExpression> expressions = new HashSet<>();
 		expressions.add(ce);
 		return expressions;
 	}
@@ -215,33 +248,37 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataMinCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataMinCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataMinCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataExactCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataExactCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataExactCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataMaxCardinality)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLClassExpression> visit(OWLDataMaxCardinality ce) {
+	public Set<OWLClassExpression> visit(@Nonnull OWLDataMaxCardinality ce) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDatatype)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDatatype dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDatatype dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -249,9 +286,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataOneOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDataOneOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDataOneOf dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -259,9 +297,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataComplementOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDataComplementOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDataComplementOf dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -269,9 +308,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataIntersectionOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDataIntersectionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDataIntersectionOf dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -279,9 +319,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDataUnionOf)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDataUnionOf dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDataUnionOf dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		dataRanges.add(dr);
 		return dataRanges;
 	}
@@ -289,9 +330,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	/* (non-Javadoc)
 	 * @see org.semanticweb.owlapi.model.OWLDataRangeVisitorEx#visit(org.semanticweb.owlapi.model.OWLDatatypeRestriction)
 	 */
+	@Nonnull
 	@Override
-	public Set<OWLDataRange> visit(OWLDatatypeRestriction dr) {
-		Set<OWLDataRange> dataRanges = new HashSet<OWLDataRange>();
+	public Set<OWLDataRange> visit(@Nonnull OWLDatatypeRestriction dr) {
+		Set<OWLDataRange> dataRanges = new HashSet<>();
 		Set<OWLFacetRestriction> facetRestrictions = dr.getFacetRestrictions();
 		OWLLiteral min = null;
 		OWLLiteral max = null;
@@ -314,9 +356,10 @@ public class ClassExpressionLiteralCombination implements OWLClassExpressionVisi
 	
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new ManchesterOWLSyntaxOWLObjectRendererImpl());
+		StringRenderer.setRenderer(Rendering.MANCHESTER_SYNTAX);
 		OWLDataFactoryImpl df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager(":");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix(":");
 		OWLClass A = df.getOWLClass("A", pm );
 		OWLDataProperty s = df.getOWLDataProperty("s", pm);
 		OWLDataProperty t = df.getOWLDataProperty("t", pm);

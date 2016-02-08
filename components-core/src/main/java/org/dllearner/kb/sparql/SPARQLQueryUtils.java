@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.kb.sparql;
 
@@ -9,7 +24,7 @@ package org.dllearner.kb.sparql;
  */
 public class SPARQLQueryUtils {
 	
-	public static final String PREFIXES = 
+	public static final String PREFIXES =
 			"PREFIX owl:<http://www.w3.org/2002/07/owl#> "
 			+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
 			+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> ";
@@ -20,7 +35,7 @@ public class SPARQLQueryUtils {
 	public static final String SELECT_DATA_PROPERTIES_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty .}";
 	public static final String SELECT_INDIVIDUALS_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 a owl:NamedIndividual .}";
 	
-	public static final String SELECT_CLASSES_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {[] a ?var1 .}";
+	public static final String SELECT_CLASSES_QUERY_ALT = PREFIXES + "SELECT DISTINCT ?var1 WHERE {[] a ?var1 .}";
 	public static final String SELECT_INDIVIDUALS_QUERY_ALT = PREFIXES + "SELECT ?var1 WHERE {?var1 a [] . \n"
 			+ "OPTIONAL { ?s1 a ?var1. } \n"
 			+ "OPTIONAL { ?s2 ?var1 []. } \n"
@@ -31,28 +46,28 @@ public class SPARQLQueryUtils {
 			+ "SELECT ?var1 WHERE {?var1 a owl:DatatypeProperty . ?var1 rdfs:range <%s> . }";
 
 	// class hierarchy queries
-	public static final String SELECT_TOP_LEVEL_OWL_CLASSES = PREFIXES + 
-			"SELECT ?var1\n" + 
-			"WHERE { ?var1 a owl:Class .\n" + 
-			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
-			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" + 
-			"FILTER ( ?super != owl:Thing && ?super != ?var1 && ?super != rdfs:Resource) } .\n" + 
+	public static final String SELECT_TOP_LEVEL_OWL_CLASSES = PREFIXES +
+			"SELECT ?var1\n" +
+			"WHERE { ?var1 a owl:Class .\n" +
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" +
+			"OPTIONAL { ?var1 rdfs:subClassOf ?super .\n" +
+			"FILTER ( ?super != owl:Thing && ?super != ?var1 && ?super != rdfs:Resource) } .\n" +
 			"FILTER ( !BOUND(?super) ) }";
 	
-	public static final String SELECT_LEAF_CLASSES_OWL = PREFIXES + 
-			"SELECT ?var1\n" + 
-			"WHERE { ?var1 a owl:Class .\n" + 
-			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
-			"OPTIONAL { ?sub rdfs:subClassOf ?var1 .\n" + 
-			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" + 
+	public static final String SELECT_LEAF_CLASSES_OWL = PREFIXES +
+			"SELECT ?var1\n" +
+			"WHERE { ?var1 a owl:Class .\n" +
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" +
+			"OPTIONAL { ?sub rdfs:subClassOf ?var1 .\n" +
+			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" +
 			"FILTER ( !BOUND(?sub) ) }";
 	
-	public static final String SELECT_LEAF_CLASSES = PREFIXES + 
-			"SELECT ?var1\n" + 
-			"WHERE { ?var1 a owl:Class .\n" + 
-			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" + 
-			"OPTIONAL { ?var1 rdfs:subClassOf ?sub .\n" + 
-			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" + 
+	public static final String SELECT_LEAF_CLASSES = PREFIXES +
+			"SELECT ?var1\n" +
+			"WHERE { ?var1 a owl:Class .\n" +
+			"FILTER ( ?var1 != owl:Thing && ?var1 != owl:Nothing ) .\n" +
+			"OPTIONAL { ?var1 rdfs:subClassOf ?sub .\n" +
+			"FILTER ( ?sub != owl:Nothing && ?sub != ?var1 ) } .\n" +
 			"FILTER ( !BOUND(?sub) ) }";
 	
 	public static final String SELECT_SUPERCLASS_OF_QUERY_INF = PREFIXES + "SELECT ?var1 WHERE { " +
@@ -62,28 +77,28 @@ public class SPARQLQueryUtils {
 			"<%s> rdfs:subClassOf* ?var1 .}";
 
 	public static final String SELECT_SUBCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {?var1 rdfs:subClassOf <%s> .}";
-	public static final String SELECT_DIRECT_SUBCLASS_OF_QUERY = PREFIXES + 
-			"SELECT ?var1 {\n" + 
-			"		BIND( <%s> as ?concept )\n" + 
-			"		?var1 rdfs:subClassOf ?concept .\n" + 
-			"		OPTIONAL {\n" + 
-			"		?concept rdfs:subClassOf ?inbetweener .\n" + 
-			"		?var1 rdfs:subClassOf ?inbetweener .\n" + 
-			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
-			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
+	public static final String SELECT_DIRECT_SUBCLASS_OF_QUERY = PREFIXES +
+			"SELECT ?var1 {\n" +
+			"		BIND( <%s> as ?concept )\n" +
+			"		?var1 rdfs:subClassOf ?concept .\n" +
+			"		OPTIONAL {\n" +
+			"		?concept rdfs:subClassOf ?inbetweener .\n" +
+			"		?var1 rdfs:subClassOf ?inbetweener .\n" +
+			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" +
+			"		}\n" +
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" +
 			"		}";
 	public static final String SELECT_SUPERCLASS_OF_QUERY = PREFIXES + "SELECT ?var1 WHERE {<%s> rdfs:subClassOf ?var1 .}";
-	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES + 
-			"SELECT ?var1 {\n" + 
-			"		BIND( <%s> as ?concept )\n" + 
-			"		?concept rdfs:subClassOf ?var1 .\n" + 
-			"		OPTIONAL {\n" + 
-			"		?concept rdfs:subClassOf ?inbetweener .\n" + 
-			"		?inbetweener rdfs:subClassOf ?var1 .\n" + 
-			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" + 
-			"		}\n" + 
-			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" + 
+	public static final String SELECT_DIRECT_SUPERCLASS_OF_QUERY = PREFIXES +
+			"SELECT ?var1 {\n" +
+			"		BIND( <%s> as ?concept )\n" +
+			"		?concept rdfs:subClassOf ?var1 .\n" +
+			"		OPTIONAL {\n" +
+			"		?concept rdfs:subClassOf ?inbetweener .\n" +
+			"		?inbetweener rdfs:subClassOf ?var1 .\n" +
+			"		FILTER( ?inbetweener != ?concept && ?inbetweener != ?var1 )\n" +
+			"		}\n" +
+			"		FILTER( ! BOUND(?inbetweener) && ?var1 != ?concept)\n" +
 			"		}";
 	public static final String SELECT_EQUIVALENT_CLASSES_QUERY = PREFIXES + "SELECT ?var1 WHERE {"
 			+ "{?var1 owl:equivalentClass <%s> .} UNION {<%s> owl:equivalentClass ?var1 .}}";

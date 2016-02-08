@@ -1,23 +1,18 @@
 package org.dllearner.scripts;
 
+import org.dllearner.examples.MouseDiabetes;
+import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.dllearner.examples.MouseDiabetes;
-import org.dllearner.utilities.owl.OWLAxiomCBDGenerator;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MouseDiabetesCBD {
     private static final Logger logger = LoggerFactory.getLogger(MouseDiabetesCBD.class);
@@ -54,6 +49,6 @@ public class MouseDiabetesCBD {
             logger.info("  Also done");
         }
 
-        man.saveOntology(cbdOnt, new RDFXMLOntologyFormat(), new FileOutputStream(new File(cbdFilePath)));
+        man.saveOntology(cbdOnt, new RDFXMLDocumentFormat(), new FileOutputStream(new File(cbdFilePath)));
     }
 }

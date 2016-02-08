@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.prolog;
 
 import java.util.ArrayList;
@@ -70,9 +69,9 @@ public class Atom {
 	 *         replaced by the term.
 	 */	
 	public Atom getInstance(Variable variable, Term term) {
-		ArrayList<Term> newArgs = new ArrayList<Term>(arguments.size());
+		ArrayList<Term> newArgs = new ArrayList<>(arguments.size());
 		for (int i = 0; i < arguments.size(); i++) {
-			Term argument = (Term) arguments.get(i);
+			Term argument = arguments.get(i);
 			newArgs.add(argument.getInstance(variable, term));
 		}
 		return new Atom(name, newArgs);
@@ -93,7 +92,7 @@ public class Atom {
 	public String toPLString() {
 		StringBuffer ret = new StringBuffer(name + "(");
 		for (int i = 0; i < arguments.size(); i++) {
-			ret.append(((Term) arguments.get(i)).toPLString());
+			ret.append(arguments.get(i).toPLString());
 			if (i + 1 < arguments.size())
 				ret.append(", ");
 		}

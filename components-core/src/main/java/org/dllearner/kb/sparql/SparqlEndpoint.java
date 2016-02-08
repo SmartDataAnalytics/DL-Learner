@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.sparql;
 
 import java.net.MalformedURLException;
@@ -41,8 +40,8 @@ public class SparqlEndpoint {
 
 	public SparqlEndpoint(URL u) {
 		this.url = u;
-		this.defaultGraphURIs=new LinkedList<String>();
-		this.namedGraphURIs=new LinkedList<String>();
+		this.defaultGraphURIs= new LinkedList<>();
+		this.namedGraphURIs= new LinkedList<>();
 	}
 
 	public SparqlEndpoint(URL u, List<String> defaultGraphURIs, List<String> namedGraphURIs) {
@@ -88,28 +87,29 @@ public class SparqlEndpoint {
 
 		name = name.toUpperCase();
 
-		if (name.equals("DBPEDIA")) {
-			return getEndpointDBpedia();
-		} else if (name.equals("GOVTRACK")) {
-			return getEndpointGovTrack();
-		} else if (name.equals("SPARQLETTE")) {
-			return getEndpointSparqlette();
-		} else if (name.equals("SWCONFERENCE")) {
-			return getEndpointSWConference();
-		} else if (name.equals("REVYU")) {
-			return getEndpointRevyu();
-		} else if (name.equals("MYOPENLINK")) {
-			return getEndpointMyOpenlink();
-		} else if (name.equals("MUSICBRAINZ")) {
-			return getEndpointMusicbrainz();
-		} else {
-			return null;
+		switch (name) {
+			case "DBPEDIA":
+				return getEndpointDBpedia();
+			case "GOVTRACK":
+				return getEndpointGovTrack();
+			case "SPARQLETTE":
+				return getEndpointSparqlette();
+			case "SWCONFERENCE":
+				return getEndpointSWConference();
+			case "REVYU":
+				return getEndpointRevyu();
+			case "MYOPENLINK":
+				return getEndpointMyOpenlink();
+			case "MUSICBRAINZ":
+				return getEndpointMusicbrainz();
+			default:
+				return null;
 		}
 	}
 
 
 	public static List<SparqlEndpoint> listEndpoints() {
-		LinkedList<SparqlEndpoint> ll =new LinkedList<SparqlEndpoint>();
+		LinkedList<SparqlEndpoint> ll = new LinkedList<>();
 		ll.add(getEndpointDBpedia());
 		ll.add(getEndpointDOAPspace());
 		ll.add(getEndpointGovTrack());
@@ -129,7 +129,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -142,7 +142,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -154,7 +154,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -166,7 +166,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -178,7 +178,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 //		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -190,7 +190,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://dbpedia.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -202,7 +202,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		//TODO defaultGraphURIs.add("http://geonames.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -214,7 +214,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		//TODO defaultGraphURIs.add("http://geonames.org");
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
 	}
@@ -246,7 +246,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://myopenlink.net/dataspace");
 
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());
@@ -291,7 +291,7 @@ public class SparqlEndpoint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		LinkedList<String> defaultGraphURIs=new LinkedList<String>();
+		LinkedList<String> defaultGraphURIs= new LinkedList<>();
 		defaultGraphURIs.add("http://www.rdfabout.com/rdf/schema/census/");
 
 		return new SparqlEndpoint(u, defaultGraphURIs, new LinkedList<String>());

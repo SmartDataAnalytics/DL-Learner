@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.learn;
 
 import java.util.Comparator;
@@ -83,24 +82,24 @@ public class UsedEntitiesDetection {
 	 * 
 	 * @param reasoner A reasoner.
 	 * @param individuals A set of individuals to start from.
-	 * @param depth The maximum depth for the search.
+	 * @param maxDepth The maximum depth for the search.
 	 */
 	public UsedEntitiesDetection(AbstractReasonerComponent reasoner, Set<OWLIndividual> individuals, int maxDepth) {
 		this.reasoner = reasoner;
 		this.maxDepth = maxDepth;
-		usedClasses = new TreeMap<Set<OWLObjectProperty>,Set<OWLClass>>(keyComp);
-		usedObjectProperties = new TreeMap<Set<OWLObjectProperty>,Set<OWLObjectProperty>>(keyComp);
+		usedClasses = new TreeMap<>(keyComp);
+		usedObjectProperties = new TreeMap<>(keyComp);
 		
-		Set<OWLObjectProperty> startKey = new TreeSet<OWLObjectProperty>();
+		Set<OWLObjectProperty> startKey = new TreeSet<>();
 		computeUsedEntitiesRec(startKey, individuals);
 		
 	}
 
 	private void computeUsedEntitiesRec(Set<OWLObjectProperty> key, Set<OWLIndividual> individuals) {
-		Set<OWLClass> types = new TreeSet<OWLClass>();
+		Set<OWLClass> types = new TreeSet<>();
 //		Set<ObjectProperty> properties = new TreeSet<ObjectProperty>();
 		// we must use the object property comparator to avoid double occurences of properties
-		Map<OWLObjectProperty,Set<OWLIndividual>> relations = new TreeMap<OWLObjectProperty,Set<OWLIndividual>>();
+		Map<OWLObjectProperty,Set<OWLIndividual>> relations = new TreeMap<>();
 		
 		for(OWLIndividual individual : individuals) {
 			// add all types
@@ -112,7 +111,7 @@ public class UsedEntitiesDetection {
 				OWLObjectProperty prop = entry.getKey();
 				// we must use the individual comparator to avoid 
 				// multiple occurrences of the same individual
-				Set<OWLIndividual> inds = new TreeSet<OWLIndividual>(entry.getValue());
+				Set<OWLIndividual> inds = new TreeSet<>(entry.getValue());
 								
 				// if property exists, add the found individuals 
 				if(relations.containsKey(prop)) {
@@ -132,7 +131,7 @@ public class UsedEntitiesDetection {
 		if(key.size() < maxDepth) {
 			for(Entry<OWLObjectProperty,Set<OWLIndividual>> entry : relations.entrySet()) {
 				// construct new key (copy and add)
-				Set<OWLObjectProperty> newKey = new TreeSet<OWLObjectProperty>(key);
+				Set<OWLObjectProperty> newKey = new TreeSet<>(key);
 				newKey.add(entry.getKey());
 				
 				// recursion

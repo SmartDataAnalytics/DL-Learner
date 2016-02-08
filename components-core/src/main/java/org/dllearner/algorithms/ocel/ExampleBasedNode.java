@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,8 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
+
+import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.learningproblems.AccMethodTwoValued;
+import org.dllearner.utilities.datastructures.SearchTreeNode;
+import org.dllearner.utilities.datastructures.WeakSearchTreeNode;
+import org.dllearner.utilities.owl.OWLAPIRenderers;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLIndividual;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -25,22 +32,17 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.algorithms.SearchTreeNode;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-
 /**
  * 
  * Represents a node in the search tree. A node consists of
  * the following parts:
  * 
- * ... (see paper) ... 
+ * ... (see paper) ...
  * 
  * @author Jens Lehmann
  *
  */
-public class ExampleBasedNode implements SearchTreeNode {
+public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> implements SearchTreeNode, WeakSearchTreeNode {
 
 //	public static long exampleMemoryCounter = 0;
 	
@@ -51,11 +53,13 @@ public class ExampleBasedNode implements SearchTreeNode {
 	// example based variables
 	private Set<OWLIndividual> coveredPositives;
 	private Set<OWLIndividual> coveredNegatives;
+
 //	private int coveredPositiveSize;
 //	private int coveredNegativeSize;
 	
 	// the method by which quality was evaluated in this node
-	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
+	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
+
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.START;
 	
 	// all properties of a node in the search tree
@@ -71,17 +75,15 @@ public class ExampleBasedNode implements SearchTreeNode {
 	private double startNodeBonus;
 	private double expansionPenaltyFactor;
 	private int negationPenalty;
-	
 	private static NodeComparatorStable nodeComparator = new NodeComparatorStable();
 	
-	// link to parent in search tree
-	private ExampleBasedNode parent = null;
-	private SortedSet<ExampleBasedNode> children = new TreeSet<ExampleBasedNode>(nodeComparator);
 	// apart from the child nodes, we also keep child concepts
-	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> childConcepts = new TreeSet<>();
 	
 	// a flag whether this could be a solution for a posonly learning problem
 	private boolean isPosOnlyCandidate = true;
+
+	private AccMethodTwoValued accuracyMethod;
 	
 	public ExampleBasedNode(OWLClassExpression concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
 //		this.configurator = configurator;
@@ -109,11 +111,10 @@ public class ExampleBasedNode implements SearchTreeNode {
 		isQualityEvaluated = true;
 	}
 
-    public boolean addChild(ExampleBasedNode child) {
-        // child.setParent(this);
-        child.parent = this;
+    @Override
+	public void addChild(ExampleBasedNode child) {
+    	super.addChild(child);
         childConcepts.add(child.concept);
-        return children.add(child);
     }
 	
 	public void setQualityEvaluationMethod(QualityEvaluationMethod qualityEvaluationMethod) {
@@ -128,7 +129,11 @@ public class ExampleBasedNode implements SearchTreeNode {
 //		exampleMemoryCounter += coveredNegatives.size() * 4;
 	}
 
-	@Override		
+	public int getQuality() {
+		return getCovPosMinusCovNeg();
+	}
+
+	@Override
 	public String toString() {
 //		System.out.println(concept);
 		String ret = concept.toString() + " [q:";
@@ -149,7 +154,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		} else {
 			return concept.toString();
 		}
-	}	
+	}
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,null, null).toString();
@@ -157,11 +162,11 @@ public class ExampleBasedNode implements SearchTreeNode {
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, null).toString();
-	}	
+	}
 	
 	public String getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, String baseURI, Map<String,String> prefixes) {
 		return getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, 0,baseURI, prefixes).toString();
-	}	
+	}
 	
 	private StringBuilder getTreeString(int nrOfPositiveExamples, int nrOfNegativeExamples, int depth, String baseURI, Map<String,String> prefixes) {
 		StringBuilder treeString = new StringBuilder();
@@ -170,7 +175,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)+"\n");
+		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)).append("\n");
 		for(ExampleBasedNode child : children) {
 			treeString.append(child.getTreeString(nrOfPositiveExamples, nrOfNegativeExamples, depth+1,baseURI, prefixes));
 		}
@@ -183,8 +188,8 @@ public class ExampleBasedNode implements SearchTreeNode {
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "acc:" + df.format(accuracy) + "% ";			
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -206,8 +211,8 @@ public class ExampleBasedNode implements SearchTreeNode {
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "<b>acc: " + df.format(accuracy) + "% </b>";			
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "<b>acc: " + df.format(accuracy) + "% </b>";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -221,7 +226,7 @@ public class ExampleBasedNode implements SearchTreeNode {
 		ret += " c:" + children.size() + "]";
 		
 		return ret + "</i></nobr></html>";
-	}	
+	}
 	
 	//TODO integrate this method with the one above
 	public String getStats(int nrOfPositiveExamples, int nrOfNegativeExamples) {
@@ -230,8 +235,8 @@ public class ExampleBasedNode implements SearchTreeNode {
 		if(isTooWeak)
 			ret += "q:tw";
 		else {
-			double accuracy = 100 * (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
-			ret += "acc:" + df.format(accuracy) + "% ";			
+			double accuracy = 100 * this.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples);
+			ret += "acc:" + df.format(accuracy) + "% ";
 			
 			// comment this out to display the heuristic score with default parameters
 			double heuristicScore = MultiHeuristic.getNodeScore(this, nrOfPositiveExamples, nrOfNegativeExamples, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
@@ -248,7 +253,15 @@ public class ExampleBasedNode implements SearchTreeNode {
 	}
 	
 	public double getAccuracy(int nrOfPositiveExamples, int nrOfNegativeExamples) {
-		return (coveredPositives.size() + nrOfNegativeExamples - coveredNegatives.size())/(double)(nrOfPositiveExamples+nrOfNegativeExamples);
+		int tp = coveredPositives.size();
+		int fp = coveredNegatives.size();
+		int tn = nrOfNegativeExamples - fp;
+		int fn = nrOfPositiveExamples - tp;
+
+		double accuracy = this.accuracyMethod.getAccOrTooWeak2(tp, fn, fp, tn, 1);
+		if (accuracy == -1 && !isTooWeak)
+			throw new RuntimeException("Accuracy says weak but node is not marked as such.");
+		return accuracy;
 	}
 	
 	/**
@@ -262,14 +275,10 @@ public class ExampleBasedNode implements SearchTreeNode {
 	
 	public Set<OWLIndividual> getCoveredPositives() {
 		return coveredPositives;
-	}	
+	}
 	
 	public Set<OWLIndividual> getCoveredNegatives() {
 		return coveredNegatives;
-	}
-	
-	public SortedSet<ExampleBasedNode> getChildren() {
-		return children;
 	}
 
 	public SortedSet<OWLClassExpression> getChildConcepts() {
@@ -278,15 +287,16 @@ public class ExampleBasedNode implements SearchTreeNode {
 
 	public OWLClassExpression getConcept() {
 		return concept;
-	}	
+	}
 	
+	@Override
 	public OWLClassExpression getExpression() {
 		return getConcept();
-	}	
+	}
 	
 	public QualityEvaluationMethod getQualityEvaluationMethod() {
 		return qualityEvaluationMethod;
-	}	
+	}
 	
 	public int getHorizontalExpansion() {
 		return horizontalExpansion;
@@ -301,19 +311,16 @@ public class ExampleBasedNode implements SearchTreeNode {
 		return isTooWeak;
 	}
 
-	/**
-	 * @return the parent
-	 */
-	public ExampleBasedNode getParent() {
-		return parent;
-	}
-
 	public boolean isPosOnlyCandidate() {
 		return isPosOnlyCandidate;
 	}
 
 	public void setPosOnlyCandidate(boolean isPosOnlyCandidate) {
 		this.isPosOnlyCandidate = isPosOnlyCandidate;
+	}
+
+	public void setAccuracyMethod(AccMethodTwoValued accuracyMethod) {
+		this.accuracyMethod = accuracyMethod;
 	}
 
 }

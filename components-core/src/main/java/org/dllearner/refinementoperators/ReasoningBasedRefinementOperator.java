@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2012, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -29,6 +29,6 @@ import org.dllearner.core.Reasoner;
  */
 public interface ReasoningBasedRefinementOperator extends RefinementOperator {
 
-	public void setReasoner(Reasoner reasoner);
+	void setReasoner(Reasoner reasoner);
 	
 }

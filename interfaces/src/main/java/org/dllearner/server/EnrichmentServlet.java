@@ -62,16 +62,16 @@ import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.ClassLearningProblem;
-import org.dllearner.learningproblems.Heuristics.HeuristicType;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.SPARULTranslator;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
+import org.dllearner.utilities.owl.OWL2SPARULConverter;
 import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -91,7 +91,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
 import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class EnrichmentServlet extends HttpServlet {
 
@@ -104,7 +103,7 @@ public class EnrichmentServlet extends HttpServlet {
 	
 	private static String validAxiomTypes = "";
 	
-	private SPARULTranslator sparul;
+	private OWL2SPARULConverter sparul;
 	private OWLOntology ont;
 
 	static {
@@ -180,7 +179,7 @@ public class EnrichmentServlet extends HttpServlet {
 		} catch (OWLOntologyCreationException e1) {
 			e1.printStackTrace();
 		}
-		sparul = new SPARULTranslator(man, ont, false);
+		sparul = new OWL2SPARULConverter(ont, false);
 		dataFactory = man.getOWLDataFactory();
 	}
 	
@@ -205,9 +204,9 @@ public class EnrichmentServlet extends HttpServlet {
 		final boolean useInference = req.getParameter("use_inference") == null ? false : Boolean.valueOf(req
 				.getParameter("use_inference"));
 		
-		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms")); 
-		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time")); 
-		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold")); 
+		final int maxNrOfReturnedAxioms = req.getParameter("max_returned_axioms") == null ? DEFAULT_MAX_NR_OF_RETURNED_AXIOMS : Integer.parseInt(req.getParameter("max_returned_axioms"));
+		final int maxExecutionTimeInSeconds = req.getParameter("max_execution_time") == null ? DEFAULT_MAX_EXECUTION_TIME_IN_SECONDS : Integer.parseInt(req.getParameter("max_execution_time"));
+		final double threshold = req.getParameter("threshold") == null ? DEFAULT_THRESHOLD : Double.parseDouble(req.getParameter("threshold"));
 
 		String resourceURI = req.getParameter("resource_uri");
 		if (resourceURI == null) {
@@ -278,7 +277,7 @@ public class EnrichmentServlet extends HttpServlet {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		List<Future<JSONObject>> list = new ArrayList<Future<JSONObject>>();
 		
-		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		final OWLObjectRenderer renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
 //		renderer.setShortFormProvider(new ManchesterOWLSyntaxPrefixNameShortFormProvider(new DefaultPrefixManager()));
 		
 
@@ -344,7 +343,7 @@ public class EnrichmentServlet extends HttpServlet {
 	}
 	
 	private String getSPARUL(OWLAxiom axiom){
-		return sparul.translate(new AddAxiom(ont, axiom));
+		return sparul.convert(new AddAxiom(ont, axiom));
 	}
 	
 	private boolean oneOf(String value, String... possibleValues){
@@ -444,7 +443,7 @@ public class EnrichmentServlet extends HttpServlet {
         SparqlKnowledgeSource ks2;
 		AbstractReasonerComponent rc;
 		ks2 = new SparqlKnowledgeSource();
-		ks2.setInstances(Datastructures.individualSetToStringSet(examples.getCompleteSet()));
+		ks2.setInstances(Helper.getStringSet(examples.getCompleteSet()));
 		ks2.setUrl(ks.getEndpoint().getURL());
 		ks2.setDefaultGraphURIs(new TreeSet<String>(ks.getEndpoint().getDefaultGraphURIs()));
 		ks2.setUseLits(false);
@@ -465,8 +464,7 @@ public class EnrichmentServlet extends HttpServlet {
         ClassLearningProblem lp = new ClassLearningProblem(rc);
 		lp.setClassToDescribe(nc);
         lp.setEquivalence(equivalence);
-        lp.setHeuristic(HeuristicType.FMEASURE);
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.setMaxExecutionTimeInSeconds(10);
         lp.init();
 
@@ -478,7 +476,7 @@ public class EnrichmentServlet extends HttpServlet {
         System.out.print("running CELOE (for " + (equivalence ? "equivalent classes" : "sub classes") + ") ... ");
         la.start();
         runTime = System.currentTimeMillis() - startTime;
-        System.out.println("done in " + runTime + " ms");	
+        System.out.println("done in " + runTime + " ms");
 
         // convert the result to axioms (to make it compatible with the other algorithms)
         List<? extends EvaluatedDescription<? extends Score>> learnedDescriptions = la.getCurrentlyBestEvaluatedDescriptions(threshold);
@@ -491,7 +489,7 @@ public class EnrichmentServlet extends HttpServlet {
         		axiom = dataFactory.getOWLSubClassOfAxiom(nc, learnedDescription.getDescription());
         	}
         	Score score = lp.computeScore(learnedDescription.getDescription());
-        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy()))); 
+        	learnedAxioms.add(new EvaluatedAxiom(axiom, new AxiomScore(score.getAccuracy())));
         }
 		return learnedAxioms;
 	}

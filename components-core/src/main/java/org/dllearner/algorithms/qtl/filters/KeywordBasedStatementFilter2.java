@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.filters;
 
 import java.util.Collections;
@@ -33,13 +51,13 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	private Map<Statement, Double> statement2Similarity = new HashMap<Statement, Double>();
+	private Map<Statement, Double> statement2Similarity = new HashMap<>();
 	
-	private Map<RDFNode, Boolean> cache = new HashMap<RDFNode, Boolean>();
+	private Map<RDFNode, Boolean> cache = new HashMap<>();
 	
-	private Map<Statement, String> statement2TokenMap = new HashMap<Statement, String>();
+	private Map<Statement, String> statement2TokenMap = new HashMap<>();
 	
-	private Map<String, String> resource2TokenMap = new HashMap<String, String>();
+	private Map<String, String> resource2TokenMap = new HashMap<>();
 	
 	int cnt = 0;
 	
@@ -69,7 +87,7 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	}
 	
 	private boolean isSimilarWithSubstringMetrik(String s, Statement st){
-		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		SortedSet<Double> values = new TreeSet<>(Collections.reverseOrder());
 		for(String word : questionWords){
 			double v = substringMetric.score(word, s, true);
 			if(v >= threshold){statement2TokenMap.put(st, word);resource2TokenMap.put(s, word);
@@ -92,7 +110,7 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	}
 	
 	private Set<Double> getTopK(SortedSet<Double> values){
-		Set<Double> top = new HashSet<Double>();
+		Set<Double> top = new HashSet<>();
 		int k = 0;
 		for(Double v : values){
 			if(k == topK){
@@ -246,9 +264,9 @@ public class KeywordBasedStatementFilter2 extends Filter<Statement> {
 	}
 	
 	public Set<Statement> getStatementsBelowThreshold(double threshold){
-		Set<Statement> statements = new HashSet<Statement>();
+		Set<Statement> statements = new HashSet<>();
 		for(Entry<Statement, Double> entry : statement2Similarity.entrySet()){
-			if(entry.getValue().doubleValue() < threshold){
+			if(entry.getValue() < threshold){
 				statements.add(entry.getKey());
 			}
 		}

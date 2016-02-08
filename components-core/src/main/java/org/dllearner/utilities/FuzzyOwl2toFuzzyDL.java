@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities;
 
 import java.util.HashSet;
@@ -68,8 +86,8 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 	public FuzzyOwl2toFuzzyDL(String input, String output)
 	{
 		super(input, output);
-		numericalDatatypes = new HashSet<String>(); 
-		stringDatatypes = new HashSet<String>();
+		numericalDatatypes = new HashSet<>();
+		stringDatatypes = new HashSet<>();
 	}
 
 
@@ -516,7 +534,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		String s = "(define-concept " + name + " (w-max ";
 		List<WeightedConcept> list = c.getWeightedConcepts();
 		WeightedConcept wc = list.get(0);
-		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept().toString() + ")";
+		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept() + ")";
 
 		for(int i=1; i<list.size(); i++)
 		{
@@ -534,7 +552,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		String s = "(define-concept " + name + " (w-min ";
 		List<WeightedConcept> list = c.getWeightedConcepts();
 		WeightedConcept wc = list.get(0);
-		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept().toString() + ")";
+		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept() + ")";
 
 		for(int i=1; i<list.size(); i++)
 		{
@@ -552,7 +570,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		String s = "(define-concept " + name + " (w-sum ";
 		List<WeightedConcept> list = c.getWeightedConcepts();
 		WeightedConcept wc = list.get(0);
-		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept().toString() + ")";
+		s += "(" + wc.getWeight() + " " + wc.getFuzzyConcept() + ")";
 
 		for(int i=1; i<list.size(); i++)
 		{
@@ -576,7 +594,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		List<String> list = c.getConcepts();
 		s += list.get(0);
 		for(int i=1; i<list.size(); i++)
-			s += " " + list.get(i).toString();
+			s += " " + list.get(i);
 		s += ") ) )";
 		print(s);
 	}
@@ -594,7 +612,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		List<String> list = c.getConcepts();
 		s += list.get(0);
 		for(int i=1; i<list.size(); i++)
-			s += " " + list.get(i).toString();
+			s += " " + list.get(i);
 		s += ") ) )";
 		print(s);
 	}
@@ -612,7 +630,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		List<String> list = c.getConcepts();
 		s += list.get(0);
 		for(int i=1; i<list.size(); i++)
-			s += " " + list.get(i).toString();
+			s += " " + list.get(i);
 		s += ") ) )";
 		print(s);
 	}
@@ -630,7 +648,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		List<String> list = c.getConcepts();
 		s += list.get(0);
 		for(int i=1; i<list.size(); i++)
-			s += " " + list.get(i).toString();
+			s += " " + list.get(i);
 		s += ") ) )";
 		print(s);
 	}
@@ -643,7 +661,7 @@ public class FuzzyOwl2toFuzzyDL extends FuzzyOwl2
 		List<String> list = c.getConcepts();
 		s += list.get(0);
 		for(int i=1; i<list.size(); i++)
-			s += " " + list.get(i).toString();
+			s += " " + list.get(i);
 		s += ") )";
 		print(s);
 	}

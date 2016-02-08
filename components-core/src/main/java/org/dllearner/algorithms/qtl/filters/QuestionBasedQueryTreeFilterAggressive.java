@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.filters;
 
 import java.util.Collections;
@@ -26,7 +44,7 @@ private Set<String> questionWords;
 	private int topK = 3;
 	private double topKSumThreshold = 0.8;
 	
-	private Set<Integer> numbers = new HashSet<Integer>();
+	private Set<Integer> numbers = new HashSet<>();
 	
 	public QuestionBasedQueryTreeFilterAggressive(Set<String> questionWords){
 		this.questionWords = questionWords;
@@ -42,7 +60,7 @@ private Set<String> questionWords;
 		if(tree.getChildren().isEmpty()){
 			return tree;
 		}
-		QueryTree<String> copy = new QueryTreeImpl<String>(tree);
+		QueryTree<String> copy = new QueryTreeImpl<>(tree);
 		filterTree(copy);
 		return copy;
 	}
@@ -158,7 +176,7 @@ private Set<String> questionWords;
 	}
 	
 	private boolean isSimlarWithSubstringMetrik(String s){
-		SortedSet<Double> values = new TreeSet<Double>(Collections.reverseOrder());
+		SortedSet<Double> values = new TreeSet<>(Collections.reverseOrder());
 		for(String word : questionWords){
 			double v = substringMetric.score(word, s, true);
 			if(v >= threshold){
@@ -178,7 +196,7 @@ private Set<String> questionWords;
 	}
 	
 	private Set<Double> getTopK(SortedSet<Double> values){
-		Set<Double> top = new HashSet<Double>();
+		Set<Double> top = new HashSet<>();
 		int k = 0;
 		for(Double v : values){
 			if(k == topK){

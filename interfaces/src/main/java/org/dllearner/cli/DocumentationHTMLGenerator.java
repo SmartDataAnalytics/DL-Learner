@@ -1,13 +1,7 @@
 package org.dllearner.cli;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
-import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc;
 import org.dllearner.configuration.spring.editors.ConfigHelper;
 import org.dllearner.core.AnnComponentManager;
@@ -16,15 +10,24 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
  * Script for generating documentation for all components, in particular
- * their configuration options, in HTML format. The script is based on 
+ * their configuration options, in HTML format. The script is based on
  * the new (as of 2011) annotation based component design.
  * 
  * @author Jens Lehmann
  *
  */
 public class DocumentationHTMLGenerator {
+	static {
+		if (System.getProperty("log4j.configuration") == null)
+			System.setProperty("log4j.configuration", "log4j.properties");
+	}
 
 	private AnnComponentManager cm;
 	
@@ -44,7 +47,7 @@ public class DocumentationHTMLGenerator {
 		for(Entry<Class<?>, String> entry : componentNames.entrySet()) {
 			componentNamesInv.put(entry.getValue(), entry.getKey());
 		}
-		
+
 		StringBuffer sb = new StringBuffer();
 		sb.append(getHeader());
 		
@@ -52,17 +55,36 @@ public class DocumentationHTMLGenerator {
 		sb.append("<h1>DL-Learner Components</h1>\n");
 		
 		// filter interface
+		Map<Class, List<Class>> compTree = new TreeMap<>(new Comparator<Class>() {
+			@Override
+			public int compare(Class o1, Class o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		Map<Class, MutableInt> compSublevel = new HashMap<>();
+		for (Class coreClazz : AnnComponentManager.coreComponentClasses) {
+			compSublevel.put(coreClazz, new MutableInt(0));
+		}
+		for (Class coreClazz : AnnComponentManager.coreComponentClasses) {
+			compTree.put(coreClazz, new ArrayList<Class>());
+			for (Class subClazz : AnnComponentManager.coreComponentClasses) {
+				if (subClazz.equals(coreClazz)) {
+					continue;
+				}
+				try {
+					subClazz.asSubclass(coreClazz);
+					compTree.get(coreClazz).add(subClazz);
+					compSublevel.get(subClazz).increment();
+				} catch (ClassCastException e) {
+					// no subclass
+				}
+			}
+		}
+
 		sb.append("<p>Click on the following items to filter the listing below by implemented interfaces (requires Javascript):</p>\n");
 		sb.append("<a href=\"#\" onClick=\"showAllCat()\">show all</a><ul class=\"list-unstyled\">");
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Class')\">Non-component Class</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('KnowledgeSource')\">KnowledgeSource</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ReasonerComponent')\">ReasonerComponent</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningProblem')\">LearningProblem</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('LearningAlgorithm')\">LearningAlgorithm</a>");
-		sb.append("<ul><li><a href=\"#\" onClick=\"showOnlyCat('AxiomLearningAlgorithm')\">AxiomLearningAlgorithm</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('ClassExpressionLearningAlgorithm')\">ClassExpressionLearningAlgorithm</a></li></ul></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('RefinementOperator')\">RefinementOperator</a></li>");
-		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('Heuristic')\">Heuristic</a></li>");
+		printFilter(sb, compTree, compSublevel, Arrays.asList(AnnComponentManager.coreComponentClasses), 0);
 		sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('OtherComponent')\">other</a></li>");
 		sb.append("</ul>");
 		
@@ -104,20 +126,37 @@ public class DocumentationHTMLGenerator {
 		Files.createFile(file, sb.toString());
 	}
 
+	private void printFilter(StringBuffer sb, Map<Class, List<Class>> compTree, Map<Class, MutableInt> compSublevel, List<Class> filter, int level) {
+		for (Class e : filter) {
+			if (level != compSublevel.get(e).intValue()) {
+				continue;
+			}
+			sb.append("<li><a href=\"#\" onClick=\"showOnlyCat('" + e.getSimpleName() + "')\">" + e.getSimpleName() + "</a>");
+			List<Class> subClazzes = compTree.get(e);
+			if (!subClazzes.isEmpty()) {
+				sb.append("<ul>");
+				printFilter(sb, compTree, compSublevel, compTree.get(e), level + 1);
+				sb.append("</ul>");
+			}
+			sb.append("</li>");
+		}
+	}
+
 	private void optionsTable(StringBuffer sb, Class<?> comp) {
 		// generate table for configuration options
-		Map<ConfigOption,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
+		Map<Field,Class<?>> options = ConfigHelper.getConfigOptionTypes(comp);
 		if(options.isEmpty()) {
 			sb.append("This component does not have configuration options.");
 		} else {
 		sb.append("<div class=\"table-responsive\"><table class=\"hor-minimalist-a table table-hover\"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>\n");
-		for(Entry<ConfigOption,Class<?>> entry : options.entrySet()) {
-			ConfigOption option = entry.getKey();
+		for(Entry<Field,Class<?>> entry : options.entrySet()) {
+			String optionName = AnnComponentManager.getName(entry.getKey());
+			ConfigOption option = entry.getKey().getAnnotation(ConfigOption.class);
 			String type = entry.getValue().getSimpleName();
 			if(entry.getValue().equals(OWLClass.class)) {
 				type = "IRI";
 			}
-			sb.append("<tr><td>" + option.name() + "</td><td>" + option.description()
+			sb.append("<tr><td>" + optionName + "</td><td>" + option.description()
 					+ (option.exampleValue().length() > 0 ? (" <strong>Example:</strong> " + option.exampleValue()) : "")
 					+ "</td><td> " + type + "</td><td>"
 					+ option.defaultValue() + "</td><td> "
@@ -125,7 +164,7 @@ public class DocumentationHTMLGenerator {
 		}
 		sb.append("</tbody></table></div>\n");
 		}
-	}		
+	}
 	
 	private String getHeader() {
 		StringBuffer sb = new StringBuffer();
@@ -147,13 +186,13 @@ public class DocumentationHTMLGenerator {
 		sb.append("</style>\n");
 		sb.append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js\"></script>");
 		sb.append("<script type=\"text/javascript\" language=\"javascript\">\n");
-		sb.append("//<![CDATA[\n"); 
+		sb.append("//<![CDATA[\n");
 		sb.append("function showOnlyCat(className){\n");
 		sb.append("	 $('div.type').show(); $('div.type').not('.'+className).hide(); }\n");
 		sb.append("function showAllCat(){\n");
 		sb.append("  $('div.type').show() };\n");
 		sb.append("//]]>\n");
-		sb.append("</script>\n"); 
+		sb.append("</script>\n");
 		sb.append("</head><body><div class=\"container-fluid\">\n");
 		return sb.toString();
 	}
@@ -162,12 +201,12 @@ public class DocumentationHTMLGenerator {
 		return "</div></body></html>";
 	}
 	
-	// this is a hack, because we just assume that every PropertyEditor is named 
-	// as TypeEditor (e.g. ObjectPropertyEditor); however that hack does not too much harm here
+	// this is a hack, because we just assume that every PropertyEditor is named
+	// as TypeEditor (e.g. OWLObjectPropertyEditor); however that hack does not too much harm here
 //	private static String getOptionType(ConfigOption option) {
 //		String name = option.propertyEditorClass().getSimpleName();
 //		return name.substring(0, name.length()-6);
-//	}	
+//	}
 	
 	private static String getCoreTypes(Class<?> comp) {
 		if (Component.class.isAssignableFrom(comp)) {

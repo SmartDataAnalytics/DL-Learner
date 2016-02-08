@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.refinement;
 
 import java.util.Set;
@@ -27,8 +26,8 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 public class Node {
 
 	// TOP ist einfach das TOP-Konzept, also das einzige welches nicht evaluiert wird
-	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST };
-	
+	public enum QualityEvaluationMethod { TOP, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
+
 	private QualityEvaluationMethod qualityEvaluationMethod = QualityEvaluationMethod.TOP;
 	
 	// alle Eigenschaften eines Knotens im Suchbaum
@@ -44,9 +43,9 @@ public class Node {
 	// Einbettung in Suchbaum
 	private Node parent = null;
 	// private Set<Node> children = new HashSet<Node>();
-	private Set<Node> children = new TreeSet<Node>(nodeComparator);
+	private Set<Node> children = new TreeSet<>(nodeComparator);
 	// es wird auch eine Liste von Kindern gehalten
-	private Set<OWLClassExpression> childConcepts = new TreeSet<OWLClassExpression>();
+	private Set<OWLClassExpression> childConcepts = new TreeSet<>();
 	
 	// verwendeter Operator für Expansion des Knotens
 	// private RefinementOperator operator;
@@ -138,7 +137,7 @@ public class Node {
 		if(depth!=0)
 			// treeString.append("|-→ ");
 			treeString.append("|--> ");
-		treeString.append(getShortDescription()+"\n");
+		treeString.append(getShortDescription()).append("\n");
 		for(Node child : children) {
 			treeString.append(child.getTreeString(depth+1));
 		}

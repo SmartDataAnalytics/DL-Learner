@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2012, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -28,6 +28,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  */
 public interface CustomStartRefinementOperator extends RefinementOperator {
 
-	public void setStartClass(OWLClassExpression description);
+	void setStartClass(OWLClassExpression description);
 	
 }

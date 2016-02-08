@@ -1,13 +1,29 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.Set;
-import java.util.SortedSet;
-
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.query.ParameterizedSparqlString;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractAxiomLearningAlgorithm;
@@ -21,30 +37,23 @@ import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
 import org.dllearner.utilities.owl.OWLEntityTypeAdder;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-//import org.dllearner.utilities.OwlApiJenaUtils;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.Set;
+import java.util.SortedSet;
+
+//import org.dllearner.utilities.OwlApiJenaUtils;
 
 /**
  * A wrapper class for CELOE that allows for returning the result in forms of OWL axioms.
  * @author Lorenz Buehmann
  *
  */
+// not for conf
 public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, OWLIndividual, OWLClass> {
 	
 	private boolean equivalence = true;
@@ -104,7 +113,7 @@ public class CELOEWrapper extends AbstractAxiomLearningAlgorithm<OWLClassAxiom, 
 		
 		OWLOntology fragment = buildFragment(posExamples, negExamples);
 		try {
-			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLOntologyFormat(), new FileOutputStream("/tmp/ont.owl"));
+			fragment.getOWLOntologyManager().saveOntology(fragment, new RDFXMLDocumentFormat(), new FileOutputStream("/tmp/ont.owl"));
 		} catch (OWLOntologyStorageException | FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

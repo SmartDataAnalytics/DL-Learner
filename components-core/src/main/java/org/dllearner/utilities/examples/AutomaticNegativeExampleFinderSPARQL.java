@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.examples;
 
 import java.util.Iterator;
@@ -39,14 +38,14 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	
 	private SortedSet<String> fullPositiveSet;
 	
-	private SortedSet<String> fromRelated  = new TreeSet<String>();
-	private SortedSet<String> fromNearbyClasses  = new TreeSet<String>();
-	private SortedSet<String> fromSuperclasses = new TreeSet<String>();;
-	private SortedSet<String> fromParallelClasses = new TreeSet<String>();;
-	private SortedSet<String> fromRandom = new TreeSet<String>();;
-	private SortedSet<String> fromDomain = new TreeSet<String>();;
-	private SortedSet<String> fromRange = new TreeSet<String>();;
-	
+	private SortedSet<String> fromRelated  = new TreeSet<>();
+	private SortedSet<String> fromNearbyClasses  = new TreeSet<>();
+	private SortedSet<String> fromSuperclasses = new TreeSet<>();
+	private SortedSet<String> fromParallelClasses = new TreeSet<>();
+	private SortedSet<String> fromRandom = new TreeSet<>();
+	private SortedSet<String> fromDomain = new TreeSet<>();
+	private SortedSet<String> fromRange = new TreeSet<>();
+
 	static int poslimit = 10;
 	static int neglimit = 20;
 
@@ -61,7 +60,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			SortedSet<String> fullPositiveSet,
 			SPARQLTasks st, SortedSet<String> filterClasses) {
 		super();
-		this.fullPositiveSet = new TreeSet<String>(); 
+		this.fullPositiveSet = new TreeSet<>();
 		this.fullPositiveSet.addAll(fullPositiveSet);
 		this.sparqltasks = st;
 		this.filterClasses=filterClasses;
@@ -86,7 +85,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 * @param stable decides whether neg Examples are randomly picked, default false, faster for developing, since the cache can be used
 	 */
 	public SortedSet<String> getNegativeExamples(int neglimit, boolean stable ) {
-		SortedSet<String> negatives = new TreeSet<String>();
+		SortedSet<String> negatives = new TreeSet<>();
 		negatives.addAll(fromNearbyClasses);
 		negatives.addAll(fromParallelClasses);
 		negatives.addAll(fromRelated);
@@ -162,7 +161,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	}*/
 	
 	public void makeNegativeExamplesFromNearbyClasses(SortedSet<String> positiveSet, int sparqlResultLimit){
-		SortedSet<String> classes = new TreeSet<String>();
+		SortedSet<String> classes = new TreeSet<>();
 		Iterator<String> instanceIter = positiveSet.iterator();
 		while(classes.isEmpty() && instanceIter.hasNext()) {
 			classes.addAll(sparqltasks.getClassesForInstance(instanceIter.next(), 100));
@@ -171,14 +170,12 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		if (filterClasses!=null&&filterClasses.size()>0){
 			boolean br=false;
 			for (String oneClass : classes){
-				Iterator<String> iter=filterClasses.iterator();
-				while (iter.hasNext()){
-					if (oneClass.startsWith(iter.next())){
+				for (String filterClass : filterClasses) {
+					if (oneClass.startsWith(filterClass)) {
 						break;
-					}
-					else{
-						concept=oneClass;
-						br=true;
+					} else {
+						concept = oneClass;
+						br = true;
 						break;
 					}
 				}
@@ -188,7 +185,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 		concept = concept.replaceAll("\"", "");
 		SortedSet<String> superClasses = sparqltasks.getSuperClasses(concept, 1);
 		
-		classes = new TreeSet<String>();
+		classes = new TreeSet<>();
 		for (String oneSuperClass : superClasses) {
 			classes.addAll(sparqltasks.getSubClasses(oneSuperClass, 1));
 		}
@@ -197,7 +194,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 			try{
 				fromNearbyClasses.addAll(sparqltasks.retrieveInstancesForClassDescription("\""
 						+ oneClass + "\"", sparqlResultLimit));
-			} catch (Exception e){}
+			} catch (Exception e){e.printStackTrace();}
 		}
 		
 		this.fromNearbyClasses.removeAll(fullPositiveSet);
@@ -216,7 +213,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	private void makeNegativeExamplesFromClassesOfInstances(SortedSet<String> positiveSet,
 			int sparqlResultLimit) {
 		logger.debug("making neg Examples from parallel classes");
-		SortedSet<String> classes = new TreeSet<String>();
+		SortedSet<String> classes = new TreeSet<>();
 		// superClasses.add(concept.replace("\"", ""));
 		// logger.debug("before"+superClasses);
 		// superClasses = dbpediaGetSuperClasses( superClasses, 4);
@@ -260,7 +257,7 @@ public class AutomaticNegativeExampleFinderSPARQL {
 	 */
 	public void makeNegativeExamplesFromSuperClassesOfInstances(SortedSet<String> positiveSet, 
 			int sparqlResultSetLimit) {
-		SortedSet<String> classes = new TreeSet<String>();
+		SortedSet<String> classes = new TreeSet<>();
 		Iterator<String> instanceIter = positiveSet.iterator();
 		while(classes.isEmpty() && instanceIter.hasNext()) {
 			classes.addAll(sparqltasks.getClassesForInstance(instanceIter.next(), sparqlResultSetLimit));

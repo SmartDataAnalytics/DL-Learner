@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.reasoning;
 
 /**
@@ -26,5 +25,12 @@ package org.dllearner.reasoning;
  *
  */
 public enum ReasonerType {
-	KAON2, DIG, FAST_RETRIEVAL, OWLAPI_FACT, OWLAPI_PELLET, OWLAPI_HERMIT, OWLAPI_FUZZY, OWLAPI_JFACT, CLOSED_WORLD_REASONER, SPARQL_NATIVE
+	DIG, OWLAPI_FACT, OWLAPI_PELLET, OWLAPI_HERMIT, OWLAPI_FUZZY, OWLAPI_JFACT, CLOSED_WORLD_REASONER, SPARQL_NATIVE;
+
+	/**
+	 * @return <code>true</code> if reasoner type is OWL API, otherwise <code>false</code>
+	 */
+	public boolean isOWLAPIReasoner() {
+		return this.name().toUpperCase().startsWith("OWLAPI_");
+	}
 }

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
 
@@ -93,8 +108,8 @@ public class AxiomAlgorithms {
     /** set of tbox and rbox axiom types */
     public static final Set<AxiomType<? extends OWLAxiom>> TBoxAndRBoxAxiomTypes = tboxAndRbox();
 
-    private static final Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
-        Set<AxiomType<?>> axioms = new HashSet<AxiomType<?>>(TBoxAxiomTypes);
+    private static Set<AxiomType<? extends OWLAxiom>> tboxAndRbox() {
+        Set<AxiomType<?>> axioms = new HashSet<>(TBoxAxiomTypes);
         axioms.addAll(RBoxAxiomTypes);
         return axioms;
     }
@@ -176,8 +191,8 @@ public class AxiomAlgorithms {
 				new ParameterizedSparqlString("CONSTRUCT{?s a ?entity . ?s a ?cls1 .} WHERE {?s a ?entity . OPTIONAL {?s a ?cls1 .}"));
 	}
 
-	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes = 
-			new HashMap<EntityType, Set<AxiomType<? extends OWLAxiom>>>();
+	private static final Map<EntityType, Set<AxiomType<? extends OWLAxiom>>> entityType2AxiomTypes =
+			new HashMap<>();
 
 	static {
 		// class axiom types
@@ -198,8 +213,8 @@ public class AxiomAlgorithms {
 				FUNCTIONAL_DATA_PROPERTY, DATA_PROPERTY_DOMAIN, DATA_PROPERTY_RANGE));
 	}
 	
-	private static final Map<EntityType, Set<AxiomTypeCluster>> sameSampleCluster = 
-			new HashMap<EntityType, Set<AxiomTypeCluster>>();
+	private static final Map<EntityType, Set<AxiomTypeCluster>> sameSampleCluster =
+			new HashMap<>();
 	
 	static {
 		// object properties

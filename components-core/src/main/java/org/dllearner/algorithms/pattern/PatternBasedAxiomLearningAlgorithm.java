@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.pattern;
 
@@ -136,7 +151,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	}
 	
 	private Set<OWLAxiom> applyPattern(OWLAxiom pattern, OWLClass cls, Model fragment) {
-		Map<OWLAxiom, Score> axioms2Score = new HashMap<OWLAxiom, Score>();
+		Map<OWLAxiom, Score> axioms2Score = new HashMap<>();
 		
 		OWLClassExpression patternSubClass = null;
 		OWLClassExpression patternSuperClass = null;
@@ -165,13 +180,13 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 		Map<OWLEntity, String> variablesMapping = converter.getVariablesMapping();
 		com.hp.hpl.jena.query.ResultSet rs = QueryExecutionFactory.create(query, fragment).execSelect();
 		QuerySolution qs;
-		Set<String> resources = new HashSet<String>();
+		Set<String> resources = new HashSet<>();
 		Multiset<OWLAxiom> instantiations = HashMultiset.create();
 		while (rs.hasNext()) {
 			qs = rs.next();
 			resources.add(qs.getResource("x").getURI());
 			// get the IRIs for each variable
-			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<OWLEntity, IRI>();
+			Map<OWLEntity, IRI> entity2IRIMap = new HashMap<>();
 			entity2IRIMap.put(patternSubClass.asOWLClass(), cls.getIRI());
 			boolean skip = false;
 			for (OWLEntity entity : signature) {
@@ -212,7 +227,7 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	}
 	
 	private Set<OWLAxiom> asAnnotatedAxioms(Map<OWLAxiom, Score> axioms2Score){
-		Set<OWLAxiom> annotatedAxioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> annotatedAxioms = new HashSet<>();
 		for (Entry<OWLAxiom, Score> entry : axioms2Score.entrySet()) {
 			OWLAxiom axiom = entry.getKey();
 			Score score = entry.getValue();
@@ -227,7 +242,8 @@ public class PatternBasedAxiomLearningAlgorithm extends AbstractAxiomLearningAlg
 	
 	public static void main(String[] args) throws Exception {
 		OWLDataFactoryImpl df = new OWLDataFactoryImpl();
-		PrefixManager pm = new DefaultPrefixManager("http://dllearner.org/pattern#");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dllearner.org/pattern#");
 		
 		Model model = ModelFactory.createDefaultModel();
 		String triples = 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -48,9 +47,9 @@ public class BlankNode extends Node {
 	String inboundEdge;
 	
 	
-	private List<BlankNode> blankNodes =new ArrayList<BlankNode>();
-	private SortedSet<StringTuple> otherNodes = new TreeSet<StringTuple> ();
-	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<DatatypePropertyNode>();
+	private List<BlankNode> blankNodes = new ArrayList<>();
+	private SortedSet<StringTuple> otherNodes = new TreeSet<>();
+	private List<DatatypePropertyNode> datatypeProperties = new ArrayList<>();
 	
 	//private List<ObjectPropertyNode> objectProperties = new ArrayList<ObjectPropertyNode>();
 	//private List<OWLDataPropertyNode> datatypeProperties = new ArrayList<OWLDataPropertyNode>();
@@ -67,7 +66,7 @@ public class BlankNode extends Node {
 	@Override
 	public List<Node> expand(TupleAquisitor tupleAquisitor,
 			Manipulator manipulator) {
-		List<Node> newNodes = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
 		SortedSet<RDFNodeTuple> s = tupleAquisitor.getBlankNode(bNode.getBNodeId());
 		//System.out.println("entering "+bNode.getBNodeId());
 		
@@ -100,12 +99,12 @@ public class BlankNode extends Node {
 	@Override
 	public List<BlankNode>  expandProperties(TupleAquisitor TupelAquisitor,
 			Manipulator manipulator, boolean dissolveBlankNodes) {
-		return new ArrayList<BlankNode>();
+		return new ArrayList<>();
 	}
 
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> returnSet = new TreeSet<String>();
+		SortedSet<String> returnSet = new TreeSet<>();
 		//String subject = getNTripleForm();
 		/*for (OWLObjectPropertyNode one : objectProperties) {
 			returnSet.add(subject + one.getNTripleForm() + one.getBPart().getNTripleForm()+" . ");
@@ -151,8 +150,8 @@ public class BlankNode extends Node {
 			(inboundEdge.equals(OWLVocabulary.OWL_complementOf))||
 			(inboundEdge.equals(OWLVocabulary.OWL_unionOf))
 		 ){
-			Set<OWLClassExpression> target = new HashSet<OWLClassExpression>();
-			List<BlankNode> tmp = new ArrayList<BlankNode>();
+			Set<OWLClassExpression> target = new HashSet<>();
+			List<BlankNode> tmp = new ArrayList<>();
 			tmp.add(this);
 			while(!tmp.isEmpty()){
 				BlankNode next = tmp.remove(0);
@@ -200,7 +199,7 @@ public class BlankNode extends Node {
 					tail("more than one complement"+target);
 					
 				}else{
-					return factory.getOWLObjectComplementOf(new ArrayList<OWLClassExpression>(target).remove(0));
+					return factory.getOWLObjectComplementOf(new ArrayList<>(target).remove(0));
 				}
 			}else{
 				printAll();

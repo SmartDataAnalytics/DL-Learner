@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.examples;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 
@@ -38,10 +38,10 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 public class ExampleContainer implements Comparable<ExampleContainer>{
 
 	
-	private static SortedSet<ExampleContainer> exampleSets = new TreeSet<ExampleContainer>();
+	private static SortedSet<ExampleContainer> exampleSets = new TreeSet<>();
 
-	private SortedSet<OWLIndividual> positiveExamples  = new TreeSet<OWLIndividual>();
-	private SortedSet<OWLIndividual> negativeExamples = new TreeSet<OWLIndividual>();
+	private SortedSet<OWLIndividual> positiveExamples  = new TreeSet<>();
+	private SortedSet<OWLIndividual> negativeExamples = new TreeSet<>();
 	
 	
 	public ExampleContainer(SortedSet<OWLIndividual> positiveExamples, SortedSet<OWLIndividual> negativeExamples) {
@@ -54,14 +54,15 @@ public class ExampleContainer implements Comparable<ExampleContainer>{
 	/**
 	 * adds to a global example repository.
 	 * returns false, if the set is contained already
-	 * @param e
+	 * @param e the example container
 	 * @return
 	 */
 	public static boolean add(ExampleContainer e){
 		return exampleSets.add(e);
 	}
-	
-	public int compareTo(ExampleContainer e){
+
+	@Override
+	public int compareTo(@NotNull ExampleContainer e){
 		
 		if(getNegativeExamples().equals(e.getNegativeExamples())
 				&&

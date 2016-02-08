@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.sparql;
 
 import java.util.Iterator;
@@ -42,7 +60,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	private Model baseModel;
 	private QueryExecutionFactory qef;
 	
-	private Set<String> propertyBlacklist = new TreeSet<String>();
+	private Set<String> propertyBlacklist = new TreeSet<>();
 	
 	public ConciseBoundedDescriptionGeneratorImpl(SparqlEndpoint endpoint, CacheFrontend cache) {
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
@@ -123,8 +141,8 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 	
 	/**
 	 * A SPARQL CONSTRUCT query is created, to get a RDF graph for the given example with a specific recursion depth.
-	 * @param example The example resource for which a CONSTRUCT query is created.
-	 * @return The JENA ARQ Query object.
+	 * @param resource The example resource for which a CONSTRUCT query is created.
+	 * @return the SPARQL query
 	 */
 	private String generateQuery(String resource, int depth, boolean withTypesForLeafs){
 		int lastIndex = Math.max(0, depth - 1);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.net.MalformedURLException;
@@ -46,7 +45,7 @@ public class Manager {
 	private Configuration configuration;
 	private ExtractionAlgorithm extractionAlgorithm;
 	private int nrOfExtractedTriples = 0;
-	private List<Node> seedNodes = new ArrayList<Node>();
+	private List<Node> seedNodes = new ArrayList<>();
 	private boolean stop = false;
 	
 	private ProgressMonitor mon;
@@ -90,7 +89,7 @@ public class Manager {
 	
 
 	public List<Node> extract(Set<String> instances) {
-		List<Node> allExtractedNodes = new ArrayList<Node>();
+		List<Node> allExtractedNodes = new ArrayList<>();
 		logger.info("Start extracting "+instances.size() + " instances ");
 		if(mon != null){
 			mon.setNote("Start extracting "+instances.size() + " instances ");
@@ -151,7 +150,7 @@ public class Manager {
 	}
 	
 	public String getNTripleForNodes(List<Node> nodes){
-		SortedSet<String> tripleCollector = new TreeSet<String>();
+		SortedSet<String> tripleCollector = new TreeSet<>();
 		for (Node n : nodes) {
 			tripleCollector.addAll(n.toNTriple());
 		}
@@ -160,7 +159,7 @@ public class Manager {
 		Object[] arr = tripleCollector.toArray();
 		nrOfExtractedTriples = arr.length;
 		for (int i = 0; i < arr.length; i++) {
-			nt.append((String) arr[i] + "\n");
+			nt.append((String) arr[i]).append("\n");
 			if (i % 1000 == 0)
 				logger.info(i + " of  " + arr.length + " triples done");
 		}

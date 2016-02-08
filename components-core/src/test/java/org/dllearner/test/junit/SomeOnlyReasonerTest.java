@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.test.junit;
 
@@ -12,10 +27,11 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningProblemUnsupportedException;
 import org.dllearner.kb.sparql.simple.SparqlSimpleExtractor;
+import org.dllearner.learningproblems.AccMethodFMeasure;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.junit.Ignore;
 import org.semanticweb.owlapi.model.ClassExpressionType;
@@ -49,7 +65,7 @@ public class SomeOnlyReasonerTest {
                 negExamples);
         
         SparqlSimpleExtractor ks = new SparqlSimpleExtractor();
-        ks.setInstances(new ArrayList<String>(Datastructures.individualSetToStringSet(examples
+        ks.setInstances(new ArrayList<String>(Helper.getStringSet(examples
                 .getCompleteSet())));
         // ks.getConfigurator().setPredefinedEndpoint("DBPEDIA"); // TODO:
         // probably the official endpoint is too slow?
@@ -75,8 +91,7 @@ public class SomeOnlyReasonerTest {
         PosNegLPStandard lp = new PosNegLPStandard(rc);
         lp.setPositiveExamples(posExamples);
         lp.setNegativeExamples(negExamples);
-        lp.setAccuracyMethod("fmeasure");
-        lp.setUseApproximations(false);
+        lp.setAccuracyMethod(new AccMethodFMeasure(true));
         lp.init();
         
         CELOE la = new CELOE(lp, rc);

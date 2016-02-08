@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,18 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
@@ -40,14 +34,14 @@ public class SetManipulation {
 	 * shrinks a set to the limit fuzzy here means the elements will be randomly
 	 * picked
 	 * 
-	 * @param set
-	 * @param limit
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static <T> SortedSet<T> fuzzyShrink(SortedSet<T> set, int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -69,15 +63,15 @@ public class SetManipulation {
 	/**
 	 * shrinks a set to the limit fuzzy here means the elements will be randomly
 	 * picked
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static SortedSet<OWLIndividual> fuzzyShrinkInd(SortedSet<OWLIndividual> set, int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		Random r = new Random();
 		double treshold = ((double) limit) / set.size();
 		// System.out.println("treshold"+howmany);
@@ -98,16 +92,16 @@ public class SetManipulation {
 	
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static <T> SortedSet<T> stableShrink(SortedSet<T> set,
 			int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<T> ret = new TreeSet<T>();
+		SortedSet<T> ret = new TreeSet<>();
 
 		for (T oneInd : set) {
 			ret.add(oneInd);
@@ -119,16 +113,16 @@ public class SetManipulation {
 	
 	/**
 	 * shrinks a set to the limit takes the first elements up to limit
-	 * 
-	 * @param set
-	 * @param limit
+	 *
+	 * @param set the set
+	 * @param limit the limit
 	 */
 	public static SortedSet<OWLIndividual> stableShrinkInd(SortedSet<OWLIndividual> set,
 			int limit) {
 		if (set.size() <= limit) {
 			return set;
 		}
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 
 		for (OWLIndividual oneInd : set) {
 			ret.add(oneInd);
@@ -140,57 +134,4 @@ public class SetManipulation {
 		return ret;
 	}
 
-	/**
-	 * XXX
-	 * getFirst n Elements from list.
-	 * changes the list object!!!
-	 * @param list
-	 * @param nrElements
-	 * @return returns the list shrunken to size. 
-	 */
-	public static <T> List<T> getFirst(List<T> list, int nrElements) {
-		int size;
-		while ((size = list.size()) > nrElements) {
-			list.remove(size - 1);
-		}
-		return list;
-	}
-
-	public static SortedSet<OWLIndividual> stringToInd(SortedSet<String> set) {
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
-		for (String ind : set) {
-			ret.add(df.getOWLNamedIndividual(IRI.create(ind)));
-		}
-		return ret;
-	}
-	
-	public static SortedSet<OWLIndividual> stringToInd(Collection<String> individualsAsString) {
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
-		for (String ind : individualsAsString) {
-			ret.add(df.getOWLNamedIndividual(IRI.create(ind)));
-		}
-		return ret;
-	}
-	
-	public static SortedSet<String>indToString(SortedSet<OWLIndividual> set) {
-		SortedSet<String> ret = new TreeSet<String>();
-		for (OWLIndividual ind : set) {
-			ret.add(ind.toString());
-		}
-		return ret;
-	}
-	
-	public static void printSet(String s, SortedSet<String> set, Logger logger) {
-		if(logger.getLevel().equals(Level.DEBUG)){
-			logger.info(s +" ["+ set.size()+"]: "+set);
-		}else{
-			logger.info(s +" ["+ set.size()+"]");
-		}
-		
-	}
-	
-	public static <T> void printSet(String s, SortedSet<T> set) {
-		System.out.println(s +" ["+ set.size()+"]: "+set);
-		
-	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.fuzzydll;
 
 import java.util.SortedSet;
@@ -36,11 +35,11 @@ public interface FuzzyIndividualReasoner {
 	 * Checks the fuzzy membership degree of <code>individual</code> over <code>description</code>.
 	 * For instance, "Peter" may be an instance of "TallPerson" with fuzzy membership degree = 0.8.
 	 * individual
-	 * @param OWLClassExpression An OWL class description.
+	 * @param description An OWL class description.
 	 * @param individual An individual.
 	 * @return fuzzy membership degree of <code>individual</code> satisfying <code>description</code> [0-1].
 	 */
-	public double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual);
+	double hasTypeFuzzyMembership(OWLClassExpression description, FuzzyIndividual individual);
 	
-	public SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept);
+	SortedSet<FuzzyIndividual> getFuzzyIndividuals(OWLClassExpression concept);
 }

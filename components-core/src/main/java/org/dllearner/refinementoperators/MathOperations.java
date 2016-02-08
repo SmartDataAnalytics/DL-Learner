@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
 import java.util.Collections;
@@ -120,7 +119,7 @@ public class MathOperations {
 	 */
 	public static List<List<Integer>> getCombos(int number) {
 		// on Notebook: length 70 in 17 seconds, length 50 in 800ms, length 30 in 15ms		
-		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<>();
 		decompose(number, number, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}
@@ -135,7 +134,7 @@ public class MathOperations {
 	 * @return A two dimensional list constructed in {@link #getCombos(int)}.
 	 */
 	public static List<List<Integer>> getCombos(int length, int maxValue) {		
-		List<List<Integer>> combosTmp = new LinkedList<List<Integer>>();
+		List<List<Integer>> combosTmp = new LinkedList<>();
 		decompose(length, maxValue, new LinkedList<Integer>(), combosTmp);
 		return combosTmp;
 	}	
@@ -146,8 +145,8 @@ public class MathOperations {
 	}
 	
 	/**
-	 * Implements a cross product in the sense that each union OWLClassExpression in the
-	 * base set is extended by each OWLClassExpression in the new set. 
+	 * Implements a cross product in the sense that each union in the
+	 * base set is extended by each class expression in the new set. 
 	 * 
 	 * Example:
 	 * baseSet = {A1 OR A2, A1 or A3}
@@ -164,7 +163,7 @@ public class MathOperations {
 	 * @return The "cross product" of baseSet and newSet.
 	 */
 	public static SortedSet<OWLObjectUnionOf> incCrossProduct(Set<OWLObjectUnionOf> baseSet, Set<OWLClassExpression> newSet) {
-		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<OWLObjectUnionOf>();
+		SortedSet<OWLObjectUnionOf> retSet = new TreeSet<>();
 	
 		if(baseSet.isEmpty()) {
 			for(OWLClassExpression c : newSet) {
@@ -199,7 +198,7 @@ public class MathOperations {
 	 * @return See description.
 	 */
 	public static boolean containsDoubleObjectSomeRestriction(OWLClassExpression d) {
-		Set<OWLObjectPropertyExpression> roles = new HashSet<OWLObjectPropertyExpression>();
+		Set<OWLObjectPropertyExpression> roles = new HashSet<>();
 		for(OWLClassExpression c : d.getNestedClassExpressions()) {
 			if(c instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom)c).getProperty();								

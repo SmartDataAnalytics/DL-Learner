@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,30 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.Lists;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.learningproblems.PosNegLP;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
+import org.semanticweb.owlapi.model.*;
 
-import com.google.common.collect.Lists;
+import java.util.*;
 
 /**
  * Operatoren Psi-Down und Psi-Up müssen noch so umgeschrieben werden, dass sie
@@ -69,7 +56,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 	}
 	
 	private void createTopSet() {
-		topSet = new TreeSet<OWLClassExpression>();
+		topSet = new TreeSet<>();
 		
 		// TOP OR TOP => Was soll mit Refinements passieren, die immer improper sind?
 		List<OWLClassExpression> operands = Lists.<OWLClassExpression>newArrayList(df.getOWLThing(), df.getOWLThing());
@@ -95,13 +82,13 @@ public class PsiDown extends RefinementOperatorAdapter {
 	@SuppressWarnings("unchecked")
 	public Set<OWLClassExpression> refine(OWLClassExpression concept) {
 		
-		Set<OWLClassExpression> refinements = new HashSet<OWLClassExpression>();
-		Set<OWLClassExpression> tmp = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> refinements = new HashSet<>();
+		Set<OWLClassExpression> tmp;
 		
 		if (concept.isOWLThing()) {
 			return (Set<OWLClassExpression>) topSet.clone();
 		} else if (concept.isOWLNothing()) {
-			return new HashSet<OWLClassExpression>();
+			return new HashSet<>();
 		} else if (!concept.isAnonymous()) {
 			// beachte: die Funktion gibt bereits nur nicht-äquivalente Konzepte zurück
 			// beachte weiter: die zurückgegebenen Instanzen dürfen nicht verändert werden,
@@ -134,7 +121,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 					// hier wird nur eine neue Liste erstellt
 					// => eigentlich muss nicht geklont werden (d.h. deep copy) da
 					// die Konzepte nicht verändert werden während des Algorithmus
-					List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
@@ -154,7 +141,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 				tmp = refine(child);
 				// neue MultiConjunction konstruieren
 				for(OWLClassExpression c : tmp) {
-					List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+					List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 					// es muss genau die vorherige Reihenfolge erhalten bleiben
 					// (zumindest bis die Normalform definiert ist)
 					int index = newChildren.indexOf(child);
@@ -167,7 +154,7 @@ public class PsiDown extends RefinementOperatorAdapter {
 			
 			// ein Element der Disjunktion kann weggelassen werden
 			for(OWLClassExpression child : ((OWLObjectUnionOf) concept).getOperandsAsList()) {
-				List<OWLClassExpression> newChildren = new LinkedList<OWLClassExpression>(operands);
+				List<OWLClassExpression> newChildren = new LinkedList<>(operands);
 				newChildren.remove(child);
 				// wenn nur ein Kind da ist, dann wird Disjunktion gleich weggelassen
 				if(newChildren.size()==1)
@@ -192,8 +179,8 @@ public class PsiDown extends RefinementOperatorAdapter {
 				refinements.add(df.getOWLNothing());
 			
 		} else if (concept instanceof OWLObjectAllValuesFrom) {
-			OWLObjectPropertyExpression role = ((OWLObjectSomeValuesFrom) concept).getProperty();
-			OWLClassExpression filler = ((OWLObjectSomeValuesFrom) concept).getFiller();
+			OWLObjectPropertyExpression role = ((OWLObjectAllValuesFrom) concept).getProperty();
+			OWLClassExpression filler = ((OWLObjectAllValuesFrom) concept).getFiller();
 
 			tmp = refine(filler);
 			for(OWLClassExpression c : tmp) {

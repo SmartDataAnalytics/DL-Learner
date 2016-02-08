@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import com.jamonapi.Monitor;
 public class ExtractionAlgorithm {
 
 	private Configuration configuration;
-	private SortedSet<String> alreadyQueriedSuperClasses = new TreeSet<String>();
+	private SortedSet<String> alreadyQueriedSuperClasses = new TreeSet<>();
 	private boolean stop = false;
 
 	
@@ -70,7 +69,7 @@ public class ExtractionAlgorithm {
 
 	@SuppressWarnings("unused")
 	private List<Node> expandAll(String[] uris, TupleAquisitor tupelAquisitor) {
-		List<Node> nodeList = new ArrayList<Node>();
+		List<Node> nodeList = new ArrayList<>();
 		for (String oneURI : uris) {
 			nodeList.add(expandNode(oneURI, tupelAquisitor));
 		}
@@ -91,9 +90,9 @@ public class ExtractionAlgorithm {
 		}
 		
 		Node seedNode = getFirstNode(uri);
-		List<Node> newNodes = new ArrayList<Node>();
-		List<Node> collectNodes = new ArrayList<Node>();
-		List<Node> tmp = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
+		List<Node> collectNodes = new ArrayList<>();
+		List<Node> tmp = new ArrayList<>();
 		
 		
 		logger.info("Seed Node: "+seedNode);
@@ -178,7 +177,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private List<Node> expandBlankNodes(List<BlankNode> blankNodes, TupleAquisitor tupelAquisitor) {
-		List<Node> newNodes = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
 		while (!blankNodes.isEmpty()&& !stopCondition()) {
 			Node next = blankNodes.remove(0);
 			List<Node> l = next.expand(tupelAquisitor, configuration.getManipulator());
@@ -193,7 +192,7 @@ public class ExtractionAlgorithm {
 	
 	private List<Node> expandCloseAfterRecursion(List<InstanceNode> instanceNodes, TupleAquisitor tupelAquisitor) {
 		
-		List<Node> newNodes = new ArrayList<Node>();
+		List<Node> newNodes = new ArrayList<>();
 		tupelAquisitor.setNextTaskToClassesForInstances();
 		while (!instanceNodes.isEmpty() && !stopCondition()) {
 			logger.trace("Getting classes for remaining instances: "
@@ -216,7 +215,7 @@ public class ExtractionAlgorithm {
 	private void expandAllSuperClassesOfANode(List<ClassNode> allClassNodes, TupleAquisitor tupelAquisitor) {
 		
 		
-		List<Node> newClasses = new ArrayList<Node>();
+		List<Node> newClasses = new ArrayList<>();
 		newClasses.addAll(allClassNodes);
 		//TODO LinkedData incompatibility
 		
@@ -228,9 +227,9 @@ public class ExtractionAlgorithm {
 			
 			logger.trace("Getting Superclasses for: " + next);
 			
-			if (!alreadyQueriedSuperClasses.contains(next.getURIString().toString())) {
+			if (!alreadyQueriedSuperClasses.contains(next.getURIString())) {
 				logger.trace("" + next+" not in cache retrieving");
-				alreadyQueriedSuperClasses.add(next.getURIString().toString());
+				alreadyQueriedSuperClasses.add(next.getURIString());
 				tupelAquisitor.setNextTaskToClassInformation();
 				
 				newClasses.addAll(next.expand(tupelAquisitor, configuration.getManipulator()));
@@ -254,7 +253,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private static List<ClassNode> getClassNodes(List<Node> l ){
-		List<ClassNode> retList = new ArrayList<ClassNode>();
+		List<ClassNode> retList = new ArrayList<>();
 		for (Node node : l) {
 			if (node instanceof ClassNode) {
 				retList.add( (ClassNode) node);
@@ -267,7 +266,7 @@ public class ExtractionAlgorithm {
 	
 
 	private static List<InstanceNode> getInstanceNodes(List<Node> l ){
-		List<InstanceNode> retList = new ArrayList<InstanceNode>();
+		List<InstanceNode> retList = new ArrayList<>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				retList.add( (InstanceNode) node);
@@ -279,7 +278,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private static List<BlankNode> getBlankNodes(List<Node> l ){
-		List<BlankNode> retList = new ArrayList<BlankNode>();
+		List<BlankNode> retList = new ArrayList<>();
 		for (Node node : l) {
 			if (node instanceof BlankNode) {
 				retList.add( (BlankNode) node);
@@ -291,7 +290,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private static List<ObjectPropertyNode> getObjectPropertyNodes(List<Node> l ){
-		List<ObjectPropertyNode> properties = new ArrayList<ObjectPropertyNode>();
+		List<ObjectPropertyNode> properties = new ArrayList<>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getObjectProperties());
@@ -303,7 +302,7 @@ public class ExtractionAlgorithm {
 	}
 	
 	private static List<DatatypePropertyNode> getDatatypeProperties(List<Node> l ){
-		List<DatatypePropertyNode> properties = new ArrayList<DatatypePropertyNode>();
+		List<DatatypePropertyNode> properties = new ArrayList<>();
 		for (Node node : l) {
 			if (node instanceof InstanceNode) {
 				properties.addAll(( (InstanceNode) node).getDatatypePropertyNode());

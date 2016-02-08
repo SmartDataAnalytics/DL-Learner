@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
 
 import java.io.File;
@@ -30,9 +29,9 @@ import org.dllearner.utilities.Files;
 
 public class TableColumn implements Serializable {
 
-	private static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1L;
 	private String header;
-	private List<String> entries = new ArrayList<String>();
+	private List<String> entries = new ArrayList<>();
 
 public TableColumn() {
 	super();

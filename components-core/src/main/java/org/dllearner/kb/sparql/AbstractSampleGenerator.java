@@ -1,8 +1,24 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.kb.sparql;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,9 +32,14 @@ import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
@@ -59,12 +80,19 @@ public abstract class AbstractSampleGenerator {
 		cbdGen.addAllowedObjectNamespaces(namespaces);
 	}
 	
+	public void addIgnoredProperties(Set<String> ignoredProperties) {
+		cbdGen.addPropertiesToIgnore(ignoredProperties);
+	}
+
+	public void setLoadRelatedSchema(boolean loadRelatedSchema) {
+		this.loadRelatedSchema = loadRelatedSchema;
+	}
+
 	/**
 	 * Computes a sample of the knowledge base, i.e. it contains only facts
 	 * about the positive and negative individuals.
-	 * @param posExamples
-	 * @param negExamples
-	 * @return
+	 * @param individuals the individuals
+	 * @return a sample ontology of the knowledge bas
 	 */
 	public OWLOntology getSample(Set<OWLIndividual> individuals) {
 		return OwlApiJenaUtils.getOWLOntology(getSampleModel(individuals));
@@ -93,12 +121,33 @@ public abstract class AbstractSampleGenerator {
 			model.add(cbd);
 		}
 		
+		StmtIterator iterator = model.listStatements();
+		List<Statement> toAdd = new ArrayList<>();
+		while(iterator.hasNext()) {
+			Statement st = iterator.next();
+			if(st.getObject().isLiteral()) {
+				Literal lit = st.getObject().asLiteral();
+				RDFDatatype datatype = lit.getDatatype();
+				
+				if(datatype != null) {
+					if(datatype.equals(XSDDatatype.XSDdouble) && lit.getLexicalForm().equals("NAN")) {
+						iterator.remove();
+						toAdd.add(model.createLiteralStatement(st.getSubject(), st.getPredicate(), Double.NaN));
+					} else if(datatype.equals(XSDDatatype.XSDgYear) && st.getPredicate().getURI().equals("http://dbpedia.org/ontology/birthDate")) {
+						iterator.remove();
+						toAdd.add(model.createStatement(st.getSubject(), st.getPredicate(), model.createTypedLiteral("2000-01-01", XSDDatatype.XSDdate)));
+					}
+				}
+			}
+		}
+		model.add(toAdd);
+		
 		// infer entity types, e.g. object or data property
 		OWLEntityTypeAdder.addEntityTypes(model);
 		
 		// load related schema information
 		if(loadRelatedSchema) {
-			loadRelatedSchema(model);
+//			loadRelatedSchema(model);
 		}
 		
 		return model;

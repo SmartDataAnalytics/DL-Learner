@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.kb.sparql;
 
@@ -11,6 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -31,6 +47,8 @@ import com.hp.hpl.jena.query.ResultSet;
  */
 public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
+	private Random rnd = new Random(12345);
+	
 	private int maxNrOfPosExamples = 20;
 	private int maxNrOfNegExamples = 20;
 	
@@ -38,13 +56,15 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	
 	private AutomaticNegativeExampleFinderSPARQL2 negExamplesFinder;
 	
-	private Random rnd = new Random(12345);
+	private Set<OWLIndividual> posExamples;
+	private Set<OWLIndividual> negExamples;
 
-	public ClassBasedSampleGenerator(QueryExecutionFactory qef) {
-		super(qef);
+	public ClassBasedSampleGenerator(SparqlEndpointKS ks) {
+		super(ks);
 		
 		negExamplesFinder = new AutomaticNegativeExampleFinderSPARQL2(qef);
 	}
+	
 	
 	/**
 	 * Computes a sample fragment of the knowledge base by using instances of the
@@ -53,12 +73,13 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	 * @return a sample fragment
 	 */
 	public OWLOntology getSample(OWLClass cls) {
-		// get pos examples
-		Set<OWLIndividual> posExamples = computePosExamples(cls);
+		// get positive examples
+		posExamples = computePosExamples(cls);
 		
-		// get neg examples if enabled
-		Set<OWLIndividual> negExamples = computeNegExamples(cls, posExamples);
+		// get negative examples if enabled
+		negExamples = computeNegExamples(cls, posExamples);
 		
+		// compute sample based on positive (and negative) examples
 		return getSample(Sets.union(posExamples, negExamples));
 	}
 	
@@ -67,6 +88,22 @@ public class ClassBasedSampleGenerator extends InstanceBasedSampleGenerator{
 	 */
 	public void setUseNegExamples(boolean useNegExamples) {
 		this.useNegExamples = useNegExamples;
+	}
+	
+	/**
+	 * @return the positive examples, i.e. instances of the class, used to
+	 * generate the sample
+	 */
+	public Set<OWLIndividual> getPositiveExamples() {
+		return posExamples;
+	}
+	
+	/**
+	 * @return the negative examples, i.e. individuals that do not belong to the class, used to
+	 * generate the sample
+	 */
+	public Set<OWLIndividual> getNegativeExamples() {
+		return negExamples;
 	}
 	
 	private Set<OWLIndividual> computePosExamples(OWLClass cls) {

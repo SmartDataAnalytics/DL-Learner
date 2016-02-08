@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.properties;
 
@@ -96,8 +111,8 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		
 		int frequency = getPositiveExamplesFrequency();
 
-		currentlyBestAxioms.add(new EvaluatedAxiom<T>(
-				getAxiom(entityToDescribe), 
+		currentlyBestAxioms.add(new EvaluatedAxiom<>(
+				getAxiom(entityToDescribe),
 				computeScore(popularity, frequency, useSampling),
 				declared));
 	}
@@ -117,7 +132,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		T axiom = evAxiom.getAxiom();
 		posExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> posExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
 
@@ -138,7 +153,7 @@ public abstract class ObjectPropertyCharacteristicsAxiomLearner<T extends OWLObj
 		T axiom = evaluatedAxiom.getAxiom();
 		negExamplesQueryTemplate.setIri("p", axiom.getProperty().asOWLObjectProperty().toStringID());
 
-		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<OWLObjectPropertyAssertionAxiom>();
+		Set<OWLObjectPropertyAssertionAxiom> negExamples = new TreeSet<>();
 
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 

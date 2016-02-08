@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.impl;
 
@@ -62,11 +61,11 @@ import com.hp.hpl.jena.util.iterator.Filter;
 public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private int nodeId;
-	private Comparator<Statement> comparator = new StatementComparator();
+	private final Comparator<Statement> comparator = new StatementComparator();
 
 	private int maxDepth = 3;
 
-	private Set<Filter<Statement>> dropFilters = new HashSet<Filter<Statement>>();
+	private Set<Filter<Statement>> dropFilters = new HashSet<>();
 
 	public QueryTreeFactoryBase() {
 	}
@@ -121,7 +120,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	private RDFResourceTree createTree(Resource resource, Model model, int maxDepth) {
 		nodeId = 0;
-		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<Resource, SortedSet<Statement>>();
+		Map<Resource, SortedSet<Statement>> resource2Statements = new HashMap<>();
 
 		fillMap(resource, model, resource2Statements);
 
@@ -149,7 +148,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 		SortedSet<Statement> statements = resource2Statements.get(s);
 		if (statements == null) {
-			statements = new TreeSet<Statement>(comparator);
+			statements = new TreeSet<>(comparator);
 			resource2Statements.put(s, statements);
 		}
 
@@ -211,7 +210,7 @@ public class QueryTreeFactoryBase implements QueryTreeFactory {
 
 	public static String encode(String s) {
 		char[] htmlChars = s.toCharArray();
-		StringBuffer encodedHtml = new StringBuffer();
+		StringBuilder encodedHtml = new StringBuilder();
 		for (int i = 0; i < htmlChars.length; i++) {
 			switch (htmlChars[i]) {
 			case '<':

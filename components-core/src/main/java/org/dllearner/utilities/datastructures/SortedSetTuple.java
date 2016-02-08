@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
 
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.dllearner.utilities.Helper;
+import com.google.common.collect.Sets;
 
 /**
  * 
@@ -39,13 +38,13 @@ public class SortedSetTuple<T> {
 	private SortedSet<T> negSet;
 	
 	public SortedSetTuple() {
-		posSet = new TreeSet<T>();
-		negSet = new TreeSet<T>();
+		posSet = new TreeSet<>();
+		negSet = new TreeSet<>();
 	}
 	
 	public SortedSetTuple(Set<T> posSet, Set<T> negSet) {
-		this.posSet = new TreeSet<T>(posSet);
-		this.negSet = new TreeSet<T>(negSet);
+		this.posSet = new TreeSet<>(posSet);
+		this.negSet = new TreeSet<>(negSet);
 	}
 
 	public SortedSet<T> getPosSet() {
@@ -56,8 +55,8 @@ public class SortedSetTuple<T> {
 		return negSet;
 	}
 	
-	public SortedSet<T> getCompleteSet() {
-		return Helper.union(posSet, negSet);
+	public Set<T> getCompleteSet() {
+		return Sets.union(posSet, negSet);
 	}
 	
 }

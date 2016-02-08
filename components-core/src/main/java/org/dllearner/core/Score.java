@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
+
+import org.semanticweb.owlapi.model.OWLObject;
 
 import java.io.Serializable;
 
 /**
- * The score class is used to store how well a class OWLClassExpression did
+ * The score class is used to store how well a hypothesis did
  * on a learning problem. Depending on the learning problem at hand,
  * different criteria can be used. (Similar learning problems probably
- * score class descriptions/hypothesis in a similar way.)
+ * score hypothesis in a similar way.)
  * 
  * TODO: Maybe we don't really need a score, but only EvaluatedDescription.
  * 
@@ -34,17 +35,14 @@ import java.io.Serializable;
  */
 public abstract class Score implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6479328496461875019L;
 
 	/**
 	 * This method returns a value, which indicates how accurate a
-	 * class OWLClassExpression solves a learning problem. 
+	 * hypothesis solves a learning problem. 
 	 * 
-	 * @see AbstractClassExpressionLearningProblem#getAccuracy(OWLClassExpression)
-	 * @return A value between 0 and 1 indicating the quality (of a class description).
+	 * @see AbstractLearningProblem#getAccuracyOrTooWeak(OWLObject, double)
+	 * @return A value between 0 and 1 indicating the quality (of a hypothesis).
 	 */	
 	public abstract double getAccuracy();
 	

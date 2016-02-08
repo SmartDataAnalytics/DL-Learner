@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.hybridgp;
 
 import java.util.Random;
@@ -44,12 +43,12 @@ public class Psi implements GeneticRefinementOperator {
 	Random random;
 	
 	// Cache, damit keine Konzepte doppelt ausgewertet werden
-	public SortedMap<OWLClassExpression,ScorePosNeg> evalCache = new TreeMap<OWLClassExpression,ScorePosNeg>();
+	public SortedMap<OWLClassExpression,ScorePosNeg> evalCache = new TreeMap<>();
 	
 	// Cache, damit PsiDown bzw. PsiUp nicht mehrfach für gleiches Konzept
 	// aufgerufen werden
-	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> pdCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
-	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> puCache = new TreeMap<OWLClassExpression,Set<OWLClassExpression>>();
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> pdCache = new TreeMap<>();
+	public SortedMap<OWLClassExpression,Set<OWLClassExpression>> puCache = new TreeMap<>();
 	
 	// Statistiken
 	int conceptCacheHits = 0;
@@ -158,7 +157,7 @@ public class Psi implements GeneticRefinementOperator {
 			
 		
 		// ein refinement zufällig auswählen
-		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[0]);
+		OWLClassExpression[] array = refinements.toArray(new OWLClassExpression[refinements.size()]);
 		// kein refinement gefunden
 		if(array.length==0) {
 			if(debug) {
@@ -200,12 +199,11 @@ public class Psi implements GeneticRefinementOperator {
 		// sich lohnt Operatoren zu definieren, die keine Negationsnormalform
 		// erfordern)
 		
-		OWLClassExpression conceptMod = ConceptTransformation.transformToNegationNormalForm(concept);
+		OWLClassExpression conceptMod = concept.getNNF();
 		// um mehr Cache Hits zu bekommen, wird noch vereinfach und geordnet
 		
 		
 		OWLClassExpression conceptModForCache = ConceptTransformation.applyEquivalenceRules(conceptMod);
-		ConceptTransformation.transformToOrderedForm(conceptModForCache);
 		
 		ScorePosNeg score = program.getScore();
 		// Eval-Cache füllen
@@ -224,7 +222,6 @@ public class Psi implements GeneticRefinementOperator {
 		/////////// TESTCODE: umwandeln des erhaltenen Konzepts
 		// someTimeStart = System.nanoTime();
 		OWLClassExpression newConceptMod = ConceptTransformation.applyEquivalenceRules(newConcept);
-		ConceptTransformation.transformToOrderedForm(newConceptMod);
 		// someTime += System.nanoTime() - someTimeStart;
 		///////////
 		

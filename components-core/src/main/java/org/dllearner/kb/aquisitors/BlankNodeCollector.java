@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class BlankNodeCollector {
 		return ret;
 	}
 	
-	private static Map<Integer, SortedSet<RDFNodeTuple>> blankNodes = new HashMap<Integer, SortedSet<RDFNodeTuple>>();
+	private static Map<Integer, SortedSet<RDFNodeTuple>> blankNodes = new HashMap<>();
 	
 	public static void addBlankNode(int id, RDFNodeTuple t){
 		if(blankNodes.get(id)==null){
@@ -67,7 +66,7 @@ public class BlankNodeCollector {
 	 * @return true if there are more blanknodes
 	 */
 	public static boolean testResultSet(ResultSetRewindable rsw, int depth){
-		List<String> vars = new ArrayList<String>();
+		List<String> vars = new ArrayList<>();
 		vars.add("o0");
 		for (int i = 1; i <= depth; i++) {
 			vars.add("o"+i);
@@ -125,7 +124,7 @@ public class BlankNodeCollector {
 			String currentO = "?o"+currentDepth;
 			String nextP = "?p"+(currentDepth+1);
 			String nextO = "?o"+(currentDepth+1);
-			sq.append("  OPTIONAL { "+currentO+" "+nextP+" "+nextO+". }");
+			sq.append("  OPTIONAL { ").append(currentO).append(" ").append(nextP).append(" ").append(nextO).append(". }");
 		}
 		
 		

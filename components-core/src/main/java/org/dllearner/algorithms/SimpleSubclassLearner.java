@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms;
 
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
-		List<OWLClassExpression> bestDescriptions = new ArrayList<OWLClassExpression>();
+		List<OWLClassExpression> bestDescriptions = new ArrayList<>();
 		for (EvaluatedDescription<? extends Score> evDesc : getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions)) {
 			bestDescriptions.add(evDesc.getDescription());
 		}
@@ -85,7 +84,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<OWLSubClassOfAxiom> getCurrentlyBestAxioms(int nrOfAxioms) {
-		List<OWLSubClassOfAxiom> bestAxioms = new ArrayList<OWLSubClassOfAxiom>();
+		List<OWLSubClassOfAxiom> bestAxioms = new ArrayList<>();
 
 		for (EvaluatedAxiom<OWLSubClassOfAxiom> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms)) {
 			bestAxioms.add(evAx.getAxiom());
@@ -96,12 +95,12 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 
 	@Override
 	public List<EvaluatedAxiom<OWLSubClassOfAxiom>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
-		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<OWLSubClassOfAxiom>>();
+		currentlyBestAxioms = new TreeSet<>();
 		for (EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions(nrOfAxioms)) {
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLSubClassOfAxiom>(df.getOWLSubClassOfAxiom(entityToDescribe,
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(df.getOWLSubClassOfAxiom(entityToDescribe,
 					ed.getDescription()), new AxiomScore(ed.getAccuracy())));
 		}
-		return new ArrayList<EvaluatedAxiom<OWLSubClassOfAxiom>>(currentlyBestAxioms);
+		return new ArrayList<>(currentlyBestAxioms);
 	}
 
 	@Override
@@ -129,7 +128,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 		//get existing super classes
 		SortedSet<OWLClassExpression> existingSuperClasses = reasoner.getSuperClasses(entityToDescribe);
 		if (!existingSuperClasses.isEmpty()) {
-			SortedSet<OWLClassExpression> inferredSuperClasses = new TreeSet<OWLClassExpression>();
+			SortedSet<OWLClassExpression> inferredSuperClasses = new TreeSet<>();
 			for (OWLClassExpression assertedSup : existingSuperClasses) {
 				if (reasoner.isPrepared()) {
 					if (reasoner.getClassHierarchy().contains(assertedSup)) {
@@ -214,7 +213,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			newType = df.getOWLClass(IRI.create(qs.getResource("type").getURI()));
 			types = ind2Types.get(ind);
 			if (types == null) {
-				types = new TreeSet<OWLClassExpression>();
+				types = new TreeSet<>();
 				ind2Types.put(ind, types);
 			}
 			types.add(newType);
@@ -235,7 +234,7 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 	private void createEvaluatedDescriptions(Map<OWLIndividual, SortedSet<OWLClassExpression>> individual2Types) {
 		currentlyBestEvaluatedDescriptions.clear();
 
-		Map<OWLClassExpression, Integer> result = new HashMap<OWLClassExpression, Integer>();
+		Map<OWLClassExpression, Integer> result = new HashMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLClassExpression>> entry : individual2Types.entrySet()) {
 			for (OWLClassExpression nc : entry.getValue()) {
 				Integer cnt = result.get(nc);

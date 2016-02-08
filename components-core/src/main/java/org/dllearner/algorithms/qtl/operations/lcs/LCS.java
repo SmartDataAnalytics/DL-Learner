@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.operations.lcs;
 
@@ -26,7 +41,7 @@ import com.hp.hpl.jena.graph.Triple;
  */
 public class LCS {
 	
-	private Map<Set<Node>, RootedRDFGraph> cache = new HashMap<Set<Node>, LCS.RootedRDFGraph>();
+	private Map<Set<Node>, RootedRDFGraph> cache = new HashMap<>();
 	
 	public RootedRDFGraph computeLCS(RootedRDFGraph g1, RootedRDFGraph g2) throws LCSException{
 		
@@ -45,7 +60,7 @@ public class LCS {
 				x = NodeFactory.createAnon();
 				
 				// a new set of triples
-				Set<Triple> triples = new HashSet<Triple>();
+				Set<Triple> triples = new HashSet<>();
 				
 				// add to result to avoid recomputation
 				RootedRDFGraph g = new RootedRDFGraph(x, triples);
@@ -69,7 +84,7 @@ public class LCS {
 	}
 	
 	private Set<Triple> connectedTriples(Node node, Set<Triple> triples) {
-		Set<Triple> connectedTriples = new HashSet<Triple>();
+		Set<Triple> connectedTriples = new HashSet<>();
 		
 		for (Triple triple : triples) {
 			if(isRDFConnected(node, triple, triples)) {
@@ -79,13 +94,15 @@ public class LCS {
 		
 		return connectedTriples;
 	}
-	
+
 	/**
 	 * Check if there is an RDF-path from source to target.
-	 * @param source the source node
-	 * @param target the target node
+	 *
+	 * @param source  the source node
+	 * @param target  the target node
 	 * @param triples the set of triples in the graph
-	 * @return
+	 * @return whether both nodes are RDF-connected by the given set of triples, i.e. if there is an RDF-path from
+	 * source to target.
 	 */
 	public static boolean isRDFConnected(Node source, Node target, Set<Triple> triples) {
 		// trivial case: node is always RDF-connected to itself
@@ -142,7 +159,7 @@ public class LCS {
 		 */
 		@Override
 		public String toString() {
-			return super.toString();
+			return root + "" + triples;
 		}
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.sparql;
 
 import java.util.List;
@@ -134,11 +133,11 @@ public class SPARQLTasks {
 		// TODO check for quotes in uris
 		int depth = maxDepth;
 
-		final SortedSet<String> toBeRetrieved = new TreeSet<String>();
+		final SortedSet<String> toBeRetrieved = new TreeSet<>();
 		toBeRetrieved.add(classURI);
 
-		final SortedSet<String> returnSet = new TreeSet<String>();
-		final SortedSet<String> tmpSet = new TreeSet<String>();
+		final SortedSet<String> returnSet = new TreeSet<>();
+		final SortedSet<String> tmpSet = new TreeSet<>();
 
 		// collect super/subclasses for the depth
 		for (; (depth > 0) && (!toBeRetrieved.isEmpty()); depth--) {
@@ -177,7 +176,8 @@ public class SPARQLTasks {
 	 * conceptRewrite(String descriptionKBSyntax, SparqlEndpoint se, Cache
 	 *      c, boolean simple )
 	 * @param classURI An URI string with no quotes
-	 * @param maxDepth
+	 * @param maxDepth determines the depth of retrieval, if only direct subclasses are retrieved,
+	 *            1 is HIGHLY RECOMMENDED FOR LARGE HIERARCHIES)
 	 * @return TreeSet of subclasses including classURI
 	 */
 	public SortedSet<String> getSubClasses(final String classURI,
@@ -406,7 +406,7 @@ public class SPARQLTasks {
 	@SuppressWarnings("unchecked")
 	public SortedSet<RDFNodeTuple> queryAsRDFNodeTuple(String sparqlQueryString, String var1, String var2) {
 		ResultSetRewindable rsw = null;
-		SortedSet<RDFNodeTuple> returnSet = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> returnSet = new TreeSet<>();
 		
 		try {
 			String jsonString = query(sparqlQueryString);
@@ -471,7 +471,7 @@ public class SPARQLTasks {
 	
 	/**
 	 * variable must be ?count
-	 * @param sparqlQueryString
+	 * @param sparqlQueryString the SPARQL query
 	 * @return -1 on failure count on success
 	 */
 	public int queryAsCount(String sparqlQueryString) {
@@ -540,7 +540,7 @@ public class SPARQLTasks {
 
 	public static SortedSet<String> getStringSetForVariableFromResultSet(
 			ResultSetRewindable rs, String variable) {
-		final SortedSet<String> result = new TreeSet<String>();
+		final SortedSet<String> result = new TreeSet<>();
 
 		@SuppressWarnings("unchecked")
 		final List<QuerySolution> l = ResultSetFormatter.toList(rs);
@@ -555,7 +555,7 @@ public class SPARQLTasks {
 	
 	private static SortedSet<StringTuple> getTuplesFromResultSet( 
 			ResultSetRewindable rs, String predicate, String object) {
-		final SortedSet<StringTuple> returnSet = new TreeSet<StringTuple>();
+		final SortedSet<StringTuple> returnSet = new TreeSet<>();
 		//SimpleClock sc = new SimpleClock();
 		@SuppressWarnings("unchecked")
 		final List<QuerySolution> l = ResultSetFormatter.toList(rs);
@@ -663,7 +663,7 @@ public class SPARQLTasks {
 	}
 	
 	public Set<OWLObjectProperty> getAllObjectProperties() {
-		Set<OWLObjectProperty> properties = new TreeSet<OWLObjectProperty>();
+		Set<OWLObjectProperty> properties = new TreeSet<>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:ObjectProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send(false);
@@ -675,7 +675,7 @@ public class SPARQLTasks {
 	}
 	
 	public Set<OWLDataProperty> getAllDataProperties() {
-		Set<OWLDataProperty> properties = new TreeSet<OWLDataProperty>();
+		Set<OWLDataProperty> properties = new TreeSet<>();
 		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> SELECT ?p WHERE {?p a owl:DatatypeProperty}";
 		SparqlQuery sq = new SparqlQuery(query, sparqlEndpoint);
 		ResultSet q = sq.send(false);
@@ -687,7 +687,7 @@ public class SPARQLTasks {
 	}
 	
 	public Set<OWLClass> getAllClasses() {
-		Set<OWLClass> classes = new TreeSet<OWLClass>();
+		Set<OWLClass> classes = new TreeSet<>();
 		String query = "SELECT ?c WHERE {?c a <http://www.w3.org/2002/07/owl#Class>} LIMIT 1000";
 		/*
 		 * String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#> PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> " +

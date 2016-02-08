@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
 
 import java.util.LinkedList;
 
+import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
@@ -49,7 +49,7 @@ public class PropertyContext extends LinkedList<OWLObjectProperty> implements Co
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(PropertyContext context) {
+	public int compareTo(@NotNull PropertyContext context) {
 		// we first distinguish on size - simpler contexts come first
 		int diff = context.size() - size();
 		if(diff != 0) {

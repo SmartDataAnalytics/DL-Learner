@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
 
-import org.dllearner.kb.extraction.LiteralNode;
-
+import com.google.common.collect.ComparisonChain;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.sparql.util.NodeComparator;
+import org.dllearner.kb.extraction.LiteralNode;
 
 /**
  * A container which can hold two Strings, mainly used as a helper.
@@ -44,14 +44,15 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 	}
 
 	public boolean equals(RDFNodeTuple t) {
-		return ((b.toString().equals(t.b.toString())) && (a.toString().equals(t.a)));
+		return b.equals(t.b) && a.equals(t.a);
 	}
-	
-	public int compareTo(RDFNodeTuple t){
-		int comp = a.toString().compareTo(t.a.toString());
-		if( comp == 0 ){
-			return b.toString().compareTo(t.b.toString());
-		}else return comp;
+
+	public int compareTo(RDFNodeTuple t) {
+		NodeComparator comparator = new NodeComparator();
+		return ComparisonChain.start().
+				compare(a.asNode(), t.a.asNode(), comparator).
+				compare(b.asNode(), t.b.asNode(), comparator).
+				result();
 	}
 	
 	public boolean aPartContains(String partOf) {

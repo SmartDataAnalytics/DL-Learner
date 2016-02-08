@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,15 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.datastructures;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -34,6 +26,9 @@ import org.dllearner.core.Score;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+
+import javax.annotation.Nonnull;
+import java.util.*;
 
 /**
  * This class takes Descritptions and a reasoner and orders the 
@@ -77,7 +72,7 @@ public class DescriptionSubsumptionTree {
 		 * holds the nodes that are subclasses of this node.
 		 * ordered by accuracy
 		 */
-		public SortedSet<Node> subClasses = new TreeSet<Node>();
+		public SortedSet<Node> subClasses = new TreeSet<>();
 		
 		public Node(EvaluatedDescription<? extends Score> ed, boolean root) {
 			this.root = root;
@@ -105,7 +100,7 @@ public class DescriptionSubsumptionTree {
 				logger.warn("Adding " + node.getEvalDesc() + "\n\t as subclass of " + this.getEvalDesc());
 				subClasses.add(node);
 			} else {
-				SortedSet<Node> subClassesTmp = new TreeSet<Node>(subClasses);
+				SortedSet<Node> subClassesTmp = new TreeSet<>(subClasses);
 				for (Node sub : subClassesTmp) {
 					logger.warn("Testing relation between: " + node.getEvalDesc() + "\n\t and "
 							+ sub.getEvalDesc());
@@ -172,7 +167,7 @@ public class DescriptionSubsumptionTree {
 		 * @return
 		 */
 		public String _toString(String tab) {
-			StringBuffer ret = new StringBuffer();
+			StringBuilder ret = new StringBuilder();
 			ret.append((root) ? "Thing\n" : tab + getEvalDesc() + "\n");
 			tab += "  ";
 			for (Node sub : subClasses) {
@@ -208,7 +203,7 @@ public class DescriptionSubsumptionTree {
 		}
 
 		@Override
-		public int compareTo(Node node) {
+		public int compareTo(@Nonnull Node node) {
 			if (this.equals(node)) {
 				return 0;
 			}
@@ -279,14 +274,14 @@ public class DescriptionSubsumptionTree {
 	public void insertEdPosNeg(Collection<EvaluatedDescriptionPosNeg> evaluatedDescriptions, int limit,
 			double accuracyThreshold) {
 		
-		List<EvaluatedDescription> newSet = new ArrayList<EvaluatedDescription>();
+		List<EvaluatedDescription> newSet = new ArrayList<>();
 		int i = 0;
 		for (EvaluatedDescriptionPosNeg evaluatedDescription : evaluatedDescriptions) {
 			if (i >= evaluatedDescriptions.size() || newSet.size() >= limit) {
 				break;
 			}
 			if (evaluatedDescription.getAccuracy() > accuracyThreshold) {
-				newSet.add((EvaluatedDescription) evaluatedDescription);
+				newSet.add(evaluatedDescription);
 				logger.warn(evaluatedDescription);
 			}
 			i++;

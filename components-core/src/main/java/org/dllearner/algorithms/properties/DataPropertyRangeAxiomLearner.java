@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.properties;
 
 import java.util.Set;
@@ -106,7 +105,7 @@ public class DataPropertyRangeAxiomLearner extends DataPropertyAxiomLearner<OWLD
 			
 			int nrOfNegExamples = popularity - nrOfPosExamples;
 			
-			currentlyBestAxioms.add(new EvaluatedAxiom<OWLDataPropertyRangeAxiom>(
+			currentlyBestAxioms.add(new EvaluatedAxiom<>(
 					df.getOWLDataPropertyRangeAxiom(entityToDescribe, df.getOWLDatatype(IRI.create(datatypeURI))),
 					new AxiomScore(score, score, nrOfPosExamples, nrOfNegExamples, useSampling)));
 

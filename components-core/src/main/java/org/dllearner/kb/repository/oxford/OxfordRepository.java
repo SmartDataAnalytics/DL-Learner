@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.repository.oxford;
 
 import java.net.URI;
@@ -23,13 +41,13 @@ public class OxfordRepository implements OntologyRepository{
 
     private List<RepositoryEntry> entries;
 
-    int numberOfEntries = 793;
+    int numberOfEntries = 797;
     
     DecimalFormat df = new DecimalFormat("00000");
 
 
     public OxfordRepository() {
-        entries = new ArrayList<RepositoryEntry>();
+        entries = new ArrayList<>();
     }
 
     @Override
@@ -38,29 +56,34 @@ public class OxfordRepository implements OntologyRepository{
     }
 
 
-    public String getName() {
+    @Override
+	public String getName() {
         return repositoryName;
     }
 
 
-    public String getLocation() {
+    @Override
+	public String getLocation() {
         return repositoryLocation.toString();
     }
 
 
-    public void refresh() {
+    @Override
+	public void refresh() {
         fillRepository();
     }
 
 
-    public Collection<OntologyRepositoryEntry> getEntries() {
-        List<OntologyRepositoryEntry> ret = new ArrayList<OntologyRepositoryEntry>();
+    @Override
+	public Collection<OntologyRepositoryEntry> getEntries() {
+        List<OntologyRepositoryEntry> ret = new ArrayList<>();
         ret.addAll(entries);
         return ret;
     }
 
 
-    public List<Object> getMetaDataKeys() {
+    @Override
+	public List<Object> getMetaDataKeys() {
         return Collections.emptyList();
     }
 
@@ -97,22 +120,26 @@ public class OxfordRepository implements OntologyRepository{
         }
 
 
-        public String getOntologyShortName() {
+        @Override
+		public String getOntologyShortName() {
             return shortName;
         }
 
 
-        public URI getOntologyURI() {
+        @Override
+		public URI getOntologyURI() {
             return ontologyURI;
         }
 
 
-        public URI getPhysicalURI() {
+        @Override
+		public URI getPhysicalURI() {
             return physicalURI;
         }
 
 
-        public String getMetaData(Object key) {
+        @Override
+		public String getMetaData(Object key) {
             return null;
         }
 

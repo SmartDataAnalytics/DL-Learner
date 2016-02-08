@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.tdt;
 
 import java.util.ArrayList;
@@ -5,14 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.Stack;
-import java.util.TreeSet;
 
-import org.apache.commons.collections.SetUtils;
-import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.decisiontrees.heuristics.TreeInductionHeuristics;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
-import org.dllearner.algorithms.decisiontrees.utils.Split;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -22,7 +36,6 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,10 +109,10 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	@ConfigOption(defaultValue = "0.05", name = "PURITY_THRESHOLD", description = "Purity threshold for setting a leaf")
 	protected  double puritythreshold;
 
-	//@ConfigOption(defaultValue = "4", name = "beam", description = "value for limiting the number of generated concepts")
+	//@ConfigOption(defaultValue = "4", name = "beam")
 	//protected int  beam;
 	
-	@ConfigOption(defaultValue = "false", name = "BINARYCLASSIFICATION", description = "value for limiting the number of generated concepts")
+	@ConfigOption(defaultValue = "false", name = "BINARYCLASSIFICATION", description = "if it is a binary classification problem")
 	protected boolean binaryClassification;
 	
 	@ConfigOption(defaultValue = "false", name = "ccp", description = "value for limiting the number of generated concepts")
@@ -118,10 +131,13 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	protected boolean missingValueTreatmentForTDT;
 	protected double prPos;
 	protected double prNeg;
+	@ConfigOption(description = "concept for splitting undefined examples into positive and negative for binary classification problems")
 	protected OWLClassExpression classToDescribe; //target concept
-	protected TreeInductionHeuristics heuristic; // heuristic 
+	@ConfigOption(description = "the heuristic instance to use", defaultValue = "TreeInductionHeuristics")
+	protected TreeInductionHeuristics heuristic; // heuristic
 	//protected LengthLimitedRefinementOperator operator ;// refinement operator
 
+	@ConfigOption(description = "the refinement operator instance to use", defaultValue = "DLTreesRefinementOperator")
 	protected RefinementOperator operator;
 
 
@@ -159,8 +175,8 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	@Override
 	public void init() throws ComponentInitException {
 		// TODO Auto-generated method stub
-		baseURI = reasoner.getBaseURI();	
-		prefixes = reasoner.getPrefixes();	
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
 
 		// if no one injected a heuristic, we use a default one
 		if(heuristic == null) {
@@ -175,11 +191,11 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		
 		if(operator == null) {
 	System.out.println("OPERATOR:"+operator==null);
-//			// default operator 
-	operator = new DLTreesRefinementOperator(); 
+//			// default operator
+	operator = new DLTreesRefinementOperator();
 	((DLTreesRefinementOperator)operator).setReasoner(reasoner);
 	((DLTreesRefinementOperator)operator).setBeam(10); // default value
-////			
+////
 ////			if(operator instanceof CustomStartRefinementOperator) {
 ////				((CustomStartRefinementOperator)operator).setStartClass(startClass);
 ////			}
@@ -189,8 +205,8 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
        	operator.init();
        	
 		//System.out.println(operator==null);
-//			
-//		
+//
+//
     }
 
 		//start to learn the new current concept description
@@ -226,7 +242,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 		//int length = testConcepts!=null?testConcepts.length:1;
 		//for (int c=0; c < length; c++) {
 			if (missingValueTreatmentForTDT){
-				ArrayList<Integer> list= new ArrayList<Integer>();
+				ArrayList<Integer> list= new ArrayList<>();
 				return  classifyExample(list,indTestEx, trees);
 
 			}
@@ -243,7 +259,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 	public int classifyExample(OWLIndividual indTestEx, DLTree tree) {
 
 
-		Stack<DLTree> stack= new Stack<DLTree>();
+		Stack<DLTree> stack= new Stack<>();
 		//OWLDataFactory dataFactory = kb.getDataFactory();
 		stack.add(tree);
 		int result=0;
@@ -270,7 +286,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 					stack.push(currentTree.getNegSubTree());
 				else {
 					stop=true;
-					result=0; 
+					result=0;
 
 				}
 
@@ -292,7 +308,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
 
 				}else if (reasoner.hasType(rootClass, indTestEx))
 					stack.push(currentTree.getPosSubTree());
-				else 
+				else
 					stack.push(currentTree.getNegSubTree()); // for those kb having no full complement
 
 			}
@@ -311,7 +327,7 @@ public abstract class AbstractTDTClassifier extends AbstractCELA {
  * @return
  */
 public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree tree) {
-	Stack<DLTree> stack= new Stack<DLTree>();
+	Stack<DLTree> stack= new Stack<>();
 	//OWLDataFactory dataFactory = kb.getDataFactory();
 	stack.add(tree);
 	int result=0;
@@ -338,12 +354,12 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 			stack.push(currentTree.getNegSubTree());
 		else {
 			//				stop=true;
-			result=0; 
+			result=0;
 			stack.push(currentTree.getPosSubTree());
 			stack.push(currentTree.getNegSubTree());
 
 		}
-	};
+	}
 
 	int posFr= Collections.frequency(list, +1);
 	int negFr= Collections.frequency(list, -1);
@@ -366,7 +382,7 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 	int bestConceptIndex = 0;
 
 	counts = getSplitCounts(concepts[0], posExs, negExs, undExs);
-	System.out.printf("%4s\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t ", 
+	System.out.printf("%4s\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t ",
 			"#"+0, counts[0], counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[7], counts[8]);
 
 	double bestGain = gain(counts, prPos, prNeg);
@@ -378,7 +394,7 @@ public int classifyExample(List<Integer> list, OWLIndividual indTestEx, DLTree t
 	for (int c=1; c<concepts.length; c++) {
 
 		counts = getSplitCounts(concepts[c], posExs, negExs, undExs);
-		System.out.printf("%4s\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t ", 
+		System.out.printf("%4s\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t ",
 				"#"+c, counts[0], counts[1], counts[2], counts[3], counts[4], counts[5], counts[6], counts[7], counts[8]);
 
 		double thisGain = gain(counts, prPos, prNeg);
@@ -417,16 +433,16 @@ public AbstractTDTClassifier() {
 	ArrayList<OWLIndividual> undExsU = new ArrayList<OWLIndividual>();
 
 	splitGroup(concept,posExs,posExsT,posExsF,posExsU);
-	splitGroup(concept,negExs,negExsT,negExsF,negExsU);	
-	splitGroup(concept,undExs,undExsT,undExsF,undExsU);	
+	splitGroup(concept,negExs,negExsT,negExsF,negExsU);
+	splitGroup(concept,undExs,undExsT,undExsF,undExsU);
 
-	counts[POSITIVE_INSTANCE_CHECK_TRUE] = posExsT.size(); 
-	counts[NEGATIVE_INSTANCE_CHECK_TRUE] = negExsT.size(); 
-	counts[UNCERTAIN_INSTANCE_CHECK_TRUE] = undExsT.size(); 
-	counts[POSITIVE_INSTANCE_CHECK_FALSE] = posExsF.size(); 
+	counts[POSITIVE_INSTANCE_CHECK_TRUE] = posExsT.size();
+	counts[NEGATIVE_INSTANCE_CHECK_TRUE] = negExsT.size();
+	counts[UNCERTAIN_INSTANCE_CHECK_TRUE] = undExsT.size();
+	counts[POSITIVE_INSTANCE_CHECK_FALSE] = posExsF.size();
 	counts[NEGATIVE_INSTANCE_CHECK_FALSE] = negExsF.size();
 	counts[UNCERTAIN_INSTANCE_CHECK_FALSE] = undExsF.size();
-	counts[POSITIVE_INSTANCE_CHECK_UNC] = posExsU.size(); 
+	counts[POSITIVE_INSTANCE_CHECK_UNC] = posExsU.size();
 	counts[NEGATIVE_INSTANCE_CHECK_UNC] = negExsU.size();
 	counts[UNCERTAIN_INSTANCE_CHECK_UNC] = undExsU.size();
 	//		for(int i=0; i<counts.length;i++)

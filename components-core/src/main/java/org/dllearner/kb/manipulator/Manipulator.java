@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class Manipulator {
 	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(Manipulator.class);
-	private List<Rule> rules = new ArrayList<Rule>();
+	private List<Rule> rules = new ArrayList<>();
 	
 	private Manipulator() {
 	}
@@ -134,7 +133,7 @@ public class Manipulator {
 	
 	public synchronized void addRule(Rule newRule){
 		rules.add(newRule);
-		List<Rule> l = new ArrayList<Rule>();
+		List<Rule> l = new ArrayList<>();
 		
 		for (Months month : Rule.MONTHS) {
 			for (Rule rule : rules) {

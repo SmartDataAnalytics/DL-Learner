@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.util.SortedSet;
@@ -37,7 +36,7 @@ public class TypeFilterRule extends Rule{
 	private String predicateFilter;
 	private String objectFilter;
 	private Nodes requiredNodeType;
-	public enum Nodes {CLASSNODE, INSTANCENODE, LITERALNODE};
+	public enum Nodes {CLASSNODE, INSTANCENODE, LITERALNODE}
 
 
 	public TypeFilterRule(Months month, String predicateFilter, String objectFilter, Nodes requiredNodeType) {
@@ -51,7 +50,7 @@ public class TypeFilterRule extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> keep = new TreeSet<>();
 		for (RDFNodeTuple tuple : tuples) {
 			//String a = tuple.a.toString();
 			//String b = tuple.b.toString();

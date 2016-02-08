@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.properties;
 
 import java.util.Set;
@@ -144,8 +143,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 			AxiomScore score = computeScore(popularity, cntB, cntAB);
 			
 			currentlyBestAxioms.add(
-					new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-							df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate), 
+					new EvaluatedAxiom<>(
+							df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate),
 							score));
 		}
 	}
@@ -210,8 +209,8 @@ public class DataPropertyDomainAxiomLearner extends DataPropertyAxiomLearner<OWL
 				double score = Heuristics.getFScore(recall, precision, beta);
 				
 				currentlyBestAxioms.add(
-						new EvaluatedAxiom<OWLDataPropertyDomainAxiom>(
-								df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate), 
+						new EvaluatedAxiom<>(
+								df.getOWLDataPropertyDomainAxiom(entityToDescribe, candidate),
 								new AxiomScore(score, useSampling)));
 				
 			}

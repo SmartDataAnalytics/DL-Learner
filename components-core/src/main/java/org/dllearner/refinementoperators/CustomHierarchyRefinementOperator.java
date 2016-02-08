@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2012, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -34,10 +34,10 @@ import org.dllearner.core.owl.ObjectPropertyHierarchy;
  */
 public interface CustomHierarchyRefinementOperator extends RefinementOperator {
 
-	public void setClassHierarchy(ClassHierarchy classHierarchy);
+	void setClassHierarchy(ClassHierarchy classHierarchy);
 	
-	public void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy);
+	void setObjectPropertyHierarchy(ObjectPropertyHierarchy objectPropertyHierarchy);
 	
-	public void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy);
+	void setDataPropertyHierarchy(DatatypePropertyHierarchy dataPropertyHierarchy);
 		
 }

@@ -20,7 +20,8 @@ import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -167,7 +168,7 @@ public class MouseDiabetesExp3CaI {
     private static void setUp() {
         logger.setLevel(Level.DEBUG);
 //        Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
-        ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+        StringRenderer.setRenderer(Rendering.DL_SYNTAX);
     }
 
     public static OWLOntology readDumpFiles() throws

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test.junit;
 
 import java.lang.reflect.Constructor;
@@ -84,7 +83,10 @@ public class PropertyAxiomLearningTest {
 	
 	private static final String NS = "http://dllearner.org/test/";
 	
-	PrefixManager pm = new DefaultPrefixManager(NS);
+	static PrefixManager pm = new DefaultPrefixManager();
+	static {
+		pm.setDefaultPrefix(NS);
+	}
 	OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	private OWLObjectProperty op1 = df.getOWLObjectProperty("op1", pm);
@@ -100,8 +102,7 @@ public class PropertyAxiomLearningTest {
 	
 	private OWLDataProperty disDataProperty = df.getOWLDataProperty(IRI.create( "http://dbpedia.org/ontology/height"));
 	private OWLDataProperty equivDataProperty = df.getOWLDataProperty(IRI.create( "http://dbpedia.org/ontology/height"));
-	
-	
+
 	@BeforeClass
 	public static void setUp() throws Exception {
 //		ks = new SparqlEndpointKS(SparqlEndpoint.getEndpointDBpedia());

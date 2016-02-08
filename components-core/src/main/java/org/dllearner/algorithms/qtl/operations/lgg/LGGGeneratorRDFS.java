@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
@@ -29,8 +28,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -48,14 +47,13 @@ import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
 import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.utilities.OwlApiJenaUtils;
 import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLProperty;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
-import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -71,13 +69,19 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import uk.ac.manchester.cs.owl.owlapi.OWLDataPropertyImpl;
+import uk.ac.manchester.cs.owl.owlapi.OWLObjectPropertyImpl;
+
 /**
- * 
+ * An LGG generator with RDFS entailment enabled.
  * @author Lorenz Bühmann
  *
  */
 public class LGGGeneratorRDFS extends AbstractLGGGenerator {
-	
+
+	/**
+	 * @param reasoner the underlying reasoner used for RDFS entailment
+	 */
 	public LGGGeneratorRDFS(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
 		this.entailment = Entailment.RDFS;
@@ -115,21 +119,45 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		// get edges of tree 2 connected via subsumption
 		Multimap<Node, Node> relatedEdges = getRelatedEdges(tree1, tree2);
 		for (Entry<Node, Collection<Node>> entry : relatedEdges.asMap().entrySet()){
-			Node edge1 = entry.getKey();
+			Node edge1 = entry.getKey();//System.out.println("e1:" + edge1);
 			Collection<Node> edges2 = entry.getValue();
 			
-			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
-		
-			
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
+
 			// loop over children of first tree
-			for(RDFResourceTree child1 : tree1.getChildren(edge1)){
+			for(RDFResourceTree child1 : tree1.getChildren(edge1)){//System.out.println("c1:" + child1);
 				// for all related edges of tree 2
-				for (Node edge2 : edges2) {
+				for (Node edge2 : edges2) {//System.out.println("e2:" + edge2);
 					// loop over children of second tree
-					for(RDFResourceTree child2 : tree2.getChildren(edge2)){
-						// compute the LGG
-						RDFResourceTree lggChild = computeLGG(child1, child2, learnFilters);
-						
+					for(RDFResourceTree child2 : tree2.getChildren(edge2)){//System.out.println("c2:" + child2);
+						RDFResourceTree lggChild;
+
+						// special case: rdf:type relation
+						if(edge1.equals(RDF.type.asNode())) {
+							if(QueryTreeUtils.isSubsumedBy(child1, child2, Entailment.RDFS)) {
+								lggChild = child2;
+							} else if(QueryTreeUtils.isSubsumedBy(child2, child1, Entailment.RDFS)) {
+								lggChild = child1;
+							} else {
+								lggChild = computeLGG(child1, child2, learnFilters);
+							}
+						} else {
+							// compute the LGG
+							lggChild = computeLGG(child1, child2, learnFilters);
+
+							Node moreGeneralEdge;
+							// get the more general edge
+							if (reasoner.isSubPropertyOf(
+									OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+									OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+								moreGeneralEdge = edge2;
+							} else {
+								moreGeneralEdge = edge1;
+							}
+//							System.out.println("e_gen:" + moreGeneralEdge);
+						}
+
 						// check if there was already a more specific child computed before
 						// and if so don't add the current one
 						boolean add = true;
@@ -146,12 +174,23 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 //								logger.trace("Removing child node: {} is subsumed by previously added child {}.",
 //										lggChild.getStringRepresentation(),
 //										addedChild.getStringRepresentation());
-								lgg.removeChild(addedChild, edge1);
+								lgg.removeChild(addedChild, lgg.getEdgeToChild(addedChild));
 								it.remove();
 							} 
 						}
 						if(add){
-							lgg.addChild(lggChild, edge1);
+							Node edge;
+							// get the more general edge
+							if (reasoner.isSubPropertyOf(
+									OwlApiJenaUtils.asOWLEntity(edge1, EntityType.OBJECT_PROPERTY),
+									OwlApiJenaUtils.asOWLEntity(edge2, EntityType.OBJECT_PROPERTY))) {
+
+								edge = edge2;
+							} else {
+								edge = edge1;
+							}
+
+							lgg.addChild(lggChild, edge);
 							addedChildren.add(lggChild);
 //							logger.trace("Adding child {}", lggChild.getStringRepresentation());
 						} 
@@ -174,10 +213,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 			if(tree2.getEdges().contains(edge1)) {
 				relatedEdges.put(edge1, edge1);
 			}
-			// check if it's not a built-in properties
-			if (!edge1.getNameSpace().equals(RDF.getURI()) 
-					&& !edge1.getNameSpace().equals(RDFS.getURI())
-					&& !edge1.getNameSpace().equals(OWL.getURI())) {
+
+			// check if it's a built-in property
+			boolean builtIn = edge1.getNameSpace().equals(RDF.getURI())
+					&& edge1.getNameSpace().equals(RDFS.getURI())
+					&& edge1.getNameSpace().equals(OWL.getURI());
+
+			if (!builtIn) {
 				
 				// get related edges by subsumption
 				OWLProperty prop;
@@ -205,13 +247,13 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QueryExecutionFactory qef = SparqlServiceBuilder
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
-				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
@@ -230,7 +272,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 				new NamespaceDropStatementFilter(Sets.newHashSet("http://dbpedia.org/property/",
 						"http://purl.org/dc/terms/", "http://dbpedia.org/class/yago/",
 						"http://www.w3.org/2003/01/geo/wgs84_pos#", "http://www.georss.org/georss/", FOAF.getURI())));
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig",
 				"http://dbpedia.org/resource/Dresden");
 		for (String resource : resources) {

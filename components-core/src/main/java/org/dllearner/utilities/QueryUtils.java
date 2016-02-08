@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities;
 
 import java.util.ArrayList;
@@ -58,9 +76,9 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	private int optionalCount = 0;
 	private int filterCount = 0;
 	
-	private Map<Triple, ElementGroup> triple2Parent = new HashMap<Triple, ElementGroup>();
+	private Map<Triple, ElementGroup> triple2Parent = new HashMap<>();
 	
-	Stack<ElementGroup> parents = new Stack<ElementGroup>();
+	Stack<ElementGroup> parents = new Stack<>();
 	
 	public static String addPrefix(String queryString, Map<String, String> prefix2Namespace){
 		Query query = QueryFactory.create(queryString);
@@ -80,11 +98,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -103,11 +121,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getSubjectVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -122,11 +140,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public static Set<Var> getSubjectVars(Query query){
-		final Set<Var> vars = new HashSet<Var>();
+		final Set<Var> vars = new HashSet<>();
 		
 		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
 			@Override
@@ -186,7 +204,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Given a SPARQL query and a start node, return the outgoing
 	 * triple patterns.
-	 * @param query
+	 * @param query the query
+	 * @param source the start node
 	 * @return
 	 */
 	public static Set<Triple> getOutgoingTriplePatterns(Query query, final Node source){
@@ -227,7 +246,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Given a SPARQL query and a start node, return the maximum subject-object
 	 * join depth.
-	 * @param query
+	 * @param query the query
+	 * @param source the start node
 	 * @return
 	 */
 	public static int getSubjectObjectJoinDepth(Query query, final Node source){
@@ -272,11 +292,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as object in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public static Set<Var> getObjectVars(Query query){
-		final Set<Var> vars = new HashSet<Var>();
+		final Set<Var> vars = new HashSet<>();
 		
 		ElementWalker.walk(query.getQueryPattern(), new ElementVisitorBase(){
 			@Override
@@ -307,11 +327,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns all variables that occur as subject in a triple pattern of the SPARQL query.
-	 * @param query
+	 * @param query the query
 	 * @return
 	 */
 	public Set<Var> getObjectVariables(Query query){
-		Set<Var> vars = new HashSet<Var>();
+		Set<Var> vars = new HashSet<>();
 		
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
@@ -328,7 +348,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in subject position, i.e. the outgoing
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractOutgoingTriplePatterns(Query query, Node node){
@@ -347,7 +367,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the incoming
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractIncomingTriplePatterns(Query query, Node node){
@@ -366,7 +386,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node in object position, i.e. the ingoing
 	 * triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractIngoingTriplePatterns(Query query, Node node){
@@ -385,11 +405,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the ingoing and outgoing triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<Triple>();
+		Set<Triple> triplePatterns = new HashSet<>();
 		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		return triplePatterns;
@@ -409,7 +429,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		// filter by predicate
 		Iterator<Triple> iterator = triplePatterns.iterator();
 		while (iterator.hasNext()) {
-			Triple tp = (Triple) iterator.next();
+			Triple tp = iterator.next();
 			if(!tp.predicateMatches(predicate)) {
 				iterator.remove();
 			}
@@ -422,11 +442,11 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Returns all triple patterns in given SPARQL query that have the given node either in subject or in object position, i.e. 
 	 * the incoming and outgoing triple patterns.
 	 * @param query The SPARQL query.
-	 * @param node
+	 * @param node the node
 	 * @return
 	 */
 	public Set<Triple> extractNonOptionalTriplePatterns(Query query, Node node){
-		Set<Triple> triplePatterns = new HashSet<Triple>();
+		Set<Triple> triplePatterns = new HashSet<>();
 		triplePatterns.addAll(extractIngoingTriplePatterns(query, node));
 		triplePatterns.addAll(extractOutgoingTriplePatterns(query, node));
 		triplePatterns.removeAll(optionalTriplePattern);
@@ -436,13 +456,12 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is either in subject or object position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
@@ -453,13 +472,12 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in subject position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractOutgoingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractOutgoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -476,13 +494,12 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in subject position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIncomingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIncomingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -492,13 +509,12 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	/**
 	 * Returns triple patterns for each projection variable v such that v is in object position.
 	 * @param query The SPARQL query.
-	 * @param node
 	 * @return
 	 */
 	public Map<Var,Set<Triple>> extractIngoingTriplePatternsForProjectionVars(Query query){
-		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<Var,Set<Triple>>();
+		Map<Var,Set<Triple>> var2TriplePatterns = new HashMap<>();
 		for (Var var : query.getProjectVars()) {
-			Set<Triple> triplePatterns = new HashSet<Triple>();
+			Set<Triple> triplePatterns = new HashSet<>();
 			triplePatterns.addAll(extractIngoingTriplePatterns(query, var));
 			var2TriplePatterns.put(var, triplePatterns);
 		}
@@ -510,8 +526,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	public Set<Triple> extractTriplePattern(Query query, boolean ignoreOptionals){
-		triplePattern = new HashSet<Triple>();
-		optionalTriplePattern = new HashSet<Triple>();
+		triplePattern = new HashSet<>();
+		optionalTriplePattern = new HashSet<>();
 		
 		query.getQueryPattern().visit(this);
 		
@@ -519,7 +535,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		if(!ignoreOptionals){
 			if(query.isSelectType()){
 				for(Triple t : optionalTriplePattern){
-					if(!ListUtils.intersection(new ArrayList<Var>(VarUtils.getVars(t)), query.getProjectVars()).isEmpty()){
+					if(!ListUtils.intersection(new ArrayList<>(VarUtils.getVars(t)), query.getProjectVars()).isEmpty()){
 						triplePattern.add(t);
 					}
 				}
@@ -537,8 +553,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	public Set<Triple> extractTriplePattern(ElementGroup group, boolean ignoreOptionals){
-		triplePattern = new HashSet<Triple>();
-		optionalTriplePattern = new HashSet<Triple>();
+		triplePattern = new HashSet<>();
+		optionalTriplePattern = new HashSet<>();
 		
 		group.visit(this);
 		
@@ -587,8 +603,8 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * Removes triple patterns of form (s rdf:type A) if there exists a
 	 * triple pattern (s rdf:type B) such that the underlying
 	 * knowledge base entails (B rdfs:subClassOf A).
-	 * @param qef
-	 * @param query
+	 * @param qef the query execution factory
+	 * @param query the query
 	 */
 	public void filterOutGeneralTypes(QueryExecutionFactory qef, Query query){
 		// extract all rdf:type triple patterns
@@ -603,7 +619,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 		// keep the most specific types for each subject
 		for (Node subject : subject2TriplePatterns.keySet()) {
 			Collection<Triple> triplePatterns = subject2TriplePatterns.get(subject);
-			Collection<Triple> triplesPatterns2Remove = new HashSet<Triple>();
+			Collection<Triple> triplesPatterns2Remove = new HashSet<>();
 			
 			for (Triple tp : triplePatterns) {
 				if(!triplesPatterns2Remove.contains(tp)) {
@@ -625,7 +641,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	}
 	
 	private Set<Node> getSuperClasses(QueryExecutionFactory qef, Node cls){
-		Set<Node> superClasses = new HashSet<Node>();
+		Set<Node> superClasses = new HashSet<>();
 		
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
@@ -649,8 +665,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	@Override
 	public void visit(ElementGroup el) {
 		parents.push(el);
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 		parents.pop();
@@ -705,8 +720,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	@Override
 	public void visit(ElementUnion el) {
 		unionCount++;
-		for (Iterator<Element> iterator = el.getElements().iterator(); iterator.hasNext();) {
-			Element e = iterator.next();
+		for (Element e : el.getElements()) {
 			e.visit(this);
 		}
 	}
@@ -730,7 +744,7 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	
 	/**
 	 * Returns the ElementGroup object containing the triple pattern.
-	 * @param triple
+	 * @param triple the triple patterm
 	 * @return
 	 */
 	public ElementGroup getElementGroup(Triple triple){

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,24 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
@@ -43,29 +32,16 @@ import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
 import org.dllearner.utilities.owl.OWLVocabulary;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.vocab.OWL2Datatype;
+import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Abstract component representing a reasoner. Only a few reasoning operations
@@ -101,6 +77,8 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public static Logger logger = LoggerFactory.getLogger(AbstractReasonerComponent.class);
 	
 	private static final NumberFormat numberFormat = NumberFormat.getInstance();
+	@ConfigOption(description = "whether to use single instance checks", defaultValue = "false")
+	protected boolean useInstanceChecks = false;
 
 	// statistical data for particular reasoning operations
 	private long instanceCheckReasoningTimeNs = 0;
@@ -132,19 +110,23 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected ClassHierarchy subsumptionHierarchy = null;
 	protected ObjectPropertyHierarchy roleHierarchy = null;
 	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
-	
+
+	@ConfigOption(description = "if class hierarchy should be precomputed", defaultValue = "true")
 	protected boolean precomputeClassHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeObjectPropertyHierarchy = true;
+	@ConfigOption(defaultValue = "true")
 	protected boolean precomputeDataPropertyHierarchy = true;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 	
 	protected Multimap<OWLDatatype, OWLDataProperty> datatype2Properties = HashMultimap.create();
-	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<OWLDataProperty, OWLDatatype>();
+	protected Map<OWLDataProperty, OWLDatatype> dataproperty2datatype = new HashMap<>();
 
 	/**
 	 * The underlying knowledge sources.
 	 */
+	@ConfigOption(description = "the underlying knowledge sources", required = true)
 	protected Set<KnowledgeSource> sources;
 
 
@@ -181,7 +163,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
     
 	@Autowired
     public void setSources(KnowledgeSource... sources) {
-    	this.sources = new HashSet<KnowledgeSource>(Arrays.asList(sources));
+    	this.sources = new HashSet<>(Arrays.asList(sources));
     }
 
 	/**
@@ -385,7 +367,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected Set<OWLClassExpression> isSuperClassOfImpl(Set<OWLClassExpression> superConcepts,
 			OWLClassExpression subConcept) throws ReasoningMethodUnsupportedException {
-		Set<OWLClassExpression> returnSet = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> returnSet = new HashSet<>();
 		for (OWLClassExpression superConcept : superConcepts) {
 			if (isSuperClassOf(superConcept, subConcept))
 				returnSet.add(superConcept);
@@ -506,7 +488,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals)
 			throws ReasoningMethodUnsupportedException {
-		SortedSet<OWLIndividual> returnSet = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 		for (OWLIndividual individual : individuals) {
 			if (hasType(concept, individual))
 				returnSet.add(individual);
@@ -696,10 +678,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Map<OWLIndividual, SortedSet<Double>> getDoubleDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<Double>> ret = new TreeMap<OWLIndividual, SortedSet<Double>>();
+		Map<OWLIndividual, SortedSet<Double>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<Double> valuesDouble = new TreeSet<Double>();
+			SortedSet<Double> valuesDouble = new TreeSet<>();
 			for (OWLLiteral lit : values) {
 				if(OWLAPIUtils.floatDatatypes.contains(lit.getDatatype())){
 					valuesDouble.add(Double.parseDouble(lit.getLiteral()));
@@ -724,10 +706,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected <T extends Number> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty, Class<T> clazz) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<T> numericValues = new TreeSet<T>();
+			SortedSet<T> numericValues = new TreeSet<>();
 			for (OWLLiteral lit : values) {
 				try {
 					numericValues.add((T) numberFormat.parse(lit.getLiteral()));
@@ -754,11 +736,11 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected <T extends Number & Comparable<T>> Map<OWLIndividual, SortedSet<T>> getNumericDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<OWLIndividual, SortedSet<T>>();
+		Map<OWLIndividual, SortedSet<T>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> entry : mapping.entrySet()) {
 			OWLIndividual ind = entry.getKey();
 			SortedSet<OWLLiteral> values = entry.getValue();
-			SortedSet<T> numericValues = new TreeSet<T>();
+			SortedSet<T> numericValues = new TreeSet<>();
 			for (OWLLiteral lit : values) {
 				if(OWLAPIUtils.isIntegerDatatype(lit)) {
 					numericValues.add((T) Integer.valueOf(lit.parseInteger()));
@@ -800,10 +782,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Map<OWLIndividual, SortedSet<Integer>> getIntDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<Integer>> ret = new TreeMap<OWLIndividual, SortedSet<Integer>>();
+		Map<OWLIndividual, SortedSet<Integer>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<Integer> valuesInt = new TreeSet<Integer>();
+			SortedSet<Integer> valuesInt = new TreeSet<>();
 			for (OWLLiteral lit : values) {
 				if(OWLAPIUtils.isIntegerDatatype(lit)){
 					valuesInt.add(lit.parseInteger());
@@ -828,10 +810,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Map<OWLIndividual, SortedSet<Boolean>> getBooleanDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<Boolean>> ret = new TreeMap<OWLIndividual, SortedSet<Boolean>>();
+		Map<OWLIndividual, SortedSet<Boolean>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<Boolean> valuesBoolean = new TreeSet<Boolean>();
+			SortedSet<Boolean> valuesBoolean = new TreeSet<>();
 			for (OWLLiteral c : values) {
 				String s = c.getLiteral();
 				if (s.equalsIgnoreCase("true")) {
@@ -861,7 +843,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected SortedSet<OWLIndividual> getTrueDatatypeMembersImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
 			if (values.size() > 1) {
@@ -889,7 +871,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected SortedSet<OWLIndividual> getFalseDatatypeMembersImpl(OWLDataProperty datatypeProperty)
 			throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		SortedSet<OWLIndividual> ret = new TreeSet<OWLIndividual>();
+		SortedSet<OWLIndividual> ret = new TreeSet<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
 			if (values.size() > 1) {
@@ -918,10 +900,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	protected Map<OWLIndividual, SortedSet<String>> getStringDatatypeMembersImpl(
 			OWLDataProperty datatypeProperty) throws ReasoningMethodUnsupportedException {
 		Map<OWLIndividual, SortedSet<OWLLiteral>> mapping = getDatatypeMembersImpl(datatypeProperty);
-		Map<OWLIndividual, SortedSet<String>> ret = new TreeMap<OWLIndividual, SortedSet<String>>();
+		Map<OWLIndividual, SortedSet<String>> ret = new TreeMap<>();
 		for (Entry<OWLIndividual, SortedSet<OWLLiteral>> e : mapping.entrySet()) {
 			SortedSet<OWLLiteral> values = e.getValue();
-			SortedSet<String> valuesString = new TreeSet<String>();
+			SortedSet<String> valuesString = new TreeSet<>();
 			for (OWLLiteral c : values) {
 				valuesString.add(c.getLiteral());				
 			}
@@ -1281,10 +1263,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * create the hierarchy is not supported by the underlying reasoner.
 	 */
 	public ClassHierarchy prepareSubsumptionHierarchy() throws ReasoningMethodUnsupportedException {
-		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-				);
-		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>>(
-				);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyUp = new TreeMap<>(
+		);
+		TreeMap<OWLClassExpression, SortedSet<OWLClassExpression>> subsumptionHierarchyDown = new TreeMap<>(
+		);
 
 		// parents/children of top ...
 		SortedSet<OWLClassExpression> tmp = getSubClassesImpl(df.getOWLThing());
@@ -1342,10 +1324,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public ObjectPropertyHierarchy prepareObjectPropertyHierarchy()
 			throws ReasoningMethodUnsupportedException {
 		
-		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyUp = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
-				);
-		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyDown = new TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>>(
-				);
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyUp = new TreeMap<>(
+		);
+		TreeMap<OWLObjectProperty, SortedSet<OWLObjectProperty>> roleHierarchyDown = new TreeMap<>(
+		);
  
 		Set<OWLObjectProperty> atomicRoles = getObjectProperties();
 		for (OWLObjectProperty role : atomicRoles) {
@@ -1373,9 +1355,9 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	
 	public boolean isSubPropertyOf(OWLProperty subProperty, OWLProperty superProperty){
 		if(subProperty.isOWLObjectProperty() && superProperty.isOWLObjectProperty()){
-			return roleHierarchy.isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
+			return getObjectPropertyHierarchy().isSubpropertyOf((OWLObjectProperty)subProperty, (OWLObjectProperty)superProperty);
 		} else if(subProperty.isOWLDataProperty() && superProperty.isOWLDataProperty()){
-			return datatypePropertyHierarchy.isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
+			return getDatatypePropertyHierarchy().isSubpropertyOf((OWLDataProperty)subProperty, (OWLDataProperty)superProperty);
 		}
 		return false;
 	}
@@ -1392,10 +1374,10 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	public DatatypePropertyHierarchy prepareDatatypePropertyHierarchy()
 			throws ReasoningMethodUnsupportedException {
 	
-		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyUp = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
-				);
-		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyDown = new TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>>(
-				);
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyUp = new TreeMap<>(
+		);
+		TreeMap<OWLDataProperty, SortedSet<OWLDataProperty>> datatypePropertyHierarchyDown = new TreeMap<>(
+		);
  
 		Set<OWLDataProperty> datatypeProperties = getDatatypeProperties();
 		for (OWLDataProperty role : datatypeProperties) {
@@ -1422,26 +1404,17 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	public List<OWLClass> getAtomicConceptsList() {
 		if (atomicConceptsList == null)
-			atomicConceptsList = new LinkedList<OWLClass>(getClasses());
+			atomicConceptsList = new LinkedList<>(getClasses());
 		return atomicConceptsList;
 	}
 
 	public List<OWLClass> getAtomicConceptsList(boolean removeOWLThing) {
-		if (!removeOWLThing) {
-			return getAtomicConceptsList();
-		} else {
-			List<OWLClass> l = new LinkedList<OWLClass>();
-			for (OWLClass class1 : getAtomicConceptsList()) {
-				if (class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_NOTHING))) == 0
-						|| class1.compareTo(df.getOWLClass(IRI.create(OWLVocabulary.OWL_THING))) == 0) {
-					;// do nothing
-				} else {
-					l.add(class1);
-				}
-			}
-			return l;
+		List<OWLClass> classes = Lists.newArrayList(getAtomicConceptsList());
+		if (removeOWLThing) {
+			classes.remove(df.getOWLThing());
+			classes.remove(df.getOWLNothing());
 		}
-
+		return classes;
 	}
 	
 	public void setSubsumptionHierarchy(ClassHierarchy subsumptionHierarchy) {
@@ -1450,7 +1423,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 	public List<OWLObjectProperty> getAtomicRolesList() {
 		if (atomicRolesList == null)
-			atomicRolesList = new LinkedList<OWLObjectProperty>(getObjectProperties());
+			atomicRolesList = new LinkedList<>(getObjectProperties());
 		return atomicRolesList;
 	}
 
@@ -1630,8 +1603,23 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 	
 	/**
-	 * @param dp
-	 * @return
+	 * Returns the datatype of the data property, i.e. the range if it is a datatype.
+	 * @param dp the data property
+	 * @return the datatype of the data property
 	 */
 	public abstract OWLDatatype getDatatype(OWLDataProperty dp);
+	
+	/**
+	 * Enabled a synchronized mode such that all reasoner methods are supposed
+	 * to be thread safe.
+	 */
+	public abstract void setSynchronized();
+
+	public boolean isUseInstanceChecks() {
+		return useInstanceChecks;
+	}
+
+	public void setUseInstanceChecks(boolean useInstanceChecks) {
+		this.useInstanceChecks = useInstanceChecks;
+	}
 }

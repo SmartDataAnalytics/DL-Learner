@@ -1,68 +1,22 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.owl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLDataComplementOf;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataOneOf;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataRangeVisitor;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataUnionOf;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectInverseOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLPropertyExpression;
-import org.semanticweb.owlapi.model.OWLPropertyExpressionVisitor;
-import org.semanticweb.owlapi.model.PrefixManager;
-import org.semanticweb.owlapi.util.DefaultPrefixManager;
-import org.semanticweb.owlapi.vocab.OWLFacet;
-
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
@@ -71,16 +25,25 @@ import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.util.DefaultPrefixManager;
+import org.semanticweb.owlapi.vocab.OWLFacet;
+
+import javax.annotation.Nonnull;
+import java.util.*;
 
 public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVisitor, OWLPropertyExpressionVisitor, OWLDataRangeVisitor{
 	
 	private String sparql = "";
-	private Stack<String> variables = new Stack<String>();
+	private Stack<String> variables = new Stack<>();
 	
 	private Multimap<Integer, OWLEntity> properties = HashMultimap.create();
 	
 	private Map<Integer, Boolean> intersection;
-	private Set<? extends OWLEntity> variableEntities = new HashSet<OWLEntity>();
+	private Set<? extends OWLEntity> variableEntities = new HashSet<>();
 	
 	private VariablesMapping mapping;
 	private boolean ignoreGenericTypeStatements = true;
@@ -90,11 +53,11 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	
 	private String outerGroupBy;
 	
-	private Map<OWLClassExpression, Set<String>> groupingVars = new HashMap<OWLClassExpression, Set<String>>();
-	private Map<OWLClassExpression, Set<String>> havingConditions = new HashMap<OWLClassExpression, Set<String>>();
+	private Map<OWLClassExpression, Set<String>> groupingVars = new HashMap<>();
+	private Map<OWLClassExpression, Set<String>> havingConditions = new HashMap<>();
 	
-	Stack<String> parentVar = new Stack<String>();
-	Stack<OWLClassExpression> parent = new Stack<OWLClassExpression>();
+	Stack<String> parentVar = new Stack<>();
+	Stack<OWLClassExpression> parent = new Stack<>();
 	
 	public OWLClassExpressionToSPARQLConverter(VariablesMapping mapping) {
 		this.mapping = mapping;
@@ -208,7 +171,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		variables.clear();
 		properties.clear();
 		sparql = "";
-		intersection = new HashMap<Integer, Boolean>();
+		intersection = new HashMap<>();
 		mapping.reset();
 		cnt = 1;
 	}
@@ -293,16 +256,16 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 
 	@Override
-	public void visit(OWLObjectProperty property) {
-	}
+	public void visit(OWLObjectProperty property) {}
 
 	@Override
-	public void visit(OWLObjectInverseOf property) {
-	}
+	public void visit(OWLObjectInverseOf property) {}
 
 	@Override
-	public void visit(OWLDataProperty property) {
-	}
+	public void visit(OWLDataProperty property) {}
+
+	@Override
+	public void visit(@Nonnull OWLAnnotationProperty property) {}
 
 	@Override
 	public void visit(OWLClass ce) {
@@ -320,14 +283,14 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 		}
 		Collection<OWLEntity> props = properties.get(modalDepth());
 		if(props.size() > 1){
-			Collection<String> vars = new TreeSet<String>();
+			Collection<String> vars = new TreeSet<>();
 			for (OWLEntity p : props) {
 				if(mapping.containsKey(p)){
 					vars.add(mapping.get(p));
 				}
 			}
 			if(vars.size() == 2){
-				List<String> varList = new ArrayList<String>(vars);
+				List<String> varList = new ArrayList<>(vars);
 				sparql += "FILTER(" + varList.get(0) + "!=" + varList.get(1) + ")";
 			}
 		}
@@ -420,7 +383,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLObjectHasValue ce) {
 		OWLObjectPropertyExpression propertyExpression = ce.getProperty();
-		OWLNamedIndividual value = ce.getValue().asOWLNamedIndividual();
+		OWLNamedIndividual value = ce.getFiller().asOWLNamedIndividual();
 		if(propertyExpression.isAnonymous()){
 			//property expression is inverse of a property
 			sparql += triple(value.toStringID(), propertyExpression.getNamedProperty(), variables.peek());
@@ -578,7 +541,7 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	@Override
 	public void visit(OWLDataHasValue ce) {
 		OWLDataPropertyExpression propertyExpression = ce.getProperty();
-		OWLLiteral value = ce.getValue();
+		OWLLiteral value = ce.getFiller();
 		sparql += triple(variables.peek(), propertyExpression.asOWLDataProperty(), value);
 	}
 
@@ -672,12 +635,13 @@ public class OWLClassExpressionToSPARQLConverter implements OWLClassExpressionVi
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 		OWLDataFactory df = man.getOWLDataFactory();
-		PrefixManager pm = new DefaultPrefixManager("http://dbpedia.org/ontology/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://dbpedia.org/ontology/");
 		
 		OWLClass clsA = df.getOWLClass("A", pm);
 		OWLClass clsB = df.getOWLClass("B", pm);

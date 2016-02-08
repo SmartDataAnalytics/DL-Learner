@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.tdt.model;
 
 
@@ -123,7 +141,7 @@ public class DLTree extends AbstractTree {
 	}
 
 	/**
-	 * @param root the root to set
+	 * @param concept the root concept to set
 	 */
 	public void setRoot(OWLClassExpression concept) {
 		this.root = new DLNode(concept);
@@ -158,7 +176,7 @@ public class DLTree extends AbstractTree {
 //			return root.concept.toString() + " ["+root.pos.toString()+" "+root.neg.toString()+"]";
 		
 		String string="";
-		Stack<DLTree> stack= new Stack<DLTree>();
+		Stack<DLTree> stack= new Stack<>();
 		stack.push(this);
 		DLTree currenttree=null;
 		while(!stack.isEmpty()){
@@ -194,7 +212,7 @@ public class DLTree extends AbstractTree {
 
 	private double getNodes(){
 
-		ArrayList<DLNode> list = new ArrayList<DLNode>();
+		ArrayList<DLNode> list = new ArrayList<>();
 		double  num=0;
 		if(root!=null){
 			list.add(root);
@@ -230,9 +248,9 @@ public class DLTree extends AbstractTree {
 
 
 	public List<DLTree> getLeaves(){
-		ArrayList<DLTree> leaves= new ArrayList<DLTree>();
+		ArrayList<DLTree> leaves= new ArrayList<>();
 
-		ArrayList<DLTree> list = new ArrayList<DLTree>();
+		ArrayList<DLTree> list = new ArrayList<>();
 
 		if(root!=null){
 			list.add(this);
@@ -271,8 +289,8 @@ public class DLTree extends AbstractTree {
 		else{
 			//OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 			// tail recursive calls
-			associate(tree.getPosSubTree(),df,leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
-			associate(tree.getNegSubTree(),df, leaf, (OWLClassExpression)(df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept)),set);
+			associate(tree.getPosSubTree(),df,leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
+			associate(tree.getNegSubTree(),df, leaf, df.getOWLObjectIntersectionOf(currentConceptDescription, tree.root.concept),set);
 		}
 	
 	}
@@ -285,7 +303,7 @@ public class DLTree extends AbstractTree {
 	 */
 	public static OWLClassExpression deriveDefinition(DLTree tree, boolean conceptFromPositiveIstances){
 	
-    HashSet<OWLClassExpression> exp= new HashSet<OWLClassExpression>();
+    HashSet<OWLClassExpression> exp= new HashSet<>();
 
     OWLDataFactory dataFactory = new OWLDataFactoryImpl();
     if (conceptFromPositiveIstances)

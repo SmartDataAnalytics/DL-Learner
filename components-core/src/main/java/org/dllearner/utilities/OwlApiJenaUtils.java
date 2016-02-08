@@ -1,7 +1,40 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities;
+
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.vocab.Namespaces;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.IOException;
 import java.io.PipedInputStream;
@@ -9,40 +42,23 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Set;
 
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
-
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.impl.LiteralLabel;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.LiteralImpl;
-
 /**
  * @author Lorenz Buehmann
  *
  */
 public class OwlApiJenaUtils {
 	
-	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl(false, false);
+	private static OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
+	/**
+	 * Converts a JENA API model into an OWL API ontology.
+	 * @param model the JENA API model
+	 * @return the OWL API ontology
+	 */
 	public static OWLOntology getOWLOntology(final Model model) {
 		OWLOntology ontology;
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			new Thread(new Runnable() {
 				public void run() {
@@ -60,31 +76,22 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Could not convert JENA API model to OWL API ontology.", e);
 		}
 	}
-	
+
 	/**
-	 * Convert JENA API OWL statements into OWL API axioms.
-	 * @param axioms the JENA API statements
-	 * @return
+	 * Converts an OWL API ontology into a JENA API model.
+	 * @param ontology the OWL API ontology
+	 * @return the JENA API model
 	 */
-	public static Set<OWLAxiom> asOWLAxioms(List<Statement> statements) {
-		Model model = ModelFactory.createDefaultModel();
-		model.add(statements);
-		OWLOntology ontology = getOWLOntology(model);
-		return ontology.getAxioms();
-	}
-	
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleOntologyFormat(), os);
+						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
-					} catch (OWLOntologyStorageException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -95,7 +102,24 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Could not convert OWL API ontology to JENA API model.", e);
 		}
 	}
-	
+
+	/**
+	 * Convert statements from JENA API  into OWL API axioms.
+	 * @param statements the JENA API statements
+	 * @return the set of axioms
+	 */
+	public static Set<OWLAxiom> asOWLAxioms(List<Statement> statements) {
+		Model model = ModelFactory.createDefaultModel();
+		model.add(statements);
+		OWLOntology ontology = getOWLOntology(model);
+		return ontology.getAxioms();
+	}
+
+	/**
+	 * Converts a JENA API literal into an OWL API literal.
+	 * @param lit the JENA API literal
+	 * @return the OWL API literal
+	 */
 	public static OWLLiteral getOWLLiteral(Literal lit){
 		OWLLiteral literal = null;
 		if(lit.getDatatypeURI() != null){
@@ -110,15 +134,37 @@ public class OwlApiJenaUtils {
 		}
 		return literal;
 	}
-	
+
+	/**
+	 * Converts a JENA API literal into an OWL API literal.
+	 * @param lit the JENA API literal
+	 * @return the OWL API literal
+	 */
 	public static OWLLiteral getOWLLiteral(LiteralLabel lit){
 		return getOWLLiteral(new LiteralImpl(NodeFactory.createLiteral(lit), null));
 	}
+
+	/**
+	 * Converts an OWL API literal into a JENA API literal.
+	 * @param lit the OWL API literal
+	 * @return the JENA API literal
+	 */
+	public static LiteralLabel getLiteral(OWLLiteral lit){
+		OWLDatatype owlDatatype = lit.getDatatype();
+
+		RDFDatatype datatype;
+		if(Namespaces.XSD.inNamespace(owlDatatype.getIRI())){
+			datatype = new XSDDatatype(owlDatatype.getIRI().getRemainder().get());
+		} else {
+			datatype = new BaseDatatype(lit.getDatatype().toStringID());
+		}
+		return LiteralLabelFactory.create(lit.getLiteral(), lit.getLang(), datatype);
+	}
 	
 	/**
-	 * Convert OWL API OWL axioms into JENA API statements.
+	 * Convert OWL axioms from OWL API into JENA API statements.
 	 * @param axioms the OWL API axioms
-	 * @return
+	 * @return the JENA statements
 	 */
 	public static Set<Statement> asStatements(Set<OWLAxiom> axioms) {
 		try {
@@ -129,5 +175,23 @@ public class OwlApiJenaUtils {
 			throw new RuntimeException("Conversion of axioms failed.", e);
 		}
 	}
-
+	
+	/**
+	 * Convert an OWL API entity into a JENA API node.
+	 * @param entity the OWL API entity
+	 * @return the JENA API node
+	 */
+	public static Node asNode(OWLEntity entity) {
+		return NodeFactory.createURI(entity.toStringID());
+	}
+	
+	/**
+	 * Convert a JENA Node into an OWL entity of the given type.
+	 * @param node the JENA node
+	 * @param entityType the type of the OWL entity, e.g. class, property, etc.
+	 * @return the OWL entity
+	 */
+	public static <T extends OWLEntity> T asOWLEntity(Node node, EntityType<T> entityType) {
+		return dataFactory.getOWLEntity(entityType, IRI.create(node.getURI()));
+	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities;
 
 import java.io.File;
@@ -51,13 +50,13 @@ public class JamonMonitorLogger {
 	
 	public static List<Monitor> getMonitors(){
 		//MonitorFactory mf=(MonitorFactory)MonitorFactory.getFactory();
-		LinkedList<Monitor> l=new LinkedList<Monitor>();
+		LinkedList<Monitor> l= new LinkedList<>();
 		
 		@SuppressWarnings("unchecked")
 		Iterator<Monitor> it = MonitorFactory.getFactory().iterator();
 			//mf.iterator();
 		while (it.hasNext()) {
-			Monitor monitor = (Monitor) it.next();
+			Monitor monitor = it.next();
 			
 			l.add(monitor);
 		}
@@ -75,15 +74,15 @@ public class JamonMonitorLogger {
 	
 	public static String getStringForAllSortedByLabel() {
 		List<Monitor> l= getMonitors();
-		SortedSet<String> sset = new TreeSet<String>();
-		StringBuffer sbuf = new StringBuffer();
+		SortedSet<String> sset = new TreeSet<>();
+		StringBuilder sbuf = new StringBuilder();
 		for (int i = 0; i < l.size(); i++) {
 			Monitor monitor = l.get(i);
 			
 			sset.add(monitor.toString());
 		}
 		for (String onemon : sset) {
-			sbuf.append(onemon+"\n");
+			sbuf.append(onemon).append("\n");
 		}
 		return sbuf.toString();
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.net.URLEncoder;
@@ -36,9 +35,8 @@ public class AddAllStringsAsClasses extends Rule{
 
 
 	/**
-	 * @param month
+	 * @param month the month
 	 * @param resourceNamespace ns for the created uris
-	 * @param limit does not convert strings that are longer than a specific value, zero means convert all
 	 */
 	public AddAllStringsAsClasses(Months month, String resourceNamespace) { 
 		super(month);
@@ -54,7 +52,7 @@ public class AddAllStringsAsClasses extends Rule{
 	
 	@Override
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
-		SortedSet<RDFNodeTuple> keep = new TreeSet<RDFNodeTuple>();
+		SortedSet<RDFNodeTuple> keep = new TreeSet<>();
 		for (RDFNodeTuple tuple : tuples) {
 			//System.out.println(tuple);
 			//System.exit(0);

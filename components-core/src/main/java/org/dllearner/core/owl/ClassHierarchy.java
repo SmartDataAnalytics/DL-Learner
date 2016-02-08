@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.owl;
 
 import java.util.HashSet;
@@ -51,7 +50,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
     private static final OWLClass OWL_NOTHING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
     
-    private OWLDataFactory df = new OWLDataFactoryImpl(false, false);
+    private OWLDataFactory df = new OWLDataFactoryImpl();
     
 	/**
 	 * The arguments specify the superclasses and subclasses of each class. This
@@ -66,33 +65,45 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	}
 
 	/**
-	 * Returns the all super classes.
-	 * @param concept
-	 * @return
+	 * Returns the all superclasses for the given class.
+	 * @param concept the class
+	 * @return all superclasses
 	 */
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept) {
 		return getSuperClasses(concept, false);
 	}
-	
+
+	/**
+	 * Returns the all superclasses for the given class.
+	 * @param concept the class
+	 * @param direct whether to return only direct superclasses or not
+	 * @return all superclasses
+	 */
 	public SortedSet<OWLClassExpression> getSuperClasses(OWLClassExpression concept, boolean direct) {
 		if(concept.isOWLThing()) {
-			return new TreeSet<OWLClassExpression>();
+			return new TreeSet<>();
 		}
 		return getParents(concept, direct);
 	}
 
 	/**
 	 * Returns the all subclasses.
-	 * @param concept
-	 * @return
+	 * @param concept the class
+	 * @return all subclasses
 	 */
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept) {
 		return getSubClasses(concept, false);
 	}
-	
+
+	/**
+	 * Returns the all subclasses.
+	 * @param concept the class
+	 * @param direct whether to return only direct subclasses or not
+	 * @return all subclasses
+	 */
 	public SortedSet<OWLClassExpression> getSubClasses(OWLClassExpression concept, boolean direct) {
 		if(concept.isOWLNothing()) {
-			return new TreeSet<OWLClassExpression>();
+			return new TreeSet<>();
 		}
 		return getChildren(concept, direct);
 	}
@@ -119,7 +130,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	}
 	
 	public Set<OWLAxiom> toOWLAxioms(OWLClassExpression concept){
-		Set<OWLAxiom> axioms = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> axioms = new HashSet<>();
 		Set<OWLClassExpression> subConcepts = getChildren(concept);
 		if (subConcepts != null) {
 			for (OWLClassExpression sub : subConcepts){

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,16 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
+
+import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
+import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.List;
 import java.util.Set;
-
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 /**
  * Adapter for {@link RefinementOperator} interface.
@@ -60,4 +59,10 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 		throw new UnsupportedOperationException();
 	}
 
+
+	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
+		throw new UnsupportedOperationException();
+	}
+
+	public OWLClassExpressionLengthMetric getLengthMetric() { return null; }
 }

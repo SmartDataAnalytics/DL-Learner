@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,25 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.ocel;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentSkipListSet;
-
+import com.google.common.collect.Sets;
+import com.jamonapi.Monitor;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.learningproblems.AccMethodNoWeakness;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -43,19 +32,16 @@ import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.JamonMonitorLogger;
-import org.dllearner.utilities.owl.ConceptTransformation;
-import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
-import org.dllearner.utilities.owl.OWLAPIRenderers;
-import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-
+import org.dllearner.utilities.datastructures.SearchTreeNonWeak;
+import org.dllearner.utilities.datastructures.SearchTreeNonWeakPartialSet;
+import org.dllearner.utilities.owl.*;
+import org.semanticweb.owlapi.io.OWLObjectRenderer;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.jamonapi.Monitor;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Implements the 2nd version of the refinement operator based learning approach.
@@ -66,7 +52,7 @@ import com.jamonapi.Monitor;
 public class ROLearner2 {
 
 	private static Logger logger = Logger.getLogger(ROLearner2.class);
-//	private OCELConfigurator configurator;
+	private final OWLObjectRenderer renderer;
 
 	// basic setup: learning problem and reasoning service
 	private AbstractReasonerComponent rs;
@@ -118,8 +104,8 @@ public class ROLearner2 {
 	// if this variable is set to true, then the refinement operator
 	// is applied until all concept of equal length have been found
 	// e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage
-	// are potentially more method calls, but the advantage is that 
-	// the algorithm is better in locating relevant concept in the 
+	// are potentially more method calls, but the advantage is that
+	// the algorithm is better in locating relevant concept in the
 	// subsumption hierarchy (otherwise, if the most general concept
 	// is not promising, it may never get expanded)
 	private boolean forceRefinementLengthIncrease;
@@ -135,16 +121,13 @@ public class ROLearner2 {
 	private boolean stop = false;
 	private boolean isRunning = false;
 
-	// node from which algorithm has started
-	private ExampleBasedNode startNode;
-
 	// solution protocol
-	private List<ExampleBasedNode> solutions = new LinkedList<ExampleBasedNode>();
+	private List<ExampleBasedNode> solutions = new LinkedList<>();
 
 	// used refinement operator and heuristic (exchangeable)
 	private RhoDRDown operator;
 	// private RefinementOperator operator;
-	// private ExampleBasedHeuristic heuristic;
+	private ExampleBasedHeuristic heuristic;
 
 	// specifies whether to compute and log benchmark information
 	private boolean computeBenchmarkInformation = false;
@@ -152,12 +135,10 @@ public class ROLearner2 {
 	// comparator used to maintain a stable ordering of nodes, i.e.
 	// an ordering which does not change during the run of the algorithm
 	private NodeComparatorStable nodeComparatorStable = new NodeComparatorStable();
-	// stable candidate set; it has no functional part in the algorithm,
-	// but is a list of the currently best concepts found;
-	// it is very important to use a concurrent set here as other threads will
-	// access it (usual iterating is likely to throw a ConcurrentModificationException)
-	private NavigableSet<ExampleBasedNode> candidatesStable = new ConcurrentSkipListSet<ExampleBasedNode>(
-			nodeComparatorStable);
+	// node from which algorithm has started
+	private SearchTreeNonWeak<ExampleBasedNode> searchTreeStable;
+	private SearchTreeNonWeakPartialSet<ExampleBasedNode> searchTree;
+
 	// evaluated descriptions
 //	private EvaluatedDescriptionSet evaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
@@ -167,22 +148,15 @@ public class ROLearner2 {
 	// utility variables
 	private DecimalFormat df = new DecimalFormat();
 
-	// candidates for refinement (used for directly accessing
-	// nodes in the search tree)
-	private TreeSet<ExampleBasedNode> candidates;
-
-	// new nodes found during a run of the algorithm
-	private List<ExampleBasedNode> newCandidates = new LinkedList<ExampleBasedNode>();
-
 	// all concepts which have been evaluated as being proper refinements
-	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> properRefinements = new TreeSet<>();
 
 	// blacklists
-	private SortedSet<OWLClassExpression> tooWeakList = new TreeSet<OWLClassExpression>();
-	private SortedSet<OWLClassExpression> overlyGeneralList = new TreeSet<OWLClassExpression>();
+	private SortedSet<OWLClassExpression> tooWeakList = new TreeSet<>();
+	private SortedSet<OWLClassExpression> overlyGeneralList = new TreeSet<>();
 
 	// set of expanded nodes (TODO: better explanation)
-	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<ExampleBasedNode>(nodeComparatorStable);
+	TreeSet<ExampleBasedNode> expandedNodes = new TreeSet<>(nodeComparatorStable);
 
 	// statistic variables
 	private int maxRecDepth = 0;
@@ -222,6 +196,7 @@ public class ROLearner2 {
 	private int negationPenalty;
 	
 	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
+	private OWLClassExpressionLengthMetric lengthMetric;
 
 	public ROLearner2(
 //			OCELConfigurator configurator,
@@ -238,7 +213,8 @@ public class ROLearner2 {
 			int maxPosOnlyExpansion, int maxExecutionTimeInSeconds, int minExecutionTimeInSeconds,
 			int guaranteeXgoodDescriptions, int maxClassDescriptionTests, boolean forceRefinementLengthIncrease,
 			boolean terminateOnNoiseReached,
-			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
+			double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty,
+			OWLClassExpressionLengthMetric lengthMetric, OWLObjectRenderer renderer) {
 
 		
 			PosNegLP lp = (PosNegLP) learningProblem;
@@ -263,8 +239,7 @@ public class ROLearner2 {
 		this.rs = rs;
 		this.operator = (RhoDRDown) operator;
 		this.startDescription = startDescription;
-		// initialise candidate set with heuristic as ordering
-		candidates = new TreeSet<ExampleBasedNode>(heuristic);
+		this.heuristic = heuristic;
 		this.noise = noise;
 		this.writeSearchTree = writeSearchTree;
 		this.replaceSearchTree = replaceSearchTree;
@@ -280,7 +255,8 @@ public class ROLearner2 {
 		this.guaranteeXgoodDescriptions = guaranteeXgoodDescriptions;
 		this.maxClassDescriptionTests = maxClassDescriptionTests;
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
-
+		this.lengthMetric = lengthMetric;
+		this.renderer = renderer;
 		// logger.setLevel(Level.DEBUG);
 	}
 
@@ -290,13 +266,12 @@ public class ROLearner2 {
 		runtime = System.currentTimeMillis();
 		
 		// reset values (algorithms may be started several times)
-		candidates.clear();
-		candidatesStable.clear();
-		newCandidates.clear();
+		searchTree = new SearchTreeNonWeakPartialSet<>(heuristic);
+		searchTreeStable = new SearchTreeNonWeak<>(nodeComparatorStable);
 		solutions.clear();
 		maxExecutionTimeAlreadyReached = false;
 		minExecutionTimeAlreadyReached = false;
-		guaranteeXgoodAlreadyReached = false;		
+		guaranteeXgoodAlreadyReached = false;
 		propernessTestsReasoner = 0;
 		propernessTestsAvoidedByShortConceptConstruction = 0;
 		propernessTestsAvoidedByTooWeakList = 0;
@@ -372,23 +347,27 @@ public class ROLearner2 {
 		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
 
 		// start search with start class
+		ExampleBasedNode startNode;
 		if (startDescription == null) {
 			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
+			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 		} else {
 			startNode = new ExampleBasedNode(startDescription,  negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			Set<OWLIndividual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
 			Set<OWLIndividual> coveredPositives = rs.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
+			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 		}
 
-		candidates.add(startNode);
-		candidatesStable.add(startNode);
+		searchTree.addNode(null, startNode);
+		searchTreeStable.addNode(null, startNode);
 
+		ExampleBasedNode previousBestNode = startNode;
 		ExampleBasedNode bestNode = startNode;
 		ExampleBasedNode bestNodeStable = startNode;
 
-		logger.info("starting top down refinement with: " + OWLAPIRenderers.toManchesterOWLSyntax(startNode.getConcept()) + " (" + df.format(100*startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "% accuracy)");
+		logger.info("starting top down refinement with: " + renderer.render(startNode.getConcept()) + " (" + df.format(100*startNode.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "% accuracy)");
 		
 		int loop = 0;
 
@@ -397,8 +376,8 @@ public class ROLearner2 {
 		long lastTreeTraversalTime = System.nanoTime();
 		long lastReductionTime = System.nanoTime();
 		// try a traversal after x seconds
-		long traversalInterval = 300l * 1000000000l;
-		long reductionInterval = 300l * 1000000000l;
+		long traversalInterval = 300L * 1000000000L;
+		long reductionInterval = 300L * 1000000000L;
 		long currentTime;
 		
 		while (!isTerminationCriteriaReached()) {
@@ -406,7 +385,7 @@ public class ROLearner2 {
 
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
-			if (currentTime - lastPrintTime > 3000000000l) {
+			if (currentTime - lastPrintTime > 3000000000L) {
 				printStatistics(false);
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");
@@ -427,37 +406,29 @@ public class ROLearner2 {
 				// Logger.getRootLogger().setLevel(Level.TRACE);
 			}
 
-			// System.out.println("next expanded: " +
-			// candidates.last().getShortDescription(nrOfPositiveExamples,
-			// nrOfNegativeExamples, baseURI));
-
 			// we record when a more accurate node is found and log it
-			if (bestNodeStable.getCovPosMinusCovNeg() < candidatesStable.last()
+			if (bestNodeStable.getCovPosMinusCovNeg() < searchTreeStable.best()
 					.getCovPosMinusCovNeg()) {
-				String acc = new DecimalFormat( ".00%" ).format((candidatesStable.last().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
+				String acc = new DecimalFormat( ".00%" ).format((searchTreeStable.best().getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)));
 				// no handling needed, it will just look ugly in the output
-				logger.info("more accurate ("+acc+") class expression found: " + OWLAPIRenderers.toManchesterOWLSyntax(candidatesStable.last().getConcept()));
+				logger.info("more accurate ("+acc+") class expression found: " + renderer.render(searchTreeStable.best().getConcept()));
 				if(logger.isTraceEnabled()){
-					logger.trace(Helper.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
-					logger.trace(Helper.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
+					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
+					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
 				}
 				printBestSolutions(5, false);
 				printStatistics(false);
-				bestNodeStable = candidatesStable.last();
+				bestNodeStable = searchTreeStable.best();
 			}
 
 			// chose best node according to heuristics
-			bestNode = candidates.last();
-			// extend best node
-			newCandidates.clear();
+			bestNode = searchTree.best();
 			// best node is removed temporarily, because extending it can
 			// change its evaluation
-			candidates.remove(bestNode);
+			searchTree.updatePrepare(bestNode);
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
-			candidates.add(bestNode);
-			// newCandidates has been filled during node expansion
-			candidates.addAll(newCandidates);
-			candidatesStable.addAll(newCandidates);
+			searchTree.updateDone(bestNode);
+			previousBestNode = bestNode;
 
 			// System.out.println("done");
 
@@ -496,8 +467,8 @@ public class ROLearner2 {
 			int show = 1;
 			String manchester = "MANCHESTER:\n";
 			for (ExampleBasedNode c : solutions) {
-				logger.info(show + ": " + OWLAPIRenderers.toManchesterOWLSyntax(c.getConcept()) 
-						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length " 
+				logger.info(show + ": " + renderer.render(c.getConcept())
+						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length "
 						+ OWLClassExpressionUtils.getLength(c.getConcept())
 						+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept()) + ")");
 //				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
@@ -511,7 +482,7 @@ public class ROLearner2 {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
 
-		logger.debug("size of candidate set: " + candidates.size());
+		logger.debug("size of candidate set: " + searchTree.size());
 		boolean showOrderedSolutions = false;
 		printBestSolutions(20, showOrderedSolutions);
 
@@ -523,7 +494,7 @@ public class ROLearner2 {
 		} else {
 			logger.info("Algorithm terminated successfully ("+conceptTests+" descriptions tested).\n");
             logger.info(rs.toString());
-		}		
+		}
 
 		totalLearningTime.stop();
 		isRunning = false;
@@ -576,66 +547,44 @@ public class ROLearner2 {
 		if (refinements.size() > maxNrOfRefinements)
 			maxNrOfRefinements = refinements.size();
 
+		// remove all refinements that are already children of the node
 		long childConceptsDeletionTimeNsStart = System.nanoTime();
-		// entferne aus den refinements alle Konzepte, die bereits Kinder des
-		// Knotens sind
-		// for(Node n : node.getChildren()) {
-		// refinements.remove(n.getConcept());
-		// }
-
-		// das ist viel schneller, allerdings bekommt man ein anderes candidate
-		// set(??)
 		refinements.removeAll(node.getChildConcepts());
-
 		childConceptsDeletionTimeNs += System.nanoTime() - childConceptsDeletionTimeNsStart;
 
-		// if(refinements.size()<30) {
-		// // System.out.println("refinements: " + refinements);
-		// for(OWLClassExpression refinement: refinements)
-		// System.out.println("refinement: " + refinement);
-		// }
-
+		// evaluate all concepts whose length is bigger than the horizontal expansion of the node
 		long evaluateSetCreationTimeNsStart = System.nanoTime();
-
-		// alle Konzepte, die länger als horizontal expansion sind, müssen
-		// ausgewertet
-		// werden
-		TreeSet<OWLClassExpression> toEvaluateConcepts = new TreeSet<OWLClassExpression>();
+		Set<OWLClassExpression> toEvaluateConcepts = new TreeSet<>();
 		Iterator<OWLClassExpression> it = refinements.iterator();
-		// for(Concept refinement : refinements) {
+		
 		while (it.hasNext()) {
 
 			OWLClassExpression refinement = it.next();
-			if (OWLClassExpressionUtils.getLength(refinement) > node.getHorizontalExpansion()) {
-				// sagt aus, ob festgestellt wurde, ob refinement proper ist
-				// (sagt nicht aus, dass das refinement proper ist!)
-				boolean propernessDetected = false;
+			if (OWLClassExpressionUtils.getLength(refinement, lengthMetric) > node.getHorizontalExpansion()) {
+				// TRUE means that improperness was detected, but FALSE does not mean that the refinement is proper
+				boolean impropernessDetected = false;
 
 				// 1. short concept construction
 				if (useShortConceptConstruction) {
-					// kurzes Konzept konstruieren
 					OWLClassExpression shortConcept = ConceptTransformation.getShortConcept(refinement);
+					// compare with original concept
 					int n = shortConcept.compareTo(concept);
 					
-					// Konzepte sind gleich also Refinement improper
+					// concepts are equal, i.e. refinement is improper
 					if (n == 0) {
 						propernessTestsAvoidedByShortConceptConstruction++;
-						propernessDetected = true;
-
-//						 System.out.println("refinement " + refinement + 
-//								 " can be shortened");
-//						 System.exit(0);
+						impropernessDetected = true;
 					}
 				}
 				
 				// 2. too weak test
-				if (!propernessDetected && useTooWeakList) {
+				if (!impropernessDetected && useTooWeakList) {
 					if (refinement instanceof OWLObjectIntersectionOf) {
 						boolean tooWeakElement = containsTooWeakElement((OWLObjectIntersectionOf) refinement);
 						if (tooWeakElement) {
 							propernessTestsAvoidedByTooWeakList++;
 							conceptTestsTooWeakList++;
-							propernessDetected = true;
+							impropernessDetected = true;
 							// tooWeakList.add(refinement);
 
 							// Knoten wird direkt erzeugt (es ist buganfällig
@@ -647,10 +596,9 @@ public class ROLearner2 {
 							tooWeakList.add(refinement);
 
 							ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement) - 1);
+							newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
 							newNode.setTooWeak(true);
-							newNode
-									.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
+							newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.TOO_WEAK_LIST);
 							node.addChild(newNode);
 
 							// Refinement muss gelöscht werden, da es proper ist
@@ -660,16 +608,8 @@ public class ROLearner2 {
 				}
 
 				// properness konnte nicht vorher ermittelt werden
-				if (!propernessDetected) {
+				if (!impropernessDetected) {
 					toEvaluateConcepts.add(refinement);
-					// if(!res) {
-					// System.out.println("already in: " + refinement);
-					// Comparator comp = toEvaluateConcepts.comparator();
-					// for(OWLClassExpression d : toEvaluateConcepts) {
-					// if(comp.compare(d,refinement)==0)
-					// System.out.println("see: " + d);
-					// }
-					// }
 				}
 
 			}
@@ -721,7 +661,7 @@ public class ROLearner2 {
 		// System.out.println("refinements: " + refinements);
 		// else
 		// System.out.println("refinements: more than 10");
-		//		
+		//
 		// System.out.println("improper concepts: " + improperConcepts);
 
 		for (OWLClassExpression refinement : properConcepts) {
@@ -740,7 +680,7 @@ public class ROLearner2 {
 				ExampleBasedNode newNode = new ExampleBasedNode(refinement, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 				// die -1 ist wichtig, da sonst keine gleich langen Refinements
 				// für den neuen Knoten erlaubt wären z.B. person => male
-				newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement) - 1);
+				newNode.setHorizontalExpansion(OWLClassExpressionUtils.getLength(refinement, lengthMetric) - 1);
 
 				boolean qualityKnown = false;
 				int quality = -2;
@@ -755,6 +695,7 @@ public class ROLearner2 {
 						newNode
 								.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
 						newNode.setCoveredExamples(positiveExamples, negativeExamples);
+						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 					}
 
 				}
@@ -769,7 +710,7 @@ public class ROLearner2 {
 					// determine individuals which have not been covered yet
 					// (more efficient than full retrieval)
 					Set<OWLIndividual> coveredPositives = node.getCoveredPositives();
-					Set<OWLIndividual> newlyCoveredPositives = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> newlyCoveredPositives = new HashSet<>();
 
 					// calculate how many pos. examples are not covered by the
 					// parent node of the refinement
@@ -802,7 +743,7 @@ public class ROLearner2 {
 					Set<OWLIndividual> newlyCoveredNegatives = null;
 					if (quality != -1) {
 						Set<OWLIndividual> coveredNegatives = node.getCoveredNegatives();
-						newlyCoveredNegatives = new HashSet<OWLIndividual>();
+						newlyCoveredNegatives = new HashSet<>();
 
 						for (OWLIndividual i : coveredNegatives) {
 							boolean covered = rs.hasType(refinement, i);
@@ -814,12 +755,20 @@ public class ROLearner2 {
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode
 							.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
+					if (quality != -1 && !(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
+							learningProblem.getAccuracyMethod().getAccOrTooWeak2(
+							newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),
+							newlyCoveredNegatives.size(), nrOfNegativeExamples - newlyCoveredNegatives.size(),
+							1) == -1)
+						quality = -1;
+
 					if (quality != -1) {
 						// quality is the number of misclassifications (if it is
 						// not too weak)
 						quality = (nrOfPositiveExamples - newlyCoveredPositives.size())
 								+ newlyCoveredNegatives.size();
 						newNode.setCoveredExamples(newlyCoveredPositives, newlyCoveredNegatives);
+						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
 					}
 
 				}
@@ -833,8 +782,6 @@ public class ROLearner2 {
 					if (quality >= 0 && quality <= allowedMisclassifications) {
 						solutions.add(newNode);
 					}
-
-					newCandidates.add(newNode);
 
 					// we need to make sure that all positives are covered
 					// before adding something to the overly general list
@@ -850,11 +797,11 @@ public class ROLearner2 {
 				// it is often useful to continue expanding until a longer node is
 				// reached (to replace atomic concepts with more specific ones)
 				if(forceRefinementLengthIncrease && !newNode.isTooWeak()) {
-					// extend node again if its concept has the same length 
-					if(OWLClassExpressionUtils.getLength(node.getConcept()) == OWLClassExpressionUtils.getLength(newNode.getConcept())) {
+					// extend node again if its concept has the same length
+					if(OWLClassExpressionUtils.getLength(node.getConcept(), lengthMetric) == OWLClassExpressionUtils.getLength(newNode.getConcept(), lengthMetric)) {
 						extendNodeProper(newNode, refinement, maxLength, recDepth + 1);
 					}
-				}				
+				}
 				
 			}
 		}
@@ -911,7 +858,7 @@ public class ROLearner2 {
 
 		if (!finalStats) {
 
-			ExampleBasedNode bestNode = candidatesStable.last();
+			ExampleBasedNode bestNode = searchTreeStable.best();
 			// double accuracy = 100 * ((bestNode.getCoveredPositives().size()
 			// + nrOfNegativeExamples -
 			// bestNode.getCoveredNegatives().size())/(double)nrOfExamples);
@@ -919,7 +866,7 @@ public class ROLearner2 {
 			// String bestNodeString = "currently best node: " + bestNode + "
 			// accuracy: " + df.format(accuracy) + "%";
 			logger.debug("start node: "
-					+ startNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
+					+ searchTreeStable.getRoot().getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
 							baseURI, prefixes));
 			String bestNodeString = "currently best node: "
 					+ bestNode.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
@@ -931,12 +878,12 @@ public class ROLearner2 {
 			if (bestNode.getCoveredNegatives().size() <= 5)
 				logger.trace("covered negs: " + bestNode.getCoveredNegatives());
 			String expandedNodeString = "next expanded node: "
-					+ candidates.last().getShortDescription(nrOfPositiveExamples,
+					+ searchTree.best().getShortDescription(nrOfPositiveExamples,
 							nrOfNegativeExamples, baseURI, prefixes);
 			// searchTree += expandedNodeString + "\n";
 			logger.debug(expandedNodeString);
 			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
-			logger.debug("size of candidate set: " + candidates.size());
+			logger.debug("size of candidate set: " + searchTree.size());
 			// System.out.println("properness max recursion depth: " +
 			// maxRecDepth);
 			// System.out.println("max. number of one-step refinements: " +
@@ -1065,12 +1012,12 @@ public class ROLearner2 {
 		logger.debug("tree traversal start accuracy: " + currentAccuracy);
 		int i = 0;
 		// start from the most promising nodes
-		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode currNode : reverseView) {
 			// compute covered positives and negatives
-			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<OWLIndividual>(currentCoveredPos);
+			SortedSet<OWLIndividual> newCoveredPositives = new TreeSet<>(currentCoveredPos);
 			newCoveredPositives.retainAll(currNode.getCoveredPositives());
-			SortedSet<OWLIndividual> newCoveredNegatives = new TreeSet<OWLIndividual>(currentCoveredNeg);
+			SortedSet<OWLIndividual> newCoveredNegatives = new TreeSet<>(currentCoveredNeg);
 			newCoveredNegatives.retainAll(currNode.getCoveredNegatives());
 
 			// compute the accuracy we would get by adding this node
@@ -1102,7 +1049,7 @@ public class ROLearner2 {
 				OWLClassExpression mc = dataFactory.getOWLObjectIntersectionOf(currentDescription, currNode.getConcept());
 
 				mc = ConceptTransformation.cleanConceptNonRecursive(mc);
-				ConceptTransformation.transformToOrderedNegationNormalFormNonRecursive(mc);
+				mc = mc.getNNF();
 
 				// System.out.println("extended concept to: " + mc);
 				logger.debug("misclassifications: " + misclassifications);
@@ -1137,7 +1084,7 @@ public class ROLearner2 {
 		int currScore = 0;
 		int i = 0;
 		ExampleBasedNode currNode = null;
-		NavigableSet<ExampleBasedNode> reverseView = candidatesStable.descendingSet();
+		SortedSet<ExampleBasedNode> reverseView = searchTreeStable.descendingSet();
 		for (ExampleBasedNode node : reverseView) {
 			int score = 2 * node.getCoveredPositives().size()
 					+ (nrOfNegativeExamples - node.getCoveredNegatives().size());
@@ -1154,8 +1101,8 @@ public class ROLearner2 {
 	}
 
 	private void reduceCandidates() {
-		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
-		Set<ExampleBasedNode> promisingNodes = new HashSet<ExampleBasedNode>();
+		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
+		Set<ExampleBasedNode> promisingNodes = new HashSet<>();
 		int i = 0;
 		while (it.hasNext() && promisingNodes.size() < candidatePostReductionSize) {
 			ExampleBasedNode node = it.next();
@@ -1183,11 +1130,13 @@ public class ROLearner2 {
 			}
 			i++;
 		}
-		candidates.retainAll(promisingNodes);
+		searchTree.retainAll(promisingNodes);
 		logger.debug("searched " + i + " nodes and picked the following promising descriptions:");
-		for (ExampleBasedNode node : promisingNodes)
-			logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-					baseURI, prefixes));
+		if (logger.isDebugEnabled()) {
+			for (ExampleBasedNode node : promisingNodes)
+				logger.debug(node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
+						baseURI, prefixes));
+		}
 	}
 
 	/*
@@ -1205,14 +1154,14 @@ public class ROLearner2 {
 	}
 
 	public OWLClassExpression getBestSolution() {
-		return candidatesStable.last().getConcept();
+		return searchTreeStable.best().getConcept();
 	}
 
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
-		List<OWLClassExpression> best = new LinkedList<OWLClassExpression>();
+		List<OWLClassExpression> best = new LinkedList<>();
 		int i = 0;
 		int nrOfSolutions = 200;
-		for (ExampleBasedNode n : candidatesStable.descendingSet()) {
+		for (ExampleBasedNode n : searchTreeStable.descendingSet()) {
 			best.add(n.getConcept());
 			if (i == nrOfSolutions)
 				return best;
@@ -1222,9 +1171,9 @@ public class ROLearner2 {
 	}
 	
 	public TreeSet<EvaluatedDescriptionPosNeg> getCurrentlyBestEvaluatedDescriptions() {
-		Iterator<ExampleBasedNode> it = candidatesStable.descendingIterator();
+		Iterator<ExampleBasedNode> it = searchTreeStable.descendingIterator();
 		int count = 0;
-		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<EvaluatedDescriptionPosNeg>(edComparator);
+		TreeSet<EvaluatedDescriptionPosNeg> cbd = new TreeSet<>(edComparator);
 		while(it.hasNext()) {
 			ExampleBasedNode eb = it.next();
 			cbd.add(new EvaluatedDescriptionPosNeg(eb.getConcept(), getScore(eb.getConcept())));
@@ -1245,9 +1194,9 @@ public class ROLearner2 {
 		}
 		// if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if (nrOfSolutions == 0)
-			nrOfSolutions = candidatesStable.size();
+			nrOfSolutions = searchTreeStable.size();
 		int i = 0;
-		for (ExampleBasedNode n : candidatesStable.descendingSet()) {
+		for (ExampleBasedNode n : searchTreeStable.descendingSet()) {
 			if (n.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples) < 1)
 				break;
 			logger.trace("best: "
@@ -1260,11 +1209,11 @@ public class ROLearner2 {
 		if (showOrderedSolutions) {
 			logger.trace("ordered by generality (most special solutions first):");
 			SubsumptionComparator sc = new SubsumptionComparator(rs);
-			SortedSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<OWLClassExpression>(sc);
+			SortedSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<>(sc);
 //			solutionsOrderedBySubsumption.addAll(solutions);
 			for (OWLClassExpression d : solutionsOrderedBySubsumption)
 				logger.trace("special: " + d);
-			throw new Error("implementation needs to be updated to show ordered solutions");			
+			throw new Error("implementation needs to be updated to show ordered solutions");
 		}
 		/*
 		 * for (int j = 0; j < solutions.size(); j++) { OWLClassExpression d =
@@ -1274,15 +1223,15 @@ public class ROLearner2 {
 	}
 
 	public ScorePosNeg getSolutionScore() {
-		return (ScorePosNeg) learningProblem.computeScore(getBestSolution());
+		return learningProblem.computeScore(getBestSolution());
 	}
 
 	private ScorePosNeg getScore(OWLClassExpression d) {
-		return (ScorePosNeg) learningProblem.computeScore(d);
+		return learningProblem.computeScore(d);
 	}
 
 	public ExampleBasedNode getStartNode() {
-		return startNode;
+		return searchTreeStable.getRoot();
 	}
 	
 	/**
@@ -1302,10 +1251,11 @@ public class ROLearner2 {
 	 * @return true if the algorithm should stop, this is mostly indepent of the question if a solution was found
 	 */
 	private boolean isTerminationCriteriaReached(){
+		// algorithm was stopped from outside
 		if(this.stop){
 			return true;
 		}
-//		System.out.println("ssssss");
+
 		long totalTimeNeeded = System.currentTimeMillis() - this.runtime;
 		long maxMilliSeconds = maxExecutionTimeInSeconds * 1000;
 		long minMilliSeconds = minExecutionTimeInSeconds * 1000;
@@ -1328,7 +1278,7 @@ public class ROLearner2 {
 		}
 		
 		//ignore default
-		if(maxClassDescriptionTests == 0) 
+		if(maxClassDescriptionTests == 0)
 			result = false;
 		//test
 		else if(conceptTests >= maxClassDescriptionTests){
@@ -1337,7 +1287,7 @@ public class ROLearner2 {
 			return true;
 		}
 		
-		// we stop if sufficiently many solutions (concepts fitting the noise parameter) have been 
+		// we stop if sufficiently many solutions (concepts fitting the noise parameter) have been
 		// reached - unless this termination criterion is switched off using terminateOnNoiseReached = false
 		if (guaranteeXgoodAlreadyReached){
 			result = true;
@@ -1363,7 +1313,7 @@ public class ROLearner2 {
 			result = result && true;
 		}else {
 			result = false;
-		} 
+		}
 		
 		return result;
 	

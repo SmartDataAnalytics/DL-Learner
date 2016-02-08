@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities;
 
 import java.io.BufferedInputStream;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,11 +60,11 @@ public class Files {
 	public static String readFile(URL file) throws IOException {
 		 BufferedReader in = new BufferedReader(new InputStreamReader(file.openStream()));
 
-		StringBuffer input = new StringBuffer();
+		StringBuilder input = new StringBuilder();
 		String inputLine;
 		while ((inputLine = in.readLine()) != null) {
-		    input.append(inputLine + "\n");
-		}		    
+		    input.append(inputLine).append("\n");
+		}
 		in.close();
 			    
 		return input.toString();
@@ -79,18 +77,17 @@ public class Files {
 	 *            The file to read.
 	 * @return Content of the file.
 	 */
-	public static String readFile(File file) throws FileNotFoundException, IOException {
-			
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		StringBuffer content = new StringBuffer();
-		try{
-		String line;
-		
-		while ((line = br.readLine()) != null) {
-			content.append(line);
-			content.append(System.getProperty("line.separator"));
+	public static String readFile(File file) throws IOException {
+
+		StringBuilder content = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				content.append(line);
+				content.append(System.getProperty("line.separator"));
+			}
 		}
-		}finally{br.close();}
 		return content.toString();
 		
 	}
@@ -102,12 +99,12 @@ public class Files {
 	 *            The file to read.
 	 * @return StringArray with lines
 	 */
-	public static String[] readFileAsArray(File file) throws FileNotFoundException, IOException {
+	public static String[] readFileAsArray(File file) throws IOException {
 		String content = readFile(file);
 		StringTokenizer st = new StringTokenizer(content, System.getProperty("line.separator"));
-		List<String> l = new ArrayList<String>();
+		List<String> l = new ArrayList<>();
 		while (st.hasMoreTokens()) {
-			l.add((String) st.nextToken());
+			l.add(st.nextToken());
 			
 		}
 		
@@ -117,8 +114,8 @@ public class Files {
 	
 	/**
 	 * writes a serializable Object to a File.
-	 * @param obj
-	 * @param file
+	 * @param obj the object
+	 * @param file the file
 	 */
 	public static void writeObjectToFile(Object obj, File file){
 		
@@ -230,83 +227,9 @@ public class Files {
 				e.printStackTrace();
 				if(debug){System.exit(0);}
 				// this should not be a show stopper
-			}		
+			}
 		}
 	}
-	
-	/**
-	 * deletes all Files in the dir, does not delete the dir itself
-	 * no warning is issued, use with care, cannot undelete files
-	 *
-	 * @param dir without a separator e.g. tmp/dirtodelete
-	 */
-	public static void deleteDir(String dir) {
-		
-			File f = new File(dir);
-			
-			if(debug){
-				System.out.println(dir);
-				System.exit(0);
-			}
-			
-		    String[] files = f.list();
-		   
-		    for (int i = 0; i < files.length; i++) {
-		    	
-		    	Files.deleteFile(new File(dir+File.separator+files[i]));
-		    }     
-	}
-	
-	/**
-	 * lists all files in a directory
-	 * 
-	 *
-	 * @param dir without a separator e.g. tmp/dir
-	 * @return a string array with filenames
-	 */
-	public static String[] listDir(String dir) {
-		
-			File f = new File(dir);
-			
-			if(debug){
-				System.out.println(dir);
-				System.exit(0);
-			}
-			
-		    return f.list();
-		   
-		   
-	}
-	
-	/**
-	 * copies all files in dir to "tmp/"+System.currentTimeMillis()
-	 * @param dir the dir to be backupped
-	 */
-	public static void backupDirectory(String dir){
-		File f = new File(dir);
-		String backupDir = "../tmp/"+System.currentTimeMillis();
-		mkdir("../tmp");
-		mkdir(backupDir);
-		
-		if(debug){
-			System.out.println(dir);
-			System.exit(0);
-		}
-		
-	    String[] files = f.list();
-	   try{
-	    for (int i = 0; i < files.length; i++) {
-	    	File target = new File(dir+File.separator+files[i]);
-	    	if(!target.isDirectory()){
-	    		String s = readFile(target);
-	    		createFile(new File(backupDir+File.separator+files[i]), s);
-	    	}
-	    }   
-	   }catch (Exception e) {
-		e.printStackTrace();
-	}
-	}
-	
 	
 
 }

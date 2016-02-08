@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import java.util.HashMap;
@@ -44,7 +43,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 	private static Logger logger = Logger.getLogger(SparqlTupleAquisitorImproved.class);
-	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<String, SortedSet<RDFNodeTuple>>();
+	private Map<String,SortedSet<RDFNodeTuple>> resources = new HashMap<>();
 	int recursionDepth;
 	
 
@@ -147,7 +146,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 	
 		
 		if(set==null){
-			set = new TreeSet<RDFNodeTuple>();
+			set = new TreeSet<>();
 			set.add(tuple);
 			resources.put(uri, set );
 			

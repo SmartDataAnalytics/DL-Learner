@@ -11,69 +11,30 @@
 	<parent>
 		<groupId>org.dllearner</groupId>
 		<artifactId>dllearner-parent</artifactId>
-		<version>1.1</version>
+		<version>1.2</version>
 	</parent>
-
 
 	<dependencies>
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>components-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-apibinding</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-api</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>owlapi-impl</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>org.dllearner</groupId>
-			<artifactId>components-ext</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>jena</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.dllearner</groupId>
 			<artifactId>interfaces</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>owlapi</artifactId>
-					<groupId>net.sourceforge.owlapi</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
+		
 		<dependency>
 			<groupId>net.sourceforge.secondstring</groupId>
 			<artifactId>secondstring</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>com.dumontierlab</groupId>
 			<artifactId>pdb2rdf-parser</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.dumontierlab</groupId>
 			<artifactId>pdb2rdf-cli</artifactId>
@@ -84,55 +45,32 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.aksw.commons</groupId>
-			<artifactId>sparql</artifactId>
-			<version>0.2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>arq</artifactId>
-					<groupId>com.hp.hpl.jena</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>any23-core</artifactId>
-					<groupId>org.deri.any23</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jena-core</artifactId>
-					<groupId>org.apache.jena</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency> -->
+		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.2</version>
 		</dependency>
+		
 		<dependency>
-			<groupId>weka</groupId>
-			<artifactId>weka</artifactId>
-			<version>3.6.5</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-dev</artifactId>
 		</dependency>
-		<dependency>
+		
+		<!--<dependency>
 		    <groupId>org.semanticweb.elk</groupId>
 		    <artifactId>elk-owlapi</artifactId>
-		</dependency>
+		</dependency>-->
+
 		<!-- <dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-reasoner</artifactId>
@@ -155,11 +93,7 @@
 		</dependency> -->
 
 
-		<dependency>
-	<groupId>org.apache.commons</groupId>
-	<artifactId>commons-math3</artifactId>
-	<version>3.0</version>
-</dependency>
+		
             
 	</dependencies>
 
@@ -168,9 +102,8 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
+				<version>1.4.0</version>
 				<executions>
-
 					<execution>
 						<goals>
 							<goal>exec</goal>

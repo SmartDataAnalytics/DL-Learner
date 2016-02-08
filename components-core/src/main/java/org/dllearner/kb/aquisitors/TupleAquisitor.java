@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import java.net.URI;
@@ -51,7 +50,7 @@ public abstract class TupleAquisitor {
 	
 	/**
 	 * TODO: this function is still used somewhere, but should be replaced
-	 * @return
+	 * @return whether blank nodes are dissolved
 	 */
 	public boolean isDissolveBlankNodes(){
 		return dissolveBlankNodes;
@@ -73,7 +72,7 @@ public abstract class TupleAquisitor {
 		}catch(Exception e){
 			logger.warn("Caught exception in tupleaquisitor, ignoring it: "+e.toString());
 			e.printStackTrace();
-			return new TreeSet<RDFNodeTuple>();
+			return new TreeSet<>();
 			
 		}
 	}

@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.dataset;
 
 import java.io.File;
@@ -40,10 +58,10 @@ import com.google.common.io.Files;
 
 public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
-	protected Collection<OWLOntology> ontologies = new TreeSet<OWLOntology>();
-	protected Collection<OWLOntology> correctOntologies = new TreeSet<OWLOntology>();
-	protected Collection<OWLOntology> incoherentOntologies = new TreeSet<OWLOntology>();
-	protected Collection<OWLOntology> inconsistentOntologies = new TreeSet<OWLOntology>();
+	protected Collection<OWLOntology> ontologies = new TreeSet<>();
+	protected Collection<OWLOntology> correctOntologies = new TreeSet<>();
+	protected Collection<OWLOntology> incoherentOntologies = new TreeSet<>();
+	protected Collection<OWLOntology> inconsistentOntologies = new TreeSet<>();
 	
 	protected String name;
 	
@@ -57,9 +75,9 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	protected OWLReasonerFactory reasonerFactory = PelletReasonerFactory.getInstance();
 	OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 	
-	protected Map<URL, String> ontologyURLs = new HashMap<URL, String>();
+	protected Map<URL, String> ontologyURLs = new HashMap<>();
 	
-	private final int nrOfThreads = 1;
+	private static final int nrOfThreads = 1;
 	private boolean analyze = false;
 	
 	public AbstractOWLOntologyDataset(String name, boolean analyze) {
@@ -98,10 +116,10 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	}
 	
 	private Set<String> load403Errors(){
-		Set<String> errors = new HashSet<String>();
+		Set<String> errors = new HashSet<>();
 		try {
 			if(new File(directory, "403.txt").exists()){
-				errors = new HashSet<String>(Files.readLines(new File(directory, "403.txt"), Charset.defaultCharset()));
+				errors = new HashSet<>(Files.readLines(new File(directory, "403.txt"), Charset.defaultCharset()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -119,7 +137,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 		if(!analyzed){
 			Set<String> errors = load403Errors();
 			ExecutorService threadPool = Executors.newFixedThreadPool(nrOfThreads);
-			List<Entry<URL, String>> urlList = new ArrayList<java.util.Map.Entry<URL, String>>(ontologyURLs.entrySet());
+			List<Entry<URL, String>> urlList = new ArrayList<>(ontologyURLs.entrySet());
 			Collections.shuffle(urlList);
 			for (java.util.Map.Entry<URL, String> entry : urlList) {
 				URL url = entry.getKey();
@@ -231,7 +249,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 	
 	private OWLOntology loadFromLocal(URL url){
 		String filename = getFilename(url);
-		for(File parent : Arrays.asList(directory)){
+		for(File parent : Collections.singletonList(directory)){
 			File file = new File(parent, filename);
 			if(file.exists()){
 				try {
@@ -281,9 +299,7 @@ public abstract class AbstractOWLOntologyDataset implements OWLOntologyDataset{
 				out.close();
 				System.out.println("done.");
 				return file;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
+			} catch (MalformedURLException | FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();

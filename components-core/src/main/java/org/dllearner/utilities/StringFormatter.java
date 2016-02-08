@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities;
 
 import java.io.File;
@@ -31,10 +30,10 @@ public class StringFormatter {
 	/**
 	 * formats a double value between 0 and 100 to a percentage
 	 * ex: 0.7854684  will be return 78.5%
-	 * @param d
+	 * @param d the double value
 	 */
 	public static String doubleToPercent(double d){
-		return doubleToPercent( d,  1,  true);	
+		return doubleToPercent( d,  1,  true);
 	}
 	
 	public static String doubleToPercent(double d, int decimals){
@@ -54,11 +53,11 @@ public class StringFormatter {
 	public static String myReplaceAll(String s, char search, String replacement ){
 		String ret ="";
 		char[] arr = s.toCharArray();
-		for (int i = 0; i < arr.length; i++) {
-			if(arr[i]==search){
-				ret+=replacement;
-			}else{
-				ret+=arr[i];
+		for (char anArr : arr) {
+			if (anArr == search) {
+				ret += replacement;
+			} else {
+				ret += anArr;
 			}
 		}
 		return ret;
@@ -74,8 +73,8 @@ public class StringFormatter {
 			format += "0";
 		}
 		format+="%";
-		DecimalFormat df = new DecimalFormat( format ); 
-		String ret = df.format(d); 
+		DecimalFormat df = new DecimalFormat( format );
+		String ret = df.format(d);
 		ret = (addPercentSign)?ret:ret.replaceAll("%", "");
 		return ret;
 		
@@ -92,8 +91,8 @@ public class StringFormatter {
 				format += "0";
 			}
 			
-			DecimalFormat df = new DecimalFormat( format ); 
-			ret = df.format(d); 
+			DecimalFormat df = new DecimalFormat( format );
+			ret = df.format(d);
 			ret = ret.replaceAll("%", "");
 		}
 		ret = before + ret+ after;
@@ -101,9 +100,9 @@ public class StringFormatter {
 		
 	}
 	
-	public static String convertStatPercentageToLatex(Stat s, 
+	public static String convertStatPercentageToLatex(Stat s,
 			int decimals,
-			boolean addPercentSign, 
+			boolean addPercentSign,
 			boolean includeSTDDeviation){
 		String ret ="";
 		
@@ -115,14 +114,14 @@ public class StringFormatter {
 		return ret;
 	}
 	
-	public static String convertStatDoubleToLatex(Stat s, 
+	public static String convertStatDoubleToLatex(Stat s,
 			int decimals,
 			boolean includeSTDDeviation){
 		return convertStatDoubleToLatex(s, decimals,"","",includeSTDDeviation);
 	}
 	
 	
-	public static String convertStatDoubleToLatex(Stat s, 
+	public static String convertStatDoubleToLatex(Stat s,
 			int decimals,
 			String before,
 			String after,

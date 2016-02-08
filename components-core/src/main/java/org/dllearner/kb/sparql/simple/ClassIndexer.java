@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /***************************************************************************/
 /*  Copyright (C) 2010-2011, Sebastian Hellmann                            */
 /*  Note: If you need parts of NLP2RDF in another licence due to licence   */
@@ -53,12 +71,12 @@ public class ClassIndexer {
     private String language = null;
 
     //Not implemented
-    private Map<String, String> transform = new HashMap<String, String>();
+    private Map<String, String> transform = new HashMap<>();
     //Not implemented
-    private Set<String> remove = new HashSet<String>();
+    private Set<String> remove = new HashSet<>();
 
     //internal variables
-    private Map<String, OntModel> classUriToClassHierarchy = new HashMap<String, OntModel>();
+    private Map<String, OntModel> classUriToClassHierarchy = new HashMap<>();
 
     public ClassIndexer() {
     }
@@ -164,7 +182,7 @@ public class ClassIndexer {
             this.uri = me.getURI();
             label = me.getLabel(language);
             comment = me.getComment(language);
-            parents = new ArrayList<Tree>();
+            parents = new ArrayList<>();
 
             Set<OntClass> superClasses = me.listSuperClasses(true).toSet();
             for (OntClass s : superClasses) {

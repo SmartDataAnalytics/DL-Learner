@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.el;
 
+import com.google.common.collect.ComparisonChain;
+import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 
 
@@ -31,39 +32,23 @@ import org.dllearner.core.ComponentInitException;
  * @author Jens Lehmann
  *
  */
+@ComponentAnn(name = "Stable Heuristic", shortName = "el_heuristic", version = 0.1)
 public class StableHeuristic implements ELHeuristic {
 
-	private ELDescriptionTreeComparator cmp = new ELDescriptionTreeComparator();
+	private final ELDescriptionTreeComparator cmp = new ELDescriptionTreeComparator();
 	
 	@Override
 	public int compare(SearchTreeNode o1, SearchTreeNode o2) {
-	
-		int diff = o2.getCoveredNegatives() - o1.getCoveredNegatives();
-		diff = Double.compare(o1.getScore(), o2.getScore());
-		if(diff>0) {		
-			return 1;
-		} else if(diff<0) {
-			return -1;
-		} else {
-			
-			double sizeDiff = o2.getDescriptionTree().size - o1.getDescriptionTree().size;
-			
-			if(sizeDiff == 0) {
-				return cmp.compare(o1.getDescriptionTree(), o2.getDescriptionTree());
-			} else if(sizeDiff>0) {
-				return 1;
-			} else {
-				return -1;
-			}
-			
-		}		
+		return ComparisonChain.start()
+				.compare(o1.getScore().getAccuracy(), o2.getScore().getAccuracy())
+				.compare(o2.getDescriptionTree().size, o1.getDescriptionTree().size)
+				.compare(o1.getDescriptionTree(), o2.getDescriptionTree(), cmp)
+				.result();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override
-	public void init() throws ComponentInitException {
-	}
-
+	public void init() throws ComponentInitException {}
 }

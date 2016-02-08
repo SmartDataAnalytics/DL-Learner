@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -41,7 +42,6 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
-import org.dllearner.Info;
 import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractComponent;
@@ -54,6 +54,7 @@ import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.LearningProblemUnsupportedException;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLFile;
 import org.dllearner.kb.sparql.Cache;
 import org.dllearner.kb.sparql.SPARQLTasks;
@@ -64,7 +65,6 @@ import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.parser.KBParser;
 import org.dllearner.parser.ParseException;
-import org.dllearner.utilities.datastructures.Datastructures;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -100,13 +100,86 @@ public class DLLearnerWS {
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
 
 	/**
-	 * Returns the DL-Learner version this web service is based on.
-	 * @return DL-Learner-Build.
+	 * Conversion between different data structures.
+	 * 
+	 * @author Jens Lehmann
+	 * @author Sebastian Hellmann
+	 *
 	 */
-	@WebMethod
-	public String getBuild() {
-		return Info.build;
+	public static class Datastructures {
+
+		public static boolean strToBool(String str) {
+			if (str.equals("true"))
+				return true;
+			else if (str.equals("false"))
+				return false;
+			else
+				throw new Error("Cannot convert to boolean.");
+		}
+
+		/**
+		 * easy conversion
+		 * 
+		 * @param s
+		 */
+		public static String[] setToArray(Set<String> s) {
+			if(s==null)return null;
+			String[] ret=new String[s.size()];
+			int i=0;
+			for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
+				ret[i] = iter.next();
+				i++;
+
+			}
+			return ret;
+
+		}
+
+		public static String[] sortedSet2StringListIndividuals(Set<OWLIndividual> individuals){
+
+			String[] ret=new String[individuals.size()];
+			Iterator<OWLIndividual> i=individuals.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
+		public static String[] sortedSet2StringListRoles(Set<OWLObjectProperty> s){
+
+			String[] ret=new String[s.size()];
+			Iterator<OWLObjectProperty> i=s.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
+		public static String[] sortedSet2StringListConcepts(Set<OWLClass> s){
+
+			String[] ret=new String[s.size()];
+			Iterator<OWLClass> i=s.iterator();
+			int a=0;
+			while (i.hasNext()){
+				ret[a++]=i.next().toStringID();
+			}
+			Arrays.sort(ret);
+			return ret;
+		}
+
 	}
+//	/**
+//	 * Returns the DL-Learner version this web service is based on.
+//	 * @return DL-Learner-Build.
+//	 */
+//	@WebMethod
+//	public String getBuild() {
+//		return Info.build;
+//	}
 
 	/**
 	 * Method to check whether web service is online and how fast it responses.
@@ -201,11 +274,12 @@ public class DLLearnerWS {
 	@WebMethod
 	public String[] getConfigOptions(String component, boolean allInfo) throws UnknownComponentException {
 		Class<? extends Component> componentClass = cm.getComponentClass(component);
-		Set<org.dllearner.core.config.ConfigOption> options = AnnComponentManager.getConfigOptions(componentClass);
+		Set<Field> options = AnnComponentManager.getConfigOptions(componentClass);
 		String[] optionsString = new String[options.size()];
 		int i = 0;
-		for(org.dllearner.core.config.ConfigOption option : options) {
-			optionsString[i] = option.name();
+		for(Field f : options) {
+			ConfigOption option = f.getAnnotation(ConfigOption.class);
+			optionsString[i] = AnnComponentManager.getName(f);
 			if(allInfo) {
 				optionsString[i] += "#" + option.description();
 				optionsString[i] += "#" + option.required();
@@ -416,7 +490,7 @@ public class DLLearnerWS {
 	public String learnDescriptionsEvaluated(int id) throws ClientNotKnownException {
 		ClientState state = getState(id);
 		state.getLearningAlgorithm().start();
-		TreeSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
+		NavigableSet<? extends EvaluatedDescription> descriptions = state.getLearningAlgorithm()
 				.getCurrentlyBestEvaluatedDescriptions();
 		String json = "{";
 		int count = 1;
@@ -704,7 +778,8 @@ public class DLLearnerWS {
 	 * @param sessionID The session ID.
 	 * @param componentID The componentID.
 	 * @param optionName The name of the configuration option.
-	 * @param value
+	 * @param keys
+	 * @param values
 	 * @throws ClientNotKnownException Thrown if client (session ID) is not known.
 	 * @throws UnknownComponentException
 	 */
@@ -759,7 +834,7 @@ public class DLLearnerWS {
 				value = ignoredConcepts;
 			}
 			field.set(component, value);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | URISyntaxException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
 //		try {
@@ -1004,7 +1079,7 @@ public class DLLearnerWS {
 	 * @param query The SPARQL query.
 	 * @param useCache Specify whether to use a cache for queries.
 	 * @return The result of the SPARQL query in JSON format or null if the endpoint does not exist.
-	 * @see SPARQLEndpoint#getEndpointByName;
+	 * @see SparqlEndpoint#getEndpointByName(String)
 	 */
 	@WebMethod
 	public String sparqlQueryPredefinedEndpoint(String predefinedEndpoint, String query, boolean useCache) {

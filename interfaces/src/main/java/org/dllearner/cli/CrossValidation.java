@@ -37,20 +37,20 @@ import org.dllearner.core.AbstractCELA;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.StringRenderer;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosOnlyLP;
 import org.dllearner.utilities.Files;
 import org.dllearner.utilities.Helper;
-import org.dllearner.utilities.datastructures.Datastructures;
+import org.dllearner.utilities.owl.ManchesterOWLSyntaxOWLObjectRendererImplExt;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.statistics.Stat;
-import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
 
-import uk.ac.manchester.cs.owl.owlapi.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import com.google.common.collect.Sets;
 
 
 /**
@@ -68,7 +68,7 @@ public class CrossValidation {
 	protected Stat length = new Stat();
 	protected Stat accuracyTraining = new Stat();
 	protected Stat fMeasure = new Stat();
-	protected Stat fMeasureTraining = new Stat(); 
+	protected Stat fMeasureTraining = new Stat();
 	public static boolean writeToFile = false;
 	public static File outputFile;
 	public static boolean multiThreaded = false;
@@ -79,7 +79,7 @@ public class CrossValidation {
 	protected Stat testingCompletenessStat = new Stat();
 	protected Stat testingCorrectnessStat = new Stat();
 	
-	DecimalFormat df = new DecimalFormat();	
+	DecimalFormat df = new DecimalFormat();
 	
 	
 	
@@ -87,11 +87,11 @@ public class CrossValidation {
 		
 	}
 	
-	public CrossValidation(AbstractCELA la, AbstractClassExpressionLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {		
+	public CrossValidation(AbstractCELA la, AbstractClassExpressionLearningProblem lp, final AbstractReasonerComponent rs, int folds, boolean leaveOneOut) {
 		//console rendering of class expressions
-		ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		ToStringRenderer.getInstance().setRenderer(renderer);
-		ToStringRenderer.getInstance().setShortFormProvider(new SimpleShortFormProvider());
+		ManchesterOWLSyntaxOWLObjectRendererImplExt renderer = new ManchesterOWLSyntaxOWLObjectRendererImplExt();
+		StringRenderer.setRenderer(renderer);
+		StringRenderer.setShortFormProvider(new SimpleShortFormProvider());
 				
 		// the training and test sets used later on
 		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
@@ -113,7 +113,7 @@ public class CrossValidation {
 			}
 			List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
 			List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
-			Collections.shuffle(posExamplesList, new Random(1));			
+			Collections.shuffle(posExamplesList, new Random(1));
 			Collections.shuffle(negExamplesList, new Random(2));
 			
 			// sanity check whether nr. of folds makes sense for this benchmark
@@ -136,7 +136,7 @@ public class CrossValidation {
 				System.exit(1);
 			} else {
 				// calculating where to split the sets, ; note that we split
-				// positive and negative examples separately such that the 
+				// positive and negative examples separately such that the
 				// distribution of positive and negative examples remains similar
 				// (note that there are better but more complex ways to implement this,
 				// which guarantee that the sum of the elements of a fold for pos
@@ -155,8 +155,8 @@ public class CrossValidation {
 					testSetsPos.add(i, testPos);
 					testSetsNeg.add(i, testNeg);
 					trainingSetsPos.add(i, getTrainingSet(posExamples, testPos));
-					trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));				
-				}	
+					trainingSetsNeg.add(i, getTrainingSet(negExamples, testNeg));
+				}
 				
 			}
 
@@ -229,21 +229,21 @@ public class CrossValidation {
 		outputWriter("Finished " + folds + "-folds cross-validation.");
 		outputWriter("runtime: " + statOutput(df, runtime, "s"));
 		outputWriter("length: " + statOutput(df, length, ""));
-		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));		
+		outputWriter("F-Measure on training set: " + statOutput(df, fMeasureTraining, "%"));
 		outputWriter("F-Measure: " + statOutput(df, fMeasure, "%"));
-		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));		
+		outputWriter("predictive accuracy on training set: " + statOutput(df, accuracyTraining, "%"));
 		outputWriter("predictive accuracy: " + statOutput(df, accuracy, "%"));
 			
 	}
 	
 	private void validate(AbstractCELA la, AbstractClassExpressionLearningProblem lp, AbstractReasonerComponent rs,
 			int currFold, Set<OWLIndividual> trainPos, Set<OWLIndividual> trainNeg, Set<OWLIndividual> testPos, Set<OWLIndividual> testNeg){
-		Set<String> pos = Datastructures.individualSetToStringSet(trainPos);
-		Set<String> neg = Datastructures.individualSetToStringSet(trainNeg);
+		Set<String> pos = Helper.getStringSet(trainPos);
+		Set<String> neg = Helper.getStringSet(trainNeg);
 		String output = "";
 		output += "+" + new TreeSet<String>(pos) + "\n";
 		output += "-" + new TreeSet<String>(neg) + "\n";
-		try {			
+		try {
 			lp.init();
 			la.setLearningProblem(lp);
 			la.init();
@@ -260,15 +260,15 @@ public class CrossValidation {
 		OWLClassExpression concept = la.getCurrentlyBestDescription();
 		
 		Set<OWLIndividual> tmp = rs.hasType(concept, testPos);
-		Set<OWLIndividual> tmp2 = Helper.difference(testPos, tmp);
+		Set<OWLIndividual> tmp2 = Sets.difference(testPos, tmp);
 		Set<OWLIndividual> tmp3 = rs.hasType(concept, testNeg);
 		
-		// calculate training accuracies 
+		// calculate training accuracies
 		int trainingCorrectPosClassified = getCorrectPosClassified(rs, concept, trainPos);
 		int trainingCorrectNegClassified = getCorrectNegClassified(rs, concept, trainNeg);
 		int trainingCorrectExamples = trainingCorrectPosClassified + trainingCorrectNegClassified;
 		double trainingAccuracy = 100*((double)trainingCorrectExamples/(trainPos.size()+
-				trainNeg.size()));			
+				trainNeg.size()));
 		accuracyTraining.addNumber(trainingAccuracy);
 		// calculate test accuracies
 		int correctPosClassified = getCorrectPosClassified(rs, concept, testPos);
@@ -287,7 +287,7 @@ public class CrossValidation {
 		double precision = correctPosClassified + negAsPos == 0 ? 0 : correctPosClassified / (double) (correctPosClassified + negAsPos);
 		double recall = correctPosClassified / (double) testPos.size();
 //		System.out.println(precision);System.out.println(recall);
-		fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));			
+		fMeasure.addNumber(100*Heuristics.getFScore(recall, precision));
 		
 		length.addNumber(OWLClassExpressionUtils.getLength(concept));
 		
@@ -296,7 +296,7 @@ public class CrossValidation {
 		output += "test set errors neg: " + tmp3 + "\n";
 		output += "fold " + currFold + ":" + "\n";
 		output += "  training: " + pos.size() + " positive and " + neg.size() + " negative examples";
-		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, " 
+		output += "  testing: " + correctPosClassified + "/" + testPos.size() + " correct positives, "
 				+ correctNegClassified + "/" + testNeg.size() + " correct negatives" + "\n";
 		output += "  concept: " + concept.toString().replace("\n", " ") + "\n";
 		output += "  accuracy: " + df.format(currAccuracy) + "% (" + df.format(trainingAccuracy) + "% on training set)" + "\n";
@@ -333,7 +333,7 @@ public class CrossValidation {
 	}
 	
 	public static Set<OWLIndividual> getTrainingSet(Set<OWLIndividual> examples, Set<OWLIndividual> testingSet) {
-		return Helper.difference(examples, testingSet);
+		return Sets.difference(examples, testingSet);
 	}
 	
 	// takes nr. of examples and the nr. of folds for this examples;
@@ -352,7 +352,7 @@ public class CrossValidation {
 		String str = "av. " + df.format(stat.getMean()) + unit;
 		str += " (deviation " + df.format(stat.getStandardDeviation()) + unit + "; ";
 		str += "min " + df.format(stat.getMin()) + unit + "; ";
-		str += "max " + df.format(stat.getMax()) + unit + ")";		
+		str += "max " + df.format(stat.getMax()) + unit + ")";
 		return str;
 	}
 

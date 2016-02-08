@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 /**
@@ -34,7 +33,7 @@ public interface StoppableLearningAlgorithm extends LearningAlgorithm {
 	 * Stops the algorithm gracefully. A stopped algorithm cannot be resumed anymore.
 	 * Use this method for cleanup and freeing memory.
 	 */
-	public abstract void stop();
+	void stop();
 	
 	/**
 	 * Returns whether the learning algorithm is running. Implementation
@@ -42,6 +41,6 @@ public interface StoppableLearningAlgorithm extends LearningAlgorithm {
 	 * the start and resume methods.
 	 * @return True if the algorithm is running, false otherwise.
 	 */
-	public abstract boolean isRunning();
+	boolean isRunning();
 	
 }

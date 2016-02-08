@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.kb.sparql;
 
 import java.util.Set;
@@ -39,26 +57,26 @@ public interface ConciseBoundedDescriptionGenerator {
 	/**
 	 * @return the CBD of depth 1 for the given resource
 	 */
-	public Model getConciseBoundedDescription(String resourceURI);
+	Model getConciseBoundedDescription(String resourceURI);
 	
 	/**
 	 * @return the CBD of given depth for the given resource
 	 */
-	public Model getConciseBoundedDescription(String resourceURI, int depth);
+	Model getConciseBoundedDescription(String resourceURI, int depth);
 	
 	/**
 	 * @return the CBD of given depth for the given resource with optionally additional 
 	 * information about the types of leaf nodes
 	 */
-	public Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
+	Model getConciseBoundedDescription(String resourceURI, int depth, boolean withTypesForLeafs);
 	
-	public void addAllowedPropertyNamespaces(Set<String> namespaces);
+	void addAllowedPropertyNamespaces(Set<String> namespaces);
 	
-	public void addAllowedObjectNamespaces(Set<String> namespaces);
+	void addAllowedObjectNamespaces(Set<String> namespaces);
 	
-	public void addPropertiesToIgnore(Set<String> properties);
+	void addPropertiesToIgnore(Set<String> properties);
 	
-	public void setRecursionDepth(int maxRecursionDepth);
+	void setRecursionDepth(int maxRecursionDepth);
 
 	
 	

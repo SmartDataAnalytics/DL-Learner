@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.reasoning;
 
@@ -13,7 +28,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -39,9 +55,9 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
 
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 
@@ -81,7 +97,7 @@ public class ExistentialRestrictionMaterialization {
 	class SuperClassFinder extends OWLClassExpressionVisitorAdapter{
 		
 		private Map<OWLClass, Set<OWLClassExpression>> map = new HashMap<>();
-		Stack<Set<OWLClassExpression>> stack = new Stack<Set<OWLClassExpression>>();
+		Stack<Set<OWLClassExpression>> stack = new Stack<>();
 		OWLDataFactory df;
 		boolean onlyIfExistentialOnPath = true;
 		
@@ -117,11 +133,11 @@ public class ExistentialRestrictionMaterialization {
 			}
 //			System.out.println(s + cls);
 			indent++;
-			Set<OWLClassExpression> superClasses = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> superClasses = new HashSet<>();
 			superClasses.add(cls);
 			
 			//get the directly asserted super classes
-			Collection<OWLClassExpression> superClassExpressions = cls.getSuperClasses(ontology);
+			Collection<OWLClassExpression> superClassExpressions = EntitySearcher.getSuperClasses(cls, ontology);
 			
 			//omit trivial super class
 			superClassExpressions.remove(cls);
@@ -149,12 +165,12 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectIntersectionOf ce) {
-			Set<OWLClassExpression> newIntersections = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> newIntersections = new HashSet<>();
 			Set<OWLClassExpression> operands = ce.getOperands();
 			for (OWLClassExpression op : operands) {
 				op.accept(this);
 				Set<OWLClassExpression> operandSuperClassExpressions = stack.pop();
-				Set<OWLClassExpression> newOperands = new HashSet<OWLClassExpression>(operands);
+				Set<OWLClassExpression> newOperands = new HashSet<>(operands);
 				newOperands.remove(op);
 				for (OWLClassExpression opSup : operandSuperClassExpressions) {
 					newOperands.add(opSup);
@@ -188,7 +204,7 @@ public class ExistentialRestrictionMaterialization {
 		 */
 		@Override
 		public void visit(OWLObjectSomeValuesFrom ce) {
-			Set<OWLClassExpression> newRestrictions = new HashSet<OWLClassExpression>();
+			Set<OWLClassExpression> newRestrictions = new HashSet<>();
 			newRestrictions.add(ce);
 			OWLClassExpression filler = ce.getFiller();
 			filler.accept(this);
@@ -293,7 +309,7 @@ public class ExistentialRestrictionMaterialization {
 
 	
 	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		String s = "@prefix : <http://example.org/> ."
 				+ "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
 				+ "@prefix owl: <http://www.w3.org/2002/07/owl#> ."

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.sparql;
 
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class SparqlQueryMaker {
 		super();
 		this.objectFilterList = objectFilterList;
 		this.predicateFilterList = predicateFilterList;
-		this.predicateobjectFilterList = new TreeSet<StringTuple>();
+		this.predicateobjectFilterList = new TreeSet<>();
 		this.literals = literals;
 	}
 
@@ -137,22 +136,20 @@ public class SparqlQueryMaker {
 				: " ";
 
 		StringBuffer sbuff = new StringBuffer(1400);
-		sbuff.append("SELECT * WHERE { " + lineend + "{<" + subject
-				+ "> ?predicate0 ?object0 ." + lineend);
-		sbuff.append(filtertmp + "} " + lineend);
+		sbuff.append("SELECT * WHERE { " + lineend + "{<").append(subject).append("> ?predicate0 ?object0 .").append(lineend);
+		sbuff.append(filtertmp).append("} ").append(lineend);
 
 		// " + lineend + filter +" } ";
 		for (int i = 1; i < level; i++) {
 			sbuff.append("OPTIONAL { ");
-			sbuff.append("?object" + (i - 1) + " ?predicate" + i + " ?object"
-					+ i + " . " + lineend);
+			sbuff.append("?object").append(i - 1).append(" ?predicate").append(i).append(" ?object").append(i).append(" . ").append(lineend);
 
 			filtertmp = internalFilterAssemblySubject("predicate" + i, "object"
 					+ i);
 			filtertmp = (filtertmp.length() > 0) ? "FILTER " + filtertmp + ". "
 					: " ";
 
-			sbuff.append(filtertmp + " }");
+			sbuff.append(filtertmp).append(" }");
 		}
 
 		sbuff.append(lineend + "} ");
@@ -167,12 +164,12 @@ public class SparqlQueryMaker {
 		objectVariable = (objectVariable.startsWith("?")) ? objectVariable
 				: "?" + objectVariable;
 
-		List<String> terms = new ArrayList<String>();
+		List<String> terms = new ArrayList<>();
 		String not = (isAllowMode()) ? "" : "!";
 		/*new filter type */
 		
 		for (StringTuple tuple : getPredicateObjectFilterList()) {
-			List<String> tmpterms = new ArrayList<String>();
+			List<String> tmpterms = new ArrayList<>();
 			tmpterms.add(not + "regex(str(" + predicateVariable + "), '" + tuple.a+ "')");
 			tmpterms.add(not + "regex(str(" + objectVariable + "), '" + tuple.b+ "')");
 			terms.add(assembleTerms(tmpterms, "&&"));
@@ -189,7 +186,7 @@ public class SparqlQueryMaker {
 		}
 		String assembled =  assembleTerms(terms, getOperator());
 		
-		terms = new ArrayList<String>();
+		terms = new ArrayList<>();
 		// the next line could be removed as it is included in assemble terms
 		if(!assembled.isEmpty()){
 			terms.add(assembled);
@@ -223,7 +220,7 @@ public class SparqlQueryMaker {
 			String first = terms.remove(0);
 			sbuf.append(brackets(first));
 			for (String term : terms) {
-				sbuf.append(lineend + operator);
+				sbuf.append(lineend).append(operator);
 				sbuf.append(brackets(term));
 			}
 			return brackets(sbuf.toString());

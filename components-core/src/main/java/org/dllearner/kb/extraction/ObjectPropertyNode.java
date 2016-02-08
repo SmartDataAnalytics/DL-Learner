@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.extraction;
 
 import java.util.ArrayList;
@@ -52,9 +51,9 @@ public class ObjectPropertyNode extends PropertyNode {
 
 	
 	// specialtypes like owl:symmetricproperty
-	private SortedSet<String> specialTypes = new TreeSet<String>();
-	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<RDFNodeTuple>();
-	private List<BlankNode> blankNodes = new ArrayList<BlankNode>();
+	private SortedSet<String> specialTypes = new TreeSet<>();
+	private SortedSet<RDFNodeTuple> propertyInformation = new TreeSet<>();
+	private List<BlankNode> blankNodes = new ArrayList<>();
 
 	public ObjectPropertyNode(String propertyURI, Node a, Node b) {
 		super(propertyURI, a, b);		
@@ -70,7 +69,7 @@ public class ObjectPropertyNode extends PropertyNode {
 	// gets the types for properties recursively
 	@Override
 	public List<BlankNode> expandProperties(TupleAquisitor tupelAquisitor, Manipulator manipulator, boolean dissolveBlankNodes) {
-		List<BlankNode> ret =  new ArrayList<BlankNode>();
+		List<BlankNode> ret = new ArrayList<>();
 		ret.addAll(b.expandProperties(tupelAquisitor, manipulator, dissolveBlankNodes));
 		SortedSet<RDFNodeTuple> newTypes = tupelAquisitor.getTupelForResource(uri);
 		for (RDFNodeTuple tuple : newTypes) {
@@ -108,7 +107,7 @@ public class ObjectPropertyNode extends PropertyNode {
 	
 	@Override
 	public SortedSet<String> toNTriple() {
-		SortedSet<String> s = new TreeSet<String>();
+		SortedSet<String> s = new TreeSet<>();
 		s.add(getNTripleForm()+"<" + OWLVocabulary.RDF_TYPE + "><"
 				+ OWLVocabulary.OWL_OBJECTPROPERTY + ">.");
 		for (String one : specialTypes) {
@@ -147,7 +146,7 @@ public class ObjectPropertyNode extends PropertyNode {
 				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseObjectPropertiesAxiom(me, p));				
 			}else if(one.aPartContains(OWLVocabulary.OWL_equivalentProperty)){
 				OWLObjectProperty p = factory.getOWLObjectProperty(IRI.create(one.b.toString()));
-				Set<OWLObjectProperty> tmp = new HashSet<OWLObjectProperty>();
+				Set<OWLObjectProperty> tmp = new HashSet<>();
 				tmp.add(me);tmp.add(p);
 				owlAPIOntologyCollector.addAxiom(factory.getOWLEquivalentObjectPropertiesAxiom(tmp));
 				
@@ -165,17 +164,23 @@ public class ObjectPropertyNode extends PropertyNode {
 		}
 		
 		for (String one : specialTypes) {
-			
-			if(one.equals(OWLVocabulary.OWL_FunctionalProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_InverseFunctionalProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLInverseFunctionalObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_TransitiveProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
-			}else if(one.equals(OWLVocabulary.OWL_SymmetricProperty)){
-				owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
-			}else{
-				tail("conversion to ontology: special types: " + one);
+
+			switch (one) {
+				case OWLVocabulary.OWL_FunctionalProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLFunctionalObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_InverseFunctionalProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLInverseFunctionalObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_TransitiveProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLTransitiveObjectPropertyAxiom(me));
+					break;
+				case OWLVocabulary.OWL_SymmetricProperty:
+					owlAPIOntologyCollector.addAxiom(factory.getOWLSymmetricObjectPropertyAxiom(me));
+					break;
+				default:
+					tail("conversion to ontology: special types: " + one);
+					break;
 			}
 		}
 		for (BlankNode bn : blankNodes) {

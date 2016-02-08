@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.refinementoperators;
 
 import java.util.Set;
@@ -27,7 +26,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
  * Interface for all refinement operators based on OWL/Description Logics.
  * A refinement operator
- * maps a OWLClassExpression to a set of descriptions. For downward refinement
+ * maps a description to a set of descriptions. For downward refinement
  * operators those descriptions are more special. For upward refinement
  * operators, those descriptions are more general. 
  * 
@@ -38,9 +37,9 @@ public interface RefinementOperator extends Component {
 
 	/**
 	 * Standard refinement operation.
-	 * @param OWLClassExpression The description, which will be refined.
+	 * @param description The description, which will be refined.
 	 * @return A set of refinements.
 	 */
-	public Set<OWLClassExpression> refine(OWLClassExpression description);
+	Set<OWLClassExpression> refine(OWLClassExpression description);
 	
 }

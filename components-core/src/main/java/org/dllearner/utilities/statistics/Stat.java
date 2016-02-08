@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.statistics;
 
 import java.text.DecimalFormat;
@@ -62,8 +61,7 @@ public class Stat {
      * Creates a new stat object by merging several stat objects. The result is the same as if
      * the numbers, which have been added to each stat would have been added to this
      * stat object.
-     * @param stat1 Statistical object 1.
-     * @param stat2 Statistical object 2.
+     * @param stats the stats
      */
     public Stat(Set<Stat> stats) {
     	for(Stat stat : stats){

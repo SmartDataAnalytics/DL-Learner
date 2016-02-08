@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.schema;
 
@@ -14,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
@@ -33,18 +49,18 @@ public class EntityDependencyMatrix<T> {
 		
 	}
 	
-	public static void EntityDependencyMatrix(OWLOntology ontology) {
+	public static void getEntityDependencyMatrix(OWLOntology ontology) {
 		OWLReasoner reasoner = new StructuralReasonerFactory().createNonBufferingReasoner(ontology);
 		
 		// how often are individuals of class A related to individuals of class B
-		Set<OWLClass> classes = ontology.getClassesInSignature(true);
+		Set<OWLClass> classes = ontology.getClassesInSignature(Imports.INCLUDED);
 		for (OWLClass clsA : classes) {
 			for (OWLClass clsB : classes) {
 				if(!clsA.equals(clsB)) {
 					Set<OWLNamedIndividual> instancesA = reasoner.getInstances(clsA, false).getFlattened();
 					Set<OWLNamedIndividual> instancesB = reasoner.getInstances(clsB, false).getFlattened();
 					
-					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> objectsOfInstancesFromA = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesA) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
 						for (OWLObjectPropertyAssertionAxiom axiom : axioms) {
@@ -52,7 +68,7 @@ public class EntityDependencyMatrix<T> {
 						}
 					}
 					
-					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<OWLIndividual>();
+					Set<OWLIndividual> objectsOfInstancesFromB = new HashSet<>();
 					for (OWLNamedIndividual ind : instancesB) {
 						Set<OWLObjectPropertyAssertionAxiom> axioms = ontology.getObjectPropertyAssertionAxioms(ind);
 						for (OWLObjectPropertyAssertionAxiom axiom : axioms) {
@@ -76,11 +92,12 @@ public class EntityDependencyMatrix<T> {
 	 * entity1 depends on entity2 might be different from what
 	 * entity2 depends on entity1.
 	 * 
-	 * @param entity1
-	 * @param entity2
+	 * @param entity1 the first entity
+	 * @param entity2 the second entity
+	 * @return the dependency value
 	 */
-	public void getDependency(OWLEntity entity1, OWLEntity entity2){
-		
+	public double getDependency(OWLEntity entity1, OWLEntity entity2){
+		return 0;
 	}
 
 }

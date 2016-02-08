@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.decisiontrees.refinementoperators;
 
 import java.util.ArrayList;
@@ -43,8 +61,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	//KnowledgeBase kb;
 	private static final double d = 0.5;
+	// @NoConfigOption
 	private ArrayList<OWLClass> allConcepts;
+	// @NoConfigOption
 	private ArrayList<OWLObjectProperty> allRoles;
+	@ConfigOption(description = "the learning problem instance to use")
 	private PosNegLP lp;
 	private Random generator;
 	public static final int ORIGINAL=3; //predefined constants
@@ -52,7 +73,8 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	public static final int PSI=2;
 
 	//private OWLDataFactory dataFactory;
-	private Reasoner r;
+	@ConfigOption(description = "the reasoner instance to use")
+	private Reasoner reasoner;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
 	@ConfigOption(defaultValue = "5", name = "beam")
@@ -60,9 +82,9 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	@ConfigOption(defaultValue = "1", name = "kindOperator")
 	private int ro; // the name of a refinement operator
-	//	
 	//
-	//	
+	//
+	//
 	public int getRo() {
 		return ro;
 	}
@@ -83,11 +105,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	public DLTreesRefinementOperator(PosNegLP lp, AbstractReasonerComponent reasoner, int beam) {
 		super();
 		// TODO Auto-generated constructor stub
-		r=reasoner;
+		this.reasoner=reasoner;
 		//System.out.println("is Reasoner null? "+reasoner==null);
-		allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+		allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
-		allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+		allRoles= new ArrayList<>(reasoner.getObjectProperties());
 		//this.beam=beam; // set the maximum number of candidates that can be generated
 		this.lp=lp;
 		generator= new Random(2);
@@ -130,7 +152,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	/**
 	 * Random concept generation
-	 * @return 
+	 * @return
 	 */
 	public OWLClassExpression getRandomConcept() {
 
@@ -155,12 +177,12 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 							else
 								newConcept = dataFactory.getOWLObjectSomeValuesFrom(role, newConceptBase);
 						}
-						else					
+						else
 							newConcept = dataFactory.getOWLObjectComplementOf(newConceptBase);
 					}
 				}
 
-			} while (!(r.getIndividuals(newConcept).size()>0) );
+			} while (!(reasoner.getIndividuals(newConcept).size()>0) );
 
 		}
 		else{
@@ -180,19 +202,19 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 								newConcept = dataFactory.getOWLObjectSomeValuesFrom(role, newConceptBase);
 						}
 				} // else ext
-				else //if (KnowledgeBase.generator.nextDouble() > 0.8) {					
+				else //if (KnowledgeBase.generator.nextDouble() > 0.8) {
 					newConcept = dataFactory.getOWLObjectComplementOf(newConcept);
 
-			} while (!(r.getIndividuals(newConcept).size()>0));
+			} while (!(reasoner.getIndividuals(newConcept).size()>0));
 		}
 		//System.out.println("*********");
-		return newConcept;				
+		return newConcept;
 	}
 
 	public SortedSet<OWLClassExpression>generateNewConcepts(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, boolean seed) {
 
 		logger.info("Generating node concepts ");
-		TreeSet<OWLClassExpression> rConcepts = new TreeSet<OWLClassExpression>();
+		TreeSet<OWLClassExpression> rConcepts = new TreeSet<>();
 
 		OWLClassExpression newConcept=null;
 		boolean emptyIntersection;
@@ -207,12 +229,12 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 				logger.info(c+"-  New Concept: "+newConcept);
 				SortedSet<OWLIndividual> individuals;
 
-				individuals = (r.getIndividuals(newConcept));
+				individuals = (reasoner.getIndividuals(newConcept));
 				Iterator<OWLIndividual> instIterator = individuals.iterator();
 				while (emptyIntersection && instIterator.hasNext()) {
 					Node<OWLNamedIndividual> nextInd = (Node<OWLNamedIndividual>) instIterator.next();
 					int index = -1;
-					ArrayList<OWLIndividual> individuals2 = new ArrayList<OWLIndividual>(r.getIndividuals());
+					ArrayList<OWLIndividual> individuals2 = new ArrayList<>(reasoner.getIndividuals());
 					for (int i=0; index<0 && i<individuals2.size(); ++i)
 						if (nextInd.equals(individuals2)) index = i;
 					if (posExs.contains(index))
@@ -238,11 +260,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	private OWLClassExpression setSeed() {
 
 		//for (OWLClassExpression cl: allConcepts){
-		//if (cl.toString().compareToIgnoreCase(conceptSeed)==0){		
+		//if (cl.toString().compareToIgnoreCase(conceptSeed)==0){
 		//return cl;
 		//}
 
-		//}	
+		//}
 		return null;
 	}
 
@@ -277,28 +299,29 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 
 
-     //	
+     //
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		// TODO Auto-generated method stub
-		this.r= reasoner;
+		this.reasoner= reasoner;
 		if (allConcepts==null)
-			allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+			allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
 		if (allRoles==null)
-			allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+			allRoles= new ArrayList<>(reasoner.getObjectProperties());
 
 
 	}
 
 	
+	@Override
 	public void setReasoner(Reasoner reasoner) {
 		// TODO Auto-generated method stub
-		this.r= reasoner;
+		this.reasoner= reasoner;
 		if (allConcepts==null)
-			allConcepts=new ArrayList<OWLClass>(reasoner.getClasses());
+			allConcepts= new ArrayList<>(reasoner.getClasses());
 		//System.out.println("all+ Concepts: "+allConcepts.size());
 		if (allRoles==null)
-			allRoles= new ArrayList<OWLObjectProperty>(reasoner.getObjectProperties());
+			allRoles= new ArrayList<>(reasoner.getObjectProperties());
 
 
 	}
@@ -306,12 +329,13 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 
 
+	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression definition, SortedSet<OWLIndividual> posExs,
 			SortedSet<OWLIndividual> negExs) {
 
 		Set<OWLClassExpression> children;
 		int n=-1; // initialization
-		ArrayList<OWLClassExpression> childrenList=new ArrayList<OWLClassExpression>();;
+		ArrayList<OWLClassExpression> childrenList= new ArrayList<>();
 		OWLClassExpression def= definition;
 		
 		if ((!definition.isOWLThing())&&(!definition.isOWLNothing())){
@@ -321,7 +345,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 			if (children.size()>0){
 				n= rg.nextInt(children.size());
-				childrenList=new ArrayList<OWLClassExpression>(children);
+				childrenList= new ArrayList<>(children);
 
 			}
 		}
@@ -329,11 +353,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		if (ro==RHO){
 			RhoDRDown rho = new RhoDRDown();
 
-			rho.setReasoner((AbstractReasonerComponent)r);
-			ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
+			rho.setReasoner((AbstractReasonerComponent)reasoner);
+			ClassHierarchy classHierarchy = (ClassHierarchy) reasoner.getClassHierarchy();
 			rho.setClassHierarchy(classHierarchy);
-			rho.setObjectPropertyHierarchy(r.getObjectPropertyHierarchy());
-			rho.setDataPropertyHierarchy(r.getDatatypePropertyHierarchy());
+			rho.setObjectPropertyHierarchy(reasoner.getObjectPropertyHierarchy());
+			rho.setDataPropertyHierarchy(reasoner.getDatatypePropertyHierarchy());
 
 			rho.setApplyAllFilter(false);
 			rho.setUseAllConstructor(true);
@@ -363,19 +387,19 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		}else if (ro==PSI){
 			PsiDown psiDown=null;
 			
-			if (r instanceof AbstractReasonerComponent){
-			  psiDown= new PsiDown(lp,(AbstractReasonerComponent)r);
+			if (reasoner instanceof AbstractReasonerComponent){
+			  psiDown= new PsiDown(lp,(AbstractReasonerComponent)reasoner);
 
 			}else
-				new RuntimeException("Psi Down cannot be instantiated");
+				throw new RuntimeException("Psi Down cannot be instantiated");
 			
 //			ClassHierarchy classHierarchy = (ClassHierarchy) r.getClassHierarchy();
 			
-		Set<OWLClassExpression> refine = psiDown.refine(definition); 
+		Set<OWLClassExpression> refine = psiDown.refine(definition);
 		return refine;
 
 		}
-		else 
+		else
 			return (generateNewConcepts(posExs, negExs, false));
 		
 		

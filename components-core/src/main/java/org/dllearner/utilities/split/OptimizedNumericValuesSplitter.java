@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities.split;
 
@@ -31,9 +46,6 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 	private PosNegLP lp;
 //	private Class<T> clazz;
 
-	/**
-	 * @param reasoner
-	 */
 	public OptimizedNumericValuesSplitter(AbstractReasonerComponent reasoner, OWLDataFactory dataFactory, PosNegLP lp) {
 		super(reasoner, dataFactory);
 		this.lp = lp;
@@ -49,7 +61,7 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 		List<OWLLiteral> splitLiterals = new ArrayList<>();
 		
 		List<? extends Number> splitValues = computeSplitValues(dp);
-		
+
 		for (Number value : splitValues) {
 			OWLLiteral literal = dataFactory.getOWLLiteral(value.toString(), reasoner.getDatatype(dp));
 			splitLiterals.add(literal);
@@ -59,10 +71,10 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 	}
 
 	public <T extends Number & Comparable<T>> List<T> computeSplitValues(OWLDataProperty dp) {
-		List<T> splitsDP = new LinkedList<T>();
+		List<T> splitsDP = new LinkedList<>();
 		NumberFormat numberFormat = NumberFormat.getInstance();
 		
-		SortedSet<T> posRelatedValues = new TreeSet<T>();
+		SortedSet<T> posRelatedValues = new TreeSet<>();
 		
 		for (OWLIndividual ex : lp.getPositiveExamples()) {
 			Set<OWLLiteral> relatedValues = reasoner.getRelatedValues(ex, dp);
@@ -84,7 +96,7 @@ public class OptimizedNumericValuesSplitter extends AbstractNumericValuesSplitte
 			}
 		}
 		
-		SortedSet<T> negRelatedValues = new TreeSet<T>();
+		SortedSet<T> negRelatedValues = new TreeSet<>();
 		
 		for (OWLIndividual ex : lp.getNegativeExamples()) {
 			Set<OWLLiteral> relatedValues = reasoner.getRelatedValues(ex, dp);

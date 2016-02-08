@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.analyse;
 
 import java.util.ArrayList;
@@ -27,10 +45,10 @@ public class TypeOntology {
 
 	private int addTypes(OntModel model) {
 		int changes=0;
-		Set<String> dataProperties = new HashSet<String>();
-		Set<String> objectProperties = new HashSet<String>();
-		Set<String> classes = new HashSet<String>();
-		Set<String> individuals = new HashSet<String>();
+		Set<String> dataProperties = new HashSet<>();
+		Set<String> objectProperties = new HashSet<>();
+		Set<String> classes = new HashSet<>();
+		Set<String> individuals = new HashSet<>();
 		Set<Triple> triples = model.getGraph().find(Triple.ANY).toSet();
 
 
@@ -187,7 +205,7 @@ public class TypeOntology {
 				+ " ! regex(str(?o), '^http://dbpedia.org/resource/Category') &&"
 				+ " ! regex(str(?o), '^http://dbpedia.org/resource/Template')  ) . }";
 		OntModel model = ModelFactory.createOntologyModel();
-		List<String> individuals = new ArrayList<String>(7);
+		List<String> individuals = new ArrayList<>(7);
 		individuals.add("http://dbpedia.org/resource/Philolaus");
 		individuals.add("http://dbpedia.org/resource/Zeno_of_Elea");
 		individuals.add("http://dbpedia.org/resource/Socrates");

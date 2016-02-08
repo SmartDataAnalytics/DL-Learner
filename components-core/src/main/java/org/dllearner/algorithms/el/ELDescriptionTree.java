@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.algorithms.el;
 
 import java.util.Collection;
@@ -71,10 +70,10 @@ public class ELDescriptionTree implements Cloneable {
 	protected ELDescriptionNode rootNode;
 
 	// the set of all nodes in the tree
-	private Collection<ELDescriptionNode> nodes = new LinkedList<ELDescriptionNode>();
+	private Collection<ELDescriptionNode> nodes = new LinkedList<>();
 	
 	// nodes on a given level of the tree
-	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<Integer, Set<ELDescriptionNode>>();
+	private Map<Integer, Set<ELDescriptionNode>> levelNodeMapping = new HashMap<>();
 
 	// the background knowledge (we need to have it explicitly here, 
 	// since we store simulation information in the tree and simulation
@@ -202,7 +201,7 @@ public class ELDescriptionTree implements Cloneable {
 		if (level <= maxLevel) {
 			levelNodeMapping.get(level).add(node);
 		} else if (level == maxLevel + 1) {
-			Set<ELDescriptionNode> set = new HashSet<ELDescriptionNode>();
+			Set<ELDescriptionNode> set = new HashSet<>();
 			set.add(node);
 			levelNodeMapping.put(level, set);
 			maxLevel++;
@@ -238,15 +237,15 @@ public class ELDescriptionTree implements Cloneable {
 //		logger.trace(Helper.arrayContent(position));		
 //		logger.trace(this);
 		ELDescriptionNode currentNode = rootNode;
-		for (int i = 0; i < position.length; i++) {
-			currentNode = currentNode.getEdges().get(position[i]).getNode();
+		for (int aPosition : position) {
+			currentNode = currentNode.getEdges().get(aPosition).getNode();
 		}
 		return currentNode;
 	}
 
 	protected void updateSimulation(Set<ELDescriptionNode> nUpdate) {
 		// create a stack and initialize it with the nodes to be updated
-		LinkedList<ELDescriptionNode> list = new LinkedList<ELDescriptionNode>();
+		LinkedList<ELDescriptionNode> list = new LinkedList<>();
 		list.addAll(nUpdate);
 		
 		while(list.size() != 0) {
@@ -478,7 +477,7 @@ public class ELDescriptionTree implements Cloneable {
 		// (hash map should be fast here, but one could also
 		// experiment with TreeMap)
 		Map<ELDescriptionNode, ELDescriptionNode> cloneMap =
-			new HashMap<ELDescriptionNode, ELDescriptionNode>();
+				new HashMap<>();
 		
 		// create a new (empty) node for each node in the tree
 		// (we loop through the level mapping, because it is cheaper
@@ -543,7 +542,7 @@ public class ELDescriptionTree implements Cloneable {
 		treeClone.size = size;
 		
 		// nodes
-		treeClone.nodes = new LinkedList<ELDescriptionNode>();
+		treeClone.nodes = new LinkedList<>();
 		for(ELDescriptionNode oldNode : nodes) {
 			treeClone.nodes.add(cloneMap.get(oldNode));
 		}		
@@ -551,7 +550,7 @@ public class ELDescriptionTree implements Cloneable {
 		// level node mapping
 		for(int i=1; i<=maxLevel; i++) {
 			Set<ELDescriptionNode> oldNodes = levelNodeMapping.get(i);
-			Set<ELDescriptionNode> newNodes = new HashSet<ELDescriptionNode>();
+			Set<ELDescriptionNode> newNodes = new HashSet<>();
 			for(ELDescriptionNode oldNode : oldNodes) {
 				newNodes.add(cloneMap.get(oldNode));
 			}
@@ -566,7 +565,7 @@ public class ELDescriptionTree implements Cloneable {
 		// create a new reference tree
 		ELDescriptionTree treeClone = new ELDescriptionTree(rs);
 		// create a root node attached to this reference tree
-		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<OWLClass>(
+		ELDescriptionNode rootNodeClone = new ELDescriptionNode(treeClone, new TreeSet<>(
 				rootNode.getLabel()));
 		cloneRecursively(rootNode, rootNodeClone);
 		return treeClone;
@@ -577,7 +576,7 @@ public class ELDescriptionTree implements Cloneable {
 		// loop through all edges and clone the subtrees
 		for (ELDescriptionEdge edge : node.getEdges()) {
 			ELDescriptionNode tmp = new ELDescriptionNode(nodeClone, edge.getLabel(),
-					new TreeSet<OWLClass>(edge.getNode().getLabel()));
+					new TreeSet<>(edge.getNode().getLabel()));
 			cloneRecursively(edge.getNode(), tmp);
 		}
 	}

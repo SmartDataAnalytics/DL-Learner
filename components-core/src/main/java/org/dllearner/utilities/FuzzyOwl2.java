@@ -1,126 +1,35 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities;
+
+import fuzzyowl2.*;
+import fuzzyowl2.parser.Parser;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.search.EntitySearcher;
+import org.semanticweb.owlapi.util.SimpleShortFormProvider;
+import org.semanticweb.owlapi.vocab.OWLFacet;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.DataRangeType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAnnotationValue;
-import org.semanticweb.owlapi.model.OWLAsymmetricObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLDataPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataPropertyRangeAxiom;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
-import org.semanticweb.owlapi.model.OWLDatatypeRestriction;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
-import org.semanticweb.owlapi.model.OWLDifferentIndividualsAxiom;
-import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
-import org.semanticweb.owlapi.model.OWLDisjointDataPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLDisjointObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLDisjointUnionAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
-import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLFacetRestriction;
-import org.semanticweb.owlapi.model.OWLFunctionalDataPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLFunctionalObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLInverseFunctionalObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLInverseObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLIrreflexiveObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
-import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyDomainAxiom;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLObjectPropertyRangeAxiom;
-import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLProperty;
-import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
-import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
-import org.semanticweb.owlapi.model.OWLSubObjectPropertyOfAxiom;
-import org.semanticweb.owlapi.model.OWLSubPropertyChainOfAxiom;
-import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
-import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-import org.semanticweb.owlapi.vocab.OWLFacet;
-
-import fuzzyowl2.ChoquetConcept;
-import fuzzyowl2.ConceptDefinition;
-import fuzzyowl2.FuzzyConcept;
-import fuzzyowl2.FuzzyDatatype;
-import fuzzyowl2.FuzzyLogic;
-import fuzzyowl2.FuzzyModifier;
-import fuzzyowl2.FuzzyNominalConcept;
-import fuzzyowl2.FuzzyProperty;
-import fuzzyowl2.LeftShoulderFunction;
-import fuzzyowl2.LinearFunction;
-import fuzzyowl2.LinearModifier;
-import fuzzyowl2.ModifiedConcept;
-import fuzzyowl2.ModifiedFunction;
-import fuzzyowl2.ModifiedProperty;
-import fuzzyowl2.OwaConcept;
-import fuzzyowl2.PropertyDefinition;
-import fuzzyowl2.QowaConcept;
-import fuzzyowl2.QuasiSugenoConcept;
-import fuzzyowl2.RightShoulderFunction;
-import fuzzyowl2.SugenoConcept;
-import fuzzyowl2.TrapezoidalFunction;
-import fuzzyowl2.TriangularFunction;
-import fuzzyowl2.TriangularModifier;
-import fuzzyowl2.WeightedConcept;
-import fuzzyowl2.WeightedMaxConcept;
-import fuzzyowl2.WeightedMinConcept;
-import fuzzyowl2.WeightedSumConcept;
-import fuzzyowl2.parser.Parser;
+import java.util.*;
 
 
 /**
@@ -254,15 +163,15 @@ public class FuzzyOwl2
 	 */
 	public FuzzyOwl2(String input, String output)
 	{
-		definedConcepts = new Hashtable<String, FuzzyConcept> ();
-		definedProperties = new Hashtable<String, FuzzyProperty> ();
-		fuzzyDatatypes = new Hashtable<String, FuzzyDatatype> ();
-		fuzzyModifiers = new Hashtable<String, FuzzyModifier> ();
+		definedConcepts = new Hashtable<>();
+		definedProperties = new Hashtable<>();
+		fuzzyDatatypes = new Hashtable<>();
+		fuzzyModifiers = new Hashtable<>();
 		manager = OWLManager.createOWLOntologyManager();
 		ontologyPath = input;
 
 		loadOntology(ontologyPath);
-		ontologies = new HashSet<OWLOntology>();
+		ontologies = new HashSet<>();
 		ontologies.add(ontology);
 
 		// Imported ontologies
@@ -504,7 +413,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(dt, o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() > 1)
@@ -527,7 +436,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(dt, o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -548,7 +457,7 @@ public class FuzzyOwl2
 				if (ent.isOWLDatatype())
 				{
 					OWLDatatype dt = ent.asOWLDatatype();
-					Collection<OWLAnnotation> annotations = dt.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(dt, o, label);
 					if (annotations != null)
 					{
 						if (annotations.size() == 1)
@@ -579,7 +488,7 @@ public class FuzzyOwl2
 				if (ent.isOWLClass())
 				{
 					OWLClass cls = ent.asOWLClass();
-					Collection<OWLAnnotation> annotations = cls.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(cls, o, label);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " class annotations for " + cls + ".");
@@ -618,7 +527,7 @@ public class FuzzyOwl2
 	
 								case WEIGHTED_MAX:
 									List<ConceptDefinition> sourceList = c.getWeightedConcepts();
-									ArrayList<WeightedConcept> list = new ArrayList<WeightedConcept>();
+									ArrayList<WeightedConcept> list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedMaxConcept wmax = new WeightedMaxConcept(list);
@@ -628,7 +537,7 @@ public class FuzzyOwl2
 									
 								case WEIGHTED_MIN:
 									sourceList = c.getWeightedConcepts();
-									list = new ArrayList<WeightedConcept>();
+									list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedMinConcept wmin = new WeightedMinConcept(list);
@@ -638,7 +547,7 @@ public class FuzzyOwl2
 	
 								case WEIGHTED_SUM:
 									sourceList = c.getWeightedConcepts();
-									list = new ArrayList<WeightedConcept>();
+									list = new ArrayList<>();
 									for(ConceptDefinition def : sourceList)
 										list.add(new WeightedConcept(def.getNumber(), def.getFuzzyConcept() ) );
 									WeightedSumConcept wsum = new WeightedSumConcept(list);
@@ -743,7 +652,7 @@ public class FuzzyOwl2
 					else // if (ent.isOWLDataProperty() )
 						prop = ent.asOWLDataProperty();
 	
-					Collection<OWLAnnotation> annotations = prop.getAnnotations(o, label);
+					Collection<OWLAnnotation> annotations = EntitySearcher.getAnnotations(prop, o, label);
 	
 					if (annotations.size() > 1)
 						exit("Error: There are " + annotations.size() + " property annotations for " + prop + ".");
@@ -1103,14 +1012,14 @@ public class FuzzyOwl2
 			case OBJECT_HAS_VALUE:
 
 				OWLObjectHasValue hasValue = (OWLObjectHasValue) c;
-				OWLIndividual i = hasValue.getValue();
+				OWLIndividual i = hasValue.getFiller();
 				p = hasValue.getProperty();
 				return getObjectHasValueName(p, i);
 
 			case DATA_HAS_VALUE:
 
 				OWLDataHasValue dataHasValue = (OWLDataHasValue) c;
-				OWLLiteral lit = dataHasValue.getValue();
+				OWLLiteral lit = dataHasValue.getFiller();
 				dp = dataHasValue.getProperty();
 				return getDataHasValueName(dp, lit);
 

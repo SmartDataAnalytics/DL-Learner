@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb;
 
 import java.io.File;
@@ -45,7 +44,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
  * @author Jens Lehmann
  * @author Sebastian Hellmann
  *         <p/>
- *         SH: I added SPARQL capabilities.  Either URL is set directly or the basedir and filename is set or the URL and the SPARQL query is set
+ *         SH added SPARQL capabilities.  Either URL is set directly or the basedir and filename is set or the URL and the SPARQL query is set
  */
 @ComponentAnn(name = "OWL File", shortName = "owlfile", version = 0.9)
 public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource {
@@ -63,9 +62,9 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     @ConfigOption(name = "sparql",   description = "SPARQL CONSTRUCT expression to download from Endpoint")
     private String sparql = null;
     @ConfigOption(name = "defaultGraphURIs", description = "a list of default graph URIs to query from the Endpoint")
-    private List<String> defaultGraphURIs = new LinkedList<String>();
+    private List<String> defaultGraphURIs = new LinkedList<>();
     @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
-    private List<String> namedGraphURIs = new LinkedList<String>();
+    private List<String> namedGraphURIs = new LinkedList<>();
 
     private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
     @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
@@ -141,9 +140,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         try {
             OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(getURL().toURI()));
             return ontology;
-        } catch (OWLOntologyCreationException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
+        } catch (OWLOntologyCreationException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
@@ -192,7 +189,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     
     public void setSparql(String sparql, boolean autoQuote) {
     	if (autoQuote) {
-    		// quote IRIs 
+    		// quote IRIs
     		sparql = sparql.replaceAll("(?<=^|\\s|\\()((?:([^<(:/?#\\s]*):)(?://([^/?#]*?))?([^?#]*?)(?:\\?([^#]*?))?(?:#(.*?))?)(?=(,|\\.|;|)(\\)|\\s|$))", "<$1>");
     	}
         this.sparql = sparql;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.util.LinkedList;
@@ -40,7 +39,7 @@ public class DBpediaNavigatorFilterRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 //		RDFNode clazz = null;
 		RDFNodeTuple typeTuple = null;
-		List<RDFNodeTuple> toRemove=new LinkedList<RDFNodeTuple>();
+		List<RDFNodeTuple> toRemove= new LinkedList<>();
 		for (RDFNodeTuple tuple : tuples) {
 						
 			if (tuple.a.toString().equals(OWLVocabulary.RDF_TYPE)){

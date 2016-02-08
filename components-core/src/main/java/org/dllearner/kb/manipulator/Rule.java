@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.util.ArrayList;
@@ -30,11 +29,11 @@ import org.dllearner.utilities.datastructures.RDFNodeTuple;
 public abstract class Rule {
 	
 	
-	public static final List<Months> MONTHS = new ArrayList<Months>(Arrays.asList(Months.values()));
+	public static final List<Months> MONTHS = new ArrayList<>(Arrays.asList(Months.values()));
 	
 	public enum Months {
 		JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY,
-		AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER;
+		AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
 	}
 
 	Months month;
@@ -57,7 +56,7 @@ public abstract class Rule {
 			System.out.println(Months.values()[i]);
 			
 		}
-		System.out.println(Months.values());
+		System.out.println(Arrays.toString(Months.values()));
 	}
 	
 	public abstract void logJamon();

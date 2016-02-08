@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.utilities.owl;
 
 import java.util.HashSet;
@@ -18,12 +36,12 @@ public class OWLEntityTypeAdder {
 	 * Infers the type of predicates p_i by analyzing the object of the triples using p_i and adds the
 	 * entity type assertion to the model, i.e. for a data property dp <dp a owl:DatatypeProperty>
 	 * will be added.
-	 * @param model
+	 * @param model the model
 	 */
 	public static void addEntityTypes(Model model){
 		StmtIterator iterator = model.listStatements();
-		Set<Property> objectPropertyPredicates = new HashSet<Property>();
-		Set<Property> dataPropertyPredicates = new HashSet<Property>();
+		Set<Property> objectPropertyPredicates = new HashSet<>();
+		Set<Property> dataPropertyPredicates = new HashSet<>();
 		while(iterator.hasNext()){
 			Statement st = iterator.next();
 			Property predicate = st.getPredicate();

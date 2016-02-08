@@ -1,188 +1,55 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.experiments;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.math3.random.JDKRandomGenerator;
-import org.dllearner.kb.SparqlEndpointKS;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.jena.riot.Lang;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.reasoning.SPARQLReasoner;
-import org.semanticweb.owlapi.model.OWLClass;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Generate learning problems based on the DBpedia knowledge base.
  * @author Lorenz Buehmann
  *
  */
-public class DBpediaLearningProblemsGenerator {
+public class DBpediaLearningProblemsGenerator extends SPARQLLearningProblemsGenerator {
 	
-	SparqlEndpoint endpoint;
-	SparqlEndpointKS ks;
-	SPARQLReasoner reasoner;
-	ConciseBoundedDescriptionGenerator cbdGen;
+	private static final String DBPEDIA_ONTOLOGY_URL = "http://downloads.dbpedia.org/2014/dbpedia_2014.owl.bz2";
 	
-	File dataDir;
-	private Model schema;
-	private File benchmarkDirectory;
-	private int threadCount;
-	
-	public DBpediaLearningProblemsGenerator(File benchmarkDirectory, int threadCount) throws Exception {
-		this.benchmarkDirectory = benchmarkDirectory;
-		this.threadCount = threadCount;
-		
-		endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
-		
-		ks = new SparqlEndpointKS(endpoint);
-		ks.setCacheDir(new File(benchmarkDirectory, "cache").getPath() + ";mv_store=false");
-		ks.setPageSize(50000);
-		ks.setUseCache(true);
-		ks.setQueryDelay(100);
-		ks.init();
-		
-		reasoner = new SPARQLReasoner(ks);
-		reasoner.init();
-		
-		cbdGen = new ConciseBoundedDescriptionGeneratorImpl(ks.getQueryExecutionFactory());
-		
-		dataDir = new File(benchmarkDirectory, "data/dbpedia/");
-		dataDir.mkdirs();
-		
-		schema = ModelFactory.createDefaultModel();
-		schema.read(new FileInputStream(new File(benchmarkDirectory, "dbpedia_2014.owl")), null, "RDF/XML");
+	public DBpediaLearningProblemsGenerator(SparqlEndpoint endpoint, File benchmarkDirectory, int threadCount) throws Exception {
+		super(endpoint, benchmarkDirectory, threadCount);
 	}
-	
-	private Set<OWLClass> getClasses() {
-		return reasoner.getMostSpecificClasses();
-	}
-	
-	
-	public void generateBenchmark(int nrOfSPARQLQueries, final int minDepth, final int maxDepth, int minNrOfExamples) {
-		Collection<OWLClass> classes = getClasses();
-		ArrayList<OWLClass> classesList = new ArrayList<>(classes);
-		Collections.shuffle(classesList, new Random(123));
-		classes = classesList;
-//		classes = Sets.<OWLClass>newHashSet(new OWLClassImpl(IRI.create("http://dbpedia.org/ontology/AcademicJournal")));
-		
-		Iterator<OWLClass> iterator = classes.iterator();
-		
-//		ExecutorService tp = Executors.newFixedThreadPool(threadCount);
-		List<Future<Path>> futures = new ArrayList<Future<Path>>();
-		List<Path> paths = new ArrayList<Path>();
-		
-		ThreadPoolExecutor tp = new CustomFutureReturningExecutor(
-				threadCount, threadCount,
-                5000L, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<Runnable>(classes.size(), true));
-				
-		JDKRandomGenerator rndGen = new JDKRandomGenerator();
-		rndGen.setSeed(123);
-		
-		int nrOfQueriesPerDepth = nrOfSPARQLQueries / (maxDepth - minDepth + 1);
-		
-		for(int depth = minDepth; depth <= maxDepth; depth++) {
-			System.out.println("Generating " + nrOfQueriesPerDepth + " queries for depth " + depth);
-			List<Path> pathsForDepth = new ArrayList<Path>();
-			// generate paths of depths <= maxDepth
-			while(pathsForDepth.size() < nrOfQueriesPerDepth && iterator.hasNext()) {
-				
-				// pick next class
-				OWLClass cls = iterator.next();
-				
-//				int depth = rndGen.nextInt(maxDepth) + 1;
-				
-				Future<Path> future = tp.submit(new PathDetectionTask(dataDir, ks, schema, cls, depth, minNrOfExamples));
-//				futures.add(future);
-				try {
-					 Path path = future.get();
-			    	  if(path != null) {
-			    		  pathsForDepth.add(path);
-			    	  }
-				} catch (InterruptedException | ExecutionException e) {
-					e.printStackTrace();
-				}
-			}
-			paths.addAll(pathsForDepth);
-		}
-		
-		
-//		for (Future<Path> future : futures) {
-//		      try {
-//		    	  Path path = future.get();
-//		    	  if(path != null) {
-//		    		  paths.add(path);
-//		    	  }
-//		    	  if(paths.size() == nrOfSPARQLQueries) {
-//			    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
-//			    	  tp.shutdownNow();
-//			      }
-//			} catch (InterruptedException | ExecutionException e) {
-//				e.printStackTrace();
-//			}
-//		      if(paths.size() == nrOfSPARQLQueries) {
-//		    	  System.err.println("Benchmark generation finished. Stopping all running threads.");
-//		    	  tp.shutdownNow();
-//		      }
-//		}
-		
-		tp.shutdownNow();
-		try {
-			tp.awaitTermination(1, TimeUnit.HOURS);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+
+	@Override
+	protected void loadSchema() {
+		try(InputStream is = new BZip2CompressorInputStream(new URL(DBPEDIA_ONTOLOGY_URL).openStream())){
+			schema.read(is, null, Lang.RDFXML.getName());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		try {
-//			tp.awaitTermination(1, TimeUnit.DAYS);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		
-		for (Path path : paths) {
-			System.out.println(path);
-		}
-	}
-	
-	
-	class CustomFutureReturningExecutor extends ThreadPoolExecutor {
-
-	    public CustomFutureReturningExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue workQueue) {
-	        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-	    }
-
-	    @Override
-	    protected RunnableFuture newTaskFor(Callable callable) {
-	        if (callable instanceof PathDetectionTask) {
-	            return ((PathDetectionTask) callable).newTask();
-	        } else {
-	            return super.newTaskFor(callable); // A regular Callable, delegate to parent
-	        }
-	    }
 	}
 
-	
 	public static void main(String[] args) throws Exception {
 		File benchmarkBaseDirectory = new File(args[0]);
 		int threadCount = Integer.parseInt(args[1]);
@@ -190,8 +57,11 @@ public class DBpediaLearningProblemsGenerator {
 		int minDepth = Integer.parseInt(args[3]);
 		int maxDepth = Integer.parseInt(args[4]);
 		int minNrOfExamples = Integer.parseInt(args[5]);
-		
-		DBpediaLearningProblemsGenerator generator = new DBpediaLearningProblemsGenerator(benchmarkBaseDirectory, threadCount);
+
+		SparqlEndpoint endpoint = SparqlEndpoint.create("http://dbpedia.org/sparql", "http://dbpedia.org");
+//		SparqlEndpoint endpoint = SparqlEndpoint.create("http://sake.informatik.uni-leipzig.de:8890/sparql", "http://dbpedia.org");
+
+		DBpediaLearningProblemsGenerator generator = new DBpediaLearningProblemsGenerator(endpoint, benchmarkBaseDirectory, threadCount);
 		generator.generateBenchmark(nrOfSPARQLQueries, minDepth, maxDepth, minNrOfExamples);
 	}
 	

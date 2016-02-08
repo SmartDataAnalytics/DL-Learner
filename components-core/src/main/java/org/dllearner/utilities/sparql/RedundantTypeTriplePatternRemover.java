@@ -1,12 +1,26 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.utilities.sparql;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -52,8 +66,8 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	
 	/**
 	 * Returns a pruned copy of the given query.
-	 * @param query
-	 * @return
+	 * @param query the query
+	 * @return a pruned copy of the given query
 	 */
 	public Query pruneQuery(Query query) {
 		Query copy = query.cloneQuery();
@@ -62,7 +76,7 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 	}
 	
 	private Set<Node> getSuperClasses(Node cls){
-		Set<Node> superClasses = new HashSet<Node>();
+		Set<Node> superClasses = new HashSet<>();
 		
 		superClassesQueryTemplate.setIri("sub", cls.getURI());
 		
@@ -103,12 +117,12 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 		}
 		
 		// check for semantically redundant triple patterns
-		Set<Triple> redundantTriples = new HashSet<Triple>();
+		Set<Triple> redundantTriples = new HashSet<>();
 		for (Entry<Node, Collection<Triple>> entry : subject2TypeTriples.asMap().entrySet()) {
 			Collection<Triple> triples = entry.getValue();
 			
 			// get all super classes
-			Set<Node> superClasses = new HashSet<Node>();
+			Set<Node> superClasses = new HashSet<>();
 			for (Triple triple : triples) {
 				Node cls = triple.getObject();
 				superClasses.addAll(getSuperClasses(cls));
@@ -143,12 +157,12 @@ public class RedundantTypeTriplePatternRemover extends ElementVisitorBase{
 		}
 
 		// check for semantically redundant triple patterns
-		Set<Triple> redundantTriples = new HashSet<Triple>();
+		Set<Triple> redundantTriples = new HashSet<>();
 		for (Entry<Node, Collection<Triple>> entry : subject2TypeTriples.asMap().entrySet()) {
 			Collection<Triple> triples = entry.getValue();
 
 			// get all super classes
-			Set<Node> superClasses = new HashSet<Node>();
+			Set<Node> superClasses = new HashSet<>();
 			for (Triple triple : triples) {
 				Node cls = triple.getObject();
 				superClasses.addAll(getSuperClasses(cls));

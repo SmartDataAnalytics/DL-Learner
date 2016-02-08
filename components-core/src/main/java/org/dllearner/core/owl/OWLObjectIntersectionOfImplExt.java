@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.core.owl;
 
@@ -14,6 +29,7 @@ import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLObjectVisitorEx;
+import org.semanticweb.owlapi.util.OWLObjectTypeIndexProvider;
 
 /**
  * 
@@ -30,6 +46,11 @@ public class OWLObjectIntersectionOfImplExt extends
 		OWLNaryBooleanClassExpressionImplExt implements OWLObjectIntersectionOf {
 
 	private static final long serialVersionUID = 30406L;
+
+	@Override
+	protected int index() {
+		return OWLObjectTypeIndexProvider.CLASS_EXPRESSION_TYPE_INDEX_BASE + 1;
+	}
 
 	/**
 	 * @param operands
@@ -84,7 +105,7 @@ public class OWLObjectIntersectionOfImplExt extends
 
 	@Override
 	public Set<OWLClassExpression> asConjunctSet() {
-		Set<OWLClassExpression> conjuncts = new HashSet<OWLClassExpression>();
+		Set<OWLClassExpression> conjuncts = new HashSet<>();
 		for (OWLClassExpression op : getOperands()) {
 			conjuncts.addAll(op.asConjunctSet());
 		}

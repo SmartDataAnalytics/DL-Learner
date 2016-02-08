@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.manipulator;
 
 import java.util.HashMap;
@@ -31,7 +30,7 @@ import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
 public class DBPediaNavigatorCityLocatorRule extends Rule{
 	
-	Map<String,String> map=new HashMap<String,String>();
+	Map<String,String> map= new HashMap<>();
 
 
 	public DBPediaNavigatorCityLocatorRule(Months month){
@@ -53,7 +52,7 @@ public class DBPediaNavigatorCityLocatorRule extends Rule{
 	public  SortedSet<RDFNodeTuple> applyRule(Node subject, SortedSet<RDFNodeTuple> tuples){
 		
 		String uri;
-		if(( uri = map.get(subject.getURIString().toString()) ) == null) {
+		if(( uri = map.get(subject.getURIString()) ) == null) {
 			return tuples;
 		}else {
 			tuples.add(new RDFNodeTuple(new ResourceImpl(OWLVocabulary.RDFS_SUBCLASS_OF), new ResourceImpl(uri)));

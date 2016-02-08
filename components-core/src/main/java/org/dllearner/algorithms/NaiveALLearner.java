@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms;
 
 import java.util.ArrayList;
@@ -12,6 +30,7 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.EvaluatedDescription;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.learningproblems.EvaluatedDescriptionPosNeg;
 import org.dllearner.learningproblems.ScorePosNeg;
@@ -28,6 +47,7 @@ public class NaiveALLearner extends AbstractCELA{
     private Map<Integer, List<OWLClassExpression>> generatedDescriptions;
     
     private boolean running = false;
+    @ConfigOption(defaultValue = "4", description = "maximum length of class expression")
     private int maxLength = 4;
     
     private OWLClassExpression bestDescription;
@@ -60,7 +80,7 @@ public class NaiveALLearner extends AbstractCELA{
 
     @Override
     public void init() throws ComponentInitException {
-        generatedDescriptions = new HashMap<Integer, List<OWLClassExpression>>();
+        generatedDescriptions = new HashMap<>();
         
         // start with owl:Thing
         bestDescription = OWL_THING;
@@ -104,7 +124,7 @@ public class NaiveALLearner extends AbstractCELA{
      *      - all concepts of length `length`-2 are extended by limited
      *        existential quantification/value restriction
      *
-     * @param length
+     * @param length the length
      */
     private void generateDescriptions(int length) {
         generatedDescriptions.put(length, new ArrayList<OWLClassExpression>());

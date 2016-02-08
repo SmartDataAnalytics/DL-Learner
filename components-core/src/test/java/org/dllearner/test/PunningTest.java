@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.test;
 
@@ -21,7 +36,8 @@ import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -73,7 +89,7 @@ public class PunningTest {
 	
 	@Test
 	public void testPunning() throws OWLOntologyCreationException, ComponentInitException{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		OWLOntology ontology = loadExample();
 		OWLDataFactory df = new OWLDataFactoryImpl();
 		
@@ -119,7 +135,8 @@ public class PunningTest {
 		System.out.println("Classes: " + ontology.getClassesInSignature());
 		System.out.println("Individuals: " + ontology.getIndividualsInSignature());
 		
-		PrefixManager pm = new DefaultPrefixManager("http://ex.org/");
+		PrefixManager pm = new DefaultPrefixManager();
+		pm.setDefaultPrefix("http://ex.org/");
 		OWLClass fahrzeug = df.getOWLClass("Fahrzeug", pm);
 		OWLClassExpression d = fahrzeug;
 		System.out.println(d);

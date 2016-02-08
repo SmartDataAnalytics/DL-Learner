@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.test;
 
 import java.util.SortedSet;
@@ -24,7 +23,6 @@ import java.util.TreeSet;
 
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
-import org.dllearner.utilities.datastructures.SetManipulation;
 import org.dllearner.utilities.datastructures.StringTuple;
 import org.dllearner.utilities.statistics.SimpleClock;
 
@@ -104,7 +102,7 @@ public class FilterTest {
 			tupleset = st.queryAsTuple(subject, true);
 			
 		}
-		SetManipulation.printSet("before", tupleset);
+		System.out.println("before ["+ tupleset.size()+"]: "+tupleset);
 	
 		sc.printAndSet("SHORT ");
 		
@@ -170,8 +168,8 @@ public class FilterTest {
 			//afterfilter = re.filterTuples(subject,tupleset);
 		}
 		sc.printAndSet("SHORT with filter");
-		SetManipulation.printSet("before", tupleset);
-		SetManipulation.printSet("after", afterfilter);
+		System.out.println("before ["+ tupleset.size()+"]: "+tupleset);
+		System.out.println("before ["+ afterfilter.size()+"]: "+afterfilter);
 	}
 
 }

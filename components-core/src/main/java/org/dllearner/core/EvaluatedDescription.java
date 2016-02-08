@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 import org.dllearner.utilities.owl.OWLAPIRenderers;
@@ -44,7 +43,7 @@ public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesis<O
 	}
 	
 	/**
-	 * @see org.dllearner.core.owl.Description#getLength()
+	 * @see OWLClassExpressionUtils#getLength(OWLClassExpression)
 	 * @return Length of the description.
 	 */		
 	public int getDescriptionLength() {
@@ -52,7 +51,7 @@ public class EvaluatedDescription<S extends Score> extends EvaluatedHypothesis<O
 	}
 	
 	/**
-	 * @see org.dllearner.core.owl.Description#getDepth()
+	 * @see OWLClassExpressionUtils#getDepth(OWLClassExpression)
 	 * @return Depth of the description.
 	 */	
 	public int getDescriptionDepth() {

@@ -4,9 +4,6 @@ import java.util.Collection;
 
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.IConfigurationProperty;
-import org.dllearner.kb.KBFile;
-import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
-import org.dllearner.kb.OWLFile;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -106,10 +103,14 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
             throw new RuntimeException("Can't find class " + beanDefinition.getBeanClassName());
         }
         /** Add Base Directory */
-		if (beanClass.isAssignableFrom(OWLFile.class) || 
-				beanClass.isAssignableFrom(KBFile.class) || 
-				beanClass == LocalModelBasedSparqlEndpointKS.class) {
+        try {
+			beanClass.getMethod("setBaseDir", String.class);
 			beanDefinition.getPropertyValues().add("baseDir", configuration.getBaseDir());
+		} catch (NoSuchMethodException e) {
+			// ignore
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
     }
 

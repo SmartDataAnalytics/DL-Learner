@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,33 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.learningproblems;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.core.options.CommonConfigMappings;
-import org.dllearner.core.options.ConfigEntry;
-import org.dllearner.core.options.ConfigOption;
-import org.dllearner.core.options.InvalidConfigOptionValueException;
-import org.dllearner.core.options.StringSetConfigOption;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 
-import com.google.common.collect.Sets;
+import java.util.*;
 
 /**
  * A learning problem, where we learn from positive examples only.
@@ -56,6 +43,7 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	private static Logger logger = Logger.getLogger(PosOnlyLP.class);
     private long nanoStartTime;
 
+	@ConfigOption(description = "the positive examples", required = true)
 	protected SortedSet<OWLIndividual> positiveExamples;
 
 	private List<OWLIndividual> positiveExamplesShuffled;
@@ -81,27 +69,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		this.positiveExamples = positiveExamples;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.dllearner.core.Component#applyConfigEntry(org.dllearner.core.ConfigEntry)
-	 */
-	@Override
-	@SuppressWarnings( { "unchecked" })
-	public <T> void applyConfigEntry(ConfigEntry<T> entry) throws InvalidConfigOptionValueException {
-		String name = entry.getOptionName();
-		if (name.equals("positiveExamples"))
-			positiveExamples = CommonConfigMappings
-					.getIndividualSet((Set<String>) entry.getValue());
-	}
-
-	public static Collection<ConfigOption<?>> createConfigOptions() {
-		Collection<ConfigOption<?>> options = new LinkedList<ConfigOption<?>>();
-		options.add(new StringSetConfigOption("positiveExamples",
-				"positive examples", null, true, false));
-		return options;
-	}
-
 	public static String getName() {
 		return "pos only learning problem";
 	}
@@ -109,30 +76,14 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	@Override
 	public void init() {
 
-		// old init code, where pos only was realised through pseudo negatives
-
-		// by default we test all other instances of the knowledge base
-//		pseudoNegatives = Helper.difference(reasoner.getIndividuals(), positiveExamples);
-
-		// create an instance of a standard definition learning problem
-		// instanciated with pseudo-negatives
-//		definitionLP = ComponentFactory.getPosNegLPStandard(
-//				reasoner,
-//				SetManipulation.indToString(positiveExamples),
-//				SetManipulation.indToString(pseudoNegatives));
-		//definitionLP = new PosNegDefinitionLP(reasoningService, positiveExamples, pseudoNegatives);
-		// TODO: we must make sure that the problem also gets the same
-		// reasoning options (i.e. options are the same up to reversed example sets)
-//		definitionLP.init();
-
 		Random rand = new Random(1);
 
 		if(getReasoner()!=null) {
-			individuals = new LinkedList<OWLIndividual>(getReasoner().getIndividuals());
+			individuals = new LinkedList<>(getReasoner().getIndividuals());
 			Collections.shuffle(individuals, rand);
 		}
 
-		positiveExamplesShuffled = new LinkedList<OWLIndividual>(positiveExamples);
+		positiveExamplesShuffled = new LinkedList<>(positiveExamples);
 		Collections.shuffle(positiveExamplesShuffled, rand);
 	}
 
@@ -147,18 +98,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		this.useApproximations = useApproximations;
 	}
 
-	/**
-	 * @return the pseudoNegatives
-	 */
-//	public SortedSet<OWLIndividual> getPseudoNegatives() {
-//		return pseudoNegatives;
-//	}
-
-
-//	public int coveredPseudoNegativeExamplesOrTooWeak(OWLClassExpression concept) {
-//		return definitionLP.coveredNegativeExamplesOrTooWeak(concept);
-//	}posOnlyLPLearningTests
-
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.LearningProblem#computeScore(org.dllearner.core.owl.Description)
 	 */
@@ -166,8 +105,8 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 	public ScorePosOnly computeScore(OWLClassExpression description, double noise) {
 		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
 
-		Set<OWLIndividual> instancesCovered = new TreeSet<OWLIndividual>();
-		Set<OWLIndividual> instancesNotCovered = new TreeSet<OWLIndividual>();
+		Set<OWLIndividual> instancesCovered = new TreeSet<>();
+		Set<OWLIndividual> instancesNotCovered = new TreeSet<>();
 		for(OWLIndividual ind : positiveExamples) {
 			if(retrieval.contains(ind)) {
 				instancesCovered.add(ind);
@@ -183,28 +122,6 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 		retrieval.removeAll(instancesCovered);
 		return new ScorePosOnly(instancesCovered, instancesNotCovered, coverage, retrieval, protusion, getAccuracy(coverage, protusion));
 	}
-
-
-	/* (non-Javadoc)
-	 * @see org.dllearner.core.LearningProblem#getAccuracy(org.dllearner.core.owl.Description)
-	 */
-	@Override
-	public double getAccuracy(OWLClassExpression description, double noise) {
-		Set<OWLIndividual> retrieval = getReasoner().getIndividuals(description);
-
-		int instancesCovered = 0;
-		for(OWLIndividual ind : positiveExamples) {
-			if(retrieval.contains(ind)) {
-				instancesCovered++;
-			}
-		}
-
-		double coverage = instancesCovered/(double)positiveExamples.size();
-		double protusion = retrieval.size() == 0 ? 0 : instancesCovered/(double)retrieval.size();
-
-		return getAccuracy(coverage, protusion);
-	}
-
 
 	public double getAccuracyOrTooWeakApprox(OWLClassExpression description, double noise) {
 
@@ -388,5 +305,9 @@ public class PosOnlyLP extends AbstractClassExpressionLearningProblem<ScorePosOn
 
 	public void setPositiveExamples(SortedSet<OWLIndividual> positiveExamples) {
 		this.positiveExamples = positiveExamples;
+	}
+
+	public void setPositiveExamples(Set<OWLIndividual> positiveExamples) {
+		this.positiveExamples = new TreeSet<>(positiveExamples);
 	}
 }

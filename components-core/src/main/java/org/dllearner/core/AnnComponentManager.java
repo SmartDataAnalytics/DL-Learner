@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,30 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.log4j.Level;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.learningproblems.AccMethod;
 import org.dllearner.refinementoperators.RefinementOperator;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 
 /**
@@ -136,7 +130,7 @@ public class AnnComponentManager {
 				reflectionScanner = new Reflections("org.dllearner");
 			}
 			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
-			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class); 
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class);
 			for (Class<?> clazz
 					: Sets.intersection(
 							componentClasses,
@@ -154,16 +148,16 @@ public class AnnComponentManager {
 			}
 		}
 		// conversion of class strings to objects
-		components = new TreeSet<Class<? extends Component>>(new Comparator<Class<? extends Component>>() {
+		components = new TreeSet<>(new Comparator<Class<? extends Component>>() {
 
 			@Override
 			public int compare(Class<? extends Component> o1,
-					Class<? extends Component> o2) {
+							   Class<? extends Component> o2) {
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
-		componentNames = new DualHashBidiMap<Class<? extends Component>, String>();
-		componentNamesShort = new DualHashBidiMap<Class<? extends Component>, String>();
+		componentNames = new DualHashBidiMap<>();
+		componentNamesShort = new DualHashBidiMap<>();
 		for (String componentClassName : componentClassNames) {
 			try {
 				Class<? extends Component> component = Class.forName(componentClassName).asSubclass(Component.class);
@@ -267,7 +261,7 @@ public class AnnComponentManager {
      */
     public Collection<Class<? extends Component>> getComponentsOfType(Class type) {
 
-        Collection<Class<? extends Component>> result = new ArrayList<Class<? extends Component>>();
+        Collection<Class<? extends Component>> result = new ArrayList<>();
         for (Class<? extends Component> component : components) {
             if (type.isAssignableFrom(component)) {
                 result.add(component);
@@ -299,6 +293,51 @@ public class AnnComponentManager {
 		return componentNamesShort;
 	}
 
+	/**
+	 * Applies a config entry to a component. If the entry is not valid, the method
+	 * prints an exception and returns false.
+	 * @param <T> Type of the config option.
+	 * @param component A component object.
+	 * @param optionName the option name
+	 * @param value the value to set
+	 * @return True if the config entry could be applied succesfully, otherwise false.
+	 */
+	@Deprecated
+	public static <T> boolean applyConfigEntry(AbstractComponent component, String optionName, T value) {
+		List<AbstractComponent> childComponents = new LinkedList<>();
+		for (Method m : component.getClass().getMethods()) {
+			if (m.getName().equals("set" + optionName.substring(0, 1).toUpperCase() + optionName.substring(1))) {
+				try {
+					m.invoke(component, value);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.debug("Error setting " + optionName + " to " + value + " on " + component + ": ", e);
+					return false;
+				}
+				return true;
+			} else if (m.getName().startsWith("get")
+					&& AbstractComponent.class.isAssignableFrom(m.getReturnType())) {
+				Object cc;
+				try {
+					cc = m.invoke(component);
+					childComponents.add((AbstractComponent) cc);
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					logger.trace("Error querying " + m.getName() + " for subcomponent in " + component, e);
+				}
+			}
+		}
+		for (AbstractComponent cc : childComponents) {
+			if (cc != null) {
+				boolean try_inv = applyConfigEntry(cc, optionName, value);
+				if (try_inv) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public final static Class[] coreComponentClasses = {
 		KnowledgeSource.class,
 		LearningAlgorithm.class,
@@ -307,7 +346,8 @@ public class AnnComponentManager {
 		LearningProblem.class,
 		ReasonerComponent.class,
 		RefinementOperator.class,
-		Heuristic.class
+		Heuristic.class,
+		AccMethod.class
 	};
 
 	/**
@@ -318,7 +358,7 @@ public class AnnComponentManager {
 	 * @return The list of core interfaces the component implemnets.
 	 */
 	public static List<Class<? extends Component>> getCoreComponentTypes(Class<? extends Component> component) {
-		List<Class<? extends Component>> types = new LinkedList<Class<? extends Component>>();
+		List<Class<? extends Component>> types = new LinkedList<>();
 		for(Class c : coreComponentClasses) {
 			if(c.isAssignableFrom(component)) {
 				types.add(c);
@@ -329,7 +369,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getName(Class<? extends Component> component){
@@ -342,7 +382,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getName(Component component){
@@ -351,7 +391,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getShortName(Class<? extends Component> component){
@@ -364,7 +404,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the short name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Short name of the component.
 	 */
 	public static String getShortName(Component component){
@@ -373,7 +413,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the name of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Name of the component.
 	 */
 	public static String getDescription(Class<? extends Component> component){
@@ -383,7 +423,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the description of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return OWLClassExpression of the component.
 	 */
 	public static String getDescription(Component component){
@@ -392,16 +432,16 @@ public class AnnComponentManager {
 	
 	/**
 	 * Returns the config options of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return OWLClassExpression of the component.
 	 */
-	public static Set<ConfigOption> getConfigOptions(Class<? extends Component> component){
-		Set<ConfigOption> set = new HashSet<>();
+	public static Set<Field> getConfigOptions(Class<? extends Component> component){
+		Set<Field> set = new HashSet<>();
 	    Class<?> c = component;
 	    while (c != null) {
-	        for (java.lang.reflect.Field field : c.getDeclaredFields()) {
+	        for (Field field : c.getDeclaredFields()) {
 	            if (field.isAnnotationPresent(ConfigOption.class)) {
-	                set.add(field.getAnnotation(ConfigOption.class));
+	                set.add(field);
 	            }
 	        }
 	        c = c.getSuperclass();
@@ -411,7 +451,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the version of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Version of the component.
 	 */
 	public static double getVersion(Class<? extends Component> component){
@@ -421,7 +461,7 @@ public class AnnComponentManager {
 
 	/**
 	 * Returns the version of a DL-Learner component.
-	 * @param component
+	 * @param component the component
 	 * @return Version of the component.
 	 */
 	public static double getVersion(Component component){
@@ -430,5 +470,15 @@ public class AnnComponentManager {
 
 	public static boolean addComponentClassName(String e) {
 		return componentClassNames.add(e);
+	}
+
+	/**
+	 * Returns the name of a config option
+	 * @param f the Reflection field of the option
+	 * @return name of the option
+	 */
+	public static String getName(Field f) {
+		f.getAnnotation(ConfigOption.class);
+		return f.getName();
 	}
 }

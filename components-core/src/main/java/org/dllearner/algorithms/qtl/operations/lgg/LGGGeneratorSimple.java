@@ -1,8 +1,8 @@
 /**
- * Copyright (C) 2007-2010, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
- * 
+ *
  * DL-Learner is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package org.dllearner.algorithms.qtl.operations.lgg;
 
@@ -27,8 +26,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
+import org.aksw.jena_sparql_api.core.FluentQueryExecutionFactory;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.aksw.jena_sparql_api.core.SparqlServiceBuilder;
 import org.dllearner.algorithms.qtl.QueryTreeUtils;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
@@ -52,7 +51,9 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
 
 /**
- * 
+ * An LGG generator based on syntax and structure only, i.e. without taking into account any type of
+ * Semantics.
+ *
  * @author Lorenz Bühmann
  *
  */
@@ -84,7 +85,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 		// 2. compare the edges
 		// we only have to compare edges contained in both trees
 		for(Node edge : Sets.intersection(tree1.getEdges(), tree2.getEdges())){
-			Set<RDFResourceTree> addedChildren = new HashSet<RDFResourceTree>();
+			Set<RDFResourceTree> addedChildren = new HashSet<>();
 			// loop over children of first tree
 			for(RDFResourceTree child1 : tree1.getChildren(edge)){
 				// loop over children of second tree
@@ -127,10 +128,10 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	public static void main(String[] args) throws Exception {
 		// knowledge base
 		SparqlEndpoint endpoint = SparqlEndpoint.getEndpointDBpedia();
-		QueryExecutionFactory qef = SparqlServiceBuilder
-				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs())
+		QueryExecutionFactory qef = FluentQueryExecutionFactory
+				.http(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs()).config()
 				.withCache(CacheUtilsH2.createCacheFrontend("/tmp/cache", false, TimeUnit.DAYS.toMillis(60)))
-				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).create();
+				.withPagination(10000).withDelay(50, TimeUnit.MILLISECONDS).end().create();
 		
 		// tree generation
 		ConciseBoundedDescriptionGenerator cbdGenerator = new ConciseBoundedDescriptionGeneratorImpl(qef);
@@ -154,7 +155,7 @@ public class LGGGeneratorSimple extends AbstractLGGGenerator {
 								)
 								)
 				);
-		List<RDFResourceTree> trees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> trees = new ArrayList<>();
 		List<String> resources = Lists.newArrayList("http://dbpedia.org/resource/Leipzig", "http://dbpedia.org/resource/Dresden");
 		for(String resource : resources){
 			try {

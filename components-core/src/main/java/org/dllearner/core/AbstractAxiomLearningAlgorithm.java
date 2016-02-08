@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core;
 
 import java.net.SocketTimeoutException;
@@ -37,6 +36,7 @@ import java.util.TreeSet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
+import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.kb.LocalModelBasedSparqlEndpointKS;
@@ -83,19 +83,20 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S extends OWLObject, E extends OWLEntity> extends AbstractComponent implements AxiomLearningAlgorithm<T>{
 	
+	@Unused
 	protected LearningProblem learningProblem;
 	protected final Logger logger;
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="")
+	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
-	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="")
+	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="omit axioms already existing in the knowledge base")
 	protected boolean returnOnlyNewAxioms;
 	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
-	
+	@ConfigOption(description = "the sparql endpoint knowledge source")
 	protected SparqlEndpointKS ks;
 	
 	// the instances which are set
@@ -103,6 +104,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	private QueryExecutionFactory ksQef;
 	
 	// the instances on which the algorithms are really applied
+	@ConfigOption(description = "The sparql reasoner instance to use", defaultValue = "SPARQLReasoner")
 	protected SPARQLReasoner reasoner;
 	protected QueryExecutionFactory qef;
 	
@@ -114,6 +116,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected boolean timeout = true;
 	
+	@Unused
 	protected boolean forceSPARQL_1_0_Mode = false;
 	
 	protected int chunkCount = 0;
@@ -123,7 +126,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected boolean fullDataLoaded = false;
 	
-	protected List<String> allowedNamespaces = new ArrayList<String>();
+	protected List<String> allowedNamespaces = new ArrayList<>();
 	
 	protected ParameterizedSparqlString iterativeQueryTemplate;
 	
@@ -140,13 +143,15 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected AxiomType<T> axiomType;
 	
+	@ConfigOption(description = "the OWL entity to learn about")
 	protected E entityToDescribe;
 	
+	@Unused
 	protected boolean useSampling = true;
 	protected int popularity;
 	
 	public AbstractAxiomLearningAlgorithm() {
-		existingAxioms = new TreeSet<T>();
+		existingAxioms = new TreeSet<>();
 		
 		logger = LoggerFactory.getLogger(this.getClass());
 	}
@@ -164,7 +169,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
     @Override
     public void setLearningProblem(LearningProblem learningProblem) {
         this.learningProblem = learningProblem;
-    }	
+    }
     
     /**
 	 * @param entityToDescribe the entityToDescribe to set
@@ -233,11 +238,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 
 	@Override
 	public void start() {
-		logger.info("Started learning of " + axiomType.getName() + " axioms for " + 
+		logger.info("Started learning of " + axiomType.getName() + " axioms for " +
 				OWLAPIUtils.getPrintName(entityToDescribe.getEntityType()) + " " + entityToDescribe.toStringID() + "...");
 		startTime = System.currentTimeMillis();
 		
-		currentlyBestAxioms = new TreeSet<EvaluatedAxiom<T>>();
+		currentlyBestAxioms = new TreeSet<>();
 		
 		popularity = reasoner.getPopularity(entityToDescribe);
 		if(popularity == 0){
@@ -266,7 +271,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 			progressMonitor.learningStopped(axiomType);
 		}
 		
-		logger.info("...finished learning of " + axiomType.getName() 
+		logger.info("...finished learning of " + axiomType.getName()
 				+ " axioms for " + OWLAPIUtils.getPrintName(entityToDescribe.getEntityType())
 				+ " " + entityToDescribe.toStringID() + " in {}ms.", (System.currentTimeMillis()-startTime));
 		if(this instanceof ObjectPropertyCharacteristicsAxiomLearner){
@@ -287,7 +292,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		qef = new QueryExecutionFactoryModel(sample);
 		reasoner = new SPARQLReasoner(qef);
 		
-		// get the page size 
+		// get the page size
 		//TODO put to base class
 		long pageSize = 10000;//PaginationUtils.adjustPageSize(globalQef, 10000);
 		
@@ -334,8 +339,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	/**
-	 * Get the defined axioms in the knowledge base.
-	 * @return
+	 * Compute the defined axioms in the knowledge base.
 	 */
 	protected abstract void getExistingAxioms();
 	
@@ -346,7 +350,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	/**
 	 * The SPARQL CONSTRUCT query used to generate a sample for the given axiom type  and entity.
-	 * @return
+	 * @return the SPARQL query
 	 */
 	protected abstract ParameterizedSparqlString getSampleQuery();
 
@@ -355,6 +359,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		return getCurrentlyBestAxioms(Integer.MAX_VALUE);
 	}
 	
+	@Override
 	public List<T> getCurrentlyBestAxioms(int nrOfAxioms) {
 		return getCurrentlyBestAxioms(nrOfAxioms, 0.0);
 	}
@@ -369,7 +374,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	public List<T> getCurrentlyBestAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<T> bestAxioms = new ArrayList<T>();
+		List<T> bestAxioms = new ArrayList<>();
 		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(nrOfAxioms, accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
@@ -377,7 +382,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public List<T> getCurrentlyBestAxioms(double accuracyThreshold) {
-		List<T> bestAxioms = new ArrayList<T>();
+		List<T> bestAxioms = new ArrayList<>();
 		for(EvaluatedAxiom<T> evAx : getCurrentlyBestEvaluatedAxioms(accuracyThreshold)){
 			bestAxioms.add(evAx.getAxiom());
 		}
@@ -392,10 +397,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		return currentlyBestEvaluatedAxioms.get(0);
 	}
 	
+	@Override
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms() {
-		return new ArrayList<EvaluatedAxiom<T>>(currentlyBestAxioms);
+		return new ArrayList<>(currentlyBestAxioms);
 	}
 
+	@Override
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms) {
 		return getCurrentlyBestEvaluatedAxioms(nrOfAxioms, 0.0);
 	}
@@ -404,9 +411,10 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		return getCurrentlyBestEvaluatedAxioms(Integer.MAX_VALUE, accuracyThreshold);
 	}
 
+	@Override
 	public List<EvaluatedAxiom<T>> getCurrentlyBestEvaluatedAxioms(int nrOfAxioms,
 			double accuracyThreshold) {
-		List<EvaluatedAxiom<T>> returnList = new ArrayList<EvaluatedAxiom<T>>();
+		List<EvaluatedAxiom<T>> returnList = new ArrayList<>();
 		
 		//get the currently best evaluated axioms
 		List<EvaluatedAxiom<T>> currentlyBestEvAxioms = getCurrentlyBestEvaluatedAxioms();
@@ -428,16 +436,16 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	public EvaluatedAxiom<T> getBestEvaluatedAxiom(){
 		if(!currentlyBestAxioms.isEmpty()){
-			return new TreeSet<EvaluatedAxiom<T>>(currentlyBestAxioms).last();
+			return new TreeSet<>(currentlyBestAxioms).last();
 		}
 		return null;
 	}
 	
 	protected Set<OWLClass> getAllClasses() {
 		if(ks.isRemote()){
-			return new SPARQLTasks(((SparqlEndpointKS) ks).getEndpoint()).getAllClasses();
+			return new SPARQLTasks(ks.getEndpoint()).getAllClasses();
 		} else {
-			Set<OWLClass> classes = new TreeSet<OWLClass>();
+			Set<OWLClass> classes = new TreeSet<>();
 			for(OntClass cls : ((LocalModelBasedSparqlEndpointKS)ks).getModel().listClasses().filterDrop(new OWLFilter()).filterDrop(new RDFSFilter()).filterDrop(new RDFFilter()).toList()){
 				if(!cls.isAnon()){
 					classes.add(df.getOWLClass(IRI.create(cls.getURI())));
@@ -507,7 +515,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	protected <K, V extends Comparable<V>> List<Entry<K, V>> sortByValues(Map<K, V> map){
-		List<Entry<K, V>> entries = new ArrayList<Entry<K, V>>(map.entrySet());
+		List<Entry<K, V>> entries = new ArrayList<>(map.entrySet());
         Collections.sort(entries, new Comparator<Entry<K, V>>() {
 
 			@Override
@@ -523,12 +531,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	protected boolean terminationCriteriaSatisfied(){
-		boolean timeLimitExceeded = maxExecutionTimeInSeconds == 0 ? false : getRemainingRuntimeInMilliSeconds() <= 0;
-		return  timeLimitExceeded ; 
+		return maxExecutionTimeInSeconds != 0 && getRemainingRuntimeInMilliSeconds() <= 0;
 	}
 	
 	protected List<Entry<OWLClassExpression, Integer>> sortByValues(Map<OWLClassExpression, Integer> map, final boolean useHierachy){
-		List<Entry<OWLClassExpression, Integer>> entries = new ArrayList<Entry<OWLClassExpression, Integer>>(map.entrySet());
+		List<Entry<OWLClassExpression, Integer>> entries = new ArrayList<>(map.entrySet());
 		final ClassHierarchy hierarchy = reasoner.getClassHierarchy();
 		
         Collections.sort(entries, new Comparator<Entry<OWLClassExpression, Integer>>() {
@@ -554,7 +561,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 					}
 				}
 				
-				return ret; 
+				return ret;
 			}
 		});
         return entries;
@@ -576,12 +583,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		return new AxiomScore(accuracy, confidence, success, total-success, sample);
 	}
-//	
+//
 //	protected double accuracy(int total, int success){
 //		double[] confidenceInterval = Heuristics.getConfidenceInterval95Wald(total, success);
 //		return (confidenceInterval[0] + confidenceInterval[1]) / 2;
 //	}
-//	
+//
 //	protected double fMEasure(double precision, double recall){
 //		return 2 * precision * recall / (precision + recall);
 //	}
@@ -594,7 +601,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	@SuppressWarnings("unchecked")
 	public Set<S> getPositiveExamples(EvaluatedAxiom<T> axiom){
 		ResultSet rs = executeSelectQuery(posExamplesQueryTemplate.toString());
-		Set<OWLObject> posExamples = new TreeSet<OWLObject>();
+		Set<OWLObject> posExamples = new TreeSet<>();
 		
 		RDFNode node;
 		while(rs.hasNext()){
@@ -616,7 +623,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		ResultSet rs = executeSelectQuery(negExamplesQueryTemplate.toString());
 		
-		Set<OWLObject> negExamples = new TreeSet<OWLObject>();
+		Set<OWLObject> negExamples = new TreeSet<>();
 		
 		while(rs.hasNext()){
 			RDFNode node = rs.next().get("s");
@@ -658,8 +665,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	/**
 	 * Converts a JENA API Literal object into an OWL API OWLLiteral object.
 	 * 
-	 * @param lit
-	 * @return
+	 * @param lit the JENA API literal
+	 * @return the OWL API literal
 	 */
 	protected OWLLiteral convertLiteral(Literal lit) {
 		String datatypeURI = lit.getDatatypeURI();
@@ -673,7 +680,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	}
 	
 	public static <E> void printSubset(Collection<E> collection, int maxSize){
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int i = 0;
 		Iterator<E> iter = collection.iterator();
 		while(iter.hasNext() && i < maxSize){
@@ -693,8 +700,7 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 				values = (J) value.getClass().newInstance();
 				values.add(value);
 			}
-			catch (InstantiationException e) {e.printStackTrace();return;}
-			catch (IllegalAccessException e) {e.printStackTrace();return;}
+			catch (InstantiationException | IllegalAccessException e) {e.printStackTrace();return;}
 		}
 		values.add(value);
 	}
@@ -704,18 +710,12 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		if(values == null){
 			try {
 				values = (J) newValues.getClass().newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 			map.put(key, values);
 		}
 		values.addAll(newValues);
-	}
-	
-	private void adaptChunkCount(){
-		
 	}
 	
 	@Autowired

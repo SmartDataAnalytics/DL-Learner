@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb;
 
 import java.net.URL;
@@ -28,12 +27,14 @@ import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.delay.core.QueryExecutionFactoryDelay;
-import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
+import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.aksw.jena_sparql_api.retry.core.QueryExecutionFactoryRetry;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
+import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
@@ -62,10 +63,10 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	private URL url;
 
 	@ConfigOption(name = "defaultGraphURIs", description="a list of default graph URIs", defaultValue="{}", required=false)
-	private List<String> defaultGraphURIs = new LinkedList<String>();
+	private List<String> defaultGraphURIs = new LinkedList<>();
 
 	@ConfigOption(name = "namedGraphURIs", description="a list of named graph URIs", defaultValue="{}", required=false)
-	private List<String> namedGraphURIs = new LinkedList<String>();
+	private List<String> namedGraphURIs = new LinkedList<>();
 
 	// some parameters for the query execution
 	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
@@ -87,11 +88,18 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	protected QueryExecutionFactory qef;
 
 	private long pageSize = 10000;
+	
+	private KnowledgeSource schema;
 
 	public SparqlEndpointKS() {}
 
 	public SparqlEndpointKS(SparqlEndpoint endpoint) {
 		this.endpoint = endpoint;
+	}
+	
+	public SparqlEndpointKS(SparqlEndpoint endpoint, KnowledgeSource schema) {
+		this.endpoint = endpoint;
+		this.schema = schema;
 	}
 
 	public SparqlEndpointKS(QueryExecutionFactory qef) {
@@ -138,7 +146,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	}
 
 	protected QueryExecutionFactory buildQueryExecutionFactory() {
-		QueryExecutionFactory qef = new QueryExecutionFactoryHttp(
+		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
 
@@ -147,7 +155,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );
 		} else {
 			// use in-memory cache
-//			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
+			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, true, cacheTTL);
 		}
 
 		// add some delay
@@ -158,7 +166,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		}
 
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
-//		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
+		qef = new QueryExecutionFactoryPaginated(qef, pageSize);
 
 		return qef;
 	}
@@ -246,6 +254,13 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	 */
 	public void setCacheTTL(long cacheTTL) {
 		this.cacheTTL = cacheTTL;
+	}
+	
+	/**
+	 * @return if exists, a knowledge source which contains the schema
+	 */
+	public KnowledgeSource getSchema() {
+		return schema;
 	}
 
 	@Override

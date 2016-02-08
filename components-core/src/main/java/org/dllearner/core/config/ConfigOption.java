@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,10 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.core.config;
 
-import java.beans.PropertyEditor;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -41,11 +39,11 @@ public @interface ConfigOption {
      * The name of this config option.
      * @return The name of this config option.
      */
-    String name();
+    String name() default "ZZZZZZZZ";
 
     /**
      * The description of this config option
-     * @return
+     * @return The description of this config option
      */
     String description() default "no description available";
 
@@ -59,11 +57,11 @@ public @interface ConfigOption {
     
     /**
      * Returns the default value of this config option. Default values should be set for all
-     * optional values. 
+     * optional values.
      * It is an overhead to describe the default value both in the source code and in the
-     * annotation. There are two reasons for this: a) the value of the field cannot easily be accessed 
+     * annotation. There are two reasons for this: a) the value of the field cannot easily be accessed
      * without creating an instance of the component and b) for more complex structures the default
-     * may only be created in the constructor or init method. 
+     * may only be created in the constructor or init method.
      * @return The default value of this option.
      */
     String defaultValue() default "";

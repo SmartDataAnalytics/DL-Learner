@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,28 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
+
+import org.dllearner.utilities.StringFormatter;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.formats.RDFXMLDocumentFormat;
+import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
+import org.semanticweb.owlapi.owlxml.renderer.OWLXMLWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-
-import org.coode.owlapi.owlxml.renderer.OWLXMLObjectRenderer;
-import org.coode.owlapi.owlxml.renderer.OWLXMLWriter;
-import org.coode.owlapi.turtle.TurtleOntologyFormat;
-import org.dllearner.utilities.StringFormatter;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 /**
  * A collection of various render methods provided by 
@@ -87,35 +78,23 @@ public class OWLAPIRenderers {
 	}
 	
 	/**
-	 * Converts an OWL API OWLClassExpression to an OWL/XML syntax string.
+	 * Converts an OWL API object to an OWL/XML syntax string.
 	 * 
-	 * @param OWLClassExpression Input OWLDescription.
+	 * @param obj Input OWL object.
 	 * @return OWL/XML syntax string.
 	 */
-	public static String toOWLXMLSyntax(OWLClassExpression description) {
+	public static String toOWLXMLSyntax(OWLObject obj) {
 		StringWriter sw = new StringWriter();
 		try {
 			OWLXMLWriter oxw = new OWLXMLWriter(sw, OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://example.com/")));
 			OWLXMLObjectRenderer renderer = new OWLXMLObjectRenderer(oxw);
-			description.accept(renderer);
+			obj.accept(renderer);
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		}
 		return sw.toString();
 	}	
-	
-	public static String toOWLXMLSyntax(OWLAxiom axiom) {
-		StringWriter sw = new StringWriter();
-		try {
-			OWLXMLWriter oxw = new OWLXMLWriter(sw, OWLManager.createOWLOntologyManager().createOntology(IRI.create("http://example.com/")));
-			OWLXMLObjectRenderer renderer = new OWLXMLObjectRenderer(oxw);
-			axiom.accept(renderer);
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		}
-		return sw.toString();
-	}		
-	
+
 	public static String toRDFXMLSyntax(OWLAxiom axiom) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		String str = "";
@@ -123,13 +102,9 @@ public class OWLAPIRenderers {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
-			manager.saveOntology(ontology, new RDFXMLOntologyFormat(), out);
+			manager.saveOntology(ontology, new RDFXMLDocumentFormat(), out);
 			str = new String(out.toByteArray(), "UTF-8");
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (OWLOntologyCreationException | OWLOntologyStorageException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return str;
@@ -142,13 +117,9 @@ public class OWLAPIRenderers {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLOntology ontology = manager.createOntology(IRI.create("http://example.com/"));
 			manager.applyChange(new AddAxiom(ontology, axiom));
-			manager.saveOntology(ontology, new TurtleOntologyFormat(), out);
+			manager.saveOntology(ontology, new TurtleDocumentFormat(), out);
 			str = new String(out.toByteArray(), "UTF-8");
-		} catch (OWLOntologyCreationException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyStorageException e) {
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
+		} catch (OWLOntologyCreationException | UnsupportedEncodingException | OWLOntologyStorageException e) {
 			e.printStackTrace();
 		}
 		if(shortVersion) {

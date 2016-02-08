@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.operations;
 
 import java.sql.SQLException;
@@ -20,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.http.HTTPException;
 
+import com.hp.hpl.jena.graph.NodeFactory;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
@@ -102,7 +121,7 @@ public class NBR<N> {
 	public NBR(SparqlEndpoint endpoint, String cacheDirectory){
 		this.endpoint = endpoint;
 		
-		noSequences = new ArrayList<List<QueryTreeChange>>();
+		noSequences = new ArrayList<>();
 		
 		qef = new QueryExecutionFactoryHttp(endpoint.getURL().toString(), endpoint.getDefaultGraphURIs());
 		if(cacheDirectory != null){
@@ -115,7 +134,7 @@ public class NBR<N> {
 	public NBR(Model model){
 		this.model = model;
 		
-		noSequences = new ArrayList<List<QueryTreeChange>>();
+		noSequences = new ArrayList<>();
 		
 		qef = new QueryExecutionFactoryModel(model);
 	}
@@ -126,7 +145,7 @@ public class NBR<N> {
 	
 	
 	private Map<QueryTree<N>, List<Integer>> createMatrix(QueryTree<N> tree, List<QueryTree<N>> negTrees){
-		Map<QueryTree<N>, List<Integer>> matrix = new HashMap<QueryTree<N>, List<Integer>>();
+		Map<QueryTree<N>, List<Integer>> matrix = new HashMap<>();
 		for(int i = 0; i < negTrees.size(); i++){
 			checkTree(matrix, tree, negTrees.get(i), i);
 		}
@@ -134,7 +153,7 @@ public class NBR<N> {
 	}
 	
 	private List<Integer> getDeterminingNodeIds(QueryTree<N> lgg, List<QueryTree<N>> trees){
-		List<Integer> nodeIds = new ArrayList<Integer>();
+		List<Integer> nodeIds = new ArrayList<>();
 		
 		boolean parentIsResource = false;
 		boolean childIsResource = false;
@@ -157,16 +176,16 @@ public class NBR<N> {
 	}
 	
 	private List<QueryTree<N>> getLeafsOrderedByRowSum(QueryTree<N> tree, Map<QueryTree<N>, List<Integer>> matrix){
-		List<QueryTree<N>> leafs = new ArrayList<QueryTree<N>>();
+		List<QueryTree<N>> leafs = new ArrayList<>();
 		
-		SortedMap<Integer, List<QueryTree<N>>> map = new TreeMap<Integer, List<QueryTree<N>>>();
+		SortedMap<Integer, List<QueryTree<N>>> map = new TreeMap<>();
 		int rowSum;
 		List<QueryTree<N>> treeList;
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
 			rowSum = sum(entry.getValue());
 			treeList = map.get(rowSum);
 			if(treeList == null){
-				treeList = new ArrayList<QueryTree<N>>();
+				treeList = new ArrayList<>();
 				map.put(rowSum, treeList);
 			}
 			treeList.add(entry.getKey());
@@ -225,7 +244,7 @@ public class NBR<N> {
 	private void setMatrixEntry(Map<QueryTree<N>, List<Integer>> matrix, QueryTree<N> row, int column, int entry){
 		List<Integer> list = matrix.get(row);
 		if(list == null){
-			list = new ArrayList<Integer>();
+			list = new ArrayList<>();
 			matrix.put(row, list);
 		}
 		try {
@@ -256,7 +275,7 @@ public class NBR<N> {
         	sb.append("TREE\n\n");
         }
 //        ren = ren.replace("\n", "\n" + sb);
-        sb.append(tree.getUserObject() + "(" +matrix.get(tree) +  ")");
+        sb.append(tree.getUserObject()).append("(").append(matrix.get(tree)).append(")");
         sb.append("\n");
         for (QueryTree<N> child : tree.getChildren()) {
             for (int i = 0; i < depth; i++) {
@@ -300,9 +319,9 @@ public class NBR<N> {
 		postLGG = getFilteredTree(lgg);
 		PostLGG<N> postGen;
 		if(endpoint != null){
-			postGen = new PostLGG<N>(endpoint);
+			postGen = new PostLGG<>(endpoint);
 		} else {
-			postGen = new PostLGG<N>();
+			postGen = new PostLGG<>();
 		}
 		
 		postGen.simplifyTree(postLGG, negTrees);
@@ -323,9 +342,9 @@ public class NBR<N> {
 		
 		List<GeneralisedQueryTree<N>> queue = null;
 		if(generalizeSortedByNegatives){
-			queue = getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<N>(postLGG), negTrees);
+			queue = getAllowedGeneralisationsSortedByMatrix(new GeneralisedQueryTree<>(postLGG), negTrees);
 		} else {
-			queue = getAllowedGeneralisationsSorted2(new GeneralisedQueryTree<N>(postLGG));
+			queue = getAllowedGeneralisationsSorted2(new GeneralisedQueryTree<>(postLGG));
 		}
 		logger.debug(getQueueLogInfo(queue));
 		
@@ -335,7 +354,7 @@ public class NBR<N> {
 		List<GeneralisedQueryTree<N>> gens;
 		List<GeneralisedQueryTree<N>> neededGeneralisations;
 		while(!queue.isEmpty()){
-			neededGeneralisations = new ArrayList<GeneralisedQueryTree<N>>();
+			neededGeneralisations = new ArrayList<>();
 			logger.debug("Selecting first tree from queue");
 //			tree1 = queue.remove(0);
 			tree1 = getGeneralisedQueryTreeNotContainingNoSequence(queue);
@@ -396,11 +415,11 @@ public class NBR<N> {
 			logger.debug("New resource before binary search: " + newResource);
 			if(!(newResource == null)){
 				logger.debug("binary search for most specific query returning a resource - start");
-				List<QueryTreeChange> firstChanges = new ArrayList<QueryTreeChange>(neededGeneralisations.get(0).getChanges());
+				List<QueryTreeChange> firstChanges = new ArrayList<>(neededGeneralisations.get(0).getChanges());
 				while(firstChanges.size() > 1){
 					firstChanges.remove(firstChanges.size()-1);
-					neededGeneralisations.add(0, new GeneralisedQueryTree<N>(getTreeByChanges(lgg, firstChanges), firstChanges));
-					firstChanges = new ArrayList<QueryTreeChange>(firstChanges);
+					neededGeneralisations.add(0, new GeneralisedQueryTree<>(getTreeByChanges(lgg, firstChanges), firstChanges));
+					firstChanges = new ArrayList<>(firstChanges);
 				}
 				newResource = findMostSpecificResourceTree2(neededGeneralisations, knownResources, 0, neededGeneralisations.size()-1);
 				logger.debug("binary search for most specific query returning a resource - completed");
@@ -439,7 +458,7 @@ public class NBR<N> {
 	}
 	
 	private SortedSet<String> getAllResources(String query){
-		SortedSet<String> resources = new TreeSet<String>();
+		SortedSet<String> resources = new TreeSet<>();
 		query = query + " LIMIT 1000";
 		
 		QueryExecution qe = qef.createQueryExecution(query);
@@ -492,13 +511,13 @@ public class NBR<N> {
 	
 	public List<GeneralisedQueryTree<N>> getAllowedGeneralisations(GeneralisedQueryTree<N> tree){
 		logger.debug("Computing allowed generalisations...");
-		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
+		List<GeneralisedQueryTree<N>> gens = new LinkedList<>();
 		gens.addAll(computeAllowedGeneralisations(tree, tree.getLastChange()));
 		return gens;
 	}
 	
 	private List<QueryTree<N>> getPossibleNodes2Change(QueryTree<N> tree){
-		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		List<QueryTree<N>> nodes = new ArrayList<>();
 		for(QueryTree<N> child : tree.getChildren()){
 			if(child.isLeaf()){
 				nodes.add(child);
@@ -521,7 +540,7 @@ public class NBR<N> {
 		for(Entry<QueryTree<N>, List<Integer>> entry : matrix.entrySet()){
 			logger.debug(entry.getKey().getId() + ": " + entry.getValue());
 		}
-		List<GeneralisedQueryTree<N>> gens = new ArrayList<GeneralisedQueryTree<N>>();
+		List<GeneralisedQueryTree<N>> gens = new ArrayList<>();
 		if(logger.isDebugEnabled()){
 			String treeString;
 			if(endpoint instanceof SPARQLEndpointEx){
@@ -534,7 +553,7 @@ public class NBR<N> {
 		}
 		
 		
-		Map<GeneralisedQueryTree<N>, Integer> genTree2Sum = new HashMap<GeneralisedQueryTree<N>, Integer>();
+		Map<GeneralisedQueryTree<N>, Integer> genTree2Sum = new HashMap<>();
 		
 		QueryTree<N> queryTree = tree.getQueryTree();
 		QueryTreeChange lastChange = tree.getLastChange();
@@ -552,7 +571,7 @@ public class NBR<N> {
 			if(lastChange.getType() == ChangeType.REMOVE_NODE){
 				if(node.getUserObject().equals("?") && node.getId() < lastChange.getNodeId()){
 					int pos = parent.removeChild((QueryTreeImpl<N>) node);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
 					genTree2Sum.put(genTree, sum(matrix.get(node)));
@@ -561,7 +580,7 @@ public class NBR<N> {
 			} else {
 				if(node.getUserObject().equals("?")){
 					int pos = parent.removeChild((QueryTreeImpl<N>) node);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REMOVE_NODE));
 					genTree2Sum.put(genTree, sum(matrix.get(node)));
@@ -569,7 +588,7 @@ public class NBR<N> {
 				} else if(lastChange.getNodeId() < node.getId()){
 					node.setUserObject((N) "?");
 					node.setVarNode(true);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(node.getId(), ChangeType.REPLACE_LABEL));
 					genTree2Sum.put(genTree, sum(matrix.get(node)));
@@ -579,7 +598,7 @@ public class NBR<N> {
 				}
 			}
 		}
-		List<Entry<GeneralisedQueryTree<N>, Integer>> entries = new ArrayList<Entry<GeneralisedQueryTree<N>,Integer>>(genTree2Sum.entrySet());
+		List<Entry<GeneralisedQueryTree<N>, Integer>> entries = new ArrayList<>(genTree2Sum.entrySet());
 		Collections.sort(entries, new NegativeTreeOccurenceComparator());
 		for(Entry<GeneralisedQueryTree<N>, Integer> entry : entries){
 			gens.add(entry.getKey());
@@ -610,7 +629,7 @@ public class NBR<N> {
 	 * and a leaf node, it can be removed. 
 	 */
 	private List<GeneralisedQueryTree<N>> computeAllowedGeneralisations(GeneralisedQueryTree<N> tree, QueryTreeChange lastChange){
-		List<GeneralisedQueryTree<N>> gens = new LinkedList<GeneralisedQueryTree<N>>();
+		List<GeneralisedQueryTree<N>> gens = new LinkedList<>();
 		
 		QueryTree<N> queryTree = tree.getQueryTree();
 		List<QueryTreeChange> changes = tree.getChanges();
@@ -632,13 +651,13 @@ public class NBR<N> {
 				}
 				if(parent.getChildren(edge).size() >= 2){
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
 					gens.add(genTree);
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
-					Map<Integer, N> node2Label = new HashMap<Integer, N>(); 
+					Map<Integer, N> node2Label = new HashMap<>();
 					for(QueryTree<N> c : child.getChildren()){
 						if(determiningNodeIds.contains(c.getId())){
 							node2Label.put(Integer.valueOf(c.getId()), c.getUserObject());
@@ -647,7 +666,7 @@ public class NBR<N> {
 					}
 					child.setUserObject((N) "?");
 					child.setVarNode(true);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REPLACE_LABEL));
 					gens.add(genTree);
@@ -678,16 +697,16 @@ public class NBR<N> {
 						continue;
 					}
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+					genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 					genTree.addChanges(changes);
 					genTree.addChange(new QueryTreeChange(child.getId(), ChangeType.REMOVE_NODE));
 					gens.add(genTree);
 					parent.addChild((QueryTreeImpl<N>) child, edge, pos);
 				} else {
 					int pos = parent.removeChild((QueryTreeImpl<N>) child);
-					for(GeneralisedQueryTree<N> subTree : computeAllowedGeneralisations(new GeneralisedQueryTree<N>(child), tree.getLastChange())){
+					for(GeneralisedQueryTree<N> subTree : computeAllowedGeneralisations(new GeneralisedQueryTree<>(child), tree.getLastChange())){
 						parent.addChild((QueryTreeImpl<N>) subTree.getQueryTree(), edge, pos);
-						genTree = new GeneralisedQueryTree<N>(new QueryTreeImpl<N>(queryTree));
+						genTree = new GeneralisedQueryTree<>(new QueryTreeImpl<>(queryTree));
 						genTree.addChanges(changes);
 						genTree.addChanges(subTree.getChanges());
 //						System.out.println(genTree.getChanges());
@@ -709,7 +728,7 @@ public class NBR<N> {
 		List<Object> path = getPathFromRootToNode(node);
 		List<QueryTree<N>> nodes;
 		for(QueryTree<N> tree : trees){
-			nodes = getNodesByPath(tree, new ArrayList<Object>(path));
+			nodes = getNodesByPath(tree, new ArrayList<>(path));
 			if(!nodes.isEmpty()){
 				for(QueryTree<N> otherNode : nodes){
 					if(nodeLabel.equals(otherNode.getUserObject()) && !otherNode.getParent().getUserObject().equals(parentLabel)){
@@ -722,19 +741,19 @@ public class NBR<N> {
 	}
 	
 	private List<QueryTree<N>> getNodesByPath(QueryTree<N> tree, List<Object> path){
-		List<QueryTree<N>> nodes = new ArrayList<QueryTree<N>>();
+		List<QueryTree<N>> nodes = new ArrayList<>();
 		for(QueryTree<N> child : tree.getChildren(path.remove(0))){
 			if(path.isEmpty()){
 				nodes.add(child);
 			} else {
-				nodes.addAll(getNodesByPath(child, new ArrayList<Object>(path)));
+				nodes.addAll(getNodesByPath(child, new ArrayList<>(path)));
 			}
 		}
 		return nodes;
 	}
 	
 	private List<Object> getPathFromRootToNode(QueryTree<N> node){
-		List<Object> path = new ArrayList<Object>();
+		List<Object> path = new ArrayList<>();
 		QueryTree<N> parent = node.getParent();
 		path.add(parent.getEdge(node));
 		if(!parent.isRoot()){
@@ -745,7 +764,7 @@ public class NBR<N> {
 	}
 	
 	private SortedSet<String> getResources(String query, int limit, int offset){
-		SortedSet<String> resources = new TreeSet<String>();
+		SortedSet<String> resources = new TreeSet<>();
 		this.query = query;
 		if(logger.isDebugEnabled()){
 			logger.debug("Testing query\n" + getLimitedQuery(query, limit, offset) + "\n");
@@ -806,7 +825,7 @@ public class NBR<N> {
 	}
 	
 	private QueryTree<N> createFilteredTree(QueryTree<N> tree){
-		QueryTree<N> filteredTree = new QueryTreeImpl<N>(tree.getUserObject());
+		QueryTree<N> filteredTree = new QueryTreeImpl<>(tree.getUserObject());
 		filteredTree.setId(nodeId);
 		QueryTree<N> subTree;
 		Object predicate;
@@ -960,7 +979,7 @@ public class NBR<N> {
     	if(tree.getChildren().isEmpty()){
     		return;
     	}
-    	Set<QueryTree<N>> parents = new HashSet<QueryTree<N>>();
+    	Set<QueryTree<N>> parents = new HashSet<>();
     	for(QueryTree<N> leaf : tree.getLeafs()){
     		if(leaf.getUserObject().equals("?")){
     			parents.add(leaf.getParent());
@@ -1012,11 +1031,11 @@ public class NBR<N> {
     
     private String fSparql(QueryTree<N> tree, List<QueryTreeChange> changes){
     	logger.debug("fSparql uses:" + changes);
-    	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
+    	QueryTree<N> copy = new QueryTreeImpl<>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
-    	List<String> optionals = new ArrayList<String>();
-    	List<String> filters = new ArrayList<String>();
+    	List<String> optionals = new ArrayList<>();
+    	List<String> filters = new ArrayList<>();
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
     	buildSPARQLQueryString(copy, changes, triples, optionals, filters);
     	if(triples.toString().isEmpty()){
@@ -1024,7 +1043,7 @@ public class NBR<N> {
     	}
     	query.append(triples.toString());
     	for(String optional : optionals){
-    		query.append("OPTIONAL{").append(optional + "}\n");
+    		query.append("OPTIONAL{").append(optional).append("}\n");
     	}
     	if(filters.size() > 0){
     		query.append("FILTER(");
@@ -1044,12 +1063,12 @@ public class NBR<N> {
     
     private String fSparql2(QueryTree<N> tree, List<QueryTreeChange> changes){
     	logger.debug("fSparql uses:" + changes);//getSPARQLQueries(tree, changes);
-    	QueryTree<N> copy = new QueryTreeImpl<N>(tree);
+    	QueryTree<N> copy = new QueryTreeImpl<>(tree);
     	StringBuilder query = new StringBuilder();
     	StringBuilder triples = new StringBuilder();
-    	List<String> optionals = new ArrayList<String>();
-    	Map<String, String> filters = new HashMap<String, String>();
-    	List<String> bounds = new ArrayList<String>();
+    	List<String> optionals = new ArrayList<>();
+    	Map<String, String> filters = new HashMap<>();
+    	List<String> bounds = new ArrayList<>();
     	query.append("SELECT DISTINCT ?x0 WHERE{\n");
     	buildSPARQLQueryString2(copy, changes, triples, optionals, filters, bounds);
     	if(triples.toString().isEmpty()){
@@ -1057,9 +1076,9 @@ public class NBR<N> {
     	}
     	query.append(triples.toString());
     	for(String optional : optionals){
-    		query.append("OPTIONAL{").append(optional + "}\n");
+    		query.append("OPTIONAL{").append(optional).append("}\n");
     	}
-    	List<String> filterParts = new ArrayList<String>();
+    	List<String> filterParts = new ArrayList<>();
     	filterParts.addAll(filters.keySet());
     	filterParts.addAll(bounds);
     	if(filterParts.size() > 0){
@@ -1085,7 +1104,7 @@ public class NBR<N> {
     			}
     			for(String f : filters.keySet()){
     				if(!filterParts.get(i).equals(f)){
-    					query.append(f + "=" + filters.get(f));
+    					query.append(f).append("=").append(filters.get(f));
     					if(cnt < filters.keySet().size()){
     						query.append(" && ");
     					}
@@ -1232,7 +1251,7 @@ public class NBR<N> {
     }
     
     private List<String> getSPARQLQueries(QueryTree<N> tree, List<QueryTreeChange> changes){
-    	List<String> queries = new ArrayList<String>();
+    	List<String> queries = new ArrayList<>();
     	
     	String originalQuery = tree.toSPARQLQueryString();
     	
@@ -1303,7 +1322,7 @@ public class NBR<N> {
 	                	if(current.getObject().toString().equals(label)){
 	                		node = current.getObject();
 	                		position = ((ElementTriplesBlock) el).getPattern().getList().indexOf(current);
-	                		add = Triple.create(current.getSubject(), current.getPredicate(), Node.createVariable("x" + nodeId));
+	                		add = Triple.create(current.getSubject(), current.getPredicate(), NodeFactory.createVariable("x" + nodeId));
 	                		iter.remove();
 	                	}
 	                }
@@ -1375,7 +1394,7 @@ public class NBR<N> {
 //    }
     
     private QueryTree<N> getTreeByChanges(QueryTree<N> originalTree, List<QueryTreeChange> changes){
-    	QueryTree<N> copy = new QueryTreeImpl<N>(originalTree);
+    	QueryTree<N> copy = new QueryTreeImpl<>(originalTree);
     	QueryTree<N> node;
     	for(QueryTreeChange change : changes){
     		node = copy.getNodeById(change.getNodeId());

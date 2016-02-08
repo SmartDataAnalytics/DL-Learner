@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.kb.aquisitors;
 
 import java.util.ArrayList;
@@ -155,22 +154,23 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			assignIds( currentId,  rsw, lastDepth);
 		}catch (Exception e) {
 			logger.info("An error occurred while dissolving blanknodes");
+			logger.debug("Error was:", e);
 		}
 	}
 	
 	//takes the resultset and assigns internal ids
 	private void assignIds(int currentId, ResultSetRewindable rsw, int lastDepth){
 		//prepare variables according to last depth
-		List<String> vars = new ArrayList<String>();
+		List<String> vars = new ArrayList<>();
 		vars.add("o0");
 		for (int i = 1; i <= lastDepth; i++) {
 			vars.add("p"+i);
 			vars.add("o"+i);
 		}
 		
-		final List<String> tmpVars = new ArrayList<String>(); 
+		final List<String> tmpVars = new ArrayList<>();
 		
-		Map<String, Integer> lastNodes = new HashMap<String, Integer>();
+		Map<String, Integer> lastNodes = new HashMap<>();
 		// the resultset first variable is o0
 		// iteration over each tuple of the set
 		while (rsw.hasNext()){
@@ -182,7 +182,6 @@ public class SparqlTupleAquisitor extends TupleAquisitor {
 			// could be two different blank nodes here, but unlikely
 			if(!q.get("o0").isAnon()){
 				lastNodes.put(q.get("o0").toString(), currentId);
-				continue;
 			}else{
 				
 				// remove the first node

@@ -1,5 +1,20 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.core;
 
@@ -14,9 +29,9 @@ import org.semanticweb.owlapi.model.OWLAxiom;
  * preprocessing and learning. <br>
  * Tasks are executed sequentially. Nested tasks are not supported. <br>
  * The general contract is that the learning algorithm will call
- * {@link #learningStarted(String)}, then call either
- * {@link #learningTaskBusy()} or {@link #learningProgressChanged(int, int)}
- * any number of times and finally call {@link #learningStopped()} when the
+ * {@link #learningStarted(AxiomType)}, then call either
+ * {@link #learningTaskBusy(AxiomType)} or {@link #learningProgressChanged(AxiomType, int, int)}
+ * any number of times and finally call {@link #learningStopped(AxiomType)} when the
  * task ends or has been interrupted. This cycle may then be repeated.
  * 
  * 
@@ -45,9 +60,9 @@ public interface AxiomLearningProgressMonitor {
 
     /**
      * Indicates that some learning algorithm has started. When the learning algorithm has
-     * finished the {@link #learningStopped()} method will be called. Once
+     * finished the {@link #learningStopped(AxiomType)} method will be called. Once
      * this method has been called it will not be called again unless the
-     * {@link #learningStopped()} method has been called. <br>
+     * {@link #learningStopped(AxiomType)} method has been called. <br>
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
      * 
@@ -58,7 +73,7 @@ public interface AxiomLearningProgressMonitor {
 
     /**
      * Indicates that a previously started learning algorithm has now stopped. This method will
-     * only be called after the {@link #learningStarted(String)} method has
+     * only be called after the {@link #learningStarted(AxiomType)} method has
      * been called.<br>
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
@@ -67,9 +82,9 @@ public interface AxiomLearningProgressMonitor {
 
     /**
      * Indicates that the learning algorithm is part way through its task. This method
-     * will only be called after the {@link #learningStarted(String)} method
+     * will only be called after the {@link #learningStarted(AxiomType)} method
      * has been called. It will not be called after the
-     * {@link #learningStopped()} method has been called. <br>
+     * {@link #learningStopped(AxiomType)} method has been called. <br>
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.
      * 
@@ -83,8 +98,8 @@ public interface AxiomLearningProgressMonitor {
     /**
      * Indicates that the learning algorithm is busy performing a task whose size cannot
      * be determined. This method will only be called after the
-     * {@link #learningStarted(String)} method has been called. It will not
-     * be called after the {@link #learningStopped()} method has been
+     * {@link #learningStarted(AxiomType)} method has been called. It will not
+     * be called after the {@link #learningStopped(AxiomType)} method has been
      * called. <br>
      * Note that this method may be called from a thread that is not the event
      * dispatch thread.

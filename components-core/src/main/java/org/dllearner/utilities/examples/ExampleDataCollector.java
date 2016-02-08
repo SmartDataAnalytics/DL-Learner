@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.examples;
 
 import java.io.File;
@@ -66,13 +65,13 @@ public class ExampleDataCollector {
 		String b = "http://nlp2rdf.org/ontology/s";
 		String baseDir = "examples/nlp2rdf/tiger/";
 		
-		SortedSet<String> pos = new TreeSet<String>(Arrays.asList(new String[]{b+"197",b+"2013",b+"2704"}));
-		SortedSet<String> neg = new TreeSet<String>(Arrays.asList(new String[]{b+"1",b+"2",b+"3"}));
-		List<URL> urls = new ArrayList<URL>();
+		SortedSet<String> pos = new TreeSet<>(Arrays.asList(new String[]{b + "197", b + "2013", b + "2704"}));
+		SortedSet<String> neg = new TreeSet<>(Arrays.asList(new String[]{b + "1", b + "2", b + "3"}));
+		List<URL> urls = new ArrayList<>();
 		urls.addAll (convert(baseDir, pos));
 		urls.addAll (convert(baseDir, neg));
 		
-		Set<KnowledgeSource> tmp = new HashSet<KnowledgeSource>();
+		Set<KnowledgeSource> tmp = new HashSet<>();
 		try {
 			URL add = new File(baseDir+"tiger.rdf").toURI().toURL();
 //			 add = new File(baseDir+"new.rdf").toURI().toURL();
@@ -109,7 +108,7 @@ public class ExampleDataCollector {
 	}
 	
 	public static List<URL> convert(String baseDir, SortedSet<String> exampleURIs){
-		List<URL> u = new ArrayList<URL>();
+		List<URL> u = new ArrayList<>();
 		for (String exampleURI : exampleURIs) {
 			try {
 				u.add(new File(toFileName(baseDir, exampleURI)).toURI().toURL());

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2007-2011, Jens Lehmann
+ * Copyright (C) 2007 - 2016, Jens Lehmann
  *
  * This file is part of DL-Learner.
  *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.dllearner.utilities.owl;
 
 import java.util.Comparator;
@@ -28,6 +27,8 @@ import org.dllearner.reasoning.OWLPunningDetector;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLNaryBooleanClassExpression;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+
+import com.google.common.collect.ComparisonChain;
 
 /**
  * Comparator for evaluated descriptions, which orders them by
@@ -44,26 +45,11 @@ public class EvaluatedDescriptionComparator implements Comparator<EvaluatedDescr
 	 */
 	@Override
 	public int compare(EvaluatedDescription<? extends Score> ed1, EvaluatedDescription<? extends Score> ed2) {
-		double acc1 = ed1.getAccuracy();
-		double acc2 = ed2.getAccuracy();
-		if(acc1 > acc2)
-			return 1;
-		else if(acc1 < acc2)
-			return -1;
-		else {
-			int length1 = 
-					getLength(ed1);
-//			ed1.getDescriptionLength();
-			int length2 = 
-					getLength(ed2);
-//			ed2.getDescriptionLength();
-			if(length1 < length2)
-				return 1;
-			else if(length1 > length2)
-				return -1;
-			else
-				return ed1.getDescription().compareTo(ed2.getDescription());
-		}
+		return ComparisonChain.start()
+				.compare(ed1.getAccuracy(), ed2.getAccuracy()) // higher accuracy is better
+				.compare(getLength(ed2), getLength(ed1)) // shorter is better
+				.compare(ed1.getDescription(), ed2.getDescription()) // syntactic sorting
+				.result();
 	}
 	
 	private int getLength(EvaluatedDescription<? extends Score> ed){

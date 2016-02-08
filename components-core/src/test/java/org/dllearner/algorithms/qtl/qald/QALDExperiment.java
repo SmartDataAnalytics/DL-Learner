@@ -1,75 +1,22 @@
 /**
- * 
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.dllearner.algorithms.qtl.qald;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.util.Pair;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.dllearner.algorithms.qtl.QTL2Disjunctive;
-import org.dllearner.algorithms.qtl.QueryTreeUtils;
-import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
-import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
-import org.dllearner.algorithms.qtl.util.Entailment;
-import org.dllearner.algorithms.qtl.util.StopURIsDBpedia;
-import org.dllearner.algorithms.qtl.util.StopURIsOWL;
-import org.dllearner.algorithms.qtl.util.StopURIsRDFS;
-import org.dllearner.algorithms.qtl.util.StopURIsSKOS;
-import org.dllearner.algorithms.qtl.util.filters.NamespaceDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.ObjectDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateDropStatementFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilter;
-import org.dllearner.algorithms.qtl.util.filters.PredicateExistenceFilterDBpedia;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
-import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
-import org.dllearner.learningproblems.Heuristics;
-import org.dllearner.learningproblems.PosNegLPStandard;
-import org.dllearner.utilities.QueryUtils;
-import org.semanticweb.owlapi.io.ToStringRenderer;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
-import uk.ac.manchester.cs.owlapi.dlsyntax.DLSyntaxObjectRenderer;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ComparisonChain;
@@ -84,38 +31,57 @@ import com.hp.hpl.jena.datatypes.xsd.impl.XSDAbstractDateTimeType;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.expr.E_Equals;
-import com.hp.hpl.jena.sparql.expr.E_LessThanOrEqual;
-import com.hp.hpl.jena.sparql.expr.E_LogicalOr;
-import com.hp.hpl.jena.sparql.expr.E_NotEquals;
-import com.hp.hpl.jena.sparql.expr.E_NotExists;
-import com.hp.hpl.jena.sparql.expr.E_NumAbs;
-import com.hp.hpl.jena.sparql.expr.E_Str;
-import com.hp.hpl.jena.sparql.expr.E_Subtract;
-import com.hp.hpl.jena.sparql.expr.Expr;
-import com.hp.hpl.jena.sparql.expr.ExprVar;
-import com.hp.hpl.jena.sparql.expr.NodeValue;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.sparql.expr.*;
+import com.hp.hpl.jena.sparql.syntax.*;
+import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.util.Pair;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.dllearner.algorithms.qtl.QTL2Disjunctive;
+import org.dllearner.algorithms.qtl.QueryTreeUtils;
+import org.dllearner.algorithms.qtl.datastructures.impl.EvaluatedRDFResourceTree;
+import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
+import org.dllearner.algorithms.qtl.util.*;
+import org.dllearner.algorithms.qtl.util.filters.*;
+import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGenerator;
+import org.dllearner.kb.sparql.ConciseBoundedDescriptionGeneratorImpl;
+import org.dllearner.learningproblems.Heuristics;
+import org.dllearner.learningproblems.PosNegLPStandard;
+import org.dllearner.utilities.QueryUtils;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Lorenz Buehmann
@@ -1263,7 +1229,7 @@ public class QALDExperiment {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+		StringRenderer.setRenderer(Rendering.DL_SYNTAX);
 		Logger.getLogger(QALDExperiment.class).addAppender(
 				new FileAppender(new SimpleLayout(), "log/qtl-qald.log", false));
 		Logger.getRootLogger().setLevel(Level.INFO);

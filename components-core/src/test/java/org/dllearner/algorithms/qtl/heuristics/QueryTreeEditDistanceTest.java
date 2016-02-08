@@ -1,6 +1,24 @@
+/**
+ * Copyright (C) 2007 - 2016, Jens Lehmann
+ *
+ * This file is part of DL-Learner.
+ *
+ * DL-Learner is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * DL-Learner is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.dllearner.algorithms.qtl.heuristics;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -11,6 +29,8 @@ import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public class QueryTreeEditDistanceTest {
+
+	double delta = 0;
     /*
      *  A     A
      */
@@ -20,7 +40,7 @@ public class QueryTreeEditDistanceTest {
         RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 0;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -32,7 +52,7 @@ public class QueryTreeEditDistanceTest {
     	RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A2"));
 
         double expectedDistance = 1;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -54,7 +74,7 @@ public class QueryTreeEditDistanceTest {
         RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 1;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -76,7 +96,7 @@ public class QueryTreeEditDistanceTest {
         tree2.addChild(child2_1, NodeFactory.createURI("p"));
 
         double expectedDistance = 1;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -111,7 +131,7 @@ public class QueryTreeEditDistanceTest {
         tree2.addChild(child2_1, NodeFactory.createURI("q"));
 
         double expectedDistance = 2;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -142,7 +162,7 @@ public class QueryTreeEditDistanceTest {
         RDFResourceTree tree2 = new RDFResourceTree(NodeFactory.createURI("A"));
 
         double expectedDistance = 3;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     /*
@@ -197,7 +217,7 @@ public class QueryTreeEditDistanceTest {
         tree2.addChild(child2_3, NodeFactory.createURI("r"));
 
         double expectedDistance = 2;
-        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2));
+        assertEquals(expectedDistance, QueryTreeEditDistance.getDistance(tree1, tree2), delta);
     }
 
     @Test
