@@ -414,7 +414,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			logger.warn("Ignoring unsatisfiable check due to "+e.getStackTrace()[0]);
 		}
 		if(unsatisfiableClasses != null && !unsatisfiableClasses.isEmpty()) {
-			logger.warn("Ignoring unsatsifiable classes " + unsatisfiableClasses);
+			logger.warn("Ignoring unsatisfiable classes " + unsatisfiableClasses);
 			if(ignoredConcepts == null) {
 				ignoredConcepts = unsatisfiableClasses;
 			} else {
