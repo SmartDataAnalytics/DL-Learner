@@ -270,6 +270,57 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+
+				<plugin>
+					<!-- the plugin to generate changelog and release announcements -->
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-changes-plugin</artifactId>
+					<configuration>
+						<developmentTeam>DL-Learner team</developmentTeam>
+						<!-- the changes filtered source changes file -->
+						<xmlPath>${basedir}/etc/changes.xml</xmlPath>
+						<templateDirectory>etc/templates</templateDirectory>
+						<issueManagementSystems>
+							<issueManagementSystem>changes.xml</issueManagementSystem>
+						</issueManagementSystems>
+					</configuration>
+					<executions>
+						<execution>
+							<!-- checking if the changes file is well-formed -->
+							<id>check-changes</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>changes-check</goal>
+							</goals>
+						</execution>
+						<execution>
+							<!-- generating of the Changes.txt file -->
+							<id>generate-changes-file</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>Changes.txt</announcementFile>
+								<template>changes.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+						<execution>
+							<!-- generation of the e-mail announcement message announcement.txt -->
+							<id>generate-email-announcement</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>announcement-generate</goal>
+							</goals>
+							<configuration>
+								<announcementFile>announcement.txt</announcementFile>
+								<template>announcement.vm</template>
+								<outputDirectory>${project.build.directory}</outputDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<!--<plugins>
@@ -849,6 +900,18 @@
 					<windowtitle>DL-Learner Javadoc</windowtitle>
 					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-changes-plugin</artifactId>
+				<version>2.11</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>github-report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
