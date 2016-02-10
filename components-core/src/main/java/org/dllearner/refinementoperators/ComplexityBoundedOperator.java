@@ -14,6 +14,10 @@ public abstract class ComplexityBoundedOperator extends RefinementOperatorAdapte
 	protected ComplexityModel complexityModel;
 	protected AbstractReasonerComponent reasoner;
 
+	public ComplexityBoundedOperator(AbstractReasonerComponent reasoner) {
+		this.reasoner = reasoner;
+	}
+
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description) {
 		return description.accept(this);
