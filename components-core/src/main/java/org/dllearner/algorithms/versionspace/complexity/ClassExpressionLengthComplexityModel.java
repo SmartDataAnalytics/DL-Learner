@@ -9,11 +9,11 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
  *
  * @author Lorenz Buehmann
  */
-public class ComplexityModelClassExpressionLength implements ComplexityModel{
+public class ClassExpressionLengthComplexityModel implements ComplexityModel{
 
 	private int maxLength = 7;
 
-	public ComplexityModelClassExpressionLength(int maxLength) {
+	public ClassExpressionLengthComplexityModel(int maxLength) {
 		this.maxLength = maxLength;
 	}
 

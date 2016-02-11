@@ -1,4 +1,4 @@
-package org.dllearner.algorithms.versionspace.complexity;
+package org.dllearner.algorithms.versionspace.operator;
 
 import com.google.common.collect.Lists;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -6,15 +6,10 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
 import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
-import org.dllearner.kb.OWLAPIOntology;
-import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
-import org.semanticweb.owlapi.io.ToStringRenderer;
+import org.dllearner.utilities.owl.ConceptTransformation;
 import org.semanticweb.owlapi.model.*;
 
 import javax.annotation.Nonnull;
-import java.io.File;
 import java.util.*;
 
 /**
@@ -48,6 +43,14 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 				refinements.add(mc);
 			}
 		}
+
+		// minimize
+		Set<OWLClassExpression> tmp = new HashSet<>(refinements.size());
+		for (OWLClassExpression refinement : refinements) {
+			OWLClassExpression cleanedRefinement = ConceptTransformation.applyEquivalenceRules(ConceptTransformation.cleanConcept(refinement));
+			tmp.add(cleanedRefinement);
+		}
+		refinements = tmp;
 
 		// filter by complexity here
 		Iterator<OWLClassExpression> iterator = refinements.iterator();
@@ -353,40 +356,5 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDatatypeRestriction node) {
 		return null;
-	}
-
-	public static void main(String[] args) throws Exception{
-		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
-
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("examples/father.owl"));
-
-		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(new OWLAPIOntology(ont));
-		reasoner.init();
-
-		ComplexityModel complexityModel = new HybridComplexityModel(
-												new ComplexityModelClassExpressionLength(8),
-												new ClassExpressionDepthComplexityModel(2)
-											);
-
-		ComplexityBoundedOperator op = new ComplexityBoundedOperatorALC(reasoner);
-		op.setComplexityModel(complexityModel);
-		op.init();
-
-		Set<OWLClassExpression> refinements = new TreeSet<>();
-		refinements.add(man.getOWLDataFactory().getOWLThing());
-
-		Set<OWLClassExpression> tmp;
-		do {
-			tmp = new HashSet<>();
-			for (OWLClassExpression ce : refinements) {
-				tmp.addAll(op.refine(ce));
-			}
-		} while(!tmp.isEmpty() && refinements.addAll(tmp));
-
-		System.out.println("#Refinements: " + refinements.size());
-		for (OWLClassExpression ref : refinements) {
-			System.out.println(ref);
-		}
 	}
 }
