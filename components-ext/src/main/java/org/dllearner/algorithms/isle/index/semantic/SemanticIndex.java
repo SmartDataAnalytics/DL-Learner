@@ -25,6 +25,7 @@ public class SemanticIndex extends HashMap<OWLEntity, Set<AnnotatedDocument>> im
      * @param entity entity to retrieve documents
      * @return documents referencing given entity
      */
+    @Override
     public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
         Set<AnnotatedDocument> annotatedDocuments = get(entity);
         if (annotatedDocuments == null) {

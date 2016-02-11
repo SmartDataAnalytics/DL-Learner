@@ -123,10 +123,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         sources = Collections.singleton(ks);
     }
 
-    public static String getName() {
-        return "OWL API reasoner";
-    }
-
     @Override
     public void init() throws ComponentInitException {
         // reset variables (otherwise subsequent initialisation with
@@ -1244,6 +1240,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		this.useFallbackReasoner = useFallbackReasoner;
 	}
 	
+	@Override
 	public OWLDatatype getDatatype(OWLDataProperty dp) {
 		return dataproperty2datatype.get(dp);
 	}

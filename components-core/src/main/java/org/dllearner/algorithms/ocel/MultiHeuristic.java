@@ -136,6 +136,7 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(ExampleBasedNode node1, ExampleBasedNode node2) {
 		double score1 = getNodeScore(node1);
 		double score2 = getNodeScore(node2);

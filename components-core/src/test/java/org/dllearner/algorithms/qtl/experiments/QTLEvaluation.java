@@ -854,6 +854,7 @@ public class QTLEvaluation {
 				}
 			}
 			Node mostFrequentType = Ordering.natural().onResultOf(new Function<Multiset.Entry<Node>, Integer>() {
+				  @Override
 				  public Integer apply(Multiset.Entry<Node> entry) {
 				    return entry.getCount();
 				  }
@@ -873,6 +874,7 @@ public class QTLEvaluation {
 				}
 			}
 			Pair<Node, Node> mostFrequentPair = Ordering.natural().onResultOf(new Function<Multiset.Entry<Pair<Node, Node>>, Integer>() {
+				  @Override
 				  public Integer apply(Multiset.Entry<Pair<Node, Node>> entry) {
 				    return entry.getCount();
 				  }

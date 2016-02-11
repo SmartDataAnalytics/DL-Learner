@@ -22,6 +22,7 @@ package org.dllearner.algorithms.refinement;
 public class NodeComparator implements Heuristic {
 
 	// implementiert einfach die Definition in der Diplomarbeit
+	@Override
 	public int compare(Node n1, Node n2) {
 		
 		// sicherstellen, dass Qualität ausgewertet wurde

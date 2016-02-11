@@ -42,16 +42,6 @@ public class PosNegUndLP extends PosNegLPStandard implements Cloneable{
 	@ConfigOption(description = "the uncertain examples", required = true)
 	private Set<OWLIndividual> uncertainExamples;
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "pos neg und learning problem";
-	}
-
-	
 	// getter and setters
 	public Set<OWLIndividual> getPositiveExample() {
 		return new TreeSet<>(super.getPositiveExamples());

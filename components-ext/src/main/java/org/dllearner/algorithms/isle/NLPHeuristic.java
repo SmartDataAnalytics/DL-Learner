@@ -58,6 +58,7 @@ public class NLPHeuristic extends AbstractHeuristic{
 		this.entityRelevance = entityRelevance;
 	}
 	
+	@Override
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();

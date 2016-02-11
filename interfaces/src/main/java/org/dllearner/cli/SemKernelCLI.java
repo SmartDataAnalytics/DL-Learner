@@ -1,29 +1,22 @@
 package org.dllearner.cli;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.xmlbeans.XmlObject;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
-import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.core.ComponentInitException;
-import org.dllearner.utilities.Files;
 import org.dllearner.utilities.semkernel.SemKernelWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * SemKernel command line interface
@@ -36,8 +29,6 @@ public class SemKernelCLI {
     private ApplicationContext context;
     private File confFile;
     private IConfiguration configuration;
-
-    private boolean writeSpringConfiguration = false;
 
     private SemKernelWorkflow semkernelWorkflow;
 
@@ -144,30 +135,6 @@ public class SemKernelCLI {
     }
 
     public void run() throws IOException, ComponentInitException {
-        if (writeSpringConfiguration) {
-            SpringConfigurationXMLBeanConverter converter =
-                    new SpringConfigurationXMLBeanConverter();
-
-            XmlObject xml;
-            if(configuration == null) {
-                Resource confFileR = new FileSystemResource(getConfFile());
-                configuration = new ConfParserConfiguration(confFileR);
-                xml = converter.convert(configuration);
-            } else {
-                xml = converter.convert(configuration);
-            }
-            String springFilename =
-                    getConfFile().getCanonicalPath().replace(".conf", ".xml");
-            File springFile = new File(springFilename);
-
-            if(springFile.exists()) {
-                logger.warn("Cannot write Spring configuration, because " +
-                        springFilename + " already exists.");
-            } else {
-                Files.createFile(springFile, xml.toString());
-            }
-        }
-
         for(Entry<String, SemKernelWorkflow> entry : getContext().
                 getBeansOfType(SemKernelWorkflow.class).entrySet()){
 

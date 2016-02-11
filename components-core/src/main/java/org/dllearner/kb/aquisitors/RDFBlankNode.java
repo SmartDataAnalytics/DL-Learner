@@ -68,36 +68,43 @@ public class RDFBlankNode implements RDFNode {
 		return blankNode.canAs(view);
 	}
 
+	@Override
 	public RDFNode inModel(Model m) {
 		
 		return blankNode.inModel(m);
 	}
 
+	@Override
 	public boolean isAnon() {
 		
 		return blankNode.isAnon();
 	}
 
+	@Override
 	public boolean isLiteral() {
 		
 		return blankNode.isLiteral();
 	}
 
+	@Override
 	public boolean isResource() {
 		
 		return blankNode.isResource();
 	}
 
+	@Override
 	public boolean isURIResource() {
 		
 		return blankNode.isURIResource();
 	}
 
+	@Override
 	public Object visitWith(RDFVisitor rv) {
 		
 		return blankNode.visitWith(rv);
 	}
 
+	@Override
 	public Node asNode() {
 		
 		return blankNode.asNode();

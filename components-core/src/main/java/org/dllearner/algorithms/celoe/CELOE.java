@@ -240,10 +240,6 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		return problems;
 	}
 	
-	public static String getName() {
-		return "CELOE";
-	}
-
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();

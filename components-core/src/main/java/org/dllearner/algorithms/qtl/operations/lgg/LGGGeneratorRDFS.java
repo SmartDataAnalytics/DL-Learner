@@ -87,6 +87,7 @@ public class LGGGeneratorRDFS extends AbstractLGGGenerator {
 		this.entailment = Entailment.RDFS;
 	}
 	
+	@Override
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		

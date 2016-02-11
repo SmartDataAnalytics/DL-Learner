@@ -18,15 +18,7 @@
  */
 package org.dllearner.kb;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -38,7 +30,14 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.hp.hpl.jena.ontology.OntModelSpec;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Jens Lehmann
@@ -70,10 +69,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
     		+ " Available reasoners are: \"micro_rule\", \"mini_rule\", \"rdfs\", \"rule\"")
     private String reasoningString = "";
-
-    public static String getName() {
-    	return "OWL file";
-    }
 
     public OWLFile() {
 

@@ -30,6 +30,7 @@ public class SearchTreeNonWeakPartialSet<T extends AbstractSearchTreeNode & Weak
 		super(comparator);
 	}
 
+	@Override
 	public void retainAll(Collection<T> promisingNodes) {
 		this.nodes.retainAll(promisingNodes);
 	}

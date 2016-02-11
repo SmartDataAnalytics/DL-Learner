@@ -59,6 +59,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 			return this.concept.toString();
 		}
 		
+		@Override
 		public Object clone(){
 			DLNode cloned= new DLNode(concept,m);
 			return cloned;
@@ -133,6 +134,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		return root.neg;
 	}
 	
+	@Override
 	public Object clone(){
 		DSTDLTree elem= new DSTDLTree();
 		DLNode cloned= (DLNode)root.clone(); 

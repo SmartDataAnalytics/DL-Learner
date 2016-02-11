@@ -33,6 +33,7 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 public class NodeComparatorStable implements Comparator<Node> {
 
 	// implementiert 
+	@Override
 	public int compare(Node n1, Node n2) {
 		
 		// sicherstellen, dass Qualität ausgewertet wurde

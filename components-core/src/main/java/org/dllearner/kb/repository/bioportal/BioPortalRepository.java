@@ -161,21 +161,25 @@ public class BioPortalRepository implements OntologyRepository {
         }
 
 
+        @Override
         public String getOntologyShortName() {
             return shortName;
         }
 
 
+        @Override
         public URI getOntologyURI() {
             return ontologyURI;
         }
 
 
+        @Override
         public URI getPhysicalURI() {
             return physicalURI;
         }
 
 
+        @Override
         public String getMetaData(Object key) {
             return null;
         }

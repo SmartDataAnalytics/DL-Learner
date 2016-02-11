@@ -237,10 +237,6 @@ public class PCELOE extends AbstractCELA {
 		super(problem, reasoner);
 	}
 
-	public static String getName() {
-		return "PCELOE";
-	}
-
 	@Override
 	public void init() throws ComponentInitException {
 		baseURI = reasoner.getBaseURI();

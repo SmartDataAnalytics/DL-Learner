@@ -22,7 +22,7 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 
 	public AbstractRelevanceMetric(Index index) {
 		this.index = index;
-		
+
 		name = getClass().getSimpleName().replace("RelevanceMetric", "");
 	}
 
@@ -62,7 +62,8 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 	public String getName() {
 		return name;
 	}
-	
+
+	@Override
 	public double getRelevance(OWLEntity entity, OWLClassExpression desc){
 		Set<OWLEntity> entities = desc.getSignature();
 		double score = 0;

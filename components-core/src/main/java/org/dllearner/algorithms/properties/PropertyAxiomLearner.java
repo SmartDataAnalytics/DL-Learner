@@ -73,6 +73,7 @@ public abstract class PropertyAxiomLearner<S extends OWLProperty, T extends OWLL
 		this.strictOWLMode = strictOWLMode;
 	}
 	
+	@Override
 	protected ParameterizedSparqlString getSampleQuery(){
 		return GET_SAMPLE_QUERY;
 	}

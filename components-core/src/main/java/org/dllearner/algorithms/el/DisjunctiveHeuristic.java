@@ -26,6 +26,7 @@ public class DisjunctiveHeuristic implements ELHeuristic {
 
 	ELDescriptionTreeComparator edt = new ELDescriptionTreeComparator();
 	
+	@Override
 	public int compare(SearchTreeNode tree1, SearchTreeNode tree2) {
 		double diff = tree1.getScore().getAccuracy()-tree2.getScore().getAccuracy();
 		if(diff < 0.00001 && diff > -0.00001) {

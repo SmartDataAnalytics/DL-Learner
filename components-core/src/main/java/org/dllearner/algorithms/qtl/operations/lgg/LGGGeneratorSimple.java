@@ -59,6 +59,7 @@ import com.hp.hpl.jena.sparql.vocabulary.FOAF;
  */
 public class LGGGeneratorSimple extends AbstractLGGGenerator {
 	
+	@Override
 	protected RDFResourceTree computeLGG(RDFResourceTree tree1, RDFResourceTree tree2, boolean learnFilters){
 		subCalls++;
 		

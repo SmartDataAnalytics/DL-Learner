@@ -76,15 +76,6 @@ public class PosNegLPStandard extends PosNegLP implements Cloneable{
 	public void init() throws ComponentInitException {
 		super.init();
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "pos neg learning problem";
-	}
 
 	/**
 	 * Computes score of a given concept using the reasoner.

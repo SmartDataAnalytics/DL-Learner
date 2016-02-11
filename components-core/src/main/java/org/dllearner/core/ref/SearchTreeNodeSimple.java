@@ -44,6 +44,7 @@ public class SearchTreeNodeSimple<T> implements SearchTreeNode<T>{
 	/**
 	 * @return the data
 	 */
+	@Override
 	public T getData() {
 		return data;
 	}

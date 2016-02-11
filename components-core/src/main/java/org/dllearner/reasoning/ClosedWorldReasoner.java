@@ -197,13 +197,6 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
     	super(baseReasoner.getSources());
         this.baseReasoner = baseReasoner;
     }
-    
-    /**
-	 * @return The name of this component.
-	 */
-	public static String getName() {
-		return "closed world reasoner";
-	}
 
 	/*
 	 * (non-Javadoc)

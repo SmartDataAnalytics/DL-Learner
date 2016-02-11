@@ -307,6 +307,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public boolean isRedundant() {
 		return isRedundant;
 	}
+	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
 	}

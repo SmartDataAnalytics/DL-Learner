@@ -260,6 +260,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	private <T extends OWLClassExpression> Set<T> filterByNamespace(Set<T> classes){
 		if(namespace != null){
 			return Sets.filter(classes, new Predicate<T>() {
+				@Override
 				public boolean apply(T input){
 					return input.toString().startsWith(namespace);
 				}
@@ -271,6 +272,7 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	private Multiset<OWLClass> filterByNamespace(Multiset<OWLClass> classes){
 		if(namespace != null){
 			return Multisets.filter(classes, new Predicate<OWLClass>() {
+				@Override
 				public boolean apply(OWLClass input){
 					return input.toStringID().startsWith(namespace);
 				}

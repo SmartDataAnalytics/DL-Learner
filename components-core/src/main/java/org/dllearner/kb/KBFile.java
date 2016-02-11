@@ -18,14 +18,6 @@
  */
 package org.dllearner.kb;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -36,6 +28,14 @@ import org.dllearner.parser.ParseException;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /**
@@ -75,10 +75,6 @@ public class KBFile extends AbstractKnowledgeSource implements OWLOntologyKnowle
      */
     public KBFile(OWLOntology kb) {
         this.kb = kb;
-    }
-
-    public static String getName() {
-        return "KB file";
     }
 
     @Override

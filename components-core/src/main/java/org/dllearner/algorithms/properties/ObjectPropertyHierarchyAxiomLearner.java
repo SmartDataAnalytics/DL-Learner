@@ -101,6 +101,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 		return SAMPLE_QUERY;
 	}
 	
+	@Override
 	protected void run() {
 		
 		// get the candidates

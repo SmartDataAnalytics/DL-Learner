@@ -27,6 +27,7 @@ public class TrieEntityCandidateGenerator extends EntityCandidateGenerator{
 		this.candidatesTrie = candidatesTrie;
 	}
 	
+	@Override
 	public Set<EntityScorePair> getCandidates(Annotation annotation) {
         Set<EntityScorePair> candidateEntities = candidatesTrie.getCandidateEntities(annotation.getTokens());
         System.out.println(annotation + " --> " + candidateEntities);

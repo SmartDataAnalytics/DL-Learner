@@ -1977,10 +1977,12 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.maxNrOfSplits = maxNrOfSplits;
 	}
 
+	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() {
 		return lengthMetric;
 	}
 
+	@Override
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
 

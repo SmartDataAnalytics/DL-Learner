@@ -100,10 +100,12 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		qef = new QueryExecutionFactoryModel(baseModel);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI){
 		return getConciseBoundedDescription(resourceURI, maxRecursionDepth);
 	}
 	
+	@Override
 	public Model getConciseBoundedDescription(String resourceURI, int depth){
 		return getConciseBoundedDescription(resourceURI, depth, false);
 	}
@@ -130,6 +132,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		this.allowedPropertyNamespaces.addAll(namespaces);
 	}
 	
+	@Override
 	public void addAllowedObjectNamespaces(Set<String> namespaces) {
 		this.allowedObjectNamespaces.addAll(namespaces);
 	}
@@ -190,6 +193,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			filter += Joiner.on(" && ").join(
 						Iterables.transform(propertyBlacklist, 
 								new Function<String, String>() {
+									@Override
 									public String apply(String input) {
 										return var.toString() + " != <" + input + ">";
 									}
@@ -234,6 +238,7 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 		return filter;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 		propertyBlacklist.addAll(properties);
 	}

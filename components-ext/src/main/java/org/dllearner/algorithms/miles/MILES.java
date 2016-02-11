@@ -136,6 +136,7 @@ public class MILES {
 			classifier = new DescriptionLinearClassifier(lp, rc);
 		}
 		
+		@Override
 		public void run() {
 			logger.debug("Computing linear combination...");
 			long start = System.currentTimeMillis();

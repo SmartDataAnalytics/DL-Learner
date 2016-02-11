@@ -64,8 +64,8 @@ public class Infgen {
         OWLOntologyManager manager=OWLManager.createOWLOntologyManager();
         File inputOntologyFile = new File(in);
         OWLOntology ontology=manager.loadOntologyFromOntologyDocument(inputOntologyFile);
-        org.semanticweb.HermiT.Reasoner.ReasonerFactory factory
-        = new org.semanticweb.HermiT.Reasoner.ReasonerFactory();
+        org.semanticweb.HermiT.ReasonerFactory factory
+        = new org.semanticweb.HermiT.ReasonerFactory();
         // The factory can now be used to obtain an instance of HermiT as an OWLReasoner.
         org.semanticweb.HermiT.Configuration c
         = new org.semanticweb.HermiT.Configuration();
