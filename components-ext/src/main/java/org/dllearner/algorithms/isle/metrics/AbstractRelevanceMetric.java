@@ -27,7 +27,7 @@ public abstract class AbstractRelevanceMetric implements RelevanceMetric {
 	}
 
 	public static Map<OWLEntity, Double> normalizeMinMax(Map<OWLEntity, Double> hmEntity2Score) {
-		Map<OWLEntity, Double> hmEntity2Norm = new HashMap<OWLEntity, Double>();
+		Map<OWLEntity, Double> hmEntity2Norm = new HashMap<>();
 
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;

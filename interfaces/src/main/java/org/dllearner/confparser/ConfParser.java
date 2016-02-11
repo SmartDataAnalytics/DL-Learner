@@ -17,16 +17,16 @@ import java.util.Set;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.parser.KBParser;
 
-@SuppressWarnings({"ManualArrayCopy", "UnnecessarySemicolon"})
+@SuppressWarnings("ALL")
 public class ConfParser implements ConfParserConstants {
 
 	// special directives (those without a property name)
-	private Map<String, ConfFileOption> specialOptions = new HashMap<String, ConfFileOption>();
+	private Map<String, ConfFileOption> specialOptions = new HashMap<>();
 
 	// conf file options
-	private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
-	private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<String, ConfFileOption>();
-	private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<String, List<ConfFileOption>>();
+	private List<ConfFileOption> confOptions = new LinkedList<>();
+	private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<>();
+	private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<>();
 
 	private void addConfOption(ConfFileOption confOption) {
 		confOptions.add(confOption);
@@ -35,7 +35,7 @@ public class ConfParser implements ConfParserConstants {
 		if (confOptionsByBean.containsKey(beanName))
 			confOptionsByBean.get(beanName).add(confOption);
 		else {
-			LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+			LinkedList<ConfFileOption> optionList = new LinkedList<>();
 			optionList.add(confOption);
 			confOptionsByBean.put(beanName, optionList);
 		}
@@ -98,9 +98,9 @@ PostProcessor pp = new PostProcessor(confOptions, specialOptions);
 
   final public ConfFileOption ConfOption() throws ParseException {boolean containsSubOption=false;
         String value="", value1="", value2="", tmp="", tmp2="";
-        Set<String> values = new HashSet<String>();
-        Map<String,String> tuples = new HashMap<String,String>();
-        Map<String,Double> tuplesD = new HashMap<String,Double>();
+        Set<String> values = new HashSet<>();
+        Map<String,String> tuples = new HashMap<>();
+        Map<String,Double> tuplesD = new HashMap<>();
 
         ConfFileOption option = new ConfFileOption();
         boolean isBeanRef = false;
@@ -692,7 +692,7 @@ option.setBeanRef(isBeanRef);
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<>();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];

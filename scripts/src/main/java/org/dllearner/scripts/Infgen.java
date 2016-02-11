@@ -29,9 +29,7 @@ public class Infgen {
 					try {
 						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);
 						os.close();
-					} catch (OWLOntologyStorageException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
+					} catch (OWLOntologyStorageException | IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -60,7 +58,7 @@ public class Infgen {
 		inf.write(new FileOutputStream(out));
 	}
 	
-	private static void reasonWithHermit(String in, String out, boolean copy) throws FileNotFoundException, IOException, OWLOntologyStorageException, OWLOntologyCreationException {
+	private static void reasonWithHermit(String in, String out, boolean copy) throws IOException, OWLOntologyStorageException, OWLOntologyCreationException {
         OWLOntologyManager manager=OWLManager.createOWLOntologyManager();
         File inputOntologyFile = new File(in);
         OWLOntology ontology=manager.loadOntologyFromOntologyDocument(inputOntologyFile);
@@ -70,7 +68,7 @@ public class Infgen {
         org.semanticweb.HermiT.Configuration c
         = new org.semanticweb.HermiT.Configuration();
         OWLReasoner reasoner=factory.createReasoner(ontology, c);
-        List<InferredAxiomGenerator<? extends OWLAxiom>> generators=new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
+        List<InferredAxiomGenerator<? extends OWLAxiom>> generators= new ArrayList<>();
         generators.add(new InferredSubClassAxiomGenerator());
         generators.add(new InferredClassAssertionAxiomGenerator());
         generators.add(new InferredDisjointClassesAxiomGenerator() {
@@ -124,7 +122,7 @@ public class Infgen {
 		model.write(new FileOutputStream(out));
 	}
 
-	private static void loadThroughJena2(String in, String out) throws OWLOntologyCreationException, FileNotFoundException {
+	private static void loadThroughJena2(String in, String out) throws FileNotFoundException {
 		
 		Model model = RDFDataMgr.loadModel("file://"+in);
 		System.out.println("ltj; size:"+model.size());

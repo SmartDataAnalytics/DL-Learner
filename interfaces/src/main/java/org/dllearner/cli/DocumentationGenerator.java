@@ -52,7 +52,7 @@ public class DocumentationGenerator {
 	}
 	private AnnComponentManager cm = AnnComponentManager.getInstance();
 	
-	private static final Map<Class, String> varNameMapping = new HashMap<Class, String>();
+	private static final Map<Class, String> varNameMapping = new HashMap<>();
 	
 	static {
 		varNameMapping.put(LearningAlgorithm.class, "la");

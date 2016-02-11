@@ -30,7 +30,7 @@ public class FatherCLITest {
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
 
         //Spring Config Files
-        List<Resource> springConfigResources = new ArrayList<Resource>();
+        List<Resource> springConfigResources = new ArrayList<>();
 
         //DL-Learner Configuration Object
         IConfiguration configuration = new ConfParserConfiguration(confFile);

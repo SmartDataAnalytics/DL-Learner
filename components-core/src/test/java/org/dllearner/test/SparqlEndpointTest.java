@@ -36,8 +36,8 @@ import org.dllearner.utilities.statistics.SimpleClock;
 
 public class SparqlEndpointTest {
 	private static Logger logger = Logger.getRootLogger();
-	static Set<String> working = new HashSet<String>();
-	static Set<String> notworking = new HashSet<String>();
+	static Set<String> working = new HashSet<>();
+	static Set<String> notworking = new HashSet<>();
 	
 	public static void main(String[] args) {
 		SimpleLayout layout = new SimpleLayout();

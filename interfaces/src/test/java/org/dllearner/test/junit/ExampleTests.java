@@ -85,13 +85,13 @@ public class ExampleTests {
 		logger.setLevel(Level.WARN);
 
 		// map containing a list of conf files for each path
-		Map<String, ArrayList<String>> confFiles = new TreeMap<String, ArrayList<String>>();
+		Map<String, ArrayList<String>> confFiles = new TreeMap<>();
 		String exampleDir = ".." + File.separator + "examples";
 		File f = new File(exampleDir);
 		QuickStart.getAllConfs(f, exampleDir, confFiles);
 
 		// put all examples in a flat list
-		List<String> examples = new LinkedList<String>();
+		List<String> examples = new LinkedList<>();
 		for(Map.Entry<String,ArrayList<String>> entry : confFiles.entrySet()) {
 			for(String file : entry.getValue()) {
 				examples.add(entry.getKey() + file + ".conf");
@@ -109,7 +109,7 @@ public class ExampleTests {
 		// ignore list (examples which are temporarily not working due
 		// to server downtime, lack of features etc., but should still
 		// remain in the example directory
-		Set<String> ignore = new TreeSet<String>();
+		Set<String> ignore = new TreeSet<>();
 		
 		// "standard" ignores (no problem to keep those)
 		ignore.add("./examples/krk/complete_no_draw.conf"); // refers to an OWL file, which has to be auto-generated

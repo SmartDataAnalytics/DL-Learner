@@ -91,7 +91,7 @@ public class TONESRepository implements OntologyRepository{
     }
 
 
-    public void dispose() throws Exception {
+    public void dispose() {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////

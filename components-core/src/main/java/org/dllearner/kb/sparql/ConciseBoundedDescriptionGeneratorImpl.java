@@ -18,11 +18,10 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Joiner;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.core.Var;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
@@ -32,12 +31,11 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.sparql.core.Var;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 //import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 //import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
@@ -191,14 +189,9 @@ public class ConciseBoundedDescriptionGeneratorImpl implements ConciseBoundedDes
 			filter += "FILTER(";
 					
 			filter += Joiner.on(" && ").join(
-						Iterables.transform(propertyBlacklist, 
-								new Function<String, String>() {
-									@Override
-									public String apply(String input) {
-										return var.toString() + " != <" + input + ">";
-									}
-								}
-						)
+					propertyBlacklist.stream()
+							.map(input -> var.toString() + " != <" + input + ">")
+							.collect(Collectors.toList())
 					);
 			filter += ")\n";
 		}

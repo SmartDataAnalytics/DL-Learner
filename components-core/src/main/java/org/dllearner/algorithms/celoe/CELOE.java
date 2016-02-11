@@ -271,7 +271,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 		}
 		
 		// start at owl:Thing by default
-		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, () -> computeStartClass(), logger);
+		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(this.startClass, reasoner, dataFactory, this::computeStartClass, logger);
 
 		bestEvaluatedDescriptions = new EvaluatedDescriptionSet(maxNrOfResults);
 		

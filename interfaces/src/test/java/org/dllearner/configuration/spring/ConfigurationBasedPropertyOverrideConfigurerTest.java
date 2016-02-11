@@ -36,7 +36,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
         Resource confFile = new ClassPathResource("/org/dllearner/configuration/spring/configurationBasedPropertyOverrideConfigurer.conf");
 
         //Spring Config Files
-        List<Resource> springConfigResources = new ArrayList<Resource>();
+        List<Resource> springConfigResources = new ArrayList<>();
         springConfigResources.add(new ClassPathResource("/org/dllearner/configuration/spring/configuration-based-property-override-configurer-configuration.xml"));
 
         //DL-Learner Configuration Object
@@ -48,7 +48,7 @@ public class ConfigurationBasedPropertyOverrideConfigurerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
 
     }
 

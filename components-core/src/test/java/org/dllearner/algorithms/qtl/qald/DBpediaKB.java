@@ -20,11 +20,9 @@ package org.dllearner.algorithms.qtl.qald;
 
 import java.net.URL;
 
-import org.dllearner.algorithms.qtl.util.PrefixCCPrefixMapping;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
-import org.dllearner.utilities.PrefixCCMap;
 
 import com.google.common.collect.Lists;
 import com.hp.hpl.jena.shared.PrefixMapping;

@@ -77,9 +77,9 @@ public class ScriptDoAll {
 	public static Map<String, SortedSet<String>>  purge(List<Count> count, Map<String, SortedSet<String>> hierarchy){
 		Map<String, Integer> map = toMap(count);
 //		System.out.println(hierarchy.size());
-		Map<String, SortedSet<String>> ret = new HashMap<String, SortedSet<String>>();
+		Map<String, SortedSet<String>> ret = new HashMap<>();
 		for(String key: hierarchy.keySet()){
-			SortedSet<String> tmp = new TreeSet<String>();
+			SortedSet<String> tmp = new TreeSet<>();
 			for(String s : hierarchy.get(key)){
 				if(map.get(s)!=null){
 					tmp.add(s);
@@ -96,8 +96,8 @@ public class ScriptDoAll {
 	
 	public static List<Count> expand(List<Count> count, Map<String, SortedSet<String>> hierarchy){
 		Map<String, Integer> classNrOfInstances = toMap(count);
-		SortedSet<Count> ret = new TreeSet<Count>();
-		SortedSet<String> allClasses = new TreeSet<String>();
+		SortedSet<Count> ret = new TreeSet<>();
+		SortedSet<String> allClasses = new TreeSet<>();
 		allClasses.addAll(classNrOfInstances.keySet());
 		allClasses.addAll(hierarchy.keySet());
 		
@@ -123,13 +123,13 @@ public class ScriptDoAll {
 			}
 			
 		}
-		return new ArrayList<Count>(ret);
+		return new ArrayList<>(ret);
 	}
 	
 	public static Map<String, Integer> toMap(List<Count> c){
-		Map<String, Integer> ret = new HashMap<String, Integer>();
+		Map<String, Integer> ret = new HashMap<>();
 		for(Count count: c){
-			ret.put(count.uri, new Integer(count.count));
+			ret.put(count.uri, count.count);
 		}
 		return ret;
 	}

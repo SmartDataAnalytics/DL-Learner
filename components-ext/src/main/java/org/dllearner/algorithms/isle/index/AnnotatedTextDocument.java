@@ -23,7 +23,7 @@ public class AnnotatedTextDocument implements AnnotatedDocument{
 		this.document = document;
 		this.annotations = annotations;
 		
-		entities = new HashSet<OWLEntity>();
+		entities = new HashSet<>();
 		for (SemanticAnnotation annotation : annotations) {
 			entities.add(annotation.getEntity());
 		}

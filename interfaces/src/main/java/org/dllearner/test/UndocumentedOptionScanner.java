@@ -31,7 +31,7 @@ public class UndocumentedOptionScanner {
 				String name = m.getName();
 				List<Method> set = methods.get(name);
 				if (set == null) {
-					set = new LinkedList<Method>();
+					set = new LinkedList<>();
 					methods.put(name, set);
 				}
 				set.add(m);

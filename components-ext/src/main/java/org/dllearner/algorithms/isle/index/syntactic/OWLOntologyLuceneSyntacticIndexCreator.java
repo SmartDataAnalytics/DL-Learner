@@ -45,12 +45,12 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 	private String language = "en";
 	private String searchField;
 	
-	public OWLOntologyLuceneSyntacticIndexCreator(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String searchField) throws IOException {
+	public OWLOntologyLuceneSyntacticIndexCreator(OWLOntology ontology, OWLAnnotationProperty annotationProperty, String searchField) {
 		this.ontology = ontology;
 		this.annotationProperty = annotationProperty;
 		this.searchField = searchField;
 
-		schemaEntities = new HashSet<OWLEntity>();
+		schemaEntities = new HashSet<>();
 		schemaEntities.addAll(ontology.getClassesInSignature());
 		schemaEntities.addAll(ontology.getObjectPropertiesInSignature());
 		schemaEntities.addAll(ontology.getDataPropertiesInSignature());
@@ -62,7 +62,7 @@ public class OWLOntologyLuceneSyntacticIndexCreator {
 		IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
 		System.out.println( "Creating index ..." );
 
-        Set<org.apache.lucene.document.Document> luceneDocuments = new HashSet<org.apache.lucene.document.Document>();
+        Set<org.apache.lucene.document.Document> luceneDocuments = new HashSet<>();
         FieldType stringType = new FieldType(StringField.TYPE_STORED);
         stringType.setStoreTermVectors(false);
         FieldType textType = new FieldType(TextField.TYPE_STORED);

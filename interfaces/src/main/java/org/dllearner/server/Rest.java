@@ -57,7 +57,7 @@ public class Rest extends HttpServlet {
      * @throws ServletException
      * @throws java.io.IOException
      */
-    private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    private void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         JSONObject result = new JSONObject();
         JSONObject learningResult = new JSONObject();
         try {
@@ -147,7 +147,7 @@ public class Rest extends HttpServlet {
         IConfiguration configuration = new ConfParserConfiguration(confFile);
 
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext context = builder.buildApplicationContext(configuration, new ArrayList<Resource>());
+        ApplicationContext context = builder.buildApplicationContext(configuration, new ArrayList<>());
 
         LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
         algorithm.start();
@@ -167,7 +167,7 @@ public class Rest extends HttpServlet {
     }
 
     public static Map<String, String> copyParameterMap(HttpServletRequest httpServletRequest) {
-        Map<String, String> ret = new HashMap<String, String>();
+        Map<String, String> ret = new HashMap<>();
         for (Object key : httpServletRequest.getParameterMap().keySet()) {
             ret.put((String) key, httpServletRequest.getParameter((String) key));
         }
@@ -196,7 +196,7 @@ public class Rest extends HttpServlet {
         IConfiguration configuration = new ConfParserConfiguration(confFile);
 
         ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
-        ApplicationContext context = builder.buildApplicationContext(configuration, new ArrayList<Resource>());
+        ApplicationContext context = builder.buildApplicationContext(configuration, new ArrayList<>());
 
         LearningAlgorithm algorithm = context.getBean(LearningAlgorithm.class);
         algorithm.start();

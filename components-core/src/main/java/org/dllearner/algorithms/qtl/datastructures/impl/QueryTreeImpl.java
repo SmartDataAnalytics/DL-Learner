@@ -478,7 +478,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 
     @Override
     public List<QueryTree<N>> getChildren() {
-        return new ArrayList<QueryTree<N>>(children);
+        return new ArrayList<>(children);
     }
     
     @Override
@@ -1751,12 +1751,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			}
 		};
 
-		VertexNameProvider<Vertex> vertexNameProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return vertex.getLabel();
-			}
-		};
+		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
 		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
 			@Override
@@ -1765,12 +1760,7 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 			}
 		};
 
-		EdgeNameProvider<Edge> edgeLabelProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return edge.getLabel();
-			}
-		};
+		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
                 vertexNameProvider, edgeIDProvider, edgeLabelProvider);
 		try {

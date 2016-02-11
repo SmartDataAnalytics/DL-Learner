@@ -44,7 +44,7 @@ public class VSMCosineDocumentSimilarity {
 	public static final String CONTENT = "Content";
     public static final FieldType TYPE_STORED = new FieldType();
     
-    private final Set<String> terms = new HashSet<String>();
+    private final Set<String> terms = new HashSet<>();
     private final RealVector v1;
     private final RealVector v2;
     
@@ -161,7 +161,7 @@ public class VSMCosineDocumentSimilarity {
             throws IOException {
         Terms vector = reader.getTermVector(docId, CONTENT);
         TermsEnum termsEnum = vector.iterator();
-        Map<String, Integer> frequencies = new HashMap<String, Integer>();
+        Map<String, Integer> frequencies = new HashMap<>();
         BytesRef text = null;
         while ((text = termsEnum.next()) != null) {
             String term = text.utf8ToString();
@@ -184,10 +184,10 @@ public class VSMCosineDocumentSimilarity {
         Terms vector = reader.getTermVector(docId, CONTENT);
         //TODO: not sure if this is reasonable but it prevents NPEs
         if (vector == null) {
-            return new HashMap<String, Double>();
+            return new HashMap<>();
         }
         TermsEnum termsEnum = vector.iterator();
-        Map<String, Double> weights = new HashMap<String, Double>();
+        Map<String, Double> weights = new HashMap<>();
         BytesRef text = null;
         while ((text = termsEnum.next()) != null) {
             String term = text.utf8ToString();

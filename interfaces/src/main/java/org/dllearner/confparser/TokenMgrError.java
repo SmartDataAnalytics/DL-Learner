@@ -3,6 +3,7 @@
 package org.dllearner.confparser;
 
 /** Token Manager Error. */
+@SuppressWarnings("ALL")
 public class TokenMgrError extends Error
 {
 

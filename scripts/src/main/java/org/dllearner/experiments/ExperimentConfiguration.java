@@ -19,18 +19,17 @@
 
 package org.dllearner.experiments;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
-import org.dllearner.utilities.JamonMonitorLogger;
-
 import com.jamonapi.MonKeyImp;
 import com.jamonapi.Monitor;
 import com.jamonapi.MonitorComposite;
 import com.jamonapi.MonitorFactory;
+import org.apache.log4j.Logger;
+import org.dllearner.utilities.JamonMonitorLogger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An experiment has a certain configuration. In an iterated experiment or a
@@ -47,9 +46,9 @@ public class ExperimentConfiguration {
 	public final String experimentName;
 	public final int sizeOfResultVector;
 
-	protected List<MonitorComposite> mcs = new ArrayList<MonitorComposite>();
-	protected Map<String, MonitorComposite> mcsMap = new HashMap<String, MonitorComposite>();
-	protected Map<MonitorComposite, String> mcsMapRev = new HashMap<MonitorComposite, String>();
+	protected List<MonitorComposite> mcs = new ArrayList<>();
+	protected Map<String, MonitorComposite> mcsMap = new HashMap<>();
+	protected Map<MonitorComposite, String> mcsMapRev = new HashMap<>();
 
 	/**
 	 * sets sizeOfResultVector to 1, meaning no iterated experiments
@@ -71,7 +70,7 @@ public class ExperimentConfiguration {
 	}
 
 	public List<TableRowColumn> getTableRows() {
-		List<TableRowColumn> l = new ArrayList<TableRowColumn>();
+		List<TableRowColumn> l = new ArrayList<>();
 		if (sizeOfResultVector == 1) {
 			Monitor[] monitors = new Monitor[mcs.size()];
 			for (int i = 0; i < monitors.length; i++) {

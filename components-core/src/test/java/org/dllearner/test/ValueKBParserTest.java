@@ -26,7 +26,7 @@ import org.dllearner.parser.ParseException;
 
 public class ValueKBParserTest {
 	public static void main(String[] args) {
-		SortedSet<String> s = new TreeSet<String>();
+		SortedSet<String> s = new TreeSet<>();
 		s.add("(\"http://nlp2rdf.org/ontology/Sentence\" AND (\"http://nlp2rdf.org/ontology/hasLemma\" value test )");
 		
 		for (String kbsyntax : s) {

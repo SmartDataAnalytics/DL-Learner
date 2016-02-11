@@ -18,15 +18,12 @@
  */
 package org.dllearner.algorithms.decisiontrees.heuristics;
 
-import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dllearner.learningproblems.PosNegUndLP;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.EvaluatedDescription;
-import org.dllearner.learningproblems.PosNegLP;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;

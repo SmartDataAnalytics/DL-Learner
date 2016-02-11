@@ -35,7 +35,7 @@ public class RelevanceUtils {
 	 */
 	public static synchronized Map<OWLEntity, Double> getRelevantEntities(final OWLEntity entity, Set<OWLEntity> otherEntities, final RelevanceMetric metric){
 		logger.info("Get relevant entities for " + entity);
-		final Map<OWLEntity, Double> relevantEntities = Collections.synchronizedMap(new HashMap<OWLEntity, Double>());
+		final Map<OWLEntity, Double> relevantEntities = Collections.synchronizedMap(new HashMap<>());
 		
 		ExecutorService executor = Executors.newFixedThreadPool(maxNrOfThreads);
 		
@@ -68,7 +68,7 @@ public class RelevanceUtils {
 	}
 	
 	public static Map<OWLEntity, Double> getRelevantEntities(OWLEntity entity, OWLOntology ontology, RelevanceMetric metric){
-		Set<OWLEntity> owlEntities = new TreeSet<OWLEntity>();
+		Set<OWLEntity> owlEntities = new TreeSet<>();
 		owlEntities.addAll(ontology.getClassesInSignature());
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());

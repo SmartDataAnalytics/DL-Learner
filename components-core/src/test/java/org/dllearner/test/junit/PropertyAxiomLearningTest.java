@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
-
-import org.aksw.commons.collections.diff.SetDiff;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner;
 import org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner;
@@ -313,7 +310,7 @@ public class PropertyAxiomLearningTest {
 		reasoner.init();
 		reasoner.precomputePopularities(PopularityType.OBJECT_PROPERTY);
 		
-		List<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>> la = new ArrayList<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>>();
+		List<Class<? extends ObjectPropertyAxiomLearner<? extends OWLObjectPropertyAxiom>>> la = new ArrayList<>();
 		la.add(DisjointObjectPropertyAxiomLearner.class);
 		la.add(SubObjectPropertyOfAxiomLearner.class);
 		la.add(EquivalentObjectPropertyAxiomLearner.class);

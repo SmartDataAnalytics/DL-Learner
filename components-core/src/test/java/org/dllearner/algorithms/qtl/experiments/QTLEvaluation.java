@@ -219,7 +219,7 @@ public class QTLEvaluation {
 	OWLObjectRenderer owlRenderer = new org.dllearner.utilities.owl.DLSyntaxObjectRenderer();
 
 
-	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) throws ComponentInitException {
+	public QTLEvaluation(EvaluationDataset dataset, File benchmarkDirectory, boolean write2DB, boolean override, int maxQTLRuntime, boolean useEmailNotification, int nrOfThreads) {
 		this.dataset = dataset;
 		this.benchmarkDirectory = benchmarkDirectory;
 		this.write2DB = write2DB;
@@ -755,8 +755,8 @@ public class QTLEvaluation {
 				
 				String content = "###";
 				String separator = "\t";
-				for(int j = 0; j < noiseIntervals.length; j++) {
-					content += separator + noiseIntervals[j];
+				for (double noiseInterval1 : noiseIntervals) {
+					content += separator + noiseInterval1;
 				}
 				content += "\n";
 				for(int i = 0; i < nrOfExamplesIntervals.length; i++) {
@@ -1296,12 +1296,11 @@ public class QTLEvaluation {
 			negExamplesSet.addAll(result);
 		} else {
 			// we modify each triple pattern <s p o> by <s p ?var> . ?var != o
-			Set<Set<Triple>> powerSet = new TreeSet<>(new Comparator<Set<Triple>>() {
-
-				@Override
-				public int compare(Set<Triple> o1, Set<Triple> o2) {
-					return ComparisonChain.start().compare(o1.size(), o2.size()).compare(o1.hashCode(), o2.hashCode()).result();
-				}
+			Set<Set<Triple>> powerSet = new TreeSet<>((Comparator<Set<Triple>>) (o1, o2) -> {
+				return ComparisonChain.start()
+						.compare(o1.size(), o2.size())
+						.compare(o1.hashCode(), o2.hashCode())
+						.result();
 			});
 			powerSet.addAll(Sets.powerSet(triplePatterns));
 			
@@ -1499,15 +1498,12 @@ public class QTLEvaluation {
 			if(object.isConcrete() || !var2TriplePatterns.containsKey(Var.alloc(object))){
 				fixedTriplePatterns.add(tp);
 			} else {
-				Set<Triple> cluster = new TreeSet<>(new Comparator<Triple>() {
-					@Override
-					public int compare(Triple o1, Triple o2) {
-						return ComparisonChain.start().
-						compare(o1.getSubject().toString(), o2.getSubject().toString()).
-						compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-						compare(o1.getObject().toString(), o2.getObject().toString()).
-						result();
-					}
+				Set<Triple> cluster = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+					return ComparisonChain.start().
+					compare(o1.getSubject().toString(), o2.getSubject().toString()).
+					compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+					compare(o1.getObject().toString(), o2.getObject().toString()).
+					result();
 				});
 				cluster.add(tp);
 				clusters.add(cluster);
@@ -1694,15 +1690,12 @@ public class QTLEvaluation {
 		QueryUtils queryUtils = new QueryUtils();
 		Set<Triple> triplePatterns = queryUtils.extractTriplePattern(query);
 		
-		Set<Triple> newTriplePatterns = new TreeSet<>(new Comparator<Triple>() {
-			@Override
-			public int compare(Triple o1, Triple o2) {
-				return ComparisonChain.start().
-				compare(o1.getSubject().toString(), o2.getSubject().toString()).
-				compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
-				compare(o1.getObject().toString(), o2.getObject().toString()).
-				result();
-			}
+		Set<Triple> newTriplePatterns = new TreeSet<>((Comparator<Triple>) (o1, o2) -> {
+			return ComparisonChain.start().
+			compare(o1.getSubject().toString(), o2.getSubject().toString()).
+			compare(o1.getPredicate().toString(), o2.getPredicate().toString()).
+			compare(o1.getObject().toString(), o2.getObject().toString()).
+			result();
 		});
 		List<ElementFilter> filters = new ArrayList<>();
 		int cnt = 0;

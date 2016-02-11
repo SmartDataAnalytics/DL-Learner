@@ -18,14 +18,9 @@
  */
 package org.dllearner.utilities.split;
 
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.dllearner.core.AbstractReasonerComponent;
@@ -39,11 +34,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.google.common.collect.Sets;
 
@@ -117,8 +109,8 @@ public class DataValuesSplitterTest {
 		reasoner.init();
 
 		// get examples
-		Set<OWLIndividual> posExamples = new HashSet<OWLIndividual>();
-		Set<OWLIndividual> negExamples = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> posExamples = new HashSet<>();
+		Set<OWLIndividual> negExamples = new HashSet<>();
 
 		for (OWLIndividual ind : ontology.getIndividualsInSignature()) {
 			if (ind.toStringID().startsWith("http://example.org/p")) {

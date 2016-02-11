@@ -182,7 +182,7 @@ private Set<String> questionWords;
 			if(v >= threshold){
 				return true;
 			} else {
-				values.add(Double.valueOf(v));
+				values.add(v);
 			}
 		} 
 		double sum = 0;

@@ -34,7 +34,6 @@ import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.core.config.ConfigOption;
-import org.dllearner.kb.sparql.QueryExecutionFactoryHttp;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;

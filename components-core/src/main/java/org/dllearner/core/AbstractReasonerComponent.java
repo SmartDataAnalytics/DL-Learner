@@ -31,7 +31,6 @@ import org.dllearner.reasoning.ReasonerType;
 import org.dllearner.utilities.Helper;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.dllearner.utilities.datastructures.SortedSetTuple;
-import org.dllearner.utilities.owl.OWLVocabulary;
 import org.semanticweb.owlapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -366,7 +365,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	}
 
 	protected Set<OWLClassExpression> isSuperClassOfImpl(Set<OWLClassExpression> superConcepts,
-			OWLClassExpression subConcept) throws ReasoningMethodUnsupportedException {
+			OWLClassExpression subConcept) {
 		Set<OWLClassExpression> returnSet = new HashSet<>();
 		for (OWLClassExpression superConcept : superConcepts) {
 			if (isSuperClassOf(superConcept, subConcept))
@@ -486,8 +485,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 		return result;
 	}
 
-	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals)
-			throws ReasoningMethodUnsupportedException {
+	protected SortedSet<OWLIndividual> hasTypeImpl(OWLClassExpression concept, Set<OWLIndividual> individuals) {
 		SortedSet<OWLIndividual> returnSet = new TreeSet<>();
 		for (OWLIndividual individual : individuals) {
 			if (hasType(concept, individual))
@@ -1270,13 +1268,13 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 
 		// parents/children of top ...
 		SortedSet<OWLClassExpression> tmp = getSubClassesImpl(df.getOWLThing());
-		subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<OWLClassExpression>());
+		subsumptionHierarchyUp.put(df.getOWLThing(), new TreeSet<>());
 		subsumptionHierarchyDown.put(df.getOWLThing(), tmp);
 
 		// ... bottom ...
 		tmp = getSuperClassesImpl(df.getOWLNothing());
 		subsumptionHierarchyUp.put(df.getOWLNothing(), tmp);
-		subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<OWLClassExpression>());
+		subsumptionHierarchyDown.put(df.getOWLNothing(), new TreeSet<>());
 		
 		// ... and named classes
 		Set<OWLClass> atomicConcepts = getClasses();

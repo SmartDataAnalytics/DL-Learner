@@ -18,13 +18,13 @@
  */
 package org.dllearner.kb.sparql;
 
+import org.dllearner.utilities.datastructures.StringTuple;
+import org.dllearner.utilities.owl.OWLVocabulary;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.dllearner.utilities.datastructures.StringTuple;
-import org.dllearner.utilities.owl.OWLVocabulary;
 
 /**
  * Can assemble sparql queries. can make queries for subject, predicate, object
@@ -349,7 +349,7 @@ public class SparqlQueryMaker {
 	}
 	
 	public static SparqlQueryMaker getAllowSKOSFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), false);
 		sqm.combineWith(getAllowYAGOandSKOSFilter());
 		sqm.addFiltersForYago();
 				
@@ -360,14 +360,14 @@ public class SparqlQueryMaker {
 	}
 
 	public static SparqlQueryMaker getAllowYAGOFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), false);
 		sqm.combineWith(getAllowYAGOandSKOSFilter());
 		sqm.addFiltersForDBpediaSKOS();
 		return sqm;
 	}
 	
 	public static SparqlQueryMaker getAllowYAGO_ONLYFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), false);
 		sqm.combineWith(getAllowYAGOandSKOSFilter());
 		sqm.addFiltersForDBpediaSKOS();
 		sqm.addFiltersForDBpediaUMBEL();
@@ -376,7 +376,7 @@ public class SparqlQueryMaker {
 
 	public static SparqlQueryMaker getDBpediaNavigatorFilter() {
 //		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), false);
-		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<String>(), new TreeSet<String>(), true);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("allow", new TreeSet<>(), new TreeSet<>(), true);
 //		sqm.addPredicateFilter("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 //		sqm.addPredicateFilter("http://www.w3.org/2000/01/rdf-schema#subClassOf");
 //		sqm.addPredicateFilter("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
@@ -401,7 +401,7 @@ public class SparqlQueryMaker {
 	}
 
 	public static SparqlQueryMaker getYagoSpecialHierarchyFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), false);
 		sqm.combineWith(getAllowYAGOFilter());
 		sqm.addPredicateFilter("http://dbpedia.org/property/monarch");
 		return sqm;
@@ -410,7 +410,7 @@ public class SparqlQueryMaker {
 
 
 	public static SparqlQueryMaker getAllowYAGOandSKOSFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), false);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), false);
 		sqm.addFiltersForFOAF();
 		sqm.addFiltersForDBpedia();
 
@@ -425,7 +425,7 @@ public class SparqlQueryMaker {
 	}
 
 	public static SparqlQueryMaker getTestFilter() {
-		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<String>(), new TreeSet<String>(), true);
+		SparqlQueryMaker sqm = new SparqlQueryMaker("forbid", new TreeSet<>(), new TreeSet<>(), true);
 		sqm.combineWith(getAllowYAGOFilter());
 		return sqm;
 	}

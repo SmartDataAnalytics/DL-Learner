@@ -57,7 +57,7 @@ public class SemKernelCLI {
 
         Resource confFile = new FileSystemResource(file);
 
-        List<Resource> springConfigResources = new ArrayList<Resource>();
+        List<Resource> springConfigResources = new ArrayList<>();
 
         try {
             //SemKernel configuration object
@@ -120,7 +120,7 @@ public class SemKernelCLI {
     public void init() throws IOException {
         if(getContext() == null) {
             Resource confFileR = new FileSystemResource(getConfFile());
-            List<Resource> springConfigResources = new ArrayList<Resource>();
+            List<Resource> springConfigResources = new ArrayList<>();
             configuration = new ConfParserConfiguration(confFileR);
 
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
@@ -134,7 +134,7 @@ public class SemKernelCLI {
         }
     }
 
-    public void run() throws IOException, ComponentInitException {
+    public void run() {
         for(Entry<String, SemKernelWorkflow> entry : getContext().
                 getBeansOfType(SemKernelWorkflow.class).entrySet()){
 

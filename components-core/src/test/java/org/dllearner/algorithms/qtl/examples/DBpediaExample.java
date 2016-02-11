@@ -44,7 +44,7 @@ public class DBpediaExample {
 	static QueryTreeFactory factory = new QueryTreeFactoryBase();
 	
 	public static List<RDFResourceTree> getPosExampleTrees(){
-		List<RDFResourceTree> posExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> posExampleTrees = new ArrayList<>();
 		
 		posExampleTrees.add(factory.getQueryTree("Leibnitz", getLeibnitzExampleModel()));
 		posExampleTrees.add(factory.getQueryTree("MaxImmelmann", getMaxImmelmannExampleModel()));
@@ -53,7 +53,7 @@ public class DBpediaExample {
 	}
 	
 	public static List<RDFResourceTree> getNegExampleTrees(){
-		List<RDFResourceTree> negExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> negExampleTrees = new ArrayList<>();
 		
 		negExampleTrees.add(factory.getQueryTree("CharlesGarnier", getCharlesGarnierExampleModel()));
 		

@@ -20,13 +20,10 @@ package org.dllearner.algorithms.qtl.heuristics;
 
 import static org.junit.Assert.assertEquals;
 
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
-import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.NodeType;
 import org.junit.Test;
 
 import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public class QueryTreeEditDistanceTest {
 

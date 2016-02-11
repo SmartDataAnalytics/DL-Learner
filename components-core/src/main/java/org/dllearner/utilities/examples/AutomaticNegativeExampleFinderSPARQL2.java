@@ -18,46 +18,26 @@
  */
 package org.dllearner.utilities.examples;
 
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.RANDOM;
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SIBLING;
-import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.SUPERCLASS;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.*;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.datastructures.SetManipulation;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2.Strategy.*;
 /**
  * 
  * Utility class for automatically retrieving negative examples from a 
@@ -259,24 +239,14 @@ public class AutomaticNegativeExampleFinderSPARQL2 {
 	
 	private <T extends OWLClassExpression> Set<T> filterByNamespace(Set<T> classes){
 		if(namespace != null){
-			return Sets.filter(classes, new Predicate<T>() {
-				@Override
-				public boolean apply(T input){
-					return input.toString().startsWith(namespace);
-				}
-			});
+			return Sets.filter(classes, input -> input.toString().startsWith(namespace));
 		}
 		return classes;
 	}
 	
 	private Multiset<OWLClass> filterByNamespace(Multiset<OWLClass> classes){
 		if(namespace != null){
-			return Multisets.filter(classes, new Predicate<OWLClass>() {
-				@Override
-				public boolean apply(OWLClass input){
-					return input.toStringID().startsWith(namespace);
-				}
-			});
+			return Multisets.filter(classes, input -> input.toStringID().startsWith(namespace));
 		}
 		return classes;
 	}

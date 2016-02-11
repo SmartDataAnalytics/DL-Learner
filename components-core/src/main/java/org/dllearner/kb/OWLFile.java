@@ -133,8 +133,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {
         try {
-            OWLOntology ontology = manager.loadOntologyFromOntologyDocument(IRI.create(getURL().toURI()));
-            return ontology;
+	        return manager.loadOntologyFromOntologyDocument(IRI.create(getURL().toURI()));
         } catch (OWLOntologyCreationException | URISyntaxException e) {
             throw new RuntimeException(e);
         }

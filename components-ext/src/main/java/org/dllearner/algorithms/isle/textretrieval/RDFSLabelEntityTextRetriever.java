@@ -48,7 +48,7 @@ public class RDFSLabelEntityTextRetriever extends AnnotationEntityTextRetriever{
 		
 		RDFSLabelEntityTextRetriever labelRetriever = new RDFSLabelEntityTextRetriever(ontology);
 		Map<OWLEntity, Set<List<Token>>> relevantText = labelRetriever.getRelevantText(ontology);
-		SortedMap<String, String> uri2Labels = new TreeMap<String, String>();
+		SortedMap<String, String> uri2Labels = new TreeMap<>();
 		
 		for (Entry<OWLEntity, Set<List<Token>>> entry : relevantText.entrySet()) {
 			OWLEntity key = entry.getKey();

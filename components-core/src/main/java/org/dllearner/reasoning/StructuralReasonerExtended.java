@@ -907,7 +907,7 @@ public class StructuralReasonerExtended extends OWLReasonerBase {
             for (T entity : signature) {
                 if (!processed.contains(entity)) {
                     pm.reasonerTaskProgressChanged(processed.size(), signature.size());
-                    tarjan(entity, 0, new Stack<T>(), new HashMap<T, Integer>(), new HashMap<T, Integer>(), cyclesResult, processed, new HashSet<T>(), cache, equivTopOrChildrenOfTop, equivBottomOrParentsOfBottom);
+                    tarjan(entity, 0, new Stack<>(), new HashMap<>(), new HashMap<>(), cyclesResult, processed, new HashSet<>(), cache, equivTopOrChildrenOfTop, equivBottomOrParentsOfBottom);
                     throwExceptionIfInterrupted();
                 }
             }

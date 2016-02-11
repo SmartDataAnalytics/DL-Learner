@@ -148,13 +148,8 @@ public class AnnComponentManager {
 			}
 		}
 		// conversion of class strings to objects
-		components = new TreeSet<>(new Comparator<Class<? extends Component>>() {
-
-			@Override
-			public int compare(Class<? extends Component> o1,
-							   Class<? extends Component> o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
+		components = new TreeSet<>((Comparator<Class<? extends Component>>) (o1, o2) -> {
+			return o1.getName().compareTo(o2.getName());
 		});
 		componentNames = new DualHashBidiMap<>();
 		componentNamesShort = new DualHashBidiMap<>();

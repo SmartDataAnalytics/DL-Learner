@@ -239,9 +239,9 @@ public class SimpleSubclassLearner extends AbstractAxiomLearningAlgorithm<OWLSub
 			for (OWLClassExpression nc : entry.getValue()) {
 				Integer cnt = result.get(nc);
 				if (cnt == null) {
-					cnt = Integer.valueOf(1);
+					cnt = 1;
 				} else {
-					cnt = Integer.valueOf(cnt + 1);
+					cnt = cnt + 1;
 				}
 				result.put(nc, cnt);
 			}

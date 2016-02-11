@@ -1030,11 +1030,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 			// initialise the refinements with empty sets
 			if(domain == null) {
-				topRefinements.put(i, new TreeSet<OWLClassExpression>());
+				topRefinements.put(i, new TreeSet<>());
 			} else {
 				if(!topARefinements.containsKey(domain))
-					topARefinements.put(domain, new TreeMap<Integer,SortedSet<OWLClassExpression>>());
-				topARefinements.get(domain).put(i, new TreeSet<OWLClassExpression>());
+					topARefinements.put(domain, new TreeMap<>());
+				topARefinements.get(domain).put(i, new TreeSet<>());
 			}
 
 			for(List<Integer> combo : combos.get(i)) {
@@ -1115,7 +1115,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				topRefinementsCumulative.put(i, cumulativeRefinements);
 			} else {
 				if(!topARefinementsCumulative.containsKey(domain))
-					topARefinementsCumulative.put(domain, new TreeMap<Integer, TreeSet<OWLClassExpression>>());
+					topARefinementsCumulative.put(domain, new TreeMap<>());
 				topARefinementsCumulative.get(domain).put(i, cumulativeRefinements);
 			}
 		}
@@ -1141,7 +1141,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		logger.debug(sparql_debug, "computeM");
 		// initialise all possible lengths (1 to mMaxLength)
 		for(int i=1; i<=mMaxLength; i++) {
-			m.put(i, new TreeSet<OWLClassExpression>());
+			m.put(i, new TreeSet<>());
 		}
 
 		SortedSet<OWLClassExpression> m1 = subHierarchy.getSubClasses(df.getOWLThing(), true);
@@ -1285,10 +1285,10 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private void computeM(OWLClassExpression nc) {
 		long mComputationTimeStartNs = System.nanoTime();
 
-		mA.put(nc, new TreeMap<Integer,SortedSet<OWLClassExpression>>());
+		mA.put(nc, new TreeMap<>());
 		// initialise all possible lengths (1 to mMaxLength)
 		for(int i=1; i<=mMaxLength; i++) {
-			mA.get(nc).put(i, new TreeSet<OWLClassExpression>());
+			mA.get(nc).put(i, new TreeSet<>());
 		}
 
 		// most general classes, which are not disjoint with nc and provide real refinement
@@ -1546,11 +1546,11 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			computeApp(domain);
 
 		// initialise mgr, mgbd, mgdd, mgsd
-		mgr.put(domain, new TreeSet<OWLObjectProperty>());
-		mgbd.put(domain, new TreeSet<OWLDataProperty>());
-		mgNumeric.put(domain, new TreeSet<OWLDataProperty>());
-		mgsd.put(domain, new TreeSet<OWLDataProperty>());
-		mgDT.put(domain, new TreeSet<OWLDataProperty>());
+		mgr.put(domain, new TreeSet<>());
+		mgbd.put(domain, new TreeSet<>());
+		mgNumeric.put(domain, new TreeSet<>());
+		mgsd.put(domain, new TreeSet<>());
+		mgDT.put(domain, new TreeSet<>());
 
 		SortedSet<OWLObjectProperty> mostGeneral = objectPropertyHierarchy.getMostGeneralRoles();
 		computeMgrRecursive(domain, mostGeneral, mgr.get(domain));
@@ -1717,9 +1717,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 		// create new entries if necessary
 		if (tmp == null)
-			cachedDisjoints.put(d1, new TreeMap<OWLClassExpression, Boolean>());
+			cachedDisjoints.put(d1, new TreeMap<>());
 		if (!cachedDisjoints.containsKey(d2))
-			cachedDisjoints.put(d2, new TreeMap<OWLClassExpression, Boolean>());
+			cachedDisjoints.put(d2, new TreeMap<>());
 
 		// add result symmetrically in the OWLClassExpression matrix
 		cachedDisjoints.get(d1).put(d2, result);

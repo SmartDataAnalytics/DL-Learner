@@ -88,7 +88,7 @@ public class OxfordRepository implements OntologyRepository{
     }
 
 
-    public void dispose() throws Exception {
+    public void dispose() {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////

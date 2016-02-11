@@ -19,20 +19,16 @@
 package org.dllearner.algorithms.decisiontrees.dsttdt.models;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.dllearner.algorithms.decisiontrees.dsttdt.dst.MassFunction;
-import org.dllearner.algorithms.decisiontrees.dsttdt.models.DSTDLTree;
-import org.dllearner.algorithms.decisiontrees.dsttdt.models.EvidentialModel;
 import org.dllearner.algorithms.decisiontrees.tdt.model.AbstractTree;
-import org.dllearner.algorithms.decisiontrees.tdt.model.DLTree;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 public class DSTDLTree extends AbstractTree implements EvidentialModel{
 
 	private class DLNode {
@@ -61,8 +57,7 @@ public class DSTDLTree extends AbstractTree implements EvidentialModel{
 		
 		@Override
 		public Object clone(){
-			DLNode cloned= new DLNode(concept,m);
-			return cloned;
+			return new DLNode(concept,m);
 		}
 		
 	}

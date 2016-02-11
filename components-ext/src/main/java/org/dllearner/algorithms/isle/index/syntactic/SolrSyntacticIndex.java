@@ -46,7 +46,7 @@ public class SolrSyntacticIndex implements Index{
 	
 	long totalNumberOfDocuments = -1;
 	
-	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
+	Map<Set<OWLEntity>, Long> cache = Collections.synchronizedMap(new HashMap<>());
 	private OWLOntology ontology;
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 	
@@ -84,12 +84,12 @@ public class SolrSyntacticIndex implements Index{
 		
 		ExecutorService executor = Executors.newFixedThreadPool(6);
 		
-		final Set<OWLEntity> owlEntities = new TreeSet<OWLEntity>();
+		final Set<OWLEntity> owlEntities = new TreeSet<>();
 		owlEntities.addAll(ontology.getClassesInSignature());
 		owlEntities.addAll(ontology.getDataPropertiesInSignature());
 		owlEntities.addAll(ontology.getObjectPropertiesInSignature());
 		
-		final Map<Set<OWLEntity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<Set<OWLEntity>, Long>());
+		final Map<Set<OWLEntity>, Long> frequencyCache = Collections.synchronizedMap(new HashMap<>());
 		
 		//fA resp. fB
 		owlEntities.addAll(classes);
@@ -135,8 +135,6 @@ public class SolrSyntacticIndex implements Index{
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("entity_frequencies.obj"));
 			oos.writeObject(frequencyCache);
 			oos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -150,7 +148,7 @@ public class SolrSyntacticIndex implements Index{
 	 */
 	@Override
 	public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
-		Set<AnnotatedDocument> documents = new HashSet<AnnotatedDocument>();
+		Set<AnnotatedDocument> documents = new HashSet<>();
 		
 		Map<List<Token>, Double> relevantText = textRetriever.getRelevantText(entity);
 		
@@ -170,9 +168,7 @@ public class SolrSyntacticIndex implements Index{
 								TextDocumentGenerator.getInstance().generateDocument((String) doc.getFieldValue(searchField)), 
 								Collections.EMPTY_SET));
 					}
-				} catch (SolrServerException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (SolrServerException | IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -190,9 +186,7 @@ public class SolrSyntacticIndex implements Index{
 		    q.setRows(0);  // don't actually request any data
 		    try {
 				totalNumberOfDocuments = solr.query(q).getResults().getNumFound();
-			} catch (SolrServerException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (SolrServerException | IOException e) {
 				e.printStackTrace();
 			}
 		}

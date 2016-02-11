@@ -18,12 +18,12 @@
  */
 package org.dllearner.algorithms.schema;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.AxiomAlgorithms;
@@ -33,21 +33,12 @@ import org.dllearner.core.SilentAxiomLearningProgressMonitor;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.reasoning.SPARQLReasoner;
 import org.dllearner.utilities.OwlApiJenaUtils;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.EntityType;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.profiles.OWL2DLProfile;
 import org.semanticweb.owlapi.profiles.OWLProfile;
-
-import com.google.common.collect.Sets;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
 import org.semanticweb.owlapi.profiles.Profiles;
+
+import java.util.*;
 
 
 /**
@@ -91,8 +82,7 @@ public abstract class AbstractSchemaGenerator implements SchemaGenerator{
 	
 	public AbstractSchemaGenerator(Model model) {
 		// enable reasoning on model
-		OntModel infModel = ModelFactory.createOntologyModel(reasoningProfile, model);
-		this.model = infModel;
+		this.model = ModelFactory.createOntologyModel(reasoningProfile, model);
 		this.qef = new QueryExecutionFactoryModel(this.model);
 		this.reasoner = new SPARQLReasoner(qef);
 	}

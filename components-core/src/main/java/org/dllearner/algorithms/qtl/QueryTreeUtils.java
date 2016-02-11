@@ -763,12 +763,7 @@ public class QueryTreeUtils {
 			}
 		};
 
-		VertexNameProvider<Vertex> vertexNameProvider = new VertexNameProvider<Vertex>() {
-			@Override
-			public String getVertexName(Vertex vertex) {
-				return vertex.getLabel();
-			}
-		};
+		VertexNameProvider<Vertex> vertexNameProvider = Vertex::getLabel;
 
 		EdgeNameProvider<Edge> edgeIDProvider = new EdgeNameProvider<Edge>() {
 			@Override
@@ -777,21 +772,12 @@ public class QueryTreeUtils {
 			}
 		};
 
-		EdgeNameProvider<Edge> edgeLabelProvider = new EdgeNameProvider<Edge>() {
-			@Override
-			public String getEdgeName(Edge edge) {
-				return edge.getLabel();
-			}
-		};
+		EdgeNameProvider<Edge> edgeLabelProvider = Edge::getLabel;
 		GraphMLExporter<Vertex, Edge> exporter = new GraphMLExporter<>(vertexIDProvider,
 				vertexNameProvider, edgeIDProvider, edgeLabelProvider);
 		try {
 			exporter.export(new FileWriter(outputFile), graph);
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (TransformerConfigurationException | IOException | SAXException e) {
 			e.printStackTrace();
 		}
 	}
@@ -860,9 +846,8 @@ public class QueryTreeUtils {
 		for(Node edge : new TreeSet<>(tree.getEdges())) {
 			if(edge.equals(RDF.type.asNode())) { // check outgoing rdf:type edges
 				List<RDFResourceTree> children = new ArrayList<>(tree.getChildren(edge));
-				for (Iterator<RDFResourceTree> iterator = children.iterator(); iterator.hasNext();) {
-					RDFResourceTree child = iterator.next();
-					if(!isNonTrivial(child, entailment)) {
+				for (RDFResourceTree child : children) {
+					if (!isNonTrivial(child, entailment)) {
 						tree.removeChild(child, edge);
 					}
 				}

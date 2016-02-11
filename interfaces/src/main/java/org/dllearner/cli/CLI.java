@@ -109,7 +109,7 @@ public class CLI {
     	if(context == null) {
 
     		Resource confFileR = new FileSystemResource(confFile);
-    		List<Resource> springConfigResources = new ArrayList<Resource>();
+    		List<Resource> springConfigResources = new ArrayList<>();
             configuration = new ConfParserConfiguration(confFileR);
             
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
@@ -122,7 +122,7 @@ public class CLI {
     	}
 	}
 	
-    public void run() throws IOException {
+    public void run() {
     	try {
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.toLevel(logLevel.toUpperCase()));
 		} catch (Exception e) {
@@ -143,10 +143,10 @@ public class CLI {
 					
 					//TODO:  verify if the quality of the code can be improved
 					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
-					ArrayList<OWLClass> concepts = new ArrayList<OWLClass>(rs.getClasses());
+					ArrayList<OWLClass> concepts = new ArrayList<>(rs.getClasses());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					
-					ArrayList<OWLObjectProperty> roles = new ArrayList<OWLObjectProperty>(rs.getAtomicRolesList());
+					ArrayList<OWLObjectProperty> roles = new ArrayList<>(rs.getAtomicRolesList());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					((DLTreesRefinementOperator) op).setAllRoles(roles);
 					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
@@ -245,7 +245,7 @@ public class CLI {
 		
 		Resource confFile = new FileSystemResource(file);
 		
-		List<Resource> springConfigResources = new ArrayList<Resource>();
+		List<Resource> springConfigResources = new ArrayList<>();
 
         try {
             //DL-Learner Configuration Object

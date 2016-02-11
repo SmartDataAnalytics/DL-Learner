@@ -152,14 +152,10 @@ public final class TestOntologies {
 			AbstractReasonerComponent rc = new OWLAPIReasoner(Collections.singleton(source));
 			rc.init();
 			return rc;	
-		} catch(ParseException e) {
-			e.printStackTrace();
-		} catch (ComponentInitException e) {
-			e.printStackTrace();
-		} catch (OWLOntologyCreationException e) {
+		} catch(ParseException | OWLOntologyCreationException | ComponentInitException e) {
 			e.printStackTrace();
 		}
-		
+
 		throw new Error("Test ontology could not be created.");	
 	}
 	

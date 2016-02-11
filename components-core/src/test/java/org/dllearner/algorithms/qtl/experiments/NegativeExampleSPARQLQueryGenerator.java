@@ -52,7 +52,6 @@ import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementUnion;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 	
@@ -108,7 +107,7 @@ public class NegativeExampleSPARQLQueryGenerator extends ElementVisitorBase{
 			
 			// extract paths
 			Node source = query.getProjectVars().get(0).asNode();
-			Set<List<Triple>> paths = getPaths(new ArrayList<Triple>(), query, source);
+			Set<List<Triple>> paths = getPaths(new ArrayList<>(), query, source);
 			
 			// for each path create query which excludes the path by FILTER NOT EXISTS
 			Set<Set<List<Triple>>> pathSubsets = Sets.powerSet(paths);

@@ -38,12 +38,9 @@ import org.dllearner.reasoning.SPARQLReasoner;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;

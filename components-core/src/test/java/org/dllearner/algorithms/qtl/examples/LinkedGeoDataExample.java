@@ -43,7 +43,7 @@ public class LinkedGeoDataExample {
 	static QueryTreeFactory factory = new QueryTreeFactoryBase();
 	
 	public static List<RDFResourceTree> getPosExampleTrees(){
-		List<RDFResourceTree> posExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> posExampleTrees = new ArrayList<>();
 		
 		posExampleTrees.add(factory.getQueryTree("lgd:node660663336", getNode660663336ExampleModel()));
 		posExampleTrees.add(factory.getQueryTree("lgd:node265046409", getNode265046409ExampleModel()));
@@ -52,7 +52,7 @@ public class LinkedGeoDataExample {
 	}
 	
 	public static List<RDFResourceTree> getNegExampleTrees(){
-		List<RDFResourceTree> negExampleTrees = new ArrayList<RDFResourceTree>();
+		List<RDFResourceTree> negExampleTrees = new ArrayList<>();
 		
 		negExampleTrees.add(factory.getQueryTree("lgd:node101156499", getNode101156499ExampleModel()));
 		negExampleTrees.add(factory.getQueryTree("lgd:node26608237", getNode26608237ExampleModel()));

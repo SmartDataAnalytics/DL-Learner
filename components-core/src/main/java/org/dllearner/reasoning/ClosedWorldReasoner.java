@@ -163,23 +163,23 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 			if(pos != null){
 				classInstancesNeg.put(atomicConcept, new TreeSet<>(Sets.difference(individuals, pos)));
 			} else {
-				classInstancesPos.put(atomicConcept, new TreeSet<OWLIndividual>());
+				classInstancesPos.put(atomicConcept, new TreeSet<>());
 				classInstancesNeg.put(atomicConcept, individuals);
 			}
 		}
 		
 		for(OWLObjectProperty p : baseReasoner.getObjectProperties()){
 			if(opPos.get(p) == null){
-				opPos.put(p, new HashMap<OWLIndividual, SortedSet<OWLIndividual>>());
+				opPos.put(p, new HashMap<>());
 			}
 		}
 		
 		for (OWLDataProperty dp : baseReasoner.getBooleanDatatypeProperties()) {
 			if(bdPos.get(dp) == null){
-				bdPos.put(dp, new TreeSet<OWLIndividual>());
+				bdPos.put(dp, new TreeSet<>());
 			}
 			if(bdNeg.get(dp) == null){
-				bdNeg.put(dp, new TreeSet<OWLIndividual>());
+				bdNeg.put(dp, new TreeSet<>());
 			}
 			
 		}

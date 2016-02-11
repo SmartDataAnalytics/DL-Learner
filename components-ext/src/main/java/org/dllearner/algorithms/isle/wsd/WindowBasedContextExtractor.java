@@ -3,14 +3,6 @@
  */
 package org.dllearner.algorithms.isle.wsd;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-
-import org.dllearner.algorithms.isle.TextDocumentGenerator;
-import org.dllearner.algorithms.isle.index.Token;
-
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
@@ -18,6 +10,13 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
+import org.dllearner.algorithms.isle.TextDocumentGenerator;
+import org.dllearner.algorithms.isle.index.Token;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Lorenz Buehmann
@@ -78,7 +77,7 @@ public class WindowBasedContextExtractor implements ContextExtractor {
 				}
 			}
 			if (found) {
-				List<String> context = new ArrayList<String>();
+				List<String> context = new ArrayList<>();
 				for (CoreLabel label : sentence.get(TokensAnnotation.class)) {
 					// this is the text of the token
 					String word = label.get(TextAnnotation.class);

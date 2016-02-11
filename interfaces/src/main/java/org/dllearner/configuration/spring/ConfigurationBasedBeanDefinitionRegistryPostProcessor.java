@@ -75,7 +75,7 @@ public class ConfigurationBasedBeanDefinitionRegistryPostProcessor implements Be
 
                 //Process collections of bean references
                 if(property.isBeanReferenceCollection()){
-                    Collection<RuntimeBeanReference> beanReferences = new ManagedSet<RuntimeBeanReference>();
+                    Collection<RuntimeBeanReference> beanReferences = new ManagedSet<>();
                     Collection<String> referencedBeanNames = (Collection<String>)property.getValue();
                     for (String referencedBeanName : referencedBeanNames) {
                          beanReferences.add(new RuntimeBeanReference(referencedBeanName));

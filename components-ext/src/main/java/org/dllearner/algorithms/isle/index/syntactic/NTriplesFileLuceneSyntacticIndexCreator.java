@@ -61,7 +61,7 @@ public class NTriplesFileLuceneSyntacticIndexCreator {
 		FieldType textType = new FieldType(TextField.TYPE_STORED);
 		textType.setStoreTermVectors(false);
 		
-		Set<Document> documents = new HashSet<Document>();
+		Set<Document> documents = new HashSet<>();
 		
 		Iterator<Triple> iterator = RiotReader.createIteratorTriples(nTriplesStream, Lang.NTRIPLES, null);
 
@@ -110,11 +110,11 @@ public class NTriplesFileLuceneSyntacticIndexCreator {
 		
 		TopDocs docs = searcher.search(query, 10);
 		ScoreDoc[] scoreDocs = docs.scoreDocs;
-		
-		for (int i = 0; i < scoreDocs.length; i++) {
-			Document doc = searcher.doc(scoreDocs[i].doc);
+
+		for (ScoreDoc scoreDoc : scoreDocs) {
+			Document doc = searcher.doc(scoreDoc.doc);
 			System.out.println(doc.get(field));
-			
+
 		}
 	}
 	

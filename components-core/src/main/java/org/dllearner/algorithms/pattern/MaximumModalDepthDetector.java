@@ -80,8 +80,6 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 
-import arq.cmdline.ModAlgebra;
-
 /**
  * @author Lorenz Buehmann
  *

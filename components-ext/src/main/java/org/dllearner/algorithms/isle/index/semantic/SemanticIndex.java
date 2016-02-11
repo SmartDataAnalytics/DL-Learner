@@ -29,7 +29,7 @@ public class SemanticIndex extends HashMap<OWLEntity, Set<AnnotatedDocument>> im
     public Set<AnnotatedDocument> getDocuments(OWLEntity entity) {
         Set<AnnotatedDocument> annotatedDocuments = get(entity);
         if (annotatedDocuments == null) {
-            annotatedDocuments = new HashSet<AnnotatedDocument>();
+            annotatedDocuments = new HashSet<>();
         }
         return annotatedDocuments;
     }

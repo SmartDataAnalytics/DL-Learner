@@ -18,15 +18,15 @@
  */
 package org.dllearner.utilities.split;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Set;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.utilities.OWLAPIUtils;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDatatype;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -59,6 +59,7 @@ public abstract class AbstractNumericValuesSplitter extends AbstractValuesSplitt
 		return avg(value1, value2);
 	}
 
+	@SuppressWarnings("UnnecessaryUnboxing")
 	private <T> T avg(T number1, T number2) {
 		T avg = null;
 		if (number1 instanceof Integer && number2 instanceof Integer){

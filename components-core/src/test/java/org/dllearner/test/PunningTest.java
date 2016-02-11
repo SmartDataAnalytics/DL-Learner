@@ -18,42 +18,30 @@
  */
 package org.dllearner.test;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.StringRenderer;
+import org.dllearner.core.StringRenderer.Rendering;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.PosNegLPStandard;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.owl.OWLPunningDetector;
 import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.dllearner.core.StringRenderer;
-import org.dllearner.core.StringRenderer.Rendering;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.PrefixManager;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.DefaultPrefixManager;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author Lorenz Buehmann
@@ -80,7 +68,7 @@ public class PunningTest {
 	}
 	
 	private Set<IRI> toIRI(Set<? extends OWLEntity> entities){
-		Set<IRI> iris = new HashSet<IRI>();
+		Set<IRI> iris = new HashSet<>();
 		for (OWLEntity e : entities) {
 			iris.add(e.getIRI());
 		}
@@ -94,11 +82,11 @@ public class PunningTest {
 		OWLDataFactory df = new OWLDataFactoryImpl();
 		
 		//check that A and B are both, individual and class
-		Set<OWLIndividual> posExamples = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> posExamples = new HashSet<>();
 		for (String uri : Sets.newHashSet("http://ex.org/TRABANT601#1234", "http://ex.org/S51#2345", "http://ex.org/MIFA23#3456")) {
 			posExamples.add(df.getOWLNamedIndividual(IRI.create(uri)));
 		}
-		Set<OWLIndividual> negExamples = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> negExamples = new HashSet<>();
 		for (String uri : Sets.newHashSet("http://ex.org/CLIPSO90MG#4567", "http://ex.org/SIEMENS425#567", "http://ex.org/TATRAT3#678")) {
 			negExamples.add(df.getOWLNamedIndividual(IRI.create(uri)));
 		}

@@ -80,14 +80,14 @@ public class ExMakerFixedSize {
 	 */
 	public Examples select(int nrOfPos, int nrOfNeg){
 
-		SortedSet<String> posTrain = new TreeSet<String>();
-		SortedSet<String> negTrain = new TreeSet<String>();
+		SortedSet<String> posTrain = new TreeSet<>();
+		SortedSet<String> negTrain = new TreeSet<>();
 		
-		SortedSet<String> posTest = new TreeSet<String>();
-		SortedSet<String> negTest = new TreeSet<String>();
+		SortedSet<String> posTest = new TreeSet<>();
+		SortedSet<String> negTest = new TreeSet<>();
 		
-		SortedSet<String> posOld = new TreeSet<String>();
-		SortedSet<String> negOld = new TreeSet<String>();
+		SortedSet<String> posOld = new TreeSet<>();
+		SortedSet<String> negOld = new TreeSet<>();
 		posOld.addAll(examples.getPositiveExamples());
 		negOld.addAll(examples.getNegativeExamples());
 		

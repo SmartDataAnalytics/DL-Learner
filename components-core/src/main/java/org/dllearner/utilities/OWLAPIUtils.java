@@ -288,7 +288,7 @@ public class OWLAPIUtils {
 	}
 
 	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, final OWLDataFactory df, Logger logger) {
-		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, () -> df.getOWLThing(), logger);
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, df::getOWLThing, logger);
 	}
 
 	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
