@@ -1,6 +1,7 @@
-package org.dllearner.refinementoperators;
+package org.dllearner.algorithms.versionspace.complexity;
 
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.refinementoperators.RefinementOperatorAdapter;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLClassExpressionVisitorEx;
 

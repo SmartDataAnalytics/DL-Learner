@@ -1,4 +1,4 @@
-package org.dllearner.refinementoperators;
+package org.dllearner.algorithms.versionspace.complexity;
 
 import com.google.common.collect.Lists;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -9,6 +9,8 @@ import org.dllearner.core.owl.OWLObjectUnionOfImplExt;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
+import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.model.*;
 
 import javax.annotation.Nonnull;
@@ -35,16 +37,26 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression ce) {
 		Set<OWLClassExpression> refinements = super.refine(ce);
-
+		
 		// if a refinement is not Bottom, Top, ALL r.Bottom a refinement of top can be appended
-		Set<OWLClassExpression> topRefs = topRefinements.get(1);
-		for (OWLClassExpression topRef : topRefs) {
-			List<OWLClassExpression> operands = Lists.newArrayList(ce, topRef);
-			Collections.sort(operands);
-			OWLObjectIntersectionOf mc = new OWLObjectIntersectionOfImplExt(operands);
-			refinements.add(mc);
+		for(int i = 1; i <= 3; i++) {
+			Set<OWLClassExpression> topRefs = topRefinements.get(i);
+			for (OWLClassExpression topRef : topRefs) {
+				List<OWLClassExpression> operands = Lists.newArrayList(ce, topRef);
+				Collections.sort(operands);
+				OWLObjectIntersectionOf mc = new OWLObjectIntersectionOfImplExt(operands);
+				refinements.add(mc);
+			}
 		}
 
+		// filter by complexity here
+		Iterator<OWLClassExpression> iterator = refinements.iterator();
+		while (iterator.hasNext()) {
+			OWLClassExpression ref =  iterator.next();
+			if(!complexityModel.isValid(ref)) {
+				iterator.remove();
+			}
+		}
 		return refinements;
 	}
 
@@ -344,16 +356,24 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	}
 
 	public static void main(String[] args) throws Exception{
+		ToStringRenderer.getInstance().setRenderer(new DLSyntaxObjectRenderer());
+
 		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("../examples/father.owl"));
+		OWLOntology ont = man.loadOntologyFromOntologyDocument(new File("examples/father.owl"));
 
 		AbstractReasonerComponent reasoner = new ClosedWorldReasoner(new OWLAPIOntology(ont));
 		reasoner.init();
 
+		ComplexityModel complexityModel = new HybridComplexityModel(
+												new ComplexityModelClassExpressionLength(8),
+												new ClassExpressionDepthComplexityModel(2)
+											);
+
 		ComplexityBoundedOperator op = new ComplexityBoundedOperatorALC(reasoner);
+		op.setComplexityModel(complexityModel);
 		op.init();
 
-		Set<OWLClassExpression> refinements = new HashSet<>();
+		Set<OWLClassExpression> refinements = new TreeSet<>();
 		refinements.add(man.getOWLDataFactory().getOWLThing());
 
 		Set<OWLClassExpression> tmp;
@@ -364,7 +384,9 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 			}
 		} while(!tmp.isEmpty() && refinements.addAll(tmp));
 
-		System.out.println(refinements.size());
-
+		System.out.println("#Refinements: " + refinements.size());
+		for (OWLClassExpression ref : refinements) {
+			System.out.println(ref);
+		}
 	}
 }
