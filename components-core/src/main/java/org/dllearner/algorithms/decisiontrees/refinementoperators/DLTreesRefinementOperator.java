@@ -18,34 +18,24 @@
  */
 package org.dllearner.algorithms.decisiontrees.refinementoperators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.Reasoner;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.refinementoperators.PsiDown;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
+
+import java.util.*;
 //import evaluation.Parameters;
 //import knowledgeBasesHandler.KnowledgeBase;
 
@@ -61,9 +51,9 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	//KnowledgeBase kb;
 	private static final double d = 0.5;
-	// @NoConfigOption
+	@NoConfigOption
 	private ArrayList<OWLClass> allConcepts;
-	// @NoConfigOption
+	@NoConfigOption
 	private ArrayList<OWLObjectProperty> allRoles;
 	@ConfigOption(description = "the learning problem instance to use")
 	private PosNegLP lp;

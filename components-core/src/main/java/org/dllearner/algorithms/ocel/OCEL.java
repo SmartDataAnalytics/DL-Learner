@@ -36,8 +36,6 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -67,15 +65,8 @@ import java.util.TreeSet;
  */
 @ComponentAnn(name = "OWL Class Expression Learner", shortName = "ocel", version = 1.2)
 public class OCEL extends AbstractCELA {
-	
-//	private OCELConfigurator configurator;
-//
-//	public OCELConfigurator getConfigurator(){
-//		return configurator;
-//	}
-	
+
 	// actual algorithm
-	private ROLearner2 algorithm;
 	private static Logger logger = Logger.getLogger(OCEL.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;
 	
@@ -88,21 +79,12 @@ public class OCEL extends AbstractCELA {
 	private File searchTreeFile;
 	private boolean replaceSearchTree = false;
 	private static String defaultSearchTreeFile = "log/searchTree.txt";
-//	private String heuristicStr = "multi";
-	
-//	private boolean applyAllFilter = true;
-//	private boolean applyExistsFilter = true;
+
 	private boolean useTooWeakList = true;
 	private boolean useOverlyGeneralList = true;
 	private boolean useShortConceptConstruction = true;
 	private boolean improveSubsumptionHierarchy = true;
-//	private boolean useAllConstructor = CommonConfigOptions.useAllConstructorDefault;
-//	private boolean useExistsConstructor = CommonConfigOptions.useExistsConstructorDefault;
-//	private boolean useHasValueConstructor = CommonConfigOptions.useHasValueConstructorDefault;
-//	private int valueFrequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
-//	private boolean useCardinalityRestrictions = CommonConfigOptions.useCardinalityRestrictionsDefault;
-//	private boolean useNegation = CommonConfigOptions.useNegationDefault;
-//	private boolean useBooleanDatatypes = CommonConfigOptions.useBooleanDatatypesDefault;
+
 	private static double noisePercentageDefault = 0.0;
 	private double noisePercentage = noisePercentageDefault;
 	private OWLClass startClass = null;
@@ -113,9 +95,11 @@ public class OCEL extends AbstractCELA {
 	//	refactor this
 	private static int maxPosOnlyExpansionDefault = 4;
 	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
+	@ConfigOption(defaultValue = "true", description = "if this variable is set to true, then the refinement operator is applied until all concept of equal length have been found e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage are potentially more method calls, but the advantage is that the algorithm is better in locating relevant concept in the subsumption hierarchy (otherwise, if the most general concept is not promising, it may never get expanded)")
 	private boolean forceRefinementLengthIncrease = true;
 	//extended Options
 	//in seconds
+	@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
 	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
 	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
 	private int guaranteeXgoodDescriptions = CommonConfigOptions.guaranteeXgoodDescriptionsDefault;
@@ -123,6 +107,7 @@ public class OCEL extends AbstractCELA {
 	
 	private double negativeWeight = 1.0;
 	private double startNodeBonus = 0.1; // 1.0;
+	@ConfigOption(description = "For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)", defaultValue="0.02")
 	private double expansionPenaltyFactor = 0.02;
 	private int negationPenalty = 0;
 	private boolean terminateOnNoiseReached = true;
@@ -133,6 +118,7 @@ public class OCEL extends AbstractCELA {
 
 	@ConfigOption(description = "adjust the weights of class expression length in refinement", defaultValue = "OCEL default metric")
 	private OWLClassExpressionLengthMetric lengthMetric;
+	private ROLearner2 algorithm;
 	// boolean createTreeString = false;
 	// String searchTree = new String();
 //	private int cardinalityLimit = 5;
@@ -155,14 +141,7 @@ public class OCEL extends AbstractCELA {
 	public OCEL(PosOnlyLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 	}
-	
-	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
-		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
-		problems.add(PosNegLP.class);
-		problems.add(PosOnlyLP.class);
-		return problems;
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
@@ -171,7 +150,7 @@ public class OCEL extends AbstractCELA {
 		
 		// exit with a ComponentInitException if the reasoner is unsupported for this learning algorithm
 		if(getReasoner().getReasonerType() == ReasonerType.DIG) {
-			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + getName());
+			throw new ComponentInitException("DIG does not support the inferences needed in the selected learning algorithm component: " + AnnComponentManager.getName(this));
 		}
 		
 		// set log level if the option has been set
@@ -193,24 +172,6 @@ public class OCEL extends AbstractCELA {
 			} else {
 				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			}
-			
-			// OLD CODE below: in the new framework we assume that the
-			// heuristic is always injected as object (not as string)
-//			if(heuristicStr == "lexicographic")
-//				heuristic = new LexicographicHeuristic();
-//			else if(heuristicStr == "flexible") {
-//				if(learningProblem instanceof PosOnlyLP) {
-//					throw new RuntimeException("does not work with positive examples only yet");
-//				}
-//				heuristic = new FlexibleHeuristic(((PosNegLP) getLearningProblem()).getNegativeExamples().size(), ((PosNegLP) getLearningProblem()).getPercentPerLengthUnit());
-//			} else {
-//				if(getLearningProblem() instanceof PosOnlyLP) {
-//					throw new RuntimeException("does not work with positive examples only yet");
-//	//				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-//				} else {
-//					heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-//				}
-//			}
 		} else {
 			// we need to set some variables to make the heuristic work
 			if(heuristic instanceof MultiHeuristic) {
@@ -234,11 +195,7 @@ public class OCEL extends AbstractCELA {
 			}
 
 		}
-		
-		// warn the user if he/she sets any non-standard heuristic, because it will just be ignored
-		if(learningProblem instanceof PosNegLPStandard) {
-		}
-		
+
 		// compute used concepts/roles from allowed/ignored
 		// concepts/roles
 		
@@ -254,12 +211,6 @@ public class OCEL extends AbstractCELA {
 			objectPropertyHierarchy.thinOutSubsumptionHierarchy();
 			datatypePropertyHierarchy.thinOutSubsumptionHierarchy();
 		}
-		
-		
-//		reasoner.prepareRoleHierarchy(usedRoles);
-		// prepare datatype hierarchy only if necessary
-//		if(reasoner.hasDatatypeSupport())
-//			reasoner.prepareDatatypePropertyHierarchy();
 		
 		// create a refinement operator and pass all configuration
 		// variables to it
@@ -291,14 +242,11 @@ public class OCEL extends AbstractCELA {
 		// create an algorithm object and pass all configuration
 		// options to it
 		algorithm = new ROLearner2(
-//				configurator,
 				learningProblem,
 				reasoner,
 				operator,
 				heuristic,
 				startClass,
-				// usedConcepts,
-				// usedRoles,
 				noisePercentage/100,
 				writeSearchTree,
 				replaceSearchTree,
@@ -325,12 +273,7 @@ public class OCEL extends AbstractCELA {
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
 	}
-	
-	public static String getName() {
-//		return "refinement operator based learning algorithm II";
-		return "OCEL";
-	}
-	
+
 	public static String getUsage() {
 		return "algorithm = refexamples;";
 	}

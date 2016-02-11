@@ -31,9 +31,11 @@ import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxClassEx
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.XSDVocabulary;
+import org.slf4j.Logger;
 import uk.ac.manchester.cs.owl.owlapi.OWLDatatypeImpl;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * A collection of utility methods for the OWL API.
@@ -283,5 +285,24 @@ public class OWLAPIUtils {
 		}
 		
 		return false;
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, final OWLDataFactory df, Logger logger) {
+		return classExpressionPropertyExpanderChecked(startClass, reasoner, df, () -> df.getOWLThing(), logger);
+	}
+
+	public static OWLClassExpression classExpressionPropertyExpanderChecked(OWLClassExpression startClass, AbstractReasonerComponent reasoner, OWLDataFactory df, Supplier<OWLClassExpression> defaultClass, Logger logger) {
+		if(startClass == null) {
+			startClass = defaultClass.get();
+		} else {
+			try {
+				startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
+			} catch (ManchesterOWLSyntaxParserException e) {
+				logger.info("Error parsing startClass: " + e.getMessage());
+				startClass = defaultClass.get();
+				logger.warn("Using "+ startClass +" instead.");
+			}
+		}
+		return startClass;
 	}
 }

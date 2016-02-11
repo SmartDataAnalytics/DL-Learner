@@ -39,7 +39,6 @@ import org.dllearner.utilities.owl.OWLClassExpressionUtils;
 import org.dllearner.utilities.split.DefaultDateTimeValuesSplitter;
 import org.dllearner.utilities.split.DefaultNumericValuesSplitter;
 import org.dllearner.utilities.split.ValuesSplitter;
-import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntaxParserException;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
@@ -446,17 +445,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 			}
 		}
 
-		if(startClass == null) {
-			startClass = df.getOWLThing();
-		} else {
-			try {
-				this.startClass = OWLAPIUtils.classExpressionPropertyExpander(startClass, reasoner, df);
-			} catch (ManchesterOWLSyntaxParserException e) {
-				logger.info("Error parsing startClass: " + e.getMessage());
-				this.startClass = df.getOWLThing();
-			}
-		}
-		
+		startClass = OWLAPIUtils.classExpressionPropertyExpanderChecked(startClass, reasoner, df, logger);
+
 		if(subHierarchy == null) {
 			subHierarchy = reasoner.getClassHierarchy();
 		}

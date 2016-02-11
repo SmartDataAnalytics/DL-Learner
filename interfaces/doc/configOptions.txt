@@ -1552,6 +1552,13 @@ required: false
 default value: 
 conf file usage: la.learningProblem = ""
 
+option name: lengthMetric
+description: adjust the weights of class expression length in refinement
+type: OWLClassExpressionLengthMetric
+required: false
+default value: OCEL default metric
+conf file usage: la.lengthMetric = "OCEL default metric"
+
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
 type: int
@@ -2151,6 +2158,13 @@ required: false
 default value: true
 conf file usage: op.applyExistsFilter = true
 
+option name: cardinalityLimit
+description: limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)
+type: int
+required: false
+default value: 5
+conf file usage: op.cardinalityLimit = 5
+
 option name: disjointChecks
 description: no description available
 type: boolean
@@ -2516,6 +2530,16 @@ type: double
 required: false
 default value: 1
 conf file usage: accMethod.posWeight = 1
+
+
+********************
+* Other Components *
+********************
+
+component: OWL Class Expression Length Metric (org.dllearner.utilities.owl.OWLClassExpressionLengthMetric) v0.1
+===============================================================================================================
+
+conf file usage: component.type = "cel_metric"
 
 
 ********************

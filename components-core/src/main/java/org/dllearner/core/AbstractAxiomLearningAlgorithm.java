@@ -36,6 +36,7 @@ import java.util.TreeSet;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
 import org.dllearner.algorithms.properties.ObjectPropertyCharacteristicsAxiomLearner;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
@@ -137,7 +138,9 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	protected ParameterizedSparqlString existingAxiomsTemplate;
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
-	
+
+	@ConfigOption
+	@NoConfigOption
 //	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
 	
