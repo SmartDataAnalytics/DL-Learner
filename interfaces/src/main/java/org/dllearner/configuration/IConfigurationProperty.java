@@ -17,7 +17,7 @@ public interface IConfigurationProperty {
      *
      * @return The Name of this property.
      */
-    public String getName();
+    String getName();
 
 
     /**
@@ -25,7 +25,7 @@ public interface IConfigurationProperty {
      *
      * @return The String representation of the value of this property.
      */
-    public Object getValue();
+    Object getValue();
 
 
     /**
@@ -33,12 +33,12 @@ public interface IConfigurationProperty {
      *
      * @return True if it does.
      */
-    public boolean isBeanReference();
+    boolean isBeanReference();
 
     /**
      * Does this property represent a collection of bean references?
      *
      * @return True if it does.
      */
-    public boolean isBeanReferenceCollection();
+    boolean isBeanReferenceCollection();
 }

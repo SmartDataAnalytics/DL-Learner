@@ -23,6 +23,7 @@ import java.util.Map.Entry;
  * @author Jens Lehmann
  *
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class DocumentationHTMLGenerator {
 	static {
 		if (System.getProperty("log4j.configuration") == null)

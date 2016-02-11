@@ -22,7 +22,7 @@ public class Infgen {
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();
 
-		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is);) {
+		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {

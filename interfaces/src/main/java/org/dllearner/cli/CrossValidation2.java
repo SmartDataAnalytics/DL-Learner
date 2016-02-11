@@ -163,7 +163,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 					final Set<OWLIndividual> testPos = testSetsPos.get(currFold);
 					final Set<OWLIndividual> testNeg = testSetsNeg.get(currFold);
-					final Set<OWLIndividual> trainUnd = trainingSetsUnd.get(currFold);;
+					final Set<OWLIndividual> trainUnd = trainingSetsUnd.get(currFold);
 					final Set<OWLIndividual> testUnd = testSetsUnd.get(currFold);
 
 

@@ -19,25 +19,6 @@
  */
 package org.dllearner.test.junit;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -45,12 +26,21 @@ import org.apache.log4j.SimpleLayout;
 import org.dllearner.cli.CLI;
 import org.dllearner.cli.QuickStart;
 import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.LearningAlgorithm;
 import org.dllearner.kb.sparql.SparqlKnowledgeSource;
 import org.dllearner.utilities.Helper;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests related to learning problems in the examples directory.
@@ -195,7 +185,7 @@ public class ExampleTests {
 								}
 //								start.getReasonerComponent().releaseKB();
 								success = true;		
-								successful.append(conf + "\n");
+								successful.append(conf).append("\n");
 							} else {
 								System.out.println("Test skipped, because of GP or SPARQL settings.");
 							}
@@ -205,7 +195,7 @@ public class ExampleTests {
 							assert ( false );
 							failedCounter.incrementAndGet();
 							failed.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-							failed.append(conf + "\n");
+							failed.append(conf).append("\n");
 							StringWriter writer = new StringWriter();
 							PrintWriter printWriter = new PrintWriter( writer );
 							e.printStackTrace(printWriter);

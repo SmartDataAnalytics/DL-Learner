@@ -42,7 +42,7 @@ public class SparqlEndpointTest {
 	public static void main(String[] args) {
 		SimpleLayout layout = new SimpleLayout();
 		ConsoleAppender consoleAppender = new ConsoleAppender(layout);
-		FileAppender fileAppender =null; ;
+		FileAppender fileAppender =null;
 		try{
 			fileAppender = new FileAppender(layout,"endpoints.txt",false);
 		}catch (Exception e) {e.printStackTrace();}

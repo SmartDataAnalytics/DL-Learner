@@ -17,6 +17,7 @@ import java.util.Set;
 import org.dllearner.cli.ConfFileOption;
 import org.dllearner.parser.KBParser;
 
+@SuppressWarnings({"ManualArrayCopy", "UnnecessarySemicolon"})
 public class ConfParser implements ConfParserConstants {
 
 	// special directives (those without a property name)

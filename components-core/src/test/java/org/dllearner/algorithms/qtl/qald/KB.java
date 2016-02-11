@@ -36,7 +36,7 @@ class KB {
 	String baseIRI;
 	PrefixMapping prefixMapping;
 	
-	public KB(){};
+	public KB(){}
 
 	public KB(SparqlEndpointKS ks, AbstractReasonerComponent reasoner, Map<String, String> prefixes,
 			List<String> questionFiles) {

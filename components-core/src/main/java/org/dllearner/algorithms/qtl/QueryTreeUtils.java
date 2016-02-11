@@ -1034,10 +1034,10 @@ public class QueryTreeUtils {
 	}
 
 	/**
-	 * @param posTree
-	 * @param tree
+	 * @param tree1
+	 * @param tree2
 	 * @param entailment
-	 * @param strategy
+	 * @param reasoner
 	 * @return
 	 */
 	public static boolean isSubsumedBy(RDFResourceTree tree1, RDFResourceTree tree2, Entailment entailment,

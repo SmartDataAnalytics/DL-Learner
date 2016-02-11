@@ -153,7 +153,6 @@ public class QuickStart {
 				} catch (Exception e) {
 					System.out.println("number does not exist");
 				}
-				;
 				writeit(selected);
 				System.out.println(selected);
 			} else if (!number) {

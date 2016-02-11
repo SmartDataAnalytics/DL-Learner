@@ -42,8 +42,8 @@ public class Table implements Serializable{
 	
 	enum Formats {
 		LATEX, GNUPLOT
-	};
-	
+	}
+
 	private SortedSet<String> experimentNames = new TreeSet<String>();
 	private SortedSet<String> labels = new TreeSet<String>();
 	

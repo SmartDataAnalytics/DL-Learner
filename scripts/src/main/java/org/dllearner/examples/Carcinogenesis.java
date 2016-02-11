@@ -96,7 +96,7 @@ public class Carcinogenesis {
 	// different from the training substances that a different testing
 	// strategy was probably in use
 	private static boolean ignoreAmes = false;
-	private static boolean ignoreSalmonella = false;;
+	private static boolean ignoreSalmonella = false;
 	private static boolean ignoreCytogenCa = false;
 	private static boolean includeMutagenesis = true;
 	// if true we learn carcinogenic, if false we learn non-carcinogenic
@@ -390,7 +390,7 @@ public class Carcinogenesis {
 			String structureName = head.getArgument(1).toPLString();
 			int count = Integer.parseInt(head.getArgument(2).toPLString());
 			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
+			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);
 			String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);	
@@ -411,8 +411,8 @@ public class Carcinogenesis {
 			String compoundName = head.getArgument(0).toPLString();
 			String structureName = headName;
 			// upper case first letter
-			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);;
-			String structureInstance = structureName + "-" + structureNr;
+			String structureClass = structureName.substring(0,1).toUpperCase() + structureName.substring(1);
+				String structureInstance = structureName + "-" + structureNr;
 			
 			addStructureSubclass(axioms, structureClass);
 			
@@ -467,9 +467,9 @@ public class Carcinogenesis {
 		StringBuffer content = new StringBuffer();
 		for(OWLIndividual example : examples) {
 			if(learnCarcinogenic)
-				content.append("+\""+example.toString()+"\"\n");
+				content.append("+\"").append(example.toString()).append("\"\n");
 			else
-				content.append("-\""+example.toString()+"\"\n");
+				content.append("-\"").append(example.toString()).append("\"\n");
 		}
 		Files.appendToFile(file, content.toString());
 	}
@@ -478,9 +478,9 @@ public class Carcinogenesis {
 		StringBuffer content = new StringBuffer();
 		for(OWLIndividual example : examples) {
 			if(learnCarcinogenic)
-				content.append("-\""+example.toString()+"\"\n");
+				content.append("-\"").append(example.toString()).append("\"\n");
 			else
-				content.append("+\""+example.toString()+"\"\n");
+				content.append("+\"").append(example.toString()).append("\"\n");
 		}
 		Files.appendToFile(file, content.toString());
 	}	

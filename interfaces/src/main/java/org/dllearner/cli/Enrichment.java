@@ -810,7 +810,7 @@ public class Enrichment {
 					if (lit.getDatatype() == null || lit.getDatatype().equals(XSD.STRING)) {
 						newObject = model.createLiteral("shortened", "en");
 					}
-					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1l, 1l);
+					validTriple = CheckerLiterals.checkLiteral(object.asNode(), ErrorHandlerFactory.errorHandlerNoLogging, 1L, 1L);
 				}
 				if(validTriple){
 					statementsToAdd.add(model.createStatement(newSubject, st.getPredicate(), newObject));

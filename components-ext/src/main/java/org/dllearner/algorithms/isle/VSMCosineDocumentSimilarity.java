@@ -94,8 +94,8 @@ public class VSMCosineDocumentSimilarity {
      * Returns the cosine document similarity between document {@code doc1} and {@code doc2} using TF-IDF as weighting for each term.
      * The resulting similarity ranges from -1 meaning exactly opposite, to 1 meaning exactly the same, 
      * with 0 usually indicating independence, and in-between values indicating intermediate similarity or dissimilarity.
-     * @param s1
-     * @param s2
+     * @param doc1
+     * @param doc2
      * @return
      * @throws IOException
      */

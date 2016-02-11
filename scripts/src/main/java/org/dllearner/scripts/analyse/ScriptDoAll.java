@@ -19,17 +19,11 @@
 
 package org.dllearner.scripts.analyse;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.scripts.analyse.CountInstances.Count;
 import org.dllearner.utilities.Files;
+
+import java.io.File;
+import java.util.*;
 
 public class ScriptDoAll {
 	
@@ -44,7 +38,7 @@ public class ScriptDoAll {
 	public static String dbns = "http://dbpedia.org/ontology/";
 	public static String yagons = "http://dbpedia.org/class/yago/";
 	
-	static CountInstances c = new CountInstances("http://db0.aksw.org:8893/sparql", Arrays.asList(new String[]{"http://dbpedia.org/ontology"}));
+	static CountInstances c = new CountInstances("http://db0.aksw.org:8893/sparql", Arrays.asList("http://dbpedia.org/ontology"));
 	
 	public static void main(String[] args) {
 		
@@ -143,7 +137,7 @@ public class ScriptDoAll {
 	public static void toFile(List<Count> c, String filename){
 		StringBuffer buf = new StringBuffer();
 		for (Count count : c) {
-			buf.append(count.toString()+"\n");
+			buf.append(count.toString()).append("\n");
 		}
 		
 		Files.createFile(new File(filename), buf.toString());

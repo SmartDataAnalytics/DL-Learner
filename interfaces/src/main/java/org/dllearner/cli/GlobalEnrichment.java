@@ -280,7 +280,7 @@ public class GlobalEnrichment {
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file, true);
-			fw.append(endpoint.getURL().toString() + "\n");
+			fw.append(endpoint.getURL().toString()).append("\n");
 			fw.flush();
 			fw.close();
 		} catch (Exception ex) {

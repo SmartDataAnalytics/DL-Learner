@@ -19,17 +19,16 @@
 
 package org.dllearner.experiments;
 
+import com.google.common.collect.Sets;
+import org.apache.log4j.Logger;
+import org.dllearner.utilities.URLencodeUTF8;
+
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
-import org.dllearner.utilities.URLencodeUTF8;
-
-import com.google.common.collect.Sets;
 
 /**
  * a container for examples used for operations like randomization
@@ -117,7 +116,7 @@ public class Examples {
 	}
 
 	private void _remove(String toBeRemoved) {
-		_removeAll(Arrays.asList(new String[] { toBeRemoved }));
+		_removeAll(Arrays.asList(toBeRemoved));
 	}
 
 	private void _removeAll(Collection<String> toBeRemoved) {
@@ -219,11 +218,11 @@ public class Examples {
 			buffer.append("\n\n\n\n\n");
 			for (String s : posTrain) {
 				a.write("import(\"" + URLencodeUTF8.encode(s) + "\");\n");
-				buffer.append("+\"" + s + "\"\n");
+				buffer.append("+\"").append(s).append("\"\n");
 			}
 			for (String s : negTrain) {
 				a.write("import(\"" + URLencodeUTF8.encode(s) + "\");\n");
-				buffer.append("-\"" + s + "\"\n");
+				buffer.append("-\"").append(s).append("\"\n");
 			}
 
 			a.write(buffer.toString());
