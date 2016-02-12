@@ -121,7 +121,6 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected OWLDataFactory df = new OWLDataFactoryImpl();
 
-	@ConfigOption
 	@NoConfigOption
 //	protected AxiomLearningProgressMonitor progressMonitor = new SilentAxiomLearningProgressMonitor();
 	protected AxiomLearningProgressMonitor progressMonitor = new ConsoleAxiomLearningProgressMonitor();
