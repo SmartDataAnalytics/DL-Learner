@@ -1,5 +1,6 @@
 package org.dllearner.distributed.amqp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -33,12 +34,7 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 		uuid2Node = new HashMap<UUID, OENode>();
 		score2UUID = new HashMap<Double, List<UUID>>();
 
-		scores = new TreeSet<Double>(new Comparator<Double>() {
-			@Override
-			public int compare(Double o1, Double o2) {
-				return Double.compare(o1, o2);
-			}
-		});
+		scores = new TreeSet<Double>(new DoubleComparator());
 		nodes = new ArrayList<OENode>();
 	}
 
@@ -64,7 +60,7 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 
 	@Override
 	public NavigableSet<OENode> descendingSet() {
-		throw new NotImplementedException();
+		return this;
 	}
 
 	@Override
@@ -328,6 +324,18 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 
 	public OENode get(UUID uuid) {
 		return uuid2Node.get(uuid);
+	}
+
+	// -----------------------------------------------------------------------
+
+	class DoubleComparator implements Comparator<Double>, Serializable {
+		private static final long serialVersionUID = -6420995635720229101L;
+
+		@Override
+		public int compare(Double o1, Double o2) {
+			return Double.compare(o1, o2);
+		}
+
 	}
 }
 
