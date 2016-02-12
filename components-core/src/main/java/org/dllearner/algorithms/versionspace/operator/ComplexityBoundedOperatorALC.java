@@ -2,6 +2,7 @@ package org.dllearner.algorithms.versionspace.operator;
 
 import com.google.common.collect.Lists;
 import gnu.trove.map.hash.TIntObjectHashMap;
+import org.dllearner.algorithms.versionspace.complexity.ComplexityModel;
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.owl.OWLObjectIntersectionOfImplExt;
@@ -19,8 +20,8 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 
 	private TIntObjectHashMap<Set<OWLClassExpression>> topRefinements = new TIntObjectHashMap<>();
 
-	public ComplexityBoundedOperatorALC(AbstractReasonerComponent reasoner) {
-		super(reasoner);
+	public ComplexityBoundedOperatorALC(AbstractReasonerComponent reasoner, ComplexityModel complexityModel) {
+		super(reasoner, complexityModel);
 	}
 
 	@Override
@@ -320,41 +321,39 @@ public class ComplexityBoundedOperatorALC extends ComplexityBoundedOperator impl
 	/*
 	Data range part
 	 */
-
-
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDatatype node) {
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataOneOf node) {
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataComplementOf node) {
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataIntersectionOf node) {
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDataUnionOf node) {
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Nonnull
 	@Override
 	public Set<OWLDataRange> visit(@Nonnull OWLDatatypeRestriction node) {
-		return null;
+		return Collections.emptySet();
 	}
 }

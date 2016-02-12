@@ -15,6 +15,8 @@ import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLOb
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
@@ -24,6 +26,8 @@ import java.util.*;
  */
 public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpaceGenerator {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ComplexityBoundedVersionSpaceGenerator.class);
+
 	private ComplexityBoundedOperator operator;
 
 	public ComplexityBoundedVersionSpaceGenerator(ComplexityBoundedOperator operator) {
@@ -32,6 +36,12 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 
 	@Override
 	public VersionSpace generate() {
+		LOGGER.info("Generating version space...");
+		LOGGER.info("#classes:" + operator.getReasoner().getClasses().size());
+		LOGGER.info("#ops:" + operator.getReasoner().getObjectProperties().size());
+		LOGGER.info("#dps:" + operator.getReasoner().getDatatypeProperties().size());
+		long startTime = System.currentTimeMillis();
+
 		// the root node is owl:Thing
 		DefaultVersionSpaceNode rootNode = new DefaultVersionSpaceNode(topConcept);
 
@@ -46,7 +56,7 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 		todo.add(rootNode);
 
 		while(!todo.isEmpty()) {
-			// pick next concept to process
+			// pick next node to process
 			DefaultVersionSpaceNode parent = todo.poll();
 
 			// compute all refinements
@@ -69,6 +79,8 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 			visited.add(parent);
 		}
 
+		LOGGER.info("...finished generating version space(#nodes: {}) in {}ms.",
+					versionSpace.vertexSet().size(), (System.currentTimeMillis() - startTime));
 		return versionSpace;
 	}
 
@@ -86,8 +98,7 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 				new ClassExpressionDepthComplexityModel(2)
 		);
 
-		ComplexityBoundedOperator op = new ComplexityBoundedOperatorALC(reasoner);
-		op.setComplexityModel(complexityModel);
+		ComplexityBoundedOperator op = new ComplexityBoundedOperatorALC(reasoner, complexityModel);
 		op.init();
 
 		VersionSpaceGenerator generator = new ComplexityBoundedVersionSpaceGenerator(op);

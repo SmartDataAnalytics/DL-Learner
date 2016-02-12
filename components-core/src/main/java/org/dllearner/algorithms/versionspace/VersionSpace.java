@@ -9,11 +9,11 @@ import org.jgrapht.graph.DefaultEdge;
  *
  * @author Lorenz Buehmann
  */
-public class VersionSpace extends DefaultDirectedGraph<VersionSpaceNode, DefaultEdge>{
+public class VersionSpace<T extends VersionSpaceNode> extends DefaultDirectedGraph<T, DefaultEdge>{
 
-	private VersionSpaceNode root;
+	private T root;
 
-	public VersionSpace(VersionSpaceNode root) {
+	public VersionSpace(T root) {
 		super(DefaultEdge.class);
 		this.root = root;
 
@@ -23,7 +23,7 @@ public class VersionSpace extends DefaultDirectedGraph<VersionSpaceNode, Default
 	/**
 	 * @return the root node
 	 */
-	public VersionSpaceNode getRoot() {
+	public T getRoot() {
 		return root;
 	}
 }

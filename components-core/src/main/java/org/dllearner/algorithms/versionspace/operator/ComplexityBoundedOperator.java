@@ -16,8 +16,9 @@ public abstract class ComplexityBoundedOperator extends RefinementOperatorAdapte
 	protected ComplexityModel complexityModel;
 	protected AbstractReasonerComponent reasoner;
 
-	public ComplexityBoundedOperator(AbstractReasonerComponent reasoner) {
+	public ComplexityBoundedOperator(AbstractReasonerComponent reasoner, ComplexityModel complexityModel) {
 		this.reasoner = reasoner;
+		this.complexityModel = complexityModel;
 	}
 
 	@Override
@@ -31,5 +32,9 @@ public abstract class ComplexityBoundedOperator extends RefinementOperatorAdapte
 
 	public ComplexityModel getComplexityModel() {
 		return complexityModel;
+	}
+
+	public AbstractReasonerComponent getReasoner() {
+		return reasoner;
 	}
 }

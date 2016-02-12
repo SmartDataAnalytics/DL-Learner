@@ -1,7 +1,6 @@
 package org.dllearner.algorithms.versionspace;
 
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +10,11 @@ import java.util.List;
  *
  * @author Lorenz Buehmann
  */
-public class RandomNodePicker {
+public class RandomNodePicker<T extends VersionSpaceNode> {
 
 	private VersionSpace space;
 
-	private final List<VersionSpaceNode> nodes;
+	private final List<T> nodes;
 
 	private final RandomDataGenerator rnd = new RandomDataGenerator();
 
@@ -29,7 +28,7 @@ public class RandomNodePicker {
 	/**
 	 * @return a random node from the version space
 	 */
-	public VersionSpaceNode selectRandomNode() {
-		return nodes.get(rnd.nextInt(0, nodes.size()));
+	public T selectRandomNode() {
+		return nodes.get(rnd.nextInt(0, nodes.size() - 1));
 	}
 }
