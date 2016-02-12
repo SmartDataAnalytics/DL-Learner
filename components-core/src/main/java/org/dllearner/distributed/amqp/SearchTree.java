@@ -1,7 +1,9 @@
 package org.dllearner.distributed.amqp;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,7 +13,9 @@ import org.dllearner.utilities.datastructures.AbstractSearchTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearchTree extends AbstractSearchTree<OENode> {
+public class SearchTree extends AbstractSearchTree<OENode> implements Serializable {
+
+	private static final long serialVersionUID = 2122736637700298756L;
 
 	private static Logger logger = LoggerFactory.getLogger(SearchTree.class);
 
@@ -21,7 +25,7 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 
 	public SearchTree(Comparator<OENode> comparator) {
 		super(comparator);
-		nodes = new TreeSet<>(sortOrderComp);
+		nodes = new NodeTreeSet((OEHeuristicRuntime) sortOrderComp);
 		blocked = new TreeSet<UUID>();
 		disabled = new TreeSet<UUID>();
 		tmpAggregators = new HashMap<UUID, Integer>();
@@ -50,10 +54,10 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 	/**
 	 * This method should be called to get a copy of the subtree of the next
 	 * best node. So it is assumed that the rootNode object stems from the same
-	 * search tree where cutSubTree is called on. This means in particular that
-	 * this method might not work in case a node was received via the network
-	 * because object identity might not be preserved after serialization and
-	 * deserialization (required to transmit the node).
+	 * search tree where cutSubTreeCopy is called on. This means in particular
+	 * that this method might not work in case a node was received via the
+	 * network because object identity might not be preserved after
+	 * serialization and deserialization (required to transmit the node).
 	 *
 	 * @param rootNode The root node of the search tree to cut out
 	 * @return the sub tree copy from this with rootNode as root node
@@ -64,6 +68,7 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 		if (nodes.contains(rootNode)) {
 			OENode rootNodeCopy = rootNode.copyAndSetBlocked();
 			subTreeCopy.setRoot(rootNodeCopy);
+			setBlocked(rootNode);
 
 			for (OENode child : rootNode.getChildren()) {
 				recursivelyCopyTo(child, rootNodeCopy, subTreeCopy);
@@ -76,6 +81,7 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 	public SearchTree cutSubtreeCopyIfNotBiggerThan(OENode rootNode, int maxNodes) {
 		if (isSubTreeGreaterThanX(rootNode, maxNodes)) {
 			return null;
+
 		} else {
 			return cutSubTreeCopy(rootNode);
 		}
@@ -140,9 +146,17 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 	}
 
 	private void updateAndSetUnblockedRecursively(OENode local, OENode nonLocal) {
-		updatePrepare(local);
+
+		if (!nodes.contains(local))
+			logger.warn(local + " was not in the local tree but was supposed to be there");
+
+		// Hint for debugging: check return value to see if everything went well
+		nodes.remove(local);
 		local.update(nonLocal);
-		updateDone(local);
+
+		// Hint for debugging: check return value to see if everything went well
+		((NodeTreeSet) nodes).add(local);
+
 		setUnblocked(local);
 
 		OENode localChild;
@@ -152,9 +166,14 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 
 			// child node does not exist in local tree --> needs to be added
 			if (localChild == null) {
-				localChild = new OENode(nonLocalChild.getDescription(),
-						nonLocalChild.getAccuracy(), nonLocalChild.getUUID());
+
+				localChild = new OENode(
+						nonLocalChild.getDescription(),
+						nonLocalChild.getAccuracy(),
+						nonLocalChild.getUUID());
+
 				localChild.setRefinementCount(nonLocalChild.getRefinementCount());
+
 				addNode(local, localChild);
 			}
 
@@ -170,10 +189,37 @@ public class SearchTree extends AbstractSearchTree<OENode> {
 		return null;
 	}
 
+	public OENode getNodeByUUID(UUID uuid) {
+		if (nodes instanceof NodeTreeSet) {
+			return ((NodeTreeSet) nodes).get(uuid);
+		}
+
+		for (OENode node : nodes) {
+			if (node.getUUID().equals(uuid)) return node;
+		}
+
+		return null;
+	}
+
 	public boolean contains(OENode node) {
 		for (OENode other : nodes) {
 			if (node.equals(other)) return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void addNode(OENode parentNode, OENode node) {
+		// link to parent (unless start node)
+		if(parentNode == null) {
+			this.setRoot(node);
+		} else {
+			parentNode.addChild(node);
+		}
+	}
+
+	@Override
+	public Iterator<OENode> descendingIterator() {
+		return ((NodeTreeSet) nodes).descendingIterator();
 	}
 }
