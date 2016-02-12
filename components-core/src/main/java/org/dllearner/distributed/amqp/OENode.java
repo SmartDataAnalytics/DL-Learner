@@ -2,10 +2,15 @@ package org.dllearner.distributed.amqp;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.dllearner.core.AbstractSearchTreeNode;
+import org.dllearner.utilities.datastructures.AbstractSearchTree;
 import org.dllearner.utilities.datastructures.SearchTreeNode;
 import org.dllearner.utilities.owl.OWLAPIRenderers;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
@@ -19,6 +24,9 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	protected double accuracy;
 	protected int horizontalExpansion;
 	protected UUID uuid;
+
+	protected List<UUID> children;
+	protected UUID parent;
 
 	/**
 	 * the refinement count corresponds to the number of refinements of the
@@ -34,6 +42,8 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		this.accuracy = accuracy;
 		this.horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 		this.uuid = UUID.randomUUID();
+		super.children = null;
+		this.children = new LinkedList<UUID>();
 	}
 
 	protected OENode(OWLClassExpression description, double accuracy, UUID uuid) {
@@ -41,6 +51,7 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		this.accuracy = accuracy;
 		this.horizontalExpansion = OWLClassExpressionUtils.getLength(description) - 1;
 		this.uuid = uuid;
+		children = new LinkedList<UUID>();
 	}
 
 	public boolean equals(OENode other) {
@@ -115,5 +126,46 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 		accuracy = other.accuracy;
 		horizontalExpansion = other.horizontalExpansion;
 		refinementCount = other.refinementCount;
+	}
+
+	@Override
+	protected void setParent(OENode node) {
+		if (this.parent == node.getUUID()) {
+			return;
+		} else if (this.parent != null) {
+			throw new Error("Parent already set on node");
+		}
+		this.parent = node.getUUID();
+	}
+
+	@Override
+	public void addChild(OENode node) {
+		node.setParent(this);
+		children.add(node.getUUID());
+		node.notifyTrees(this.trees);
+	}
+
+	@Override
+	public Collection<OENode> getChildren() {
+		HashSet<OENode> childNodes = new HashSet<OENode>();
+
+		for (AbstractSearchTree<OENode> tree : trees) {
+			for (UUID childUUID : children) {
+				OENode childNode = ((SearchTree) tree).getNodeByUUID(childUUID);
+				if (childNode != null) childNodes.add(childNode);
+			}
+		}
+
+		return childNodes;
+	}
+
+	@Override
+	public OENode getParent() {
+		for (AbstractSearchTree<OENode> tree : trees) {
+			OENode node = ((SearchTree) tree).getNodeByUUID(parent);
+			if (node != null) return node;
+		}
+
+		return null;
 	}
 }
