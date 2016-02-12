@@ -9,10 +9,7 @@ import org.dllearner.algorithms.versionspace.operator.ComplexityBoundedOperatorA
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.reasoning.ClosedWorldReasoner;
-import org.dllearner.utilities.TreeUtils;
-import org.dllearner.utilities.datastructures.SearchTree;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.dlsyntax.renderer.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -24,7 +21,6 @@ import java.util.*;
 
 /**
  * @author Lorenz Buehmann
- *         created on 2/11/16
  */
 public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpaceGenerator {
 
@@ -35,35 +31,45 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 	}
 
 	@Override
-	public RootedDirectedGraph generate() {
-		RootedDirectedGraph searchTree = new RootedDirectedGraph(topConcept);
+	public VersionSpace generate() {
+		// the root node is owl:Thing
+		DefaultVersionSpaceNode rootNode = new DefaultVersionSpaceNode(topConcept);
 
-		Set<OWLClassExpression> visited = new HashSet<>();
+		// create the version space
+		VersionSpace versionSpace = new VersionSpace(rootNode);
 
-		Queue<OWLClassExpression> todo = new ArrayDeque<>();
-		todo.add(topConcept);
+		// keep track of already visited(refined) nodes
+		Set<DefaultVersionSpaceNode> visited = new HashSet<>();
+
+		// the list of nodes we have to process
+		Queue<DefaultVersionSpaceNode> todo = new ArrayDeque<>();
+		todo.add(rootNode);
 
 		while(!todo.isEmpty()) {
-			OWLClassExpression parent = todo.poll();
+			// pick next concept to process
+			DefaultVersionSpaceNode parent = todo.poll();
 
-			Set<OWLClassExpression> refinements = operator.refine(parent);
+			// compute all refinements
+			Set<OWLClassExpression> refinements = operator.refine(parent.getHypothesis());
 
+			// add child node and edge to parent for each refinement
 			for (OWLClassExpression ref : refinements) {
-				if(!ref.equals(parent)) {
-					searchTree.addVertex(ref);
-					searchTree.addEdge(parent, ref);
+				DefaultVersionSpaceNode child = new DefaultVersionSpaceNode(ref);
+
+				if(!child.equals(parent)) {
+					versionSpace.addVertex(child);
+					versionSpace.addEdge(parent, child);
 				}
 
 				// add to todo list only if not already processed before
-				if(visited.add(ref)) {
-					todo.add(ref);
+				if(!visited.contains(child)) {
+					todo.add(child);
 				}
 			}
 			visited.add(parent);
-
 		}
 
-		return searchTree;
+		return versionSpace;
 	}
 
 	public static void main(String[] args) throws Exception{
@@ -85,7 +91,7 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 		op.init();
 
 		VersionSpaceGenerator generator = new ComplexityBoundedVersionSpaceGenerator(op);
-		RootedDirectedGraph g = generator.generate();
+		VersionSpace g = generator.generate();
 
 		GraphUtils.writeGraphML(g, "/tmp/versionspace.graphml");
 

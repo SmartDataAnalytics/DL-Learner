@@ -1,8 +1,6 @@
 package org.dllearner.algorithms.versionspace;
 
 
-import org.dllearner.utilities.datastructures.SearchTree;
-
 /**
  *
  * Generates the version space H that contains all possible concepts between TOP and BOTTOM.
@@ -17,9 +15,9 @@ import org.dllearner.utilities.datastructures.SearchTree;
 public interface VersionSpaceGenerator {
 
 	/**
-	 * Generate the search tree, i.e. all concepts in the version space.
+	 * Generate the version space, i.e. in our case a restricted subset of all possible concepts.
 	 *
-	 * @return the search tree
+	 * @return the version space
 	 */
-	RootedDirectedGraph generate();
+	VersionSpace generate();
 }
