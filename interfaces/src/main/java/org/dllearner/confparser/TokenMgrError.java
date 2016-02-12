@@ -3,7 +3,6 @@
 package org.dllearner.confparser;
 
 /** Token Manager Error. */
-@SuppressWarnings("ALL")
 public class TokenMgrError extends Error
 {
 
@@ -83,7 +82,7 @@ public class TokenMgrError extends Error
         default:
           if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
             String s = "0000" + Integer.toString(ch, 16);
-            retval.append("\\u").append(s.substring(s.length() - 4, s.length()));
+            retval.append("\\u" + s.substring(s.length() - 4, s.length()));
           } else {
             retval.append(ch);
           }
@@ -122,7 +121,6 @@ public class TokenMgrError extends Error
    *
    * from this method for such cases in the release version of your parser.
    */
-  @Override
   public String getMessage() {
     return super.getMessage();
   }
@@ -146,4 +144,4 @@ public class TokenMgrError extends Error
     this(LexicalError(EOFSeen, lexState, errorLine, errorColumn, errorAfter, curChar), reason);
   }
 }
-/* JavaCC - OriginalChecksum=52462882bed940bf33866ca9696c8f85 (do not edit this line) */
+/* JavaCC - OriginalChecksum=f5fc8a20129c9ebcb2277855176bcf0d (do not edit this line) */

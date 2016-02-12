@@ -91,18 +91,18 @@ public class ParseException extends Exception {
     String eol = System.getProperty("line.separator", "\n");
     StringBuffer expected = new StringBuffer();
     int maxSize = 0;
-      for (int[] expectedTokenSequence : expectedTokenSequences) {
-          if (maxSize < expectedTokenSequence.length) {
-              maxSize = expectedTokenSequence.length;
-          }
-          for (int j = 0; j < expectedTokenSequence.length; j++) {
-              expected.append(tokenImage[expectedTokenSequence[j]]).append(' ');
-          }
-          if (expectedTokenSequence[expectedTokenSequence.length - 1] != 0) {
-              expected.append("...");
-          }
-          expected.append(eol).append("    ");
+    for (int i = 0; i < expectedTokenSequences.length; i++) {
+      if (maxSize < expectedTokenSequences[i].length) {
+        maxSize = expectedTokenSequences[i].length;
       }
+      for (int j = 0; j < expectedTokenSequences[i].length; j++) {
+        expected.append(tokenImage[expectedTokenSequences[i][j]]).append(' ');
+      }
+      if (expectedTokenSequences[i][expectedTokenSequences[i].length - 1] != 0) {
+        expected.append("...");
+      }
+      expected.append(eol).append("    ");
+    }
     String retval = "Encountered \"";
     Token tok = currentToken.next;
     for (int i = 0; i < maxSize; i++) {
@@ -173,7 +173,7 @@ public class ParseException extends Exception {
            default:
               if ((ch = str.charAt(i)) < 0x20 || ch > 0x7e) {
                  String s = "0000" + Integer.toString(ch, 16);
-                 retval.append("\\u").append(s.substring(s.length() - 4, s.length()));
+                 retval.append("\\u" + s.substring(s.length() - 4, s.length()));
               } else {
                  retval.append(ch);
               }
@@ -184,4 +184,4 @@ public class ParseException extends Exception {
    }
 
 }
-/* JavaCC - OriginalChecksum=72d8badf88dbc09bae77f8c82b715143 (do not edit this line) */
+/* JavaCC - OriginalChecksum=83b39037671be2819266390c16f2c4dc (do not edit this line) */

@@ -8,60 +8,59 @@ import org.dllearner.parser.KBParser;
 import java.io.*;
 import java.util.*;
 
-@SuppressWarnings("ALL")
 public class ConfParser implements ConfParserConstants {
 
-	// special directives (those without a property name)
-	private Map<String, ConfFileOption> specialOptions = new HashMap<>();
+        // special directives (those without a property name)
+        private Map<String, ConfFileOption> specialOptions = new HashMap<String, ConfFileOption>();
 
-	// conf file options
-	private List<ConfFileOption> confOptions = new LinkedList<>();
-	private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<>();
-	private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<>();
+        // conf file options
+        private List<ConfFileOption> confOptions = new LinkedList<ConfFileOption>();
+        private Map<String, ConfFileOption> confOptionsByProperty = new HashMap<String, ConfFileOption>();
+        private Map<String, List<ConfFileOption>> confOptionsByBean = new HashMap<String, List<ConfFileOption>>();
 
-	private void addConfOption(ConfFileOption confOption) {
-		confOptions.add(confOption);
-		confOptionsByProperty.put(confOption.getPropertyName(), confOption);
-		String beanName = confOption.getBeanName();
-		if (confOptionsByBean.containsKey(beanName))
-			confOptionsByBean.get(beanName).add(confOption);
-		else {
-			LinkedList<ConfFileOption> optionList = new LinkedList<>();
-			optionList.add(confOption);
-			confOptionsByBean.put(beanName, optionList);
-		}
-	}
+        private void addConfOption(ConfFileOption confOption) {
+                confOptions.add(confOption);
+                confOptionsByProperty.put(confOption.getPropertyName(), confOption);
+                String beanName = confOption.getBeanName();
+                if (confOptionsByBean.containsKey(beanName))
+                        confOptionsByBean.get(beanName).add(confOption);
+                else {
+                        LinkedList<ConfFileOption> optionList = new LinkedList<ConfFileOption>();
+                        optionList.add(confOption);
+                        confOptionsByBean.put(beanName, optionList);
+                }
+        }
 
-	public List<ConfFileOption> getConfOptions() {
-		return confOptions;
-	}
+        public List<ConfFileOption> getConfOptions() {
+                return confOptions;
+        }
 
-	public Map<String, ConfFileOption> getConfOptionsByProperty() {
-		return confOptionsByProperty;
-	}
+        public Map<String, ConfFileOption> getConfOptionsByProperty() {
+                return confOptionsByProperty;
+        }
 
-	public ConfFileOption getConfOptionsByProperty(String propertyName) {
-		ConfFileOption confOption = confOptionsByProperty.get(propertyName);
-		if (confOption == null) {
-			confOption = specialOptions.get(propertyName);
-		}
-		return confOption;
-	}
+        public ConfFileOption getConfOptionsByProperty(String propertyName) {
+                ConfFileOption confOption = confOptionsByProperty.get(propertyName);
+                if (confOption == null) {
+                        confOption = specialOptions.get(propertyName);
+                }
+                return confOption;
+        }
 
-	public Map<String, List<ConfFileOption>> getConfOptionsByBean() {
-		return confOptionsByBean;
-	}
+        public Map<String, List<ConfFileOption>> getConfOptionsByBean() {
+                return confOptionsByBean;
+        }
 
-	public List<ConfFileOption> getConfOptionsByBean(String beanName) {
-		return confOptionsByBean.get(beanName);
-	}
+        public List<ConfFileOption> getConfOptionsByBean(String beanName) {
+                return confOptionsByBean.get(beanName);
+        }
 
-	public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException,
-			UnsupportedEncodingException {
-		ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
-		parser.Start();
-		return parser;
-	}
+        public static ConfParser parseFile(File filename) throws FileNotFoundException, ParseException,
+                        UnsupportedEncodingException {
+                ConfParser parser = new ConfParser(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
+                parser.Start();
+                return parser;
+        }
 
   final public void Start() throws ParseException {ConfFileOption confOption;
     label_1:
@@ -89,9 +88,9 @@ PostProcessor pp = new PostProcessor(confOptions, specialOptions);
 
   final public ConfFileOption ConfOption() throws ParseException {boolean containsSubOption=false;
         String value="", value1="", value2="", tmp="", tmp2="";
-        Set<String> values = new HashSet<>();
-        Map<String,String> tuples = new HashMap<>();
-        Map<String,Double> tuplesD = new HashMap<>();
+        Set<String> values = new HashSet<String>();
+        Map<String,String> tuples = new HashMap<String,String>();
+        Map<String,Double> tuplesD = new HashMap<String,Double>();
 
         ConfFileOption option = new ConfFileOption();
         boolean isBeanRef = false;
@@ -415,6 +414,20 @@ option.setBeanRef(isBeanRef);
     finally { jj_save(8, xla); }
   }
 
+  private boolean jj_3_1()
+ {
+    if (jj_3R_6()) return true;
+    if (jj_scan_token(16)) return true;
+    return false;
+  }
+
+  private boolean jj_3_7()
+ {
+    if (jj_scan_token(18)) return true;
+    if (jj_scan_token(19)) return true;
+    return false;
+  }
+
   private boolean jj_3_3()
  {
     if (jj_scan_token(20)) return true;
@@ -496,20 +509,6 @@ option.setBeanRef(isBeanRef);
     }
     if (jj_3R_6()) return true;
     if (jj_scan_token(15)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1()
- {
-    if (jj_3R_6()) return true;
-    if (jj_scan_token(16)) return true;
-    return false;
-  }
-
-  private boolean jj_3_7()
- {
-    if (jj_scan_token(18)) return true;
-    if (jj_scan_token(19)) return true;
     return false;
   }
 
@@ -683,7 +682,7 @@ option.setBeanRef(isBeanRef);
       return (jj_ntk = jj_nt.kind);
   }
 
-  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<>();
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
   private int[] jj_expentry;
   private int jj_kind = -1;
   private int[] jj_lasttokens = new int[100];
