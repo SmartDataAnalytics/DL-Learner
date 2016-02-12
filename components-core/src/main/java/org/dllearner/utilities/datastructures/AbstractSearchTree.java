@@ -18,21 +18,29 @@
  */
 package org.dllearner.utilities.datastructures;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.SortedSet;
+
 import org.dllearner.core.AbstractSearchTreeNode;
 
-import java.util.*;
+public class AbstractSearchTree <T extends AbstractSearchTreeNode> implements Serializable {
 
-public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
+	private static final long serialVersionUID = 4611314318241155733L;
 
 	// all nodes in the search tree (used for selecting most promising node)
 	protected NavigableSet<T> nodes;
-	
+
 	// the sort order on the set
 	protected Comparator<T> sortOrderComp;
 
 	// root of search tree
 	protected T root;
-	
+
 	/**
 	 * create a new search tree
 	 * @param comparator the comparator to use for the nodes
@@ -54,7 +62,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 			parentNode.addChild(node);
 		}
 	}
-	
+
 	/**
 	 * internally used by tree<->node contract to notify a tree about an added node
 	 * @param node the node
@@ -98,7 +106,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> {
 		}
 		nodes.remove(node);
 	}
-	
+
 	/**
 	 * must be called after modifying a node, to support immutable set element pattern
 	 */

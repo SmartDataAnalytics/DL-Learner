@@ -18,6 +18,7 @@
  */
 package org.dllearner.utilities.owl;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,11 +34,13 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 /**
  * A set of evaluated descriptions, which is bound by a maximum size. Can be
  * used by algorithms to store the most promising n class descriptions.
- * 
+ *
  * @author Jens Lehmann
  *
  */
-public class EvaluatedDescriptionSet {
+public class EvaluatedDescriptionSet implements Serializable {
+
+	private static final long serialVersionUID = 1806527158234797691L;
 
 	private EvaluatedDescriptionComparator comp = new EvaluatedDescriptionComparator();
 
@@ -53,9 +56,9 @@ public class EvaluatedDescriptionSet {
 	}
 
 	/**
-	 * Adds an class expression to this set. Some kind of lazy evaluation is applied, 
+	 * Adds an class expression to this set. Some kind of lazy evaluation is applied,
 	 * i.e. an evaluated description is only generated if the given accuracy
-	 * is higher than the accuracy value of the worst evaluated description 
+	 * is higher than the accuracy value of the worst evaluated description
 	 * contained in this set.
 	 * @param description the class expression
 	 * @param accuracy the accuracy of the class expression
@@ -108,7 +111,7 @@ public class EvaluatedDescriptionSet {
 	}
 
 	/**
-	 * @return true if this set contains no elements. 
+	 * @return true if this set contains no elements.
 	 */
 	public boolean isEmpty() {
 		return (set.isEmpty());
@@ -127,7 +130,7 @@ public class EvaluatedDescriptionSet {
 	public EvaluatedDescription<? extends Score> getBest() {
 		return set.isEmpty() ? null : set.last();
 	}
-	
+
 	/**
 	 * @return the worst evaluated description or <code>null</code> if this set is empty.
 	 */
@@ -159,7 +162,7 @@ public class EvaluatedDescriptionSet {
 		}
 		return list;
 	}
-	
+
 	/**
 	 * @return the maximum size of this set.
 	 */
