@@ -34,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -130,7 +131,7 @@ public class AnnComponentManager {
 				reflectionScanner = new Reflections("org.dllearner");
 			}
 			Set<Class<? extends Component>> componentClasses = reflectionScanner.getSubTypesOf(Component.class);
-			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class);
+			Set<Class<?>> componentAnnClasses = reflectionScanner.getTypesAnnotatedWith(ComponentAnn.class, true);
 			for (Class<?> clazz
 					: Sets.intersection(
 							componentClasses,
@@ -207,10 +208,9 @@ public class AnnComponentManager {
 	 * instance of <code>ComponentManager</code>.
 	 */
 	public SortedSet<String> getComponentStrings() {
-		SortedSet<String> result = new TreeSet<>();
-        for (Class<? extends Component> component : getComponents()) {
-        	result.add(getShortName(component));
-        }
+		SortedSet<String> result = getComponents().stream()
+				.map(AnnComponentManager::getShortName)
+				.collect(Collectors.toCollection(TreeSet::new));
 		return result;
 	}
 
@@ -222,12 +222,11 @@ public class AnnComponentManager {
      */
     public SortedSet<String> getComponentStringsOfType(Class type) {
 
-    	SortedSet<String> result = new TreeSet<>();
-        for (Class<? extends Component> component : getComponentsOfType(type)) {
-        	result.add(getShortName(component));
-        }
+    	SortedSet<String> result = getComponentsOfType(type).stream()
+			    .map(AnnComponentManager::getShortName)
+			    .collect(Collectors.toCollection(TreeSet::new));
 
-        return result;
+	    return result;
     }
     
     /**
@@ -256,14 +255,11 @@ public class AnnComponentManager {
      */
     public Collection<Class<? extends Component>> getComponentsOfType(Class type) {
 
-        Collection<Class<? extends Component>> result = new ArrayList<>();
-        for (Class<? extends Component> component : components) {
-            if (type.isAssignableFrom(component)) {
-                result.add(component);
-            }
-        }
+        Collection<Class<? extends Component>> result = components.stream()
+		        .filter(component -> type.isAssignableFrom(component))
+		        .collect(Collectors.toCollection(ArrayList::new));
 
-        return result;
+	    return result;
     }
 
 	/**
