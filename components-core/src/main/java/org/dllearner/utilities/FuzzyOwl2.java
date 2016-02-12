@@ -248,7 +248,6 @@ public class FuzzyOwl2
 	{
 		if (s != null && !s.contains(" null"))
 			out.println(s);
-		}
 	}
 
 	/**
