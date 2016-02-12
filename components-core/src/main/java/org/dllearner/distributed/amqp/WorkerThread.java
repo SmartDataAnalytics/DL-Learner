@@ -13,6 +13,21 @@ public class WorkerThread extends AMQPAgent {
 	private int runtimeBase = 10;
 
 	@Override
+	public void run() {
+		while (true) {
+			if (checkTerminateMsg()) {
+				break;
+			} else {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+
+	@Override
 	public void init() throws URLSyntaxException, QpidException, JMSException {
 		setOutputQueue(AMQPAgent.processedMessagesQueue);
 		setInputQueue(AMQPAgent.messagesToProcessQueue);
@@ -25,22 +40,22 @@ public class WorkerThread extends AMQPAgent {
 	}
 
 	public boolean checkTerminateMsg() {
-		while (true) {
-			Message msg;
-			try {
-				// TODO: PW: check whether these 100ms make sense
-				msg = termMsgSubscriber.receive(100);
+		Message msg;
 
-			} catch (JMSException e) {
-				e.printStackTrace();
-				continue;
-			}
+		try {
+			msg = termMsgSubscriber.receive(1000);
+		} catch (JMSException e) {
+			e.printStackTrace();
+			return false;
+		}
 
-			if (msg != null) {
-				return true;
-			} else {
-				return false;
-			}
+		if (msg != null) {
+			return true;
+		} else {
+			/* since receive just waits for 1000 ms and cancels receiving then,
+			 * msg might be null. In this case the worker should not terminate
+			 */
+			return false;
 		}
 	}
 
