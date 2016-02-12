@@ -655,7 +655,7 @@ public class SPARQLSampleDebugging {
 			try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
 				ResultSet results = qexec.execSelect();
 				for (; results.hasNext(); ) {
-					Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
+					Set<OWLAxiom> explanation = new HashSet<>();
 					explanation.add(axiom);
 					QuerySolution qs = results.next();
 					OWLIndividual subject = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
@@ -682,7 +682,7 @@ public class SPARQLSampleDebugging {
 			try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
 				ResultSet results = qexec.execSelect();
 				for (; results.hasNext(); ) {
-					Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
+					Set<OWLAxiom> explanation = new HashSet<>();
 					explanation.add(axiom);
 					QuerySolution qs = results.next();
 					OWLIndividual subject1 = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s1").getURI()));
@@ -709,7 +709,7 @@ public class SPARQLSampleDebugging {
 			try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
 				ResultSet results = qexec.execSelect();
 				for (; results.hasNext(); ) {
-					Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
+					Set<OWLAxiom> explanation = new HashSet<>();
 					explanation.add(axiom);
 					QuerySolution qs = results.nextSolution();
 					OWLIndividual subject = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));
@@ -735,7 +735,7 @@ public class SPARQLSampleDebugging {
 			try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
 				ResultSet results = qexec.execSelect();
 				for (; results.hasNext(); ) {
-					Set<OWLAxiom> explanation = new HashSet<OWLAxiom>();
+					Set<OWLAxiom> explanation = new HashSet<>();
 					explanation.add(axiom);
 					QuerySolution qs = results.nextSolution();
 					OWLIndividual subject = factory.getOWLNamedIndividual(IRI.create(qs.getResource("s").getURI()));

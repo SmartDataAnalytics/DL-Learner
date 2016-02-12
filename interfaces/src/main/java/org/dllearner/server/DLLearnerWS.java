@@ -95,8 +95,8 @@ public class DLLearnerWS {
 			if(s==null)return null;
 			String[] ret=new String[s.size()];
 			int i=0;
-			for (Iterator<String> iter = s.iterator(); iter.hasNext();) {
-				ret[i] = iter.next();
+			for (String value : s) {
+				ret[i] = value;
 				i++;
 
 			}

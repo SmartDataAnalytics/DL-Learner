@@ -42,7 +42,7 @@ public class SpringTest {
 		factory.addPropertyEditorRegistrar(new CustomPropertyEditorRegistrar());
 		reader.loadBeanDefinitions(resource);
 
-		LearningAlgorithm alg = (LearningAlgorithm) factory.getBean(LearningAlgorithm.class);
+		LearningAlgorithm alg = factory.getBean(LearningAlgorithm.class);
 		alg.start();
 
 	}

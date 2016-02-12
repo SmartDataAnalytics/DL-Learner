@@ -18,45 +18,24 @@
  */
 package org.dllearner.utilities;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
-
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
-import org.apache.commons.collections15.ListUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.sparql.core.TriplePath;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
-import com.hp.hpl.jena.sparql.syntax.ElementWalker;
+import com.hp.hpl.jena.sparql.syntax.*;
 import com.hp.hpl.jena.sparql.util.VarUtils;
 import com.hp.hpl.jena.vocabulary.RDF;
+import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
+import org.apache.commons.collections15.ListUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class QueryUtils extends ElementVisitorBase {
 	
@@ -125,14 +104,14 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 * @return
 	 */
 	public Set<Var> getSubjectVariables(Query query){
-		Set<Var> vars = new HashSet<>();
-		
+
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
-		
+
+		Set<Var> vars = new HashSet<>();
 		for (Triple tp : triplePatterns) {
 			if(tp.getSubject().isVariable()){
 				vars.add(Var.alloc(tp.getSubject()));
-			} 
+			}
 		}
 		
 		return vars;
@@ -332,15 +311,15 @@ private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
 	 */
 	public Set<Var> getObjectVariables(Query query){
 		Set<Var> vars = new HashSet<>();
-		
+
 		Set<Triple> triplePatterns = extractTriplePattern(query, false);
 		
 		for (Triple tp : triplePatterns) {
 			if(tp.getObject().isVariable()){
 				vars.add(Var.alloc(tp.getObject()));
-			} 
+			}
 		}
-		
+
 		return vars;
 	}
 	

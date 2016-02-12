@@ -49,6 +49,7 @@ function showAllCat(){
 <div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.celoe.OEHeuristicRuntime">OEHeuristicRuntime</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.OWLAPIReasoner">OWL API Reasoner</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.ocel.OCEL">OWL Class Expression Learner</a></li></div>
+<div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.owl.OWLClassExpressionLengthMetric">OWL Class Expression Length Metric</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.OWLFile">OWL File</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.refinementoperators.OperatorInverter">OperatorInverter</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.celoe.PCELOE">PCELOE</a></li></div>
@@ -59,7 +60,7 @@ function showAllCat(){
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccApprox">Predictive Accuracy Approximate</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PropertyAxiomLearningProblem">PropertyAxiomLearningProblem</a></li></div>
-<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex">QueryTreeHeuristic</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple">QueryTreeHeuristic</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator">Refinement Operator TDT</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.SPARQLReasoner">SPARQL Reasoner</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
@@ -117,7 +118,7 @@ function showAllCat(){
 <tr><td>maxClassExpressionTestsAfterImprovement</td><td>The maximum number of candidate hypothesis the algorithm is allowed after an improvement in accuracy (0 = no limit). The algorithm will stop afterwards. (The real number of tests can be slightly higher, because this criterion usually won't be checked after each single test.)</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxDepth</td><td>maximum depth of description</td><td> double</td><td>7</td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
-<tr><td>maxExecutionTimeInSecondsAfterImprovement</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>maxExecutionTimeInSecondsAfterImprovement</td><td>maximum execution of the algorithm in seconds after last improvement</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxNrOfResults</td><td>Sets the maximum number of results one is interested in. (Setting this to a lower value may increase performance as the learning algorithm has to store/evaluate/beautify less descriptions).</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>noisePercentage</td><td>the (approximated) percentage of noise within the examples</td><td> double</td><td>0.0</td><td> false</td></tr>
 <tr><td>operator</td><td>the refinement operator instance to use</td><td> LengthLimitedRefinementOperator</td><td></td><td> false</td></tr>
@@ -154,7 +155,6 @@ function showAllCat(){
 <tr><td>logLevel</td><td>Configure logger log level from conf file. Available levels: "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE". Note, to see results, at least "INFO" is required.</td><td> String</td><td>INFO</td><td> false</td></tr>
 <tr><td>nrOfFolds</td><td>Number of folds in Cross-Validation mode</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>performCrossValidation</td><td>Run in Cross-Validation mode</td><td> boolean</td><td>false</td><td> false</td></tr>
-<tr><td>writeSpringConfiguration</td><td>Write the Spring XML configuration to disk corresponding to the .conf file</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive"><h2>Disjunctive ELTL <small class="default-hidden">org.dllearner.algorithms.el.ELLearningAlgorithmDisjunctive</small></h2></a>
@@ -314,15 +314,20 @@ function showAllCat(){
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>expansionPenaltyFactor</td><td>For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)</td><td> double</td><td>0.02</td><td> false</td></tr>
+<tr><td>forceRefinementLengthIncrease</td><td>if this variable is set to true, then the refinement operator is applied until all concept of equal length have been found e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage are potentially more method calls, but the advantage is that the algorithm is better in locating relevant concept in the subsumption hierarchy (otherwise, if the most general concept is not promising, it may never get expanded)</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
+<tr><td>lengthMetric</td><td>adjust the weights of class expression length in refinement</td><td> OWLClassExpressionLengthMetric</td><td>OCEL default metric</td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
+<div class="type OtherComponent"><a name="org.dllearner.utilities.owl.OWLClassExpressionLengthMetric"><h2>OWL Class Expression Length Metric <small class="default-hidden">org.dllearner.utilities.owl.OWLClassExpressionLengthMetric</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>cel_metric</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.OWLFile"><h2>OWL File <small class="default-hidden">org.dllearner.kb.OWLFile</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>owlfile</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>baseDir</td><td>separately specify directory of KB file</td><td> String</td><td></td><td> false</td></tr>
@@ -414,8 +419,8 @@ function showAllCat(){
 <tr><td>reasoner</td><td>The reasoner component variable to use for this Learning Problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex"><h2>QueryTreeHeuristic <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_complex</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple"><h2>QueryTreeHeuristic <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_simple</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type RefinementOperator"><a name="org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator"><h2>Refinement Operator TDT <small class="default-hidden">org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>tdtop</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beam</td><td>no description available</td><td> int</td><td>5</td><td> false</td></tr>
@@ -532,12 +537,12 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplirrefl</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for irreflexive object property axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.MultiHeuristic"><h2>multiple criteria heuristic <small class="default-hidden">org.dllearner.algorithms.ocel.MultiHeuristic</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>multiheuristic</dd><dt>version</dt><dd>0.7</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
-<tr><td>expansionPenaltyFactor</td><td>no description available</td><td> double</td><td>0.02</td><td> false</td></tr>
-<tr><td>gainBonusFactor</td><td>no description available</td><td> double</td><td>0.5</td><td> false</td></tr>
-<tr><td>negationPenalty</td><td>no description available</td><td> int</td><td>0</td><td> false</td></tr>
-<tr><td>negativeWeight</td><td>no description available</td><td> double</td><td>1.0</td><td> false</td></tr>
-<tr><td>nodeChildPenalty</td><td>no description available</td><td> double</td><td>0.0001</td><td> false</td></tr>
-<tr><td>startNodeBonus</td><td>no description available</td><td> double</td><td>0.1</td><td> false</td></tr>
+<tr><td>expansionPenaltyFactor</td><td>how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)</td><td> double</td><td>0.02</td><td> false</td></tr>
+<tr><td>gainBonusFactor</td><td>how accuracy gain should be weighted versus accuracy itself (typical value: 1.00)</td><td> double</td><td>0.5</td><td> false</td></tr>
+<tr><td>negationPenalty</td><td>penalty value to deduce for using a negated class expression (complementOf)</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>negativeWeight</td><td>weighting factor on the number of true negatives (true positives are weigthed with 1)</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>nodeChildPenalty</td><td>penalty factor for the search tree node child count (use higher values for simple learning problems)</td><td> double</td><td>0.0001</td><td> false</td></tr>
+<tr><td>startNodeBonus</td><td>the score value for the start node</td><td> double</td><td>0.1</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner"><h2>object property domain axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.ObjectPropertyDomainAxiomLearner</small></h2></a>
@@ -572,6 +577,7 @@ function showAllCat(){
 <dl class="dl-horizontal"><dt>short name</dt><dd>rho</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>applyAllFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>applyExistsFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>cardinalityLimit</td><td>limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)</td><td> int</td><td>5</td><td> false</td></tr>
 <tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
