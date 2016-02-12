@@ -1,5 +1,6 @@
 package org.dllearner.distributed.amqp;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.dllearner.core.AbstractComponent;
@@ -9,7 +10,9 @@ import org.dllearner.core.config.ConfigOption;
 
 import com.google.common.collect.ComparisonChain;
 
-public class OEHeuristicRuntime extends AbstractComponent implements Heuristic, Comparator<OENode> {
+public class OEHeuristicRuntime extends AbstractComponent implements Heuristic, Comparator<OENode>, Serializable {
+	private static final long serialVersionUID = 1801623584011563966L;
+
 	@ConfigOption(description="penalty for long descriptions (horizontal " +
 			"expansion) (strong by default)", defaultValue="0.1")
 	private double expansionPenaltyFactor = 0.1;
@@ -34,18 +37,22 @@ public class OEHeuristicRuntime extends AbstractComponent implements Heuristic, 
 	public double getNodeScore(OENode node) {
 		// accuracy as baseline
 		double score = node.getAccuracy();
+
 		// being better than the parent gives a bonus;
 		if(!node.isRoot()) {
 			double parentAccuracy = node.getParent().getAccuracy();
 			score += (parentAccuracy - score) * gainBonusFactor;
+
 		// the root node also gets a bonus to possibly spawn useful disjunctions
 		} else {
 			score += startNodeBonus;
 		}
 		// penalty for horizontal expansion
 		score -= node.getHorizontalExpansion() * expansionPenaltyFactor;
+
 		// penalty for having many child nodes (stuck prevention)
 		score -= node.getRefinementCount() * nodeRefinementPenalty;
+
 		return score;
 	}
 
