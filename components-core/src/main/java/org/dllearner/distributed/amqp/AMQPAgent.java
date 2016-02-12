@@ -55,8 +55,8 @@ public class AMQPAgent extends Thread {
 	private String termRoutingKey = "terminate";
 	private Topic termTopic;
 	protected int myID;
-	private int sentMsgsCnt;
-	private int recvdMsgsCnt;
+	protected int sentMsgsCnt;
+	protected int recvdMsgsCnt;
 
 	public AMQPAgent() {
 		super();

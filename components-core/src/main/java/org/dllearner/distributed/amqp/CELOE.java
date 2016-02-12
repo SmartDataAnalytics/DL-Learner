@@ -85,7 +85,6 @@ import com.jamonapi.MonitorFactory;
  * @author Jens Lehmann
  *
  */
-@SuppressWarnings("CloneDoesntCallSuperClone")
 public class CELOE extends AbstractCELA {
 
 	private static final Logger logger = LoggerFactory.getLogger(CELOE.class);
@@ -207,6 +206,7 @@ public class CELOE extends AbstractCELA {
 
 
 	// <---------------------- non-component attributes ---------------------->
+	private String amqpConfigFilePath;  // FIXME: make this a component attr
 	private double bestAccuracy = Double.MIN_VALUE;
 	private OWLClassExpression bestDescription;
 	private OWLClass classToDescribe;  // TODO: is this needed?
@@ -266,7 +266,6 @@ public class CELOE extends AbstractCELA {
 	 * answer was received, yet */
 	private int pendingRequests;
 
-	private int receivedMessagesCount;
 	private boolean runMaster = false;
 	private SearchTree searchTree;
 
@@ -280,7 +279,9 @@ public class CELOE extends AbstractCELA {
 	// <--------------------------- constructors ----------------------------->
 	public CELOE() {}
 
-	public CELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
+	public CELOE(AbstractClassExpressionLearningProblem<? extends Score> problem,
+			AbstractReasonerComponent reasoner) {
+
 		super(problem, reasoner);
 	}
 	// </-------------------------- constructors ----------------------------->
@@ -413,6 +414,7 @@ public class CELOE extends AbstractCELA {
 
 		if (runMaster()) {
 			Master master = new Master();
+			master.loadAMQPSettings(amqpConfigFilePath);
 			try {
 				master.init();
 			} catch (URLSyntaxException | JMSException | QpidException e2) {
@@ -425,7 +427,7 @@ public class CELOE extends AbstractCELA {
 					e1.printStackTrace();
 				}
 			}
-			master.start();
+			master.run();
 
 			try {
 				master.join();
@@ -448,6 +450,7 @@ public class CELOE extends AbstractCELA {
 
 		} else {
 			Worker worker = new Worker();
+			worker.loadAMQPSettings(amqpConfigFilePath);
 			try {
 				worker.init();
 			} catch (URLSyntaxException | QpidException | JMSException e1) {
@@ -459,7 +462,7 @@ public class CELOE extends AbstractCELA {
 				}
 				System.exit(1);
 			}
-			worker.start();
+			worker.run();
 
 			try {
 				worker.finalizeMessaging();
@@ -516,7 +519,9 @@ public class CELOE extends AbstractCELA {
 		}
 
 		OENode node = new OENode(description, accuracy);
-		searchTree.addNode(parentNode, node);
+		synchronized (searchTree) {
+			searchTree.addNode(parentNode, node);
+		}
 
 		/* in some cases (e.g. mutation) fully evaluating even a single class
 		 * expression is too expensive due to the high number of
@@ -695,6 +700,9 @@ public class CELOE extends AbstractCELA {
 	 * constructs)
 	 */
 	private OENode getNextNodeToExpand() {
+
+		synchronized (searchTree) {
+
 		Iterator<OENode> it = searchTree.descendingIterator();
 
 		while(it.hasNext()) {
@@ -706,13 +714,14 @@ public class CELOE extends AbstractCELA {
 					OWLClassExpressionUtils.getLength(node.getDescription());
 
 			if (isExpandAccuracy100Nodes() && horizExpLtDescLen) {
-					return node;
+				return node;
 
 			} else {
 				if(node.getAccuracy() < 1.0 || horizExpLtDescLen) {
 					return node;
 				}
 			}
+		}
 		}
 
 		// this might happen if there are currently no unblocked nodes
@@ -859,14 +868,43 @@ public class CELOE extends AbstractCELA {
 	}
 
 	private boolean terminationCriteriaSatisfied() {
+//		if (!runMaster) {
+//		System.out.println("expression tests: " + expressionTests);
+//		System.out.println("max class expression tests: " + maxClassExpressionTests);
+//		System.out.println("stop: " + stop);
+//		System.out.println("a) maxClassExpressionTestsAfterImprovement != 0: " + (maxClassExpressionTestsAfterImprovement != 0));
+//		System.out.println("a) expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement): " + (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement));
+//		System.out.println("b) maxClassExpressionTests != 0: " + (maxClassExpressionTests != 0));
+//		System.out.println("b) expressionTests >= maxClassExpressionTests: " + (expressionTests >= maxClassExpressionTests));
+//		System.out.println("c) maxExecutionTimeInSecondsAfterImprovement != 0: " + (maxExecutionTimeInSecondsAfterImprovement != 0));
+//		System.out.println("c) (System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L)): " + ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L)));
+//		System.out.println("-----");
+//		System.out.println("maxExecutionTimeInSeconds: " + maxExecutionTimeInSeconds);
+//		System.out.println("System.nanoTime() - nanoStartTime: " + (System.nanoTime() - nanoStartTime));
+//		System.out.println("nanoStartTime: " + nanoStartTime);
+//		System.out.println("d) maxExecutionTimeInSeconds != 0: " + (maxExecutionTimeInSeconds != 0));
+//		System.out.println("d) (System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L): " + ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L)));
+//		System.out.println("e) terminateOnNoiseReached: " + terminateOnNoiseReached);
+//		if (!bestEvaluatedDescriptions.isEmpty())
+//		System.out.println("e) 100*getCurrentlyBestAccuracy()>=100-noisePercentage" + (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
+//		System.out.println("f) stopOnFirstDefinition: " + stopOnFirstDefinition);
+//		System.out.println("f) getCurrentlyBestAccuracy() >= 1: " + (getCurrentlyBestAccuracy() >= 1));
+//		}
+
 		return
 		stop ||
-		(maxClassExpressionTestsAfterImprovement != 0 && (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
-		(maxClassExpressionTests != 0 && (expressionTests >= maxClassExpressionTests)) ||
-		(maxExecutionTimeInSecondsAfterImprovement != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L))) ||
-		(maxExecutionTimeInSeconds != 0 && ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L))) ||
-		(terminateOnNoiseReached && (100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
-		(stopOnFirstDefinition && (getCurrentlyBestAccuracy() >= 1));
+		(maxClassExpressionTestsAfterImprovement != 0 &&
+			(expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement)) ||
+		(maxClassExpressionTests != 0 &&
+			(expressionTests >= maxClassExpressionTests)) ||
+		(maxExecutionTimeInSecondsAfterImprovement != 0 &&
+			((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L))) ||
+		(maxExecutionTimeInSeconds != 0 &&
+			((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L))) ||
+		(terminateOnNoiseReached &&
+			(100*getCurrentlyBestAccuracy()>=100-noisePercentage)) ||
+		(stopOnFirstDefinition &&
+			(getCurrentlyBestAccuracy() >= 1));
 	}
 
 	private void updateMinMaxHorizExp(OENode node) {
@@ -882,15 +920,17 @@ public class CELOE extends AbstractCELA {
 			// the best accuracy that a node can achieve
 			double scoreThreshold = heuristic.getNodeScore(node) + 1 - node.getAccuracy();
 
-			for(OENode n : searchTree.descendingSet()) {
-				if(n != node) {
-					if(n.getHorizontalExpansion() == minHorizExp) {
-						// we can stop instantly when another node with min.
-						return;
-					}
-					if(heuristic.getNodeScore(n) < scoreThreshold) {
-						// we can stop traversing nodes when their score is too low
-						break;
+			synchronized (searchTree) {
+				for(OENode n : searchTree.descendingSet()) {
+					if(n != node) {
+						if(n.getHorizontalExpansion() == minHorizExp) {
+							// we can stop instantly when another node with min.
+							return;
+						}
+						if(heuristic.getNodeScore(n) < scoreThreshold) {
+							// we can stop traversing nodes when their score is too low
+							break;
+						}
 					}
 				}
 			}
@@ -912,7 +952,9 @@ public class CELOE extends AbstractCELA {
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		synchronized (searchTree) {
+			treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		}
 
 		// replace or append
 		if (replaceSearchTree) {
@@ -931,6 +973,11 @@ public class CELOE extends AbstractCELA {
 
 
 	// <---------------------------- getter/setter --------------------------->
+
+	// amqpConfigFilePath
+	public void setAMQPConfigFilePath(String filePath) {
+		amqpConfigFilePath = filePath;
+	}
 
 	// bestEvaluatedDescriptions
 	public double getCurrentlyBestAccuracy() {
@@ -1270,11 +1317,13 @@ public class CELOE extends AbstractCELA {
 
 
 		public void processRecvdTree(SearchTreeContainer treeContainer) {
-			receivedMessagesCount++;
+			recvdMsgsCnt++;
 			pendingRequests--;
 			SearchTree remoteTree = treeContainer.getTree();
 
-			searchTree.updateAndSetUnblocked(remoteTree);
+			synchronized (searchTree) {
+				searchTree.updateAndSetUnblocked(remoteTree);
+			}
 
 			double remoteBestAcc = treeContainer.getBestAccuracy();
 			OWLClassExpression remoteBestDescription = treeContainer.getBestDescription();
@@ -1312,6 +1361,7 @@ public class CELOE extends AbstractCELA {
 
 				try {
 					treeContainer = (SearchTreeContainer) ((ObjectMessage) msg).getObject();
+					logger.info("|<--| " + treeContainer.toString());
 					processRecvdTree(treeContainer);
 
 				} catch (JMSException e) {
@@ -1332,7 +1382,7 @@ public class CELOE extends AbstractCELA {
 		public void processRecvdTree(SearchTreeContainer treeContainer) {
 			reset();
 
-			receivedMessagesCount++;
+			recvdMsgsCnt++;
 			// call refineNode
 			// add min/maxHorizExp to tree container
 
@@ -1366,6 +1416,7 @@ public class CELOE extends AbstractCELA {
 		 * copy from current CELOE implementation
 		 */
 		public void startWorkerCELOE() {
+			nanoStartTime = System.nanoTime();
 			OENode nextNode;
 
 			while (!terminationCriteriaSatisfied()) {
@@ -1389,6 +1440,7 @@ public class CELOE extends AbstractCELA {
 					// (this also avoids duplicate node children)
 					if(length > horizExp && OWLClassExpressionUtils.getDepth(refinement) <= maxDepth) {
 						// add node to search tree
+
 						addNode(refinement, nextNode);
 					}
 				}
@@ -1447,7 +1499,9 @@ public class CELOE extends AbstractCELA {
 
 				try {
 					treeContainer = (SearchTreeContainer) ((ObjectMessage) msg).getObject();
+					logger.debug("|<--| " + treeContainer.toString());
 					processRecvdTree(treeContainer);
+					recvdMsgsCnt++;
 				} catch (JMSException e) {
 					e.printStackTrace();
 				}
