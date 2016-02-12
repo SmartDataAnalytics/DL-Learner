@@ -64,6 +64,7 @@ public class AMQPAgent extends Thread {
 
 	public AMQPAgent(String user, String password, String hostName,
 			String clientID, String virtualHost, Integer port) {
+
 		super();
 
 		this.user = user != null ? user : this.user;
@@ -131,11 +132,13 @@ public class AMQPAgent extends Thread {
 		virtualHost = props.getProperty("virtualHost", virtualHost);
 		port = props.getProperty("port") == null ? port : Integer.parseInt(
 				props.getProperty("port"));
+
 		return true;
 	}
 
 	protected void send(MessageContainer msgContainer) {
-		// TODO: PW: log send
+		logger.info("|-->| " + msgContainer.toString());
+
 		Message msg;
 
 		try {
@@ -161,17 +164,23 @@ public class AMQPAgent extends Thread {
 				e.printStackTrace();
 			}
 			producer.send(msg);
+			sentMsgsCnt++;
 
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
 	}
 
-	// TODO: PW: implement receive
-	// TODO: PW: log receive
-
 	public void finalizeMessaging() throws JMSException {
 		session.close();
 		connection.close();
+	}
+
+	public int getSentMessagesCount() {
+		return sentMsgsCnt;
+	}
+
+	public int getReceivedMessagesCount() {
+		return recvdMsgsCnt;
 	}
 }
