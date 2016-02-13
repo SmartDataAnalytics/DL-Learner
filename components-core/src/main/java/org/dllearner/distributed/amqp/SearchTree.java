@@ -222,4 +222,13 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	public Iterator<OENode> descendingIterator() {
 		return ((NodeTreeSet) nodes).descendingIterator();
 	}
+
+	@Override
+	public void setRoot(OENode node) {
+		if (this.root != null || !this.nodes.isEmpty()) {
+			throw new Error("Tree Root already set");
+		}
+		this.root = node;
+		node.notifyTree(this);
+	}
 }

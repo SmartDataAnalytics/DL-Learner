@@ -27,6 +27,8 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 
 	protected List<UUID> children;
 	protected UUID parent;
+	private SearchTree tree;
+	private AbstractSearchTree<AbstractSearchTreeNode> trees = null;
 
 	/**
 	 * the refinement count corresponds to the number of refinements of the
@@ -142,18 +144,16 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 	public void addChild(OENode node) {
 		node.setParent(this);
 		children.add(node.getUUID());
-		node.notifyTrees(this.trees);
+		node.notifyTree(this.tree);
 	}
 
 	@Override
 	public Collection<OENode> getChildren() {
 		HashSet<OENode> childNodes = new HashSet<OENode>();
 
-		for (AbstractSearchTree<OENode> tree : trees) {
-			for (UUID childUUID : children) {
-				OENode childNode = ((SearchTree) tree).getNodeByUUID(childUUID);
-				if (childNode != null) childNodes.add(childNode);
-			}
+		for (UUID childUUID : children) {
+			OENode childNode = tree.getNodeByUUID(childUUID);
+			if (childNode != null) childNodes.add(childNode);
 		}
 
 		return childNodes;
@@ -161,11 +161,20 @@ public class OENode extends AbstractSearchTreeNode<OENode> implements SearchTree
 
 	@Override
 	public OENode getParent() {
-		for (AbstractSearchTree<OENode> tree : trees) {
-			OENode node = ((SearchTree) tree).getNodeByUUID(parent);
-			if (node != null) return node;
-		}
+		return tree.getNodeByUUID(parent);
+	}
 
-		return null;
+	public void notifyTree(SearchTree tree) {
+		updatePrepareTree();
+		this.tree = tree;
+		notifyTree();
+	}
+
+	private void updatePrepareTree() {
+		if (tree != null) tree.updatePrepare(this);
+	}
+
+	private void notifyTree() {
+		tree.notifyNode(this);
 	}
 }
