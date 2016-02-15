@@ -119,21 +119,10 @@ public class OCEL extends AbstractCELA {
 	@ConfigOption(description = "adjust the weights of class expression length in refinement", defaultValue = "OCEL default metric")
 	private OWLClassExpressionLengthMetric lengthMetric;
 	private ROLearner2 algorithm;
-	// boolean createTreeString = false;
-	// String searchTree = new String();
-//	private int cardinalityLimit = 5;
-//	private boolean useStringDatatypes = false;
-//	private boolean instanceBasedDisjoints = true;
-
-	// Konfiguration des Algorithmus
-	// Faktor für horizontale Erweiterung (notwendig für completeness)
-	// double horizontalExpansionFactor = 0.6;
-
 
     public OCEL(){}
     
 	// soll später einen Operator und eine Heuristik entgegennehmen
-	// public ROLearner(LearningProblem learningProblem, LearningProblem learningProblem2) {
 	public OCEL(PosNegLP learningProblem, AbstractReasonerComponent reasoningService) {
 		super(learningProblem, reasoningService);
 	}
@@ -168,7 +157,6 @@ public class OCEL extends AbstractCELA {
 		if(heuristic == null) {
 			if(getLearningProblem() instanceof PosOnlyLP) {
 				throw new RuntimeException("does not work with positive examples only yet");
-//				heuristic = new MultiHeuristic(((PosOnlyLP) getLearningProblem()).getPositiveExamples().size(),0, negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			} else {
 				heuristic = new MultiHeuristic(((PosNegLP) getLearningProblem()).getPositiveExamples().size(),((PosNegLP) getLearningProblem()).getNegativeExamples().size(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			}
@@ -282,8 +270,7 @@ public class OCEL extends AbstractCELA {
 	public void start() {
 		algorithm.start();
 	}
-	
-//	@Override
+
 	public ScorePosNeg getSolutionScore() {
 		return algorithm.getSolutionScore();
 	}
@@ -534,7 +521,7 @@ public class OCEL extends AbstractCELA {
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		this.lengthMetric = lengthMetric;
 		if (operator != null && operator instanceof LengthLimitedRefinementOperator) {
-			((LengthLimitedRefinementOperator)operator).setLengthMetric(lengthMetric);
+			operator.setLengthMetric(lengthMetric);
 		}
 	}
 
