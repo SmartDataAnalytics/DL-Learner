@@ -10,16 +10,16 @@ import org.dllearner.core.*;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.reasoning.ClosedWorldReasoner;
+import org.dllearner.refinementoperators.RhoDRDown;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.ToStringRenderer;
 import org.semanticweb.owlapi.manchestersyntax.renderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Lorenz Buehmann
@@ -35,6 +35,8 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 	private ComplexityBoundedOperator operator;
 
 	private RandomNodePicker<DefaultVersionSpaceNode> exploitation;
+
+	private Set<OWLClassExpression> classesToIgnore = new HashSet<>();
 
 	public VersionSpaceLearningAlgorithm(
 			AbstractClassExpressionLearningProblem learningProblem,
@@ -59,6 +61,10 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 
 		// the helper for exploitation
 		exploitation = new RandomNodePicker<>(versionSpace);
+
+		if(learningProblem.getClass().isAssignableFrom(ClassLearningProblem.class)) {
+			classesToIgnore.add(((ClassLearningProblem)learningProblem).getClassToDescribe());
+		}
 	}
 
 	@Override
@@ -73,8 +79,9 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 
 			currentNode.setScore(evaluatedConcept.getScore());
 
-			if(getCurrentlyBestEvaluatedDescriptions().isEmpty() ||
-					evaluatedConcept.getAccuracy() > getCurrentlyBestEvaluatedDescription().getAccuracy()) {
+			if(!classesToIgnore.contains(evaluatedConcept.getDescription()) &&
+					(getCurrentlyBestEvaluatedDescriptions().isEmpty() ||
+					evaluatedConcept.getAccuracy() > getCurrentlyBestEvaluatedDescription().getAccuracy())) {
 				System.out.println("Found better solution: " + evaluatedConcept);
 			}
 			bestEvaluatedDescriptions.add(evaluatedConcept);
@@ -100,8 +107,8 @@ public class VersionSpaceLearningAlgorithm extends AbstractCELA {
 		lp.init();
 
 		ComplexityModel complexityModel = new HybridComplexityModel(
-				new ClassExpressionLengthComplexityModel(3),
-				new ClassExpressionDepthComplexityModel(1)
+				new ClassExpressionLengthComplexityModel(5),
+				new ClassExpressionDepthComplexityModel(2)
 		);
 
 		VersionSpaceLearningAlgorithm la = new VersionSpaceLearningAlgorithm(lp, reasoner, complexityModel);

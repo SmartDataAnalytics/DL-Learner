@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Lorenz Buehmann
@@ -46,38 +47,85 @@ public class ComplexityBoundedVersionSpaceGenerator extends AbstractVersionSpace
 		DefaultVersionSpaceNode rootNode = new DefaultVersionSpaceNode(topConcept);
 
 		// create the version space
-		VersionSpace versionSpace = new VersionSpace(rootNode);
+		final VersionSpace versionSpace = new VersionSpace(rootNode);
 
 		// keep track of already visited(refined) nodes
-		Set<DefaultVersionSpaceNode> visited = new HashSet<>();
+		final Set<DefaultVersionSpaceNode> visited = new HashSet<>();
 
 		// the list of nodes we have to process
-		Queue<DefaultVersionSpaceNode> todo = new ArrayDeque<>();
-		todo.add(rootNode);
+//		Queue<DefaultVersionSpaceNode> todo = new ArrayDeque<>();
+//		todo.add(rootNode);
+//
+//		while(!todo.isEmpty()) {
+//			// pick next node to process
+//			DefaultVersionSpaceNode parent = todo.poll();
+//
+//			// compute all refinements
+//			Set<OWLClassExpression> refinements = operator.refine(parent.getHypothesis());
+//
+//			// add child node and edge to parent for each refinement
+//			for (OWLClassExpression ref : refinements) {
+//				DefaultVersionSpaceNode child = new DefaultVersionSpaceNode(ref);
+//
+//				if(!child.equals(parent)) {
+//					versionSpace.addVertex(child);
+//					versionSpace.addEdge(parent, child);
+//				}
+//
+//				// add to todo list only if not already processed before
+//				if(!visited.contains(child)) {
+//					todo.add(child);
+//				}
+//			}
+//			visited.add(parent);
+//		}
 
-		while(!todo.isEmpty()) {
-			// pick next node to process
-			DefaultVersionSpaceNode parent = todo.poll();
+		final BlockingQueue<DefaultVersionSpaceNode> todoQueue = new ArrayBlockingQueue<DefaultVersionSpaceNode>(1024);
+		todoQueue.add(rootNode);
+		ThreadPoolExecutor tp = (ThreadPoolExecutor)Executors.newFixedThreadPool(4);
 
-			// compute all refinements
-			Set<OWLClassExpression> refinements = operator.refine(parent.getHypothesis());
+		while(!todoQueue.isEmpty() || tp.getActiveCount() > 0) {
+			tp.submit(new Runnable() {
+				@Override
+				public void run() {
+					// pick next node to process
+					try {
+						DefaultVersionSpaceNode parent = todoQueue.take();
 
-			// add child node and edge to parent for each refinement
-			for (OWLClassExpression ref : refinements) {
-				DefaultVersionSpaceNode child = new DefaultVersionSpaceNode(ref);
+						System.out.println(Thread.currentThread().getId() + "::" + parent.getHypothesis());
 
-				if(!child.equals(parent)) {
-					versionSpace.addVertex(child);
-					versionSpace.addEdge(parent, child);
+						// compute all refinements
+						Set<OWLClassExpression> refinements = operator.refine(parent.getHypothesis());
+
+						// add child node and edge to parent for each refinement
+						for (OWLClassExpression ref : refinements) {
+							DefaultVersionSpaceNode child = new DefaultVersionSpaceNode(ref);
+
+							if(!child.equals(parent)) {
+								versionSpace.addVertex(child);
+								versionSpace.addEdge(parent, child);
+							}
+
+							// add to todo list only if not already processed before
+							if(!visited.contains(child)) {
+								todoQueue.put(child);
+							}
+						}
+						visited.add(parent);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-
-				// add to todo list only if not already processed before
-				if(!visited.contains(child)) {
-					todo.add(child);
-				}
-			}
-			visited.add(parent);
+			});
 		}
+
+		tp.shutdown();
+		try {
+			tp.awaitTermination(1, TimeUnit.HOURS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 
 		LOGGER.info("...finished generating version space(#nodes: {}) in {}ms.",
 					versionSpace.vertexSet().size(), (System.currentTimeMillis() - startTime));
