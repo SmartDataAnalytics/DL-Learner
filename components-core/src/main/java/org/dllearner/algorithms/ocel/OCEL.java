@@ -21,7 +21,6 @@ package org.dllearner.algorithms.ocel;
 import com.google.common.collect.Sets;
 import com.jamonapi.Monitor;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.dllearner.core.*;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
@@ -40,10 +39,10 @@ import org.dllearner.utilities.owl.ConceptTransformation;
 import org.dllearner.utilities.owl.EvaluatedDescriptionPosNegComparator;
 import org.dllearner.utilities.owl.OWLClassExpressionLengthMetric;
 import org.dllearner.utilities.owl.OWLClassExpressionUtils;
-import org.semanticweb.owlapi.io.OWLObjectRenderer;
 import org.semanticweb.owlapi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -77,16 +76,11 @@ import java.util.*;
 public class OCEL extends AbstractCELA {
 
 	// actual algorithm
-	private static Logger logger = Logger.getLogger(OCEL.class);
+	private static Logger logger = LoggerFactory.getLogger(OCEL.class);
 	private String logLevel = CommonConfigOptions.logLevelDefault;
-	
-	private OWLObjectRenderer renderer;
 
-	// basic setup: learning problem and reasoning service
-	private AbstractReasonerComponent rs;
 	// often the learning problems needn't be accessed directly; instead
 	// use the example sets below and the posonly variable
-	private PosNegLP learningProblem;
 	private OWLClassExpression startDescription;
 	private int nrOfExamples;
 	private int nrOfPositiveExamples;
@@ -110,8 +104,6 @@ public class OCEL extends AbstractCELA {
 	private boolean useShortConceptConstruction = true;
 
 	// extended Options
-	@ConfigOption(defaultValue = "10", description = "maximum execution of the algorithm in seconds")
-	private int maxExecutionTimeInSeconds = CommonConfigOptions.maxExecutionTimeInSecondsDefault;
 	private boolean maxExecutionTimeAlreadyReached = false;
 	private int minExecutionTimeInSeconds = CommonConfigOptions.minExecutionTimeInSecondsDefault;
 	private boolean minExecutionTimeAlreadyReached = false;
@@ -146,10 +138,6 @@ public class OCEL extends AbstractCELA {
 	// set is reduced to focus CPU time on the most promising concepts
 	private boolean useCandidateReduction = true;
 	private int candidatePostReductionSize = 30;
-
-	// setting to true gracefully stops the algorithm
-	private boolean stop = false;
-	private boolean isRunning = false;
 
 	// solution protocol
 	private List<ExampleBasedNode> solutions = new LinkedList<>();
@@ -205,10 +193,6 @@ public class OCEL extends AbstractCELA {
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
 
-	// prefixes
-	private String baseURI;
-	private Map<String, String> prefixes;
-
 	private boolean terminateOnNoiseReached = true;
 
 	private double negativeWeight = 1.0;
@@ -220,7 +204,6 @@ public class OCEL extends AbstractCELA {
 
 	private int negationPenalty = 0;
 
-	private OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	@ConfigOption(description = "adjust the weights of class expression length in refinement", defaultValue = "OCEL default metric")
 	private OWLClassExpressionLengthMetric lengthMetric;
 
@@ -268,7 +251,7 @@ public class OCEL extends AbstractCELA {
 		
 		// set log level if the option has been set
 		if(!logLevel.equals(CommonConfigOptions.logLevelDefault))
-			logger.setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
+			org.apache.log4j.Logger.getLogger(OCEL.class).setLevel(Level.toLevel(logLevel,Level.toLevel(CommonConfigOptions.logLevelDefault)));
 		
 		if(searchTreeFile == null)
 			searchTreeFile = new File(defaultSearchTreeFile);
@@ -354,14 +337,14 @@ public class OCEL extends AbstractCELA {
 		// create an algorithm object and pass all configuration
 		// options to it
 
-		positiveExamples = learningProblem.getPositiveExamples();
-		negativeExamples = learningProblem.getNegativeExamples();
+		positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
+		negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
 		nrOfPositiveExamples = positiveExamples.size();
 		nrOfNegativeExamples = negativeExamples.size();
 
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
-		baseURI = rs.getBaseURI();
-		prefixes = rs.getPrefixes();
+		baseURI = reasoner.getBaseURI();
+		prefixes = reasoner.getPrefixes();
 		// note: used concepts and roles do not need to be passed
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
@@ -411,13 +394,13 @@ public class OCEL extends AbstractCELA {
 		if (startDescription == null) {
 			startNode = new ExampleBasedNode(dataFactory.getOWLThing(), negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
 			startNode.setCoveredExamples(positiveExamples, negativeExamples);
-			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
+			startNode.setAccuracyMethod(((PosNegLP)learningProblem).getAccuracyMethod());
 		} else {
 			startNode = new ExampleBasedNode(startDescription,  negativeWeight, startNodeBonus, expansionPenaltyFactor, negationPenalty);
-			Set<OWLIndividual> coveredNegatives = rs.hasType(startDescription, negativeExamples);
-			Set<OWLIndividual> coveredPositives = rs.hasType(startDescription, positiveExamples);
+			Set<OWLIndividual> coveredNegatives = reasoner.hasType(startDescription, negativeExamples);
+			Set<OWLIndividual> coveredPositives = reasoner.hasType(startDescription, positiveExamples);
 			startNode.setCoveredExamples(coveredPositives, coveredNegatives);
-			startNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
+			startNode.setAccuracyMethod(((PosNegLP)learningProblem).getAccuracyMethod());
 		}
 
 		searchTree.addNode(null, startNode);
@@ -469,8 +452,8 @@ public class OCEL extends AbstractCELA {
 				// no handling needed, it will just look ugly in the output
 				logger.info("more accurate ("+acc+") class expression found: " + renderer.render(searchTreeStable.best().getConcept()));
 				if(logger.isTraceEnabled()){
-					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
-					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
+					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()).toString());
+					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()).toString());
 				}
 				printBestSolutions(5);
 				printStatistics(false);
@@ -539,7 +522,7 @@ public class OCEL extends AbstractCELA {
 			logger.info("Algorithm stopped ("+conceptTests+" descriptions tested).\n");
 		} else {
 			logger.info("Algorithm terminated successfully ("+conceptTests+" descriptions tested).\n");
-            logger.info(rs.toString());
+            logger.info(reasoner.toString());
 		}
 
 		totalLearningTime.stop();
@@ -660,7 +643,7 @@ public class OCEL extends AbstractCELA {
 			// Test aller Konzepte auf properness (mit DIG in nur einer Anfrage)
 			if (usePropernessChecks) {
 				long propCalcReasoningStart = System.nanoTime();
-				improperConcepts = rs.isSuperClassOf(toEvaluateConcepts, concept);
+				improperConcepts = reasoner.isSuperClassOf(toEvaluateConcepts, concept);
 
 				propernessTestsReasoner += toEvaluateConcepts.size();
 				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
@@ -706,7 +689,7 @@ public class OCEL extends AbstractCELA {
 						qualityKnown = true;
 						newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.OVERLY_GENERAL_LIST);
 						newNode.setCoveredExamples(positiveExamples, negativeExamples);
-						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
+						newNode.setAccuracyMethod(((PosNegLP)learningProblem).getAccuracyMethod());
 					}
 
 				}
@@ -733,7 +716,7 @@ public class OCEL extends AbstractCELA {
 					for (OWLIndividual i : coveredPositives) {
 						// TODO: move code to a separate function
 						if (quality != -1) {
-							boolean covered = rs.hasType(refinement, i);
+							boolean covered = reasoner.hasType(refinement, i);
 							if (!covered)
 								misclassifiedPositives++;
 							else
@@ -751,7 +734,7 @@ public class OCEL extends AbstractCELA {
 						newlyCoveredNegatives = new HashSet<>();
 
 						for (OWLIndividual i : coveredNegatives) {
-							boolean covered = rs.hasType(refinement, i);
+							boolean covered = reasoner.hasType(refinement, i);
 							if (covered)
 								newlyCoveredNegatives.add(i);
 						}
@@ -759,8 +742,8 @@ public class OCEL extends AbstractCELA {
 
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
 					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
-					if (quality != -1 && !(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
-							learningProblem.getAccuracyMethod().getAccOrTooWeak2(
+					if (quality != -1 && !(((PosNegLP)learningProblem).getAccuracyMethod() instanceof AccMethodNoWeakness) &&
+							((PosNegLP)learningProblem).getAccuracyMethod().getAccOrTooWeak2(
 							newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),
 							newlyCoveredNegatives.size(), nrOfNegativeExamples - newlyCoveredNegatives.size(),
 							1) == -1)
@@ -772,7 +755,7 @@ public class OCEL extends AbstractCELA {
 						quality = (nrOfPositiveExamples - newlyCoveredPositives.size())
 								+ newlyCoveredNegatives.size();
 						newNode.setCoveredExamples(newlyCoveredPositives, newlyCoveredNegatives);
-						newNode.setAccuracyMethod(learningProblem.getAccuracyMethod());
+						newNode.setAccuracyMethod(((PosNegLP)learningProblem).getAccuracyMethod());
 					}
 
 				}
@@ -861,19 +844,19 @@ public class OCEL extends AbstractCELA {
 			logger.debug(expandedNodeString);
 			logger.debug("algorithm runtime " + Helper.prettyPrintNanoSeconds(algorithmRuntime));
 			logger.debug("size of candidate set: " + searchTree.size());
-			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(rs.getSubsumptionReasoningTimeNs()));
-			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(rs.getInstanceCheckReasoningTimeNs()));
-			logger.debug("retrieval time: " + Helper.prettyPrintNanoSeconds(rs.getRetrievalReasoningTimeNs()));
+			logger.debug("subsumption time: " + Helper.prettyPrintNanoSeconds(reasoner.getSubsumptionReasoningTimeNs()));
+			logger.debug("instance check time: " + Helper.prettyPrintNanoSeconds(reasoner.getInstanceCheckReasoningTimeNs()));
+			logger.debug("retrieval time: " + Helper.prettyPrintNanoSeconds(reasoner.getRetrievalReasoningTimeNs()));
 		}
 
 		if (computeBenchmarkInformation) {
 
-			long reasoningTime = rs.getOverallReasoningTimeNs();
+			long reasoningTime = reasoner.getOverallReasoningTimeNs();
 			double reasoningPercentage = 100 * reasoningTime / (double) algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs - propernessCalcReasoningTimeNs;
 			double propPercentage = 100 * propWithoutReasoning / (double) algorithmRuntime;
 			double deletionPercentage = 100 * childConceptsDeletionTimeNs / (double) algorithmRuntime;
-			long subTime = rs.getSubsumptionReasoningTimeNs();
+			long subTime = reasoner.getSubsumptionReasoningTimeNs();
 			double subPercentage = 100 * subTime / (double) algorithmRuntime;
 			double refinementPercentage = 100 * refinementCalcTimeNs / (double) algorithmRuntime;
 			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs / (double) algorithmRuntime;
@@ -1056,10 +1039,6 @@ public class OCEL extends AbstractCELA {
 		}
 	}
 
-	public void stop() {
-		stop = true;
-	}
-
 	public OWLClassExpression getBestSolution() {
 		return searchTreeStable.best().getConcept();
 	}
@@ -1115,11 +1094,11 @@ public class OCEL extends AbstractCELA {
 	}
 
 	public ScorePosNeg getSolutionScore() {
-		return learningProblem.computeScore(getBestSolution());
+		return ((PosNegLP)learningProblem).computeScore(getBestSolution());
 	}
 
 	private ScorePosNeg getScore(OWLClassExpression d) {
-		return learningProblem.computeScore(d);
+		return ((PosNegLP)learningProblem).computeScore(d);
 	}
 
 	public ExampleBasedNode getStartNode() {
@@ -1207,10 +1186,6 @@ public class OCEL extends AbstractCELA {
 
 		return result;
 
-	}
-
-	public boolean isRunning() {
-		return isRunning;
 	}
 
 	public boolean isUseTreeTraversal() {
@@ -1362,16 +1337,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setForceRefinementLengthIncrease(boolean forceRefinementLengthIncrease) {
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
-	}
-
-	@Override
-	public int getMaxExecutionTimeInSeconds() {
-		return maxExecutionTimeInSeconds;
-	}
-
-	@Override
-	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
-		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
 
 	public int getMinExecutionTimeInSeconds() {

@@ -181,16 +181,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
-		
-	/**
-	 * Every algorithm must be able to return the score of the
-	 * best solution found.
-	 * 
-	 * @return Best score.
-	 */
-//	@Deprecated
-//	public abstract Score getSolutionScore();
-	
 
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
@@ -358,7 +348,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected String getSolutionString() {
 		int current = 1;
 		String str = "";
-		for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+		for(EvaluatedDescription<? extends Score> ed : getCurrentlyBestEvaluatedDescriptions().descendingSet()) {
 			// temporary code
 			OWLClassExpression description = ed.getDescription();
 			String descriptionString = descriptionToString(description);
