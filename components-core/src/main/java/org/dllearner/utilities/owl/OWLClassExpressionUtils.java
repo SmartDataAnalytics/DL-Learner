@@ -60,8 +60,7 @@ public class OWLClassExpressionUtils {
 	 * @return the depth of the class expression
 	 */
 	public static synchronized int getDepth(OWLClassExpression ce){
-		int depth = ce.accept(DEPTH_FINDER);
-		return depth;
+		return ce.accept(DEPTH_FINDER);
 	}
 	
 	/**

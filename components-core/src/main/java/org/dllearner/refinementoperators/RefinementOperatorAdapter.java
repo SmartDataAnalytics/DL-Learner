@@ -60,9 +60,11 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 	}
 
 
+	@Override
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() { return null; }
 }

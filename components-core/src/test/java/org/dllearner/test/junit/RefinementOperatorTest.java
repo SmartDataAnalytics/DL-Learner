@@ -100,9 +100,7 @@ public class RefinementOperatorTest {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}
 			assertTrue(results.size()==desiredResultSize);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -145,7 +143,7 @@ public class RefinementOperatorTest {
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
 		OCEL la = new OCEL(lp, reasoner);
 		
-		Set<OWLClass> ignoredConcepts = new TreeSet<OWLClass>();
+		Set<OWLClass> ignoredConcepts = new TreeSet<>();
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ZERO")));
 		ignoredConcepts.add(new OWLClassImpl(IRI.create("http://www.test.de/test#ONE")));
 		Set<OWLClass> usedConcepts = Helper.computeConceptsUsingIgnoreList(reasoner, ignoredConcepts);
@@ -274,9 +272,7 @@ public class RefinementOperatorTest {
 				System.out.println(tooLong + " refinements were longer than " + maxLength);
 			}
 			assertTrue(tooLong==0);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -311,9 +307,7 @@ public class RefinementOperatorTest {
 				System.out.println(results.size() + " results found, but should be " + desiredResultSize + ".");
 			}
 			assertTrue(results.size()==desiredResultSize);
-		} catch(ComponentInitException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch(ComponentInitException | ParseException e) {
 			e.printStackTrace();
 		}
 	}

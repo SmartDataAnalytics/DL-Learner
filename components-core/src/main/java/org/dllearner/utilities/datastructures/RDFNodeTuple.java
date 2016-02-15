@@ -47,6 +47,7 @@ public class RDFNodeTuple implements Comparable<RDFNodeTuple>{
 		return b.equals(t.b) && a.equals(t.a);
 	}
 
+	@Override
 	public int compareTo(RDFNodeTuple t) {
 		NodeComparator comparator = new NodeComparator();
 		return ComparisonChain.start().

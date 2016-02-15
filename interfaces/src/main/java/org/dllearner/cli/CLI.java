@@ -21,14 +21,12 @@ package org.dllearner.cli;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
-import org.apache.xmlbeans.XmlObject;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
 import org.dllearner.configuration.IConfiguration;
 import org.dllearner.configuration.spring.ApplicationContextBuilder;
 import org.dllearner.configuration.spring.DefaultApplicationContextBuilder;
-import org.dllearner.configuration.util.SpringConfigurationXMLBeanConverter;
 import org.dllearner.confparser.ConfParserConfiguration;
 import org.dllearner.confparser.ParseException;
 import org.dllearner.core.*;
@@ -36,7 +34,6 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.refinementoperators.RefinementOperator;
-import org.dllearner.utilities.Files;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.slf4j.Logger;
@@ -82,8 +79,6 @@ public class CLI {
 	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
-	@ConfigOption(name = "writeSpringConfiguration", defaultValue = "false", description = "Write the Spring XML configuration to disk corresponding to the .conf file")
-	private boolean writeSpringConfiguration = false;
 	@ConfigOption(name = "performCrossValidation", defaultValue = "false", description = "Run in Cross-Validation mode")
 	private boolean performCrossValidation = false;
 	@ConfigOption(name = "nrOfFolds", defaultValue = "10", description = "Number of folds in Cross-Validation mode")
@@ -114,7 +109,7 @@ public class CLI {
     	if(context == null) {
 
     		Resource confFileR = new FileSystemResource(confFile);
-    		List<Resource> springConfigResources = new ArrayList<Resource>();
+    		List<Resource> springConfigResources = new ArrayList<>();
             configuration = new ConfParserConfiguration(confFileR);
             
             ApplicationContextBuilder builder = new DefaultApplicationContextBuilder();
@@ -127,32 +122,13 @@ public class CLI {
     	}
 	}
 	
-    public void run() throws IOException {
+    public void run() {
     	try {
 			org.apache.log4j.Logger.getLogger("org.dllearner").setLevel(Level.toLevel(logLevel.toUpperCase()));
 		} catch (Exception e) {
 			logger.warn("Error setting log level to " + logLevel);
 		}
-    	
-		if (writeSpringConfiguration) {
-        	SpringConfigurationXMLBeanConverter converter = new SpringConfigurationXMLBeanConverter();
-        	XmlObject xml;
-        	if(configuration == null) {
-        		Resource confFileR = new FileSystemResource(confFile);
-        		configuration = new ConfParserConfiguration(confFileR);
-        		xml = converter.convert(configuration);
-        	} else {
-        		xml = converter.convert(configuration);
-        	}
-        	String springFilename = confFile.getCanonicalPath().replace(".conf", ".xml");
-        	File springFile = new File(springFilename);
-        	if(springFile.exists()) {
-        		logger.warn("Cannot write Spring configuration, because " + springFilename + " already exists.");
-        	} else {
-        		Files.createFile(springFile, xml.toString());
-        	}
-		}
-		
+
 		rs = getMainReasonerComponent();
 		
 		
@@ -167,10 +143,10 @@ public class CLI {
 					
 					//TODO:  verify if the quality of the code can be improved
 					RefinementOperator op = context.getBeansOfType(DLTreesRefinementOperator.class).entrySet().iterator().next().getValue();
-					ArrayList<OWLClass> concepts = new ArrayList<OWLClass>(rs.getClasses());
+					ArrayList<OWLClass> concepts = new ArrayList<>(rs.getClasses());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					
-					ArrayList<OWLObjectProperty> roles = new ArrayList<OWLObjectProperty>(rs.getAtomicRolesList());
+					ArrayList<OWLObjectProperty> roles = new ArrayList<>(rs.getAtomicRolesList());
 					((DLTreesRefinementOperator) op).setAllConcepts(concepts);
 					((DLTreesRefinementOperator) op).setAllRoles(roles);
 					((DLTreesRefinementOperator) op).setReasoner(getMainReasonerComponent());
@@ -222,14 +198,6 @@ public class CLI {
 		return rc;
     }
 
-    public boolean isWriteSpringConfiguration() {
-		return writeSpringConfiguration;
-	}
-
-	public void setWriteSpringConfiguration(boolean writeSpringConfiguration) {
-		this.writeSpringConfiguration = writeSpringConfiguration;
-	}
-	
 	/**
 	 * @return the lp
 	 */
@@ -277,7 +245,7 @@ public class CLI {
 		
 		Resource confFile = new FileSystemResource(file);
 		
-		List<Resource> springConfigResources = new ArrayList<Resource>();
+		List<Resource> springConfigResources = new ArrayList<>();
 
         try {
             //DL-Learner Configuration Object

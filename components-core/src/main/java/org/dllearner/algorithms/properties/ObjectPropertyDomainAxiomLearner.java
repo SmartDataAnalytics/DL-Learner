@@ -138,6 +138,7 @@ public class ObjectPropertyDomainAxiomLearner extends ObjectPropertyAxiomLearner
 	 * A = \exists r.\top
 	 * B = C
 	 */
+	@Override
 	protected void run(){
 		// get the candidates
 		Set<OWLClass> candidates = reasoner.getNonEmptyOWLClasses();

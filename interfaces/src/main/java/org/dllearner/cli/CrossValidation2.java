@@ -1,24 +1,8 @@
 package org.dllearner.cli;
-import java.lang.reflect.InvocationTargetException;
-import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.Sets;
 import org.dllearner.algorithms.decisiontrees.dsttdt.DSTTDTClassifier;
 import org.dllearner.algorithms.decisiontrees.tdt.TDTClassifier;
-import org.dllearner.core.AbstractCELA;
-import org.dllearner.core.AbstractClassExpressionLearningProblem;
-import org.dllearner.core.AbstractReasonerComponent;
-import org.dllearner.core.ComponentInitException;
-import org.dllearner.core.StringRenderer;
+import org.dllearner.core.*;
 import org.dllearner.learningproblems.Heuristics;
 import org.dllearner.learningproblems.PosNegLP;
 import org.dllearner.learningproblems.PosNegUndLP;
@@ -32,10 +16,14 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.util.SimpleShortFormProvider;
-
 import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
-import com.google.common.collect.Sets;
+import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
@@ -61,12 +49,12 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		StringRenderer.setShortFormProvider(new SimpleShortFormProvider());
 
 		// the training and test sets used later on
-		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> trainingSetsUnd = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> testSetsPos = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> testSetsUnd = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<>();
+		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<>();
+		List<Set<OWLIndividual>> trainingSetsUnd = new LinkedList<>();
+		List<Set<OWLIndividual>> testSetsPos = new LinkedList<>();
+		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<>();
+		List<Set<OWLIndividual>> testSetsUnd = new LinkedList<>();
 		// get examples and shuffle them too
 		Set<OWLIndividual> posExamples;
 		Set<OWLIndividual> negExamples;
@@ -74,7 +62,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		if(lp instanceof PosNegLP){
 			posExamples = ((PosNegLP)lp).getPositiveExamples();
 			negExamples = ((PosNegLP)lp).getNegativeExamples();
-			undExamples=  new TreeSet<OWLIndividual>();
+			undExamples= new TreeSet<>();
 
 			if(lp instanceof PosNegUndLP){
 
@@ -82,14 +70,14 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 			}
 		} else if(lp instanceof PosOnlyLP){
 			posExamples = ((PosNegLP)lp).getPositiveExamples();
-			negExamples = new HashSet<OWLIndividual>();
-			undExamples=  new TreeSet<OWLIndividual>();
+			negExamples = new HashSet<>();
+			undExamples= new TreeSet<>();
 		} else {
 			throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
 		}
-		List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
-		List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
-		List<OWLIndividual> undExamplesList = new LinkedList<OWLIndividual>(undExamples);
+		List<OWLIndividual> posExamplesList = new LinkedList<>(posExamples);
+		List<OWLIndividual> negExamplesList = new LinkedList<>(negExamples);
+		List<OWLIndividual> undExamplesList = new LinkedList<>(undExamples);
 		//System.out.println("Undefined membership: "+undExamples);
 		Collections.shuffle(posExamplesList, new Random(1));
 		Collections.shuffle(negExamplesList, new Random(2));
@@ -163,7 +151,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 					final Set<OWLIndividual> testPos = testSetsPos.get(currFold);
 					final Set<OWLIndividual> testNeg = testSetsNeg.get(currFold);
-					final Set<OWLIndividual> trainUnd = trainingSetsUnd.get(currFold);;
+					final Set<OWLIndividual> trainUnd = trainingSetsUnd.get(currFold);
 					final Set<OWLIndividual> testUnd = testSetsUnd.get(currFold);
 
 
@@ -174,7 +162,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 							((PosNegUndLP)lpClone).setUncertainExample(trainUnd);
 						}
 					} else if(lp instanceof PosOnlyLP){
-						((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<OWLIndividual>(trainPos));
+						((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<>(trainPos));
 					}
 					final AbstractCELA laClone = (AbstractCELA) la.getClass().getMethod("clone").invoke(la);
 					final int i = currFold;
@@ -193,15 +181,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 							}
 						}
 					});
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
+				} catch (IllegalAccessException | SecurityException | NoSuchMethodException | InvocationTargetException | IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
@@ -230,7 +210,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 						((PosNegUndLP)lp).setUncertainExample(trainUnd);
 					}
 				} else if(lp instanceof PosOnlyLP){
-					((PosOnlyLP)lp).setPositiveExamples(new TreeSet<OWLIndividual>(trainPos));
+					((PosOnlyLP)lp).setPositiveExamples(new TreeSet<>(trainPos));
 				}
 
 				//System.out.println("Training set negative"+trainNeg.size());
@@ -260,11 +240,11 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 		Set<String> neg = Helper.getStringSet(trainNeg);
 		Set<String> und = Helper.getStringSet(trainUnd);
 		String output = "";
-		TreeSet<String> treeSetPos = new TreeSet<String>(pos);
+		TreeSet<String> treeSetPos = new TreeSet<>(pos);
 		output += "+" + treeSetPos + "\n";
-		TreeSet<String> treeSetNeg = new TreeSet<String>(neg);
+		TreeSet<String> treeSetNeg = new TreeSet<>(neg);
 		output += "-" + treeSetNeg + "\n";
-		TreeSet<String> treeSetUnd = new TreeSet<String>(und);
+		TreeSet<String> treeSetUnd = new TreeSet<>(und);
 		output += "?" + treeSetUnd + "\n";
 		//System.out.printf("Learning algoritm preparation: %d %d %d \n", treeSetPos.size(),treeSetNeg.size(),treeSetUnd.size());
 		try {

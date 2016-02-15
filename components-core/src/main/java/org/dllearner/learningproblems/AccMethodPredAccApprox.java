@@ -98,8 +98,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 
 		} while(itPos.hasNext() || itNeg.hasNext());
 
-		double ret = Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
-		return ret;
+		return Heuristics.getPredictiveAccuracy(positiveExamples.size(), negativeExamples.size(), posClassifiedAsPos, negClassifiedAsNeg, 1);
 	}
 
 	@Override

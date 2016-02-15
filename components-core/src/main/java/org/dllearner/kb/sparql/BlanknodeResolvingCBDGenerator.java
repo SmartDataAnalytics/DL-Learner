@@ -94,6 +94,7 @@ public class BlanknodeResolvingCBDGenerator implements ConciseBoundedDescription
 		return cbd;
 	}
 	
+	@Override
 	public void addPropertiesToIgnore(Set<String> properties) {
 	}
 

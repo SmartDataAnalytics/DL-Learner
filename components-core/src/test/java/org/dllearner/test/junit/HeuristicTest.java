@@ -301,8 +301,8 @@ public class HeuristicTest {
 	
 //	@SuppressWarnings("unchecked")
 	private static void configurePosNegStandardLP(PosNegLPStandard problem, OWLIndividual[] positiveExamples, OWLIndividual[] negativeExamples, AccMethodTwoValued accuracyMethod) throws ComponentInitException {
-		Set<OWLIndividual> s1 = new TreeSet<OWLIndividual>(Arrays.asList(positiveExamples));
-		Set<OWLIndividual> s2 = new TreeSet<OWLIndividual>(Arrays.asList(negativeExamples));
+		Set<OWLIndividual> s1 = new TreeSet<>(Arrays.asList(positiveExamples));
+		Set<OWLIndividual> s2 = new TreeSet<>(Arrays.asList(negativeExamples));
 		HeuristicTest.configurePosNegStandardLP(problem, s1, s2, accuracyMethod);
 	}
 	

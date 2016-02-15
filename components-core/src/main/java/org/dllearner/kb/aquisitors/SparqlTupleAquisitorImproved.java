@@ -115,7 +115,7 @@ public class SparqlTupleAquisitorImproved extends SparqlTupleAquisitor {
 		if(resultsetcount>999) {
 			logger.warn("SparqlTupelAquisitor retrieved more than 1000 results, there might some be missing");
 		}
-		return ((cachedSet=resources.get(uri))==null)?new TreeSet<RDFNodeTuple>():cachedSet;
+		return ((cachedSet=resources.get(uri))==null)? new TreeSet<>():cachedSet;
 	}
 	
 	@Override

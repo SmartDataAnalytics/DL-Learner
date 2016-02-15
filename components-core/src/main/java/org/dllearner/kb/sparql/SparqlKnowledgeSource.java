@@ -18,17 +18,8 @@
  */
 package org.dllearner.kb.sparql;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.swing.ProgressMonitor;
-
+import com.jamonapi.Monitor;
+import com.jamonapi.MonitorFactory;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
@@ -52,8 +43,10 @@ import org.dllearner.utilities.statistics.SimpleClock;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import com.jamonapi.Monitor;
-import com.jamonapi.MonitorFactory;
+import javax.swing.*;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Represents the SPARQL Endpoint Component.
@@ -149,11 +142,6 @@ public class SparqlKnowledgeSource extends AbstractKnowledgeSource implements OW
 	private boolean useImprovedSparqlTupelAquisitor;
 
 	private List<StringTuple> replaceObject  = new LinkedList<>();
-
-
-	public static String getName() {
-		return "SPARQL Endpoint";
-	}
 
 	private static Logger logger = Logger
 			.getLogger(SparqlKnowledgeSource.class);

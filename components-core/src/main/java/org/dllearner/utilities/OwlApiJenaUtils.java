@@ -61,6 +61,7 @@ public class OwlApiJenaUtils {
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					model.write(os, "TURTLE", null);
 					try {
@@ -87,6 +88,7 @@ public class OwlApiJenaUtils {
 
 		try (PipedInputStream is = new PipedInputStream(); PipedOutputStream os = new PipedOutputStream(is)) {
 			new Thread(new Runnable() {
+				@Override
 				public void run() {
 					try {
 						ontology.getOWLOntologyManager().saveOntology(ontology, new TurtleDocumentFormat(), os);

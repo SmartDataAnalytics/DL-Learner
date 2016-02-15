@@ -84,6 +84,7 @@ public class DBpediaEvaluationDataset extends EvaluationDataset {
 		prefixMapping.setNsPrefix("schema", "http://schema.org/");
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Filter<Statement>> getQueryTreeFilters() {
 		return Lists.newArrayList(

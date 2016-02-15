@@ -108,11 +108,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	public ELLearningAlgorithm(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
-	
-	public static String getName() {
-		return "standard EL learning algorithm";
-	}	
-	
+
 	@Override
 	public void init() throws ComponentInitException {
 		// currently we use the stable heuristic
@@ -417,6 +413,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @param ignoredConcepts the ignored concepts to set
 	 */
+	@Override
 	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
@@ -424,6 +421,7 @@ public class ELLearningAlgorithm extends AbstractCELA {
 	/**
 	 * @return the ignored concepts
 	 */
+	@Override
 	public Set<OWLClass> getIgnoredConcepts() {
 		return ignoredConcepts;
 	}

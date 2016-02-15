@@ -20,9 +20,6 @@ package org.dllearner.algorithms.qtl.impl;
 
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;

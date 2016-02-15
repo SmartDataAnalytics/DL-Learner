@@ -37,7 +37,7 @@ public class LearningProblemTest {
 			if (la instanceof OCEL) {
 				metric = ((OCEL)la).getLengthMetric();
 			} else {
-				metric = OWLClassExpressionLengthMetric.getDefaultMetric().getDefaultMetric();
+				metric = OWLClassExpressionLengthMetric.getDefaultMetric();
 			}
 
 			OWLClassExpression concept = OWLAPIUtils.fromManchester("Compound and hasAtom only (not Nitrogen-35) and ((amesTestPositive some {true}) or hasStructure some Ar_halide)", reasoner, df, true);

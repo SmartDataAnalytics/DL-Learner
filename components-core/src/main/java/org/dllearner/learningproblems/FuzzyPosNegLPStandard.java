@@ -18,10 +18,6 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.EvaluatedDescription;
@@ -34,6 +30,10 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The aim of this learning problem is to learn a concept definition such that
@@ -88,15 +88,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 			logger.warn("Approximating predictive accuracy is an experimental feature. USE IT AT YOUR OWN RISK. If you consider to use it for anything serious, please extend the unit tests at org.dllearner.test.junit.HeuristicTests first and verify that it works.");
 		}
 		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "fuzzy pos neg learning problem";
 	}
 
 	@Override

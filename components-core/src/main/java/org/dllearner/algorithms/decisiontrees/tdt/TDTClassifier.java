@@ -79,6 +79,7 @@ public class TDTClassifier extends AbstractTDTClassifier {
 		super(problem, reasoner,op);
 	}
 	
+	@Override
 	public void init() throws ComponentInitException{
 		
 		super.init();
@@ -94,7 +95,8 @@ public class TDTClassifier extends AbstractTDTClassifier {
 	}
 	
 	
-	public DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, SortedSet<OWLIndividual> undExs) {		
+	@Override
+	public DLTree induceDLTree(SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs, SortedSet<OWLIndividual> undExs) {
 		logger.info("Learning problem\t p:"+posExs.size()+"\t n:"+negExs.size()+"\t u:"+undExs.size()+"\t prPos:"+prPos+"\t prNeg:"+prNeg+"\n");
 		//ArrayList<OWLIndividual> truePos= posExs;
 		//ArrayList<OWLIndividual> trueNeg= negExs;
@@ -228,6 +230,7 @@ public OWLClassExpression deriveDefinition(DLTree model){
 }
 	
 
+@Override
 public void start() {
 
 	// TODO Auto-generated method stub

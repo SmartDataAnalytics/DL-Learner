@@ -25,7 +25,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.utilities.examples.AutomaticNegativeExampleFinderSPARQL2;
 import org.semanticweb.owlapi.model.IRI;

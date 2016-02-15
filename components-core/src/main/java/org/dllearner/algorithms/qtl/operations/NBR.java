@@ -18,7 +18,6 @@
  */
 package org.dllearner.algorithms.qtl.operations;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,10 +39,7 @@ import javax.xml.ws.http.HTTPException;
 
 import com.hp.hpl.jena.graph.NodeFactory;
 import org.aksw.jena_sparql_api.cache.core.QueryExecutionFactoryCacheEx;
-import org.aksw.jena_sparql_api.cache.extra.CacheBackend;
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
-import org.aksw.jena_sparql_api.cache.extra.CacheFrontendImpl;
-import org.aksw.jena_sparql_api.cache.h2.CacheCoreH2;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp;
 import org.aksw.jena_sparql_api.model.QueryExecutionFactoryModel;
@@ -660,7 +656,7 @@ public class NBR<N> {
 					Map<Integer, N> node2Label = new HashMap<>();
 					for(QueryTree<N> c : child.getChildren()){
 						if(determiningNodeIds.contains(c.getId())){
-							node2Label.put(Integer.valueOf(c.getId()), c.getUserObject());
+							node2Label.put(c.getId(), c.getUserObject());
 							c.setUserObject((N)"?");
 						}
 					}

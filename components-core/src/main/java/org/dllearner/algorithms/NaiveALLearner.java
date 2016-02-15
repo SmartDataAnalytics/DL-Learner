@@ -127,7 +127,7 @@ public class NaiveALLearner extends AbstractCELA{
      * @param length the length
      */
     private void generateDescriptions(int length) {
-        generatedDescriptions.put(length, new ArrayList<OWLClassExpression>());
+        generatedDescriptions.put(length, new ArrayList<>());
         List<OWLClassExpression> thisLenDescriptions = generatedDescriptions.get(length);
 
         if (length == 1) {

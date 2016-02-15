@@ -19,16 +19,7 @@
  */
 package org.dllearner.cli;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
-
+import com.google.common.collect.Sets;
 import org.dllearner.algorithms.qtl.QTL2Disjunctive;
 import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNodeSubsumptionStrategy;
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
@@ -46,7 +37,9 @@ import org.dllearner.utilities.statistics.Stat;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
-import com.google.common.collect.Sets;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.util.*;
 
 /**
  * Performs cross validation for the given problem. Supports
@@ -85,10 +78,10 @@ public class SPARQLCrossValidation {
 		DecimalFormat df = new DecimalFormat();
 
 		// the training and test sets used later on
-		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> testSetsPos = new LinkedList<Set<OWLIndividual>>();
-		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<Set<OWLIndividual>>();
+		List<Set<OWLIndividual>> trainingSetsPos = new LinkedList<>();
+		List<Set<OWLIndividual>> trainingSetsNeg = new LinkedList<>();
+		List<Set<OWLIndividual>> testSetsPos = new LinkedList<>();
+		List<Set<OWLIndividual>> testSetsNeg = new LinkedList<>();
 		
 			// get examples and shuffle them too
 		Set<OWLIndividual> posExamples;
@@ -98,12 +91,12 @@ public class SPARQLCrossValidation {
 				negExamples = ((PosNegLP)lp).getNegativeExamples();
 			} else if(lp instanceof PosOnlyLP){
 				posExamples = ((PosNegLP)lp).getPositiveExamples();
-				negExamples = new HashSet<OWLIndividual>();
+				negExamples = new HashSet<>();
 			} else {
 				throw new IllegalArgumentException("Only PosNeg and PosOnly learning problems are supported");
 			}
-			List<OWLIndividual> posExamplesList = new LinkedList<OWLIndividual>(posExamples);
-			List<OWLIndividual> negExamplesList = new LinkedList<OWLIndividual>(negExamples);
+			List<OWLIndividual> posExamplesList = new LinkedList<>(posExamples);
+			List<OWLIndividual> negExamplesList = new LinkedList<>(negExamples);
 			Collections.shuffle(posExamplesList, new Random(1));
 			Collections.shuffle(negExamplesList, new Random(2));
 			
@@ -160,7 +153,7 @@ public class SPARQLCrossValidation {
 				((PosNegLP)lp).setPositiveExamples(trainingSetsPos.get(currFold));
 				((PosNegLP)lp).setNegativeExamples(trainingSetsNeg.get(currFold));
 			} else if(lp instanceof PosOnlyLP){
-				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<OWLIndividual>(trainingSetsPos.get(currFold)));
+				((PosOnlyLP)lp).setPositiveExamples(new TreeSet<>(trainingSetsPos.get(currFold)));
 			}
 			
 
@@ -250,7 +243,7 @@ public class SPARQLCrossValidation {
 	}
 	
 	protected Set<OWLIndividual> hasType(Set<OWLIndividual> individuals, QTL2Disjunctive qtl) {
-		Set<OWLIndividual> coveredIndividuals = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> coveredIndividuals = new HashSet<>();
 		RDFResourceTree solutionTree = qtl.getBestSolution().getTree();
 		
 		for (OWLIndividual ind : individuals) {
@@ -283,7 +276,7 @@ public class SPARQLCrossValidation {
 		
 //		System.out.println("from " + fromIndex + " to " + toIndex);
 		
-		Set<OWLIndividual> testingSet = new HashSet<OWLIndividual>();
+		Set<OWLIndividual> testingSet = new HashSet<>();
 		// +1 because 2nd element is exclusive in subList method
 		testingSet.addAll(examples.subList(fromIndex, toIndex));
 		return testingSet;

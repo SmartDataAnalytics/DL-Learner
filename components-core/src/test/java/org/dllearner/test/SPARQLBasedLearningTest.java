@@ -18,7 +18,6 @@
  */
 package org.dllearner.test;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,7 +40,6 @@ import org.dllearner.reasoning.ClosedWorldReasoner;
 import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
-import org.dllearner.utilities.owl.DLSyntaxObjectRenderer;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.dllearner.core.StringRenderer;
 import org.dllearner.core.StringRenderer.Rendering;
@@ -56,7 +54,6 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.google.common.collect.Sets;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
@@ -94,8 +91,8 @@ public class SPARQLBasedLearningTest {
 		OWLOntology schemaOntology = man.loadOntology(IRI.create(ontologyURL));
 		// OWL API does not support rdf:langString so far
 		Set<OWLDataPropertyRangeAxiom> rangeAxioms = schemaOntology.getAxioms(AxiomType.DATA_PROPERTY_RANGE);
-		Set<OWLAxiom> toRemove = new HashSet<OWLAxiom>();
-		Set<OWLAxiom> toAdd = new HashSet<OWLAxiom>();
+		Set<OWLAxiom> toRemove = new HashSet<>();
+		Set<OWLAxiom> toAdd = new HashSet<>();
 		for (OWLDataPropertyRangeAxiom ax : rangeAxioms) {
 			OWLDatatype datatype = ax.getRange().asOWLDatatype();
 			if(datatype.equals(df.getOWLDatatype(IRI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")))) {

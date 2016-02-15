@@ -105,6 +105,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 		return SAMPLE_QUERY;
 	}
 	
+	@Override
 	protected void run() {
 		
 		// get the candidates

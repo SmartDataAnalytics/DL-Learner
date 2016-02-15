@@ -75,14 +75,6 @@ public class PosNegLPStrict extends PosNegLP {
 	public PosNegLPStrict() { super(); }
 
 	/* (non-Javadoc)
-	 * @see org.dllearner.core.Component#getName()
-	 */
-	public static String getName() {
-		return "three valued definition learning problem";
-	}
-
-
-	/* (non-Javadoc)
 	 * @see org.dllearner.core.Component#init()
 	 */
 	@Override

@@ -246,16 +246,8 @@ public class FuzzyOwl2
 	 */
 	protected static void print(String s)
 	{
-		try
-		{
-			if (!s.contains(" null"))
-				out.println(s);
-		}
-		catch (NullPointerException ex)
-		{
-
-		}
-
+		if (s != null && !s.contains(" null"))
+			out.println(s);
 	}
 
 	/**

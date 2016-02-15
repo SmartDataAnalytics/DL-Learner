@@ -98,16 +98,13 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	}
 
+	@Override
 	protected ReasoningUtils newReasoningUtils(AbstractReasonerComponent reasoner) {
 		return new ReasoningUtilsCLP(this, reasoner);
 	}
 
 	public ClassLearningProblem(AbstractReasonerComponent reasoner) {
 		super(reasoner);
-	}
-
-	public static String getName() {
-		return "class learning problem";
 	}
 
 	@Override

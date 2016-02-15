@@ -111,7 +111,7 @@ public class Combination {
         
         if (n == 0)
         {
-            result.add(new ArrayList<T>());
+            result.add(new ArrayList<>());
             
             return result;
         }

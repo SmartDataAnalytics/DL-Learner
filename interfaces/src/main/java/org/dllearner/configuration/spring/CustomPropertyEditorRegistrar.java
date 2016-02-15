@@ -24,9 +24,9 @@ public class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
         //Register any custom editors here.
     	registry.registerCustomEditor(OWLClassExpression.class, new ClassExpressionPropertyEditor());
 //		registry.registerCustomEditor(OWLClass.class, new OWLEntityEditor<EntityType<OWLClass>>());
-		registry.registerCustomEditor(OWLObjectProperty.class, new OWLEntityEditor<EntityType<OWLObjectProperty>>(EntityType.OBJECT_PROPERTY));
-		registry.registerCustomEditor(OWLDataProperty.class, new OWLEntityEditor<EntityType<OWLDataProperty>>(EntityType.DATA_PROPERTY));
-		registry.registerCustomEditor(OWLIndividual.class, new OWLEntityEditor<EntityType<OWLNamedIndividual>>(EntityType.NAMED_INDIVIDUAL));
+		registry.registerCustomEditor(OWLObjectProperty.class, new OWLEntityEditor<>(EntityType.OBJECT_PROPERTY));
+		registry.registerCustomEditor(OWLDataProperty.class, new OWLEntityEditor<>(EntityType.DATA_PROPERTY));
+		registry.registerCustomEditor(OWLIndividual.class, new OWLEntityEditor<>(EntityType.NAMED_INDIVIDUAL));
     	registry.registerCustomEditor(ReasonerImplementation.class, new ReasonerImplementationEditor());
     	
     }

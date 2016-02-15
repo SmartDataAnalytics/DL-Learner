@@ -184,7 +184,7 @@ public class PCELOE extends AbstractCELA {
 	private int expressionTestCountLastImprovement;
 	private long timeLastImprovement = 0;
 
-	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<OENode>());
+	private Set<OENode> currentlyProcessedNodes = Collections.synchronizedSet(new HashSet<>());
 	private volatile double highestAccuracy = 0.0;
 
 	public PCELOE() {}
@@ -235,10 +235,6 @@ public class PCELOE extends AbstractCELA {
 
 	public PCELOE(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
-	}
-
-	public static String getName() {
-		return "PCELOE";
 	}
 
 	@Override
@@ -801,7 +797,7 @@ public class PCELOE extends AbstractCELA {
 //		nodes = new TreeSet<OENode>(heuristic);
 		searchTree = new SynchronizedSearchTree(heuristic);
 		//Sets.synchronizedNavigableSet(new TreeSet<OENode>(Collections.reverseOrder(heuristic)));
-		descriptions = Collections.synchronizedSortedSet(new TreeSet<OWLClassExpression>());
+		descriptions = Collections.synchronizedSortedSet(new TreeSet<>());
 		bestEvaluatedDescriptions.getSet().clear();
 		expressionTests = 0;
 		highestAccuracy = 0.0;

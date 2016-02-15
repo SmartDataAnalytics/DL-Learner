@@ -28,7 +28,6 @@ import org.semanticweb.owlapi.util.OWLAnonymousIndividualsWithMultipleOccurrence
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -100,15 +99,10 @@ public class OWL2SPARULConverter
 		sb = new StringBuilder();
 
 		// sort by type of change
-		Collections.sort(changes, new Comparator<OWLOntologyChange>() {
-			@Override
-			public int compare(OWLOntologyChange o1, OWLOntologyChange o2) {
-				return ComparisonChain.start()
-						.compareTrueFirst(o1.isAddAxiom(), o2.isAddAxiom())
-						.compare(o1.getAxiom(), o2.getAxiom())
-						.result();
-			}
-		});
+		Collections.sort(changes, (o1, o2) -> ComparisonChain.start()
+				.compareTrueFirst(o1.isAddAxiom(), o2.isAddAxiom())
+				.compare(o1.getAxiom(), o2.getAxiom())
+				.result());
 
 		// convert to SPARQL 1.1 Update
 		for (OWLOntologyChange change : changes) {

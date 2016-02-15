@@ -68,7 +68,7 @@ public class LinguisticUtil {
      * @return all words as camelcase contained in the given word
      */
     public String[] getWordsFromCamelCase(String camelCase) {
-        ArrayList<String> resultingWords = new ArrayList<String>();
+        ArrayList<String> resultingWords = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < camelCase.length(); i++) {
             // we just ignore characters not matching the defined pattern
@@ -115,7 +115,7 @@ public class LinguisticUtil {
      * @return synonyms for the given word
      */
     public String[] getSynonymsForWord(String word) {
-        ArrayList<String> synonyms = new ArrayList<String>();
+        ArrayList<String> synonyms = new ArrayList<>();
 
         for (POS pos : RELEVANT_POS) {
             synonyms.addAll(wn.getAllSynonyms(pos, word));
@@ -146,7 +146,7 @@ public class LinguisticUtil {
      * @return synonyms for the given word
      */
     public String[] getSynonymsForWord(String word, POS pos) {
-        ArrayList<String> synonyms = new ArrayList<String>();
+        ArrayList<String> synonyms = new ArrayList<>();
 
         synonyms.addAll(wn.getAllSynonyms(pos, word));
         return synonyms.toArray(new String[synonyms.size()]);
@@ -161,7 +161,7 @@ public class LinguisticUtil {
      * @return synonyms for the given word
      */
     public String[] getTopSynonymsForWord(String word, int n) {
-        ArrayList<String> synonyms = new ArrayList<String>();
+        ArrayList<String> synonyms = new ArrayList<>();
 
         for (POS pos : RELEVANT_POS) {
             synonyms.addAll(wn.getTopSynonyms(pos, word, n));
@@ -182,7 +182,7 @@ public class LinguisticUtil {
 
         boolean first = true;
 
-        ArrayList<String> singleWords = new ArrayList<String>();
+        ArrayList<String> singleWords = new ArrayList<>();
         Collections.addAll(singleWords, word.trim().split(" "));
 
         for (String w : singleWords) {

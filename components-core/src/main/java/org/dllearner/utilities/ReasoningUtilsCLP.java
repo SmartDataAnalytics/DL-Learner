@@ -30,6 +30,7 @@ public class ReasoningUtilsCLP extends ReasoningUtils {
 		this.problem = problem;
 	}
 
+	@Override
 	protected boolean interrupted() {
 		return problem.terminationTimeExpired();
 	}

@@ -144,7 +144,7 @@ public class SimpleEntityCandidatesTrie implements EntityCandidatesTrie {
 
         // generate list of lemmatized wordnet synonyms for each token
         for (int i = 0; i < tokens.length; i++) {
-            wordnetTokens[i] = new ArrayList<String>();
+            wordnetTokens[i] = new ArrayList<>();
             wordnetTokens[i].add(LinguisticUtil.getInstance().getNormalizedForm(tokens[i]));
             for (String w : LinguisticUtil.getInstance().getTopSynonymsForWord(tokens[i], 5)) {
                 System.out.println("Adding: " + LinguisticUtil.getInstance().getNormalizedForm(w));

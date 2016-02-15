@@ -1,6 +1,5 @@
 package org.dllearner.configuration.spring.editors;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.dllearner.utilities.OWLAPIUtils;

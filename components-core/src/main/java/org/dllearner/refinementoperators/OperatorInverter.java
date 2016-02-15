@@ -130,6 +130,7 @@ public class OperatorInverter implements LengthLimitedRefinementOperator {
 		operator.setLengthMetric(lengthMetric);
 	}
 
+	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() {
 		return this.lengthMetric;
 	}

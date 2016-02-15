@@ -11,7 +11,7 @@ public class AccMethodAMeasure implements Component, AccMethodTwoValued, AccMeth
 
 	public AccMethodAMeasure() {}
 	
-	public AccMethodAMeasure(boolean init) throws ComponentInitException {
+	public AccMethodAMeasure(boolean init) {
 		if(init)init();
 	}
 

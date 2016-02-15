@@ -1,9 +1,11 @@
 package org.dllearner.test;
 
 import com.google.common.collect.Sets;
+import javassist.ClassPool;
 import org.apache.log4j.Logger;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
@@ -13,8 +15,12 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
+/* (no java-doc)
+ * Internal tool to help find undocumented config options
+ */
 public class UndocumentedOptionScanner {
 	public static void main(String[] args) {
+		ClassPool cp = ClassPool.getDefault();
 		Logger logger = Logger.getLogger(UndocumentedOptionScanner.class);
 		AnnComponentManager cm = AnnComponentManager.getInstance();
 		for (Class<? extends Component> c : cm.getComponents()) {
@@ -25,7 +31,7 @@ public class UndocumentedOptionScanner {
 				String name = m.getName();
 				List<Method> set = methods.get(name);
 				if (set == null) {
-					set = new LinkedList<Method>();
+					set = new LinkedList<>();
 					methods.put(name, set);
 				}
 				set.add(m);
@@ -53,7 +59,8 @@ public class UndocumentedOptionScanner {
 				for (Field fs : f.getValue()) {
 					isDocumented = isDocumented || fs.isAnnotationPresent(ConfigOption.class)
 							|| fs.isAnnotationPresent(Unused.class)
-							|| fs.isAnnotationPresent(OutVariable.class);
+							|| fs.isAnnotationPresent(OutVariable.class)
+							|| fs.isAnnotationPresent(NoConfigOption.class);
 				}
 				if (isDocumented) {
 					hasDoc.add(AnnComponentManager.getName(f.getValue().get(0)));
@@ -72,8 +79,9 @@ public class UndocumentedOptionScanner {
 						hasSetter.add(optionName);
 						
 					} else if (noDoc.contains(optionName)) {
-						logger.warn("setter+var. but no @configOption: " + optionName);
+						logger.warn("setter+var. but no @configOption: " + optionName + "(" + fields.get(optionName).get(0).getDeclaringClass().getSimpleName().concat(".java") + ":12)");
 						noCO.add(optionName);
+
 					} else {
 						boolean deprecated = false;
 						for (Method ms : m.getValue()) {

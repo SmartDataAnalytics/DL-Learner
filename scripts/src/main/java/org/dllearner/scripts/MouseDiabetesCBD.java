@@ -22,7 +22,7 @@ public class MouseDiabetesCBD {
 	public static int nrOfPosExamples = 5;
 	public static int nrOfNegExamples = 5;
 	
-	private static List<OWLIndividual> exampleUris = new ArrayList<OWLIndividual>();
+	private static List<OWLIndividual> exampleUris = new ArrayList<>();
 
     public static void main (String[] args) throws Exception {
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
@@ -34,9 +34,9 @@ public class MouseDiabetesCBD {
         OWLAxiomCBDGenerator cbdGenartor = new OWLAxiomCBDGenerator(ontology);
         cbdGenartor.setFetchCompleteRelatedTBox(true);
         
-        List<OWLIndividual> posExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadPosExamples());
+        List<OWLIndividual> posExamples = new ArrayList<>(MouseDiabetes.loadPosExamples());
         exampleUris.addAll(posExamples.subList(0, nrOfPosExamples ));
-        List<OWLIndividual> negExamples = new ArrayList<OWLIndividual>(MouseDiabetes.loadNegExamples());
+        List<OWLIndividual> negExamples = new ArrayList<>(MouseDiabetes.loadNegExamples());
         exampleUris.addAll(negExamples.subList(0, nrOfNegExamples ));
 
         OWLOntology cbdOnt = man.createOntology();

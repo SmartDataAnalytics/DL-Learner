@@ -140,7 +140,6 @@ public class ROLearner2 {
 	private SearchTreeNonWeakPartialSet<ExampleBasedNode> searchTree;
 
 	// evaluated descriptions
-//	private EvaluatedDescriptionSet evaluatedDescriptions = new EvaluatedDescriptionSet(LearningAlgorithm.MAX_NR_OF_RESULTS);
 
 	// comparator for evaluated descriptions
 	private EvaluatedDescriptionPosNegComparator edComparator = new EvaluatedDescriptionPosNegComparator();
@@ -199,14 +198,11 @@ public class ROLearner2 {
 	private OWLClassExpressionLengthMetric lengthMetric;
 
 	public ROLearner2(
-//			OCELConfigurator configurator,
 			AbstractClassExpressionLearningProblem learningProblem,
 			AbstractReasonerComponent rs,
 			RefinementOperator operator,
 			ExampleBasedHeuristic heuristic,
 			OWLClassExpression startDescription,
-			// Set<AtomicConcept> allowedConcepts,
-			// Set<AtomicRole> allowedRoles,
 			double noise, boolean writeSearchTree, boolean replaceSearchTree, File searchTreeFile,
 			boolean useTooWeakList, boolean useOverlyGeneralList,
 			boolean useShortConceptConstruction, boolean usePropernessChecks,
@@ -228,12 +224,7 @@ public class ROLearner2 {
 			this.startNodeBonus = startNodeBonus;
 			this.expansionPenaltyFactor = expansionPenaltyFactor;
 			this.negationPenalty = negationPenalty;
-			
-			// System.out.println(nrOfPositiveExamples);
-			// System.out.println(nrOfNegativeExamples);
-			// System.exit(0);
 
-//		this.configurator = configurator;
 		this.terminateOnNoiseReached = terminateOnNoiseReached;
 		nrOfExamples = nrOfPositiveExamples + nrOfNegativeExamples;
 		this.rs = rs;
@@ -257,7 +248,6 @@ public class ROLearner2 {
 		this.forceRefinementLengthIncrease = forceRefinementLengthIncrease;
 		this.lengthMetric = lengthMetric;
 		this.renderer = renderer;
-		// logger.setLevel(Level.DEBUG);
 	}
 
 	public void start() {
@@ -287,60 +277,9 @@ public class ROLearner2 {
 		
 		Monitor totalLearningTime = JamonMonitorLogger.getTimeMonitor(OCEL.class, "totalLearningTime")
 				.start();
-		// TODO: write a JUnit test for this problem (long-lasting or infinite
-		// loops because
-		// redundant children of a node are called recursively when a node is
-		// extended
-		// twice)
+		// TODO: write a JUnit test for this problem (long-lasting or infinite loops because
+		// redundant children of a node are called recursively when a node is extended twice)
 		/*
-		 * // String conceptStr =
-		 * "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 2
-		 * \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Ar_halide\"
-		 * OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS
-		 * TRUE) AND >= 5 \"http://dl-learner.org/carcinogenesis#hasBond\".
-		 * TOP)))"; // String conceptStr =
-		 * "(\"http://dl-learner.org/carcinogenesis#Compound\" AND
-		 * ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS TRUE)
-		 * AND (\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS
-		 * TRUE)))"; String conceptStr =
-		 * "(\"http://dl-learner.org/carcinogenesis#Compound\" AND (>= 3
-		 * \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Halide\"
-		 * OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS
-		 * TRUE) AND ALL
-		 * \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)))"; String
-		 * conceptStr2 = "(\"http://dl-learner.org/carcinogenesis#Compound\" AND
-		 * (>= 4
-		 * \"http://dl-learner.org/carcinogenesis#hasStructure\".\"http://dl-learner.org/carcinogenesis#Halide\"
-		 * OR ((\"http://dl-learner.org/carcinogenesis#amesTestPositive\" IS
-		 * TRUE) AND ALL
-		 * \"http://dl-learner.org/carcinogenesis#hasAtom\".TOP)))"; try {
-		 * OWLClass struc = new
-		 * NamedClass("http://dl-learner.org/carcinogenesis#Compound");
-		 * OWLClassExpression d = KBParser.parseConcept(conceptStr); OWLClassExpression d2 =
-		 * KBParser.parseConcept(conceptStr2); // SortedSet<OWLClassExpression> ds =
-		 * (SortedSet<OWLClassExpression>) operator.refine(d,15,null,struc); //
-		 * System.out.println(ds);
-		 *  // System.out.println(RhoDRDown.checkIntersection((Intersection)d));
-		 * 
-		 * 
-		 * Set<OWLIndividual> coveredNegatives = rs.instanceCheck(d,
-		 * learningProblem.getNegativeExamples()); Set<OWLIndividual>
-		 * coveredPositives = rs.instanceCheck(d,
-		 * learningProblem.getPositiveExamples()); ExampleBasedNode ebn = new
-		 * ExampleBasedNode(d); ebn.setCoveredExamples(coveredPositives,
-		 * coveredNegatives);
-		 * 
-		 * properRefinements.add(d2); extendNodeProper(ebn,13);
-		 * extendNodeProper(ebn,14); for(OWLClassExpression refinement:
-		 * ebn.getChildConcepts()) System.out.println("refinement: " +
-		 * refinement);
-		 *  // Individual i = new
-		 * Individual("http://dl-learner.org/carcinogenesis#d101"); //
-		 * for(OWLIndividual i : learningProblem.getPositiveExamples()) //
-		 * rs.instanceCheck(ds.last(), i);
-		 * 
-		 * System.out.println("finished"); } catch (ParseException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } System.exit(0);
 		 */
 
 		// calculate quality threshold required for a solution
@@ -381,16 +320,12 @@ public class ROLearner2 {
 		long currentTime;
 		
 		while (!isTerminationCriteriaReached()) {
-		//while ((!solutionFound || !configurator.getTerminateOnNoiseReached() ) && !stop) {
-
 			// print statistics at most once a second
 			currentTime = System.nanoTime();
 			if (currentTime - lastPrintTime > 3000000000L) {
 				printStatistics(false);
 				lastPrintTime = currentTime;
 				logger.debug("--- loop " + loop + " started ---");
-//				logger.info("used memory: " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024);
-//				logger.info("test: " + ExampleBasedNode.exampleMemoryCounter/1024);
 			}
 
 			// traverse the current search tree to find a solution
@@ -416,7 +351,7 @@ public class ROLearner2 {
 					logger.trace(Sets.difference(positiveExamples,bestNodeStable.getCoveredNegatives()));
 					logger.trace(Sets.difference(negativeExamples,bestNodeStable.getCoveredNegatives()));
 				}
-				printBestSolutions(5, false);
+				printBestSolutions(5);
 				printStatistics(false);
 				bestNodeStable = searchTreeStable.best();
 			}
@@ -429,8 +364,6 @@ public class ROLearner2 {
 			extendNodeProper(bestNode, bestNode.getHorizontalExpansion() + 1);
 			searchTree.updateDone(bestNode);
 			previousBestNode = bestNode;
-
-			// System.out.println("done");
 
 			if (writeSearchTree) {
 				// String treeString = "";
@@ -457,34 +390,26 @@ public class ROLearner2 {
 		}// end while
 		
 		if (solutions.size()>0) {
-		//if (solutionFound) {
 			int solutionLimit = 20;
 			// we do not need to print the best node if we display the top 20 solutions below anyway
-//			logger.info("best node "
-//					+ candidatesStable.last().getShortDescription(nrOfPositiveExamples,
-//							nrOfNegativeExamples, baseURI));
 			logger.info("solutions (at most " + solutionLimit + " are shown):");
 			int show = 1;
-			String manchester = "MANCHESTER:\n";
 			for (ExampleBasedNode c : solutions) {
 				logger.info(show + ": " + renderer.render(c.getConcept())
 						+ " (accuracy " + df.format(100*c.getAccuracy(nrOfPositiveExamples, nrOfNegativeExamples)) + "%, length "
 						+ OWLClassExpressionUtils.getLength(c.getConcept())
 						+ ", depth " + OWLClassExpressionUtils.getDepth(c.getConcept()) + ")");
-//				manchester += show + ": " + c.toManchesterSyntaxString(baseURI, prefixes) + "\n";
 				if (show >= solutionLimit) {
 					break;
 				}
 				show++;
 			}
-			logger.debug(manchester);
 		} else {
 			logger.info("no appropriate solutions found (try increasing the noisePercentage parameter to what was reported as most accurate expression found above)");
 		}
 
 		logger.debug("size of candidate set: " + searchTree.size());
-		boolean showOrderedSolutions = false;
-		printBestSolutions(20, showOrderedSolutions);
+		printBestSolutions(20);
 
 		printStatistics(true);
 
@@ -524,12 +449,7 @@ public class ROLearner2 {
 	private void extendNodeProper(ExampleBasedNode node, OWLClassExpression concept, int maxLength,
 			int recDepth) {
 
-//		System.out.println("node: " + node);
-//		System.out.println("concept: " + concept);
-//		System.out.println("max length: " + maxLength);
-		
-		// do not execute methods if algorithm has been stopped (this means that
-		// the algorithm
+		// do not execute methods if algorithm has been stopped (this means that the algorithm
 		// will terminate without further reasoning queries)
 		if (stop)
 			return;
@@ -537,8 +457,7 @@ public class ROLearner2 {
 		if (recDepth > maxRecDepth)
 			maxRecDepth = recDepth;
 
-		// compute refinements => we must not delete refinements with low
-		// horizontal expansion,
+		// compute refinements => we must not delete refinements with low horizontal expansion,
 		// because they are used in recursive calls of this method later on
 		long refinementCalcTimeNsStart = System.nanoTime();
 		Set<OWLClassExpression> refinements = operator.refine(concept, maxLength, null);
@@ -587,10 +506,8 @@ public class ROLearner2 {
 							impropernessDetected = true;
 							// tooWeakList.add(refinement);
 
-							// Knoten wird direkt erzeugt (es ist buganfällig
-							// zwei Plätze
-							// zu haben, an denen Knoten erzeugt werden, aber es
-							// erscheint
+							// Knoten wird direkt erzeugt (es ist buganfällig zwei Plätze
+							// zu haben, an denen Knoten erzeugt werden, aber es erscheint
 							// hier am sinnvollsten)
 							properRefinements.add(refinement);
 							tooWeakList.add(refinement);
@@ -614,18 +531,8 @@ public class ROLearner2 {
 
 			}
 
-			// System.out.println("handled " + refinement + " length: " +
-			// refinement.getLength() + " (new size: " +
-			// toEvaluateConcepts.size() + ")");
-
 		}
 		evaluateSetCreationTimeNs += System.nanoTime() - evaluateSetCreationTimeNsStart;
-
-		// System.out.println("intermediate 1 " +
-		// node.getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples,
-		// baseURI));
-
-		// System.out.println(toEvaluateConcepts.size());
 
 		Set<OWLClassExpression> improperConcepts = null;
 		if (toEvaluateConcepts.size() > 0) {
@@ -635,17 +542,9 @@ public class ROLearner2 {
 				improperConcepts = rs.isSuperClassOf(toEvaluateConcepts, concept);
 				
 				propernessTestsReasoner += toEvaluateConcepts.size();
-				// boolean isProper =
-				// !learningProblem.getReasonerComponent().subsumes(refinement,
-				// concept);
 				propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart;
 			}
 		}
-
-		// if(toEvaluateConcepts.size()<10)
-		// System.out.println("to evaluate: " + toEvaluateConcepts);
-		// else
-		// System.out.println("to evaluate: more than 10");
 
 		long improperConceptsRemovalTimeNsStart = System.nanoTime();
 		// die improper Konzepte werden von den auszuwertenden gelöscht, d.h.
@@ -656,13 +555,6 @@ public class ROLearner2 {
 		// alle proper concepts von refinements löschen
 		refinements.removeAll(properConcepts);
 		improperConceptsRemovalTimeNs += System.nanoTime() - improperConceptsRemovalTimeNsStart;
-
-		// if(refinements.size()<10)
-		// System.out.println("refinements: " + refinements);
-		// else
-		// System.out.println("refinements: more than 10");
-		//
-		// System.out.println("improper concepts: " + improperConcepts);
 
 		for (OWLClassExpression refinement : properConcepts) {
 			long redundancyCheckTimeNsStart = System.nanoTime();
@@ -701,11 +593,9 @@ public class ROLearner2 {
 				}
 
 				// Qualität des Knotens auswerten
-				if (!qualityKnown) {
+				if (!qualityKnown) { // -> quality == -2
 					long propCalcReasoningStart2 = System.nanoTime();
 					conceptTestsReasoner++;
-
-					// quality = coveredNegativesOrTooWeak(refinement);
 
 					// determine individuals which have not been covered yet
 					// (more efficient than full retrieval)
@@ -716,14 +606,10 @@ public class ROLearner2 {
 					// parent node of the refinement
 					int misclassifiedPositives = nrOfPositiveExamples - coveredPositives.size();
 
-					// iterate through all covered examples (examples which are
-					// not
-					// covered do not need to be tested, because they remain
-					// uncovered);
-					// DIG will be slow if we send each reasoner request
-					// individually
-					// (however if we send everything in one request, too many
-					// instance checks
+					// iterate through all covered examples (examples which are not
+					// covered do not need to be tested, because they remain uncovered);
+					// DIG will be slow if we send each reasoner request individually
+					// (however if we send everything in one request, too many instance checks
 					// are performed => rely on fast instance checker)
 					for (OWLIndividual i : coveredPositives) {
 						// TODO: move code to a separate function
@@ -753,8 +639,7 @@ public class ROLearner2 {
 					}
 
 					propernessCalcReasoningTimeNs += System.nanoTime() - propCalcReasoningStart2;
-					newNode
-							.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
+					newNode.setQualityEvaluationMethod(ExampleBasedNode.QualityEvaluationMethod.REASONER);
 					if (quality != -1 && !(learningProblem.getAccuracyMethod() instanceof AccMethodNoWeakness) &&
 							learningProblem.getAccuracyMethod().getAccOrTooWeak2(
 							newlyCoveredPositives.size(), nrOfPositiveExamples - newlyCoveredPositives.size(),
@@ -841,12 +726,9 @@ public class ROLearner2 {
 	
 	
 	private void printStatistics(boolean finalStats) {
-		// TODO: viele Tests haben ergeben, dass man nie 100% mit der
-		// Zeitmessung abdecken
-		// kann (zum einen weil Stringausgabe verzögert erfolgt und zum anderen
-		// weil
-		// Funktionsaufrufe, garbage collection, Zeitmessung selbst auch Zeit
-		// benötigt);
+		// TODO: viele Tests haben ergeben, dass man nie 100% mit der Zeitmessung abdecken
+		// kann (zum einen weil Stringausgabe verzögert erfolgt und zum anderen weil
+		// Funktionsaufrufe, garbage collection, Zeitmessung selbst auch Zeit benötigt);
 		// es empfiehlt sich folgendes Vorgehen:
 		// - Messung der Zeit eines Loops im Algorithmus
 		// - Messung der Zeit für alle node extensions innerhalb eines Loops
@@ -904,79 +786,40 @@ public class ROLearner2 {
 			double reasoningPercentage = 100 * reasoningTime / (double) algorithmRuntime;
 			long propWithoutReasoning = propernessCalcTimeNs - propernessCalcReasoningTimeNs;
 			double propPercentage = 100 * propWithoutReasoning / (double) algorithmRuntime;
-			double deletionPercentage = 100 * childConceptsDeletionTimeNs
-					/ (double) algorithmRuntime;
+			double deletionPercentage = 100 * childConceptsDeletionTimeNs / (double) algorithmRuntime;
 			long subTime = rs.getSubsumptionReasoningTimeNs();
 			double subPercentage = 100 * subTime / (double) algorithmRuntime;
 			double refinementPercentage = 100 * refinementCalcTimeNs / (double) algorithmRuntime;
-			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs
-					/ (double) algorithmRuntime;
-			double evaluateSetCreationTimePercentage = 100 * evaluateSetCreationTimeNs
-					/ (double) algorithmRuntime;
-			double improperConceptsRemovalTimePercentage = 100 * improperConceptsRemovalTimeNs
-					/ (double) algorithmRuntime;
-			double mComputationTimePercentage = 100 * operator.mComputationTimeNs
-					/ (double) algorithmRuntime;
-			double topComputationTimePercentage = 100 * operator.topComputationTimeNs
-					/ (double) algorithmRuntime;
-			double cleanTimePercentage = 100 * ConceptTransformation.cleaningTimeNs
-					/ (double) algorithmRuntime;
-			double onnfTimePercentage = 100 * ConceptTransformation.onnfTimeNs
-					/ (double) algorithmRuntime;
-			double shorteningTimePercentage = 100 * ConceptTransformation.shorteningTimeNs
-					/ (double) algorithmRuntime;
+			double redundancyCheckPercentage = 100 * redundancyCheckTimeNs / (double) algorithmRuntime;
+			double evaluateSetCreationTimePercentage = 100 * evaluateSetCreationTimeNs / (double) algorithmRuntime;
+			double improperConceptsRemovalTimePercentage = 100 * improperConceptsRemovalTimeNs / (double) algorithmRuntime;
+			double mComputationTimePercentage = 100 * operator.mComputationTimeNs / (double) algorithmRuntime;
+			double topComputationTimePercentage = 100 * operator.topComputationTimeNs / (double) algorithmRuntime;
+			double cleanTimePercentage = 100 * ConceptTransformation.cleaningTimeNs / (double) algorithmRuntime;
+			double onnfTimePercentage = 100 * ConceptTransformation.onnfTimeNs / (double) algorithmRuntime;
+			double shorteningTimePercentage = 100 * ConceptTransformation.shorteningTimeNs / (double) algorithmRuntime;
 
 			logger.debug("reasoning percentage: " + df.format(reasoningPercentage) + "%");
 			logger.debug("   subsumption check time: " + df.format(subPercentage) + "%");
-			logger.debug("proper calculation percentage (wo. reasoning): "
-					+ df.format(propPercentage) + "%");
+			logger.debug("proper calculation percentage (wo. reasoning): " + df.format(propPercentage) + "%");
 			logger.debug("   deletion time percentage: " + df.format(deletionPercentage) + "%");
-			logger.debug("   refinement calculation percentage: " + df.format(refinementPercentage)
-					+ "%");
-			logger.debug("      m calculation percentage: " + df.format(mComputationTimePercentage)
-					+ "%");
-			logger.debug("      top calculation percentage: "
-					+ df.format(topComputationTimePercentage) + "%");
-			logger.debug("   redundancy check percentage: " + df.format(redundancyCheckPercentage)
-					+ "%");
-			logger.debug("   evaluate set creation time percentage: "
-					+ df.format(evaluateSetCreationTimePercentage) + "%");
-			logger.debug("   improper concepts removal time percentage: "
-					+ df.format(improperConceptsRemovalTimePercentage) + "%");
+			logger.debug("   refinement calculation percentage: " + df.format(refinementPercentage) + "%");
+			logger.debug("      m calculation percentage: " + df.format(mComputationTimePercentage) + "%");
+			logger.debug("      top calculation percentage: " + df.format(topComputationTimePercentage) + "%");
+			logger.debug("   redundancy check percentage: " + df.format(redundancyCheckPercentage) + "%");
+			logger.debug("   evaluate set creation time percentage: " + df.format(evaluateSetCreationTimePercentage) + "%");
+			logger.debug("   improper concepts removal time percentage: " + df.format(improperConceptsRemovalTimePercentage) + "%");
 			logger.debug("clean time percentage: " + df.format(cleanTimePercentage) + "%");
 			logger.debug("onnf time percentage: " + df.format(onnfTimePercentage) + "%");
-			logger
-					.debug("shortening time percentage: " + df.format(shorteningTimePercentage)
-							+ "%");
+			logger.debug("shortening time percentage: " + df.format(shorteningTimePercentage) + "%");
 		}
 
 		logger.debug("properness tests (reasoner/short concept/too weak list): "
 				+ propernessTestsReasoner + "/" + propernessTestsAvoidedByShortConceptConstruction
 				+ "/" + propernessTestsAvoidedByTooWeakList);
-		logger
-				.debug("concept tests (reasoner/too weak list/overly general list/redundant concepts): "
-						+ conceptTestsReasoner
-						+ "/"
-						+ conceptTestsTooWeakList
-						+ "/"
-						+ conceptTestsOverlyGeneralList + "/" + redundantConcepts);
+		logger.debug("concept tests (reasoner/too weak list/overly general list/redundant concepts): "
+				+ conceptTestsReasoner + "/" + conceptTestsTooWeakList + "/" + conceptTestsOverlyGeneralList + "/" + redundantConcepts);
 	}
-
-	// @SuppressWarnings({"unused"})
-	// private int coveredNegativesOrTooWeak(OWLClassExpression concept) {
-	// if(posOnly)
-	// return
-	// posOnlyLearningProblem.coveredPseudoNegativeExamplesOrTooWeak(concept);
-	// else
-	// return learningProblem.coveredNegativeExamplesOrTooWeak(concept);
-	// }
-
-	// private int getNumberOfNegatives() {
-	// if(posOnly)
-	// return posOnlyLearningProblem.getPseudoNegatives().size();
-	// else
-	// return learningProblem.getNegativeExamples().size();
-	// }
 
 	private boolean containsTooWeakElement(OWLObjectIntersectionOf mc) {
 		for (OWLClassExpression child : mc.getOperands()) {
@@ -998,7 +841,6 @@ public class ROLearner2 {
 	// in the nodes, but instead perform instance checks in tree traversal
 	// (it is only run in large intervals so it shouldn't be too expensive)
 	private void traverseTree() {
-		// ExampleBasedNode startNode = candidatesStable.last();
 		ExampleBasedNode startNode = findBestTraversalStartNode();
 		OWLClassExpression currentDescription = startNode.getConcept();
 		Set<OWLIndividual> currentCoveredPos = startNode.getCoveredPositives();
@@ -1021,26 +863,19 @@ public class ROLearner2 {
 			newCoveredNegatives.retainAll(currNode.getCoveredNegatives());
 
 			// compute the accuracy we would get by adding this node
-			double accuracy = (newCoveredPositives.size() + nrOfNegativeExamples - newCoveredNegatives
-					.size())
+			double accuracy = (newCoveredPositives.size() + nrOfNegativeExamples - newCoveredNegatives.size())
 					/ (double) (nrOfPositiveExamples + nrOfNegativeExamples);
-			int misclassifications = nrOfPositiveExamples - newCoveredPositives.size()
-					+ newCoveredNegatives.size();
+			int misclassifications = nrOfPositiveExamples - newCoveredPositives.size() + newCoveredNegatives.size();
 			int misclassifiedPositives = nrOfPositiveExamples - newCoveredPositives.size();
 
 			int lostPositives = currentCoveredPos.size() - newCoveredPositives.size();
 
-			// TODO: maybe we should also consider a minimum improvement when
-			// adding something
+			// TODO: maybe we should also consider a minimum improvement when adding something
 			// otherwise we could overfit
 			// we give double weith to lost positives, i.e. when one positive is
-			// lost at least
-			// two negatives need to be uncovered
+			// lost at least two negatives need to be uncovered
 			boolean consider = (misclassifications + lostPositives < currentMisclassifications)
 					&& (misclassifiedPositives <= allowedMisclassifications);
-			// boolean consider = (misclassifications <
-			// currentMisclassifications) &&
-			// (misclassifiedPositives <= allowedMisclassifications);
 
 			// concept has been chosen, so construct it
 			if (consider) {
@@ -1061,6 +896,7 @@ public class ROLearner2 {
 				currentCoveredPos = newCoveredPositives;
 				currentCoveredNeg = newCoveredNegatives;
 				currentMisclassifications = misclassifications;
+				//noinspection UnusedAssignment
 				currentAccuracy = accuracy;
 
 				if (accuracy > 1 - noise) {
@@ -1106,24 +942,19 @@ public class ROLearner2 {
 		int i = 0;
 		while (it.hasNext() && promisingNodes.size() < candidatePostReductionSize) {
 			ExampleBasedNode node = it.next();
-			// System.out.println(node.getShortDescription(nrOfPositiveExamples,
-			// nrOfNegativeExamples, baseURI));
 			// first criterion: the considered node should have an accuracy gain
 			// over its parent
 			// (avoids to use only the most promising node + all its refinements
 			// with equal accuracy)
 			boolean hasAccuracyGain = (node.getParent() == null)
-					|| (node.getCoveredPositives().size() != node.getParent().getCoveredPositives()
-							.size())
-					|| (node.getCoveredNegatives().size() != node.getParent().getCoveredNegatives()
-							.size());
+					|| (node.getCoveredPositives().size() != node.getParent().getCoveredPositives().size())
+					|| (node.getCoveredNegatives().size() != node.getParent().getCoveredNegatives().size());
 			// second criterion: uncovered positives; it does not make much
 			// sense to pick nodes with
 			// low potential for reaching a solution (already at the limit of
 			// misclassified positives)
 			int misclassifiedPositives = nrOfPositiveExamples - node.getCoveredPositives().size();
-			boolean hasRefinementPotential = (misclassifiedPositives <= Math
-					.floor(0.65d * allowedMisclassifications));
+			boolean hasRefinementPotential = (misclassifiedPositives <= Math.floor(0.65d * allowedMisclassifications));
 			boolean keep = hasAccuracyGain && hasRefinementPotential;
 			if (keep) {
 				promisingNodes.add(node);
@@ -1138,16 +969,6 @@ public class ROLearner2 {
 						baseURI, prefixes));
 		}
 	}
-
-	/*
-	 * private Set<OWLIndividual> computeQuality(OWLClassExpression refinement, Set<OWLIndividual>
-	 * coveredPositives) { Set<OWLIndividual> ret = new TreeSet<OWLIndividual>();
-	 * int misclassifications; for(OWLIndividual i : coveredPositives) { boolean
-	 * covered = rs.instanceCheck(refinement, i); if(!covered)
-	 * misclassifications++; else ret.add(i);
-	 * 
-	 * if(misclassifications > allowedMisclassifications) return null; } }
-	 */
 
 	public void stop() {
 		stop = true;
@@ -1187,12 +1008,11 @@ public class ROLearner2 {
 	}
 	
 
-	public void printBestSolutions(int nrOfSolutions, boolean showOrderedSolutions) {
+	public void printBestSolutions(int nrOfSolutions) {
 		// QUALITY: could be optimized
 		if (!logger.isTraceEnabled()) {
 			return;
 		}
-		// if(!logger.getLevel().toString().equalsIgnoreCase("TRACE"))return;
 		if (nrOfSolutions == 0)
 			nrOfSolutions = searchTreeStable.size();
 		int i = 0;
@@ -1205,20 +1025,6 @@ public class ROLearner2 {
 				break;
 			i++;
 		}
-
-		if (showOrderedSolutions) {
-			logger.trace("ordered by generality (most special solutions first):");
-			SubsumptionComparator sc = new SubsumptionComparator(rs);
-			SortedSet<OWLClassExpression> solutionsOrderedBySubsumption = new TreeSet<>(sc);
-//			solutionsOrderedBySubsumption.addAll(solutions);
-			for (OWLClassExpression d : solutionsOrderedBySubsumption)
-				logger.trace("special: " + d);
-			throw new Error("implementation needs to be updated to show ordered solutions");
-		}
-		/*
-		 * for (int j = 0; j < solutions.size(); j++) { OWLClassExpression d =
-		 * solutions.get(j); logger.trace(d.toString()); }
-		 */
 
 	}
 

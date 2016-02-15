@@ -44,19 +44,12 @@ import java.util.TreeSet;
  */
 public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> implements SearchTreeNode, WeakSearchTreeNode {
 
-//	public static long exampleMemoryCounter = 0;
-	
-//	private OCELConfigurator configurator;
-	
 	private static DecimalFormat df = new DecimalFormat();
 	
 	// example based variables
 	private Set<OWLIndividual> coveredPositives;
 	private Set<OWLIndividual> coveredNegatives;
 
-//	private int coveredPositiveSize;
-//	private int coveredNegativeSize;
-	
 	// the method by which quality was evaluated in this node
 	public enum QualityEvaluationMethod { START, REASONER, TOO_WEAK_LIST, OVERLY_GENERAL_LIST }
 
@@ -86,7 +79,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	private AccMethodTwoValued accuracyMethod;
 	
 	public ExampleBasedNode(OWLClassExpression concept, double negativeWeight, double startNodeBonus, double expansionPenaltyFactor, int negationPenalty) {
-//		this.configurator = configurator;
 		this.concept = concept;
 		horizontalExpansion = 0;
 		isQualityEvaluated = false;
@@ -125,8 +117,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		this.coveredPositives = coveredPositives;
 		this.coveredNegatives = coveredNegatives;
 		isQualityEvaluated = true;
-//		exampleMemoryCounter += coveredPositives.size() * 4;
-//		exampleMemoryCounter += coveredNegatives.size() * 4;
 	}
 
 	public int getQuality() {
@@ -135,7 +125,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 
 	@Override
 	public String toString() {
-//		System.out.println(concept);
 		String ret = concept.toString() + " [q:";
 		if(isTooWeak)
 			ret += "tw";
@@ -173,7 +162,6 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 		for(int i=0; i<depth-1; i++)
 			treeString.append("  ");
 		if(depth!=0)
-			// treeString.append("|-→ ");
 			treeString.append("|--> ");
 		treeString.append(getShortDescription(nrOfPositiveExamples, nrOfNegativeExamples, baseURI, prefixes)).append("\n");
 		for(ExampleBasedNode child : children) {
@@ -307,6 +295,7 @@ public class ExampleBasedNode extends AbstractSearchTreeNode<ExampleBasedNode> i
 	public boolean isRedundant() {
 		return isRedundant;
 	}
+	@Override
 	public boolean isTooWeak() {
 		return isTooWeak;
 	}

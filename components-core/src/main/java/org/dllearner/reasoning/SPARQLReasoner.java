@@ -19,10 +19,8 @@
 package org.dllearner.reasoning;
 
 import com.clarkparsia.owlapiv3.XSD;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hp.hpl.jena.query.ParameterizedSparqlString;
@@ -69,6 +67,8 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * A reasoner implementation that provides inference services by the execution
@@ -566,12 +566,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 						// add sub properties entry
 						if (!subsumptionHierarchyDown.containsKey(sub)) {
-							subsumptionHierarchyDown.put(sub, new TreeSet<OWLObjectProperty>());
+							subsumptionHierarchyDown.put(sub, new TreeSet<>());
 						}
 						
 						// add super properties entry
 						if (!subsumptionHierarchyUp.containsKey(sub)) {
-							subsumptionHierarchyUp.put(sub, new TreeSet<OWLObjectProperty>());
+							subsumptionHierarchyUp.put(sub, new TreeSet<>());
 						}
 						
 						// if there is a super property
@@ -580,12 +580,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 							// add sub properties entry
 							if (!subsumptionHierarchyDown.containsKey(sup)) {
-								subsumptionHierarchyDown.put(sup, new TreeSet<OWLObjectProperty>());
+								subsumptionHierarchyDown.put(sup, new TreeSet<>());
 							}
 							
 							// add super properties entry
 							if (!subsumptionHierarchyUp.containsKey(sup)) {
-								subsumptionHierarchyUp.put(sup, new TreeSet<OWLObjectProperty>());
+								subsumptionHierarchyUp.put(sup, new TreeSet<>());
 							}
 							
 							// add super properties entry
@@ -643,12 +643,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 				// add sub properties entry
 				if (!subsumptionHierarchyDown.containsKey(sub)) {
-					subsumptionHierarchyDown.put(sub, new TreeSet<OWLDataProperty>());
+					subsumptionHierarchyDown.put(sub, new TreeSet<>());
 				}
 				
 				// add super properties entry
 				if (!subsumptionHierarchyUp.containsKey(sub)) {
-					subsumptionHierarchyUp.put(sub, new TreeSet<OWLDataProperty>());
+					subsumptionHierarchyUp.put(sub, new TreeSet<>());
 				}
 				
 				// if there is a super property
@@ -657,12 +657,12 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 
 					// add sub properties entry
 					if (!subsumptionHierarchyDown.containsKey(sup)) {
-						subsumptionHierarchyDown.put(sup, new TreeSet<OWLDataProperty>());
+						subsumptionHierarchyDown.put(sup, new TreeSet<>());
 					}
 					
 					// add super properties entry
 					if (!subsumptionHierarchyUp.containsKey(sup)) {
-						subsumptionHierarchyUp.put(sup, new TreeSet<OWLDataProperty>());
+						subsumptionHierarchyUp.put(sup, new TreeSet<>());
 					}
 					
 					// add super properties entry
@@ -1512,12 +1512,9 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	
 	private String datatypeSparqlFilter(Iterable<OWLDatatype> dts) {
 		return Joiner.on(" || ").join(
-				Iterables.transform(dts, new Function<OWLDatatype,String>(){
-					@Override
-					public String apply(OWLDatatype input) {
-						return "DATATYPE(?o) = <" + input.toStringID() + ">";
-					}}
-						)
+				StreamSupport.stream(dts.spliterator(), false)
+						.map(input -> "DATATYPE(?o) = <" + input.toStringID() + ">")
+						.collect(Collectors.toList())
 				);
 	}
 

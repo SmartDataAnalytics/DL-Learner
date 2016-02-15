@@ -44,11 +44,12 @@ public class RawAgreement {
 
 		float O_poss = 0;
 		int n_k;
-		for (int k = 0; k < K; k++) {
+		for (short[] aMat : mat) {
 			n_k = 0;
 			for (int j = 0; j < C; j++) {
-				n_k += mat[k][j];
-			}System.out.println(n_k);
+				n_k += aMat[j];
+			}
+			System.out.println(n_k);
 			O_poss += (n_k * (n_k - 1));
 		}
 		logger.debug("O_poss = " + O_poss);

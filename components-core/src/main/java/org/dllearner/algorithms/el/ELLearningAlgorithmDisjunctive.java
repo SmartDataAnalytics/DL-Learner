@@ -126,11 +126,7 @@ public class ELLearningAlgorithmDisjunctive extends AbstractCELA {
 	public ELLearningAlgorithmDisjunctive(AbstractClassExpressionLearningProblem problem, AbstractReasonerComponent reasoner) {
 		super(problem, reasoner);
 	}
-	
-	public static String getName() {
-		return "disjunctive EL learning algorithm";
-	}	
-	
+
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
 		Collection<Class<? extends AbstractClassExpressionLearningProblem>> problems = new LinkedList<>();
 		problems.add(PosNegLP.class);

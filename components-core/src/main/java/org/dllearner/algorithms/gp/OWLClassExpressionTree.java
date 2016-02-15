@@ -39,7 +39,7 @@ public class OWLClassExpressionTree implements Cloneable{
 	}
 	
 	public OWLClassExpressionTree(OWLClassExpressionTree parent, OWLClassExpression ce) {
-		this(parent, new ArrayList<OWLClassExpressionTree>(), ce);
+		this(parent, new ArrayList<>(), ce);
 	}
 	
 	public OWLClassExpressionTree(OWLClassExpressionTree parent, 
