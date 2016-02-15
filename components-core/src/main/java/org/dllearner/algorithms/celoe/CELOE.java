@@ -801,7 +801,7 @@ public class CELOE extends AbstractCELA implements Cloneable{
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {

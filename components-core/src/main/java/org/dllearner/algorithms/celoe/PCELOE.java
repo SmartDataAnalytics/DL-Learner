@@ -836,7 +836,7 @@ public class PCELOE extends AbstractCELA {
 				treeString.append("   ").append(ref).append("\n");
 			}
 		}
-		treeString.append(TreeUtils.toTreeString(searchTree, baseURI, prefixes)).append("\n");
+		treeString.append(TreeUtils.toTreeString(searchTree)).append("\n");
 
 		// replace or append
 		if (replaceSearchTree) {
