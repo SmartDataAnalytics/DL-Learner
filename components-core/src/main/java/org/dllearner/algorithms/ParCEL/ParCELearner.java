@@ -204,8 +204,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		// this will be revise later using least common super class of all observations
 		startClass = dataFactory.getOWLThing();
 
-		this.uncoveredPositiveExampleAllowed = (int) Math.ceil(getNoisePercentage()
-				* positiveExamples.size());
+		this.uncoveredPositiveExampleAllowed = (int) Math.ceil(noisePercentage/100d * positiveExamples.size());
 
 		// initial the existing uncovered positive examples
 		((ParCELPosNegLP) this.learningProblem)
@@ -255,6 +254,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 			refinementOperatorPool.getFactory().setUseDisjunction(false);
 			refinementOperatorPool.getFactory().setUseNegation(true);
+			System.out.println(refinementOperatorPool);
 
 		}
 
@@ -608,6 +608,10 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	 *         found, or timeout), false otherwise
 	 */
 	private boolean isTerminateCriteriaSatisfied() {
+//		System.out.println(stop);
+//		System.out.println(searchTree.size());
+//		System.out.println(done);
+//		System.out.println(timeout);
 		return stop || ((searchTree.size() == 0) && (done == true)) || timeout;
 		//return stop || done || timeout;// ||
 		// (Runtime.getRuntime().totalMemory() >= this.maxHeapSize
@@ -885,4 +889,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return this.noOfUncoveredPositiveExamples;
 	}
 
+	public void setStartClass(OWLClassExpression startClass) {
+		this.startClass = startClass;
+	}
 }

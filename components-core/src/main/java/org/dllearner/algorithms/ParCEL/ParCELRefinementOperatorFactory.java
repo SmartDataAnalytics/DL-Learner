@@ -8,6 +8,7 @@ package org.dllearner.algorithms.ParCEL;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.log4j.Logger;
 import org.dllearner.algorithms.ParCEL.split.ParCELDoubleSplitterAbstract;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -66,7 +67,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
 
 	@Override
 	public LengthLimitedRefinementOperator create() throws Exception {
-		//clone a new class heirarchy to avoid the competition between refinement operators
+		//clone a new class hierarchy to avoid the competition between refinement operators
 		ClassHierarchy clonedClassHierarchy = this.classHierarchy.clone();
 
 		if (logger.isDebugEnabled())
@@ -92,7 +93,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
 	@Override
 	public PooledObject<LengthLimitedRefinementOperator> wrap(
 			LengthLimitedRefinementOperator lengthLimitedRefinementOperator) {
-		return null;
+		return new DefaultPooledObject<LengthLimitedRefinementOperator>(lengthLimitedRefinementOperator);
 	}
 
 	public boolean isUseNegation() {

@@ -24,6 +24,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.collect.Maps;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
@@ -122,7 +123,7 @@ public class ClassHierarchy extends AbstractHierarchy<OWLClassExpression> {
 	
 	@Override
 	public ClassHierarchy clone() {
-		return new ClassHierarchy(getHierarchyUp(), getHierarchyDown());		
+		return new ClassHierarchy(Maps.newTreeMap(getHierarchyUp()), Maps.newTreeMap(getHierarchyDown()));
 	}
 	
 	public Set<OWLAxiom> toOWLAxioms(){
