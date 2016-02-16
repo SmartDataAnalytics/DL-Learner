@@ -349,10 +349,6 @@ public class OCEL extends AbstractCELA {
 		// as argument, because it is sufficient to prepare the
 		// concept and role hierarchy accordingly
 	}
-
-	public static String getUsage() {
-		return "algorithm = refexamples;";
-	}
 	
 	@Override
 	public void start() {
