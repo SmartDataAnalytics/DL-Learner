@@ -371,11 +371,7 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
-        <dependency>
-        	<groupId>commons-pool</groupId>
-        	<artifactId>commons-pool</artifactId>
-        	<version>1.6</version>
-        </dependency>
+
     -->
 
     <!--
@@ -385,6 +381,11 @@
          	<version>2.8.0</version>
          </dependency>
     -->
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>uk.ac.shef.wit</groupId>
