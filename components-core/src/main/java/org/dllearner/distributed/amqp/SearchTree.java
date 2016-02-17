@@ -23,6 +23,16 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	private Set<UUID> disabled;
 	private Map<UUID, Integer> tmpAggregators;
 
+	/**
+	 * @param rand Boolean that indicates whether the standard iterator for the
+	 * NodeTreeSet should return nodes in a random order or not.
+	 */
+	public SearchTree(Comparator<OENode> comparator, boolean rand) {
+		this(comparator);
+
+		((NodeTreeSet) nodes).setUseRandomIterator(rand);
+	}
+
 	public SearchTree(Comparator<OENode> comparator) {
 		super(comparator);
 		nodes = new NodeTreeSet((OEHeuristicRuntime) sortOrderComp);
