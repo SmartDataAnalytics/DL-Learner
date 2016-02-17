@@ -89,9 +89,7 @@ public class OCEL extends AbstractCELA {
 	private int nrOfNegativeExamples;
 	private Set<OWLIndividual> negativeExamples;
 
-	// noise regulates how many positives can be misclassified and when the
-	// algorithm terminates
-	private double noise = 0.0;
+
 	private int allowedMisclassifications = 0;
 
 	// search tree options
@@ -230,12 +228,11 @@ public class OCEL extends AbstractCELA {
 	private boolean improveSubsumptionHierarchy = true;
 
 	private static double noisePercentageDefault = 0.0;
+	@ConfigOption(defaultValue = "0.0", description = "noise regulates how many positives can be misclassified and when " +
+			"the algorithm terminates")
 	private double noisePercentage = noisePercentageDefault;
 	private OWLClass startClass = null;
 	private boolean useDataHasValueConstructor = false;
-	//	refactor this
-	private static int maxPosOnlyExpansionDefault = 4;
-	private int maxPosOnlyExpansion = maxPosOnlyExpansionDefault;
 
 	// Variablen zur Einstellung der Protokollierung
 	// boolean quiet = false;
@@ -397,7 +394,7 @@ public class OCEL extends AbstractCELA {
 		 */
 
 		// calculate quality threshold required for a solution
-		allowedMisclassifications = (int) Math.round(noise * nrOfExamples);
+		allowedMisclassifications = (int) Math.round(noisePercentage * nrOfExamples / 100);
 
 		// start search with start class
 		ExampleBasedNode startNode;
@@ -973,7 +970,7 @@ public class OCEL extends AbstractCELA {
 				//noinspection UnusedAssignment
 				currentAccuracy = accuracy;
 
-				if (accuracy > 1 - noise) {
+				if (accuracy > 1 - (noisePercentage / 100)) {
 					logger.info("traversal found " + mc);
 					logger.info("accuracy: " + accuracy);
 					System.exit(0);
@@ -1321,14 +1318,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setUsePropernessChecks(boolean usePropernessChecks) {
 		this.usePropernessChecks = usePropernessChecks;
-	}
-
-	public int getMaxPosOnlyExpansion() {
-		return maxPosOnlyExpansion;
-	}
-
-	public void setMaxPosOnlyExpansion(int maxPosOnlyExpansion) {
-		this.maxPosOnlyExpansion = maxPosOnlyExpansion;
 	}
 
 	public boolean isForceRefinementLengthIncrease() {
