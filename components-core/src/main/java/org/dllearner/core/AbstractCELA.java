@@ -75,40 +75,40 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
  * example coverage associated with them. However, retrieving those
  * may require addition reasoner queries, because the learning
  * algorithms usually use but do not necessarily store this information.
- * 
+ *
  * Changes (March/April 2011): Learning algorithms no longer have to use
  * this class, but it still serves as a prototypical template for class
  * expression learning algorithms.
- * 
+ *
  * @author Jens Lehmann
  *
  */
 public abstract class AbstractCELA extends AbstractComponent implements ClassExpressionLearningAlgorithm, StoppableLearningAlgorithm {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCELA.class);
-	
+
 	protected OWLObjectRenderer renderer = StringRenderer.getRenderer();
-	
+
 	protected EvaluatedDescriptionSet bestEvaluatedDescriptions = new EvaluatedDescriptionSet(AbstractCELA.MAX_NR_OF_RESULTS);
 	protected DecimalFormat dfPercent = new DecimalFormat("0.00%");
 	protected String baseURI;
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
-	
+
 	protected static final OWLClass OWL_THING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_THING.getIRI());
 	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_NOTHING.getIRI());
-	
+
 	protected long nanoStartTime;
 	protected boolean isRunning = false;
 	protected boolean stop = false;
-	
+
 	protected OWLClassExpressionMinimizer minimizer;
-	
+
 	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
 	private boolean useMinimizer = true;
-	
+
 	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
 	protected int maxExecutionTimeInSeconds = 10;
 
@@ -118,7 +118,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 */
 	@ConfigOption(name="learningProblem", description="The Learning Problem variable to use in this algorithm")
 	protected AbstractClassExpressionLearningProblem<? extends Score> learningProblem;
-	
+
 	/**
 	 * The reasoning service variable, which must be used by
 	 * all learning algorithm implementations.
@@ -127,7 +127,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected AbstractReasonerComponent reasoner;
 
 	protected OWLObjectDuplicator duplicator = new OWLObjectDuplicator(new OWLDataFactoryImpl());
-	
+
 	@ConfigOption(name="allowedConcepts", description="List of classes that are allowed")
 	protected Set<OWLClass> allowedConcepts = null;
 	@ConfigOption(name="ignoredConcepts", description="List of classes to ignore")
@@ -145,7 +145,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
      * Default Constructor
      */
     public AbstractCELA(){}
-    
+
 	/**
 	 * Each learning algorithm gets a learning problem and
 	 * a reasoner as input.
@@ -160,7 +160,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 //		baseURI = reasoner.getBaseURI();
 //		prefixes = reasoner.getPrefixes();
 	}
-	
+
 	/**
 	 * Call this when you want to change the learning problem, but
 	 * leave everything else as is. Method can be used to apply
@@ -186,7 +186,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public void changeReasonerComponent(AbstractReasonerComponent reasoningService) {
 		this.reasoner = reasoningService;
 	}
-	
+
 	/**
 	 * This is the maximum number of results, which the learning
 	 * algorithms are asked to store. (Note, that algorithms are not
@@ -195,16 +195,16 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	 * choose to store results.)
 	 */
 	public static final int MAX_NR_OF_RESULTS = 100;
-		
+
 	/**
 	 * Every algorithm must be able to return the score of the
 	 * best solution found.
-	 * 
+	 *
 	 * @return Best score.
 	 */
 //	@Deprecated
 //	public abstract Score getSolutionScore();
-	
+
 
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescription()
@@ -213,7 +213,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public OWLClassExpression getCurrentlyBestDescription() {
 		return getCurrentlyBestEvaluatedDescription().getDescription();
 	}
-	
+
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions()
 	 * @return The best class descriptions found by the learning algorithm so far.
@@ -221,7 +221,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public List<OWLClassExpression> getCurrentlyBestDescriptions() {
 		return bestEvaluatedDescriptions.toDescriptionList();
 	}
-	
+
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int)
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
@@ -231,7 +231,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public synchronized List<OWLClassExpression> getCurrentlyBestDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestDescriptions(nrOfDescriptions, false);
 	}
-	
+
 	/**
 	 * @see #getCurrentlyBestEvaluatedDescriptions(int,double,boolean)
 	 * @param nrOfDescriptions Limit for the number or returned descriptions.
@@ -246,15 +246,15 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
 			}
-			
+
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed)) {
 				returnList.add(ed);
 			}
-			
+
 		}
 		return returnList;
 	}
-	
+
 	/**
 	 * Returns the best descriptions obtained so far.
 	 * @return Best class class expression found so far.
@@ -262,7 +262,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public EvaluatedDescription<? extends Score> getCurrentlyBestEvaluatedDescription() {
 		return bestEvaluatedDescriptions.getSet().last();
 	}
-	
+
 	/**
 	 * Returns a sorted set of the best descriptions found so far. We
 	 * assume that they are ordered such that the best ones come in
@@ -272,23 +272,23 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public NavigableSet<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions() {
 		return bestEvaluatedDescriptions.getSet();
 	}
-	
+
 	/**
 	 * Returns a filtered list of currently best class descriptions.
-	 * 
+	 *
 	 * @param nrOfDescriptions Maximum number of restrictions. Use Integer.MAX_VALUE
 	 * if you do not want this filter to be active.
-	 * 
+	 *
 	 * @param accuracyThreshold Minimum accuracy. All class descriptions with lower
 	 * accuracy are disregarded. Specify a value between 0.0 and 1.0. Use 0.0 if
 	 * you do not want this filter to be active.
-	 * 
+	 *
 	 * @param filterNonMinimalDescriptions If true, non-minimal descriptions are
 	 * filtered, e.g. ALL r.TOP (being equivalent to TOP), male AND male (can be
 	 * shortened to male). Currently, non-minimal descriptions are just skipped,
 	 * i.e. they are completely omitted from the return list. Later, implementation
 	 * might be changed to return shortened versions of those descriptions.
-	 * 
+	 *
 	 * @return A list of currently best class descriptions.
 	 */
 	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions, double accuracyThreshold, boolean filterNonMinimalDescriptions) {
@@ -307,7 +307,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			if(returnList.size() >= nrOfDescriptions) {
 				return returnList;
 			}
-			
+
 			if(!filterNonMinimalDescriptions || ConceptTransformation.isDescriptionMinimal(ed.getDescription())) {
 				// before we add the OWLClassExpression we replace EXISTS r.TOP with
 				// EXISTS r.range(r) if range(r) is atomic
@@ -315,18 +315,18 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				// be in the search of the learning algorithm, which leads to
 				// unpredictable behaviour)
 				OWLClassExpression d = duplicator.duplicateObject(ed.getDescription());
-				
+
 				//commented out because reasoner is called. leads in swing applications sometimes to exceptions
 //				ConceptTransformation.replaceRange(d, reasoner);
 				ed.setDescription(d);
-				
+
 				returnList.add(ed);
 			}
-			
+
 		}
 		return returnList;
 	}
-	
+
 	/**
 	 * Return the best currently found concepts up to some maximum
 	 * count (no minimality filter used).
@@ -337,7 +337,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public synchronized List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(int nrOfDescriptions) {
 		return getCurrentlyBestEvaluatedDescriptions(nrOfDescriptions, 0.0, false);
 	}
-	
+
 	/**
 	 * Returns a fraction of class descriptions with sufficiently high accuracy.
 	 * @param accuracyThreshold Only return solutions with this accuracy or higher.
@@ -346,14 +346,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public synchronized  List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestEvaluatedDescriptions(double accuracyThreshold) {
 		return getCurrentlyBestEvaluatedDescriptions(Integer.MAX_VALUE, accuracyThreshold, false);
 	}
-	
+
 	public synchronized  List<? extends EvaluatedDescription<? extends Score>> getCurrentlyBestMostGeneralEvaluatedDescriptions() {
 		List<? extends EvaluatedDescription<? extends Score>> l = getCurrentlyBestEvaluatedDescriptions(getCurrentlyBestEvaluatedDescriptions().last().getAccuracy());
 		DescriptionSubsumptionTree t = new DescriptionSubsumptionTree(reasoner);
 		t.insert(l);
 		return t.getMostGeneralDescriptions(true);
 	}
-		
+
 	/**
 	 * Returns all learning problems supported by this component. This can be used to indicate that, e.g.
 	 * an algorithm is only suitable for positive only learning.
@@ -362,44 +362,50 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public static Collection<Class<? extends AbstractClassExpressionLearningProblem>> supportedLearningProblems() {
 		return new LinkedList<>();
 	}
-	
+
 	// central function for printing description
 	protected String descriptionToString(OWLClassExpression description) {
 		return renderer.render(description);
 	}
-		
-	
+
+
 	protected String getSolutionString() {
 		int current = 1;
 		String str = "";
-		for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
-			// temporary code
-			OWLClassExpression description = ed.getDescription();
-			String descriptionString = descriptionToString(description);
-			if(learningProblem instanceof PosNegLP) {
-				Set<OWLIndividual> positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
-				Set<OWLIndividual> negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
-				ReasoningUtils reasoningUtil = learningProblem.getReasoningUtil();
-				
-				str += current + ": " + descriptionString + " (pred. acc.: "
-						+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
-						+ ", F-measure: "+ dfPercent.format(reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1));
 
-				AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
-				if ( !(accuracyMethod instanceof AccMethodPredAcc)
-						&& !(accuracyMethod instanceof AccMethodFMeasure) ) {
-					str += ", " + AnnComponentManager.getName(accuracyMethod) + ": " + dfPercent.format(ed.getAccuracy());
+		synchronized (bestEvaluatedDescriptions) {
+			for(EvaluatedDescription<? extends Score> ed : bestEvaluatedDescriptions.getSet().descendingSet()) {
+				// temporary code
+				OWLClassExpression description = ed.getDescription();
+				String descriptionString = descriptionToString(description);
+				if(learningProblem instanceof PosNegLP) {
+					Set<OWLIndividual> positiveExamples = ((PosNegLP)learningProblem).getPositiveExamples();
+					Set<OWLIndividual> negativeExamples = ((PosNegLP)learningProblem).getNegativeExamples();
+					ReasoningUtils reasoningUtil = learningProblem.getReasoningUtil();
+
+					str += current + ": " + descriptionString + " (pred. acc.: "
+							+ dfPercent.format(
+									reasoningUtil.getAccuracyOrTooWeak2(new AccMethodPredAcc(true), description, positiveExamples, negativeExamples, 1))
+							+ ", F-measure: "+ dfPercent.format(
+									reasoningUtil.getAccuracyOrTooWeak2(new AccMethodFMeasure(true), description, positiveExamples, negativeExamples, 1))
+							+ ", lp score: " + learningProblem.computeScore(description) + ")";
+
+					AccMethodTwoValued accuracyMethod = ((PosNegLP)learningProblem).getAccuracyMethod();
+					if ( !(accuracyMethod instanceof AccMethodPredAcc)
+							&& !(accuracyMethod instanceof AccMethodFMeasure) ) {
+						str += ", " + AnnComponentManager.getName(accuracyMethod) + ": " + dfPercent.format(ed.getAccuracy());
+					}
+					str += ")\n";
+				} else {
+					str += current + ": " + descriptionString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
+	//				System.out.println(ed);
 				}
-				str += ")\n";
-			} else {
-				str += current + ": " + descriptionString + " " + dfPercent.format(ed.getAccuracy()) + "\n";
-//				System.out.println(ed);
+				current++;
 			}
-			current++;
 		}
 		return str;
 	}
-	
+
 	/**
 	 * Computes an internal class hierarchy that only contains classes
 	 * that are allowed.
@@ -421,8 +427,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 				ignoredConcepts.addAll(unsatisfiableClasses);
 			}
 		}
-		
-		
+
+
 		Set<OWLClass> usedConcepts;
 		if(allowedConcepts != null) {
 			// sanity check to control if no non-existing concepts are in the list
@@ -433,12 +439,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			usedConcepts = Helper.computeConcepts(reasoner);
 		}
-		
+
 		ClassHierarchy hierarchy = (ClassHierarchy) reasoner.getClassHierarchy().cloneAndRestrict(new HashSet<OWLClassExpression>(usedConcepts));
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
 	}
-	
+
 	/**
 	 * Computes an internal object property hierarchy that only contains
 	 * object properties that are allowed.
@@ -455,13 +461,13 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			usedProperties = Helper.computeEntities(reasoner, EntityType.OBJECT_PROPERTY);
 		}
-		
+
 		ObjectPropertyHierarchy hierarchy = (ObjectPropertyHierarchy) reasoner.getObjectPropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
-		
+
 		return hierarchy;
 	}
-	
+
 	/**
 	 * Computes an internal data property hierarchy that only contains
 	 * data properties that are allowed.
@@ -478,20 +484,20 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			usedProperties = Helper.computeEntities(reasoner, EntityType.DATA_PROPERTY);
 		}
-		
+
 		DatatypePropertyHierarchy hierarchy = (DatatypePropertyHierarchy) reasoner.getDatatypePropertyHierarchy().cloneAndRestrict(usedProperties);
 //		hierarchy.thinOutSubsumptionHierarchy();
 		return hierarchy;
 	}
-	
+
 	protected boolean isTimeExpired() {
 		return getCurrentRuntimeInMilliSeconds() >= TimeUnit.SECONDS.toMillis(maxExecutionTimeInSeconds);
 	}
-	
+
 	protected long getCurrentRuntimeInMilliSeconds() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStartTime);
 	}
-	
+
 	protected String getDurationAsString(long durationInMillis) {
 		PeriodFormatter formatter = new PeriodFormatterBuilder()
 	     .appendDays().appendSuffix("d")
@@ -501,10 +507,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	     .appendMillis().appendSuffix("ms")
 	     .printZeroNever()
 	     .toFormatter();
-		
+
 		return formatter.print(new Period(durationInMillis));
 	}
-	
+
 	protected OWLClassExpression rewrite(OWLClassExpression ce) {
 		// minimize class expression (expensive!) - also performs some human friendly rewrites
 		OWLClassExpression niceDescription;
@@ -513,12 +519,12 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 		} else {
 			niceDescription = ce;
 		}
-		
+
 		// replace \exists r.\top with \exists r.range(r) which is easier to read for humans
 		niceDescription = ConceptTransformation.replaceRange(niceDescription, reasoner);
-		
+
 		niceDescription = ConceptTransformation.appendSomeValuesFrom(niceDescription);
-		
+
 		return niceDescription;
 	}
 
@@ -548,21 +554,21 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
     @Autowired
     public void setReasoner(AbstractReasonerComponent reasoner) {
         this.reasoner = reasoner;
-        
+
         baseURI = reasoner.getBaseURI();
 		prefixes = reasoner.getPrefixes();
     }
-    
+
     @Override
 	public void stop() {
 		stop = true;
 	}
-	
+
 	@Override
 	public boolean isRunning() {
 		return isRunning;
 	}
-	
+
 	public Set<OWLClass> getAllowedConcepts() {
 		return allowedConcepts;
 	}
@@ -578,63 +584,63 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public void setIgnoredConcepts(Set<OWLClass> ignoredConcepts) {
 		this.ignoredConcepts = ignoredConcepts;
 	}
-	
+
 	/**
 	 * @param allowedObjectProperties the allowed object properties to set
 	 */
 	public void setAllowedObjectProperties(Set<OWLObjectProperty> allowedObjectProperties) {
 		this.allowedObjectProperties = allowedObjectProperties;
 	}
-	
+
 	/**
 	 * @return the allowed object properties
 	 */
 	public Set<OWLObjectProperty> getAllowedObjectProperties() {
 		return allowedObjectProperties;
 	}
-	
+
 	/**
 	 * @param ignoredObjectProperties the ignored object properties to set
 	 */
 	public void setIgnoredObjectProperties(Set<OWLObjectProperty> ignoredObjectProperties) {
 		this.ignoredObjectProperties = ignoredObjectProperties;
 	}
-	
+
 	/**
 	 * @return the ignored object properties
 	 */
 	public Set<OWLObjectProperty> getIgnoredObjectProperties() {
 		return ignoredObjectProperties;
 	}
-	
+
 	/**
 	 * @param allowedDataProperties the allowed data properties to set
 	 */
 	public void setAllowedDataProperties(Set<OWLDataProperty> allowedDataProperties) {
 		this.allowedDataProperties = allowedDataProperties;
 	}
-	
+
 	/**
 	 * @return the allowed data properties
 	 */
 	public Set<OWLDataProperty> getAllowedDataProperties() {
 		return allowedDataProperties;
 	}
-	
+
 	/**
 	 * @param ignoredDataProperties the ignored data properties to set
 	 */
 	public void setIgnoredDataProperties(Set<OWLDataProperty> ignoredDataProperties) {
 		this.ignoredDataProperties = ignoredDataProperties;
 	}
-	
+
 	/**
 	 * @return the ignored data properties
 	 */
 	public Set<OWLDataProperty> getIgnoredDataProperties() {
 		return ignoredDataProperties;
 	}
-	
+
 	public boolean isUseMinimizer() {
 		return useMinimizer;
 	}
@@ -642,7 +648,7 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public void setUseMinimizer(boolean useMinimizer) {
 		this.useMinimizer = useMinimizer;
 	}
-	
+
 	public int getMaxExecutionTimeInSeconds() {
 		return maxExecutionTimeInSeconds;
 	}
@@ -650,14 +656,14 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public void setMaxExecutionTimeInSeconds(int maxExecutionTimeInSeconds) {
 		this.maxExecutionTimeInSeconds = maxExecutionTimeInSeconds;
 	}
-	
+
 	/**
 	 * @param renderer the renderer of OWL objects to set
 	 */
 	public void setRenderer(OWLObjectRenderer renderer) {
 		this.renderer = renderer;
 	}
-    
+
     /**
 	 * The goal of this method is to rewrite the class expression CE, to get a more informative one by e.g.
 	 * <ul><li>replacing the role fillers in CE with the range of the property, if exists.</li></ul>

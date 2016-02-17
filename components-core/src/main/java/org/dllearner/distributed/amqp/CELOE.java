@@ -20,7 +20,6 @@
 package org.dllearner.distributed.amqp;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
@@ -1301,7 +1300,9 @@ public class CELOE extends AbstractCELA {
 			}
 
 			if(singleSuggestionMode) {
-				bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
+				synchronized (bestEvaluatedDescriptions) {
+					bestEvaluatedDescriptions.add(bestDescription, bestAccuracy, learningProblem);
+				}
 			}
 
 			terminateWorkers();
