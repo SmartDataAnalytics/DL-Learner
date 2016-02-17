@@ -8,6 +8,7 @@ import java.util.Set;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.distributed.amqp.CELOE;
+import org.dllearner.distributed.amqp.OEHeuristicRuntime;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.learningproblems.AccMethodPredAcc;
 import org.dllearner.learningproblems.PosNegLPStandard;
@@ -86,10 +87,18 @@ public class CarcinogenesisAMQP {
 		lp.setPositiveExamples(pos);
 		lp.setNegativeExamples(neg);
 		lp.setAccuracyMethod(new AccMethodPredAcc());
+		lp.setPercentPerLengthUnit(0);
 		lp.init();
 
 		// ------------------ learning algorithm -----------------------------
+		OEHeuristicRuntime h = new OEHeuristicRuntime();
+		h.setExpansionPenaltyFactor(0);
+		h.setStartNodeBonus(0);
+		h.setNodeRefinementPenalty(0);
+		h.init();
+
 		CELOE la = new CELOE();
+		la.setHeuristic(h);
 		la.setLearningProblem(lp);
 		la.setMaxExecutionTimeInSeconds(runtimeInSecs);
 		la.setNoisePercentage(noisePercent / 100.);
