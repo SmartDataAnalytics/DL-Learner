@@ -274,10 +274,10 @@ public class NodeTreeSetTest {
 		Random rnd = new Random();
 
 		NodeTreeSet ntSet = new NodeTreeSet(new ReversedOENodeComparator());
-		double acc = 0.10;
+		double acc = 1.0;
 		for (int i=0; i<maxNodes; i++) {
 			if (rnd.nextBoolean()) {
-				acc += 0.01;
+				acc -= 0.01;
 			}
 			OENode node = new OENode(nextCls(), acc);
 			nodes.add(new Pair<Double, OENode>(acc, node));
