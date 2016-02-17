@@ -67,7 +67,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> implements Se
 	 * internally used by tree<->node contract to notify a tree about an added node
 	 * @param node the node
 	 */
-	public final void notifyNode(T node) {
+	public void notifyNode(T node) {
 		if (node.getParent() == null || nodes.contains(node.getParent())) {
 			if (allowedNode(node))
 				nodes.add(node);
@@ -110,7 +110,7 @@ public class AbstractSearchTree <T extends AbstractSearchTreeNode> implements Se
 	/**
 	 * must be called after modifying a node, to support immutable set element pattern
 	 */
-	public final void updateDone(T node) {
+	public void updateDone(T node) {
 		if (allowedNode(node)) {
 			nodes.add(node);
 			for (T child : (Collection<T>)node.getChildren()) {
