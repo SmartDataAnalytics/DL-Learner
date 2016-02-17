@@ -257,7 +257,7 @@ public class CELOE extends AbstractCELA {
 	 * guarantee that all workers should get something to work on even though
 	 * the master might be very busy on something else for some time.
 	 */
-	private int maxPendingRequests = 60;
+	private int maxPendingRequests = 16;
 
 	private double noise;
 
@@ -1202,6 +1202,9 @@ public class CELOE extends AbstractCELA {
 			currentHighestAccuracy = 0.0;
 			pendingRequests = 0;
 			OENode nextNode;
+
+			// FIXME: should be initialized somewhere else
+			searchTree = new SearchTree(heuristic, false);
 
 			logger.info("start class:" + startClass);
 
