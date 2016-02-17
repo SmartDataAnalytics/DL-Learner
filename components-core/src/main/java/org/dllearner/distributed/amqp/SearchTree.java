@@ -73,7 +73,7 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	 * @return the sub tree copy from this with rootNode as root node
 	 */
 	public SearchTree cutSubTreeCopy(OENode rootNode) {
-		SearchTree subTreeCopy = new SearchTree(new OEHeuristicRuntime());
+		SearchTree subTreeCopy = new SearchTree(this.sortOrderComp);
 
 		if (nodes.contains(rootNode)) {
 			OENode rootNodeCopy = rootNode.copyAndSetBlocked();
@@ -209,6 +209,17 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 		}
 
 		return null;
+	}
+
+	/** Mainly for debugging purposes */
+	private void print(OENode n, int indLevel) {
+		String ind = "";
+		for (int i=0; i<indLevel; i++) ind += "  ";
+
+		for (OENode c : n.getChildren()) {
+			System.out.println(ind  + "+ " + c + " (" + c.getUUID() + ")");
+			print(c, indLevel + 1);
+		}
 	}
 
 	public boolean contains(OENode node) {
