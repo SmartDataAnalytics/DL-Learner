@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -75,7 +76,7 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	public SearchTree cutSubTreeCopy(OENode rootNode) {
 		SearchTree subTreeCopy = new SearchTree(this.sortOrderComp);
 
-		if (nodes.contains(rootNode)) {
+		if (((NodeTreeSet) nodes).contains(rootNode)) {
 			OENode rootNodeCopy = rootNode.copyAndSetBlocked();
 			subTreeCopy.setRoot(rootNodeCopy);
 			setBlocked(rootNode);
@@ -157,11 +158,11 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 
 	private void updateAndSetUnblockedRecursively(OENode local, OENode nonLocal) {
 
-		if (!nodes.contains(local))
+		if (!((NodeTreeSet) nodes).contains(local))
 			logger.warn(local + " was not in the local tree but was supposed to be there");
 
 		// Hint for debugging: check return value to see if everything went well
-		nodes.remove(local);
+		((NodeTreeSet) nodes).remove(local);
 		local.update(nonLocal);
 
 		// Hint for debugging: check return value to see if everything went well
@@ -192,7 +193,7 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	}
 
 	protected OENode findLocalNode(OENode other) {
-		for (OENode node : nodes) {
+		for (OENode node : (NodeTreeSet) nodes) {
 			if (node.equals(other)) return node;
 		}
 
@@ -204,7 +205,7 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 			return ((NodeTreeSet) nodes).get(uuid);
 		}
 
-		for (OENode node : nodes) {
+		for (OENode node : (NodeTreeSet) nodes) {
 			if (node.getUUID().equals(uuid)) return node;
 		}
 
@@ -223,9 +224,10 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 	}
 
 	public boolean contains(OENode node) {
-		for (OENode other : nodes) {
+		for (OENode other : (NodeTreeSet) nodes) {
 			if (node.equals(other)) return true;
 		}
+
 		return false;
 	}
 
@@ -234,6 +236,7 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 		// link to parent (unless start node)
 		if(parentNode == null) {
 			this.setRoot(node);
+
 		} else {
 			parentNode.addChild(node);
 		}
@@ -246,10 +249,43 @@ public class SearchTree extends AbstractSearchTree<OENode> implements Serializab
 
 	@Override
 	public void setRoot(OENode node) {
-		if (this.root != null || !this.nodes.isEmpty()) {
+		if (this.root != null || !((NodeTreeSet) nodes).isEmpty()) {
 			throw new Error("Tree Root already set");
 		}
 		this.root = node;
 		node.notifyTree(this);
+	}
+
+	@Override
+	public final void notifyNode(OENode node) {
+		if (node.getParent() == null || ((NodeTreeSet) nodes).contains(node.getParent())) {
+			if (allowedNode(node))
+				((NodeTreeSet) nodes).add(node);
+		}
+	}
+
+	@Override
+	public int size() {
+		return ((NodeTreeSet) nodes).size();
+	}
+
+	@Override
+	public final void updateDone(OENode node) {
+		if (allowedNode(node)) {
+			((NodeTreeSet) nodes).add(node);
+			for (OENode child : node.getChildren()) {
+				updateDone(child);
+			}
+		}
+	}
+
+	@Override
+	public SortedSet<OENode> descendingSet() {
+		return ((NodeTreeSet) nodes).descendingSet();
+	}
+
+	@Override
+	public Set<OENode> getNodeSet() {
+		return nodes;
 	}
 }
