@@ -102,13 +102,30 @@ public class ParCELExtraNode extends ParCELNode {
 	 * @param description
 	 * @param accuracy
 	 * @param correctness
-	 * @param cn
+	 * @param cp
 	 *            Covered positive examples
 	 */
 	public ParCELExtraNode(ParCELNode parentNode, OWLClassExpression description, double accuracy,
 						   double correctness, double completeness, Set<OWLIndividual> cp) {
 		super(parentNode, description, accuracy, correctness, completeness);
 		super.setCoveredPositiveExamples(cp);
+	}
+
+	/**
+	 * Constructor with the set of positive examples covered by the description of the node
+	 *
+	 * @param parentNode
+	 * @param description
+	 * @param accuracy
+	 * @param correctness
+	 * @param cn Covered positive examples
+	 */
+	public ParCELExtraNode(ParCELNode parentNode, OWLClassExpression description, double accuracy,
+						   double correctness, double completeness, Set<OWLIndividual> cp, Set<OWLIndividual> cn)
+	{
+		super(parentNode, description, accuracy, correctness, completeness);
+		super.setCoveredPositiveExamples(cp);
+		super.setCoveredNegativeExamples(cn);
 	}
 
 	// -------------------------

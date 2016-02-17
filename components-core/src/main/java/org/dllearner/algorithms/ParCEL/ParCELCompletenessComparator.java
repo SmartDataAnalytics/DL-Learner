@@ -11,10 +11,10 @@ import java.util.Comparator;
  * @author An C. Tran
  * 
  */
-public class ParCELCompletenessComparator implements Comparator<ParCELExtraNode> {
+public class ParCELCompletenessComparator implements Comparator<ParCELNode> {
 
 	@Override
-	public int compare(ParCELExtraNode node1, ParCELExtraNode node2) {
+	public int compare(ParCELNode node1, ParCELNode node2) {
 
 		int v1 = node1.getCoveredPositiveExamples().size();
 		int v2 = node2.getCoveredPositiveExamples().size();

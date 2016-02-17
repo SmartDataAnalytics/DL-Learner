@@ -149,7 +149,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		super(learningProblem, reasoningService);
 
 		// default compactor used by this algorithm
-		this.reducer = new ParCELImprovedCovegareGreedyReducer();
+		this.reducer = new ParCELImprovedCoverageGreedyReducer();
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 	public ParCELearner() {
 		super();
 		
-		this.reducer = new ParCELImprovedCovegareGreedyReducer();
+		this.reducer = new ParCELImprovedCoverageGreedyReducer();
 		// this.compactor = new PDLLGenerationTimeCompactor();
 		// this.compactor = new PDLLDefinitionLengthCompactor();
 	}
@@ -742,6 +742,21 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 		return 1 - (uncoveredPositiveExamples.size() / (double) positiveExamples.size());
 	}
 
+	// methods related to the compactness: get compact definition, set compactor
+	public SortedSet<ParCELExtraNode> getReducedPartialDefinition(ParCELReducer reducer) {
+		return reducer.reduce(partialDefinitions, positiveExamples,
+							  uncoveredPositiveExamples.size());
+	}
+
+	public SortedSet<ParCELExtraNode> getReducedPartialDefinition() {
+		return this.getReducedPartialDefinition(this.reducer);
+	}
+
+	@Override
+	public int getNoOfReducedPartialDefinition() {
+		return 0;
+	}
+
 	/**
 	 * ============================================================================================
 	 * =============<br>
@@ -757,7 +772,7 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 	// methods related to the compactness: get compact definition, set compactor
 	public SortedSet<ParCELExtraNode> compactPartialDefinition(ParCELReducer reducer) {
-		return reducer.compact(partialDefinitions, positiveExamples,
+		return reducer.reduce(partialDefinitions, positiveExamples,
 				uncoveredPositiveExamples.size());
 	}
 
@@ -807,6 +822,11 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 	public int getMaximumHorizontalExpansion() {
 		return currentMaxHorizExp;
+	}
+
+	@Override
+	public void newPartialDefinitionsFound(Set<ParCELExtraNode> definitions) {
+
 	}
 
 	public Set<ParCELExtraNode> getPartialDefinitions() {
@@ -891,5 +911,32 @@ public class ParCELearner extends ParCELAbstract implements ParCELearnerMBean {
 
 	public void setStartClass(OWLClassExpression startClass) {
 		this.startClass = startClass;
+	}
+
+	@Override
+	public long getTotalNumberOfDescriptionsGenerated() {
+		return allDescriptions.size();
+	}
+
+	@Override
+	public long getTotalDescriptions() {
+
+		return allDescriptions.size();
+	}
+
+	@Override
+	public double getCurrentlyBestAccuracy() {
+		return 	((positiveExamples.size() - uncoveredPositiveExamples.size()) + negativeExamples.size()) /
+				(double)(positiveExamples.size() + negativeExamples.size());
+	}
+
+	@Override
+	public int getWorkerPoolSize() {
+		return this.workerPool.getQueue().size();
+	}
+
+	@Override
+	public int getCurrentlyMaxExpansion() {
+		return this.currentMaxHorizExp;
 	}
 }

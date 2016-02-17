@@ -13,13 +13,13 @@ import java.util.*;
 public class ParCELDefinitionLengthReducer implements ParCELReducer {
 
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples) {
-		return compact(partialDefinitions, positiveExamples, 0);
+		return reduce(partialDefinitions, positiveExamples, 0);
 	}
 
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples, int uncoveredPositiveExamples) {
 		Set<OWLIndividual> positiveExamplesTmp = new HashSet<>();
 		positiveExamplesTmp.addAll(positiveExamples);

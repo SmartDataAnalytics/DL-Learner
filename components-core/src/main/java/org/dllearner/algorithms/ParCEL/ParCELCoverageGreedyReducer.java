@@ -26,9 +26,9 @@ public class ParCELCoverageGreedyReducer implements ParCELReducer {
 	 * @return Subset of partial definitions that cover all positive examples
 	 */
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples) {
-		return compact(partialDefinitions, positiveExamples, 0);
+		return reduce(partialDefinitions, positiveExamples, 0);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class ParCELCoverageGreedyReducer implements ParCELReducer {
 	 *         examples)
 	 */
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples, int uncoveredPositiveExamples) {
 
 		Set<OWLIndividual> positiveExamplesTmp = new HashSet<>();

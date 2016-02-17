@@ -32,6 +32,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
 
 	private boolean useNegation = true;
 	private boolean useDisjunction = true;
+	private boolean useHasValue = false;
 
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -80,6 +81,7 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
 		op.setStartClass(startclass);
 
 		op.setUseNegation(this.useNegation);
+		op.setUseHasValueConstructor(useHasValue);
 
 		if (this.splits != null)
 			op.setSplits(this.splits);
@@ -113,5 +115,13 @@ public class ParCELRefinementOperatorFactory extends BasePooledObjectFactory<Len
 
 	public void setUseDisjunction(boolean useDisjunction) {
 		this.useDisjunction = useDisjunction;
-	}	
+	}
+
+	public void setUseHasValue(boolean useHasValue) {
+		this.useHasValue = useHasValue;
+	}
+
+	public boolean getUseHasValue() {
+		return this.useHasValue;
+	}
 }

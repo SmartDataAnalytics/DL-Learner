@@ -17,7 +17,7 @@ import java.util.TreeSet;
  * 
  */
 
-public class ParCELImprovedCovegareGreedyReducer implements ParCELReducer {
+public class ParCELImprovedCoverageGreedyReducer implements ParCELReducer {
 
 	Logger logger = Logger.getLogger(this.getClass());
 
@@ -32,9 +32,9 @@ public class ParCELImprovedCovegareGreedyReducer implements ParCELReducer {
 	 * @return Subset of partial definitions that cover all positive examples
 	 */
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples) {
-		return this.compact(partialDefinitions, positiveExamples, 0);
+		return this.reduce(partialDefinitions, positiveExamples, 0);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class ParCELImprovedCovegareGreedyReducer implements ParCELReducer {
 	 *         examples)
 	 */
 	@Override
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples, int uncoveredPositiveExamples) {
 		Set<OWLIndividual> positiveExamplesTmp = new HashSet<>();
 		positiveExamplesTmp.addAll(positiveExamples);

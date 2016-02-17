@@ -24,7 +24,7 @@ public interface ParCELReducer {
 	 * 
 	 * @return "Minimal" set of partial definitions
 	 */
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples);
 
 	/**
@@ -40,6 +40,6 @@ public interface ParCELReducer {
 	 * 
 	 * @return "Minimal" set of partial definitions
 	 */
-	public SortedSet<ParCELExtraNode> compact(SortedSet<ParCELExtraNode> partialDefinitions,
+	public SortedSet<ParCELExtraNode> reduce(SortedSet<ParCELExtraNode> partialDefinitions,
 			Set<OWLIndividual> positiveExamples, int uncoveredPositiveExamples);
 }
