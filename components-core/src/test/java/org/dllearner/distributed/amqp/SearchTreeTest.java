@@ -2,6 +2,7 @@ package org.dllearner.distributed.amqp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -363,6 +364,29 @@ public class SearchTreeTest {
 		assertEquals(r, it.next());
 		assertEquals(q, it.next());
 		assertEquals(p, it.next());
+		assertEquals(o, it.next());
+		assertEquals(n, it.next());
+		assertEquals(a, it.next());
+		assertEquals(m, it.next());
+		assertEquals(b, it.next());
+		assertEquals(l, it.next());
+		assertEquals(k, it.next());
+		// k before c because c was set blocked, i.e. modified, i.e. removed
+		// and re-added
+		assertEquals(c, it.next());
+		assertEquals(d, it.next());
+		assertEquals(j, it.next());
+		assertEquals(i, it.next());  // i added to tree before e
+		assertEquals(e, it.next());
+		assertEquals(f, it.next());
+		assertEquals(h, it.next());
+		assertEquals(g, it.next());
+		try {
+			it.next();
+			fail("Should have throuwn a NoSuchElementException");
+		} catch (Exception e2) {
+			// all fine
+		}
 		assertEquals(18, tree.size());
 
 		SearchTree updateTree1 = new SearchTree(new ReversedAccuracyOENodeComparator());
@@ -438,6 +462,28 @@ public class SearchTreeTest {
 		/* have to check the UUID here since S will be newly introduced in tree
 		 * so object identity is not preserved */
 		assertEquals(s_.getUUID(), it.next().getUUID());
+		assertEquals(a, it.next());
+		assertEquals(m, it.next());
+		assertEquals(b, it.next());
+		assertEquals(l, it.next());
+		assertEquals(c, it.next());
+		assertEquals(k, it.next());
+		assertEquals(f, it.next());
+		assertEquals(d, it.next());
+		assertEquals(j, it.next());
+		assertEquals(g, it.next());
+		assertEquals(i, it.next());
+		assertEquals(e, it.next());
+		assertEquals(h, it.next());
+		assertEquals(n, it.next());
+		assertEquals(o, it.next());
+		assertEquals(p, it.next());
+		try {
+			it.next();
+			fail("Should have throuwn a NoSuchElementException");
+		} catch (Exception e2) {
+			// all fine
+		}
 
 		/*    J*
 		 *   / \
@@ -477,6 +523,32 @@ public class SearchTreeTest {
 		assertEquals(w_.getUUID(), it.next().getUUID());
 		assertEquals(q, it.next());
 		assertEquals(v_.getUUID(), it.next().getUUID());
+		assertEquals(r, it.next());
+		assertEquals(s_.getUUID(), it.next().getUUID());
+		assertEquals(u_.getUUID(), it.next().getUUID());
+		assertEquals(a, it.next());
+		assertEquals(m, it.next());
+		assertEquals(b, it.next());
+		assertEquals(l, it.next());
+		assertEquals(c, it.next());
+		assertEquals(t_.getUUID(), it.next().getUUID());
+		assertEquals(k, it.next());
+		assertEquals(f, it.next());
+		assertEquals(d, it.next());
+		assertEquals(g, it.next());
+		assertEquals(i, it.next());
+		assertEquals(e, it.next());
+		assertEquals(h, it.next());
+		assertEquals(n, it.next());
+		assertEquals(j, it.next());
+		assertEquals(o, it.next());
+		assertEquals(p, it.next());
+		try {
+			it.next();
+			fail("Should have throuwn a NoSuchElementException");
+		} catch (Exception e2) {
+			// all fine
+		}
 	}
 
 	@Test
