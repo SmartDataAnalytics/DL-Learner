@@ -4,15 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
+import org.aksw.commons.util.Pair;
 import org.dllearner.distributed.amqp.NodeTreeSet.NodeTreeSetIterator;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
@@ -37,6 +41,7 @@ public class NodeTreeSetTest {
 	NodeTreeSet nts;
 	OENode nodeArray[] = new OENode[1000];
 	String prefix = "http://dl-learner.org/ont/";
+	int clsCounter = 1;
 
 	@Test
 	public void test_Constructor() {
@@ -257,6 +262,43 @@ public class NodeTreeSetTest {
 //		for (int i = 900; i < nodeArray.length; i++)
 //			assertTrue("Returned incorrect set", s.contains(nodeArray[i]));
 //	}
+
+	private OWLClassExpression nextCls() {
+		return new OWLClassImpl(IRI.create(prefix + (clsCounter++)));
+	}
+
+	@Test
+	public void test_iter() {
+		ArrayList<Pair<Double, OENode>> nodes = new ArrayList<>();
+		int maxNodes = 1000;
+		Random rnd = new Random();
+
+		NodeTreeSet ntSet = new NodeTreeSet(new ReversedOENodeComparator());
+		double acc = 0.10;
+		for (int i=0; i<maxNodes; i++) {
+			if (rnd.nextBoolean()) {
+				acc += 0.01;
+			}
+			OENode node = new OENode(nextCls(), acc);
+			nodes.add(new Pair<Double, OENode>(acc, node));
+
+			ntSet.add(node);
+		}
+
+		int cmpCntr = 0;
+		for (OENode n : ntSet) {
+			assertTrue(n.equals(nodes.get(cmpCntr).getValue()));
+			assertEquals((Double) n.getAccuracy(), nodes.get(cmpCntr).getKey());
+			cmpCntr++;
+		}
+
+		NodeTreeSetIterator it = ntSet.iterator();
+		for (int i=0; i<nodes.size(); i++) {
+			OENode n = it.next();
+			assertTrue(nodes.get(i).getValue().equals(n));
+			assertTrue(nodes.get(i).getKey().equals(n.getAccuracy()));
+		}
+	}
 
 	@Before
 	public void setUp() {
