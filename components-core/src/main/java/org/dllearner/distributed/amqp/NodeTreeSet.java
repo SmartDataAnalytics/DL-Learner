@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.Spliterator;
 import java.util.TreeSet;
@@ -24,6 +25,7 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 	private ArrayList<OENode> nodes;
 	private SortedSet<Double> scores;
 	private OEHeuristicRuntime comparator;
+	private boolean useRandomIterator = false;
 
 	public NodeTreeSet() {
 		this(new OEHeuristicRuntime());
@@ -50,7 +52,10 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 
 	@Override
 	public NodeTreeSetIterator iterator() {
-		return new NodeTreeSetIterator();
+		if (useRandomIterator)
+			return new NodeTreeSetRandIterator();
+		else
+			return new NodeTreeSetIterator();
 	}
 
 	@Override
@@ -284,7 +289,39 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 		return uuid2Node.get(uuid);
 	}
 
+	public void setUseRandomIterator(boolean useRandomIterator) {
+		this.useRandomIterator = useRandomIterator;
+	}
+
 	// ------------------------------------------------------------------------
+
+	class NodeTreeSetRandIterator extends NodeTreeSetIterator implements Iterator<OENode> {
+
+		private List<Integer> unseenIdxs;
+		private Random rnd;
+
+		public NodeTreeSetRandIterator() {
+			unseenIdxs = new ArrayList<Integer>();
+
+			for (int i=0; i<nodes.size(); i++) { unseenIdxs.add(i); }
+
+			rnd = new Random();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !unseenIdxs.isEmpty();
+		}
+
+		@Override
+		public OENode next() {
+			int i = rnd.nextInt(unseenIdxs.size());
+			Integer nodeIdx = unseenIdxs.remove(i);
+
+			return nodes.get(nodeIdx);
+		}
+
+	}
 
 	class NodeTreeSetIterator implements Iterator<OENode> {
 		/** points to the *current* index position, so the one that corresponds
