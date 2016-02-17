@@ -80,6 +80,16 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 		return uuid2Node.containsKey(node.getUUID());
 	}
 
+	/** mainly for debugging purposes */
+	protected void dump() {
+		System.out.println("--- start dump ---");
+		System.out.println("keys: ");
+		for (UUID k : uuid2Node.keySet()) System.out.println("\t" + k);
+		System.out.println("nodes: ");
+		for (OENode n : nodes) System.out.println("\t" + n + " (" + n.getUUID() + ")");
+		System.out.println("--- end dump ---");
+	}
+
 	@Override
 	public boolean add(OENode node) {
 		// do nothing if node is already in the set
@@ -292,13 +302,7 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 
 		@Override
 		public boolean hasNext() {
-			//              evaluation can be skipped if currScope not set, yet
-			boolean isLastUUID = ((currScore == null) ||
-					/* for each score we get from the score iterator we have to
-					 * check whether we are at the end of the UUID list
-					 * already. The current list pos is held in uuidIdx; the
-					 * considered UUID list is score2UUID.get(currScore) */
-					(uuidIdx < score2UUID.get(currScore).size()));
+			boolean isLastUUID = (currScore == null);
 
 			return !isLastUUID || scoresIt.hasNext();
 		}
@@ -333,7 +337,7 @@ public class NodeTreeSet extends TreeSet<OENode> implements Iterable<OENode> {
 
 		@Override
 		public int compare(Double o1, Double o2) {
-			return Double.compare(o1, o2);
+			return -Double.compare(o1, o2);
 		}
 
 	}
