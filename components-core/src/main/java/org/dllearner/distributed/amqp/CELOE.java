@@ -1344,7 +1344,9 @@ public class CELOE extends AbstractCELA {
 					treeContainer.getBestEvaluatedDescriptions();
 
 			for (EvaluatedDescription<? extends Score> ed : remoteBestEvaluatedDescriptions.getSet()) {
-				bestEvaluatedDescriptions.add(ed);
+				synchronized (bestEvaluatedDescriptions) {
+					bestEvaluatedDescriptions.add(ed);
+				}
 			}
 
 			int newMinHorizExp = treeContainer.getMinHorizExpansion();
@@ -1362,7 +1364,7 @@ public class CELOE extends AbstractCELA {
 
 				try {
 					treeContainer = (SearchTreeContainer) ((ObjectMessage) msg).getObject();
-					logger.info("|<--| " + treeContainer.toString());
+					logger.info("|-->| " + treeContainer.toString());
 					processRecvdTree(treeContainer);
 
 				} catch (JMSException e) {
@@ -1500,7 +1502,7 @@ public class CELOE extends AbstractCELA {
 
 				try {
 					treeContainer = (SearchTreeContainer) ((ObjectMessage) msg).getObject();
-					logger.debug("|<--| " + treeContainer.toString());
+					logger.info("|-->| " + treeContainer.toString());
 					processRecvdTree(treeContainer);
 					recvdMsgsCnt++;
 				} catch (JMSException e) {

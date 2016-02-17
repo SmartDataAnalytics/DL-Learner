@@ -137,7 +137,7 @@ public class AMQPAgent extends Thread {
 	}
 
 	protected void send(MessageContainer msgContainer) {
-		logger.info("|-->| " + msgContainer.toString());
+		logger.info("|<--| " + msgContainer.toString());
 
 		Message msg;
 
