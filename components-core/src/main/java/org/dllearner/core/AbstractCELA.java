@@ -81,10 +81,8 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	protected Map<String, String> prefixes;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 	
-	protected static final OWLClass OWL_THING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_THING.getIRI());
-	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(
-            OWLRDFVocabulary.OWL_NOTHING.getIRI());
+	protected static final OWLClass OWL_THING = new OWLClassImpl(OWLRDFVocabulary.OWL_THING.getIRI());
+	protected static final OWLClass OWL_NOTHING = new OWLClassImpl(OWLRDFVocabulary.OWL_NOTHING.getIRI());
 	
 	protected long nanoStartTime;
 	protected boolean isRunning = false;
@@ -92,7 +90,10 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	
 	protected OWLClassExpressionMinimizer minimizer;
 	
-	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.")
+	@ConfigOption(name="useMinimizer", defaultValue="true", description="Specifies whether returned expressions should " +
+			"be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the " +
+			"shortest expression which is equivalent to the learned expression). Turning this feature off may improve " +
+			"performance.")
 	private boolean useMinimizer = true;
 	
 	@ConfigOption(defaultValue = "10", name = "maxExecutionTimeInSeconds", description = "maximum execution of the algorithm in seconds")
@@ -142,9 +143,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 	public AbstractCELA(AbstractClassExpressionLearningProblem learningProblem, AbstractReasonerComponent reasoningService) {
 		this.learningProblem = learningProblem;
 		this.reasoner = reasoningService;
-//
-//		baseURI = reasoner.getBaseURI();
-//		prefixes = reasoner.getPrefixes();
 	}
 	
 	/**
@@ -274,7 +272,6 @@ public abstract class AbstractCELA extends AbstractComponent implements ClassExp
 			// once we hit a OWLClassExpression with a below threshold accuracy, we simply return
 			// because learning algorithms are advised to order descriptions by accuracy,
 			// so we won't find any concept with higher accuracy in the remaining list
-//			if(ed.getAccuracy() < accuracyThreshold) {
 			if(ed.getAccuracy() < accuracyThreshold) {
 				return returnList;
 			}

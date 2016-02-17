@@ -139,7 +139,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		logger = LoggerFactory.getLogger(this.getClass());
 	}
-	
+
+	@NoConfigOption
 	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
 		this.ksQef = qef;
 	}
