@@ -44,6 +44,7 @@ import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
+import org.dllearner.distributed.amqp.NodeTreeSet.NodeTreeSetIterator;
 import org.dllearner.learningproblems.ClassAsInstanceLearningProblem;
 import org.dllearner.learningproblems.ClassLearningProblem;
 import org.dllearner.learningproblems.PosNegLP;
@@ -702,25 +703,28 @@ public class CELOE extends AbstractCELA {
 
 		synchronized (searchTree) {
 
-		Iterator<OENode> it = searchTree.descendingIterator();
+			NodeTreeSetIterator it = (NodeTreeSetIterator) searchTree.descendingIterator();
 
-		while(it.hasNext()) {
-			OENode node = it.next();
+			while(it.hasNext()) {
+				OENode node = it.next();
 
-			if (searchTree.isBlocked(node) || searchTree.isDisabled(node)) continue;
+				if (searchTree.isBlocked(node) || searchTree.isDisabled(node)) {
+					continue;
+				}
 
-			boolean horizExpLtDescLen = node.getHorizontalExpansion() <
-					OWLClassExpressionUtils.getLength(node.getDescription());
+				boolean horizExpLtDescLen = node.getHorizontalExpansion() <
+						OWLClassExpressionUtils.getLength(node.getDescription());
 
-			if (isExpandAccuracy100Nodes() && horizExpLtDescLen) {
-				return node;
-
-			} else {
-				if(node.getAccuracy() < 1.0 || horizExpLtDescLen) {
+				if (isExpandAccuracy100Nodes() && horizExpLtDescLen) {
 					return node;
+
+				} else {
+
+					if(node.getAccuracy() < 1.0 || horizExpLtDescLen) {
+						return node;
+					}
 				}
 			}
-		}
 		}
 
 		// this might happen if there are currently no unblocked nodes
@@ -862,34 +866,12 @@ public class CELOE extends AbstractCELA {
 			logger.info("more accurate (" +
 					dfPercent.format(currentHighestAccuracy) + ") class " +
 					"expression found after " + durationStr + ": " +
-					descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()));
+					descriptionToString(bestEvaluatedDescriptions.getBest().getDescription()) + " [" +
+					bestEvaluatedDescriptions.getBest().getScore() + "]");
 		}
 	}
 
 	private boolean terminationCriteriaSatisfied() {
-//		if (!runMaster) {
-//		System.out.println("expression tests: " + expressionTests);
-//		System.out.println("max class expression tests: " + maxClassExpressionTests);
-//		System.out.println("stop: " + stop);
-//		System.out.println("a) maxClassExpressionTestsAfterImprovement != 0: " + (maxClassExpressionTestsAfterImprovement != 0));
-//		System.out.println("a) expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement): " + (expressionTests - expressionTestCountLastImprovement >= maxClassExpressionTestsAfterImprovement));
-//		System.out.println("b) maxClassExpressionTests != 0: " + (maxClassExpressionTests != 0));
-//		System.out.println("b) expressionTests >= maxClassExpressionTests: " + (expressionTests >= maxClassExpressionTests));
-//		System.out.println("c) maxExecutionTimeInSecondsAfterImprovement != 0: " + (maxExecutionTimeInSecondsAfterImprovement != 0));
-//		System.out.println("c) (System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L)): " + ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSecondsAfterImprovement* 1000000000L)));
-//		System.out.println("-----");
-//		System.out.println("maxExecutionTimeInSeconds: " + maxExecutionTimeInSeconds);
-//		System.out.println("System.nanoTime() - nanoStartTime: " + (System.nanoTime() - nanoStartTime));
-//		System.out.println("nanoStartTime: " + nanoStartTime);
-//		System.out.println("d) maxExecutionTimeInSeconds != 0: " + (maxExecutionTimeInSeconds != 0));
-//		System.out.println("d) (System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L): " + ((System.nanoTime() - nanoStartTime) >= (maxExecutionTimeInSeconds* 1000000000L)));
-//		System.out.println("e) terminateOnNoiseReached: " + terminateOnNoiseReached);
-//		if (!bestEvaluatedDescriptions.isEmpty())
-//		System.out.println("e) 100*getCurrentlyBestAccuracy()>=100-noisePercentage" + (100*getCurrentlyBestAccuracy()>=100-noisePercentage));
-//		System.out.println("f) stopOnFirstDefinition: " + stopOnFirstDefinition);
-//		System.out.println("f) getCurrentlyBestAccuracy() >= 1: " + (getCurrentlyBestAccuracy() >= 1));
-//		}
-
 		return
 		stop ||
 		(maxClassExpressionTestsAfterImprovement != 0 &&
@@ -1276,7 +1258,10 @@ public class CELOE extends AbstractCELA {
 				 * in the search tree */
 				if (nextNode == null) continue;
 
-				logger.info("NEXT NODE ACC: " + nextNode.getAccuracy());
+				logger.info("+++ NEXT NODE: " + nextNode + " " +
+						"(ACC: " + nextNode.getAccuracy() + ", " +
+						"H-SCORE: " + heuristic.getNodeScore(nextNode) + ", " +
+						"LP-SCORE: " + learningProblem.computeScore(nextNode.getDescription()) + ")");
 
 				// With a lot of workers it might happen that temporarilyTOP is
 				// going to be the best node. Then the whole global search tree
@@ -1296,6 +1281,7 @@ public class CELOE extends AbstractCELA {
 					continue;
 				}
 
+				pendingRequests++;
 				sendTree(subTree, minHorizExp, maxHorizExp);
 			}
 
@@ -1322,9 +1308,12 @@ public class CELOE extends AbstractCELA {
 			pendingRequests--;
 			SearchTree remoteTree = treeContainer.getTree();
 
+			int searchTreeSizeBeforeMerge = searchTree.size();
 			synchronized (searchTree) {
 				searchTree.updateAndSetUnblocked(remoteTree);
 			}
+			logger.info("added " + (searchTree.size()-searchTreeSizeBeforeMerge) +
+					" nodes to search tree during merge");
 
 			double remoteBestAcc = treeContainer.getBestAccuracy();
 			OWLClassExpression remoteBestDescription = treeContainer.getBestDescription();
@@ -1357,7 +1346,6 @@ public class CELOE extends AbstractCELA {
 		}
 
 		class MasterMessageListener implements MessageListener {
-
 			@Override
 			public void onMessage(Message msg) {
 				SearchTreeContainer treeContainer;
@@ -1370,7 +1358,6 @@ public class CELOE extends AbstractCELA {
 				} catch (JMSException e) {
 					e.printStackTrace();
 				}
-
 			}
 		}
 	}
