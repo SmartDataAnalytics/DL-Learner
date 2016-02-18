@@ -59,6 +59,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
+	@ConfigOption(defaultValue = "false")
 	protected boolean strictMode = false;
 
 	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
@@ -299,7 +300,7 @@ public abstract class ObjectPropertyHierarchyAxiomLearner<T extends OWLObjectPro
 	/**
 	 * @param strictMode the strictMode to set
 	 */
-	public void setUseStrictMode(boolean strictMode) {
+	public void setStrictMode(boolean strictMode) {
 		this.strictMode = strictMode;
 	}
 

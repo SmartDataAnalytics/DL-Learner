@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.utilities.URLencodeUTF8;
 import org.semanticweb.owlapi.model.IRI;
@@ -65,6 +66,7 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
     private List<String> namedGraphURIs = new LinkedList<>();
 
+	@NoConfigOption // set via reasoningString
     private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
     @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
     		+ " Available reasoners are: \"micro_rule\", \"mini_rule\", \"rdfs\", \"rule\"")

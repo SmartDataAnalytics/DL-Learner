@@ -266,6 +266,7 @@ function showAllCat(){
 <tr><td>cacheTTL</td><td>The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).</td><td> long</td><td>86400</td><td> false</td></tr>
 <tr><td>defaultGraphURIs</td><td>a list of default graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
 <tr><td>namedGraphURIs</td><td>a list of named graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
+<tr><td>pageSize</td><td>page size <strong>Example:</strong> 10000</td><td> long</td><td>10 000</td><td> false</td></tr>
 <tr><td>queryDelay</td><td>Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.</td><td> long</td><td>50</td><td> false</td></tr>
 <tr><td>retryCount</td><td>The maximum number of retries for the execution of a particular SPARQL query.</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>url</td><td>URL of the SPARQL endpoint</td><td> URL</td><td></td><td> true</td></tr>
@@ -351,7 +352,30 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type OtherComponent"><a name="org.dllearner.utilities.owl.OWLClassExpressionLengthMetric"><h2>OWL Class Expression Length Metric <small class="default-hidden">org.dllearner.utilities.owl.OWLClassExpressionLengthMetric</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>cel_metric</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>cel_metric</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>OtherComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>classLength</td><td>Class: "C"</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataAllValuesLength</td><td>Data All Values: "∀" p.t</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataCardinalityLength</td><td>Data Cardinaltiy restriction: "≤n" r.t</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>dataComplementLength</td><td>Data Complement: "¬"datatype</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataHasValueLength</td><td>Data Has Value: "∃" p."{V}"</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>dataIntersectionLength</td><td>Data Intersection: datatype"⨅"datatype</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataOneOfLength</td><td>Data One of: ∃ p."{U,V,W}"</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataProperyLength</td><td>Data Property: ∃ "p".t</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataSomeValuesLength</td><td>Data Some Values: "∃" p.t</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>dataUnionLength</td><td>Data Union: datatype"<u>⨆</u>"datatype</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>datatypeLength</td><td>Datatype: "^^datatype"</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectAllValuesLength</td><td>Obj. All Values: "∀" r.C</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectCardinalityLength</td><td>Obj. Cardinaltiy restriction: "≤n" r.C</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>objectComplementLength</td><td>Complement: "¬"C</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectHasValueLength</td><td>Obj. Has Value: "∃" r."{I}"</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>objectIntersectionLength</td><td>Intersection: A"⨅"B</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectInverseLength</td><td>Inverse property: ∃ "r⁻".C</td><td> int</td><td>2</td><td> false</td></tr>
+<tr><td>objectOneOfLength</td><td>Obj. One of: ∃ r."{X,Y,Z}"</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectProperyLength</td><td>Obj. Property: ∃ "r".C</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectSomeValuesLength</td><td>Obj. Some Values: "∃" r.C</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>objectUnionLength</td><td>Union: A"⨆"B</td><td> int</td><td>1</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.OWLFile"><h2>OWL File <small class="default-hidden">org.dllearner.kb.OWLFile</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>owlfile</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>baseDir</td><td>separately specify directory of KB file</td><td> String</td><td></td><td> false</td></tr>
@@ -366,6 +390,7 @@ function showAllCat(){
 <div class="type RefinementOperator"><a name="org.dllearner.refinementoperators.OperatorInverter"><h2>OperatorInverter <small class="default-hidden">org.dllearner.refinementoperators.OperatorInverter</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>inv_op</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>guaranteeLength</td><td>Whether inverse solutions must respect the desired max length</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>lengthMetric</td><td>class expression length calculation metric</td><td> OWLClassExpressionLengthMetric</td><td></td><td> false</td></tr>
 <tr><td>operator</td><td>operator to invert</td><td> LengthLimitedRefinementOperator</td><td></td><td> true</td></tr>
 <tr><td>useNegationNormalForm</td><td>whether to apply NNF</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
@@ -460,7 +485,6 @@ function showAllCat(){
 <tr><td>precomputeDataPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
-<tr><td>useCache</td><td>Whether to use a file-based cache</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useGenericSplitsCode</td><td>Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>useValueLists</td><td>Whether to use SPARQL1.1 Value Lists</td><td> boolean</td><td>false</td><td> false</td></tr>
@@ -472,6 +496,7 @@ function showAllCat(){
 <tr><td>cacheTTL</td><td>The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).</td><td> long</td><td>86400</td><td> false</td></tr>
 <tr><td>defaultGraphURIs</td><td>a list of default graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
 <tr><td>namedGraphURIs</td><td>a list of named graph URIs</td><td> List</td><td>{}</td><td> false</td></tr>
+<tr><td>pageSize</td><td>page size <strong>Example:</strong> 10000</td><td> long</td><td>10 000</td><td> false</td></tr>
 <tr><td>queryDelay</td><td>Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.</td><td> long</td><td>50</td><td> false</td></tr>
 <tr><td>retryCount</td><td>The maximum number of retries for the execution of a particular SPARQL query.</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>url</td><td>URL of the SPARQL endpoint</td><td> URL</td><td></td><td> true</td></tr>
@@ -518,6 +543,7 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner"><h2>data subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm data subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.DisjointClassesLearner"><h2>disjoint classes learner <small class="default-hidden">org.dllearner.algorithms.DisjointClassesLearner</small></h2></a>
@@ -535,11 +561,13 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner"><h2>disjoint data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dpldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner"><h2>disjoint object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>opldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.sparql.simple.SparqlSimpleExtractor"><h2>efficient SPARQL fragment extractor <small class="default-hidden">org.dllearner.kb.sparql.simple.SparqlSimpleExtractor</small></h2></a>
@@ -557,11 +585,13 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner"><h2>equivalent data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner"><h2>equivalent object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner"><h2>functional data property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner</small></h2></a>
@@ -591,6 +621,7 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm object subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>strictMode</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosOnlyLP"><h2>positive only learning problem <small class="default-hidden">org.dllearner.learningproblems.PosOnlyLP</small></h2></a>
@@ -603,6 +634,7 @@ function showAllCat(){
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>beta</td><td>how important it is not to cover negatives</td><td> double</td><td>1</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
@@ -618,12 +650,16 @@ function showAllCat(){
 <div class="type RefinementOperator"><a name="org.dllearner.refinementoperators.RhoDRDown"><h2>rho refinement operator <small class="default-hidden">org.dllearner.refinementoperators.RhoDRDown</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>rho</dd><dt>version</dt><dd>0.8</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>applyAllFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>applyExistsFilter</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>applyExistsFilter</td><td>throwing out all refinements with duplicate ∃ r for any r</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>cardinalityLimit</td><td>limit for cardinality restrictions (this makes sense if we e.g. have compounds with too many atoms)</td><td> int</td><td>5</td><td> false</td></tr>
-<tr><td>disjointChecks</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>disjointChecks</td><td>skip combination of intersection between disjoint classes</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>dropDisjuncts</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>frequencyThreshold</td><td>minimum number an individual or literal has to be seen in the knowledge base before considering it for inclusion in concepts</td><td> int</td><td>3</td><td> false</td></tr>
 <tr><td>instanceBasedDisjoints</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>lengthMetric</td><td>class expression length metric (should match learning algorithm usage)</td><td> OWLClassExpressionLengthMetric</td><td>default cel_metric</td><td> false</td></tr>
 <tr><td>maxNrOfSplits</td><td>the number of generated split intervals for numeric types</td><td> int</td><td>12</td><td> false</td></tr>
+<tr><td>reasoner</td><td>the reasoner to use</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
+<tr><td>startClass</td><td>You can specify a start class for the algorithm</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
 <tr><td>useAllConstructor</td><td>support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useBooleanDatatypes</td><td>support of boolean datatypes (xsd:boolean), e.g. ∃ r.{true} </td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useCardinalityRestrictions</td><td>support of qualified cardinality restrictions (owl:minCardinality), e.g. ≥ 3 r.C </td><td> boolean</td><td>true</td><td> false</td></tr>

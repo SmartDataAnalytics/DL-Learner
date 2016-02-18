@@ -25,6 +25,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import org.dllearner.core.*;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.*;
@@ -84,11 +85,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private static final OWLClass OWL_THING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_THING.getIRI());
 
+	@ConfigOption(description = "the reasoner to use")
 	private AbstractReasonerComponent reasoner;
 
 	// hierarchies
+	@NoConfigOption
 	private ClassHierarchy subHierarchy;
+	@NoConfigOption
 	private ObjectPropertyHierarchy objectPropertyHierarchy;
+	@NoConfigOption
 	private DatatypePropertyHierarchy dataPropertyHierarchy;
 
 	// domains and ranges
@@ -109,6 +114,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// start class, then the algorithm should start the search with class
 	// Compound (and not with Thing), because otherwise concepts like
 	// NOT Carbon-87 will be returned which itself is not a subclass of Compound
+	@ConfigOption(
+			defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm")
 	private OWLClassExpression startClass = OWL_THING;
 
 	// the length of concepts of top refinements, the first values is
@@ -154,6 +162,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
+	@ConfigOption(defaultValue = "3", description = "minimum number an individual or literal has to be seen in the " +
+			"knowledge base before considering it for inclusion in concepts")
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<>();
 	// data structure with identified frequent values
@@ -171,7 +181,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "applyAllFilter", defaultValue="true")
 	private boolean applyAllFilter = true;
 
-	@ConfigOption(name = "applyExistsFilter", defaultValue="true")
+	@ConfigOption(name = "applyExistsFilter", defaultValue="true", description = "throwing out all refinements with " +
+			"duplicate \u2203 r for any r")
 	private boolean applyExistsFilter = true;
 
 	@ConfigOption(name = "useAllConstructor", description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
@@ -204,7 +215,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false")
 	private boolean useStringDatatypes = false;
 
-	@ConfigOption(name = "disjointChecks", defaultValue="true")
+	@ConfigOption(name = "disjointChecks", defaultValue="true", description = "skip combination of intersection between disjoint classes")
 	private boolean disjointChecks = true;
 
 	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true")
@@ -230,6 +241,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description = "whether to generate object complement while refining", defaultValue = "false")
 	private boolean useObjectValueNegation = false;
 
+	@ConfigOption(description = "class expression length metric (should match learning algorithm usage)", defaultValue = "default cel_metric")
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
@@ -1804,6 +1816,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setApplyAllFilter(boolean applyAllFilter) {
 		this.applyAllFilter = applyAllFilter;
+	}
+
+	public boolean isApplyExistsFilter() {
+		return applyExistsFilter;
+	}
+
+	public void setApplyExistsFilter(boolean applyExistsFilter) {
+		this.applyExistsFilter = applyExistsFilter;
 	}
 
 	public boolean isUseAllConstructor() {

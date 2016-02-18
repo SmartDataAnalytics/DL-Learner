@@ -54,10 +54,10 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#DatatypeProperty> .} WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }");
-	
-	
+
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
+	@ConfigOption(defaultValue = "false")
 	protected boolean strictMode = false;
 
 	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
@@ -305,7 +305,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 	/**
 	 * @param strictMode the strictMode to set
 	 */
-	public void setUseStrictMode(boolean strictMode) {
+	public void setStrictMode(boolean strictMode) {
 		this.strictMode = strictMode;
 	}
 

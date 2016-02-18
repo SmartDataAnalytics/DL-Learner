@@ -40,6 +40,7 @@ import org.aksw.jena_sparql_api.pagination.core.QueryExecutionFactoryPaginated;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.jena.riot.RDFDataMgr;
 import org.dllearner.core.*;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -104,10 +105,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private static final ParameterizedSparqlString INDIVIDUAL_POPULARITY_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(*) AS ?cnt) WHERE {?entity ?p ?o .}");
 
-
-	@ConfigOption(name = "useCache", description = "Whether to use a file-based cache", defaultValue = "true", required = false)
-	private boolean useCache = true;
-	
 	@ConfigOption(name = "laxMode", description = "Use alternative relaxed Sparql-queries for Classes and Individuals", defaultValue = "false")
 	private boolean laxMode = false;
 
@@ -2399,7 +2396,7 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		throw new NotImplementedException("Method setSynchronized() not implemented yet!");
 	}

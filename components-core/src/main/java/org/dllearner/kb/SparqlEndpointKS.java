@@ -18,11 +18,6 @@
  */
 package org.dllearner.kb;
 
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.aksw.jena_sparql_api.cache.extra.CacheFrontend;
 import org.aksw.jena_sparql_api.cache.h2.CacheUtilsH2;
 import org.aksw.jena_sparql_api.core.QueryExecutionFactory;
@@ -33,11 +28,17 @@ import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.sparql.SPARQLTasks;
 import org.dllearner.kb.sparql.SparqlEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SPARQL endpoint knowledge source (without fragment extraction),
@@ -53,7 +54,9 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	private static final Logger logger = LoggerFactory.getLogger(SparqlEndpointKS.class);
 
 	private SparqlEndpoint endpoint;
+	@NoConfigOption
 	private CacheFrontend cache;
+	@NoConfigOption // auto-detected
 	private boolean supportsSPARQL_1_1 = false;
 	private boolean isRemote = true;
 	private boolean initialized = false;
@@ -86,6 +89,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 
 	protected QueryExecutionFactory qef;
 
+	@ConfigOption(defaultValue = "10 000", description = "page size", exampleValue = "10000")
 	private long pageSize = 10000;
 	
 	private KnowledgeSource schema;
@@ -161,7 +165,7 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		qef = new QueryExecutionFactoryDelay(qef, queryDelay);
 
 		if(retryCount > 0) {
-			qef = new QueryExecutionFactoryRetry(qef, 3, 1, TimeUnit.SECONDS);
+			qef = new QueryExecutionFactoryRetry(qef, retryCount, 1, TimeUnit.SECONDS);
 		}
 
 		// add pagination to avoid incomplete result sets due to limitations of the endpoint
@@ -260,6 +264,14 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	 */
 	public KnowledgeSource getSchema() {
 		return schema;
+	}
+
+	public int getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
 	}
 
 	@Override

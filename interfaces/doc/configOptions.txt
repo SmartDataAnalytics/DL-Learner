@@ -112,6 +112,13 @@ required: false
 default value: {}
 conf file usage: ks.namedGraphURIs = {}
 
+option name: pageSize
+description: page size
+type: long
+required: false
+default value: 10 000
+conf file usage: ks.pageSize = 10000
+
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
 type: long
@@ -226,6 +233,13 @@ type: List
 required: false
 default value: {}
 conf file usage: ks.namedGraphURIs = {}
+
+option name: pageSize
+description: page size
+type: long
+required: false
+default value: 10 000
+conf file usage: ks.pageSize = 10000
 
 option name: queryDelay
 description: Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.
@@ -364,6 +378,13 @@ required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
 
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
 A learning algorithm for disjoint object properties axioms.
@@ -376,6 +397,13 @@ type: double
 required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: equivalent data properties axiom learner (org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -390,6 +418,13 @@ required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
 
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: equivalent object properties axiom learner (org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner) v0.1
 =====================================================================================================================================
 A learning algorithm for equivalent object properties axioms.
@@ -402,6 +437,13 @@ type: double
 required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
 ===============================================================================================================================
@@ -464,6 +506,13 @@ required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
 
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
+
 component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
 ======================================================================================================================
 A learning algorithm object subproperty axioms.
@@ -476,6 +525,13 @@ type: double
 required: false
 default value: 1.0
 conf file usage: la.beta = 1.0
+
+option name: strictMode
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: la.strictMode = false
 
 component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -1823,6 +1879,13 @@ required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
 
+option name: beta
+description: how important it is not to cover negatives
+type: double
+required: false
+default value: 1
+conf file usage: la.beta = 1
+
 option name: ignoredConcepts
 description: List of classes to ignore
 type: Set
@@ -2263,13 +2326,6 @@ required: true
 default value: 
 conf file usage: reasoner.sources = {}
 
-option name: useCache
-description: Whether to use a file-based cache
-type: boolean
-required: false
-default value: true
-conf file usage: reasoner.useCache = true
-
 option name: useGenericSplitsCode
 description: Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended
 type: boolean
@@ -2342,6 +2398,13 @@ required: false
 default value: true
 conf file usage: op.guaranteeLength = true
 
+option name: lengthMetric
+description: class expression length calculation metric
+type: OWLClassExpressionLengthMetric
+required: false
+default value: 
+conf file usage: op.lengthMetric = ""
+
 option name: operator
 description: operator to invert
 type: LengthLimitedRefinementOperator
@@ -2369,7 +2432,7 @@ default value: true
 conf file usage: op.applyAllFilter = true
 
 option name: applyExistsFilter
-description: no description available
+description: throwing out all refinements with duplicate ∃ r for any r
 type: boolean
 required: false
 default value: true
@@ -2383,7 +2446,7 @@ default value: 5
 conf file usage: op.cardinalityLimit = 5
 
 option name: disjointChecks
-description: no description available
+description: skip combination of intersection between disjoint classes
 type: boolean
 required: false
 default value: true
@@ -2396,6 +2459,13 @@ required: false
 default value: false
 conf file usage: op.dropDisjuncts = false
 
+option name: frequencyThreshold
+description: minimum number an individual or literal has to be seen in the knowledge base before considering it for inclusion in concepts
+type: int
+required: false
+default value: 3
+conf file usage: op.frequencyThreshold = 3
+
 option name: instanceBasedDisjoints
 description: no description available
 type: boolean
@@ -2403,12 +2473,33 @@ required: false
 default value: true
 conf file usage: op.instanceBasedDisjoints = true
 
+option name: lengthMetric
+description: class expression length metric (should match learning algorithm usage)
+type: OWLClassExpressionLengthMetric
+required: false
+default value: default cel_metric
+conf file usage: op.lengthMetric = "default cel_metric"
+
 option name: maxNrOfSplits
 description: the number of generated split intervals for numeric types
 type: int
 required: false
 default value: 12
 conf file usage: op.maxNrOfSplits = 12
+
+option name: reasoner
+description: the reasoner to use
+type: AbstractReasonerComponent
+required: false
+default value: 
+conf file usage: op.reasoner = ""
+
+option name: startClass
+description: You can specify a start class for the algorithm
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: op.startClass = "owl:Thing"
 
 option name: useAllConstructor
 description: support of universal restrictions (owl:allValuesFrom), e.g. ∀ r.C 
@@ -2757,6 +2848,153 @@ component: OWL Class Expression Length Metric (org.dllearner.utilities.owl.OWLCl
 ===============================================================================================================
 
 conf file usage: component.type = "cel_metric"
+
+option name: classLength
+description: Class: "C"
+type: int
+required: false
+default value: 1
+conf file usage: component.classLength = 1
+
+option name: dataAllValuesLength
+description: Data All Values: "∀" p.t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataAllValuesLength = 1
+
+option name: dataCardinalityLength
+description: Data Cardinaltiy restriction: "≤n" r.t
+type: int
+required: false
+default value: 2
+conf file usage: component.dataCardinalityLength = 2
+
+option name: dataComplementLength
+description: Data Complement: "¬"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataComplementLength = 1
+
+option name: dataHasValueLength
+description: Data Has Value: "∃" p."{V}"
+type: int
+required: false
+default value: 2
+conf file usage: component.dataHasValueLength = 2
+
+option name: dataIntersectionLength
+description: Data Intersection: datatype"⨅"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataIntersectionLength = 1
+
+option name: dataOneOfLength
+description: Data One of: ∃ p."{U,V,W}"
+type: int
+required: false
+default value: 1
+conf file usage: component.dataOneOfLength = 1
+
+option name: dataProperyLength
+description: Data Property: ∃ "p".t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataProperyLength = 1
+
+option name: dataSomeValuesLength
+description: Data Some Values: "∃" p.t
+type: int
+required: false
+default value: 1
+conf file usage: component.dataSomeValuesLength = 1
+
+option name: dataUnionLength
+description: Data Union: datatype"<u>⨆</u>"datatype
+type: int
+required: false
+default value: 1
+conf file usage: component.dataUnionLength = 1
+
+option name: datatypeLength
+description: Datatype: "^^datatype"
+type: int
+required: false
+default value: 1
+conf file usage: component.datatypeLength = 1
+
+option name: objectAllValuesLength
+description: Obj. All Values: "∀" r.C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectAllValuesLength = 1
+
+option name: objectCardinalityLength
+description: Obj. Cardinaltiy restriction: "≤n" r.C
+type: int
+required: false
+default value: 2
+conf file usage: component.objectCardinalityLength = 2
+
+option name: objectComplementLength
+description: Complement: "¬"C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectComplementLength = 1
+
+option name: objectHasValueLength
+description: Obj. Has Value: "∃" r."{I}"
+type: int
+required: false
+default value: 2
+conf file usage: component.objectHasValueLength = 2
+
+option name: objectIntersectionLength
+description: Intersection: A"⨅"B
+type: int
+required: false
+default value: 1
+conf file usage: component.objectIntersectionLength = 1
+
+option name: objectInverseLength
+description: Inverse property: ∃ "r⁻".C
+type: int
+required: false
+default value: 2
+conf file usage: component.objectInverseLength = 2
+
+option name: objectOneOfLength
+description: Obj. One of: ∃ r."{X,Y,Z}"
+type: int
+required: false
+default value: 1
+conf file usage: component.objectOneOfLength = 1
+
+option name: objectProperyLength
+description: Obj. Property: ∃ "r".C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectProperyLength = 1
+
+option name: objectSomeValuesLength
+description: Obj. Some Values: "∃" r.C
+type: int
+required: false
+default value: 1
+conf file usage: component.objectSomeValuesLength = 1
+
+option name: objectUnionLength
+description: Union: A"⨆"B
+type: int
+required: false
+default value: 1
+conf file usage: component.objectUnionLength = 1
 
 
 ********************

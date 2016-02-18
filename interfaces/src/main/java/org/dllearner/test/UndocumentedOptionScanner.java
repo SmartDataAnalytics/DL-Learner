@@ -30,11 +30,23 @@ public class UndocumentedOptionScanner {
 
 	private static Logger logger = LoggerFactory.getLogger(UndocumentedOptionScanner.class);
 	private static AnnComponentManager cm = AnnComponentManager.getInstance();
+	private static Class<?> currentClaz;
+	private static boolean loggedCurrentClaz;
 
+	private static void logClass() {
+		if (!loggedCurrentClaz) {
+			logger.info("\n@" + currentClaz.getCanonicalName());
+			loggedCurrentClaz = true;
+		}
+	}
+	private static void startClass(Class<?> clazz) {
+		currentClaz = clazz;
+		loggedCurrentClaz = false;
+	}
 	public static void main(String[] args) {
 		ClassPool cp = ClassPool.getDefault();
 		for (Class<? extends Component> c : cm.getComponents()) {
-			logger.info("\n@"+c.getCanonicalName());
+			startClass(c);
 			Map<String, List<Field>> fields = new TreeMap<>();
 			Map<String, List<Method>> methods = new TreeMap<>();
 			for (Method m : c.getMethods()) {
@@ -93,6 +105,7 @@ public class UndocumentedOptionScanner {
 						String fileName = getFilename(claz);
 						File file = findSource(claz);
 						int foundLine = findFieldLine(file, optionName);
+						logClass();
 						logger.warn("setter+var but no @configOption . " + optionName + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 						noCO.add(optionName);
 
@@ -109,6 +122,7 @@ public class UndocumentedOptionScanner {
 							String fileName = getFilename(claz);
 							File file = findSource(claz);
 							int foundLine = findFieldLine(file, m0.getName());
+							logClass();
 							logger.info("setter without var . "+optionName + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 						}
 					}
@@ -119,9 +133,9 @@ public class UndocumentedOptionScanner {
 				String fileName = getFilename(claz);
 				File file = findSource(claz);
 				int foundLine = findFieldLine(file, noSetter);
+				logClass();
 				logger.warn("option without setter! . " +noSetter + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 			}
-			//if (c.equals(CELOE.class)) { System.exit(0); }
 		}
 	}
 
