@@ -82,7 +82,6 @@ public class CarcinogenesisAMQP {
 		op.init();
 
 		// ------------------- learning problem -------------------------------
-
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
 		lp.setPositiveExamples(pos);
 		lp.setNegativeExamples(neg);

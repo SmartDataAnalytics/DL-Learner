@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dllearner.algorithms.celoe.CELOE;
+import org.dllearner.algorithms.celoe.OEHeuristicRuntime;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
 import org.dllearner.kb.OWLAPIOntology;
@@ -16,10 +17,13 @@ import org.dllearner.reasoning.OWLAPIReasoner;
 import org.dllearner.reasoning.ReasonerImplementation;
 import org.dllearner.refinementoperators.RhoDRDown;
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
 
 public class CarcinogenesisSingle {
 
@@ -72,14 +76,22 @@ public class CarcinogenesisSingle {
 		op.init();
 
 		// ------------------- learning problem -------------------------------
-
 		PosNegLPStandard lp = new PosNegLPStandard(reasoner);
 		lp.setPositiveExamples(pos);
 		lp.setNegativeExamples(neg);
 		lp.setAccuracyMethod(new AccMethodPredAcc());
+		lp.setPercentPerLengthUnit(0);
 		lp.init();
 
+		// ------------------ learning algorithm -----------------------------
+		OEHeuristicRuntime h = new OEHeuristicRuntime();
+		h.setExpansionPenaltyFactor(0);
+		h.setStartNodeBonus(0);
+		h.setNodeRefinementPenalty(0);
+		h.init();
+
 		CELOE la = new CELOE();
+		la.setHeuristic(h);
 		la.setLearningProblem(lp);
 		la.setMaxExecutionTimeInSeconds(runtimeInSecs);
 		la.setNoisePercentage(noisePercent / 100.);
@@ -87,6 +99,7 @@ public class CarcinogenesisSingle {
 		la.setReasoner(reasoner);
 		la.setSearchTreeFile(searchTreeFilePath);
 		la.setWriteSearchTree(true);
+		la.setStartClass(new OWLClassImpl(IRI.create("http://dl-learner.org/carcinogenesis#Compound")));
 		la.init();
 
 		la.start();
