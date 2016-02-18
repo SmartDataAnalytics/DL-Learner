@@ -2,27 +2,37 @@ package org.dllearner.test;
 
 import com.google.common.collect.Sets;
 import javassist.ClassPool;
-import org.apache.log4j.Logger;
 import org.dllearner.core.AnnComponentManager;
 import org.dllearner.core.Component;
 import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.annotations.Unused;
 import org.dllearner.core.config.ConfigOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /* (no java-doc)
  * Internal tool to help find undocumented config options
  */
 public class UndocumentedOptionScanner {
+
+	private static Logger logger = LoggerFactory.getLogger(UndocumentedOptionScanner.class);
+	private static AnnComponentManager cm = AnnComponentManager.getInstance();
+
 	public static void main(String[] args) {
 		ClassPool cp = ClassPool.getDefault();
-		Logger logger = Logger.getLogger(UndocumentedOptionScanner.class);
-		AnnComponentManager cm = AnnComponentManager.getInstance();
 		for (Class<? extends Component> c : cm.getComponents()) {
 			logger.info("\n@"+c.getCanonicalName());
 			Map<String, List<Field>> fields = new TreeMap<>();
@@ -79,24 +89,81 @@ public class UndocumentedOptionScanner {
 						hasSetter.add(optionName);
 						
 					} else if (noDoc.contains(optionName)) {
-						logger.warn("setter+var. but no @configOption: " + optionName + "(" + fields.get(optionName).get(0).getDeclaringClass().getSimpleName().concat(".java") + ":12)");
+						Class<?> claz = fields.get(optionName).get(0).getDeclaringClass();
+						String fileName = getFilename(claz);
+						File file = findSource(claz);
+						int foundLine = findFieldLine(file, optionName);
+						logger.warn("setter+var but no @configOption . " + optionName + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 						noCO.add(optionName);
 
 					} else {
-						boolean deprecated = false;
+						boolean notConfig = false;
 						for (Method ms : m.getValue()) {
-							deprecated = deprecated || ms.isAnnotationPresent(Deprecated.class);
+							notConfig = notConfig
+									|| ms.isAnnotationPresent(Deprecated.class)
+									|| ms.isAnnotationPresent(NoConfigOption.class);
 						}
-						if (!deprecated) {
-							logger.info("setter without var: "+optionName);
+						if (!notConfig) {
+							Method m0 = m.getValue().get(0);
+							Class<?> claz = m0.getDeclaringClass();
+							String fileName = getFilename(claz);
+							File file = findSource(claz);
+							int foundLine = findFieldLine(file, m0.getName());
+							logger.info("setter without var . "+optionName + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 						}
 					}
 				}
 			}
 			for (String noSetter : Sets.difference(hasDoc, hasSetter)) {
-				logger.warn("option without setter! " +noSetter);
+				Class<?> claz = fields.get(noSetter).get(0).getDeclaringClass();
+				String fileName = getFilename(claz);
+				File file = findSource(claz);
+				int foundLine = findFieldLine(file, noSetter);
+				logger.warn("option without setter! . " +noSetter + "(" + claz.getSimpleName() + ".java:"+foundLine+")");
 			}
 			//if (c.equals(CELOE.class)) { System.exit(0); }
 		}
+	}
+
+	private static String getFilename(Class<?> clazz) {
+		return clazz.getCanonicalName().replaceAll("\\.", "/") + ".java";
+	}
+	private static File findSource(Class<?> clazz) {
+		File file = null;
+		String fileName = getFilename(clazz);
+		URLClassLoader currentClassLoader = ((URLClassLoader) (Thread.currentThread().getContextClassLoader()));
+		List<URL> sourceCP = Arrays.stream(currentClassLoader.getURLs()).filter(url -> !url.getPath().endsWith(".jar")).collect(Collectors.toList());
+		for (URL u : sourceCP) {
+			File tFile = new File(u.getFile() + "/../../src/main/java/" + fileName);
+			if (tFile.isFile()) {
+				file = tFile;
+				break;
+			}
+		}
+		return file;
+	}
+
+	private static int findFieldLine(File file, String optionName) {
+		int foundLine = 0;
+		if (file != null) try {
+			int lineno = 0;
+			boolean inComment = false;
+			for (String line : Files.readAllLines(file.toPath())) {
+				lineno++;
+				if (line.matches(".*/\\*.*") && !line.matches(".*\\*/.*")) {
+					inComment = true;
+				}
+				if (!inComment && !line.matches("\\s*//.*") && line.matches("(\\w|\\s)*\\w+\\s" + Pattern.quote(optionName) + "(\\W.*|)")) {
+					foundLine = lineno;
+					break;
+				}
+				if (inComment && !line.matches(".*/\\*.*") && line.matches(".*\\*/.*")) {
+					inComment = false;
+				}
+			}
+		} catch (IOException e) {
+			logger.warn("Problem reading " + file + " (" + e.getMessage() + ")");
+		}
+		return foundLine;
 	}
 }

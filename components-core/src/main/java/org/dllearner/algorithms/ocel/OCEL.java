@@ -93,13 +93,20 @@ public class OCEL extends AbstractCELA {
 	private int allowedMisclassifications = 0;
 
 	// search tree options
+	@ConfigOption(defaultValue = "false", description = "specifies whether to write a search tree")
 	private boolean writeSearchTree;
+	@ConfigOption(defaultValue="log/searchTree.txt", description="file to use for the search tree")
 	private File searchTreeFile;
+	@ConfigOption(defaultValue="false", description="specifies whether to replace the search tree in the log file after each run or append the new search tree")
 	private boolean replaceSearchTree = false;
 
 	// constructs to improve performance
+	@ConfigOption(defaultValue = "true", description = "exclude too weak concepts when they occur as sub concept")
 	private boolean useTooWeakList = true;
+	@ConfigOption(defaultValue = "true")
 	private boolean useOverlyGeneralList = true;
+	@ConfigOption(defaultValue = "true", description = "whether to shorten concepts to ignore identical refinement. " +
+			"e.g. male AND male is shortened to male. ")
 	private boolean useShortConceptConstruction = true;
 
 	// extended Options
@@ -116,15 +123,14 @@ public class OCEL extends AbstractCELA {
 			"allowed to test (0 = no limit). The algorithm will stop afterwards")
 	private int maxClassDescriptionTests = CommonConfigOptions.maxClassDescriptionTestsDefault;
 
-	// if set to false we do not test properness; this may seem wrong
-	// but the disadvantage of properness testing are additional reasoner
-	// queries and a search bias towards ALL r.something because
-	// ALL r.TOP is improper and automatically expanded further
+	@ConfigOption(defaultValue = "false", description = "if set to false we do not test properness; this may seem wrong " +
+			"but the disadvantage of properness testing are additional reasoner queries and a search bias towards " +
+			"ALL r.something because ALL r.TOP is improper and automatically expanded further")
 	private boolean usePropernessChecks = false;
 
-	// tree traversal means to run through the most promising concepts
-	// and connect them in an intersection to find a solution
-	// (this is called irregularly e.g. every 100 seconds)
+	@ConfigOption(defaultValue = "false", description = "tree traversal means to run through the most promising " +
+			"concepts and connect them in an intersection to find a solution (this is called irregularly e.g. " +
+			"every 100 seconds)")
 	private boolean useTreeTraversal = false;
 
 	@ConfigOption(defaultValue = "true",
@@ -197,18 +203,23 @@ public class OCEL extends AbstractCELA {
 	private long evaluateSetCreationTimeNs = 0;
 	private long improperConceptsRemovalTimeNs = 0;
 
+	@ConfigOption(defaultValue = "true", description = "specifies whether to terminate when noise criterion is met")
 	private boolean terminateOnNoiseReached = true;
 
-	@ConfigOption
+	@ConfigOption(defaultValue = "1.0", description = "(for the ExampleBasedNode.) weighting factor on the number of " +
+			"true negatives (true positives are weigthed with 1)")
 	private double negativeWeight = 1.0;
 
+	@ConfigOption(defaultValue = "0.1", description = "(for the ExampleBasedNode.) the score value for the start node")
 	private double startNodeBonus = 0.1;
 
-	@ConfigOption(description = "For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)",
+	@ConfigOption(description = "For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal " +
+			"expansion by one (typical value: 0.01)",
 	              defaultValue = "0.02")
 	private double expansionPenaltyFactor = 0.02;
 
-	@ConfigOption(defaultValue = "0", description = "(for the ExampleBasedNode.) penalty value to deduce for using a negated class expression (complementOf)")
+	@ConfigOption(defaultValue = "0", description = "(for the ExampleBasedNode.) penalty value to deduce for using a " +
+			"negated class expression (complementOf)")
 	private int negationPenalty = 0;
 
 	@ConfigOption(description = "adjust the weights of class expression length in refinement",
@@ -216,6 +227,7 @@ public class OCEL extends AbstractCELA {
 	private OWLClassExpressionLengthMetric lengthMetric;
 
 	// dependencies
+	@ConfigOption(defaultValue = "RhoDRDown", description = "the refinement operator instance to use")
 	private LengthLimitedRefinementOperator operator;
 	@ConfigOption(description = "the heuristic to guide the search", defaultValue = "MultiHeuristic")
 	private ExampleBasedHeuristic heuristic;
@@ -231,11 +243,14 @@ public class OCEL extends AbstractCELA {
 	@ConfigOption(defaultValue = "0.0", description = "noise regulates how many positives can be misclassified and when " +
 			"the algorithm terminates")
 	private double noisePercentage = noisePercentageDefault;
-	private OWLClass startClass = null;
-	private boolean useDataHasValueConstructor = false;
+	@ConfigOption(
+			defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm",
+			exampleValue = "ex:Male or http://example.org/ontology/Female")
+	private OWLClassExpression startClass = null;
 
 	// Variablen zur Einstellung der Protokollierung
-	// boolean quiet = false;
+	@ConfigOption(defaultValue = "false", description = "show additional timing info for benchmark purposes")
 	boolean showBenchmarkInformation = false;
 
 	public OCEL() {
@@ -1304,7 +1319,7 @@ public class OCEL extends AbstractCELA {
 		this.noisePercentage = noisePercentage;
 	}
 
-	public OWLClass getStartClass() {
+	public OWLClassExpression getStartClass() {
 		return startClass;
 	}
 
@@ -1390,14 +1405,6 @@ public class OCEL extends AbstractCELA {
 
 	public void setNegationPenalty(int negationPenalty) {
 		this.negationPenalty = negationPenalty;
-	}
-
-	public boolean isUseDataHasValueConstructor() {
-		return useDataHasValueConstructor;
-	}
-
-	public void setUseDataHasValueConstructor(boolean useDataHasValueConstructor) {
-		this.useDataHasValueConstructor = useDataHasValueConstructor;
 	}
 
 	public boolean isTerminateOnNoiseReached() {

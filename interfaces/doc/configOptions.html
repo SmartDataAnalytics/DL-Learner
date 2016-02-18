@@ -42,7 +42,7 @@ function showAllCat(){
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodGenFMeasure">Generalised FMeasure</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodJaccard">Jaccard Coefficient</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.KBFile">KB File</a></li></div>
-<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.ocel.LexicographicHeuristic">Lexicograpgic Heuristic</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.ocel.LexicographicHeuristic">Lexicographic Heuristic</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.LocalModelBasedSparqlEndpointKS">Local Endpoint</a></li></div>
 <div class="type menu OtherComponent"><li><a href="#org.dllearner.utilities.semkernel.MPSemKernelWorkflow">Mammalian Phenotype SemKernel Workflow</a></li></div>
 <div class="type menu LearningAlgorithm ClassExpressionLearningAlgorithm"><li><a href="#org.dllearner.algorithms.NaiveALLearner">Naive AL Learner</a></li></div>
@@ -60,7 +60,7 @@ function showAllCat(){
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccApprox">Predictive Accuracy Approximate</a></li></div>
 <div class="type menu AccMethod"><li><a href="#org.dllearner.learningproblems.AccMethodPredAccOCEL">Predictive Accuracy without Weak elimination</a></li></div>
 <div class="type menu LearningProblem"><li><a href="#org.dllearner.learningproblems.PropertyAxiomLearningProblem">PropertyAxiomLearningProblem</a></li></div>
-<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple">QueryTreeHeuristic</a></li></div>
+<div class="type menu Heuristic"><li><a href="#org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex">QueryTreeHeuristic</a></li></div>
 <div class="type menu RefinementOperator"><li><a href="#org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator">Refinement Operator TDT</a></li></div>
 <div class="type menu ReasonerComponent"><li><a href="#org.dllearner.reasoning.SPARQLReasoner">SPARQL Reasoner</a></li></div>
 <div class="type menu KnowledgeSource"><li><a href="#org.dllearner.kb.SparqlEndpointKS">SPARQL endpoint</a></li></div>
@@ -258,7 +258,7 @@ function showAllCat(){
 <tr><td>url</td><td>URL pointer to the KB file</td><td> String</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.LexicographicHeuristic"><h2>Lexicograpgic Heuristic <small class="default-hidden">org.dllearner.algorithms.ocel.LexicographicHeuristic</small></h2></a>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.LexicographicHeuristic"><h2>Lexicographic Heuristic <small class="default-hidden">org.dllearner.algorithms.ocel.LexicographicHeuristic</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>lexheuristic</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.LocalModelBasedSparqlEndpointKS"><h2>Local Endpoint <small class="default-hidden">org.dllearner.kb.LocalModelBasedSparqlEndpointKS</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>local_sparql</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
@@ -314,16 +314,40 @@ function showAllCat(){
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedDataProperties</td><td>List of data properties to allow</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>allowedObjectProperties</td><td>List of object properties to allow</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>candidatePostReductionSize</td><td>maximum number of candidates to retain</td><td> int</td><td>30</td><td> false</td></tr>
+<tr><td>computeBenchmarkInformation</td><td>specifies whether to compute and log benchmark information</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>expansionPenaltyFactor</td><td>For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)</td><td> double</td><td>0.02</td><td> false</td></tr>
 <tr><td>forceRefinementLengthIncrease</td><td>if this variable is set to true, then the refinement operator is applied until all concept of equal length have been found e.g. TOP -> A1 -> A2 -> A3 is found in one loop; the disadvantage are potentially more method calls, but the advantage is that the algorithm is better in locating relevant concept in the subsumption hierarchy (otherwise, if the most general concept is not promising, it may never get expanded)</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>guaranteeXgoodDescriptions</td><td>how many sufficient solutions must be found before termination, if terminateOnNoiseReached is enabled</td><td> int</td><td>1</td><td> false</td></tr>
+<tr><td>heuristic</td><td>the heuristic to guide the search</td><td> ExampleBasedHeuristic</td><td>MultiHeuristic</td><td> false</td></tr>
 <tr><td>ignoredConcepts</td><td>List of classes to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredDataProperties</td><td>List of data properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>ignoredObjectProperties</td><td>List of object properties to ignore</td><td> Set</td><td></td><td> false</td></tr>
+<tr><td>improveSubsumptionHierarchy</td><td>if enabled, modifies the subsumption hierarchy such that for each class, there is only a single path to reach it via upward and downward refinement respectively.</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>learningProblem</td><td>The Learning Problem variable to use in this algorithm</td><td> AbstractClassExpressionLearningProblem</td><td></td><td> false</td></tr>
 <tr><td>lengthMetric</td><td>adjust the weights of class expression length in refinement</td><td> OWLClassExpressionLengthMetric</td><td>OCEL default metric</td><td> false</td></tr>
+<tr><td>maxClassDescriptionTests</td><td>The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards</td><td> int</td><td>0</td><td> false</td></tr>
 <tr><td>maxExecutionTimeInSeconds</td><td>maximum execution of the algorithm in seconds</td><td> int</td><td>10</td><td> false</td></tr>
+<tr><td>minExecutionTimeInSeconds</td><td>Minimum time the algorithm has to run before termination (even if solution already found</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>negationPenalty</td><td>(for the ExampleBasedNode.) penalty value to deduce for using a negated class expression (complementOf)</td><td> int</td><td>0</td><td> false</td></tr>
+<tr><td>negativeWeight</td><td>(for the ExampleBasedNode.) weighting factor on the number of true negatives (true positives are weigthed with 1)</td><td> double</td><td>1.0</td><td> false</td></tr>
+<tr><td>noisePercentage</td><td>noise regulates how many positives can be misclassified and when the algorithm terminates</td><td> double</td><td>0.0</td><td> false</td></tr>
+<tr><td>operator</td><td>the refinement operator instance to use</td><td> LengthLimitedRefinementOperator</td><td>RhoDRDown</td><td> false</td></tr>
 <tr><td>reasoner</td><td>The reasoner variable to use for this learning problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
+<tr><td>replaceSearchTree</td><td>specifies whether to replace the search tree in the log file after each run or append the new search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>searchTreeFile</td><td>file to use for the search tree</td><td> File</td><td>log/searchTree.txt</td><td> false</td></tr>
+<tr><td>showBenchmarkInformation</td><td>show additional timing info for benchmark purposes</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>startClass</td><td>You can specify a start class for the algorithm <strong>Example:</strong> ex:Male or http://example.org/ontology/Female</td><td> OWLClassExpression</td><td>owl:Thing</td><td> false</td></tr>
+<tr><td>startNodeBonus</td><td>(for the ExampleBasedNode.) the score value for the start node</td><td> double</td><td>0.1</td><td> false</td></tr>
+<tr><td>terminateOnNoiseReached</td><td>specifies whether to terminate when noise criterion is met</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useCandidateReduction</td><td>candidate reduction: using this mechanism we can simulate the divide&conquer approach in many ILP programs using a clause by clause search; after a period of time the candidate set is reduced to focus CPU time on the most promising concepts</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>useMinimizer</td><td>Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useOverlyGeneralList</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>usePropernessChecks</td><td>if set to false we do not test properness; this may seem wrong but the disadvantage of properness testing are additional reasoner queries and a search bias towards ALL r.something because ALL r.TOP is improper and automatically expanded further</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useShortConceptConstruction</td><td>whether to shorten concepts to ignore identical refinement. e.g. male AND male is shortened to male. </td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useTooWeakList</td><td>exclude too weak concepts when they occur as sub concept</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>useTreeTraversal</td><td>tree traversal means to run through the most promising concepts and connect them in an intersection to find a solution (this is called irregularly e.g. every 100 seconds)</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>writeSearchTree</td><td>specifies whether to write a search tree</td><td> boolean</td><td>false</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type OtherComponent"><a name="org.dllearner.utilities.owl.OWLClassExpressionLengthMetric"><h2>OWL Class Expression Length Metric <small class="default-hidden">org.dllearner.utilities.owl.OWLClassExpressionLengthMetric</small></h2></a>
@@ -419,8 +443,8 @@ function showAllCat(){
 <tr><td>reasoner</td><td>The reasoner component variable to use for this Learning Problem</td><td> AbstractReasonerComponent</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
-<div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple"><h2>QueryTreeHeuristic <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_simple</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
+<div class="type Heuristic"><a name="org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex"><h2>QueryTreeHeuristic <small class="default-hidden">org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicComplex</small></h2></a>
+<dl class="dl-horizontal"><dt>short name</dt><dd>qtree_heuristic_complex</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>Heuristic</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type RefinementOperator"><a name="org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator"><h2>Refinement Operator TDT <small class="default-hidden">org.dllearner.algorithms.decisiontrees.refinementoperators.DLTreesRefinementOperator</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>tdtop</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>RefinementOperator</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>beam</td><td>no description available</td><td> int</td><td>5</td><td> false</td></tr>
@@ -492,7 +516,10 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner"><h2>data property range learner <small class="default-hidden">org.dllearner.algorithms.properties.DataPropertyRangeAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dblrange</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for reflexive data property range axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner"><h2>data subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubDataPropertyOfAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>dplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm data subproperty axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>dplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm data subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.DisjointClassesLearner"><h2>disjoint classes learner <small class="default-hidden">org.dllearner.algorithms.DisjointClassesLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>cldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>entityToDescribe</td><td>the OWL entity to learn about</td><td> OWLEntity</td><td></td><td> false</td></tr>
@@ -506,9 +533,15 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner"><h2>disjoint data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointDataPropertyAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>dpldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint data properties axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>dpldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner"><h2>disjoint object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>opldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint object properties axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>opldisjoint</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for disjoint object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.sparql.simple.SparqlSimpleExtractor"><h2>efficient SPARQL fragment extractor <small class="default-hidden">org.dllearner.kb.sparql.simple.SparqlSimpleExtractor</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>sparqls</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>KnowledgeSource</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>aboxfilter</td><td>Filter for the tbox, can use variable ?s, ?p amd ?o</td><td> String</td><td></td><td> false</td></tr>
@@ -522,9 +555,15 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner"><h2>equivalent data properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>dplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent data properties axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>dplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent data properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner"><h2>equivalent object properties axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>oplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent object properties axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>oplequiv</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for equivalent object properties axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner"><h2>functional data property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>dplfunc</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for functional data property axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner"><h2>functional object property axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.FunctionalObjectPropertyAxiomLearner</small></h2></a>
@@ -550,7 +589,10 @@ function showAllCat(){
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner"><h2>object property range learner <small class="default-hidden">org.dllearner.algorithms.properties.ObjectPropertyRangeAxiomLearner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>oplrange</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm for object property range axioms.</dd></dl>This component does not have configuration options.</div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner"><h2>object subproperty axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>oplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm object subproperty axioms.</dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>oplsubprop</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>AxiomLearningAlgorithm</li></ul></dd><dt>description</dt><dd>A learning algorithm object subproperty axioms.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>the beta value for the F-score calculation</td><td> double</td><td>1.0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.PosOnlyLP"><h2>positive only learning problem <small class="default-hidden">org.dllearner.learningproblems.PosOnlyLP</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>posonlylp</dd><dt>version</dt><dd>0.6</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>positiveExamples</td><td>the positive examples</td><td> SortedSet</td><td></td><td> true</td></tr>

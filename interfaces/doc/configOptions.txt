@@ -357,11 +357,25 @@ A learning algorithm for disjoint data properties axioms.
 
 conf file usage: la.type = "dpldisjoint"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
 component: disjoint object properties axiom learner (org.dllearner.algorithms.properties.DisjointObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
 A learning algorithm for disjoint object properties axioms.
 
 conf file usage: la.type = "opldisjoint"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
 
 component: equivalent data properties axiom learner (org.dllearner.algorithms.properties.EquivalentDataPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -369,11 +383,25 @@ A learning algorithm for equivalent data properties axioms.
 
 conf file usage: la.type = "dplequiv"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
 component: equivalent object properties axiom learner (org.dllearner.algorithms.properties.EquivalentObjectPropertyAxiomLearner) v0.1
 =====================================================================================================================================
 A learning algorithm for equivalent object properties axioms.
 
 conf file usage: la.type = "oplequiv"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
 
 component: functional data property axiom learner (org.dllearner.algorithms.properties.FunctionalDataPropertyAxiomLearner) v0.1
 ===============================================================================================================================
@@ -429,11 +457,25 @@ A learning algorithm data subproperty axioms.
 
 conf file usage: la.type = "dplsubprop"
 
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
+
 component: object subproperty axiom learner (org.dllearner.algorithms.properties.SubObjectPropertyOfAxiomLearner) v0.1
 ======================================================================================================================
 A learning algorithm object subproperty axioms.
 
 conf file usage: la.type = "oplsubprop"
+
+option name: beta
+description: the beta value for the F-score calculation
+type: double
+required: false
+default value: 1.0
+conf file usage: la.beta = 1.0
 
 component: symmetric object property axiom learner (org.dllearner.algorithms.properties.SymmetricObjectPropertyAxiomLearner) v0.1
 =================================================================================================================================
@@ -1517,6 +1559,20 @@ required: false
 default value: 
 conf file usage: la.allowedObjectProperties = {}
 
+option name: candidatePostReductionSize
+description: maximum number of candidates to retain
+type: int
+required: false
+default value: 30
+conf file usage: la.candidatePostReductionSize = 30
+
+option name: computeBenchmarkInformation
+description: specifies whether to compute and log benchmark information
+type: boolean
+required: false
+default value: false
+conf file usage: la.computeBenchmarkInformation = false
+
 option name: expansionPenaltyFactor
 description: For the MultiHeuristic: how much accuracy gain is worth an increase of horizontal expansion by one (typical value: 0.01)
 type: double
@@ -1530,6 +1586,20 @@ type: boolean
 required: false
 default value: true
 conf file usage: la.forceRefinementLengthIncrease = true
+
+option name: guaranteeXgoodDescriptions
+description: how many sufficient solutions must be found before termination, if terminateOnNoiseReached is enabled
+type: int
+required: false
+default value: 1
+conf file usage: la.guaranteeXgoodDescriptions = 1
+
+option name: heuristic
+description: the heuristic to guide the search
+type: ExampleBasedHeuristic
+required: false
+default value: MultiHeuristic
+conf file usage: la.heuristic = "MultiHeuristic"
 
 option name: ignoredConcepts
 description: List of classes to ignore
@@ -1552,6 +1622,13 @@ required: false
 default value: 
 conf file usage: la.ignoredObjectProperties = {}
 
+option name: improveSubsumptionHierarchy
+description: if enabled, modifies the subsumption hierarchy such that for each class, there is only a single path to reach it via upward and downward refinement respectively.
+type: boolean
+required: false
+default value: true
+conf file usage: la.improveSubsumptionHierarchy = true
+
 option name: learningProblem
 description: The Learning Problem variable to use in this algorithm
 type: AbstractClassExpressionLearningProblem
@@ -1566,12 +1643,54 @@ required: false
 default value: OCEL default metric
 conf file usage: la.lengthMetric = "OCEL default metric"
 
+option name: maxClassDescriptionTests
+description: The maximum number of candidate hypothesis the algorithm is allowed to test (0 = no limit). The algorithm will stop afterwards
+type: int
+required: false
+default value: 0
+conf file usage: la.maxClassDescriptionTests = 0
+
 option name: maxExecutionTimeInSeconds
 description: maximum execution of the algorithm in seconds
 type: int
 required: false
 default value: 10
 conf file usage: la.maxExecutionTimeInSeconds = 10
+
+option name: minExecutionTimeInSeconds
+description: Minimum time the algorithm has to run before termination (even if solution already found
+type: int
+required: false
+default value: 0
+conf file usage: la.minExecutionTimeInSeconds = 0
+
+option name: negationPenalty
+description: (for the ExampleBasedNode.) penalty value to deduce for using a negated class expression (complementOf)
+type: int
+required: false
+default value: 0
+conf file usage: la.negationPenalty = 0
+
+option name: negativeWeight
+description: (for the ExampleBasedNode.) weighting factor on the number of true negatives (true positives are weigthed with 1)
+type: double
+required: false
+default value: 1.0
+conf file usage: la.negativeWeight = 1.0
+
+option name: noisePercentage
+description: noise regulates how many positives can be misclassified and when the algorithm terminates
+type: double
+required: false
+default value: 0.0
+conf file usage: la.noisePercentage = 0.0
+
+option name: operator
+description: the refinement operator instance to use
+type: LengthLimitedRefinementOperator
+required: false
+default value: RhoDRDown
+conf file usage: la.operator = "RhoDRDown"
 
 option name: reasoner
 description: The reasoner variable to use for this learning problem
@@ -1580,12 +1699,103 @@ required: false
 default value: 
 conf file usage: la.reasoner = ""
 
+option name: replaceSearchTree
+description: specifies whether to replace the search tree in the log file after each run or append the new search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.replaceSearchTree = false
+
+option name: searchTreeFile
+description: file to use for the search tree
+type: File
+required: false
+default value: log/searchTree.txt
+conf file usage: la.searchTreeFile = "log/searchTree.txt"
+
+option name: showBenchmarkInformation
+description: show additional timing info for benchmark purposes
+type: boolean
+required: false
+default value: false
+conf file usage: la.showBenchmarkInformation = false
+
+option name: startClass
+description: You can specify a start class for the algorithm
+type: OWLClassExpression
+required: false
+default value: owl:Thing
+conf file usage: la.startClass = "ex:Male or http://example.org/ontology/Female"
+
+option name: startNodeBonus
+description: (for the ExampleBasedNode.) the score value for the start node
+type: double
+required: false
+default value: 0.1
+conf file usage: la.startNodeBonus = 0.1
+
+option name: terminateOnNoiseReached
+description: specifies whether to terminate when noise criterion is met
+type: boolean
+required: false
+default value: true
+conf file usage: la.terminateOnNoiseReached = true
+
+option name: useCandidateReduction
+description: candidate reduction: using this mechanism we can simulate the divide&conquer approach in many ILP programs using a clause by clause search; after a period of time the candidate set is reduced to focus CPU time on the most promising concepts
+type: boolean
+required: false
+default value: true
+conf file usage: la.useCandidateReduction = true
+
 option name: useMinimizer
 description: Specifies whether returned expressions should be minimised by removing those parts, which are not needed. (Basically the minimiser tries to find the shortest expression which is equivalent to the learned expression). Turning this feature off may improve performance.
 type: boolean
 required: false
 default value: true
 conf file usage: la.useMinimizer = true
+
+option name: useOverlyGeneralList
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: la.useOverlyGeneralList = true
+
+option name: usePropernessChecks
+description: if set to false we do not test properness; this may seem wrong but the disadvantage of properness testing are additional reasoner queries and a search bias towards ALL r.something because ALL r.TOP is improper and automatically expanded further
+type: boolean
+required: false
+default value: false
+conf file usage: la.usePropernessChecks = false
+
+option name: useShortConceptConstruction
+description: whether to shorten concepts to ignore identical refinement. e.g. male AND male is shortened to male. 
+type: boolean
+required: false
+default value: true
+conf file usage: la.useShortConceptConstruction = true
+
+option name: useTooWeakList
+description: exclude too weak concepts when they occur as sub concept
+type: boolean
+required: false
+default value: true
+conf file usage: la.useTooWeakList = true
+
+option name: useTreeTraversal
+description: tree traversal means to run through the most promising concepts and connect them in an intersection to find a solution (this is called irregularly e.g. every 100 seconds)
+type: boolean
+required: false
+default value: false
+conf file usage: la.useTreeTraversal = false
+
+option name: writeSearchTree
+description: specifies whether to write a search tree
+type: boolean
+required: false
+default value: false
+conf file usage: la.writeSearchTree = false
 
 component: query tree learner with noise (disjunctive) (org.dllearner.algorithms.qtl.QTL2Disjunctive) v0.8
 ==========================================================================================================
@@ -2359,7 +2569,7 @@ required: true
 default value: 
 conf file usage: h.percentPerLengthUnit = 
 
-component: Lexicograpgic Heuristic (org.dllearner.algorithms.ocel.LexicographicHeuristic) v0.1
+component: Lexicographic Heuristic (org.dllearner.algorithms.ocel.LexicographicHeuristic) v0.1
 ==============================================================================================
 
 conf file usage: h.type = "lexheuristic"
