@@ -33,6 +33,7 @@ import org.dllearner.algorithms.qtl.datastructures.impl.QueryTreeImpl.LiteralNod
 import org.dllearner.algorithms.qtl.datastructures.impl.RDFResourceTree;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristic;
 import org.dllearner.algorithms.qtl.heuristics.QueryTreeHeuristicSimple;
+import org.dllearner.algorithms.qtl.impl.QueryTreeFactory;
 import org.dllearner.algorithms.qtl.impl.QueryTreeFactoryBase;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGenerator;
 import org.dllearner.algorithms.qtl.operations.lgg.LGGGeneratorRDFS;
@@ -74,7 +75,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 //	private LGGGenerator2 lggGenerator = new LGGGeneratorSimple();
 	private LGGGenerator lggGenerator;
 	
-	private org.dllearner.algorithms.qtl.impl.QueryTreeFactory treeFactory;
+	private QueryTreeFactory treeFactory;
 	private ConciseBoundedDescriptionGenerator cbdGen;
 	
 	private Queue<EvaluatedRDFResourceTree> todoList;
