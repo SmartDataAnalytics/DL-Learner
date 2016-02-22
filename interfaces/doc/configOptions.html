@@ -99,9 +99,17 @@ function showAllCat(){
 <div class="type menu LearningAlgorithm AxiomLearningAlgorithm"><li><a href="#org.dllearner.algorithms.properties.TransitiveObjectPropertyAxiomLearner">transitive object property axiom learner</a></li></div>
 </ul>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodAMeasure"><h2>AMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodAMeasure</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodAMeasureApprox"><h2>AMeasure Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodAMeasureApprox</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>approx.ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>approx.ameasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>(configured by learning problem)</td><td> Reasoner</td><td></td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type LearningAlgorithm ClassExpressionLearningAlgorithm"><a name="org.dllearner.algorithms.celoe.CELOE"><h2>CELOE <small class="default-hidden">org.dllearner.algorithms.celoe.CELOE</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>celoe</dd><dt>version</dt><dd>1.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningAlgorithm</li><li>ClassExpressionLearningAlgorithm</li></ul></dd><dt>description</dt><dd>CELOE is an adapted and extended version of the OCEL algorithm applied for the ontology engineering use case. See http://jens-lehmann.org/files/2011/celoe.pdf for reference.</dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>allowedConcepts</td><td>List of classes that are allowed</td><td> Set</td><td></td><td> false</td></tr>
@@ -136,7 +144,9 @@ function showAllCat(){
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.ClassAsInstanceLearningProblem"><h2>Class as Instance LP <small class="default-hidden">org.dllearner.learningproblems.ClassAsInstanceLearningProblem</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>classasinstance</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>negativeExamples</td><td>no description available</td><td> Set</td><td></td><td> false</td></tr>
 <tr><td>percentPerLengthUnit</td><td>Percent Per Length Unit</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>positiveExamples</td><td>no description available</td><td> Set</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.ClassLearningProblem"><h2>ClassLearningProblem <small class="default-hidden">org.dllearner.learningproblems.ClassLearningProblem</small></h2></a>
@@ -224,10 +234,15 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasure"><h2>FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasure</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureApprox"><h2>FMeasure Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureApprox</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>approx.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>reasoner component (configured  by learning problem)</td><td> Reasoner</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Heuristic"><a name="org.dllearner.algorithms.ocel.FlexibleHeuristic"><h2>Flexible Heuristic <small class="default-hidden">org.dllearner.algorithms.ocel.FlexibleHeuristic</small></h2></a>
@@ -239,6 +254,9 @@ function showAllCat(){
 <div class="type LearningProblem"><a name="org.dllearner.learningproblems.FuzzyPosNegLPStandard"><h2>FuzzyPosNegLPStandard <small class="default-hidden">org.dllearner.learningproblems.FuzzyPosNegLPStandard</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>fuzzyPosNeg</dd><dt>version</dt><dd>0.2</dd><dt>implements</dt><dd><ul class="list-inline"><li>LearningProblem</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>accuracyMethod</td><td>Specifies, which method/function to use for computing accuracy. Available measues are "PRED_ACC" (predictive accuracy), "FMEASURE" (F measure), "GEN_FMEASURE" (generalised F-Measure according to Fanizzi and d'Amato).</td><td> HeuristicType</td><td>PRED_ACC</td><td> false</td></tr>
+<tr><td>fuzzyExamples</td><td>no description available</td><td> SortedSet</td><td></td><td> false</td></tr>
+<tr><td>negativeExamples</td><td>no description available</td><td> SortedSet</td><td></td><td> false</td></tr>
+<tr><td>positiveExamples</td><td>no description available</td><td> SortedSet</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type Class"><a name="org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc"><h2>GLOBAL OPTIONS <small class="default-hidden">org.dllearner.cli.DocumentationGeneratorMeta.GlobalDoc</small></h2></a>
@@ -248,7 +266,10 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodGenFMeasure"><h2>Generalised FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodGenFMeasure</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>gen_fmeasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>gen_fmeasure</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodJaccard"><h2>Jaccard Coefficient <small class="default-hidden">org.dllearner.learningproblems.AccMethodJaccard</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>jaccard</dd><dt>version</dt><dd>0.1</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
 <div class="type KnowledgeSource"><a name="org.dllearner.kb.KBFile"><h2>KB File <small class="default-hidden">org.dllearner.kb.KBFile</small></h2></a>
@@ -455,10 +476,15 @@ function showAllCat(){
 </tbody></table></div>
 </div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAcc"><h2>Predictive Accuracy <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAcc</small></h2></a>
-<dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl>This component does not have configuration options.</div>
+<dl class="dl-horizontal"><dt>short name</dt><dd>pred_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+</tbody></table></div>
+</div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccApprox"><h2>Predictive Accuracy Approximate <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccApprox</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>approx.prec_acc</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>approxDelta</td><td>The Approximate Delta</td><td> double</td><td>0.05</td><td> false</td></tr>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
+<tr><td>reasoner</td><td>(configured by the learning problem)</td><td> Reasoner</td><td></td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodPredAccOCEL"><h2>Predictive Accuracy without Weak elimination <small class="default-hidden">org.dllearner.learningproblems.AccMethodPredAccOCEL</small></h2></a>
@@ -512,6 +538,7 @@ function showAllCat(){
 <div class="type AccMethod"><a name="org.dllearner.learningproblems.AccMethodFMeasureWeighted"><h2>Weighted FMeasure <small class="default-hidden">org.dllearner.learningproblems.AccMethodFMeasureWeighted</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>weighted.fmeasure</dd><dt>version</dt><dd>0.0</dd><dt>implements</dt><dd><ul class="list-inline"><li>AccMethod</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>balanced</td><td>balance the weights to relative set size</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>beta</td><td>beta factor (0 = do not use)</td><td> double</td><td>0</td><td> false</td></tr>
 <tr><td>negWeight</td><td>weight on the negative examples</td><td> double</td><td>1</td><td> false</td></tr>
 <tr><td>posWeight</td><td>weight on the positive examples</td><td> double</td><td>1</td><td> false</td></tr>
 </tbody></table></div>
@@ -528,12 +555,16 @@ function showAllCat(){
 <div class="type ReasonerComponent"><a name="org.dllearner.reasoning.ClosedWorldReasoner"><h2>closed world reasoner <small class="default-hidden">org.dllearner.reasoning.ClosedWorldReasoner</small></h2></a>
 <dl class="dl-horizontal"><dt>short name</dt><dd>cwr</dd><dt>version</dt><dd>0.9</dd><dt>implements</dt><dd><ul class="list-inline"><li>ReasonerComponent</li></ul></dd></dl><div class="table-responsive"><table class="hor-minimalist-a table table-hover"><thead><tr><th>option name</th><th>description</th><th>type</th><th>default value</th><th>required?</th></tr></thead><tbody>
 <tr><td>defaultNegation</td><td>Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.</td><td> boolean</td><td>true</td><td> false</td></tr>
-<tr><td>forallSemantics</td><td>This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.</td><td> ForallSemantics</td><td>standard</td><td> false</td></tr>
+<tr><td>forAllSemantics</td><td>This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.</td><td> ForallSemantics</td><td>standard</td><td> false</td></tr>
+<tr><td>handlePunning</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>materializeExistentialRestrictions</td><td>no description available</td><td> boolean</td><td>false</td><td> false</td></tr>
 <tr><td>precomputeClassHierarchy</td><td>if class hierarchy should be precomputed</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>precomputeDataPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 <tr><td>precomputeObjectPropertyHierarchy</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
+<tr><td>reasonerComponent</td><td>the underlying reasoner implementation</td><td> OWLAPIReasoner</td><td>OWL API Reasoner</td><td> false</td></tr>
 <tr><td>sources</td><td>the underlying knowledge sources</td><td> Set</td><td></td><td> true</td></tr>
 <tr><td>useInstanceChecks</td><td>whether to use single instance checks</td><td> boolean</td><td>false</td><td> false</td></tr>
+<tr><td>useMaterializationCaching</td><td>no description available</td><td> boolean</td><td>true</td><td> false</td></tr>
 </tbody></table></div>
 </div>
 <div class="type LearningAlgorithm AxiomLearningAlgorithm"><a name="org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner"><h2>data property domain axiom learner <small class="default-hidden">org.dllearner.algorithms.properties.DataPropertyDomainAxiomLearner</small></h2></a>

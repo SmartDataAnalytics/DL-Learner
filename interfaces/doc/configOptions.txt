@@ -1953,12 +1953,26 @@ component: Class as Instance LP (org.dllearner.learningproblems.ClassAsInstanceL
 
 conf file usage: lp.type = "classasinstance"
 
+option name: negativeExamples
+description: no description available
+type: Set
+required: false
+default value: 
+conf file usage: lp.negativeExamples = {}
+
 option name: percentPerLengthUnit
 description: Percent Per Length Unit
 type: double
 required: false
 default value: 0.05
 conf file usage: lp.percentPerLengthUnit = 0.05
+
+option name: positiveExamples
+description: no description available
+type: Set
+required: false
+default value: 
+conf file usage: lp.positiveExamples = {}
 
 component: ClassLearningProblem (org.dllearner.learningproblems.ClassLearningProblem) v0.6
 ==========================================================================================
@@ -2025,6 +2039,27 @@ type: HeuristicType
 required: false
 default value: PRED_ACC
 conf file usage: lp.accuracyMethod = "PRED_ACC"
+
+option name: fuzzyExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.fuzzyExamples = ""
+
+option name: negativeExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.negativeExamples = ""
+
+option name: positiveExamples
+description: no description available
+type: SortedSet
+required: false
+default value: 
+conf file usage: lp.positiveExamples = ""
 
 component: PosNegLPStandard (org.dllearner.learningproblems.PosNegLPStandard) v0.8
 ==================================================================================
@@ -2183,12 +2218,26 @@ required: false
 default value: true
 conf file usage: reasoner.defaultNegation = true
 
-option name: forallSemantics
+option name: forAllSemantics
 description: This option controls how to interpret the all quantifier in forall r.C. The standard option is to return all those which do not have an r-filler not in C. The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.
 type: ForallSemantics
 required: false
 default value: standard
-conf file usage: reasoner.forallSemantics = "standard"
+conf file usage: reasoner.forAllSemantics = "standard"
+
+option name: handlePunning
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.handlePunning = false
+
+option name: materializeExistentialRestrictions
+description: no description available
+type: boolean
+required: false
+default value: false
+conf file usage: reasoner.materializeExistentialRestrictions = false
 
 option name: precomputeClassHierarchy
 description: if class hierarchy should be precomputed
@@ -2211,6 +2260,13 @@ required: false
 default value: true
 conf file usage: reasoner.precomputeObjectPropertyHierarchy = true
 
+option name: reasonerComponent
+description: the underlying reasoner implementation
+type: OWLAPIReasoner
+required: false
+default value: OWL API Reasoner
+conf file usage: reasoner.reasonerComponent = "OWL API Reasoner"
+
 option name: sources
 description: the underlying knowledge sources
 type: Set
@@ -2224,6 +2280,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: reasoner.useInstanceChecks = false
+
+option name: useMaterializationCaching
+description: no description available
+type: boolean
+required: false
+default value: true
+conf file usage: reasoner.useMaterializationCaching = true
 
 component: OWL API Reasoner (org.dllearner.reasoning.OWLAPIReasoner) v0.8
 =========================================================================
@@ -2733,15 +2796,50 @@ component: AMeasure (org.dllearner.learningproblems.AccMethodAMeasure) v0.1
 
 conf file usage: accMethod.type = "ameasure"
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
 component: AMeasure Approximate (org.dllearner.learningproblems.AccMethodAMeasureApprox) v0.1
 =============================================================================================
 
 conf file usage: accMethod.type = "approx.ameasure"
 
+option name: approxDelta
+description: The Approximate Delta
+type: double
+required: false
+default value: 0.05
+conf file usage: accMethod.approxDelta = 0.05
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: (configured by learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
+
 component: FMeasure (org.dllearner.learningproblems.AccMethodFMeasure) v0.0
 ===========================================================================
 
 conf file usage: accMethod.type = "fmeasure"
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 component: FMeasure Approximate (org.dllearner.learningproblems.AccMethodFMeasureApprox) v0.0
 =============================================================================================
@@ -2755,6 +2853,20 @@ required: false
 default value: 0.05
 conf file usage: accMethod.approxDelta = 0.05
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: reasoner component (configured  by learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
+
 component: Weighted FMeasure (org.dllearner.learningproblems.AccMethodFMeasureWeighted) v0.0
 ============================================================================================
 
@@ -2766,6 +2878,13 @@ type: boolean
 required: false
 default value: false
 conf file usage: accMethod.balanced = false
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 option name: negWeight
 description: weight on the negative examples
@@ -2786,6 +2905,13 @@ component: Generalised FMeasure (org.dllearner.learningproblems.AccMethodGenFMea
 
 conf file usage: accMethod.type = "gen_fmeasure"
 
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
 component: Jaccard Coefficient (org.dllearner.learningproblems.AccMethodJaccard) v0.1
 =====================================================================================
 
@@ -2795,6 +2921,13 @@ component: Predictive Accuracy (org.dllearner.learningproblems.AccMethodPredAcc)
 =====================================================================================
 
 conf file usage: accMethod.type = "pred_acc"
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
 
 component: Predictive Accuracy Approximate (org.dllearner.learningproblems.AccMethodPredAccApprox) v0.0
 =======================================================================================================
@@ -2807,6 +2940,20 @@ type: double
 required: false
 default value: 0.05
 conf file usage: accMethod.approxDelta = 0.05
+
+option name: beta
+description: beta factor (0 = do not use)
+type: double
+required: false
+default value: 0
+conf file usage: accMethod.beta = 0
+
+option name: reasoner
+description: (configured by the learning problem)
+type: Reasoner
+required: false
+default value: 
+conf file usage: accMethod.reasoner = ""
 
 component: Predictive Accuracy without Weak elimination (org.dllearner.learningproblems.AccMethodPredAccOCEL) v0.0
 ==================================================================================================================
