@@ -64,7 +64,9 @@ public class ClassAsInstanceLearningProblem extends AbstractClassExpressionLearn
 
 	private HeuristicType heuristic = HeuristicType.PRED_ACC;
 
+	@ConfigOption()
 	protected Set<OWLClass> positiveExamples = new TreeSet<>();
+	@ConfigOption()
 	protected Set<OWLClass> negativeExamples = new TreeSet<>();
 	
 	

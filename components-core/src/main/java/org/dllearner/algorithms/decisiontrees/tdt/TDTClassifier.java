@@ -236,9 +236,9 @@ public void start() {
 	// TODO Auto-generated method stub
 	
 	PosNegUndLP posNegUndLP = (PosNegUndLP)learningProblem;
-	SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)(posNegUndLP.getPositiveExample());
-	SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)posNegUndLP.getNegativeExample();
-	SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)posNegUndLP.getUncertainExample();								
+	SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)(posNegUndLP.getPositiveExamples());
+	SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)posNegUndLP.getNegativeExamples();
+	SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)posNegUndLP.getUncertainExamples();
 
 	System.out.println(posExs.size());
 	System.out.println(negExs.size());

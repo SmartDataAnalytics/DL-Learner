@@ -27,6 +27,8 @@ import org.dllearner.core.AbstractReasonerComponent;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
 import org.dllearner.core.KnowledgeSource;
+import org.dllearner.core.annotations.NoConfigOption;
+import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLAPIOntology;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
@@ -83,7 +85,9 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     SortedSet<OWLIndividual> individuals = new TreeSet<>();
 
     // namespaces
+	@OutVariable
     private Map<String, String> prefixes = new TreeMap<>();
+	@OutVariable
     private String baseURI;
 
     // references to OWL API ontologies
@@ -1248,7 +1252,7 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		if(!(reasoner instanceof ThreadSafeOWLReasoner)) {
 			reasoner = new ThreadSafeOWLReasoner(reasoner);

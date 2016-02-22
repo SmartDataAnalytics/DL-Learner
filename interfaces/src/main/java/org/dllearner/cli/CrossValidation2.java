@@ -66,7 +66,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 
 			if(lp instanceof PosNegUndLP){
 
-				undExamples=((PosNegUndLP)lp).getUncertainExample();
+				undExamples=((PosNegUndLP)lp).getUncertainExamples();
 			}
 		} else if(lp instanceof PosOnlyLP){
 			posExamples = ((PosNegLP)lp).getPositiveExamples();
@@ -159,7 +159,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 						((PosNegLP)lpClone).setPositiveExamples(trainPos);
 						((PosNegLP)lpClone).setNegativeExamples(trainNeg);
 						if (lp instanceof PosNegUndLP){
-							((PosNegUndLP)lpClone).setUncertainExample(trainUnd);
+							((PosNegUndLP)lpClone).setUncertainExamples(trainUnd);
 						}
 					} else if(lp instanceof PosOnlyLP){
 						((PosOnlyLP)lpClone).setPositiveExamples(new TreeSet<>(trainPos));
@@ -207,7 +207,7 @@ public class CrossValidation2  extends org.dllearner.cli.CrossValidation{
 					((PosNegLP)lp).setPositiveExamples(trainPos);
 					((PosNegLP)lp).setNegativeExamples(trainNeg);
 					if(lp instanceof PosNegUndLP){
-						((PosNegUndLP)lp).setUncertainExample(trainUnd);
+						((PosNegUndLP)lp).setUncertainExamples(trainUnd);
 					}
 				} else if(lp instanceof PosOnlyLP){
 					((PosOnlyLP)lp).setPositiveExamples(new TreeSet<>(trainPos));

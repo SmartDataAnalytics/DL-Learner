@@ -27,6 +27,7 @@ import com.jamonapi.MonitorFactory;
 import org.dllearner.core.AbstractKnowledgeSource;
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.ComponentInitException;
+import org.dllearner.core.annotations.OutVariable;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.OWLOntologyKnowledgeSource;
 import org.dllearner.utilities.OwlApiJenaUtils;
@@ -44,6 +45,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
     @ConfigOption(name = "endpointURL", description = "URL of the SPARQL endpoint", required = true)
     private String endpointURL = null;
+    @OutVariable
     private OntModel model = null;
     @ConfigOption(name = "instances", description = "List of the instances to use", required = true)
     private List<String> instances = null;
@@ -57,6 +59,7 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
     @ConfigOption(name = "defaultGraphURI", description = "default graph URI", required = true)
     private String defaultGraphURI = null;
+
     @ConfigOption(name = "sparqlQuery", description = "Sparql Query", required = false)
     private String sparqlQuery = null;
     @ConfigOption(name = "ontologySchemaUrls", description = "List of Ontology Schema URLs", required = true)
@@ -307,6 +310,13 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
         this.tboxfilter = tboxfilter;
     }
 
+    public String getSparqlQuery() {
+        return sparqlQuery;
+    }
+
+    public void setSparqlQuery(String sparqlQuery) {
+        this.sparqlQuery = sparqlQuery;
+    }
 
     @Override
     public OWLOntology createOWLOntology(OWLOntologyManager manager) {

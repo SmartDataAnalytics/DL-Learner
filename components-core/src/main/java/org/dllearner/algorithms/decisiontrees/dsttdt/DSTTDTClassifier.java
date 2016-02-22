@@ -692,9 +692,9 @@ public class DSTTDTClassifier extends AbstractCELA{
 		
 		
 		PosNegUndLP learningProblem2 = (PosNegUndLP)learningProblem;
-		SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)learningProblem2.getPositiveExample();
-		SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)learningProblem2.getNegativeExample();
-		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExample();
+		SortedSet<OWLIndividual> posExs = (SortedSet<OWLIndividual>)learningProblem2.getPositiveExamples();
+		SortedSet<OWLIndividual> negExs = (SortedSet<OWLIndividual>)learningProblem2.getNegativeExamples();
+		SortedSet<OWLIndividual> undExs = (SortedSet<OWLIndividual>)learningProblem2.getUncertainExamples();
 
 		//System.out.printf("--- Query Concept #%d \n",c);
 		

@@ -2,6 +2,7 @@ package org.dllearner.learningproblems;
 
 import org.dllearner.core.ComponentAnn;
 import org.dllearner.core.Reasoner;
+import org.dllearner.core.config.ConfigOption;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLIndividual;
 
@@ -10,8 +11,10 @@ import java.util.Collection;
 @ComponentAnn(name = "AMeasure Approximate", shortName = "approx.ameasure", version = 0.1)
 public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMethodTwoValuedApproximate {
 
+	@ConfigOption(description = "(configured by learning problem)")
 	private Reasoner reasoner;
-	private double approxDelta;
+	@ConfigOption(description = "The Approximate Delta", defaultValue = "0.05")
+	private double approxDelta = 0.05;
 
 	@Override
 	public double getApproxDelta() {

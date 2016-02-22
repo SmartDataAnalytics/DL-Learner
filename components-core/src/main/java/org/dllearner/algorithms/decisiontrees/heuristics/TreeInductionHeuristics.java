@@ -158,8 +158,8 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		//logger.debug("%4s\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t p:%d n:%d u:%d\t ", 
 			//	"#"+0, counts[, counts[], counts[], counts[], counts[], counts[], counts[], counts[UNCERTAIN_INSTANCE_CHECK_FALSE], counts[UNCERTAIN_INSTANCE_CHECK_UNC]);
 
-//		SortedSet<OWLIndividual> truePositiveExample = problem.getPositiveExample();
-//		SortedSet<OWLIndividual> trueNegativeExample = problem.getNegativeExample();
+//		SortedSet<OWLIndividual> truePositiveExample = problem.getPositiveExamples();
+//		SortedSet<OWLIndividual> trueNegativeExample = problem.getNegativeExamples();
 		double minEntropy = CCP(counts, prPos, prNeg); // recall improvement
 
 		logger.debug("%+10e\n",minEntropy);

@@ -1947,7 +1947,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.reasoner = (AbstractReasonerComponent) reasoner;
 	}
 
-	@Override
+	@Override @NoConfigOption
 	public void setClassHierarchy(ClassHierarchy classHierarchy) {
 		subHierarchy = classHierarchy;
 	}

@@ -167,7 +167,7 @@ public class UndocumentedOptionScanner {
 				if (line.matches(".*/\\*.*") && !line.matches(".*\\*/.*")) {
 					inComment = true;
 				}
-				if (!inComment && !line.matches("\\s*//.*") && line.matches("(\\w|\\s)*\\w+\\s" + Pattern.quote(optionName) + "(\\W.*|)")) {
+				if (!inComment && !line.matches("\\s*//.*") && line.matches("(\\w|\\s|[><,])*(\\w|[><,])+\\s" + Pattern.quote(optionName) + "\\s*(\\W.*|)")) {
 					foundLine = lineno;
 					break;
 				}
