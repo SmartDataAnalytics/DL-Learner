@@ -105,10 +105,10 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	private static final ParameterizedSparqlString INDIVIDUAL_POPULARITY_QUERY = new ParameterizedSparqlString(
 			"SELECT (COUNT(*) AS ?cnt) WHERE {?entity ?p ?o .}");
 
-	@ConfigOption(name = "laxMode", description = "Use alternative relaxed Sparql-queries for Classes and Individuals", defaultValue = "false")
+	@ConfigOption(description = "Use alternative relaxed Sparql-queries for Classes and Individuals", defaultValue = "false")
 	private boolean laxMode = false;
 
-	@ConfigOption(name = "useGenericSplitsCode", description = "Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended", defaultValue = "false")
+	@ConfigOption(description = "Whether to use the generic facet generation code, which requires downloading all instances and is thus not recommended", defaultValue = "false")
 	private boolean useGenericSplitsCode = false;
 	
 	@ConfigOption(description = "Whether to use SPARQL1.1 Value Lists", defaultValue = "false")
@@ -759,7 +759,6 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 		query = "CONSTRUCT {?s a <%s>. ?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>} WHERE {?s a <%s>.?s a <http://www.w3.org/2002/07/owl#DatatypeProperty>}".
 				replaceAll("%s", OWL.FunctionalProperty.getURI());
 		model.add(loadIncrementally(query));
-
 
 		return model;
 	}
@@ -2408,6 +2407,5 @@ public class SPARQLReasoner extends AbstractReasonerComponent implements SchemaR
 	public void setUseValueLists(boolean useValueLists) {
 		this.useValueLists = useValueLists;
 	}
-
 
 }

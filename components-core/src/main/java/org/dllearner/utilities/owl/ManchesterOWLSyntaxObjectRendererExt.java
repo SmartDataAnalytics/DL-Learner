@@ -18,7 +18,6 @@
  */
 package org.dllearner.utilities.owl;
 
-
 import org.semanticweb.owlapi.manchestersyntax.parser.ManchesterOWLSyntax;
 import org.semanticweb.owlapi.manchestersyntax.renderer.AbstractRenderer;
 import org.semanticweb.owlapi.model.*;

@@ -58,41 +58,33 @@ public class FinalizedMonitor implements Serializable{
 		
 	}
 
-
 	public String getHeader() {
 		return header;
 	}
-
 
 	public String getUnits() {
 		return units;
 	}
 
-
 	public double getAvg() {
 		return avg;
 	}
-
 
 	public double getHits() {
 		return hits;
 	}
 
-
 	public double getStdDev() {
 		return stdDev;
 	}
-
 
 	public double getLastValue() {
 		return lastValue;
 	}
 
-
 	public double getMax() {
 		return max;
 	}
-
 
 	public double getMin() {
 		return min;

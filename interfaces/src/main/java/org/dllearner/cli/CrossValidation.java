@@ -41,7 +41,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Performs cross validation for the given problem. Supports
  * k-fold cross-validation and leave-one-out cross-validation.

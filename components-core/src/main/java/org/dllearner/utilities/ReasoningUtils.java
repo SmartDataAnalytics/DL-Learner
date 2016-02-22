@@ -80,7 +80,6 @@ public class ReasoningUtils implements Component {
 	 */
 	protected boolean interrupted() { return false; }
 
-
 	/**
 	 * binary partition a list of sets into true and false, depending on whether they satisfy concept
 	 * @param concept the OWL concept used for partition

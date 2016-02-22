@@ -25,7 +25,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-
 /**
  * @author Lorenz Buehmann
  *

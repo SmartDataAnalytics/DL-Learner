@@ -33,7 +33,6 @@ import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 public class AddAllStringsAsClasses extends Rule{
 	String namespace;
 
-
 	/**
 	 * @param month the month
 	 * @param resourceNamespace ns for the created uris

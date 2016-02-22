@@ -67,7 +67,6 @@ public class AccMethodFMeasureWeighted implements AccMethodTwoValued, AccMethodW
 		}
 	}
 
-
 	public boolean isBalanced() {
 		return balanced;
 	}

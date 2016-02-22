@@ -95,14 +95,12 @@ public class LexicographicHeuristic implements ExampleBasedHeuristic {
 						// throw new RuntimeException("Current implementation cannot cope with concepts with equal string representations.");
 					}
 
-
 				//}
 			}
 		}
 
 		throw new RuntimeException("Cannot compare nodes, which have no evaluated quality or are too weak.");
 	}
-
 
 	// alle NodeComparators führen zur gleichen Ordnung
 	@Override	

@@ -93,20 +93,19 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
     // references to OWL API ontologies
     private Set<OWLOntology> owlAPIOntologies = new HashSet<>();
 
-
     private OWLClassExpressionMinimizer minimizer;
 
     private OWLReasoner fallbackReasoner;
     
     
  // default reasoner is Pellet
-    @ConfigOption(name = "reasonerImplementation", defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
+    @ConfigOption(defaultValue="pellet", description="specifies the used OWL API reasoner implementation")
     private ReasonerImplementation reasonerImplementation = ReasonerImplementation.PELLET;
 
-    @ConfigOption(name = "useFallbackReasoner", defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
+    @ConfigOption(defaultValue="false", description="specifies whether to use a fallback reasoner if a reasoner call fails because it's not supported or results in a bug. (the fallback works only on the assertional level")
     private boolean useFallbackReasoner = false;
 
-    @ConfigOption(name = "owlLinkURL", defaultValue="null", description="specifies the URL of the remote OWLLink server")
+    @ConfigOption(defaultValue="null", description="specifies the URL of the remote OWLLink server")
     private String owlLinkURL;
 
     public OWLAPIReasoner() {
@@ -216,7 +215,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
         // remove top and bottom properties (for backwards compatibility)
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#bottomObjectProperty"));
 //		atomicRoles.remove(df.getOWLObjectProperty(IRI.create("http://www.w3.org/2002/07/owl#topObjectProperty"));
-
 
         // remove classes that are built-in entities
 		Iterator<OWLClass> it = atomicConcepts.iterator();
@@ -960,7 +958,6 @@ public class OWLAPIReasoner extends AbstractReasonerComponent {
 		}
 		return map;
 	}
-
 
     // OWL API returns a set of nodes of classes, where each node
     // consists of equivalent classes; this method picks one class

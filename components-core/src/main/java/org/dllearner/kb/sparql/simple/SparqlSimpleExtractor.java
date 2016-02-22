@@ -42,27 +42,26 @@ import java.util.*;
 @ComponentAnn(name = "efficient SPARQL fragment extractor", shortName = "sparqls", version = 0.1)
 public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OWLOntologyKnowledgeSource{
 
-
-    @ConfigOption(name = "endpointURL", description = "URL of the SPARQL endpoint", required = true)
+    @ConfigOption(description = "URL of the SPARQL endpoint", required = true)
     private String endpointURL = null;
     @OutVariable
     private OntModel model = null;
-    @ConfigOption(name = "instances", description = "List of the instances to use", required = true)
+    @ConfigOption(description = "List of the instances to use", required = true)
     private List<String> instances = null;
-    @ConfigOption(name = "aboxfilter", description = "Filter for the tbox, can use variable ?s, ?p amd ?o", required = false)
+    @ConfigOption(description = "Filter for the tbox, can use variable ?s, ?p amd ?o", required = false)
     private String aboxfilter = null;
-    @ConfigOption(name = "tboxfilter", description = "Filter for the tbox, can use variable ?example and ?class", required = false)
+    @ConfigOption(description = "Filter for the tbox, can use variable ?example and ?class", required = false)
     private String tboxfilter = null;
 
-    @ConfigOption(name = "recursionDepth", description = "recursion depth", required = true)
+    @ConfigOption(description = "recursion depth", required = true)
     private int recursionDepth = 0;
 
-    @ConfigOption(name = "defaultGraphURI", description = "default graph URI", required = true)
+    @ConfigOption(description = "default graph URI", required = true)
     private String defaultGraphURI = null;
 
-    @ConfigOption(name = "sparqlQuery", description = "Sparql Query", required = false)
+    @ConfigOption(description = "Sparql Query", required = false)
     private String sparqlQuery = null;
-    @ConfigOption(name = "ontologySchemaUrls", description = "List of Ontology Schema URLs", required = true)
+    @ConfigOption(description = "List of Ontology Schema URLs", required = true)
     private List<String> ontologySchemaUrls = null;
 
     private SchemaIndexer indexer;
@@ -118,7 +117,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
 
         return result;
     }
-
 
     @Override
     public void init() throws ComponentInitException {
@@ -183,7 +181,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
                 alreadyQueried.addAll(instancesSet);
                 instancesSet = difference(alreadyQueried, model);
 
-
             }
 
             log.info("recursion depth: {} reached, {} new instances",recursionDepth,instancesSet.size());
@@ -202,7 +199,6 @@ public class SparqlSimpleExtractor extends AbstractKnowledgeSource implements OW
             executor.executeQuery(sparqlQuery, endpointURL, model, null);
             monQueryingABox.stop();
         }
-
 
         TBoxQueryGenerator tGenerator = new TBoxQueryGenerator();
 

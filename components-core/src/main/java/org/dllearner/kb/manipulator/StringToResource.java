@@ -34,7 +34,6 @@ public class StringToResource extends Rule{
 	String namespace;
 	int limit ;
 
-
 	/**
 	 * @param month the month
 	 * @param resourceNamespace ns for the created uris

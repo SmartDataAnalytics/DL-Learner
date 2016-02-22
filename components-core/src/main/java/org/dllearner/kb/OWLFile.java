@@ -52,23 +52,23 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     private static Logger logger = Logger.getLogger(OWLFile.class);
 
     // TODO: turn this into a config option
-    @ConfigOption(name = "url", description = "URL pointer to the KB file or Endpoint")
+    @ConfigOption(description = "URL pointer to the KB file or Endpoint")
     private URL url;
-    @ConfigOption(name = "fileName", description = "relative or absolute path to KB file")
+    @ConfigOption(description = "relative or absolute path to KB file")
     private String fileName;
-    @ConfigOption(name = "baseDir",  description = "separately specify directory of KB file")
+    @ConfigOption(description = "separately specify directory of KB file")
     private String baseDir;
 
-    @ConfigOption(name = "sparql",   description = "SPARQL CONSTRUCT expression to download from Endpoint")
+    @ConfigOption(description = "SPARQL CONSTRUCT expression to download from Endpoint")
     private String sparql = null;
-    @ConfigOption(name = "defaultGraphURIs", description = "a list of default graph URIs to query from the Endpoint")
+    @ConfigOption(description = "a list of default graph URIs to query from the Endpoint")
     private List<String> defaultGraphURIs = new LinkedList<>();
-    @ConfigOption(name = "namedGraphURIs", description = "a list of named graph URIs to query from the Endpoint")
+    @ConfigOption(description = "a list of named graph URIs to query from the Endpoint")
     private List<String> namedGraphURIs = new LinkedList<>();
 
 	@NoConfigOption // set via reasoningString
     private OntModelSpec reasoning = OntModelSpec.OWL_MEM;
-    @ConfigOption(name = "reasoningString", defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
+    @ConfigOption(defaultValue = "false", description = "Enable JENA reasoning on the Ontology Model."
     		+ " Available reasoners are: \"micro_rule\", \"mini_rule\", \"rdfs\", \"rule\"")
     private String reasoningString = "";
 
@@ -141,7 +141,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
         }
     }
 
-
     public URL getURL() {
         return url;
     }
@@ -149,7 +148,6 @@ public class OWLFile extends AbstractKnowledgeSource implements OWLOntologyKnowl
     public void setURL(URL url) {
         this.url = url;
     }
-
 
     public String getBaseDir() {
         return baseDir;

@@ -18,7 +18,6 @@
  */
 package org.dllearner.core;
 
-
 /**
  * Active Learning algorithms are those, which can use feedback from an oracle.
  * 

@@ -67,10 +67,10 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 	private Reasoner reasoner;
 	protected OWLDataFactory dataFactory = new OWLDataFactoryImpl();
 
-	@ConfigOption(defaultValue = "5", name = "beam")
+	@ConfigOption(defaultValue = "5")
 	private int beam;
 
-	@ConfigOption(defaultValue = "1", name = "kindOperator")
+	@ConfigOption(defaultValue = "1")
 	private int ro; // the name of a refinement operator
 	//
 	//
@@ -79,18 +79,15 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return ro;
 	}
 
-
 	public void setRo(int ro) {
 		this.ro = ro;
 	}
-
 
 	public DLTreesRefinementOperator() {
 		super();
 
 		generator= new Random(2);
 	}
-
 
 	public DLTreesRefinementOperator(PosNegLP lp, AbstractReasonerComponent reasoner, int beam) {
 		super();
@@ -106,39 +103,29 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	}
 
-
-
-
-
 	public PosNegLP getLp() {
 		return lp;
 	}
-
 
 	public void setLp(PosNegLP lp) {
 		this.lp = lp;
 	}
 
-
 	public ArrayList<OWLClass> getAllConcepts() {
 		return allConcepts;
 	}
-
 
 	public void setAllConcepts(ArrayList<OWLClass> allConcepts) {
 		this.allConcepts = allConcepts;
 	}
 
-
 	public ArrayList<OWLObjectProperty> getAllRoles() {
 		return allRoles;
 	}
 
-
 	public void setAllRoles(ArrayList<OWLObjectProperty> allRoles) {
 		this.allRoles = allRoles;
 	}
-
 
 	/**
 	 * Random concept generation
@@ -246,7 +233,6 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return rConcepts;
 	}
 
-
 	private OWLClassExpression setSeed() {
 
 		//for (OWLClassExpression cl: allConcepts){
@@ -258,19 +244,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		return null;
 	}
 
-
-
-
-
-
-
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression description) {
 		// this method calls the naive refinement operator for DLTree
 		return null;
 	}
-
-
 
 	@Override
 	public void init() throws ComponentInitException {
@@ -287,8 +265,6 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 
 	}
 
-
-
      //
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		// TODO Auto-generated method stub
@@ -298,7 +274,6 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		//System.out.println("all+ Concepts: "+allConcepts.size());
 		if (allRoles==null)
 			allRoles= new ArrayList<>(reasoner.getObjectProperties());
-
 
 	}
 
@@ -313,11 +288,7 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		if (allRoles==null)
 			allRoles= new ArrayList<>(reasoner.getObjectProperties());
 
-
 	}
-
-
-
 
 	@Override
 	public Set<OWLClassExpression> refine(OWLClassExpression definition, SortedSet<OWLIndividual> posExs,
@@ -359,7 +330,6 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 			rho.setUseNumericDatatypes(false);
 			rho.setUseStringDatatypes(false);
 
-
 			try {
 				rho.init();
 			} catch (ComponentInitException e) {
@@ -395,19 +365,11 @@ public class DLTreesRefinementOperator implements InstanceBasedRefinementOperato
 		
 	}
 
-
-
-
-
 	public void setBeam(int i) {
 		// TODO Auto-generated method stub
 		beam=i;
 
 	}
-
-
-
-
 
 	public int getBeam() {
 		return beam;

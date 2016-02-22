@@ -61,30 +61,30 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 	private boolean isRemote = true;
 	private boolean initialized = false;
 
-	@ConfigOption(name = "url", description="URL of the SPARQL endpoint", required=true)
+	@ConfigOption(description="URL of the SPARQL endpoint", required=true)
 	private URL url;
 
-	@ConfigOption(name = "defaultGraphURIs", description="a list of default graph URIs", defaultValue="{}", required=false)
+	@ConfigOption(description="a list of default graph URIs", defaultValue="{}", required=false)
 	private List<String> defaultGraphURIs = new LinkedList<>();
 
-	@ConfigOption(name = "namedGraphURIs", description="a list of named graph URIs", defaultValue="{}", required=false)
+	@ConfigOption(description="a list of named graph URIs", defaultValue="{}", required=false)
 	private List<String> namedGraphURIs = new LinkedList<>();
 
 	// some parameters for the query execution
-	@ConfigOption(name = "queryDelay", defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
+	@ConfigOption(defaultValue = "50", description = "Use this setting to avoid overloading the endpoint with a sudden burst of queries. A value below 0 means no delay.", required = false)
 	private long queryDelay = 50;
 
 	// caching options
-	@ConfigOption(name = "useCache", defaultValue = "true", description = "Use this setting to enable caching of SPARQL queries in a local database.", required = false)
+	@ConfigOption(defaultValue = "true", description = "Use this setting to enable caching of SPARQL queries in a local database.", required = false)
 	private boolean useCache = true;
 
-	@ConfigOption(name = "cacheDir", defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
+	@ConfigOption(defaultValue = "tmp folder of the system", description = "The base directory of the SPARQL query cache.", required = false)
 	protected String cacheDir = System.getProperty("java.io.tmpdir") + "/sparql-cache";
 
-	@ConfigOption(name = "cacheTTL", defaultValue = "86400", description = "The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).", required = false)
+	@ConfigOption(defaultValue = "86400", description = "The time to live in milliseconds for cached SPARQL queries, if enabled. The default value is 86400s(=1 day).", required = false)
 	protected long cacheTTL = TimeUnit.DAYS.toMillis(1);
 
-	@ConfigOption(name = "retryCount", defaultValue = "3", description = "The maximum number of retries for the execution of a particular SPARQL query.", required = false)
+	@ConfigOption(defaultValue = "3", description = "The maximum number of retries for the execution of a particular SPARQL query.", required = false)
 	protected int retryCount = 3;
 
 	protected QueryExecutionFactory qef;
@@ -152,7 +152,6 @@ public class SparqlEndpointKS extends AbstractKnowledgeSource {
 		QueryExecutionFactory qef = new org.aksw.jena_sparql_api.http.QueryExecutionFactoryHttp(
 				endpoint.getURL().toString(),
 				endpoint.getDefaultGraphURIs());
-
 
 		if(useCache) {
 			qef = CacheUtilsH2.createQueryExecutionFactory(qef, cacheDir, false, cacheTTL );

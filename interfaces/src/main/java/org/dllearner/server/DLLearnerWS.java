@@ -671,7 +671,6 @@ public class DLLearnerWS {
 		}
 	}
 
-
 	/**
 	 *
 	 * @param id The session ID.
@@ -969,7 +968,6 @@ public class DLLearnerWS {
 	////////////////////////////////////////
 	//     SPARQL component methods       //
 	////////////////////////////////////////
-
 
 	@WebMethod
 	public String getAsJSON(int sessionID, int queryID) throws ClientNotKnownException, SparqlQueryException

@@ -33,7 +33,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 
-
 public class Reactome {
     private static final Logger logger = Logger.getLogger(Reactome.class);
     private static final String kbPathStr = "/tmp/tr.owl";

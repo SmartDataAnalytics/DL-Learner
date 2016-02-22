@@ -28,7 +28,6 @@ public class WordNetIndex extends Index
 
 	public WordNetIndex(Index index) {this.index=index;}
 
-
 	@Override public IndexResultSet getResourcesWithScores(String queryString, int limit)
 	{		
 		IndexResultSet resources = index.getResourcesWithScores(queryString, limit);

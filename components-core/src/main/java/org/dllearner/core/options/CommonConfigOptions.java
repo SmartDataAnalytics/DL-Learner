@@ -18,9 +18,6 @@
  */
 package org.dllearner.core.options;
 
-
-
-
 /**
  * Contains methods for creating common configuration options, i.e. options
  * which are or may be of use for several components.

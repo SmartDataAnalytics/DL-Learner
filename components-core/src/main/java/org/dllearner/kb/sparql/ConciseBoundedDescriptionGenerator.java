@@ -22,7 +22,6 @@ import java.util.Set;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-
 /**
  * According to the definition at http://www.w3.org/Submission/CBD/
  * 

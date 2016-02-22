@@ -20,7 +20,6 @@ package org.dllearner.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 /**
  * Basic interface for all DL-Learner learning algorithms.
  * 

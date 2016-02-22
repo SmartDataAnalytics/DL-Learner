@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-
 public class Infgen {
 	public static Model getModel(final OWLOntology ontology) {
 		Model model = ModelFactory.createDefaultModel();

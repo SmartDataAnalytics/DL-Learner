@@ -117,5 +117,4 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 		this.reasoner = reasoner;
 	}
 
-
 }

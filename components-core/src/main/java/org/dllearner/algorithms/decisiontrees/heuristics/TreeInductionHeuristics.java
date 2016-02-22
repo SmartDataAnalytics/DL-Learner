@@ -66,13 +66,9 @@ public class TreeInductionHeuristics {
 		
 	}
 
-
-
 	public AbstractClassExpressionLearningProblem getProblem() {
 		return problem;
 	}
-
-
 
 	public void setProblem(AbstractClassExpressionLearningProblem problem) {
 		if (problem instanceof PosNegUndLP)
@@ -81,13 +77,9 @@ public class TreeInductionHeuristics {
 			
 	}
 
-
-
 	public AbstractReasonerComponent getReasoner() {
 		return reasoner;
 	}
-
-
 
 	public void setReasoner(AbstractReasonerComponent reasoner) {
 		this.reasoner = reasoner;
@@ -99,8 +91,6 @@ public class TreeInductionHeuristics {
 	public void setProblem(PosNegUndLP problem) {
 		this.problem = problem;
 	}
-
-
 
 	public void init(){
 		
@@ -189,8 +179,6 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		return concepts[bestConceptIndex];
 }
 
-
-
 	private double CCP(int[] counts, double prPos, double prNeg) {
 		// TODO Auto-generated method stub
 		
@@ -217,7 +205,6 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 
 		return entropyCCP;
 	}
-
 
 	/* Gain in terms of gini?*/
 	private double gain(int[] counts, double prPos, double prNeg) {
@@ -248,7 +235,6 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		return (1.0-p1*p1-p2*p2);
 		//		return (1-Math.pow(p1,2)-Math.pow(p2,2))/2;
 	}
-
 
 	private int[] getSplitCounts(OWLClassExpression concept, SortedSet<OWLIndividual> posExs, SortedSet<OWLIndividual> negExs,
 			SortedSet<OWLIndividual> undExs) {
@@ -449,7 +435,6 @@ public OWLClassExpression selectBestConceptCCP(OWLClassExpression[] concepts, So
 		name.setSecondElement(bestBba);
 		return name;
 	}
-
 
 /**
  * Selct the worst concept in terms of information gain. To be used jointly with 

@@ -27,7 +27,6 @@ import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 
-
 /**
  * A class for splitting sets of individuals
  * @author Giuseppe Rizzo
@@ -84,11 +83,9 @@ public class Split {
 			} else
 				negExs.add(trainingEx);
 
-
 		}
 		
 	}
-
 
 	
 	

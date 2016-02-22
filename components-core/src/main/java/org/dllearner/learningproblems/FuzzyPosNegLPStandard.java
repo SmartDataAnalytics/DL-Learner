@@ -65,7 +65,7 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 
 	private int errorIndex = 0;
 	
-	@ConfigOption(name = "accuracyMethod", description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"PRED_ACC\" (predictive accuracy), \"FMEASURE\" (F measure), \"GEN_FMEASURE\" (generalised F-Measure according to Fanizzi and d'Amato).",defaultValue = "PRED_ACC")
     private HeuristicType accuracyMethod = HeuristicType.PRED_ACC;
 	
 	public FuzzyPosNegLPStandard() {}
@@ -457,7 +457,6 @@ public class FuzzyPosNegLPStandard extends FuzzyPosNegLP {
 		// (leads to undesired effects for descriptions not following this rule,
 		// but improves performance a lot);
 		// for learning a superclass of a defined class, similar observations apply;
-
 
 		int testsPerformed = 0;
 		int instancesDescription = 0;

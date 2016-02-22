@@ -49,7 +49,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 
-
 /**
  * An LGG generator based on syntax and structure only, i.e. without taking into account any type of
  * Semantics.

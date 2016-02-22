@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractLearningProblem<T extends Score, V extends OWLObject, W extends EvaluatedHypothesis<V, T>>  extends AbstractComponent implements LearningProblem {
 	
-	@ConfigOption(name="reasoner",description="The reasoner component variable to use for this Learning Problem")
+	@ConfigOption(description="The reasoner component variable to use for this Learning Problem")
 	protected AbstractReasonerComponent reasoner;
 
     public AbstractLearningProblem(){

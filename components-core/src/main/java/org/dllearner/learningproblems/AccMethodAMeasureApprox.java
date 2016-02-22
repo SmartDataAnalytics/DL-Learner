@@ -112,7 +112,6 @@ public class AccMethodAMeasureApprox extends AccMethodAMeasure implements AccMet
 		// but improves performance a lot);
 		// for learning a superclass of a defined class, similar observations apply;
 
-
 		int testsPerformed = 0;
 		int instancesDescription = 0;
 		//			boolean estimatedB = false;

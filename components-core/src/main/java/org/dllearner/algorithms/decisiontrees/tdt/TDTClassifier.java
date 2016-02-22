@@ -24,12 +24,6 @@ import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
 
-
-
-
-
-
-
 //import org.dllearner.algorithms.celoe.CELOE;
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
@@ -55,7 +49,6 @@ public class TDTClassifier extends AbstractTDTClassifier {
 	private static Logger logger = LoggerFactory.getLogger(TDTClassifier.class);
 	private DLTree currentmodel;
 	
-
 
  //private RefinementOperator op;
 
@@ -258,7 +251,6 @@ public void start() {
 	Split.splitting(dataFactory, reasoner, trainingExs, posExs, negExs, undExs, classToDescribe, binaryClassification);
 	}
 
-
 	prPos = (double)posExs.size()/(posExs.size()+ negExs.size()+ undExs.size());
 	prNeg = (double)negExs.size()/(posExs.size()+ negExs.size()+ undExs.size());
 
@@ -291,7 +283,6 @@ public void start() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	public DLTree getCurrentmodel() {
 		// TODO Auto-generated method stub

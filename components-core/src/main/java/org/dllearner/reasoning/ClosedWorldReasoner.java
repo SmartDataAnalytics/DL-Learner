@@ -99,12 +99,10 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	
 	
 	
-    @ConfigOption(name="defaultNegation", description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
+    @ConfigOption(description = "Whether to use default negation, i.e. an instance not being in a class means that it is in the negation of the class.", defaultValue = "true", required = false)
     private boolean defaultNegation = true;
 
-	@ConfigOption(
-    		name = "forAllRetrievalSemantics",
-    		description = "This option controls how to interpret the all quantifier in forall r.C. " +
+	@ConfigOption(description = "This option controls how to interpret the all quantifier in forall r.C. " +
     		"The standard option is to return all those which do not have an r-filler not in C. " +
     		"The domain semantics is to use those which are in the domain of r and do not have an r-filler not in C. " +
     		"The forallExists semantics is to use those which have at least one r-filler and do not have an r-filler not in C.",

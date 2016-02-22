@@ -104,7 +104,7 @@ public class QTL2Disjunctive extends AbstractCELA implements Cloneable{
 	private QueryTreeHeuristic heuristic;
 	
 	//Parameters
-	@ConfigOption(name = "noisePercentage", defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
+	@ConfigOption(defaultValue="0.0", description="the (approximated) percentage of noise within the examples")
 	private double noisePercentage = 0.0;
 	
 	private double coverageWeight = 0.8;

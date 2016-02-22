@@ -89,7 +89,6 @@ public class OCEL extends AbstractCELA {
 	private int nrOfNegativeExamples;
 	private Set<OWLIndividual> negativeExamples;
 
-
 	private int allowedMisclassifications = 0;
 
 	// search tree options
@@ -548,7 +547,6 @@ public class OCEL extends AbstractCELA {
 		isRunning = false;
 	}
 
-
 	// we apply the operator recursively until all proper refinements up
 	// to the maxmimum length are reached
 	private void extendNodeProper(ExampleBasedNode node, int maxLength) {
@@ -826,7 +824,6 @@ public class OCEL extends AbstractCELA {
 		}
 	}
 
-
 	private void printStatistics(boolean finalStats) {
 		// TODO: viele Tests haben ergeben, dass man nie 100% mit der Zeitmessung abdecken
 		// kann (zum einen weil Stringausgabe verzögert erfolgt und zum anderen weil
@@ -1084,7 +1081,6 @@ public class OCEL extends AbstractCELA {
 		return cbd;
 	}
 
-
 	public void printBestSolutions(int nrOfSolutions) {
 		// QUALITY: could be optimized
 		if (!logger.isTraceEnabled()) {
@@ -1182,7 +1178,6 @@ public class OCEL extends AbstractCELA {
 				result = true;
 			}
 		}
-
 
 		if (minExecutionTimeAlreadyReached) {
 			result = result && true;

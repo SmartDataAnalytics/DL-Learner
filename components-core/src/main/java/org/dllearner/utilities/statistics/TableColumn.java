@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.dllearner.utilities.Files;
 
-
 public class TableColumn implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -43,7 +42,6 @@ public TableColumn(String header) {
 	this.header = header;
 }
 
-
 public TableColumn( String[] entries) {
 	this.entries = Arrays.asList(entries);
 }
@@ -57,7 +55,6 @@ public TableColumn(String header, String[] entries) {
 public TableColumn( List<String> entries) {
 	this.entries = entries;
 }
-
 
 public String getHeader() {
 	return header;
@@ -113,6 +110,5 @@ public static TableColumn deSerialize(File f){
 	
 	return ret;
 }
-
 
 }

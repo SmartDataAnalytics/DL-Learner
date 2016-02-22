@@ -53,8 +53,6 @@ import java.util.Map.Entry;
 
 //import org.dllearner.algorithms.qtl.QTL2;
 
-
-
 /**
  * 
  * New commandline interface.
@@ -79,11 +77,11 @@ public class CLI {
 	private KnowledgeSource knowledgeSource;
 	
 	// some CLI options
-	@ConfigOption(name = "performCrossValidation", defaultValue = "false", description = "Run in Cross-Validation mode")
+	@ConfigOption(defaultValue = "false", description = "Run in Cross-Validation mode")
 	private boolean performCrossValidation = false;
-	@ConfigOption(name = "nrOfFolds", defaultValue = "10", description = "Number of folds in Cross-Validation mode")
+	@ConfigOption(defaultValue = "10", description = "Number of folds in Cross-Validation mode")
 	private int nrOfFolds = 10;
-	@ConfigOption(name = "logLevel", defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
+	@ConfigOption(defaultValue = "INFO", description = "Configure logger log level from conf file. Available levels: \"FATAL\", \"ERROR\", \"WARN\", \"INFO\", \"DEBUG\", \"TRACE\". "
 			+ "Note, to see results, at least \"INFO\" is required.")
 	private String logLevel = "INFO";
 
