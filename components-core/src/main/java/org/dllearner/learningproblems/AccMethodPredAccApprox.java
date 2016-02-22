@@ -40,6 +40,7 @@ public class AccMethodPredAccApprox extends AccMethodPredAcc implements AccMetho
 	// and class instances to positive examples)
     @ConfigOption(description = "The Approximate Delta", defaultValue = "0.05", required = false)
 	private double approxDelta = 0.05;
+	@ConfigOption(description = "(configured by the learning problem)")
 	private Reasoner reasoner;
 	
     

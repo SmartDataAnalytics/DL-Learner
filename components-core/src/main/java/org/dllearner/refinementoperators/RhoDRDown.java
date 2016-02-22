@@ -1997,6 +1997,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.maxNrOfSplits = maxNrOfSplits;
 	}
 
+	public boolean isDisjointChecks() {
+		return disjointChecks;
+	}
+
+	public void setDisjointChecks(boolean disjointChecks) {
+		this.disjointChecks = disjointChecks;
+	}
+
 	@Override
 	public OWLClassExpressionLengthMetric getLengthMetric() {
 		return lengthMetric;

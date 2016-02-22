@@ -65,6 +65,8 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	
 	// the underlying base reasoner implementation
 	private OWLAPIReasoner baseReasoner;
+	@ConfigOption(description = "the underlying reasoner implementation", defaultValue = "OWL API Reasoner")
+	private final OWLAPIReasoner reasonerComponent = null; /** unused, see instead: baseReasoner */
 	
 	// we use an extra set for object properties because of punning option
 	private Set<OWLObjectProperty> objectProperties;
@@ -130,6 +132,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 
 	@ConfigOption(defaultValue = "false")
     private boolean materializeExistentialRestrictions = false;
+	@ConfigOption(defaultValue = "true")
 	private boolean useMaterializationCaching = true;
 	@ConfigOption(defaultValue = "false")
 	private boolean handlePunning = false;
@@ -1669,7 +1672,7 @@ public class ClosedWorldReasoner extends AbstractReasonerComponent {
 	/* (non-Javadoc)
 	 * @see org.dllearner.core.AbstractReasonerComponent#setSynchronized()
 	 */
-	@Override
+	@Override @NoConfigOption
 	public void setSynchronized() {
 		baseReasoner.setSynchronized();
 	}

@@ -76,16 +76,20 @@ public class UndocumentedOptionScanner {
 			
 			Set<String> hasDoc = new TreeSet<>();
 			Set<String> noDoc = new TreeSet<>();
+			Set<String> notConfigSet = new TreeSet<>();
 			for (Entry<String, List<Field>> f : fields.entrySet()) {
 				boolean isDocumented = false;
+				boolean notConfig = false;
 				for (Field fs : f.getValue()) {
-					isDocumented = isDocumented || fs.isAnnotationPresent(ConfigOption.class)
-							|| fs.isAnnotationPresent(Unused.class)
+					isDocumented = isDocumented || fs.isAnnotationPresent(ConfigOption.class);
+					notConfig = notConfig || fs.isAnnotationPresent(Unused.class)
 							|| fs.isAnnotationPresent(OutVariable.class)
 							|| fs.isAnnotationPresent(NoConfigOption.class);
 				}
 				if (isDocumented) {
 					hasDoc.add(AnnComponentManager.getName(f.getValue().get(0)));
+				} else if (notConfig) {
+					notConfigSet.add(f.getKey());
 				} else {
 					noDoc.add(f.getKey());
 				}
@@ -116,7 +120,7 @@ public class UndocumentedOptionScanner {
 									|| ms.isAnnotationPresent(Deprecated.class)
 									|| ms.isAnnotationPresent(NoConfigOption.class);
 						}
-						if (!notConfig) {
+						if (!notConfig && !notConfigSet.contains(optionName)) {
 							Method m0 = m.getValue().get(0);
 							Class<?> claz = m0.getDeclaringClass();
 							String fileName = getFilename(claz);

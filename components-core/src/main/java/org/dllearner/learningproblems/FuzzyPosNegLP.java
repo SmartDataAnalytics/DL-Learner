@@ -41,7 +41,7 @@ public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProbl
 	protected SortedSet<OWLIndividual> negativeExamples;
 
 	protected SortedSet<OWLIndividual> allExamples;
-	
+	@ConfigOption()
 	protected SortedSet<FuzzyIndividual> fuzzyExamples;
 
 	public void setFuzzyExamples(Map<OWLIndividual, Double> fuzzyEx) {

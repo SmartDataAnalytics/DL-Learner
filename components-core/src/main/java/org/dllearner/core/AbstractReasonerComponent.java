@@ -22,6 +22,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
@@ -108,8 +109,11 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	private List<OWLObjectProperty> atomicRolesList;
 
 	// hierarchies (they are computed the first time they are needed)
+	@NoConfigOption
 	protected ClassHierarchy subsumptionHierarchy = null;
+	@NoConfigOption
 	protected ObjectPropertyHierarchy roleHierarchy = null;
+	@NoConfigOption
 	protected DatatypePropertyHierarchy datatypePropertyHierarchy = null;
 
 	@ConfigOption(description = "if class hierarchy should be precomputed", defaultValue = "true")
@@ -212,6 +216,7 @@ public abstract class AbstractReasonerComponent extends AbstractComponent implem
 	 * should be invalidaded. TODO Currently, nothing is done to behave
 	 * correctly after updates.
 	 */
+	@NoConfigOption
 	public void setUpdated() {
 		// TODO currently, nothing is done to behave correctly after updates
 	}
