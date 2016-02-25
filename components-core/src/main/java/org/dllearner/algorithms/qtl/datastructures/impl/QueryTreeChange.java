@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.qtl.datastructures.impl;
 
-
-
 public class QueryTreeChange {
 	
 	public enum ChangeType{
@@ -85,6 +83,5 @@ public class QueryTreeChange {
 	public int hashCode() {
 		return nodeId + type.hashCode() + 37;
 	}
-
 
 }

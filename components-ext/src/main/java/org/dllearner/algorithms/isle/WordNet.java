@@ -396,7 +396,6 @@ public class WordNet {
             e.printStackTrace();
         }
 
-
         return result;
     }
 

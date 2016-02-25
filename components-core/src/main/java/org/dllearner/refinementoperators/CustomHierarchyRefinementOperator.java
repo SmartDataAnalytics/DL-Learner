@@ -22,7 +22,6 @@ import org.dllearner.core.owl.ClassHierarchy;
 import org.dllearner.core.owl.DatatypePropertyHierarchy;
 import org.dllearner.core.owl.ObjectPropertyHierarchy;
 
-
 /**
  * 
  * A refinement operator for which hierarchies other those of the

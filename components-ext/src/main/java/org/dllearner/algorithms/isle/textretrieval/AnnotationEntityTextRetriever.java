@@ -16,7 +16,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 
 import java.util.*;
 
-
 /**
  * @author Lorenz Buehmann
  *

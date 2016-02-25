@@ -24,7 +24,6 @@ import org.dllearner.kb.sparql.SparqlQuery;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 
-
 public class JenaQueryToResultSpeedTest {
 	static boolean print_flag=false;
 	

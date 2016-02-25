@@ -69,7 +69,6 @@ public class ReasoningUtilsCLP extends ReasoningUtils {
 
 	}
 
-
 	public double getAccuracyCLP(AccMethodTwoValued accuracyMethod,
 	                             OWLClassExpression description, Set<OWLIndividual> classInstances,
 	                             Set<OWLIndividual> superClassInstances,

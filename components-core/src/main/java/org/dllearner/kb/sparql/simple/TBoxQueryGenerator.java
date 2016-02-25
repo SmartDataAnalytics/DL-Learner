@@ -61,7 +61,6 @@ public class TBoxQueryGenerator {
         OntModel model = ModelFactory.createOntologyModel();
         Set<String> individuals = new HashSet<>();
 
-
         individuals.add("http://dbpedia.org/resource/JB_Carlson");
         individuals.add("http://dbpedia.org/resource/Martin_Alabaster");
         individuals.add("http://dbpedia.org/resource/Lane_Gibson");

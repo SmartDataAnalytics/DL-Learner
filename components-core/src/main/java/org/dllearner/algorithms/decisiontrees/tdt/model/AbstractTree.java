@@ -18,8 +18,6 @@
  */
 package org.dllearner.algorithms.decisiontrees.tdt.model;
 
-
-
 /**
  * Abstract class for induced Tree model 
  * @author Utente

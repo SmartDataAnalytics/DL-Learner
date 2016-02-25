@@ -18,15 +18,16 @@
  */
 package org.dllearner.learningproblems;
 
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.dllearner.core.AbstractClassExpressionLearningProblem;
 import org.dllearner.core.AbstractReasonerComponent;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.owl.fuzzydll.FuzzyIndividual;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
+
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Jens Lehmann
@@ -34,19 +35,16 @@ import org.semanticweb.owlapi.model.OWLNamedIndividual;
  */
 public abstract class FuzzyPosNegLP extends AbstractClassExpressionLearningProblem<ScorePosNeg<OWLNamedIndividual>> {
 	
+	@ConfigOption()
 	protected SortedSet<OWLIndividual> positiveExamples;
+	@ConfigOption()
 	protected SortedSet<OWLIndividual> negativeExamples;
+
 	protected SortedSet<OWLIndividual> allExamples;
-	
+	@ConfigOption()
 	protected SortedSet<FuzzyIndividual> fuzzyExamples;
 
-	protected Map<OWLIndividual,Double> fuzzyEx;
-	
-	public Map<OWLIndividual, Double> getFuzzyEx() {
-		return fuzzyEx;
-	}
-
-	public void setFuzzyEx(Map<OWLIndividual, Double> fuzzyEx) {
+	public void setFuzzyExamples(Map<OWLIndividual, Double> fuzzyEx) {
 		fuzzyExamples = new TreeSet<>();
 
 		for (OWLIndividual i : fuzzyEx.keySet()) {

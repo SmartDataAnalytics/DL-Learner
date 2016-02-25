@@ -115,7 +115,6 @@ public class PostProcessor {
 		}
     }
 
-
     private Map processStringMap(Map<String, String> prefixes, Map inputMap) {
 
         Map newMap = new HashMap();

@@ -34,7 +34,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 
-
 public class Rest extends HttpServlet {
     private static Logger log = LoggerFactory.getLogger(Rest.class);
 
@@ -47,7 +46,6 @@ public class Rest extends HttpServlet {
     protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         handle(httpServletRequest, httpServletResponse);
     }
-
 
     /**
      * *
@@ -75,7 +73,6 @@ public class Rest extends HttpServlet {
             }
 
             if (isSet("debug", httpServletRequest) && httpServletRequest.getParameter("debug").equalsIgnoreCase("true")) {
-
 
                 String manchester = "author some (Artist and Writer)";
                 String sparql = "prefix dbo: <http://dbpedia.org/ontology/>\n" +
@@ -107,7 +104,6 @@ public class Rest extends HttpServlet {
                 learningResult.put("trueNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getNotCoveredNegatives()));
                 learningResult.put("falseNegatives", EvaluatedDescriptionPosNeg.getJSONArray(ed.getCoveredNegatives()));
             }
-
 
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();// + printParameterMap(httpServletRequest);
@@ -156,7 +152,6 @@ public class Rest extends HttpServlet {
         }
         throw new Exception("only ClassExpressionLearningAlgorithm implemented currently");
     }
-
 
     public static boolean isSet(String parameterName, HttpServletRequest hsr) {
         boolean retVal = hsr.getParameterValues(parameterName) != null && hsr.getParameterValues(parameterName).length == 1 && hsr.getParameter(parameterName).length() > 0;

@@ -312,7 +312,6 @@ public class PathDetectionTask implements Callable<Path> {
 				}
 				query += ") } GROUP BY ?o HAVING(count(distinct ?s1) >= " + minNrOfExamples + ") ORDER BY DESC(?cnt)";
 
-
 				System.out.println(Thread.currentThread().getId() + ":Testing path: " + path);
 				System.out.println(query);
 

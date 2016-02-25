@@ -18,8 +18,6 @@
  */
 package org.dllearner.core;
 
-
-
 /**
  * Base class of all components. See also http://dl-learner.org/wiki/Architecture.
  * 

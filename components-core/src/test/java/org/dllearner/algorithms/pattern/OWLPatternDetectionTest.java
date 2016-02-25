@@ -25,7 +25,6 @@ import org.dllearner.kb.repository.bioportal.BioPortalRepository;
 import org.dllearner.kb.repository.tones.TONESRepository;
 import org.junit.Test;
 
-
 public class OWLPatternDetectionTest {
 	
 //	@Before

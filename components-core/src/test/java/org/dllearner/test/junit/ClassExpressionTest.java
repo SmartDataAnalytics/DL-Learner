@@ -34,7 +34,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
 /**
  * Tests on class expressins, e.g. transformations or tests on them.
  * 

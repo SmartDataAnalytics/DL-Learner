@@ -72,11 +72,11 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 	
 	protected NumberFormat format = DecimalFormat.getPercentInstance();
 	
-	@ConfigOption(name="maxExecutionTimeInSeconds", defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
+	@ConfigOption(defaultValue="10", description="maximum execution of the algorithm in seconds (abstract)")
 	protected int maxExecutionTimeInSeconds = 10;
-	@ConfigOption(name="returnOnlyNewAxioms", defaultValue="false", description="omit axioms already existing in the knowledge base")
+	@ConfigOption(defaultValue="false", description="omit axioms already existing in the knowledge base")
 	protected boolean returnOnlyNewAxioms;
-	@ConfigOption(name="maxFetchedRows", description="The maximum number of rows fetched from the endpoint to approximate the result.")
+	@ConfigOption(description="The maximum number of rows fetched from the endpoint to approximate the result.")
 	protected int maxFetchedRows;
 	
 	@ConfigOption(description = "the sparql endpoint knowledge source")
@@ -139,7 +139,8 @@ public abstract class AbstractAxiomLearningAlgorithm<T extends OWLAxiom, S exten
 		
 		logger = LoggerFactory.getLogger(this.getClass());
 	}
-	
+
+	@NoConfigOption
 	public void setQueryExecutionFactory(QueryExecutionFactory qef) {
 		this.ksQef = qef;
 	}

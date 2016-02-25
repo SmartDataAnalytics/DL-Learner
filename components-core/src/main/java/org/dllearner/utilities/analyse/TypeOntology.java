@@ -51,7 +51,6 @@ public class TypeOntology {
 		Set<String> individuals = new HashSet<>();
 		Set<Triple> triples = model.getGraph().find(Triple.ANY).toSet();
 
-
 		ExtendedIterator<OntClass> itClass = model.listNamedClasses();
 		while (itClass.hasNext()) {
 			classes.add(itClass.next().getURI());

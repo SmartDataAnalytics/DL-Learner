@@ -18,7 +18,6 @@
  */
 package org.dllearner.prolog;
 
-
 /**
  * 
  * @author Sebastian Bader

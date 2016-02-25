@@ -231,7 +231,6 @@ public class MultiHeuristic implements ExampleBasedHeuristic, Component {
 		this.nrOfExamples = nrOfExamples;
 	}
 
-
 	public double getGainBonusFactor() {
 		return gainBonusFactor;
 	}

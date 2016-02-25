@@ -18,31 +18,17 @@
  */
 package org.dllearner.algorithms.properties;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
+import com.hp.hpl.jena.query.*;
 import org.dllearner.core.EvaluatedAxiom;
+import org.dllearner.core.config.ConfigOption;
 import org.dllearner.kb.SparqlEndpointKS;
 import org.dllearner.learningproblems.AxiomScore;
 import org.dllearner.learningproblems.Heuristics;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
-import org.semanticweb.owlapi.model.OWLDataPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNaryPropertyAxiom;
-import org.semanticweb.owlapi.model.OWLSubDataPropertyOfAxiom;
+import org.semanticweb.owlapi.model.*;
 
-import com.hp.hpl.jena.query.ParameterizedSparqlString;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFactory;
-import com.hp.hpl.jena.query.ResultSetRewindable;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A learning algorithm for data property hierarchy axioms.
@@ -68,12 +54,13 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 	
 	private static final ParameterizedSparqlString SAMPLE_QUERY = new ParameterizedSparqlString(
 			"CONSTRUCT {?s ?p ?o . ?s ?p1 ?o . ?p1 a <http://www.w3.org/2002/07/owl#DatatypeProperty> .} WHERE {?s ?p ?o . OPTIONAL{?s ?p1 ?o . FILTER(?p != ?p1)} }");
-	
-	
+
 	// set strict mode, i.e. if for the property explicit domain and range is given
 	// we only consider properties with same range and domain
+	@ConfigOption(defaultValue = "false")
 	protected boolean strictMode = false;
 
+	@ConfigOption(defaultValue = "1.0", description = "the beta value for the F-score calculation")
 	protected double beta = 1.0;
 	
 	public DataPropertyHierarchyAxiomLearner(SparqlEndpointKS ks) {
@@ -318,7 +305,7 @@ public abstract class DataPropertyHierarchyAxiomLearner<T extends OWLDataPropert
 	/**
 	 * @param strictMode the strictMode to set
 	 */
-	public void setUseStrictMode(boolean strictMode) {
+	public void setStrictMode(boolean strictMode) {
 		this.strictMode = strictMode;
 	}
 

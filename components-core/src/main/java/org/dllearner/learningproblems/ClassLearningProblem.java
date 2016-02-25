@@ -44,31 +44,26 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 
 	private static Logger logger = LoggerFactory.getLogger(ClassLearningProblem.class);
 	private long nanoStartTime;
-	@ConfigOption(name = "maxExecutionTimeInSeconds",
-	              defaultValue = "10",
+	@ConfigOption(defaultValue = "10",
 	              description = "Maximum execution time in seconds")
 	private int maxExecutionTimeInSeconds = 10;
 
-	@ConfigOption(name = "classToDescribe",
-	              description = "class of which an OWL class expression should be learned",
+	@ConfigOption(description = "class of which an OWL class expression should be learned",
 	              required = true)
 	private OWLClass classToDescribe;
 
 	private List<OWLIndividual> classInstances;
 	private TreeSet<OWLIndividual> classInstancesSet;
-	@ConfigOption(name = "equivalence",
-	              defaultValue = "true",
+	@ConfigOption(defaultValue = "true",
 	              description = "Whether this is an equivalence problem (or superclass learning problem)")
 	private boolean equivalence = true;
 
-	@ConfigOption(name = "betaSC",
-	              description = "beta index for F-measure in super class learning",
+	@ConfigOption(description = "beta index for F-measure in super class learning",
 	              required = false,
 	              defaultValue = "3.0")
 	private double betaSC = 3.0;
 
-	@ConfigOption(name = "betaEq",
-	              description = "beta index for F-measure in definition learning",
+	@ConfigOption(description = "beta index for F-measure in definition learning",
 	              required = false,
 	              defaultValue = "1.0")
 	private double betaEq = 1.0;
@@ -80,19 +75,16 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 	// specific variables for generalised F-measure
 	private TreeSet<OWLIndividual> negatedClassInstances;
 
-	@ConfigOption(name = "accuracyMethod",
-	              description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
+	@ConfigOption(description = "Specifies, which method/function to use for computing accuracy. Available measues are \"pred_acc\" (predictive accuracy), \"fmeasure\" (F measure), \"generalised_fmeasure\" (generalised F-Measure according to Fanizzi and d'Amato).",
 	              defaultValue = "PRED_ACC")
 	protected AccMethod accuracyMethod;
 
-	@ConfigOption(name = "checkConsistency",
-	              description = "whether to check for consistency of suggestions (when added to ontology)",
+	@ConfigOption(description = "whether to check for consistency of suggestions (when added to ontology)",
 	              required = false,
 	              defaultValue = "true")
 	private boolean checkConsistency = true;
 
 	private OWLDataFactory df = new OWLDataFactoryImpl();
-
 
 	public ClassLearningProblem() {
 
@@ -230,10 +222,8 @@ public class ClassLearningProblem extends AbstractClassExpressionLearningProblem
 		return val;
 	}
 
-
 	// see http://sunsite.informatik.rwth-aachen.de/Publications/CEUR-WS/Vol-426/swap2008_submission_14.pdf
 	// for all methods below (currently dummies)
-
 
 	/**
 	 * @return the classToDescribe

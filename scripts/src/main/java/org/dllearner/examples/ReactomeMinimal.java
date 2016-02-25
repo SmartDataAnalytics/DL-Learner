@@ -20,7 +20,6 @@ import uk.ac.manchester.cs.owl.owlapi.OWLNamedIndividualImpl;
 import java.io.File;
 import java.util.*;
 
-
 public class ReactomeMinimal {
     private static final Logger logger = Logger.getLogger(ReactomeMinimal.class);
     private static final String kbPathStr = "/tmp/tr_cbd.owl";
@@ -141,7 +140,6 @@ public class ReactomeMinimal {
         Logger.getLogger(AbstractReasonerComponent.class).setLevel(Level.OFF);
         StringRenderer.setRenderer(Rendering.DL_SYNTAX);
     }
-
 
     private static Set<OWLIndividual> makeIndividuals(List<String> uris) {
         Set<OWLIndividual> individuals = new HashSet<>();

@@ -32,7 +32,6 @@ public class DBPediaNavigatorCityLocatorRule extends Rule{
 	
 	Map<String,String> map= new HashMap<>();
 
-
 	public DBPediaNavigatorCityLocatorRule(Months month){
 		super(month);
 		map.put("http://dbpedia.org/class/custom/City_in_Saxony", "http://dbpedia.org/class/custom/City_in_Europe");

@@ -42,7 +42,6 @@ import java.sql.*;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-
 public class OWLAxiomPatternFinder {
 	
 	private static Queue<String> classVarQueue = new LinkedList<>();

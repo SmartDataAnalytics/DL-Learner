@@ -21,8 +21,6 @@ package org.dllearner.utilities;
 import org.dllearner.core.AbstractSearchTreeNode;
 import org.dllearner.utilities.datastructures.AbstractSearchTree;
 
-import java.util.Map;
-
 public class TreeUtils {
 
 	public static String toTreeString(
@@ -31,6 +29,15 @@ public class TreeUtils {
 	}
 	public static String toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
 		return TreeUtils.toTreeString(node, 0).toString();
+	}
+	public static String getRefinementChainString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node) {
+		if(node.getParent()!=null) {
+			String ret = getRefinementChainString(node.getParent());
+			ret += " => " + node.getExpression().toString();
+			return ret;
+		} else {
+			return node.getExpression().toString();
+		}
 	}
 
 	private static StringBuilder toTreeString(AbstractSearchTreeNode<? extends AbstractSearchTreeNode> node,

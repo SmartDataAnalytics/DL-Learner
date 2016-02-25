@@ -32,7 +32,6 @@ public class PredicateReplacementRule extends Rule{
 	String oldPredicate;
 	String newPredicate;
 
-
 	public PredicateReplacementRule(Months month, String oldPredicate, String newPredicate) {
 		super(month);
 		this.oldPredicate = oldPredicate;

@@ -335,7 +335,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	isResourceNode = false;
     }
 
-
     public void setParent(QueryTreeImpl<N> parent) {
         if (this.parent != null) {
             this.parent.children.remove(this);
@@ -404,7 +403,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	
     }
 
-
     @Override
     public int removeChild(QueryTreeImpl<N> child) {
     	int pos = children.indexOf(child);
@@ -445,7 +443,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
 //    	edge2ChildrenMap.put("http://dl-learner.org/carcinogenesis#hasAtom", list);
     }
 
-
     @Override
     public Object getEdge(QueryTree<N> child) {
         return child2EdgeMap.get(child);
@@ -456,12 +453,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return new TreeSet<>(child2EdgeMap.values());
     }
 
-
     @Override
     public void sortChildren(Comparator<QueryTree<N>> comparator) {
         Collections.sort(children, comparator);
     }
-
 
     public void clearChildren() {
         for (QueryTreeImpl<N> child : new ArrayList<>(children)) {
@@ -469,12 +464,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
 
-
     @Override
     public QueryTree<N> getParent() {
         return parent;
     }
-
 
     @Override
     public List<QueryTree<N>> getChildren() {
@@ -502,12 +495,10 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         return children.size();
     }
 
-
     @Override
     public boolean isRoot() {
         return parent == null;
     }
-
 
     @Override
     public boolean isLeaf() {
@@ -732,7 +723,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return tagged;
     }
 
-
     @Override
     public QueryTree<N> getRoot() {
         if (parent == null) {
@@ -754,7 +744,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     	return leafs;
     }
 
-
     @Override
     public List<QueryTree<N>> getPathToRoot() {
         List<QueryTree<N>> path = new ArrayList<>();
@@ -768,7 +757,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
     }
     
    
-
 
     @Override
     public List<N> getUserObjectPathToRoot() {
@@ -795,7 +783,6 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         	getChildrenClosure(child, bin);
         }
     }
-
 
     @Override
     public Set<N> getUserObjectClosure() {
@@ -1021,12 +1008,9 @@ public class QueryTreeImpl<N> implements QueryTree<N>{
         }
     }
 
-
     public int getSize() {
         return getUserObjectClosure().size();
     }
-
-
 
     @Override
     public int getMaxDepth() {

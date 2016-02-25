@@ -19,10 +19,12 @@
 package org.dllearner.learningproblems;
 
 import org.dllearner.core.ComponentAnn;
+import org.dllearner.core.config.ConfigOption;
 
 @ComponentAnn(name = "Predictive Accuracy", shortName = "pred_acc", version = 0)
 public class AccMethodPredAcc implements AccMethodTwoValued, AccMethodWithBeta {
 
+	@ConfigOption(description = "beta factor (0 = do not use)", defaultValue = "0")
 	private double beta = 0;
 
 	public AccMethodPredAcc() {

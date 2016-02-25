@@ -59,7 +59,6 @@ public abstract class RefinementOperatorAdapter implements LengthLimitedRefineme
 		throw new UnsupportedOperationException();
 	}
 
-
 	@Override
 	public void setLengthMetric(OWLClassExpressionLengthMetric lengthMetric) {
 		throw new UnsupportedOperationException();

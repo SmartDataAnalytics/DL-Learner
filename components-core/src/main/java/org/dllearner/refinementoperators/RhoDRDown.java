@@ -25,6 +25,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import org.dllearner.core.*;
+import org.dllearner.core.annotations.NoConfigOption;
 import org.dllearner.core.config.ConfigOption;
 import org.dllearner.core.options.CommonConfigOptions;
 import org.dllearner.core.owl.*;
@@ -84,11 +85,15 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private static final OWLClass OWL_THING = new OWLClassImpl(
             OWLRDFVocabulary.OWL_THING.getIRI());
 
+	@ConfigOption(description = "the reasoner to use")
 	private AbstractReasonerComponent reasoner;
 
 	// hierarchies
+	@NoConfigOption
 	private ClassHierarchy subHierarchy;
+	@NoConfigOption
 	private ObjectPropertyHierarchy objectPropertyHierarchy;
+	@NoConfigOption
 	private DatatypePropertyHierarchy dataPropertyHierarchy;
 
 	// domains and ranges
@@ -109,6 +114,9 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	// start class, then the algorithm should start the search with class
 	// Compound (and not with Thing), because otherwise concepts like
 	// NOT Carbon-87 will be returned which itself is not a subclass of Compound
+	@ConfigOption(
+			defaultValue = "owl:Thing",
+			description = "You can specify a start class for the algorithm")
 	private OWLClassExpression startClass = OWL_THING;
 
 	// the length of concepts of top refinements, the first values is
@@ -154,6 +162,8 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	private int maxNrOfSplits = 12;
 
 	// data structure for a simple frequent pattern matching preprocessing phase
+	@ConfigOption(defaultValue = "3", description = "minimum number an individual or literal has to be seen in the " +
+			"knowledge base before considering it for inclusion in concepts")
 	private int frequencyThreshold = CommonConfigOptions.valueFrequencyThresholdDefault;
 	private Map<OWLObjectPropertyExpression, Map<OWLIndividual, Integer>> valueFrequency = new HashMap<>();
 	// data structure with identified frequent values
@@ -168,53 +178,53 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	public long mComputationTimeNs = 0;
 	public long topComputationTimeNs = 0;
 
-	@ConfigOption(name = "applyAllFilter", defaultValue="true")
+	@ConfigOption(defaultValue="true")
 	private boolean applyAllFilter = true;
 
-	@ConfigOption(name = "applyExistsFilter", defaultValue="true")
+	@ConfigOption(defaultValue="true", description = "throwing out all refinements with " +
+			"duplicate \u2203 r for any r")
 	private boolean applyExistsFilter = true;
 
-	@ConfigOption(name = "useAllConstructor", description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
+	@ConfigOption(description="support of universal restrictions (owl:allValuesFrom), e.g. \u2200 r.C ", defaultValue="true")
 	private boolean useAllConstructor = true;
 
-	@ConfigOption(name = "useExistsConstructor", description="support of existential restrictions (owl:someValuesFrom), e.g. \u2203 r.C ", defaultValue="true")
+	@ConfigOption(description="support of existential restrictions (owl:someValuesFrom), e.g. \u2203 r.C ", defaultValue="true")
 	private boolean useExistsConstructor = true;
 
-	@ConfigOption(name = "useHasValueConstructor", description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false")
+	@ConfigOption(description="support of has value constructor (owl:hasValue), e.g. \u2203 r.{a} ", defaultValue="false")
 	private boolean useHasValueConstructor = false;
 
-	@ConfigOption(name = "useCardinalityRestrictions", description="support of qualified cardinality restrictions (owl:minCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
+	@ConfigOption(description="support of qualified cardinality restrictions (owl:minCardinality), e.g. \u2265 3 r.C ", defaultValue="true")
 	private boolean useCardinalityRestrictions = true;
 
-	@ConfigOption(name = "useNegation", description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
+	@ConfigOption(description="support of negation (owl:complementOf), e.g. \u00AC C ", defaultValue="true")
 	private boolean useNegation = true;
 
-	@ConfigOption(name = "useInverse", description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
+	@ConfigOption(description="support of inverse object properties (owl:inverseOf), e.g. r\u207B.C ", defaultValue="false")
 	private boolean useInverse = false;
 
-	@ConfigOption(name = "useBooleanDatatypes", description="support of boolean datatypes (xsd:boolean), e.g. \u2203 r.{true} ", defaultValue="true")
+	@ConfigOption(description="support of boolean datatypes (xsd:boolean), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useBooleanDatatypes = true;
 
-	@ConfigOption(name = "useNumericDatatypes", description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true")
+	@ConfigOption(description="support of numeric datatypes (xsd:int, xsd:double, ...), e.g. \u2203 r.{true} ", defaultValue="true")
 	private boolean useNumericDatatypes = true;
 
-	@ConfigOption(name = "useTimeDatatypes", defaultValue="true")
+	@ConfigOption(defaultValue="true")
 	private boolean useTimeDatatypes = true;
 
-	@ConfigOption(name = "useStringDatatypes", description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false")
+	@ConfigOption(description="support of string datatypes (xsd:string), e.g. \u2203 r.{\"SOME_STRING\"} ",defaultValue="false")
 	private boolean useStringDatatypes = false;
 
-	@ConfigOption(name = "disjointChecks", defaultValue="true")
+	@ConfigOption(defaultValue="true", description = "skip combination of intersection between disjoint classes")
 	private boolean disjointChecks = true;
 
-	@ConfigOption(name = "instanceBasedDisjoints", defaultValue="true")
+	@ConfigOption(defaultValue="true")
 	private boolean instanceBasedDisjoints = true;
 
-	@ConfigOption(name = "dropDisjuncts", defaultValue="false")
+	@ConfigOption(defaultValue="false")
 	private boolean dropDisjuncts = false;
 
-	@ConfigOption(name = "useSomeOnly",
-			description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",
+	@ConfigOption(description="universal restrictions on a property r are only used when there is already a cardinality and/or existential restriction on r",
 			defaultValue="true")
 	private boolean useSomeOnly = true;
 
@@ -230,6 +240,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 	@ConfigOption(description = "whether to generate object complement while refining", defaultValue = "false")
 	private boolean useObjectValueNegation = false;
 
+	@ConfigOption(description = "class expression length metric (should match learning algorithm usage)", defaultValue = "default cel_metric")
 	private OWLClassExpressionLengthMetric lengthMetric = OWLClassExpressionLengthMetric.getDefaultMetric();
 	private OWLDataFactory df = new OWLDataFactoryImpl();
 
@@ -363,7 +374,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		// garbage collector take care of it
 		valueFrequency = null;
 		dataValueFrequency.clear();// = null;
-
 
 		// compute splits for numeric data properties
 		if(useNumericDatatypes) {
@@ -701,7 +711,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 				OWLDatatype datatype = ((OWLDatatypeRestriction) dr).getDatatype();
 				Set<OWLFacetRestriction> facetRestrictions = ((OWLDatatypeRestriction) dr).getFacetRestrictions();
 
-
 				OWLDatatypeRestriction newDatatypeRestriction = null;
 				if(OWLAPIUtils.isNumericDatatype(datatype) || OWLAPIUtils.dtDatatypes.contains(datatype)){
 					for (OWLFacetRestriction facetRestriction : facetRestrictions) {
@@ -900,7 +909,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		for (OWLObjectProperty subProperty : subProperties) {
 			refinements.add(df.getOWLObjectAllValuesFrom(subProperty, filler));
 		}
-
 
 		// rule 4: ALL r.D => <= (maxFillers-1) r.D
 		// (length increases by 1 so we have to check whether max length is sufficient)
@@ -1583,7 +1591,6 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		}
 	}
 
-
 	private void computeMostGeneralNumericDPRecursive(OWLClassExpression domain, Set<OWLDataProperty> currProperties, Set<OWLDataProperty> mgddTmp) {
 		for(OWLDataProperty prop : currProperties) {
 			if(appNumeric.get(domain).contains(prop))
@@ -1806,6 +1813,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.applyAllFilter = applyAllFilter;
 	}
 
+	public boolean isApplyExistsFilter() {
+		return applyExistsFilter;
+	}
+
+	public void setApplyExistsFilter(boolean applyExistsFilter) {
+		this.applyExistsFilter = applyExistsFilter;
+	}
+
 	public boolean isUseAllConstructor() {
 		return useAllConstructor;
 	}
@@ -1927,7 +1942,7 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 		this.reasoner = (AbstractReasonerComponent) reasoner;
 	}
 
-	@Override
+	@Override @NoConfigOption
 	public void setClassHierarchy(ClassHierarchy classHierarchy) {
 		subHierarchy = classHierarchy;
 	}
@@ -1975,6 +1990,14 @@ public class RhoDRDown extends RefinementOperatorAdapter implements Component, C
 
 	public void setMaxNrOfSplits(int maxNrOfSplits) {
 		this.maxNrOfSplits = maxNrOfSplits;
+	}
+
+	public boolean isDisjointChecks() {
+		return disjointChecks;
+	}
+
+	public void setDisjointChecks(boolean disjointChecks) {
+		this.disjointChecks = disjointChecks;
 	}
 
 	@Override

@@ -234,7 +234,6 @@ public class QALDExperiment {
 					e1.printStackTrace();
 				}
 
-
 				logger.info("#examples: " + nrOfExamples + " noise: " + noise);
 
 				DescriptiveStatistics bestReturnedSolutionPrecisionStats = new DescriptiveStatistics();

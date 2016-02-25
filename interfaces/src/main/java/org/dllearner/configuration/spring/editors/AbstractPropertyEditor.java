@@ -23,5 +23,4 @@ public abstract class AbstractPropertyEditor<T> extends PropertyEditorSupport {
 		return value;
 	}
 
-
 }
