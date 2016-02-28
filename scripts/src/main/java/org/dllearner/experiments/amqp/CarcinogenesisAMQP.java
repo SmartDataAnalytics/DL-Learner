@@ -54,7 +54,7 @@ public class CarcinogenesisAMQP {
 		int isMaster = Integer.parseInt(args[1]);
 		String amqpConfFilePath = args[2];
 		String ontFilePath = args[3];
-		int runtimeInSecs = Integer.parseInt(args[4]);
+		int runtimeInSecsOrWorkerBaseTime = Integer.parseInt(args[4]);
 		int noisePercent = Integer.parseInt(args[5]);
 		String searchTreeFilePath = args[6];
 
@@ -99,7 +99,10 @@ public class CarcinogenesisAMQP {
 		CELOE la = new CELOE();
 		la.setHeuristic(h);
 		la.setLearningProblem(lp);
-		la.setMaxExecutionTimeInSeconds(runtimeInSecs);
+		if (isMaster == 1)
+			la.setMaxExecutionTimeInSeconds(runtimeInSecsOrWorkerBaseTime);
+		else
+			la.setWorkerRuntimeBaseInSecs(runtimeInSecsOrWorkerBaseTime);
 		la.setNoisePercentage(noisePercent / 100.);
 		la.setOperator(op);
 		la.setReasoner(reasoner);

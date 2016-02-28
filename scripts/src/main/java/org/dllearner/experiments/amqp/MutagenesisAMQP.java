@@ -30,7 +30,7 @@ public class MutagenesisAMQP {
 				"<is master (1)/is not master (0)>",
 				"<path to amqp config>",
 				"<path to ont file>",
-				"<max master exec time>",
+				"<max master exec time/worker base time>",
 				"<noise percent>",
 				"<search tree file>"
 		);
@@ -51,7 +51,7 @@ public class MutagenesisAMQP {
 		int isMaster = Integer.parseInt(args[1]);
 		String amqpConfFilePath = args[2];
 		String ontFilePath = args[3];
-		int runtimeInSecs = Integer.parseInt(args[4]);
+		int runtimeInSecsOrWorkerBaseTime = Integer.parseInt(args[4]);
 		int noisePercent = Integer.parseInt(args[5]);
 		String searchTreeFilePath = args[6];
 
@@ -96,7 +96,10 @@ public class MutagenesisAMQP {
 		CELOE la = new CELOE();
 		la.setHeuristic(h);
 		la.setLearningProblem(lp);
-		la.setMaxExecutionTimeInSeconds(runtimeInSecs);
+		if (isMaster == 1)
+			la.setMaxExecutionTimeInSeconds(runtimeInSecsOrWorkerBaseTime);
+		else
+			la.setWorkerRuntimeBaseInSecs(runtimeInSecsOrWorkerBaseTime);
 		la.setNoisePercentage(noisePercent / 100.);
 		la.setOperator(op);
 		la.setReasoner(reasoner);
@@ -112,5 +115,4 @@ public class MutagenesisAMQP {
 		la.start();
 		la.stop();
 	}
-
 }
