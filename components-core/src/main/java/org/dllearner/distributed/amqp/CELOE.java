@@ -273,6 +273,7 @@ public class CELOE extends AbstractCELA {
 	private long timeLastImprovement = 0;
 
 	private long totalRuntimeNs = 0;
+	private int workerRuntimeBaseInSecs = 10;
 	// </--------------------- non-component attributes ---------------------->
 
 
@@ -1161,6 +1162,12 @@ public class CELOE extends AbstractCELA {
 		return totalRuntimeNs;
 	}
 
+	// workerRuntimeBase
+	public void setWorkerRuntimeBaseInSecs(int runtime) {
+		this.workerRuntimeBaseInSecs = runtime;
+	}
+
+
 	// writeSearchTree
 	public boolean isWriteSearchTree() {
 		return writeSearchTree;
@@ -1370,6 +1377,7 @@ public class CELOE extends AbstractCELA {
 		public void init() throws URLSyntaxException, QpidException, JMSException {
 			super.init();
 			setMessageListener(new WorkerMessageListener());
+			setWorkerRuntimeBase(workerRuntimeBaseInSecs);
 		}
 
 		public void processRecvdTree(SearchTreeContainer treeContainer) {
@@ -1397,6 +1405,7 @@ public class CELOE extends AbstractCELA {
 			maxExecutionTimeInSeconds = Math.max(
 					getRuntimeBase(),
 					(int) (getRuntimeBase() * Math.log(searchTree.size())));
+			logger.info("Set runtime to " + maxExecutionTimeInSeconds);
 
 			startWorkerCELOE();
 
